@@ -1,15 +1,20 @@
-import { useContextHandler, type UseContextHandlerParams } from "@webiny/testing";
-import { createModelsPlugins } from "../__cms/models.js";
-import { PluginsContainer } from "@webiny/plugins";
-import type { Context } from "~/types.js";
-import { createHeadlessCmsWorkflows } from "~/index.js";
 import { createWorkflows } from "@webiny/api-workflows";
+import { useContextHandler, type UseContextHandlerParams } from "@webiny/testing";
+import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
+import { createModelsPlugins } from "../__cms/models.js";
+import { createHeadlessCmsWorkflows } from "~/index.js";
 
 export const createContextHandler = (params?: UseContextHandlerParams) => {
-    const container = new PluginsContainer(params?.plugins || []);
-    container.register([...createModelsPlugins(), createWorkflows(), createHeadlessCmsWorkflows()]);
-    return useContextHandler<Context>({
+    const testLicence = createTestWcpLicense();
+
+    return useContextHandler({
         ...params,
-        plugins: container.all()
+        bottomPlugins: [
+            ...createModelsPlugins(),
+            createWorkflows(),
+            createHeadlessCmsWorkflows(),
+            params?.plugins || []
+        ],
+        testProjectLicense: testLicence
     });
 };

@@ -1,10 +1,9 @@
-import { WcpContext } from "@webiny/api-core/src/features/wcp/WcpContext/index.js";
-import { ContextPlugin } from "@webiny/handler";
-import type { Context } from "~/types.js";
+import { createContextPlugin } from "@webiny/api";
 import { EntryWorkflowsFeature } from "./features/EntryWorkflows/feature.js";
+import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 
 export const createHeadlessCmsWorkflows = () => {
-    const plugin = new ContextPlugin<Context>(async context => {
+    const plugin = createContextPlugin(async context => {
         const wcpContext = context.container.resolve(WcpContext);
 
         if (!wcpContext.canUseWorkflows()) {
