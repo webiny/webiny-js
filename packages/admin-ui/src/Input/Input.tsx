@@ -39,6 +39,8 @@ const DecoratableInput = ({
         [validate, originalOnBlur]
     );
 
+    // TODO: handle `type: "hidden"` so that it doesn't render wrapper divs.
+
     return (
         <div className={"w-full"}>
             <FormComponentLabel

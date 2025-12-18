@@ -2,7 +2,15 @@
 import React, { useEffect } from "react";
 import { contentSdk } from "@webiny/website-builder-sdk";
 
-export type DocumentFragments = Record<string, React.ReactNode>;
+type FragmentConfig =
+    | {
+          type: "fixed";
+          name: string;
+          element: React.ReactNode;
+      }
+    | { type: "component"; component: string; inputs: Record<string, any> };
+
+export type DocumentFragments = FragmentConfig[];
 
 const FragmentsContext = React.createContext<DocumentFragments | undefined>(undefined);
 
@@ -12,15 +20,29 @@ interface FragmentsProviderProps {
 }
 
 export const FragmentsProvider = ({ fragments, children }: FragmentsProviderProps) => {
-    const fragmentNames = Object.keys(fragments);
-
     useEffect(() => {
         if (contentSdk.isEditing()) {
+            // Extract serializable data
+            const fragmentsData = fragments.map(fragment => {
+                if (fragment.type === "fixed") {
+                    return {
+                        type: "fixed",
+                        name: fragment.name
+                    };
+                }
+
+                return {
+                    type: "component",
+                    component: fragment.component,
+                    inputs: fragment.inputs
+                };
+            });
+
             contentSdk
                 .getEditingSdk()!
-                .messenger.send("document.fragments", { fragments: fragmentNames });
+                .messenger.send("document.fragments", { fragments: fragmentsData });
         }
-    }, [fragmentNames]);
+    }, [fragments.length]);
 
     return <FragmentsContext.Provider value={fragments}>{children}</FragmentsContext.Provider>;
 };
@@ -28,7 +50,7 @@ export const FragmentsProvider = ({ fragments, children }: FragmentsProviderProp
 export const useDocumentFragments = () => {
     const context = React.useContext(FragmentsContext);
     if (!context) {
-        return {};
+        return [];
     }
 
     return context;

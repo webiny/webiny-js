@@ -6,6 +6,7 @@ import { ConnectToEditor } from "./ConnectToEditor.js";
 import { editorComponents } from "../editorComponents/index.js";
 import type { DocumentFragments } from "./FragmentsProvider.js";
 import { FragmentsProvider } from "./FragmentsProvider.js";
+import type { DocumentFragmentProps } from "~/components/DocumentFragment.js";
 
 interface DocumentRendererProps {
     document: Document | null;
@@ -16,17 +17,30 @@ interface DocumentRendererProps {
 export const DocumentRenderer = ({ document, components, children }: DocumentRendererProps) => {
     const allComponents = [...editorComponents, ...components];
     allComponents.forEach(blueprint => contentSdk.registerComponent(blueprint));
-    const fragments: DocumentFragments = {};
+    const fragments: DocumentFragments = [];
 
-    React.Children.toArray(children).forEach(child => {
-        // @ts-expect-error Need to properly type this.
-        const { name, children } = child.props;
-        if (!name || !children) {
-            return;
-        }
+    React.Children.toArray(children)
+        .filter(child => React.isValidElement(child))
+        .forEach(child => {
+            const props = child.props as DocumentFragmentProps;
+            // Case 1:
+            if (props.name && props.children) {
+                fragments.push({
+                    type: "fixed",
+                    name: props.name,
+                    element: <>{props.children}</>
+                });
+            }
 
-        fragments[name] = <>{children}</>;
-    });
+            // Case 2:
+            if (props.component) {
+                fragments.push({
+                    type: "component",
+                    component: props.component,
+                    inputs: props.inputs ?? {}
+                });
+            }
+        });
 
     if (!document) {
         return <div data-role={"document-renderer"}>{children}</div>;
