@@ -1,0 +1,44 @@
+{
+  "name": "@cloudi/aws",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "description": "DI-enabled cloud (AWS Lambda) functions. Write cloud functions using Dependency Injection.",
+  "contributors": [
+    "Webiny Team"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "aws",
+    "lambda",
+    "dependency-injection",
+    "di",
+    "serverless"
+  ],
+  "dependencies": {
+    "@fastify/aws-lambda": "4.1.0",
+    "@webiny/aws-sdk": "0.0.0",
+    "@webiny/di": "^0.2.3",
+    "@webiny/handler": "0.0.0",
+    "@webiny/handler-aws": "0.0.0",
+    "@webiny/plugins": "0.0.0",
+    "@webiny/utils": "0.0.0",
+    "fastify": "4.29.1",
+    "pino-lambda": "^4.4.1"
+  },
+  "devDependencies": {
+    "@webiny/build-tools": "0.0.0",
+    "rimraf": "^6.0.1",
+    "typescript": "5.9.3",
+    "vitest": "^3.2.4"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  }
+}
+
