@@ -80,7 +80,10 @@ export const WatchCommand = createAppModule({
                           subnetIds: vpc.subnets.private.map(s => s.output.id),
                           securityGroupIds: [vpc.vpc.output.defaultSecurityGroupId]
                       }
-                    : undefined
+                    : undefined,
+                loggingConfig: {
+                    logFormat: "JSON"
+                }
             }
         });
 

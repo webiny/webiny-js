@@ -42,6 +42,9 @@ export const SyncSystemWorkerLambda = createAppModule({
                         PULUMI_APPS: "true",
                         AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
                     }
+                },
+                loggingConfig: {
+                    logFormat: "JSON"
                 }
             }
         });

@@ -52,7 +52,10 @@ export const ApiMigration = createAppModule({
                         S3_BUCKET: core.fileManagerBucketId
                     })) as Record<string, any>
                 },
-                vpcConfig: app.getModule(VpcConfig).functionVpcConfig
+                vpcConfig: app.getModule(VpcConfig).functionVpcConfig,
+                loggingConfig: {
+                    logFormat: "JSON"
+                }
             }
         });
 

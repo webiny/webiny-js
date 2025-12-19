@@ -29,7 +29,10 @@ export const ApiScheduler = createAppModule({
                 layers: graphql.functions.graphql.output.layers.apply(arns => {
                     return Array.from(new Set([...(arns || []), getLayerArn("sharp")]));
                 }),
-                description: "Performs scheduled operations on Headless CMS entries."
+                description: "Performs scheduled operations on Headless CMS entries.",
+                loggingConfig: {
+                    logFormat: "JSON"
+                }
             }
         });
         */
