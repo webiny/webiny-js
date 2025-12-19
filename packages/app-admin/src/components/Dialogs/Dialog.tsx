@@ -70,13 +70,13 @@ export const Dialog = ({
                     actions={
                         <>
                             {cancelLabel ? (
-                                <AdminDialog.CancelButton
+                                <AdminDialog.CancelAction
                                     onClick={closeDialog}
                                     text={cancelLabel}
                                 />
                             ) : null}
                             {acceptLabel ? (
-                                <AdminDialog.ConfirmButton onClick={submit} text={acceptLabel} />
+                                <AdminDialog.ConfirmAction onClick={submit} text={acceptLabel} />
                             ) : null}
                         </>
                     }

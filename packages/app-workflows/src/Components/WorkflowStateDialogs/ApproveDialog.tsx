@@ -29,8 +29,8 @@ export const ApproveDialog = (props: IApproveDialogProps) => {
             }
             actions={
                 <>
-                    <Dialog.CancelButton onClick={hide} />
-                    <Dialog.ConfirmButton text={"Approve content"} onClick={onConfirm} />
+                    <Dialog.CancelAction onClick={hide} />
+                    <Dialog.ConfirmAction text={"Approve content"} onClick={onConfirm} />
                 </>
             }
             showCloseButton={true}

@@ -23,8 +23,8 @@ export const RequestReviewDialog = (props: IRequestReviewDialogProps) => {
             }
             actions={
                 <>
-                    <Dialog.CancelButton onClick={hide} />
-                    <Dialog.ConfirmButton
+                    <Dialog.CancelAction onClick={hide} />
+                    <Dialog.ConfirmAction
                         text={"Request Content Review"}
                         onClick={onRequestReview}
                     />

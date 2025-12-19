@@ -36,8 +36,8 @@ export const QueryManagerDialog = ({ vm, ...props }: QueryManagerDialogProps) =>
             title={"Advanced search filter"}
             actions={
                 <>
-                    <Dialog.CancelButton onClick={props.onClose} text={"Cancel"} />
-                    <Dialog.ConfirmButton onClick={props.onCreate} text={"Create new"} />
+                    <Dialog.CancelAction onClick={props.onClose} text={"Cancel"} />
+                    <Dialog.ConfirmAction onClick={props.onCreate} text={"Create new"} />
                 </>
             }
         >

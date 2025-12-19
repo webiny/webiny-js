@@ -66,8 +66,8 @@ export const RejectDialog = (props: IRejectDialogProps) => {
             }
             actions={
                 <>
-                    <Dialog.CancelButton onClick={hide} />
-                    <Dialog.ConfirmButton
+                    <Dialog.CancelAction onClick={hide} />
+                    <Dialog.ConfirmAction
                         disabled={!validation.isValid}
                         text={"Reject content"}
                         onClick={onConfirm}
