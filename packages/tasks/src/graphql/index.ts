@@ -313,7 +313,12 @@ const createGraphQL = () => {
                             rwd: "w"
                         });
                         return resolve(async () => {
-                            return await context.tasks.abort(args);
+                            const result = await context.tasks.abort(args);
+                            if(result.isOk()) {
+                                return true;
+                            }
+
+                            throw result.error;
                         });
                     },
                     /**
@@ -324,7 +329,12 @@ const createGraphQL = () => {
                             rwd: "w"
                         });
                         return resolve(async () => {
-                            return await context.tasks.trigger(args);
+                            const result = await context.tasks.trigger(args);
+                            if (result.isOk()) {
+                                return true;
+                            }
+
+                            throw result.error;
                         });
                     },
                     /**

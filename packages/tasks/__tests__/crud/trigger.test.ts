@@ -22,7 +22,7 @@ describe("trigger crud", () => {
             }
         });
 
-        expect(result).toEqual({
+        expect(result.value).toEqual({
             id: expect.toBeString(),
             name: "A test of triggering task",
             definitionId: "myCustomTaskNumber1",
@@ -89,7 +89,7 @@ describe("trigger crud", () => {
                     anotherWrongValueKey: "wrong again"
                 }
             });
-            expect(result).toEqual("Should not reach this point.");
+            expect(result.value).toEqual("Should not reach this point.");
         } catch (ex) {
             expect(ex.message).toEqual("Validation failed.");
             expect(ex.data).toEqual({
@@ -134,7 +134,7 @@ describe("trigger crud", () => {
                 name: "A test of triggering task",
                 input
             });
-            expect(result).toMatchObject({
+            expect(result.value).toMatchObject({
                 id: expect.any(String),
                 input
             });

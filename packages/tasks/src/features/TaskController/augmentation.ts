@@ -6,6 +6,8 @@ import {
 } from "@webiny/api-core/features/task/TaskService/index.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import type { ITaskResponse } from "~/response/abstractions/index.js";
+import { Result } from "@webiny/feature/api";
+import { BaseError } from "@webiny/feature/api/index.js";
 
 /**
  * Augment the TaskController interface from api-core with implementation details.
@@ -51,7 +53,7 @@ declare module "@webiny/api-core/features/task/TaskController/abstractions.js" {
         task: {
             trigger<CI extends TaskDefinition.TaskInput = TaskDefinition.TaskInput>(
                 params: ITaskTriggerParams<CI>
-            ): Promise<TaskService.Task<CI>>;
+            ): Promise<Result<TaskService.Task<CI>, BaseError>>;
 
             listChildren<
                 CT extends TaskDefinition.TaskInput = I,

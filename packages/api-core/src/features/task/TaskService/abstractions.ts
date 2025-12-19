@@ -1,4 +1,4 @@
-import { createAbstraction } from "@webiny/feature/api";
+import { createAbstraction, BaseError, Result } from "@webiny/feature/api";
 import type { GenericRecord } from "@webiny/api/types.js";
 import { type ITaskOutput, TaskDefinition } from "~/features/task/TaskDefinition/index.js";
 
@@ -41,14 +41,14 @@ export interface ITaskService {
         O extends IGenericOutput = IGenericOutput
     >(
         params: ITaskTriggerParams<T>
-    ) => Promise<ITask<T, O>>;
+    ) => Promise<Result<ITask<T, O>, BaseError>>;
     abort: <
         T extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
         O extends IGenericOutput = IGenericOutput
     >(
         params: ITaskAbortParams
-    ) => Promise<ITask<T, O>>;
-    fetchServiceInfo: (input: ITask<any, any> | string) => Promise<IServiceInfo | null>;
+    ) => Promise<Result<ITask<T, O>, BaseError>>;
+    fetchServiceInfo: (input: ITask<any, any> | string) => Promise<Result<IServiceInfo, BaseError>>;
 }
 
 export interface IGenericOutput {

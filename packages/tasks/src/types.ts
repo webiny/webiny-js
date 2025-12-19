@@ -12,6 +12,7 @@ import type { IStepFunctionServiceFetchResult } from "~/service/StepFunctionServ
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
+import { BaseError, Result } from "@webiny/feature/api";
 
 export * from "./handler/types.js";
 export * from "./response/abstractions/index.js";
@@ -275,16 +276,16 @@ export interface ITasksContextServiceObject {
         O extends TaskService.GenericOutput = TaskService.GenericOutput
     >(
         params: ITaskTriggerParams<T>
-    ) => Promise<ITask<T, O>>;
+    ) => Promise<Result<ITask<T, O>, BaseError>>;
     abort: <
         T extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
         O extends TaskService.GenericOutput = TaskService.GenericOutput
     >(
         params: ITaskAbortParams
-    ) => Promise<ITask<T, O>>;
+    ) => Promise<Result<ITask<T, O>>>;
     fetchServiceInfo: (
         input: ITask<any, any> | string
-    ) => Promise<IStepFunctionServiceFetchResult | null>;
+    ) => Promise<Result<IStepFunctionServiceFetchResult, BaseError>>;
 }
 
 export interface ITasksContextObject

@@ -1,10 +1,11 @@
 import { createRoute } from "@webiny/handler";
-import type { WebsiteBuilderContext } from "~/context/types.js";
 import { ensureAuthentication } from "~/utils/ensureAuthentication.js";
 import { ActiveRedirectRestMapper } from "./ActiveRedirectRestMapper.js";
+import { GetActiveRedirectsUseCase } from "~/features/redirects/GetActiveRedirects/index.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 
 export const createRedirectsRoute = () => {
-    return createRoute<WebsiteBuilderContext>(({ onGet, context }) => {
+    return createRoute<ApiCoreContext>(({ onGet, context }) => {
         onGet("/wb/redirects", async (_, reply) => {
             try {
                 ensureAuthentication(context);
@@ -17,9 +18,11 @@ export const createRedirectsRoute = () => {
                 return;
             }
 
-            const redirects = await context.websiteBuilder.redirects.getActiveRedirects();
+            const getActiveRedirects = context.container.resolve(GetActiveRedirectsUseCase);
 
-            const redirectsDto = redirects.map(entry => ActiveRedirectRestMapper.toDto(entry));
+            const result = await getActiveRedirects.execute();
+
+            const redirectsDto = result.value.map(entry => ActiveRedirectRestMapper.toDto(entry));
 
             reply.headers({
                 "content-type": "application/json",

@@ -59,7 +59,7 @@ export const createBulkActionGraphQL = async (
                         });
 
                         return new Response({
-                            id: response.id
+                            id: response.value.id
                         });
                     }
                 }

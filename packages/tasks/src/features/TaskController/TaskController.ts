@@ -4,6 +4,7 @@ import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js
 import { TaskExecutionContext } from "../TaskExecutionContext/abstractions.js";
 import { type ITaskTriggerParams, TaskDataStatus } from "~/types.js";
 import "./augmentation.js";
+import { BaseError, Result } from "@webiny/feature/api/index.js";
 
 class TaskControllerImpl implements Abstraction.Interface {
     constructor(
@@ -59,7 +60,7 @@ class TaskControllerImpl implements Abstraction.Interface {
     task = {
         trigger: async <CI extends TaskDefinition.TaskInput = TaskDefinition.TaskInput>(
             params: ITaskTriggerParams<CI>
-        ): Promise<TaskService.Task<CI>> => {
+        ): Promise<Result<TaskService.Task<CI>, BaseError>> => {
             return this.taskService.trigger({ ...params, parent: this.store.getTask() });
         },
         listChildren: async <

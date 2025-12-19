@@ -353,7 +353,7 @@ describe("task lifecycle hooks", () => {
 
             await runner.run(
                 createMockEvent({
-                    webinyTaskId: task.id,
+                    webinyTaskId: task.value.id,
                     webinyTaskDefinitionId: "testMultipleHooks"
                 })
             );
