@@ -1,4 +1,3 @@
-import type { WbIdentity, WbLocation } from "~/context/types.js";
 import type {
     CmsEntryGetParams,
     CmsEntryListSort,
@@ -7,31 +6,8 @@ import type {
 } from "@webiny/api-headless-cms/types/index.js";
 import type { Topic } from "@webiny/pubsub/types.js";
 import type { ListWbPagesParams, WbListMeta } from "~/features/pages/ListPages/IListPages.js";
-
-export interface WbPage {
-    id: string;
-    entryId: string;
-    wbyAco_location: WbLocation;
-    status: string;
-    version: number;
-    locked: boolean;
-    createdOn: string;
-    createdBy: WbIdentity;
-    savedOn: string;
-    savedBy: WbIdentity;
-    modifiedOn: string;
-    modifiedBy: WbIdentity;
-    tenant: string;
-    locale: string;
-    webinyVersion: string;
-    state?: IEntryState;
-
-    properties: Record<string, any>;
-    metadata: Record<string, any>;
-    bindings: Record<string, any>;
-    elements: Record<string, any>;
-    extensions?: Record<string, any>;
-}
+import type { WbPage } from "~/domain/page/abstractions.js";
+import type { WbLocation } from "~/domain/shared/abstractions.js";
 
 export interface GetWbPageParams {
     id: string;
@@ -39,7 +15,7 @@ export interface GetWbPageParams {
 
 export type CreateWbPageData = Pick<
     WbPage,
-    "properties" | "metadata" | "bindings" | "elements" | "wbyAco_location" | "extensions"
+    "properties" | "metadata" | "bindings" | "elements" | "location" | "extensions"
 >;
 
 export interface UpdateWbPageData {

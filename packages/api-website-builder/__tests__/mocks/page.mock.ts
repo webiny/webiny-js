@@ -9,7 +9,7 @@ export const pageMocks: Record<string, CreateWbPageData> = {
         metadata: {},
         bindings: {},
         elements: [],
-        wbyAco_location: {
+        location: {
             folderId: "root"
         }
     },
@@ -21,7 +21,7 @@ export const pageMocks: Record<string, CreateWbPageData> = {
         metadata: {},
         bindings: {},
         elements: [],
-        wbyAco_location: {
+        location: {
             folderId: "root"
         }
     },
@@ -33,7 +33,7 @@ export const pageMocks: Record<string, CreateWbPageData> = {
         metadata: {},
         bindings: {},
         elements: [],
-        wbyAco_location: {
+        location: {
             folderId: "root"
         }
     }

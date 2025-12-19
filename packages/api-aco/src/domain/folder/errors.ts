@@ -1,4 +1,4 @@
-import { BaseError } from "@webiny/feature/api/index.js";
+import { BaseError } from "@webiny/feature/api";
 
 export class FolderNotFoundError extends BaseError<{ folder: { id: string } }> {
     override readonly code = "Aco/Folder/NotFound" as const;

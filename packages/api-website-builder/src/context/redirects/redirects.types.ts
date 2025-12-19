@@ -8,7 +8,7 @@ import type {
 
 export interface WbRedirect {
     id: string;
-    wbyAco_location: WbLocation;
+    location: WbLocation;
     createdOn: string;
     createdBy: WbIdentity;
     savedOn: string;
@@ -24,11 +24,11 @@ export interface WbRedirect {
 
 export type CreateWbRedirectData = Pick<
     WbRedirect,
-    "redirectFrom" | "redirectTo" | "redirectType" | "isEnabled" | "wbyAco_location"
+    "redirectFrom" | "redirectTo" | "redirectType" | "isEnabled" | "location"
 >;
 
 export interface UpdateWbRedirectData {
-    wbyAco_location?: WbLocation;
+    location?: WbLocation;
     redirectFrom?: string;
     redirectTo?: string;
     redirectType?: string;

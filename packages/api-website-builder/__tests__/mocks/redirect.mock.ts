@@ -6,7 +6,7 @@ export const redirectMocks: Record<string, CreateWbRedirectData> = {
         redirectTo: "/new-page-a",
         redirectType: "permanent",
         isEnabled: true,
-        wbyAco_location: {
+        location: {
             folderId: "root"
         }
     },
@@ -15,7 +15,7 @@ export const redirectMocks: Record<string, CreateWbRedirectData> = {
         redirectTo: "/new-page-b",
         redirectType: "temporary",
         isEnabled: true,
-        wbyAco_location: {
+        location: {
             folderId: "root"
         }
     },
@@ -24,7 +24,7 @@ export const redirectMocks: Record<string, CreateWbRedirectData> = {
         redirectTo: "/new-page-c",
         redirectType: "permanent",
         isEnabled: true,
-        wbyAco_location: {
+        location: {
             folderId: "root"
         }
     }

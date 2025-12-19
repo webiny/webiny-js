@@ -11,7 +11,7 @@ const PAGE_DATA_FIELD = /* GraphQL */ `
         metadata
         savedOn
         createdOn
-        wbyAco_location {
+        location {
             folderId
         }
     }

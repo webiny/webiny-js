@@ -39,6 +39,6 @@ export class DuplicatePage implements IDuplicatePage {
     }
 
     private pickPageData = (page: WbPage) => {
-        return pick(page, ["bindings", "elements", "wbyAco_location", "properties", "metadata"]);
+        return pick(page, ["bindings", "elements", "location", "properties", "metadata"]);
     };
 }

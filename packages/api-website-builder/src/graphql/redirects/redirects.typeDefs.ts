@@ -14,7 +14,7 @@ const getStringFilters = (name: string) => {
 export const redirectsTypeDefs = /* GraphQL */ `
     type WbRedirect {
         id: ID!
-        wbyAco_location: WbLocation
+        location: WbLocation
         createdOn: DateTime
         modifiedOn: DateTime
         savedOn: DateTime
@@ -30,7 +30,7 @@ export const redirectsTypeDefs = /* GraphQL */ `
     }
 
     input WbRedirectCreateInput {
-        wbyAco_location: WbLocationInput!
+        location: WbLocationInput!
         redirectFrom: String!
         redirectTo: String!
         redirectType: String!
@@ -42,11 +42,11 @@ export const redirectsTypeDefs = /* GraphQL */ `
         redirectTo: String!
         redirectType: String!
         isEnabled: Boolean!
-        wbyAco_location: WbLocationInput
+        location: WbLocationInput
     }
 
     input WbRedirectsListWhereInput {
-        wbyAco_location: WbLocationWhereInput
+        location: WbLocationWhereInput
         id: ID
         id_not: ID
         id_in: [ID!]

@@ -135,7 +135,7 @@ export class PagesStorage implements WbPagesStorageOperations {
         return {
             id: entry.id,
             entryId: entry.entryId,
-            wbyAco_location: entry.location,
+            location: entry.location,
             status: entry.status,
             version: entry.version,
             createdOn: entry.createdOn,

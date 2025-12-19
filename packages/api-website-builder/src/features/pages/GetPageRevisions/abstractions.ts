@@ -1,0 +1,47 @@
+import { createAbstraction } from "@webiny/feature/api";
+import type { Result } from "@webiny/feature/api";
+import type { WbPage } from "~/domain/page/abstractions.js";
+import type { PagePersistenceError } from "~/domain/page/errors.js";
+
+/**
+ * GetPageRevisions repository interface
+ */
+export interface IGetPageRevisionsRepository {
+    execute(entryId: string): Promise<Result<WbPage[], RepositoryError>>;
+}
+
+export interface IGetPageRevisionsRepositoryErrors {
+    persistence: PagePersistenceError;
+}
+
+type RepositoryError = IGetPageRevisionsRepositoryErrors[keyof IGetPageRevisionsRepositoryErrors];
+
+export const GetPageRevisionsRepository = createAbstraction<IGetPageRevisionsRepository>(
+    "GetPageRevisionsRepository"
+);
+
+export namespace GetPageRevisionsRepository {
+    export type Interface = IGetPageRevisionsRepository;
+    export type Error = RepositoryError;
+}
+
+/**
+ * GetPageRevisions use case interface
+ */
+export interface IGetPageRevisionsUseCase {
+    execute(entryId: string): Promise<Result<WbPage[], UseCaseError>>;
+}
+
+export interface IGetPageRevisionsUseCaseErrors {
+    persistence: PagePersistenceError;
+}
+
+type UseCaseError = IGetPageRevisionsUseCaseErrors[keyof IGetPageRevisionsUseCaseErrors];
+
+export const GetPageRevisionsUseCase =
+    createAbstraction<IGetPageRevisionsUseCase>("GetPageRevisionsUseCase");
+
+export namespace GetPageRevisionsUseCase {
+    export type Interface = IGetPageRevisionsUseCase;
+    export type Error = UseCaseError;
+}

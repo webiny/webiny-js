@@ -88,7 +88,7 @@ export class RedirectsStorage implements WbRedirectsStorageOperations {
     private getWbRedirectFieldValues(entry: CmsEntry) {
         return {
             id: entry.entryId,
-            wbyAco_location: entry.location,
+            location: entry.location,
             status: entry.status,
             version: entry.version,
             createdOn: entry.createdOn,
