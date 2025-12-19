@@ -174,7 +174,7 @@ export const MultiValueContainer = makeDecoratable(
     "MultiValueContainer",
     ({ children }: MultiValueContainerProps) => {
         return (
-            <Accordion variant={"container"}>
+            <Accordion variant={"container"} className={"gap-md"}>
                 <>{children}</>
             </Accordion>
         );

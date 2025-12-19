@@ -20,7 +20,7 @@ export const TemplateItem = makeDecoratable(
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
                 className={
-                    "flex flex-col justify-between bg-neutral-base overflow-hidden rounded-lg w-[173px] relative cursor-pointer shadow-sm"
+                    "flex flex-col justify-between bg-neutral-base overflow-hidden rounded-lg w-[173px] relative shadow-sm"
                 }
             >
                 <div>
@@ -42,13 +42,14 @@ export const TemplateItem = makeDecoratable(
                 </div>
 
                 {isHovered && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-white/80">
-                        <Dialog.Close>
-                            <Button variant="primary" onClick={() => onTemplate(template)}>
-                                Insert
-                            </Button>
-                        </Dialog.Close>
-                    </div>
+                    <Dialog.Close asChild>
+                        <div
+                            className="absolute inset-0 flex items-center justify-center bg-white/80 cursor-pointer"
+                            onClick={() => onTemplate(template)}
+                        >
+                            <Button variant="primary">Insert</Button>
+                        </div>
+                    </Dialog.Close>
                 )}
             </div>
         );

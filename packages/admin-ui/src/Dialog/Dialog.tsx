@@ -120,7 +120,9 @@ const DialogBase = (props: DialogProps) => {
                     <DialogHeader {...headerProps} />
                     <DialogBody {...bodyProps} />
                     <DialogFooter {...footerProps} />
-                    {closeButtonProps.show && <CloseDialogIconButton size={closeButtonProps.size} />}
+                    {closeButtonProps.show && (
+                        <CloseDialogIconButton size={closeButtonProps.size} />
+                    )}
                 </DialogContent>
             </DialogPortal>
         </DialogRoot>
@@ -135,7 +137,7 @@ const Dialog = withStaticProps(DecoratableDialog, {
     ConfirmButton,
     CancelButton,
     Icon,
-    DialogClose
+    Close: DialogClose
 });
 
 export { Dialog, type DialogProps };
