@@ -3,6 +3,7 @@ import { makeDecoratable } from "@webiny/app-admin";
 import type { CmsDynamicZoneTemplate } from "~/types.js";
 import { TemplateIcon } from "~/admin/plugins/fieldRenderers/dynamicZone/TemplateIcon.js";
 import { Text, Button } from "@webiny/admin-ui";
+import { Dialog } from "@webiny/admin-ui";
 
 export interface TemplateCardProps {
     template: CmsDynamicZoneTemplate;
@@ -15,13 +16,11 @@ export const TemplateItem = makeDecoratable(
         const [isHovered, setIsHovered] = useState(false);
 
         return (
-            // <DialogClose asChild>
             <div
-                onClick={() => onTemplate(template)}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
                 className={
-                    "flex flex-col justify-between bg-neutral-base overflow-hidden rounded-lg w-[173px] relative cursor-pointer"
+                    "flex flex-col justify-between bg-neutral-base overflow-hidden rounded-lg w-[173px] relative cursor-pointer shadow-sm"
                 }
             >
                 <div>
@@ -44,7 +43,11 @@ export const TemplateItem = makeDecoratable(
 
                 {isHovered && (
                     <div className="absolute inset-0 flex items-center justify-center bg-white/80">
-                        <Button variant="primary">Insert</Button>
+                        <Dialog.Close>
+                            <Button variant="primary" onClick={() => onTemplate(template)}>
+                                Insert
+                            </Button>
+                        </Dialog.Close>
                     </div>
                 )}
             </div>
