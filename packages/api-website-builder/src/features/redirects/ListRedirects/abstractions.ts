@@ -22,7 +22,7 @@ export interface WbListMeta {
     cursor: string | null;
 }
 
-export type ListRedirectsResult = { redirects: WbRedirect[], meta: WbListMeta};
+export type ListRedirectsResult = { redirects: WbRedirect[]; meta: WbListMeta };
 
 // ============================================================================
 // Repository Abstraction

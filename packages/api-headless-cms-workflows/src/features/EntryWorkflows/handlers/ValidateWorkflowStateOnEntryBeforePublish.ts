@@ -3,7 +3,6 @@ import { EntryBeforePublishHandler } from "@webiny/api-headless-cms/features/con
 import { createWorkflowAppName } from "~/utils/appName.js";
 import { isModelAllowed } from "~/utils/modelAllowed.js";
 import { GetTargetWorkflowStateUseCase } from "@webiny/api-workflows/features/workflowState/GetTargetWorkflowState/index.js";
-import type { WorkflowState } from "@webiny/api-workflows/domain/workflowState/WorkflowState.js";
 
 class ValidateWorkflowStateOnEntryBeforePublishImpl implements EntryBeforePublishHandler.Interface {
     constructor(private getTargetState: GetTargetWorkflowStateUseCase.Interface) {}
@@ -17,9 +16,8 @@ class ValidateWorkflowStateOnEntryBeforePublishImpl implements EntryBeforePublis
 
         const app = createWorkflowAppName({ model });
 
-        let state: WorkflowState | undefined;
         const stateResult = await this.getTargetState.execute({ app, targetRevisionId: entry.id });
-        state = stateResult.value;
+        const state = stateResult.value;
 
         if (state?.done) {
             entry.state = undefined;

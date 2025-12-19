@@ -8,7 +8,6 @@ import {
     CreatePageRevisionFromRepository
 } from "./abstractions.js";
 import { PageBeforeCreateRevisionFromEvent, PageAfterCreateRevisionFromEvent } from "./events.js";
-import type { WbPage } from "~/domain/page/abstractions.js";
 
 class CreatePageRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(

@@ -52,7 +52,8 @@ export interface IUnpublishPageUseCaseErrors {
 
 type UseCaseError = IUnpublishPageUseCaseErrors[keyof IUnpublishPageUseCaseErrors];
 
-export const UnpublishPageUseCase = createAbstraction<IUnpublishPageUseCase>("UnpublishPageUseCase");
+export const UnpublishPageUseCase =
+    createAbstraction<IUnpublishPageUseCase>("UnpublishPageUseCase");
 
 export namespace UnpublishPageUseCase {
     export type Interface = IUnpublishPageUseCase;
@@ -77,18 +78,18 @@ export interface PageAfterUnpublishPayload {
 // Event Handler Abstractions
 // ============================================================================
 
-export const PageBeforeUnpublishHandler =
-    createAbstraction<IEventHandler<DomainEvent<PageBeforeUnpublishPayload>>>(
-        "PageBeforeUnpublishHandler"
-    );
+export const PageBeforeUnpublishHandler = createAbstraction<
+    IEventHandler<DomainEvent<PageBeforeUnpublishPayload>>
+>("PageBeforeUnpublishHandler");
 
 export namespace PageBeforeUnpublishHandler {
     export type Interface = IEventHandler<DomainEvent<PageBeforeUnpublishPayload>>;
     export type Event = DomainEvent<PageBeforeUnpublishPayload>;
 }
 
-export const PageAfterUnpublishHandler =
-    createAbstraction<IEventHandler<DomainEvent<PageAfterUnpublishPayload>>>("PageAfterUnpublishHandler");
+export const PageAfterUnpublishHandler = createAbstraction<
+    IEventHandler<DomainEvent<PageAfterUnpublishPayload>>
+>("PageAfterUnpublishHandler");
 
 export namespace PageAfterUnpublishHandler {
     export type Interface = IEventHandler<DomainEvent<PageAfterUnpublishPayload>>;

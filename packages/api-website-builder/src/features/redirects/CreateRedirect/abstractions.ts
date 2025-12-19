@@ -2,7 +2,6 @@ import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { IEventHandler } from "@webiny/api-core/features/EventPublisher";
 import type { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import type { WbRedirect } from "~/domain/redirect/abstractions.js";
-import type { WbLocation } from "~/domain/shared/abstractions.js";
 import { RedirectPersistenceError, RedirectValidationError } from "~/domain/redirect/errors.js";
 
 // ============================================================================

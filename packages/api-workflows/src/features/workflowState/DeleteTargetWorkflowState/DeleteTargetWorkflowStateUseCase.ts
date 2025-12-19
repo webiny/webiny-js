@@ -60,7 +60,6 @@ class DeleteTargetWorkflowStateUseCaseImpl implements UseCase.Interface {
 
         return Result.ok();
     }
-
 }
 
 export const DeleteTargetWorkflowStateUseCase = UseCase.createImplementation({

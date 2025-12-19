@@ -36,7 +36,6 @@ import { RejectWorkflowStateStepFeature } from "~/features/workflowState/RejectW
 import { TakeOverWorkflowStateStepFeature } from "~/features/workflowState/TakeOverWorkflowStateStep/feature.js";
 import { GetUserTeamsFeature } from "~/features/internal/GetUserTeams/feature.js";
 
-
 export const createWorkflows = () => {
     const plugin = new ContextPlugin(async context => {
         const tenantContext = context.container.resolve(TenantContext);

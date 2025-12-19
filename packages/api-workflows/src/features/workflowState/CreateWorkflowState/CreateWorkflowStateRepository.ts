@@ -1,11 +1,8 @@
 import { Result } from "@webiny/feature/api";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import { WorkflowStateModel, WorkflowStateMapper } from "~/domain/workflowState/abstractions.js";
-import type { IWorkflowStateRecord } from "~/domain/workflowState/abstractions.js";
 import { WorkflowStatePersistenceError } from "~/domain/workflowState/errors.js";
 import { CreateWorkflowStateRepository as Repository } from "./abstractions.js";
-import { createIdentifier } from "@webiny/utils/createIdentifier.js";
-import { mdbid } from "@webiny/utils/mdbid.js";
 
 class CreateWorkflowStateRepositoryImpl implements Repository.Interface {
     constructor(

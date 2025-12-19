@@ -1,4 +1,4 @@
-import { Result, createImplementation } from "@webiny/feature/api";
+import { Result } from "@webiny/feature/api";
 import {
     EventPublisher,
     EventPublisher as EventPublisherAbstraction
@@ -19,7 +19,7 @@ class DeletePageUseCaseImpl implements UseCaseAbstraction.Interface {
         const getResult = await this.getPageById.execute(params.id);
 
         if (getResult.isFail()) {
-            return getResult;
+            return Result.fail(getResult.error);
         }
 
         const page = getResult.value;
@@ -49,8 +49,7 @@ class DeletePageUseCaseImpl implements UseCaseAbstraction.Interface {
     }
 }
 
-export const DeletePageUseCase = createImplementation({
-    abstraction: UseCaseAbstraction,
+export const DeletePageUseCase = UseCaseAbstraction.createImplementation({
     implementation: DeletePageUseCaseImpl,
     dependencies: [EventPublisher, GetPageByIdUseCase, DeletePageRepository]
 });

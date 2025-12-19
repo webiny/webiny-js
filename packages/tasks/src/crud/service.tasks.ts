@@ -14,7 +14,12 @@ import type { IStepFunctionServiceFetchResult } from "~/service/StepFunctionServ
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { BaseError, Result } from "@webiny/feature/api";
-import { TaskAbortError, TaskDefinitionNotFoundError, TaskNotFoundError, TaskServiceInfoError } from "~/domain/errors.js";
+import {
+    TaskAbortError,
+    TaskDefinitionNotFoundError,
+    TaskNotFoundError,
+    TaskServiceInfoError
+} from "~/domain/errors.js";
 
 const MAX_DELAY_DAYS = 355;
 const MAX_DELAY_SECONDS = MAX_DELAY_DAYS * 24 * 60 * 60;
@@ -129,7 +134,7 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
 
             try {
                 const info = (await service.fetch(task)) as IStepFunctionServiceFetchResult | null;
-                if(info) {
+                if (info) {
                     return Result.ok(info);
                 }
 

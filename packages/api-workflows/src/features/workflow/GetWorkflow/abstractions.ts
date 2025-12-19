@@ -1,7 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
 import type { IWorkflow } from "~/domain/workflow/abstractions.js";
-import  { type WorkflowNotFoundError, WorkflowPersistenceError } from "~/domain/workflow/errors.js";
+import { type WorkflowNotFoundError, WorkflowPersistenceError } from "~/domain/workflow/errors.js";
 
 export interface IGetWorkflowParams {
     app: string;

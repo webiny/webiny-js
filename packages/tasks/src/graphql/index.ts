@@ -314,7 +314,7 @@ const createGraphQL = () => {
                         });
                         return resolve(async () => {
                             const result = await context.tasks.abort(args);
-                            if(result.isOk()) {
+                            if (result.isOk()) {
                                 return true;
                             }
 

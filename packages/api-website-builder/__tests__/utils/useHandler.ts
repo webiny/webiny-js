@@ -1,21 +1,19 @@
 import { createApiCore } from "@webiny/api-core";
 import createGraphQLHandler from "@webiny/handler-graphql";
 import { createEventHandler, createHandler } from "@webiny/handler-aws/raw";
-import type { WebsiteBuilderContext } from "~/context/types.js";
-import { createTenancyAndSecurity } from "./tenancySecurity.js";
-import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
-import { createWebsiteBuilder } from "~/index.js";
-import type { Plugin, PluginCollection } from "@webiny/plugins/types";
-import { createIdentity } from "./identity.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
-import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
-import { createBackgroundTaskContext } from "@webiny/tasks";
+import type { ApiCoreContext, ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import { createContextPlugin } from "@webiny/api";
 import { InvalidateCloudfrontCacheTaskDefinition } from "@webiny/api-file-manager-s3/features/FlushCache/InvalidateCacheTask.js";
+import { createTenancyAndSecurity } from "./tenancySecurity.js";
+import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import { createWebsiteBuilder } from "~/index.js";
+import type { Plugin, PluginCollection } from "@webiny/plugins/types";
+import { createIdentity } from "./identity.js";
 import { createBackgroundTasks } from "~tests/mocks/mockBackgroundTasks.js";
 
 export interface UseHandlerParams {
@@ -31,7 +29,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
 
     const testProjectLicense = createTestWcpLicense();
 
-    const handler = createHandler<any, WebsiteBuilderContext>({
+    const handler = createHandler<any, ApiCoreContext>({
         plugins: [
             createApiCore({
                 storageOperations: apiCoreStorage.storageOperations,
@@ -49,7 +47,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
             createContextPlugin(context => {
                 context.container.register(InvalidateCloudfrontCacheTaskDefinition);
             }),
-            createEventHandler<any, WebsiteBuilderContext, WebsiteBuilderContext>(
+            createEventHandler<any, ApiCoreContext, ApiCoreContext>(
                 async ({ context }) => {
                     return context;
                 }

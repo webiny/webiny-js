@@ -28,8 +28,7 @@ export interface IMovePageRepositoryErrors {
 
 type RepositoryError = IMovePageRepositoryErrors[keyof IMovePageRepositoryErrors];
 
-export const MovePageRepository =
-    createAbstraction<IMovePageRepository>("MovePageRepository");
+export const MovePageRepository = createAbstraction<IMovePageRepository>("MovePageRepository");
 
 export namespace MovePageRepository {
     export type Interface = IMovePageRepository;
@@ -82,9 +81,7 @@ export interface PageAfterMovePayload {
 // ============================================================================
 
 export const PageBeforeMoveHandler =
-    createAbstraction<IEventHandler<DomainEvent<PageBeforeMovePayload>>>(
-        "PageBeforeMoveHandler"
-    );
+    createAbstraction<IEventHandler<DomainEvent<PageBeforeMovePayload>>>("PageBeforeMoveHandler");
 
 export namespace PageBeforeMoveHandler {
     export type Interface = IEventHandler<DomainEvent<PageBeforeMovePayload>>;

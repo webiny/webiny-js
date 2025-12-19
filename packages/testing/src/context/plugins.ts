@@ -1,4 +1,4 @@
-import  { createContextPlugin } from "@webiny/api";
+import { createContextPlugin } from "@webiny/api";
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types.js";

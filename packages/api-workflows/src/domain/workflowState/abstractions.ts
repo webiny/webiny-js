@@ -21,7 +21,9 @@ export interface IWorkflowStateRecordStep extends IWorkflowStep {
     savedBy: IWorkflowStateIdentity | null;
 }
 
-export interface IWorkflowStateRecord<Steps extends IWorkflowStateRecordStep = IWorkflowStateRecordStep> {
+export interface IWorkflowStateRecord<
+    Steps extends IWorkflowStateRecordStep = IWorkflowStateRecordStep
+> {
     id: string;
     app: string;
     title: string;
