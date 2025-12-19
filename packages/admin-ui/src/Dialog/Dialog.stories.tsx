@@ -47,8 +47,8 @@ export const Default: Story = {
         },
         actions: (
             <>
-                <Dialog.CancelButton />
-                <Dialog.ConfirmButton />
+                <Dialog.CancelAction />
+                <Dialog.ConfirmAction />
             </>
         )
     },

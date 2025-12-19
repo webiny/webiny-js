@@ -4,10 +4,10 @@ import { DialogClose } from "./DialogClose.js";
 import type { ButtonProps } from "~/Button/index.js";
 import { Button } from "~/Button/index.js";
 
-const CancelButtonBase = (props: ButtonProps) => (
+const CancelActionBase = (props: ButtonProps) => (
     <DialogClose asChild>
         <Button text={"Cancel"} {...props} variant="secondary" />
     </DialogClose>
 );
 
-export const CancelButton = makeDecoratable("CancelButton", CancelButtonBase);
+export const CancelAction = makeDecoratable("CancelAction", CancelActionBase);

@@ -9,8 +9,8 @@ import { DialogPortal } from "./components/DialogPortal.js";
 import { DialogRoot } from "./components/DialogRoot.js";
 import { DialogTrigger } from "./components/DialogTrigger.js";
 import { Icon } from "./components/Icon.js";
-import { ConfirmButton } from "./components/ConfirmButton.js";
-import { CancelButton } from "./components/CancelButton.js";
+import { ConfirmAction } from "./components/ConfirmAction.js";
+import { CancelAction } from "./components/CancelAction.js";
 import { CloseDialogIconButton } from "~/Dialog/components/CloseDialogIconButton.js";
 import { DialogClose } from "~/Dialog/components/DialogClose.js";
 
@@ -134,8 +134,8 @@ DialogBase.displayName = "Dialog";
 const DecoratableDialog = makeDecoratable("Dialog", DialogBase);
 
 const Dialog = withStaticProps(DecoratableDialog, {
-    ConfirmButton,
-    CancelButton,
+    ConfirmAction,
+    CancelAction,
     Icon,
     Close: DialogClose
 });
