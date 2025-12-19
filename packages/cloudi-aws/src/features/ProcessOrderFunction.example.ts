@@ -86,20 +86,17 @@ export const ProcessOrderFunction = SnsFunction.createImplementation({
 /**
  * Example usage in handler file:
  *
- * import { createFunction, SnsFunction } from "@cloudi/aws";
+ * import { createFunction } from "@cloudi/aws";
  * import { ProcessOrderFunction } from "./features/ProcessOrderFunction.example";
  * import { ConsoleLogger, DynamoDbOrderService } from "./services";
  *
- * export const handler = createFunction(
- *   SnsFunction,
- *   async (container) => {
- *     // Register services
- *     container.register(ConsoleLogger).inSingletonScope();
- *     container.register(DynamoDbOrderService).inSingletonScope();
+ * export const handler = createFunction(async (container) => {
+ *   // Register services
+ *   container.register(ConsoleLogger).inSingletonScope();
+ *   container.register(DynamoDbOrderService).inSingletonScope();
  *
- *     // Register the function implementation
- *     container.register(ProcessOrderFunction).inSingletonScope();
- *   }
- * );
+ *   // Register the function implementation
+ *   container.register(ProcessOrderFunction).inSingletonScope();
+ * });
  */
 

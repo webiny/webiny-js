@@ -24,6 +24,13 @@ export namespace SqsFunction {
     export type Interface = ISqsFunction;
     export type Result = SqsResult;
 
+    /**
+     * Detect if the event is an SQS event
+     */
+    export function canUse(event: any): event is SQSEvent {
+        return Array.isArray(event.Records) && event.Records[0]?.eventSource === "aws:sqs";
+    }
+
     export function createImplementation<T extends ISqsFunction>(config: {
         implementation: new (...args: any[]) => T;
         dependencies: Array<Abstraction<any>>;
@@ -31,7 +38,8 @@ export namespace SqsFunction {
         return {
             abstraction: SqsFunction,
             implementation: config.implementation,
-            dependencies: config.dependencies
+            dependencies: config.dependencies,
+            canUse: SqsFunction.canUse
         };
     }
 }

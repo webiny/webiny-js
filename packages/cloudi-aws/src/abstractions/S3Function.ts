@@ -24,6 +24,13 @@ export namespace S3Function {
     export type Interface = IS3Function;
     export type Result = S3Result;
 
+    /**
+     * Detect if the event is an S3 event
+     */
+    export function canUse(event: any): event is S3Event {
+        return Array.isArray(event.Records) && event.Records[0]?.eventSource === "aws:s3";
+    }
+
     export function createImplementation<T extends IS3Function>(config: {
         implementation: new (...args: any[]) => T;
         dependencies: Array<Abstraction<any>>;
@@ -31,7 +38,8 @@ export namespace S3Function {
         return {
             abstraction: S3Function,
             implementation: config.implementation,
-            dependencies: config.dependencies
+            dependencies: config.dependencies,
+            canUse: S3Function.canUse
         };
     }
 }

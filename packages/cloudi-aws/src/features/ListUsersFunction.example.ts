@@ -89,20 +89,27 @@ export const ListUsersFunction = ApiGatewayFunction.createImplementation({
 /**
  * Example usage in handler file:
  *
- * import { createFunction, ApiGatewayFunction } from "@cloudi/aws";
+ * import { createFunction } from "@cloudi/aws";
  * import { ListUsersFunction } from "./features/ListUsersFunction.example";
- * import { ConsoleLogger, DynamoDbUserService } from "./services";
+ * import { ProcessOrderFunction } from "./features/ProcessOrderFunction.example";
+ * import { ConsoleLogger, DynamoDbUserService, DynamoDbOrderService } from "./services";
  *
- * export const handler = createFunction(
- *   ApiGatewayFunction,
- *   async (container) => {
- *     // Register services
- *     container.register(ConsoleLogger).inSingletonScope();
- *     container.register(DynamoDbUserService).inSingletonScope();
+ * // Single handler that can handle multiple event types!
+ * export const handler = createFunction(async (container) => {
+ *   // Register services
+ *   container.register(ConsoleLogger).inSingletonScope();
+ *   container.register(DynamoDbUserService).inSingletonScope();
+ *   container.register(DynamoDbOrderService).inSingletonScope();
  *
- *     // Register the function implementation
- *     container.register(ListUsersFunction).inSingletonScope();
- *   }
- * );
+ *   // Register multiple function implementations
+ *   // The handler will automatically detect which one to execute based on the event
+ *   container.register(ListUsersFunction).inSingletonScope();      // Handles API Gateway events
+ *   container.register(ProcessOrderFunction).inSingletonScope();   // Handles SNS events
+ * });
+ *
+ * // Deploy this single Lambda function with multiple triggers:
+ * // - API Gateway trigger for HTTP requests
+ * // - SNS topic trigger for order processing
+ * // The handler automatically executes the right implementation!
  */
 

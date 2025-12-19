@@ -24,6 +24,13 @@ export namespace SnsFunction {
     export type Interface = ISnsFunction;
     export type Result = SnsResult;
 
+    /**
+     * Detect if the event is an SNS event
+     */
+    export function canUse(event: any): event is SNSEvent {
+        return Array.isArray(event.Records) && event.Records[0]?.EventSource === "aws:sns";
+    }
+
     export function createImplementation<T extends ISnsFunction>(config: {
         implementation: new (...args: any[]) => T;
         dependencies: Array<Abstraction<any>>;
@@ -31,7 +38,8 @@ export namespace SnsFunction {
         return {
             abstraction: SnsFunction,
             implementation: config.implementation,
-            dependencies: config.dependencies
+            dependencies: config.dependencies,
+            canUse: SnsFunction.canUse
         };
     }
 }

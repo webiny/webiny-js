@@ -26,6 +26,13 @@ export namespace EventBridgeFunction {
     >;
     export type Result = EventBridgeResult;
 
+    /**
+     * Detect if the event is an EventBridge event
+     */
+    export function canUse(event: any): event is EventBridgeEvent<string, any> {
+        return event.source && event["detail-type"] && event.detail !== undefined;
+    }
+
     export function createImplementation<T extends IEventBridgeFunction>(config: {
         implementation: new (...args: any[]) => T;
         dependencies: Array<Abstraction<any>>;
@@ -33,7 +40,8 @@ export namespace EventBridgeFunction {
         return {
             abstraction: EventBridgeFunction,
             implementation: config.implementation,
-            dependencies: config.dependencies
+            dependencies: config.dependencies,
+            canUse: EventBridgeFunction.canUse
         };
     }
 }

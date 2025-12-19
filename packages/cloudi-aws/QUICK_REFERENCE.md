@@ -15,21 +15,43 @@ export const ListUsersFunction = ApiGatewayFunction.createImplementation({
     dependencies: [UserService]
 });
 
-// 3. Register with container
-container.register(ListUsersFunction).inSingletonScope();
+// 3. Register with container - NO abstraction parameter!
+export const handler = createFunction(async (container) => {
+    container.register(UserService).inSingletonScope();
+    container.register(ListUsersFunction).inSingletonScope();
+});
+```
+
+## Auto-Detection Magic ✨
+
+The handler **automatically detects** which function to execute based on the AWS event:
+
+```typescript
+export const handler = createFunction(async (container) => {
+    // Register services
+    container.register(UserService).inSingletonScope();
+    container.register(OrderService).inSingletonScope();
+    
+    // Register multiple handlers - they auto-detect!
+    container.register(ListUsersFunction).inSingletonScope();      // API Gateway
+    container.register(ProcessOrderFunction).inSingletonScope();   // SNS
+    container.register(ResizeImageFunction).inSingletonScope();    // S3
+});
+
+// One Lambda, multiple triggers! 🚀
 ```
 
 ## Available Functions
 
-| Type | Usage |
-|------|-------|
-| API Gateway | `ApiGatewayFunction.createImplementation({ ... })` |
-| SNS | `SnsFunction.createImplementation({ ... })` |
-| S3 | `S3Function.createImplementation({ ... })` |
-| SQS | `SqsFunction.createImplementation({ ... })` |
-| DynamoDB | `DynamoDBFunction.createImplementation({ ... })` |
-| EventBridge | `EventBridgeFunction.createImplementation({ ... })` |
-| Raw/Generic | `RawFunction.createImplementation({ ... })` |
+| Type | Usage | Detects |
+|------|-------|---------|
+| API Gateway | `ApiGatewayFunction.createImplementation({ ... })` | `event.httpMethod` |
+| SNS | `SnsFunction.createImplementation({ ... })` | `event.Records[0].EventSource === "aws:sns"` |
+| S3 | `S3Function.createImplementation({ ... })` | `event.Records[0].eventSource === "aws:s3"` |
+| SQS | `SqsFunction.createImplementation({ ... })` | `event.Records[0].eventSource === "aws:sqs"` |
+| DynamoDB | `DynamoDBFunction.createImplementation({ ... })` | `event.Records[0].eventSource === "aws:dynamodb"` |
+| EventBridge | `EventBridgeFunction.createImplementation({ ... })` | `event.source && event["detail-type"]` |
+| Raw/Generic | `RawFunction.createImplementation({ ... })` | Always (fallback) |
 
 ## Naming Rules
 
@@ -40,15 +62,14 @@ container.register(ListUsersFunction).inSingletonScope();
 ## Handler Template
 
 ```typescript
-import { createFunction, ApiGatewayFunction } from "@cloudi/aws";
-import { MyFunction } from "~/features/MyFunction";
+import { createFunction } from "@cloudi/aws";
+import { MyFunction, AnotherFunction } from "~/features";
 
-export const handler = createFunction(
-    ApiGatewayFunction,
-    async (container) => {
-        // Register your implementations
-        container.register(MyFunction).inSingletonScope();
-    }
-);
+export const handler = createFunction(async (container) => {
+    // Register your implementations
+    // Handler auto-detects which one to execute!
+    container.register(MyFunction).inSingletonScope();
+    container.register(AnotherFunction).inSingletonScope();
+});
 ```
 

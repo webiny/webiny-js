@@ -54,21 +54,43 @@ export const ListUsersFunction = ApiGatewayFunction.createImplementation({
 
 ```typescript
 // handler.ts
-import { createFunction, ApiGatewayFunction } from "@cloudi/aws";
+import { createFunction } from "@cloudi/aws";
 import { ListUsersFunction } from "~/features/ListUsersFunction";
 import { ConsoleLogger, DynamoDbUserService } from "~/services";
 
-export const handler = createFunction(
-  ApiGatewayFunction,
-  async (container) => {
-    // Register services
-    container.register(ConsoleLogger).inSingletonScope();
-    container.register(DynamoDbUserService).inSingletonScope();
-    
-    // Register the function implementation
-    container.register(ListUsersFunction).inSingletonScope();
-  }
-);
+export const handler = createFunction(async (container) => {
+  // Register services
+  container.register(ConsoleLogger).inSingletonScope();
+  container.register(DynamoDbUserService).inSingletonScope();
+  
+  // Register the function implementation
+  // Auto-detects this handles API Gateway events
+  container.register(ListUsersFunction).inSingletonScope();
+});
+```
+
+## Multi-Event Handler Example
+
+```typescript
+// handler.ts - One Lambda handles multiple event types!
+import { createFunction } from "@cloudi/aws";
+import { ListUsersFunction } from "~/features/ListUsersFunction";
+import { ProcessOrderFunction } from "~/features/ProcessOrderFunction";
+import { ConsoleLogger, DynamoDbUserService, OrderService } from "~/services";
+
+export const handler = createFunction(async (container) => {
+  // Register services
+  container.register(ConsoleLogger).inSingletonScope();
+  container.register(DynamoDbUserService).inSingletonScope();
+  container.register(OrderService).inSingletonScope();
+  
+  // Register multiple handlers
+  // The function auto-detects which one to execute based on the event!
+  container.register(ListUsersFunction).inSingletonScope();      // API Gateway
+  container.register(ProcessOrderFunction).inSingletonScope();   // SNS
+});
+
+// Deploy with multiple triggers - same code handles all events!
 ```
 
 ## Service Example
@@ -108,4 +130,5 @@ export const ConsoleLogger = LoggerService.createImplementation({
 1. **Implement** the interface with class name suffixed with `Impl`
 2. **Export** using `FunctionType.createImplementation()` with capital letter
 3. **Register** using `container.register(Implementation).inSingletonScope()`
+4. **Auto-detect** - Handler automatically executes the right implementation based on AWS event type
 

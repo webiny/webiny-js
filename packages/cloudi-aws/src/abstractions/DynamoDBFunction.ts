@@ -24,6 +24,13 @@ export namespace DynamoDBFunction {
     export type Interface = IDynamoDBFunction;
     export type Result = DynamoDBResult;
 
+    /**
+     * Detect if the event is a DynamoDB Stream event
+     */
+    export function canUse(event: any): event is DynamoDBStreamEvent {
+        return Array.isArray(event.Records) && event.Records[0]?.eventSource === "aws:dynamodb";
+    }
+
     export function createImplementation<T extends IDynamoDBFunction>(config: {
         implementation: new (...args: any[]) => T;
         dependencies: Array<Abstraction<any>>;
@@ -31,7 +38,8 @@ export namespace DynamoDBFunction {
         return {
             abstraction: DynamoDBFunction,
             implementation: config.implementation,
-            dependencies: config.dependencies
+            dependencies: config.dependencies,
+            canUse: DynamoDBFunction.canUse
         };
     }
 }

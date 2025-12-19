@@ -17,6 +17,13 @@ export const RawFunction = createAbstraction<IRawFunction>("RawFunction");
 export namespace RawFunction {
     export type Interface<TEvent = any, TResult = any> = IRawFunction<TEvent, TResult>;
 
+    /**
+     * RawFunction is a fallback that can handle any event
+     */
+    export function canUse(_event: any): _event is any {
+        return true;
+    }
+
     export function createImplementation<T extends IRawFunction>(config: {
         implementation: new (...args: any[]) => T;
         dependencies: Array<Abstraction<any>>;
@@ -24,7 +31,8 @@ export namespace RawFunction {
         return {
             abstraction: RawFunction,
             implementation: config.implementation,
-            dependencies: config.dependencies
+            dependencies: config.dependencies,
+            canUse: RawFunction.canUse
         };
     }
 }

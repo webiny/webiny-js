@@ -20,6 +20,13 @@ export const ApiGatewayFunction = createAbstraction<IApiGatewayFunction>("ApiGat
 export namespace ApiGatewayFunction {
     export type Interface = IApiGatewayFunction;
 
+    /**
+     * Detect if the event is an API Gateway event
+     */
+    export function canUse(event: any): event is APIGatewayEvent {
+        return !!event.httpMethod && !!event.requestContext;
+    }
+
     export function createImplementation<T extends IApiGatewayFunction>(config: {
         implementation: new (...args: any[]) => T;
         dependencies: Array<Abstraction<any>>;
@@ -27,7 +34,8 @@ export namespace ApiGatewayFunction {
         return {
             abstraction: ApiGatewayFunction,
             implementation: config.implementation,
-            dependencies: config.dependencies
+            dependencies: config.dependencies,
+            canUse: ApiGatewayFunction.canUse
         };
     }
 }
