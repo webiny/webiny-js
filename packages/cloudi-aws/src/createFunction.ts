@@ -1,66 +1,74 @@
-import { Container } from "@webiny/di";
+import { Container, type Abstraction } from "@webiny/di";
 import type { FunctionSetup, CreateFunctionOptions } from "./types.js";
 
 /**
- * Base class for all cloud function abstractions
+ * Generic function interface that all implementations should follow
  */
-export abstract class CloudFunction<TEvent = any, TResult = any, TContext = any> {
-    protected container: Container;
-    protected context?: TContext;
-
-    constructor(container: Container) {
-        this.container = container;
-    }
-
-    /**
-     * Initialize the function context (called once per cold start)
-     */
-    protected async initialize(): Promise<void> {
-        // Override in subclasses if needed
-    }
-
-    /**
-     * Execute the function logic
-     */
-    abstract execute(event: TEvent): Promise<TResult>;
-
-    /**
-     * Handle the incoming event
-     */
-    async handle(event: TEvent): Promise<TResult> {
-        if (!this.context) {
-            await this.initialize();
-        }
-        return this.execute(event);
-    }
+export interface ICloudFunction<TEvent = any, TResult = any> {
+    execute(event: TEvent): Promise<TResult>;
 }
 
 /**
  * Create a DI-enabled cloud function
+ *
+ * @param abstraction - The abstraction to resolve from the container
+ * @param setup - Composition root where you register services and implementations
+ * @param options - Optional configuration
+ *
+ * @example
+ * ```ts
+ * // Create a function implementation
+ * class ListUsersFunction implements ApiGatewayFunction.Interface {
+ *   constructor(
+ *     private userService: UserService.Interface,
+ *     private logger: LoggerService.Interface
+ *   ) {}
+ *
+ *   async execute(event: APIGatewayEvent): Promise<APIGatewayProxyResult> {
+ *     this.logger.info("Listing users");
+ *     const users = await this.userService.listUsers();
+ *     return {
+ *       statusCode: 200,
+ *       body: JSON.stringify(users)
+ *     };
+ *   }
+ * }
+ *
+ * // Register in the composition root
+ * export const handler = createFunction(
+ *   ApiGatewayFunction,
+ *   async (container) => {
+ *     // Register services
+ *     container.bind(LoggerService).toSelf();
+ *     container.bind(UserService).toSelf();
+ *
+ *     // Register the function implementation
+ *     container.bind(ApiGatewayFunction).to(ListUsersFunction);
+ *   }
+ * );
+ * ```
  */
 export function createFunction<TEvent = any, TResult = any>(
-    FunctionClass: new (container: Container) => CloudFunction<TEvent, TResult>,
-    setup?: FunctionSetup,
-    options?: CreateFunctionOptions
+    abstraction: Abstraction<ICloudFunction<TEvent, TResult>>,
+    setup: FunctionSetup,
+    _options?: CreateFunctionOptions
 ) {
-    let functionInstance: CloudFunction<TEvent, TResult> | null = null;
+    let container: Container | null = null;
 
-    return async (event: TEvent, lambdaContext: any): Promise<TResult> => {
+    return async (event: TEvent, _lambdaContext: any): Promise<TResult> => {
         // Initialize on cold start
-        if (!functionInstance) {
-            const container = new Container();
+        if (!container) {
+            container = new Container();
 
-            // Run user setup
-            if (setup) {
-                await setup(container);
-            }
-
-            // Create function instance
-            functionInstance = new FunctionClass(container);
+            // Run user setup - this is the composition root
+            await setup(container);
         }
 
-        // Handle the event
-        return functionInstance.handle(event);
+        // Resolve function instance from container
+        const functionInstance = container.get(abstraction);
+
+        // Execute the function
+        return functionInstance.execute(event);
     };
 }
 
