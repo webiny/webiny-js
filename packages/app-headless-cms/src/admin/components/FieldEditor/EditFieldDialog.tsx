@@ -94,12 +94,12 @@ const EditFieldDialog = (props: EditFieldDialogProps) => {
                         bodyPadding={false}
                         actions={
                             <>
-                                <Dialog.CancelButton
+                                <Dialog.CancelAction
                                     text={t`Cancel`}
                                     onClick={props.onClose}
                                     data-testid="cms.editor.field.settings.cancel"
                                 />
-                                <Dialog.ConfirmButton
+                                <Dialog.ConfirmAction
                                     text={t`Save Field`}
                                     onClick={submit}
                                     data-testid="cms.editor.field.settings.save"

@@ -59,13 +59,13 @@ export const DialogContainer = () => {
                 !actions.cancel && !actions.accept ? null : (
                     <>
                         {actions.cancel && (
-                            <Dialog.CancelButton
+                            <Dialog.CancelAction
                                 onClick={actions.cancel.onClick}
                                 text={actions.cancel.label}
                             />
                         )}
                         {actions.accept && (
-                            <Dialog.ConfirmButton
+                            <Dialog.ConfirmAction
                                 onClick={handleConfirm}
                                 text={actions.accept.label}
                                 data-testid={"confirmationdialog-confirm-action"}

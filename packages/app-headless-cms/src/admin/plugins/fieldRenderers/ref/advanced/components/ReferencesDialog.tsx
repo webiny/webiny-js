@@ -138,8 +138,8 @@ export const ReferencesDialog = (props: ReferencesDialogProps) => {
                 description={`Content model: ${contentModel.name}`}
                 actions={
                     <>
-                        <Dialog.CancelButton />
-                        <Dialog.ConfirmButton onClick={onDialogSave} text="Save" />
+                        <Dialog.CancelAction />
+                        <Dialog.ConfirmAction onClick={onDialogSave} text="Save" />
                     </>
                 }
             >

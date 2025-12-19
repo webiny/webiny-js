@@ -36,7 +36,12 @@ const AccordionBase = (props: AccordionProps) => {
     return (
         <AccordionBackgroundProvider currentBackground={background}>
             <AccordionPropsProvider props={props}>
-                <div className={cn(accordionVariants({ variant }), className)}>{children}</div>
+                <div
+                    data-accordion="base"
+                    className={cn(accordionVariants({ variant }), className)}
+                >
+                    {children}
+                </div>
             </AccordionPropsProvider>
         </AccordionBackgroundProvider>
     );

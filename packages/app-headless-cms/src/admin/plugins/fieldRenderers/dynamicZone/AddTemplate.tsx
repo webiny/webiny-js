@@ -1,38 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
-import { ReactComponent as AddCircleIcon } from "@webiny/icons/add_circle_outline.svg";
 import type { CmsDynamicZoneTemplate, CmsDynamicZoneTemplateWithTypename } from "~/types.js";
 import { TemplateGallery } from "./TemplateGallery.js";
 import { useTemplateTypename } from "~/admin/plugins/fieldRenderers/dynamicZone/useTemplateTypename.js";
-import { Button, cn, IconButton, Link, Text, Tooltip } from "@webiny/admin-ui";
+import { Button, Link, Text, Dialog } from "@webiny/admin-ui";
 
 interface UseAddTemplateParams {
     onTemplate: (template: CmsDynamicZoneTemplateWithTypename) => void;
-}
-
-function useAddTemplate(params: UseAddTemplateParams) {
-    const [showGallery, setShowGallery] = useState(false);
-    const { getFullTypename } = useTemplateTypename();
-
-    const browseTemplates = () => {
-        setShowGallery(true);
-    };
-
-    const onTemplate = (template: CmsDynamicZoneTemplate) => {
-        params.onTemplate({ ...template, __typename: getFullTypename(template) });
-        onGalleryClose();
-    };
-
-    const onGalleryClose = () => {
-        setShowGallery(false);
-    };
-
-    return {
-        showGallery,
-        browseTemplates,
-        onTemplate,
-        onGalleryClose
-    };
 }
 
 interface AddTemplateProps {
@@ -41,75 +15,37 @@ interface AddTemplateProps {
 }
 
 export const AddTemplateButton = (props: AddTemplateProps) => {
-    const { showGallery, onTemplate, browseTemplates, onGalleryClose } = useAddTemplate({
-        onTemplate: props.onTemplate
-    });
+    const { getFullTypename } = useTemplateTypename();
+
+    const onTemplate = (template: CmsDynamicZoneTemplate) => {
+        props.onTemplate({ ...template, __typename: getFullTypename(template) });
+    };
 
     return (
-        <div
-            className={
-                "w-full rounded-md border-sm border-neutral-muted p-sm-extra mt-xs mb-md relative"
-            }
-        >
-            {showGallery ? (
-                <TemplateGallery onTemplate={onTemplate} onClose={onGalleryClose} />
-            ) : (
-                <div
-                    className={cn([
-                        "w-full flex flex-col gap-sm-extra px-xl pt-xl pb-lg bg-neutral-subtle rounded text-center",
-                        "hover:bg-neutral-light"
-                    ])}
-                >
+        <div className={"flex justify-between items-center"}>
+            <Dialog
+                size={"lg"}
+                className={"w-[800px]"}
+                trigger={
                     <Button
                         size={"sm"}
-                        variant={"ghost"}
-                        onClick={browseTemplates}
-                        text={"Pick a template"}
+                        variant={"tertiary"}
+                        text={"Add a template"}
                         icon={<AddIcon />}
                     />
-                    <div
-                        className={
-                            "flex items-center justify-center gap-xs w-full mx-auto text-center"
-                        }
-                    >
-                        <Text size={"sm"} className={"text-neutral-strong"}>
-                            <Link
-                                to={"http://webiny.link/admin/how-to-use/dynamic-zones"}
-                                target={"_blank"}
-                            >
-                                Learn how
-                            </Link>{" "}
-                            templates and dynamic zones work.
-                        </Text>
-                    </div>
-                </div>
-            )}
-        </div>
-    );
-};
+                }
+                title="Insert a template"
+                info={<></>}
+            >
+                <TemplateGallery onTemplate={onTemplate} onClose={() => {}} />
+            </Dialog>
 
-export const AddTemplateIcon = (props: AddTemplateProps) => {
-    const { showGallery, onTemplate, browseTemplates, onGalleryClose } = useAddTemplate({
-        onTemplate: props.onTemplate
-    });
-
-    return (
-        <div className={"w-full text-center mt-md"}>
-            {showGallery ? (
-                <TemplateGallery onTemplate={onTemplate} onClose={onGalleryClose} />
-            ) : (
-                <Tooltip
-                    content={"Add template"}
-                    trigger={
-                        <IconButton
-                            onClick={browseTemplates}
-                            icon={<AddCircleIcon />}
-                            size={"lg"}
-                            variant={"ghost"}
-                        />
-                    }
-                />
-            )}
+            <Text size={"sm"} className={"text-neutral-strong"}>
+                Learn how&nbsp;
+                <Link to={"https://webiny.link/admin/how-to-use/dynamic-zones"} target={"_blank"}>
+                    templates and dynamic zones work.
+                </Link>{" "}
+            </Text>
         </div>
     );
 };
