@@ -1,8 +1,8 @@
 import WebinyError from "@webiny/error";
 import { ApiKeyAfterCreateHandler } from "@webiny/api-core/features/CreateApiKey";
+import { AuditLogsContext } from "~/abstractions.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
-import type { AuditLogsContext } from "~/types.js";
 import type { ApiKey } from "@webiny/api-core/types/security.js";
 
 /**
@@ -22,8 +22,8 @@ const cleanupApiKey = (apiKey: ApiKey): Omit<ApiKey, "token"> => {
     };
 };
 
-export class AuditLogApiKeyAfterCreateHandler implements ApiKeyAfterCreateHandler.Interface {
-    constructor(private context: AuditLogsContext) {}
+class AuditLogApiKeyAfterCreateHandlerImpl implements ApiKeyAfterCreateHandler.Interface {
+    constructor(private context: AuditLogsContext.Interface) {}
 
     async handle(event: ApiKeyAfterCreateHandler.Event): Promise<void> {
         try {
@@ -41,3 +41,8 @@ export class AuditLogApiKeyAfterCreateHandler implements ApiKeyAfterCreateHandle
         }
     }
 }
+
+export const AuditLogApiKeyAfterCreateHandler = ApiKeyAfterCreateHandler.createImplementation({
+    implementation: AuditLogApiKeyAfterCreateHandlerImpl,
+    dependencies: [AuditLogsContext]
+});

@@ -1,11 +1,11 @@
 import WebinyError from "@webiny/error";
 import { GroupAfterDeleteHandler } from "@webiny/api-core/features/DeleteGroup";
+import { AuditLogsContext } from "~/abstractions.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
-import type { AuditLogsContext } from "~/types.js";
 
-export class AuditLogGroupAfterDeleteHandler implements GroupAfterDeleteHandler.Interface {
-    constructor(private context: AuditLogsContext) {}
+class AuditLogGroupAfterDeleteHandlerImpl implements GroupAfterDeleteHandler.Interface {
+    constructor(private context: AuditLogsContext.Interface) {}
 
     async handle(event: GroupAfterDeleteHandler.Event): Promise<void> {
         try {
@@ -21,3 +21,8 @@ export class AuditLogGroupAfterDeleteHandler implements GroupAfterDeleteHandler.
         }
     }
 }
+
+export const AuditLogGroupAfterDeleteHandler = GroupAfterDeleteHandler.createImplementation({
+    implementation: AuditLogGroupAfterDeleteHandlerImpl,
+    dependencies: [AuditLogsContext]
+});

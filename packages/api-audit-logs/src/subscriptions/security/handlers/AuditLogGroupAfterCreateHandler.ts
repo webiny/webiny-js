@@ -1,11 +1,11 @@
 import WebinyError from "@webiny/error";
 import { GroupAfterCreateHandler } from "@webiny/api-core/features/CreateGroup";
+import { AuditLogsContext } from "~/abstractions.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
-import type { AuditLogsContext } from "~/types.js";
 
-export class AuditLogGroupAfterCreateHandler implements GroupAfterCreateHandler.Interface {
-    constructor(private context: AuditLogsContext) {}
+class AuditLogGroupAfterCreateHandlerImpl implements GroupAfterCreateHandler.Interface {
+    constructor(private context: AuditLogsContext.Interface) {}
 
     async handle(event: GroupAfterCreateHandler.Event): Promise<void> {
         try {
@@ -21,3 +21,8 @@ export class AuditLogGroupAfterCreateHandler implements GroupAfterCreateHandler.
         }
     }
 }
+
+export const AuditLogGroupAfterCreateHandler = GroupAfterCreateHandler.createImplementation({
+    implementation: AuditLogGroupAfterCreateHandlerImpl,
+    dependencies: [AuditLogsContext]
+});
