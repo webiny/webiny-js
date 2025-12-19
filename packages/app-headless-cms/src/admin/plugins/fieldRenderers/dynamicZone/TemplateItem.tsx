@@ -26,10 +26,10 @@ export const TemplateItem = makeDecoratable(
                             "flex items-center justify-center h-[117px] w-full bg-neutral-dimmed"
                         }
                     >
-                        <TemplateIcon icon={template.icon} />
+                        <TemplateIcon icon={template.icon} style={{width: 40, height: 40}} />
                     </div>
                     <div className={"py-sm-extra px-md"}>
-                        <Text size={"md"} className={"mb-xs text-neutral-primary"}>
+                        <Text size={"md"} className={"mb-xs text-neutral-primary font-semibold"}>
                             {template.name}
                         </Text>
                         <Text size={"sm"} as={"div"} className={"text-neutral-muted"}>
