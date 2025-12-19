@@ -318,8 +318,8 @@ export const Documentation: Story = {
         ),
         actions: (
             <>
-                <Dialog.CancelButton />
-                <Dialog.ConfirmButton />
+                <Dialog.CancelAction />
+                <Dialog.ConfirmAction />
             </>
         )
     },
