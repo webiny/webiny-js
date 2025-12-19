@@ -84,24 +84,44 @@ export const handler = createApiGatewayFunction(
 );
 ```
 
-### After (Abstractions)
+### After (Abstractions + createImplementation)
 ```typescript
-// New way - interface abstractions
+// New way - interface abstractions with createImplementation
 interface IApiGatewayFunction {
     execute(event: APIGatewayEvent): Promise<APIGatewayProxyResult>;
 }
 
 const ApiGatewayFunction = createAbstraction<IApiGatewayFunction>("ApiGatewayFunction");
 
-// Single createFunction, pass abstraction
+// Implementation
+class ListUsersFunction implements ApiGatewayFunction.Interface {
+    constructor(
+        private userService: UserService.Interface,
+        private logger: LoggerService.Interface
+    ) {}
+    
+    async execute(event: APIGatewayEvent): Promise<APIGatewayProxyResult> {
+        // ...
+    }
+}
+
+// Export using createImplementation
+export const listUsersFunction = createImplementation({
+    abstraction: ApiGatewayFunction,
+    implementation: ListUsersFunction,
+    dependencies: [UserService, LoggerService]
+});
+
+// Single createFunction, register with container.register()
 export const handler = createFunction(
     ApiGatewayFunction,
     async (container) => {
         // Register services
-        container.bind(LoggerService).to(ConsoleLogger);
+        container.register(consoleLogger).inSingletonScope();
+        container.register(dynamoDbUserService).inSingletonScope();
         
         // Register function implementation
-        container.bind(ApiGatewayFunction).to(ListUsersFunction);
+        container.register(listUsersFunction).inSingletonScope();
     }
 );
 ```
@@ -136,13 +156,20 @@ class ListUsersFunction implements ApiGatewayFunction.Interface {
     }
 }
 
-// 2. Register in composition root
+// 2. Export using createImplementation
+export const listUsersFunction = createImplementation({
+    abstraction: ApiGatewayFunction,
+    implementation: ListUsersFunction,
+    dependencies: [UserService, LoggerService]
+});
+
+// 3. Register in composition root
 export const handler = createFunction(
     ApiGatewayFunction,
     async (container) => {
-        container.bind(LoggerService).to(ConsoleLogger);
-        container.bind(UserService).to(DynamoDBUserService);
-        container.bind(ApiGatewayFunction).to(ListUsersFunction);
+        container.register(consoleLogger).inSingletonScope();
+        container.register(dynamoDbUserService).inSingletonScope();
+        container.register(listUsersFunction).inSingletonScope();
     }
 );
 ```

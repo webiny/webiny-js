@@ -4,14 +4,15 @@
  * This example demonstrates how to create a Lambda function that:
  * - Implements the ApiGatewayFunction interface
  * - Uses dependency injection for services
- * - Handles errors gracefully
+ * - Exports using ApiGatewayFunction.createImplementation()
+ * - Registers with container.register()
  */
 
-import type {
-    APIGatewayEvent,
-    APIGatewayProxyResult,
-    IApiGatewayFunction
-} from "../abstractions/index.js";
+import {
+    ApiGatewayFunction,
+    type APIGatewayEvent,
+    type APIGatewayProxyResult
+} from "../index.js";
 
 // Example service interfaces (you would define these in your abstractions)
 interface IUserService {
@@ -23,10 +24,14 @@ interface ILoggerService {
     error(message: string, ...args: any[]): void;
 }
 
+// Example abstraction declarations (you would define these in your abstractions)
+declare const UserService: any;
+declare const LoggerService: any;
+
 /**
  * Implementation of the ListUsers function
  */
-export class ListUsersFunction implements IApiGatewayFunction {
+export class ListUsersFunctionImpl implements ApiGatewayFunction.Interface {
     constructor(
         private userService: IUserService,
         private logger: ILoggerService
@@ -74,23 +79,29 @@ export class ListUsersFunction implements IApiGatewayFunction {
 }
 
 /**
+ * Export the implementation using ApiGatewayFunction.createImplementation
+ */
+export const ListUsersFunction = ApiGatewayFunction.createImplementation({
+    implementation: ListUsersFunctionImpl,
+    dependencies: [UserService, LoggerService]
+});
+
+/**
  * Example usage in handler file:
  *
  * import { createFunction, ApiGatewayFunction } from "@cloudi/aws";
  * import { ListUsersFunction } from "./features/ListUsersFunction.example";
- * import { UserService, LoggerService } from "~/abstractions";
- * import { DynamoDBUserService } from "~/services/DynamoDBUserService";
- * import { ConsoleLogger } from "~/services/ConsoleLogger";
+ * import { ConsoleLogger, DynamoDbUserService } from "./services";
  *
  * export const handler = createFunction(
  *   ApiGatewayFunction,
  *   async (container) => {
  *     // Register services
- *     container.bind(LoggerService).to(ConsoleLogger);
- *     container.bind(UserService).to(DynamoDBUserService);
+ *     container.register(ConsoleLogger).inSingletonScope();
+ *     container.register(DynamoDbUserService).inSingletonScope();
  *
  *     // Register the function implementation
- *     container.bind(ApiGatewayFunction).to(ListUsersFunction);
+ *     container.register(ListUsersFunction).inSingletonScope();
  *   }
  * );
  */

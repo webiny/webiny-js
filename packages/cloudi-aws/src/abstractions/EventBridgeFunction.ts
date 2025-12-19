@@ -1,5 +1,6 @@
 import type { EventBridgeEvent } from "@webiny/aws-sdk/types/index.js";
 import { createAbstraction } from "./createAbstraction.js";
+import type { Abstraction } from "@webiny/di";
 
 export interface EventBridgeResult {
     success: boolean;
@@ -24,6 +25,17 @@ export namespace EventBridgeFunction {
         TDetail
     >;
     export type Result = EventBridgeResult;
+
+    export function createImplementation<T extends IEventBridgeFunction>(config: {
+        implementation: new (...args: any[]) => T;
+        dependencies: Array<Abstraction<any>>;
+    }) {
+        return {
+            abstraction: EventBridgeFunction,
+            implementation: config.implementation,
+            dependencies: config.dependencies
+        };
+    }
 }
 
 export type { EventBridgeEvent };

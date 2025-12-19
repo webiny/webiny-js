@@ -12,12 +12,11 @@ export interface ICloudFunction<TEvent = any, TResult = any> {
  * Create a DI-enabled cloud function
  *
  * @param abstraction - The abstraction to resolve from the container
- * @param setup - Composition root where you register services and implementations
- * @param options - Optional configuration
+ * @param setup - Composition root where you register implementations using container.register()
  *
  * @example
  * ```ts
- * // Create a function implementation
+ * // 1. Create implementation
  * class ListUsersFunction implements ApiGatewayFunction.Interface {
  *   constructor(
  *     private userService: UserService.Interface,
@@ -34,28 +33,34 @@ export interface ICloudFunction<TEvent = any, TResult = any> {
  *   }
  * }
  *
- * // Register in the composition root
+ * // 2. Export implementation
+ * export const listUsersFunction = createImplementation({
+ *   abstraction: ApiGatewayFunction,
+ *   implementation: ListUsersFunction,
+ *   dependencies: [UserService, LoggerService]
+ * });
+ *
+ * // 3. Register in composition root
  * export const handler = createFunction(
  *   ApiGatewayFunction,
  *   async (container) => {
  *     // Register services
- *     container.bind(LoggerService).toSelf();
- *     container.bind(UserService).toSelf();
+ *     container.register(consoleLogger).inSingletonScope();
+ *     container.register(dynamoDbUserService).inSingletonScope();
  *
  *     // Register the function implementation
- *     container.bind(ApiGatewayFunction).to(ListUsersFunction);
+ *     container.register(listUsersFunction).inSingletonScope();
  *   }
  * );
  * ```
  */
 export function createFunction<TEvent = any, TResult = any>(
     abstraction: Abstraction<ICloudFunction<TEvent, TResult>>,
-    setup: FunctionSetup,
-    _options?: CreateFunctionOptions
+    setup: FunctionSetup
 ) {
     let container: Container | null = null;
 
-    return async (event: TEvent, _lambdaContext: any): Promise<TResult> => {
+    return async (event: TEvent): Promise<TResult> => {
         // Initialize on cold start
         if (!container) {
             container = new Container();
@@ -65,7 +70,7 @@ export function createFunction<TEvent = any, TResult = any>(
         }
 
         // Resolve function instance from container
-        const functionInstance = container.get(abstraction);
+        const functionInstance = container.resolve(abstraction);
 
         // Execute the function
         return functionInstance.execute(event);

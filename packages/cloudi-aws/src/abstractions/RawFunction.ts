@@ -1,4 +1,5 @@
 import { createAbstraction } from "./createAbstraction.js";
+import type { Abstraction } from "@webiny/di";
 
 /**
  * Abstraction for raw/generic Lambda functions
@@ -15,5 +16,16 @@ export const RawFunction = createAbstraction<IRawFunction>("RawFunction");
 
 export namespace RawFunction {
     export type Interface<TEvent = any, TResult = any> = IRawFunction<TEvent, TResult>;
+
+    export function createImplementation<T extends IRawFunction>(config: {
+        implementation: new (...args: any[]) => T;
+        dependencies: Array<Abstraction<any>>;
+    }) {
+        return {
+            abstraction: RawFunction,
+            implementation: config.implementation,
+            dependencies: config.dependencies
+        };
+    }
 }
 

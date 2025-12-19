@@ -21,7 +21,7 @@ export const handler = createApiGatewayFunction(MyFunction);
 
 ### After (New Pattern)
 ```typescript
-import { ApiGatewayFunction, createFunction } from "@cloudi/aws";
+import { ApiGatewayFunction, createFunction, createImplementation } from "@cloudi/aws";
 import type { APIGatewayEvent, APIGatewayProxyResult } from "@cloudi/aws";
 
 class MyFunction implements ApiGatewayFunction.Interface {
@@ -30,10 +30,16 @@ class MyFunction implements ApiGatewayFunction.Interface {
     }
 }
 
+export const myFunction = createImplementation({
+    abstraction: ApiGatewayFunction,
+    implementation: MyFunction,
+    dependencies: []
+});
+
 export const handler = createFunction(
     ApiGatewayFunction,
     async (container) => {
-        container.bind(ApiGatewayFunction).to(MyFunction);
+        container.register(myFunction).inSingletonScope();
     }
 );
 ```
@@ -80,20 +86,12 @@ class ListUsersFunction implements ApiGatewayFunction.Interface {
 }
 ```
 
-### 3. Add Dependency Injection
-
-**Before:**
-```typescript
-class ListUsersFunction extends ApiGatewayFunction {
-    async execute(event: APIGatewayEvent) {
-        const logger = console; // Direct usage
-        logger.log("Hello");
-    }
-}
-```
+### 3. Export Implementation with createImplementation
 
 **After:**
 ```typescript
+import { createImplementation, ApiGatewayFunction } from "@cloudi/aws";
+
 class ListUsersFunction implements ApiGatewayFunction.Interface {
     constructor(
         private logger: LoggerService.Interface
@@ -101,11 +99,19 @@ class ListUsersFunction implements ApiGatewayFunction.Interface {
 
     async execute(event: APIGatewayEvent): Promise<APIGatewayProxyResult> {
         this.logger.info("Hello");
+        // ...
     }
 }
+
+// Export using createImplementation
+export const listUsersFunction = createImplementation({
+    abstraction: ApiGatewayFunction,
+    implementation: ListUsersFunction,
+    dependencies: [LoggerService]
+});
 ```
 
-### 4. Update Function Creation
+### 4. Update Function Registration
 
 **Before:**
 ```typescript
@@ -123,10 +129,10 @@ export const handler = createFunction(
     ApiGatewayFunction,
     async (container) => {
         // Register services
-        container.bind(LoggerService).to(ConsoleLogger);
+        container.register(consoleLogger).inSingletonScope();
         
         // Register function
-        container.bind(ApiGatewayFunction).to(ListUsersFunction);
+        container.register(listUsersFunction).inSingletonScope();
     }
 );
 ```
@@ -148,16 +154,22 @@ export const handler = createApiGatewayFunction(MyFunction);
 
 **After:**
 ```typescript
-import { ApiGatewayFunction, createFunction } from "@cloudi/aws";
+import { ApiGatewayFunction, createFunction, createImplementation } from "@cloudi/aws";
 
 class MyFunction implements ApiGatewayFunction.Interface {
     async execute(event) { /* ... */ }
 }
 
+export const myFunction = createImplementation({
+    abstraction: ApiGatewayFunction,
+    implementation: MyFunction,
+    dependencies: []
+});
+
 export const handler = createFunction(
     ApiGatewayFunction,
     async (container) => {
-        container.bind(ApiGatewayFunction).to(MyFunction);
+        container.register(myFunction).inSingletonScope();
     }
 );
 ```
@@ -177,16 +189,22 @@ export const handler = createSnsFunction(MyFunction);
 
 **After:**
 ```typescript
-import { SnsFunction, createFunction } from "@cloudi/aws";
+import { SnsFunction, createFunction, createImplementation } from "@cloudi/aws";
 
 class MyFunction implements SnsFunction.Interface {
     async execute(event) { /* ... */ }
 }
 
+export const myFunction = createImplementation({
+    abstraction: SnsFunction,
+    implementation: MyFunction,
+    dependencies: []
+});
+
 export const handler = createFunction(
     SnsFunction,
     async (container) => {
-        container.bind(SnsFunction).to(MyFunction);
+        container.register(myFunction).inSingletonScope();
     }
 );
 ```
@@ -206,16 +224,22 @@ export const handler = createS3Function(MyFunction);
 
 **After:**
 ```typescript
-import { S3Function, createFunction } from "@cloudi/aws";
+import { S3Function, createFunction, createImplementation } from "@cloudi/aws";
 
 class MyFunction implements S3Function.Interface {
     async execute(event) { /* ... */ }
 }
 
+export const myFunction = createImplementation({
+    abstraction: S3Function,
+    implementation: MyFunction,
+    dependencies: []
+});
+
 export const handler = createFunction(
     S3Function,
     async (container) => {
-        container.bind(S3Function).to(MyFunction);
+        container.register(myFunction).inSingletonScope();
     }
 );
 ```
@@ -235,16 +259,22 @@ export const handler = createSqsFunction(MyFunction);
 
 **After:**
 ```typescript
-import { SqsFunction, createFunction } from "@cloudi/aws";
+import { SqsFunction, createFunction, createImplementation } from "@cloudi/aws";
 
 class MyFunction implements SqsFunction.Interface {
     async execute(event) { /* ... */ }
 }
 
+export const myFunction = createImplementation({
+    abstraction: SqsFunction,
+    implementation: MyFunction,
+    dependencies: []
+});
+
 export const handler = createFunction(
     SqsFunction,
     async (container) => {
-        container.bind(SqsFunction).to(MyFunction);
+        container.register(myFunction).inSingletonScope();
     }
 );
 ```
@@ -264,16 +294,22 @@ export const handler = createDynamoDBFunction(MyFunction);
 
 **After:**
 ```typescript
-import { DynamoDBFunction, createFunction } from "@cloudi/aws";
+import { DynamoDBFunction, createFunction, createImplementation } from "@cloudi/aws";
 
 class MyFunction implements DynamoDBFunction.Interface {
     async execute(event) { /* ... */ }
 }
 
+export const myFunction = createImplementation({
+    abstraction: DynamoDBFunction,
+    implementation: MyFunction,
+    dependencies: []
+});
+
 export const handler = createFunction(
     DynamoDBFunction,
     async (container) => {
-        container.bind(DynamoDBFunction).to(MyFunction);
+        container.register(myFunction).inSingletonScope();
     }
 );
 ```
@@ -293,16 +329,22 @@ export const handler = createEventBridgeFunction(MyFunction);
 
 **After:**
 ```typescript
-import { EventBridgeFunction, createFunction } from "@cloudi/aws";
+import { EventBridgeFunction, createFunction, createImplementation } from "@cloudi/aws";
 
 class MyFunction implements EventBridgeFunction.Interface {
     async execute(event) { /* ... */ }
 }
 
+export const myFunction = createImplementation({
+    abstraction: EventBridgeFunction,
+    implementation: MyFunction,
+    dependencies: []
+});
+
 export const handler = createFunction(
     EventBridgeFunction,
     async (container) => {
-        container.bind(EventBridgeFunction).to(MyFunction);
+        container.register(myFunction).inSingletonScope();
     }
 );
 ```

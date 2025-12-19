@@ -14,7 +14,7 @@ import {
 import type { UserService } from "~/abstractions";
 import type { LoggerService } from "~/abstractions";
 
-export class ListUsersFunction implements ApiGatewayFunction.Interface {
+export class ListUsersFunctionImpl implements ApiGatewayFunction.Interface {
   constructor(
     private userService: UserService.Interface,
     private logger: LoggerService.Interface
@@ -42,6 +42,12 @@ export class ListUsersFunction implements ApiGatewayFunction.Interface {
     }
   }
 }
+
+// Export using ApiGatewayFunction.createImplementation
+export const ListUsersFunction = ApiGatewayFunction.createImplementation({
+  implementation: ListUsersFunctionImpl,
+  dependencies: [UserService, LoggerService]
+});
 ```
 
 ## Example: Registering the Function
@@ -49,22 +55,42 @@ export class ListUsersFunction implements ApiGatewayFunction.Interface {
 ```typescript
 // handler.ts
 import { createFunction, ApiGatewayFunction } from "@cloudi/aws";
-import { LoggerService, UserService } from "~/abstractions";
-import { ConsoleLogger } from "~/services/ConsoleLogger";
-import { DynamoDBUserService } from "~/services/DynamoDBUserService";
 import { ListUsersFunction } from "~/features/ListUsersFunction";
+import { ConsoleLogger, DynamoDbUserService } from "~/services";
 
 export const handler = createFunction(
   ApiGatewayFunction,
   async (container) => {
     // Register services
-    container.bind(LoggerService).to(ConsoleLogger);
-    container.bind(UserService).to(DynamoDBUserService);
+    container.register(ConsoleLogger).inSingletonScope();
+    container.register(DynamoDbUserService).inSingletonScope();
     
     // Register the function implementation
-    container.bind(ApiGatewayFunction).to(ListUsersFunction);
+    container.register(ListUsersFunction).inSingletonScope();
   }
 );
+```
+
+## Service Example
+
+```typescript
+// services/ConsoleLogger.ts
+import { LoggerService } from "~/abstractions";
+
+export class ConsoleLoggerImpl implements LoggerService.Interface {
+  info(message: string, ...args: any[]): void {
+    console.log(message, ...args);
+  }
+  
+  error(message: string, ...args: any[]): void {
+    console.error(message, ...args);
+  }
+}
+
+export const ConsoleLogger = LoggerService.createImplementation({
+  implementation: ConsoleLoggerImpl,
+  dependencies: []
+});
 ```
 
 ## Available Function Types
@@ -76,4 +102,10 @@ export const handler = createFunction(
 - `DynamoDBFunction` - DynamoDB Stream handlers
 - `EventBridgeFunction` - EventBridge event handlers
 - `RawFunction` - Generic Lambda handlers
+
+## Key Pattern
+
+1. **Implement** the interface with class name suffixed with `Impl`
+2. **Export** using `FunctionType.createImplementation()` with capital letter
+3. **Register** using `container.register(Implementation).inSingletonScope()`
 
