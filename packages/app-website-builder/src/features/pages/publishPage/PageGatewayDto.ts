@@ -5,7 +5,7 @@ export interface PageGatewayDto {
     id: string;
     entryId: string;
     status: WbStatus;
-    wbyAco_location: WbLocation;
+    location: WbLocation;
     properties: Record<string, any>;
     metadata: Record<string, any>;
     bindings: Record<string, any>;

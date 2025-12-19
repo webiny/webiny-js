@@ -21,8 +21,7 @@ class GetActiveRedirectsRepositoryImpl implements RepositoryAbstraction.Interfac
             return Result.fail(new RedirectPersistenceError(result.error));
         }
 
-        const [redirects] = result.value;
-        return Result.ok(redirects);
+        return Result.ok(result.value.redirects);
     }
 }
 

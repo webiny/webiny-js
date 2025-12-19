@@ -37,6 +37,6 @@ export class ExportContentEntriesUseCase implements IExportContentEntriesUseCase
             definition: EXPORT_CONTENT_ENTRIES_CONTROLLER_TASK
         });
 
-        return convertTaskToCmsExportRecord(task);
+        return convertTaskToCmsExportRecord(task.value);
     }
 }

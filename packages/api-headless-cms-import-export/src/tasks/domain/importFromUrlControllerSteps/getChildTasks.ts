@@ -67,7 +67,8 @@ export const getChildTasks = async <
              * We also need to check the actual status of the service.
              * It can happen that the task is marked as running, but the service is not running.
              */
-            const serviceInfo = await context.tasks.fetchServiceInfo(task);
+            const serviceInfoResult = await context.tasks.fetchServiceInfo(task);
+            const serviceInfo = serviceInfoResult.isOk() ? serviceInfoResult.value : null;
             const status = mapServiceStatusToTaskStatus(task, serviceInfo);
 
             if (status === null || !serviceInfo) {

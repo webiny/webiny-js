@@ -63,10 +63,12 @@ export const cancelDeleteModel = async (
         });
     }
 
-    const canceledTask = await context.tasks.abort<IDeleteModelTaskInput, IDeleteModelTaskOutput>({
+    const abortResult = await context.tasks.abort<IDeleteModelTaskInput, IDeleteModelTaskOutput>({
         id: task.id,
         message: "User canceled the task."
     });
+
+    const canceledTask = abortResult.value;
 
     return {
         id: canceledTask.id,

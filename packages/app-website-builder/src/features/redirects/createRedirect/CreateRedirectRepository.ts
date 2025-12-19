@@ -14,7 +14,7 @@ export class CreateRedirectRepository implements ICreateRedirectRepository {
 
     async execute(redirect: Redirect) {
         const dto: RedirectDto = {
-            wbyAco_location: redirect.location,
+            location: redirect.location,
             redirectFrom: redirect.redirectFrom,
             redirectTo: redirect.redirectTo,
             redirectType: redirect.redirectType,

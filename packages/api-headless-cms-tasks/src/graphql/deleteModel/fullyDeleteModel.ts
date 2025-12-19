@@ -44,13 +44,15 @@ export const fullyDeleteModel = async (
         throw new Error(`Model "${modelId}" is already getting deleted. Task id: ${taskId}.`);
     }
 
-    const task = await context.tasks.trigger<IDeleteModelTaskInput>({
+    const triggerResult = await context.tasks.trigger<IDeleteModelTaskInput>({
         input: {
             modelId
         },
         definition: DELETE_MODEL_TASK,
         name: `Fully delete model: ${modelId}`
     });
+
+    const task = triggerResult.value;
 
     const identity = context.security.getIdentity();
 

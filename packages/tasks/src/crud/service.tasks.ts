@@ -13,6 +13,8 @@ import { createService } from "~/service/index.js";
 import type { IStepFunctionServiceFetchResult } from "~/service/StepFunctionServicePlugin.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import { BaseError, Result } from "@webiny/feature/api";
+import { TaskAbortError, TaskDefinitionNotFoundError, TaskNotFoundError, TaskServiceInfoError } from "~/domain/errors.js";
 
 const MAX_DELAY_DAYS = 355;
 const MAX_DELAY_SECONDS = MAX_DELAY_DAYS * 24 * 60 * 60;
@@ -52,7 +54,7 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
             O extends TaskService.GenericOutput = TaskService.GenericOutput
         >(
             params: ITaskTriggerParams<T>
-        ): Promise<TaskService.Task<T, O>> => {
+        ): Promise<Result<TaskService.Task<T, O>, BaseError>> => {
             const { definition: id, input: inputValues, name, parent, delay = 0 } = params;
             const definition = context.tasks.getDefinition(id);
             if (!definition) {
@@ -106,13 +108,16 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
                 await context.tasks.deleteTask(task.id);
                 throw ex;
             }
-            return await context.tasks.updateTask<T, O>(task.id, {
+
+            const updatedTask = await context.tasks.updateTask<T, O>(task.id, {
                 eventResponse: result
             });
+
+            return Result.ok(updatedTask);
         },
         fetchServiceInfo: async (
             input: TaskService.Task | string
-        ): Promise<IStepFunctionServiceFetchResult | null> => {
+        ): Promise<Result<IStepFunctionServiceFetchResult, BaseError<any>>> => {
             const task = typeof input === "object" ? input : await context.tasks.getTask(input);
             if (!task && typeof input === "string") {
                 throw new NotFoundError(`Task "${input}" was not found!`);
@@ -123,11 +128,16 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
             }
 
             try {
-                return (await service.fetch(task)) as IStepFunctionServiceFetchResult | null;
+                const info = (await service.fetch(task)) as IStepFunctionServiceFetchResult | null;
+                if(info) {
+                    return Result.ok(info);
+                }
+
+                return Result.fail(new TaskServiceInfoError());
             } catch (ex) {
                 console.log("Service fetch error.");
                 console.error(ex);
-                return null;
+                return Result.fail(new TaskServiceInfoError());
             }
         },
         abort: async <
@@ -135,17 +145,15 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
             O extends TaskService.GenericOutput = TaskService.GenericOutput
         >(
             params: ITaskAbortParams
-        ): Promise<TaskService.Task<T, O>> => {
+        ): Promise<Result<TaskService.Task<T, O>, BaseError<any>>> => {
             const task = await context.tasks.getTask<T, O>(params.id);
             if (!task) {
-                throw new NotFoundError(`Task "${params.id}" was not found!`);
+                return Result.fail(new TaskNotFoundError());
             }
 
             const definition = context.tasks.getDefinition<T, O>(task.definitionId);
             if (!definition) {
-                throw new WebinyError(`Task definition was not found!`, "TASK_DEFINITION_ERROR", {
-                    id: task.id
-                });
+                return Result.fail(new TaskDefinitionNotFoundError(task.definitionId));
             }
             /**
              * We should only be able to abort a task which is pending or running
@@ -153,13 +161,11 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
             if (
                 [TaskDataStatus.PENDING, TaskDataStatus.RUNNING].includes(task.taskStatus) === false
             ) {
-                throw new WebinyError(
-                    `Cannot abort a task that is not pending or running!`,
-                    "TASK_ABORT_ERROR",
-                    {
+                return Result.fail(
+                    new TaskAbortError({
                         id: params.id,
                         status: task.taskStatus
-                    }
+                    })
                 );
             }
             let taskLog: ITaskLog | null = null;
@@ -194,7 +200,7 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
                     });
                 }
 
-                return updatedTask;
+                return Result.ok(updatedTask);
             } catch (ex) {
                 throw new WebinyError(`Could not abort the task!`, "TASK_ABORT_ERROR", {
                     id: params.id,

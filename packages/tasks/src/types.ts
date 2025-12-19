@@ -282,7 +282,7 @@ export interface ITasksContextServiceObject {
         O extends TaskService.GenericOutput = TaskService.GenericOutput
     >(
         params: ITaskAbortParams
-    ) => Promise<Result<ITask<T, O>>>;
+    ) => Promise<Result<ITask<T, O>, BaseError>>;
     fetchServiceInfo: (
         input: ITask<any, any> | string
     ) => Promise<Result<IStepFunctionServiceFetchResult, BaseError>>;

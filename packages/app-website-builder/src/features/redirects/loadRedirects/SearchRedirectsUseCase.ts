@@ -16,7 +16,7 @@ export class SearchRedirectsUseCase implements ISearchRedirectsUseCase {
 
         if (params.folderIds.length > 0) {
             where = {
-                wbyAco_location: {
+                location: {
                     folderId_in: params.folderIds
                 }
             };

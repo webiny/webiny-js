@@ -22,10 +22,13 @@ describe("task runner abort", () => {
             input: {},
             name: "My task name"
         });
-        const abortedTask = await context.tasks.abort({
+        const abortResult = await context.tasks.abort({
             id: task.id,
             message: "Testing the Abort functionality."
         });
+
+        const abortedTask = abortResult.value;
+
         const result = await runner.run(
             createMockEvent({
                 webinyTaskId: abortedTask.id,

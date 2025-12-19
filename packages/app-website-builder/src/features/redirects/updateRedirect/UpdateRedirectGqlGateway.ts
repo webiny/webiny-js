@@ -20,7 +20,7 @@ export interface UpdateRedirectVariables {
         Omit<
             RedirectDto,
             | "id"
-            | "wbyAco_location"
+            | "location"
             | "createdOn"
             | "createdBy"
             | "savedOn"

@@ -27,6 +27,6 @@ export class AbortExportContentEntriesUseCase implements IAbortExportContentEntr
         const task = await this.abortTask<IControllerInput, IControllerOutput>({
             id: params.id
         });
-        return convertTaskToCmsExportRecord(task);
+        return convertTaskToCmsExportRecord(task.value);
     }
 }

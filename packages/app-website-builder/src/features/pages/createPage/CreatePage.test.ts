@@ -7,7 +7,7 @@ describe("CreatePage", () => {
         execute: vi.fn().mockResolvedValue({
             id: "page-1#0001",
             entryId: "page-1",
-            wbyAco_location: {
+            location: {
                 folderId: "folder-1"
             },
             properties: {

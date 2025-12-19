@@ -10,31 +10,45 @@ import {
 import { ensureAuthentication } from "~/utils/ensureAuthentication.js";
 import { resolve } from "~/utils/resolve.js";
 import { WEBSITE_BUILDER_INTEGRATIONS, WEBSITE_BUILDER_SETTINGS } from "~/constants.js";
-import type { WebsiteBuilderContext } from "~/context/types.js";
 import { pagesTypeDefs } from "~/graphql/pages/pages.typeDefs.js";
-import { PAGE_MODEL_ID } from "~/context/pages/pages.context.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
+import { PageModel } from "~/domain/page/abstractions.js";
+import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
+import { GetPageByPathUseCase } from "~/features/pages/GetPageByPath/index.js";
+import { GetPageRevisionsUseCase } from "~/features/pages/GetPageRevisions/index.js";
+import { ListPagesUseCase } from "~/features/pages/ListPages/index.js";
+import { CreatePageUseCase } from "~/features/pages/CreatePage/index.js";
+import { UpdatePageUseCase } from "~/features/pages/UpdatePage/index.js";
+import { DeletePageUseCase } from "~/features/pages/DeletePage/index.js";
+import { PublishPageUseCase } from "~/features/pages/PublishPage/index.js";
+import { UnpublishPageUseCase } from "~/features/pages/UnpublishPage/index.js";
+import { MovePageUseCase } from "~/features/pages/MovePage/index.js";
+import { DuplicatePageUseCase } from "~/features/pages/DuplicatePage/index.js";
+import { CreatePageRevisionFromUseCase } from "~/features/pages/CreatePageRevisionFrom/index.js";
 
 export const createPagesSchema = () => {
-    const pageGraphQL = new GraphQLSchemaPlugin<WebsiteBuilderContext>({
+    const pageGraphQL = new GraphQLSchemaPlugin<ApiCoreContext>({
         typeDefs: pagesTypeDefs,
         resolvers: {
             WbQuery: {
                 getPageModel: async (_, __, context) => {
-                    return resolve(() => {
+                    return resolve(async () => {
                         ensureAuthentication(context);
-                        return context.cms.getModel(PAGE_MODEL_ID);
+                        return context.container.resolve(PageModel);
                     });
                 },
                 getPageByPath: async (_, { path }, context) => {
                     return resolve(async () => {
                         ensureAuthentication(context);
 
-                        const page = await context.websiteBuilder.pages.getByPath(path);
+                        const getPageByPath = context.container.resolve(GetPageByPathUseCase);
+                        const result = await getPageByPath.execute(path);
 
-                        if (!page) {
+                        if (result.isFail()) {
                             throw new NotFoundError(`Page ${path} was not found!`);
                         }
 
+                        const page = result.value;
                         return {
                             id: page.id,
                             properties: page.properties,
@@ -44,16 +58,29 @@ export const createPagesSchema = () => {
                     });
                 },
                 getPageById: async (_, { id }, context) => {
-                    return resolve(() => {
+                    return resolve(async () => {
                         ensureAuthentication(context);
-                        return context.websiteBuilder.pages.getById(id);
+                        const getPageById = context.container.resolve(GetPageByIdUseCase);
+                        const result = await getPageById.execute(id);
+
+                        if (result.isFail()) {
+                            throw new NotFoundError(`Page with id "${id}" was not found!`);
+                        }
+
+                        return result.value;
                     });
                 },
                 getPageRevisions: async (_, { entryId }, context) => {
                     return resolve(async () => {
                         ensureAuthentication(context);
-                        const revisions = await context.websiteBuilder.pages.getRevisions(entryId);
+                        const getPageRevisions = context.container.resolve(GetPageRevisionsUseCase);
+                        const result = await getPageRevisions.execute(entryId);
 
+                        if (result.isFail()) {
+                            throw new Error(result.error.message);
+                        }
+
+                        const revisions = result.value;
                         return revisions.map(page => {
                             return {
                                 id: page.id,
@@ -70,8 +97,15 @@ export const createPagesSchema = () => {
                 listPages: async (_, args: any, context) => {
                     try {
                         ensureAuthentication(context);
-                        const [entries, meta] = await context.websiteBuilder.pages.list(args);
-                        return new ListResponse(entries, meta);
+                        const listPages = context.container.resolve(ListPagesUseCase);
+                        const result = await listPages.execute(args);
+
+                        if (result.isFail()) {
+                            throw result.error;
+                        }
+
+                        const { pages, meta } = result.value;
+                        return new ListResponse(pages, meta);
                     } catch (e) {
                         return new ErrorResponse(e);
                     }
@@ -109,52 +143,108 @@ export const createPagesSchema = () => {
             },
             WbMutation: {
                 createPage: async (_, { data }, context) => {
-                    return resolve(() => {
+                    return resolve(async () => {
                         ensureAuthentication(context);
-                        return context.websiteBuilder.pages.create(data);
+                        const createPage = context.container.resolve(CreatePageUseCase);
+                        const result = await createPage.execute(data);
+
+                        if (result.isFail()) {
+                            throw new Error(result.error.message);
+                        }
+
+                        return result.value;
                     });
                 },
                 updatePage: async (_, { id, data }, context) => {
-                    return resolve(() => {
+                    return resolve(async () => {
                         ensureAuthentication(context);
-                        return context.websiteBuilder.pages.update(id, data);
+                        const updatePage = context.container.resolve(UpdatePageUseCase);
+                        const result = await updatePage.execute(id, data);
+
+                        if (result.isFail()) {
+                            throw new Error(result.error.message);
+                        }
+
+                        return result.value;
                     });
                 },
                 duplicatePage: async (_, { id }, context) => {
-                    return resolve(() => {
+                    return resolve(async () => {
                         ensureAuthentication(context);
-                        return context.websiteBuilder.pages.duplicate({ id });
+                        const duplicatePage = context.container.resolve(DuplicatePageUseCase);
+                        const result = await duplicatePage.execute({ id });
+
+                        if (result.isFail()) {
+                            throw new Error(result.error.message);
+                        }
+
+                        return result.value;
                     });
                 },
                 publishPage: async (_, { id }, context) => {
-                    return resolve(() => {
+                    return resolve(async () => {
                         ensureAuthentication(context);
-                        return context.websiteBuilder.pages.publish({ id });
+                        const publishPage = context.container.resolve(PublishPageUseCase);
+                        const result = await publishPage.execute({ id });
+
+                        if (result.isFail()) {
+                            throw new Error(result.error.message);
+                        }
+
+                        return result.value;
                     });
                 },
                 unpublishPage: async (_, { id }, context) => {
-                    return resolve(() => {
+                    return resolve(async () => {
                         ensureAuthentication(context);
-                        return context.websiteBuilder.pages.unpublish({ id });
+                        const unpublishPage = context.container.resolve(UnpublishPageUseCase);
+                        const result = await unpublishPage.execute({ id });
+
+                        if (result.isFail()) {
+                            throw new Error(result.error.message);
+                        }
+
+                        return result.value;
                     });
                 },
                 movePage: async (_, { id, folderId }, context) => {
                     return resolve(async () => {
                         ensureAuthentication(context);
-                        await context.websiteBuilder.pages.move({ id, folderId });
+                        const movePage = context.container.resolve(MovePageUseCase);
+                        const result = await movePage.execute({ id, folderId });
+
+                        if (result.isFail()) {
+                            throw new Error(result.error.message);
+                        }
+
                         return true;
                     });
                 },
                 createPageRevisionFrom: async (_, { id }, context) => {
-                    return resolve(() => {
+                    return resolve(async () => {
                         ensureAuthentication(context);
-                        return context.websiteBuilder.pages.createRevisionFrom({ id });
+                        const createRevision = context.container.resolve(
+                            CreatePageRevisionFromUseCase
+                        );
+                        const result = await createRevision.execute({ id });
+
+                        if (result.isFail()) {
+                            throw new Error(result.error.message);
+                        }
+
+                        return result.value;
                     });
                 },
                 deletePage: async (_, { id }, context) => {
                     return resolve(async () => {
                         ensureAuthentication(context);
-                        await context.websiteBuilder.pages.delete({ id });
+                        const deletePage = context.container.resolve(DeletePageUseCase);
+                        const result = await deletePage.execute({ id });
+
+                        if (result.isFail()) {
+                            throw new Error(result.error.message);
+                        }
+
                         return true;
                     });
                 },

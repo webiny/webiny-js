@@ -65,7 +65,7 @@ export class ExportContentEntriesController<
         const prefix =
             input.prefix || uniqueId(`${EXPORT_BASE_PATH}/${model.modelId}/${currentTask.id}`);
         if (!state) {
-            const task = await controller.task.trigger<IExportContentEntriesInput>({
+            const result = await controller.task.trigger<IExportContentEntriesInput>({
                 definition: EXPORT_CONTENT_ENTRIES_TASK,
                 input: {
                     prefix,
@@ -77,6 +77,8 @@ export class ExportContentEntriesController<
                 },
                 name: `Export Content Entries ${currentTask.id}`
             });
+
+            const task = result.value;
 
             return controller.response.continue(
                 {
@@ -154,7 +156,7 @@ export class ExportContentEntriesController<
                 return controller.response.done("Export done, without assets.", output as O);
             }
 
-            const assetTask = await controller.task.trigger<IExportContentAssetsInput>({
+            const result = await controller.task.trigger<IExportContentAssetsInput>({
                 definition: EXPORT_CONTENT_ASSETS_TASK,
                 input: {
                     prefix,
@@ -167,6 +169,8 @@ export class ExportContentEntriesController<
                 },
                 name: `Export Content Assets ${currentTask.id}`
             });
+
+            const assetTask = result.value;
 
             return controller.response.continue(
                 {

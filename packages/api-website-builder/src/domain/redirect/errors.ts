@@ -20,13 +20,13 @@ export class RedirectNotFoundError extends BaseError {
     }
 }
 
-export class RedirectPersistenceError extends BaseError {
+export class RedirectPersistenceError extends BaseError<{ error: Error }> {
     override readonly code = "WebsiteBuilder/Redirect/PersistenceError" as const;
 
     constructor(error: Error) {
         super({
             message: `Redirect persistence error: ${error.message}`,
-            cause: error
+            data: { error }
         });
     }
 }

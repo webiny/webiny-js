@@ -130,7 +130,7 @@ describe("task lifecycle hooks", () => {
                 onError = onError;
 
                 async run({ controller }: TaskDefinition.RunParams) {
-                    return controller.response.error("Task failed", {
+                    return controller.response.error({
                         message: "Something went wrong",
                         code: "TEST_ERROR"
                     });
