@@ -26,7 +26,7 @@ export const TemplateItem = makeDecoratable(
                 <div>
                     <div
                         className={
-                            "flex items-center justify-center h-[117px] w-full bg-neutral-dimmed"
+                            "flex items-center justify-center py-xxl w-full bg-neutral-dimmed"
                         }
                     >
                         <TemplateIcon icon={template.icon} style={{ width: 40, height: 40 }} />
