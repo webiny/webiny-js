@@ -18,7 +18,7 @@ class PublishPageUseCaseImpl implements UseCaseAbstraction.Interface {
         private repository: PublishPageRepository.Interface
     ) {}
 
-    async execute(params: PublishPageRepository.Params): UseCaseAbstraction.Return {
+    async execute(params: UseCaseAbstraction.Params): UseCaseAbstraction.Return {
         // Get the page first for the before event
         const getResult = await this.getEntryById.execute(this.pageModel, params.id);
 

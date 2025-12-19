@@ -66,6 +66,7 @@ export const CreatePageRevisionFromUseCase = createAbstraction<ICreatePageRevisi
 
 export namespace CreatePageRevisionFromUseCase {
     export type Interface = ICreatePageRevisionFromUseCase;
+    export type Params = ICreateWbPageRevisionFromParams;
     export type Return = Promise<Result<WbPage, UseCaseError>>;
     export type Error = UseCaseError;
 }

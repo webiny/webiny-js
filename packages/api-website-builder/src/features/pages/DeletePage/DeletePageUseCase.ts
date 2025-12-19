@@ -18,7 +18,7 @@ class DeletePageUseCaseImpl implements UseCaseAbstraction.Interface {
         private repository: DeletePageRepository.Interface
     ) {}
 
-    async execute(params: DeletePageRepository.Params): UseCaseAbstraction.Return {
+    async execute(params: UseCaseAbstraction.Params): UseCaseAbstraction.Return {
         // Get the page first to include in events
         const getResult = await this.getEntryById.execute(this.pageModel, params.id);
 

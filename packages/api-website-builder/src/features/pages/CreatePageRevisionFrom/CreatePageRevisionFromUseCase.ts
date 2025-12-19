@@ -16,7 +16,7 @@ class CreatePageRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface 
         private repository: CreatePageRevisionFromRepository.Interface
     ) {}
 
-    async execute(params: CreatePageRevisionFromRepository.Params): UseCaseAbstraction.Return {
+    async execute(params: UseCaseAbstraction.Params): UseCaseAbstraction.Return {
         // Publish before event
         const beforeEvent = new PageBeforeCreateRevisionFromEvent({
             params

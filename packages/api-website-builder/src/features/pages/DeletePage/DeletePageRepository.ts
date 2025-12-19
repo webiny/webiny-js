@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
-import { DeletePageRepository as RepositoryAbstraction } from "./abstractions.js";
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
+import { DeletePageRepository as RepositoryAbstraction } from "./abstractions.js";
 import { PageModel } from "~/domain/page/abstractions.js";
 import { PageNotFoundError, PagePersistenceError } from "~/domain/page/errors.js";
 

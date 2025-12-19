@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
-import { UpdatePageRepository as RepositoryAbstraction } from "./abstractions.js";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
+import { UpdatePageRepository as RepositoryAbstraction } from "./abstractions.js";
 import { PageModel } from "~/domain/page/abstractions.js";
 import { EntryToPageMapper } from "~/domain/page/EntryToPageMapper.js";
 import {

@@ -56,6 +56,7 @@ export const DeletePageUseCase = createAbstraction<IDeletePageUseCase>("DeletePa
 
 export namespace DeletePageUseCase {
     export type Interface = IDeletePageUseCase;
+    export type Params = IDeleteWbPageParams;
     export type Return = Promise<Result<void, UseCaseError>>;
     export type Error = UseCaseError;
 }
