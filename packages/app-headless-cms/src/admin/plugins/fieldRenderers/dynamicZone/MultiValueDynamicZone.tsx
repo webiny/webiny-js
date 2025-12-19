@@ -4,7 +4,7 @@ import { ReactComponent as DeleteIcon } from "@webiny/icons/delete_outline.svg";
 import { ReactComponent as CloneIcon } from "@webiny/icons/library_add.svg";
 import { ReactComponent as ArrowUpIcon } from "@webiny/icons/expand_less.svg";
 import { ReactComponent as ArrowDownIcon } from "@webiny/icons/expand_more.svg";
-import { AddTemplateButton, AddTemplateIcon } from "./AddTemplate.js";
+import { AddTemplateButton } from "./AddTemplate.js";
 import { TemplateIcon } from "./TemplateIcon.js";
 import { ParentFieldProvider, useModelField } from "~/admin/hooks/index.js";
 import { Fields } from "~/admin/components/ContentEntryForm/Fields.js";
@@ -174,7 +174,7 @@ export const MultiValueContainer = makeDecoratable(
     "MultiValueContainer",
     ({ children }: MultiValueContainerProps) => {
         return (
-            <Accordion>
+            <Accordion variant={"container"}>
                 <>{children}</>
             </Accordion>
         );
@@ -211,7 +211,7 @@ export const MultiValueDynamicZone = (props: MultiValueDynamicZoneProps) => {
     const Bind = getBind();
 
     return (
-        <>
+        <div className={"flex flex-col gap-y-lg"}>
             {hasValues ? (
                 <ParentFieldProvider value={bind.value} path={Bind.parentName}>
                     <MultiValueContainer {...props}>
@@ -249,11 +249,7 @@ export const MultiValueDynamicZone = (props: MultiValueDynamicZoneProps) => {
                     </MultiValueContainer>
                 </ParentFieldProvider>
             ) : null}
-            {hasValues ? (
-                <AddTemplateIcon onTemplate={onTemplate} />
-            ) : (
-                <AddTemplateButton onTemplate={onTemplate} />
-            )}
-        </>
+            <AddTemplateButton onTemplate={onTemplate} />
+        </div>
     );
 };

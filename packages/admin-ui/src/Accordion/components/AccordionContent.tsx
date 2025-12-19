@@ -47,7 +47,9 @@ export const AccordionContent = ({ children, className, ...props }: AccordionCon
             {...props}
             className={cn(accordionContentVariants({ withHandle, withIcon }), className)}
         >
-            <div className="pt-sm pb-lg">{children}</div>
+            <div data-accordion={"content"} className="pt-sm pb-lg">
+                {children}
+            </div>
         </CollapsiblePrimitive.Content>
     );
 };

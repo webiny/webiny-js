@@ -55,8 +55,6 @@ export const SingleValueItemContainer = makeDecoratable(
                 title={template.name}
                 description={template.description}
                 icon={<TemplateIcon icon={template.icon} />}
-                open={true}
-                interactive={false}
                 actions={
                     <>
                         {actions ?? null}
@@ -109,7 +107,7 @@ export const SingleValueDynamicZone = ({
                 <ParentFieldProvider value={bind.value} path={Bind.parentName}>
                     <ParentValueIndexProvider index={-1}>
                         <ModelFieldProvider field={field}>
-                            <Accordion>
+                            <Accordion background={"base"} variant={"container"}>
                                 <SingleValueItemContainer
                                     template={template}
                                     value={bind.value}
