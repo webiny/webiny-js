@@ -1,6 +1,6 @@
-import type { CreateWbRedirectData } from "~/context/redirects/redirects.types.js";
+import { CreateRedirectUseCase } from "~/features/redirects/CreateRedirect/index.js";
 
-export const redirectMocks: Record<string, CreateWbRedirectData> = {
+export const redirectMocks: Record<string, CreateRedirectUseCase.Params> = {
     redirectA: {
         redirectFrom: "/old-page-a",
         redirectTo: "/new-page-a",

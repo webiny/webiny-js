@@ -1,6 +1,6 @@
-import type { CreateWbPageData } from "~/context/pages/pages.types.js";
+import { CreatePageUseCase } from "~/features/pages/CreatePage/index.js";
 
-export const pageMocks: Record<string, CreateWbPageData> = {
+export const pageMocks: Record<string, CreatePageUseCase.Params> = {
     pageA: {
         properties: {
             title: "Page A",

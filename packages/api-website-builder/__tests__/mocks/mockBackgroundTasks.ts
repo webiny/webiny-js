@@ -1,20 +1,21 @@
 import { createContextPlugin } from "@webiny/api";
 import { createBackgroundTaskContext } from "@webiny/tasks";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
+import { Result } from "@webiny/feature/api";
 
 export const createBackgroundTasks = () => {
     return [
         ...createBackgroundTaskContext(),
         createContextPlugin(context => {
             context.container.registerInstance(TaskService, {
-                trigger() {
-                    return {} as any;
+                async trigger() {
+                    return Result.ok({}) as any;
                 },
                 abort() {
-                    return {} as any;
+                    return Result.ok({}) as any;
                 },
                 fetchServiceInfo() {
-                    return {} as any;
+                    return Result.ok({}) as any;
                 }
             });
         })
