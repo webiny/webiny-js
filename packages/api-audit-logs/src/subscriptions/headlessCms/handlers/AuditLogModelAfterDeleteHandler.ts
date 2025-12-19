@@ -1,11 +1,11 @@
 import WebinyError from "@webiny/error";
-import { ModelAfterDeleteHandler } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/events.js";
+import { ModelAfterDeleteHandler } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/index.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
-import type { AuditLogsContext } from "~/types.js";
+import { AuditLogsContext } from "~/abstractions.js";
 
-export class AuditLogModelAfterDeleteHandler implements ModelAfterDeleteHandler.Interface {
-    constructor(private context: AuditLogsContext) {}
+class AuditLogModelAfterDeleteHandlerImpl implements ModelAfterDeleteHandler.Interface {
+    constructor(private context: AuditLogsContext.Interface) {}
 
     async handle(event: ModelAfterDeleteHandler.Event): Promise<void> {
         const { model } = event.payload;
@@ -22,3 +22,8 @@ export class AuditLogModelAfterDeleteHandler implements ModelAfterDeleteHandler.
         }
     }
 }
+
+export const AuditLogModelAfterDeleteHandler = ModelAfterDeleteHandler.createImplementation({
+    implementation: AuditLogModelAfterDeleteHandlerImpl,
+    dependencies: [AuditLogsContext]
+});

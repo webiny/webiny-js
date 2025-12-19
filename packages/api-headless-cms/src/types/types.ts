@@ -6,7 +6,6 @@ import type {
 } from "@webiny/handler-graphql/types.js";
 import type { processRequestBody } from "@webiny/handler-graphql";
 import type { DbContext } from "@webiny/handler-db/types.js";
-import type { Topic } from "@webiny/pubsub/types.js";
 import type { CmsModelConverterCallable } from "~/utils/converters/ConverterCollection.js";
 import type { HeadlessCmsExport, HeadlessCmsImport } from "~/export/types.js";
 import type { AccessControl } from "~/crud/AccessControl/AccessControl.js";
@@ -259,86 +258,6 @@ export interface CmsGroupListParams {
 }
 
 /**
- * @category CmsGroup
- * @category Topic
- */
-export interface OnGroupBeforeCreateTopicParams {
-    group: CmsGroup;
-}
-
-/**
- * @category CmsGroup
- * @category Topic
- */
-export interface OnGroupAfterCreateTopicParams {
-    group: CmsGroup;
-}
-
-/**
- * @category CmsGroup
- * @category Topic
- */
-export interface OnGroupCreateErrorTopicParams {
-    input: CmsGroupCreateInput;
-    group: CmsGroup;
-    error: Error;
-}
-
-/**
- * @category CmsGroup
- * @category Topic
- */
-export interface OnGroupBeforeUpdateTopicParams {
-    original: CmsGroup;
-    group: CmsGroup;
-}
-
-/**
- * @category CmsGroup
- * @category Topic
- */
-export interface OnGroupAfterUpdateTopicParams {
-    original: CmsGroup;
-    group: CmsGroup;
-}
-
-/**
- * @category CmsGroup
- * @category Topic
- */
-export interface OnGroupUpdateErrorTopicParams {
-    input: CmsGroupUpdateInput;
-    original: CmsGroup;
-    group: CmsGroup;
-    error: Error;
-}
-
-/**
- * @category CmsGroup
- * @category Topic
- */
-export interface OnGroupBeforeDeleteTopicParams {
-    group: CmsGroup;
-}
-
-/**
- * @category CmsGroup
- * @category Topic
- */
-export interface OnGroupAfterDeleteTopicParams {
-    group: CmsGroup;
-}
-
-/**
- * @category CmsGroup
- * @category Topic
- */
-export interface OnGroupDeleteErrorTopicParams {
-    group: CmsGroup;
-    error: Error;
-}
-
-/**
  * Cms Group in context.
  *
  * @category Context
@@ -369,18 +288,6 @@ export interface CmsGroupContext {
      * Clear the cached groups.
      */
     clearGroupsCache: () => void;
-    /**
-     * Lifecycle Events
-     */
-    onGroupBeforeCreate: Topic<OnGroupBeforeCreateTopicParams>;
-    onGroupAfterCreate: Topic<OnGroupAfterCreateTopicParams>;
-    onGroupCreateError: Topic<OnGroupCreateErrorTopicParams>;
-    onGroupBeforeUpdate: Topic<OnGroupBeforeUpdateTopicParams>;
-    onGroupAfterUpdate: Topic<OnGroupAfterUpdateTopicParams>;
-    onGroupUpdateError: Topic<OnGroupUpdateErrorTopicParams>;
-    onGroupBeforeDelete: Topic<OnGroupBeforeDeleteTopicParams>;
-    onGroupAfterDelete: Topic<OnGroupAfterDeleteTopicParams>;
-    onGroupDeleteError: Topic<OnGroupDeleteErrorTopicParams>;
 }
 
 /**
@@ -604,138 +511,6 @@ export interface CmsEntryUniqueValue {
     count: number;
 }
 
-/**
- * A definition for content model manager to be used in the code.
- * The default one uses `CmsEntryContext` methods internally, but devs can change to what every they want.
- *
- * @see CmsEntryContext
- *
- * @category Context
- * @category CmsEntry
- * @category CmsModel
- */
-export interface CmsModelManager<T = CmsEntryValues> {
-    model: CmsModel;
-    /**
-     * List only published entries in the content model.
-     */
-    listPublished(params: CmsEntryListParams): Promise<[CmsEntry<T>[], CmsEntryMeta]>;
-    /**
-     * List latest entries in the content model. Used for administration.
-     */
-    listLatest(params: CmsEntryListParams): Promise<[CmsEntry<T>[], CmsEntryMeta]>;
-    /**
-     * Get a list of published entries by the ID list.
-     */
-    getPublishedByIds(ids: string[]): Promise<CmsEntry<T>[]>;
-    /**
-     * Get a list of the latest entries by the ID list.
-     */
-    getLatestByIds(ids: string[]): Promise<CmsEntry<T>[]>;
-    /**
-     * Get an entry filtered by given params. Will always get one.
-     */
-    get(id: string): Promise<CmsEntry<T>>;
-    /**
-     * Create an entry.
-     */
-    create<I>(
-        data: CreateCmsEntryInput & I,
-        options?: CreateCmsEntryOptionsInput
-    ): Promise<CmsEntry<T>>;
-    /**
-     * Update an entry.
-     */
-    update(
-        id: string,
-        data: UpdateCmsEntryInput,
-        options?: UpdateCmsEntryOptionsInput
-    ): Promise<CmsEntry<T>>;
-    /**
-     * Delete an entry.
-     */
-    delete(id: string, options?: CmsDeleteEntryOptions): Promise<void>;
-}
-
-/**
- * Create
- */
-export interface OnModelBeforeCreateTopicParams {
-    input: CmsModelCreateInput;
-    model: CmsModel;
-}
-
-export interface OnModelAfterCreateTopicParams {
-    input: CmsModelCreateInput;
-    model: CmsModel;
-}
-
-export interface OnModelCreateErrorTopicParams {
-    input: CmsModelCreateInput;
-    model: CmsModel;
-    error: Error;
-}
-
-/**
- * Create From / Clone
- */
-export interface OnModelBeforeCreateFromTopicParams {
-    input: CmsModelCreateInput;
-    original: CmsModel;
-    model: CmsModel;
-}
-
-export interface OnModelAfterCreateFromTopicParams {
-    input: CmsModelCreateInput;
-    original: CmsModel;
-    model: CmsModel;
-}
-
-export interface OnModelCreateFromErrorParams {
-    input: CmsModelCreateInput;
-    original: CmsModel;
-    model: CmsModel;
-    error: Error;
-}
-
-/**
- * Update
- */
-export interface OnModelBeforeUpdateTopicParams {
-    input: CmsModelUpdateInput;
-    original: CmsModel;
-    model: CmsModel;
-}
-
-export interface OnModelAfterUpdateTopicParams {
-    input: CmsModelUpdateInput;
-    original: CmsModel;
-    model: CmsModel;
-}
-
-export interface OnModelUpdateErrorTopicParams {
-    input: CmsModelUpdateInput;
-    original: CmsModel;
-    model: CmsModel;
-    error: Error;
-}
-
-/**
- * Delete
- */
-export interface OnModelBeforeDeleteTopicParams {
-    model: CmsModel;
-}
-
-export interface OnModelAfterDeleteTopicParams {
-    model: CmsModel;
-}
-
-export interface OnModelDeleteErrorTopicParams {
-    model: CmsModel;
-    error: Error;
-}
-
 export interface ICmsModelListParams {
     /**
      * Defaults to true.
@@ -785,21 +560,6 @@ export interface CmsModelContext {
      * Clear all the model caches.
      */
     clearModelsCache(): void;
-    /**
-     * Lifecycle Events
-     */
-    onModelBeforeCreate: Topic<OnModelBeforeCreateTopicParams>;
-    onModelAfterCreate: Topic<OnModelAfterCreateTopicParams>;
-    onModelCreateError: Topic<OnModelCreateErrorTopicParams>;
-    onModelBeforeCreateFrom: Topic<OnModelBeforeCreateFromTopicParams>;
-    onModelAfterCreateFrom: Topic<OnModelAfterCreateFromTopicParams>;
-    onModelCreateFromError: Topic<OnModelCreateFromErrorParams>;
-    onModelBeforeUpdate: Topic<OnModelBeforeUpdateTopicParams>;
-    onModelAfterUpdate: Topic<OnModelAfterUpdateTopicParams>;
-    onModelUpdateError: Topic<OnModelUpdateErrorTopicParams>;
-    onModelBeforeDelete: Topic<OnModelBeforeDeleteTopicParams>;
-    onModelAfterDelete: Topic<OnModelAfterDeleteTopicParams>;
-    onModelDeleteError: Topic<OnModelDeleteErrorTopicParams>;
 }
 
 /**
@@ -1240,28 +1000,6 @@ export interface OnEntryRevisionDeleteErrorTopicParams {
     error: Error;
     entry: CmsEntry;
     model: CmsModel;
-}
-
-/**
- * Delete multiple
- */
-export interface OnEntryBeforeDeleteMultipleTopicParams {
-    model: CmsModel;
-    entries: CmsEntry[];
-    ids: string[];
-}
-
-export interface OnEntryAfterDeleteMultipleTopicParams {
-    model: CmsModel;
-    entries: CmsEntry[];
-    ids: string[];
-}
-
-export interface OnEntryDeleteMultipleErrorTopicParams {
-    model: CmsModel;
-    entries: CmsEntry[];
-    ids: string[];
-    error: Error;
 }
 
 /**
@@ -2010,15 +1748,6 @@ export enum CONTENT_ENTRY_STATUS {
     DRAFT = "draft",
     PUBLISHED = "published",
     UNPUBLISHED = "unpublished"
-}
-
-export interface CmsSystem {
-    version?: string;
-    readAPIKey?: string;
-    /**
-     * System tenant.
-     */
-    tenant: string;
 }
 
 export interface HeadlessCmsStorageOperations<C = CmsContext> {

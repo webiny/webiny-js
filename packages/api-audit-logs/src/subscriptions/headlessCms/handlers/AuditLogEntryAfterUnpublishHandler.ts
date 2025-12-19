@@ -1,11 +1,11 @@
 import WebinyError from "@webiny/error";
-import { EntryAfterUnpublishHandler } from "@webiny/api-headless-cms/features/contentEntry/UnpublishEntry/events.js";
+import { EntryAfterUnpublishHandler } from "@webiny/api-headless-cms/features/contentEntry/UnpublishEntry/index.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
-import type { AuditLogsContext } from "~/types.js";
+import { AuditLogsContext } from "~/abstractions.js";
 
-export class AuditLogEntryAfterUnpublishHandler implements EntryAfterUnpublishHandler.Interface {
-    constructor(private context: AuditLogsContext) {}
+class AuditLogEntryAfterUnpublishHandlerImpl implements EntryAfterUnpublishHandler.Interface {
+    constructor(private context: AuditLogsContext.Interface) {}
 
     async handle(event: EntryAfterUnpublishHandler.Event): Promise<void> {
         const { model, entry } = event.payload;
@@ -26,3 +26,8 @@ export class AuditLogEntryAfterUnpublishHandler implements EntryAfterUnpublishHa
         }
     }
 }
+
+export const AuditLogEntryAfterUnpublishHandler = EntryAfterUnpublishHandler.createImplementation({
+    implementation: AuditLogEntryAfterUnpublishHandlerImpl,
+    dependencies: [AuditLogsContext]
+});

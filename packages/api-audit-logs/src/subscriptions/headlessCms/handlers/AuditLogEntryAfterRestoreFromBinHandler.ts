@@ -1,13 +1,13 @@
 import WebinyError from "@webiny/error";
-import { EntryAfterRestoreFromBinHandler } from "@webiny/api-headless-cms/features/contentEntry/RestoreEntryFromBin/events.js";
+import { EntryAfterRestoreFromBinHandler } from "@webiny/api-headless-cms/features/contentEntry/RestoreEntryFromBin/index.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
-import type { AuditLogsContext } from "~/types.js";
+import { AuditLogsContext } from "~/abstractions.js";
 
-export class AuditLogEntryAfterRestoreFromBinHandler
+class AuditLogEntryAfterRestoreFromBinHandlerImpl
     implements EntryAfterRestoreFromBinHandler.Interface
 {
-    constructor(private context: AuditLogsContext) {}
+    constructor(private context: AuditLogsContext.Interface) {}
 
     async handle(event: EntryAfterRestoreFromBinHandler.Event): Promise<void> {
         const { model, entry } = event.payload;
@@ -27,3 +27,9 @@ export class AuditLogEntryAfterRestoreFromBinHandler
         }
     }
 }
+
+export const AuditLogEntryAfterRestoreFromBinHandler =
+    EntryAfterRestoreFromBinHandler.createImplementation({
+        implementation: AuditLogEntryAfterRestoreFromBinHandlerImpl,
+        dependencies: [AuditLogsContext]
+    });

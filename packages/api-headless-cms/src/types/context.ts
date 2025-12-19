@@ -209,49 +209,4 @@ export interface CmsEntryContext {
         model: CmsModel,
         params: GetUniqueFieldValuesParams
     ) => Promise<CmsEntryUniqueValue[]>;
-    /**
-     * Lifecycle Events
-     */
-    onEntryBeforeCreate: Topic<OnEntryBeforeCreateTopicParams>;
-    onEntryAfterCreate: Topic<OnEntryAfterCreateTopicParams>;
-    onEntryCreateError: Topic<OnEntryCreateErrorTopicParams>;
-
-    onEntryRevisionBeforeCreate: Topic<OnEntryRevisionBeforeCreateTopicParams>;
-    onEntryRevisionAfterCreate: Topic<OnEntryRevisionAfterCreateTopicParams>;
-    onEntryRevisionCreateError: Topic<OnEntryCreateRevisionErrorTopicParams>;
-
-    onEntryBeforeUpdate: Topic<OnEntryBeforeUpdateTopicParams>;
-    onEntryAfterUpdate: Topic<OnEntryAfterUpdateTopicParams>;
-    onEntryUpdateError: Topic<OnEntryUpdateErrorTopicParams>;
-
-    onEntryBeforeMove: Topic<OnEntryBeforeMoveTopicParams>;
-    onEntryAfterMove: Topic<OnEntryAfterMoveTopicParams>;
-    onEntryMoveError: Topic<OnEntryMoveErrorTopicParams>;
-
-    onEntryBeforeDelete: Topic<OnEntryBeforeDeleteTopicParams>;
-    onEntryAfterDelete: Topic<OnEntryAfterDeleteTopicParams>;
-    onEntryDeleteError: Topic<OnEntryDeleteErrorTopicParams>;
-
-    onEntryBeforeRestoreFromBin: Topic<OnEntryBeforeRestoreFromBinTopicParams>;
-    onEntryAfterRestoreFromBin: Topic<OnEntryAfterRestoreFromBinTopicParams>;
-    onEntryRestoreFromBinError: Topic<OnEntryRestoreFromBinErrorTopicParams>;
-
-    onEntryRevisionBeforeDelete: Topic<OnEntryRevisionBeforeDeleteTopicParams>;
-    onEntryRevisionAfterDelete: Topic<OnEntryRevisionAfterDeleteTopicParams>;
-    onEntryRevisionDeleteError: Topic<OnEntryRevisionDeleteErrorTopicParams>;
-
-    onEntryBeforePublish: Topic<OnEntryBeforePublishTopicParams>;
-    onEntryAfterPublish: Topic<OnEntryAfterPublishTopicParams>;
-    onEntryPublishError: Topic<OnEntryPublishErrorTopicParams>;
-
-    onEntryBeforeRepublish: Topic<OnEntryBeforeRepublishTopicParams>;
-    onEntryAfterRepublish: Topic<OnEntryAfterRepublishTopicParams>;
-    onEntryRepublishError: Topic<OnEntryRepublishErrorTopicParams>;
-
-    onEntryBeforeUnpublish: Topic<OnEntryBeforeUnpublishTopicParams>;
-    onEntryAfterUnpublish: Topic<OnEntryAfterUnpublishTopicParams>;
-    onEntryUnpublishError: Topic<OnEntryUnpublishErrorTopicParams>;
-
-    onEntryBeforeGet: Topic<OnEntryBeforeGetTopicParams>;
-    onEntryBeforeList: Topic<EntryBeforeListTopicParams>;
 }

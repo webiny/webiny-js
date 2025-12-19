@@ -10,42 +10,9 @@ import type {
     CmsModel,
     CreateCmsEntryInput,
     CreateCmsEntryOptionsInput,
-    EntryBeforeListTopicParams,
-    OnEntryAfterCreateTopicParams,
-    OnEntryAfterDeleteTopicParams,
-    OnEntryAfterMoveTopicParams,
-    OnEntryAfterPublishTopicParams,
-    OnEntryAfterRepublishTopicParams,
-    OnEntryAfterRestoreFromBinTopicParams,
-    OnEntryAfterUnpublishTopicParams,
-    OnEntryAfterUpdateTopicParams,
-    OnEntryBeforeCreateTopicParams,
-    OnEntryBeforeDeleteTopicParams,
-    OnEntryBeforeGetTopicParams,
-    OnEntryBeforeMoveTopicParams,
-    OnEntryBeforePublishTopicParams,
-    OnEntryBeforeRepublishTopicParams,
-    OnEntryBeforeRestoreFromBinTopicParams,
-    OnEntryBeforeUnpublishTopicParams,
-    OnEntryBeforeUpdateTopicParams,
-    OnEntryCreateErrorTopicParams,
-    OnEntryCreateRevisionErrorTopicParams,
-    OnEntryDeleteErrorTopicParams,
-    OnEntryMoveErrorTopicParams,
-    OnEntryPublishErrorTopicParams,
-    OnEntryRepublishErrorTopicParams,
-    OnEntryRestoreFromBinErrorTopicParams,
-    OnEntryRevisionAfterCreateTopicParams,
-    OnEntryRevisionAfterDeleteTopicParams,
-    OnEntryRevisionBeforeCreateTopicParams,
-    OnEntryRevisionBeforeDeleteTopicParams,
-    OnEntryRevisionDeleteErrorTopicParams,
-    OnEntryUnpublishErrorTopicParams,
-    OnEntryUpdateErrorTopicParams,
     UpdateCmsEntryInput,
     UpdateCmsEntryOptionsInput
 } from "~/types/index.js";
-import { createTopic } from "@webiny/pubsub";
 import { ContentEntryTraverser } from "~/utils/contentEntryTraverser/ContentEntryTraverser.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import { CreateEntryUseCase } from "~/features/contentEntry/CreateEntry/index.js";
@@ -81,125 +48,6 @@ interface CreateContentEntryCrudParams {
 export const createContentEntryCrud = (params: CreateContentEntryCrudParams): CmsEntryContext => {
     const { context } = params;
 
-    /**
-     * Create
-     */
-    const onEntryBeforeCreate =
-        createTopic<OnEntryBeforeCreateTopicParams>("cms.onEntryBeforeCreate");
-    const onEntryAfterCreate = createTopic<OnEntryAfterCreateTopicParams>("cms.onEntryAfterCreate");
-    const onEntryCreateError = createTopic<OnEntryCreateErrorTopicParams>("cms.onEntryCreateError");
-
-    /**
-     * Create new revision
-     */
-    const onEntryBeforeCreateRevision = createTopic<OnEntryRevisionBeforeCreateTopicParams>(
-        "cms.onEntryBeforeCreateRevision"
-    );
-    const onEntryRevisionAfterCreate = createTopic<OnEntryRevisionAfterCreateTopicParams>(
-        "cms.onEntryRevisionAfterCreate"
-    );
-    const onEntryCreateRevisionError = createTopic<OnEntryCreateRevisionErrorTopicParams>(
-        "cms.onEntryCreateRevisionError"
-    );
-
-    /**
-     * Update
-     */
-    const onEntryBeforeUpdate =
-        createTopic<OnEntryBeforeUpdateTopicParams>("cms.onEntryBeforeUpdate");
-    const onEntryAfterUpdate = createTopic<OnEntryAfterUpdateTopicParams>("cms.onEntryAfterUpdate");
-    const onEntryUpdateError = createTopic<OnEntryUpdateErrorTopicParams>("cms.onEntryUpdateError");
-
-    /**
-     * Move
-     */
-    const onEntryBeforeMove = createTopic<OnEntryBeforeMoveTopicParams>("cms.onEntryBeforeMove");
-    const onEntryAfterMove = createTopic<OnEntryAfterMoveTopicParams>("cms.onEntryAfterMove");
-    const onEntryMoveError = createTopic<OnEntryMoveErrorTopicParams>("cms.onEntryMoveError");
-
-    /**
-     * Publish
-     */
-    const onEntryBeforePublish = createTopic<OnEntryBeforePublishTopicParams>(
-        "cms.onEntryBeforePublish"
-    );
-    const onEntryAfterPublish =
-        createTopic<OnEntryAfterPublishTopicParams>("cms.onEntryAfterPublish");
-
-    const onEntryPublishError =
-        createTopic<OnEntryPublishErrorTopicParams>("cms.onEntryPublishError");
-
-    /**
-     * Republish
-     */
-    const onEntryBeforeRepublish = createTopic<OnEntryBeforeRepublishTopicParams>(
-        "cms.onEntryBeforeRepublish"
-    );
-    const onEntryAfterRepublish = createTopic<OnEntryAfterRepublishTopicParams>(
-        "cms.onEntryAfterRepublish"
-    );
-
-    const onEntryRepublishError = createTopic<OnEntryRepublishErrorTopicParams>(
-        "cms.onEntryRepublishError"
-    );
-
-    /**
-     * Unpublish
-     */
-    const onEntryBeforeUnpublish = createTopic<OnEntryBeforeUnpublishTopicParams>(
-        "cms.onEntryBeforeUnpublish"
-    );
-    const onEntryAfterUnpublish = createTopic<OnEntryAfterUnpublishTopicParams>(
-        "cms.onEntryAfterUnpublish"
-    );
-    const onEntryUnpublishError = createTopic<OnEntryUnpublishErrorTopicParams>(
-        "cms.onEntryUnpublishError"
-    );
-
-    /**
-     * Delete
-     */
-    const onEntryBeforeDelete =
-        createTopic<OnEntryBeforeDeleteTopicParams>("cms.onEntryBeforeDelete");
-    const onEntryAfterDelete = createTopic<OnEntryAfterDeleteTopicParams>("cms.onEntryAfterDelete");
-    const onEntryDeleteError = createTopic<OnEntryDeleteErrorTopicParams>("cms.onEntryDeleteError");
-
-    /**
-     * Restore from bin
-     */
-    const onEntryBeforeRestoreFromBin = createTopic<OnEntryBeforeRestoreFromBinTopicParams>(
-        "cms.onEntryBeforeRestoreFromBin"
-    );
-    const onEntryAfterRestoreFromBin = createTopic<OnEntryAfterRestoreFromBinTopicParams>(
-        "cms.onEntryAfterRestoreFromBin"
-    );
-    const onEntryRestoreFromBinError = createTopic<OnEntryRestoreFromBinErrorTopicParams>(
-        "cms.onEntryRestoreFromBinError"
-    );
-
-    /**
-     * Delete revision
-     */
-    const onEntryRevisionBeforeDelete = createTopic<OnEntryRevisionBeforeDeleteTopicParams>(
-        "cms.onEntryRevisionBeforeDelete"
-    );
-    const onEntryRevisionAfterDelete = createTopic<OnEntryRevisionAfterDeleteTopicParams>(
-        "cms.onEntryRevisionAfterDelete"
-    );
-    const onEntryRevisionDeleteError = createTopic<OnEntryRevisionDeleteErrorTopicParams>(
-        "cms.onEntryRevisionDeleteError"
-    );
-
-    /**
-     * Get entry
-     */
-    const onEntryBeforeGet = createTopic<OnEntryBeforeGetTopicParams>("cms.onEntryBeforeGet");
-
-    /**
-     * List entries
-     */
-    const onEntryBeforeList = createTopic<EntryBeforeListTopicParams>("cms.onEntryBeforeList");
-
     const createEntry: CmsEntryContext["createEntry"] = async <T = CmsEntryValues>(
         model: CmsModel,
         rawInput: CreateCmsEntryInput,
@@ -210,14 +58,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const result = await useCase.execute(model, rawInput, options);
 
         if (result.isFail()) {
-            // Publish error event for backward compatibility
-            await onEntryCreateError.publish({
-                error: result.error,
-                entry: null as any,
-                model,
-                input: rawInput
-            });
-
             // Convert Result error to WebinyError for backward compatibility
             const error = result.error;
             throw new WebinyError(
@@ -265,14 +105,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const result = await useCase.execute(model, id, rawInput, metaInput, options);
 
         if (result.isFail()) {
-            // Publish error event for backward compatibility
-            await onEntryUpdateError.publish({
-                error: result.error,
-                entry: null as any,
-                model,
-                input: rawInput
-            });
-
             // Convert Result error to WebinyError for backward compatibility
             const error = result.error;
             throw new WebinyError(
@@ -434,48 +266,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
     return {
         getEntryTraverser,
-        onEntryBeforeCreate,
-        onEntryAfterCreate,
-        onEntryCreateError,
-
-        onEntryRevisionBeforeCreate: onEntryBeforeCreateRevision,
-        onEntryRevisionAfterCreate,
-        onEntryRevisionCreateError: onEntryCreateRevisionError,
-
-        onEntryBeforeUpdate,
-        onEntryAfterUpdate,
-        onEntryUpdateError,
-
-        onEntryBeforeMove,
-        onEntryAfterMove,
-        onEntryMoveError,
-
-        onEntryBeforeDelete,
-        onEntryAfterDelete,
-        onEntryDeleteError,
-
-        onEntryBeforeRestoreFromBin,
-        onEntryAfterRestoreFromBin,
-        onEntryRestoreFromBinError,
-
-        onEntryRevisionBeforeDelete,
-        onEntryRevisionAfterDelete,
-        onEntryRevisionDeleteError,
-
-        onEntryBeforePublish,
-        onEntryAfterPublish,
-        onEntryPublishError,
-
-        onEntryBeforeRepublish,
-        onEntryAfterRepublish,
-        onEntryRepublishError,
-
-        onEntryBeforeUnpublish,
-        onEntryAfterUnpublish,
-        onEntryUnpublishError,
-
-        onEntryBeforeGet,
-        onEntryBeforeList,
         /**
          * Get entries by exact revision IDs from the database.
          */

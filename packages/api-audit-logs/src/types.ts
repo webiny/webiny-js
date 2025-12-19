@@ -7,7 +7,6 @@ import type { IStorageListParams } from "~/storage/abstractions/Storage.js";
 import type { Action, App, Entity } from "@webiny/common-audit-logs/types.js";
 import type { DbContext } from "@webiny/handler-db/types.js";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
-import type { WebsiteBuilderContext } from "@webiny/api-website-builder";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 
 export interface AuditLogPayload
@@ -78,8 +77,7 @@ export interface AuditLogsContext
         Pick<CmsContext, "cms">,
         Pick<DbContext, "db">,
         Pick<AcoContext, "aco">,
-        Pick<MailerContext, "mailer">,
-        Pick<WebsiteBuilderContext, "websiteBuilder"> {
+        Pick<MailerContext, "mailer"> {
     auditLogs: AuditLogsContextValue;
 }
 

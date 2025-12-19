@@ -1,13 +1,13 @@
 import WebinyError from "@webiny/error";
-import { EntryRevisionAfterDeleteHandler } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntryRevision/events.js";
+import { EntryRevisionAfterDeleteHandler } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntryRevision/index.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
-import type { AuditLogsContext } from "~/types.js";
+import { AuditLogsContext } from "~/abstractions.js";
 
-export class AuditLogEntryRevisionAfterDeleteHandler
+class AuditLogEntryRevisionAfterDeleteHandlerImpl
     implements EntryRevisionAfterDeleteHandler.Interface
 {
-    constructor(private context: AuditLogsContext) {}
+    constructor(private context: AuditLogsContext.Interface) {}
 
     async handle(event: EntryRevisionAfterDeleteHandler.Event): Promise<void> {
         const { model, entry } = event.payload;
@@ -28,3 +28,9 @@ export class AuditLogEntryRevisionAfterDeleteHandler
         }
     }
 }
+
+export const AuditLogEntryRevisionAfterDeleteHandler =
+    EntryRevisionAfterDeleteHandler.createImplementation({
+        implementation: AuditLogEntryRevisionAfterDeleteHandlerImpl,
+        dependencies: [AuditLogsContext]
+    });

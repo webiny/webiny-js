@@ -1,19 +1,5 @@
 import WebinyError from "@webiny/error";
-import type {
-    CmsContext,
-    CmsGroup,
-    CmsGroupContext,
-    OnGroupAfterCreateTopicParams,
-    OnGroupAfterDeleteTopicParams,
-    OnGroupAfterUpdateTopicParams,
-    OnGroupBeforeCreateTopicParams,
-    OnGroupBeforeDeleteTopicParams,
-    OnGroupBeforeUpdateTopicParams,
-    OnGroupCreateErrorTopicParams,
-    OnGroupDeleteErrorTopicParams,
-    OnGroupUpdateErrorTopicParams
-} from "~/types/index.js";
-import { createTopic } from "@webiny/pubsub";
+import type { CmsContext, CmsGroup, CmsGroupContext } from "~/types/index.js";
 import { createMemoryCache } from "~/utils/index.js";
 import { GetGroupUseCase } from "~/features/contentModelGroup/GetGroup/index.js";
 import { ListGroupsUseCase } from "~/features/contentModelGroup/ListGroups/index.js";
@@ -36,28 +22,6 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
         listDatabaseGroupsCache.clear();
         listFilteredDatabaseGroupsCache.clear();
     };
-
-    /**
-     * Create
-     */
-    const onGroupBeforeCreate =
-        createTopic<OnGroupBeforeCreateTopicParams>("cms.onGroupBeforeCreate");
-    const onGroupAfterCreate = createTopic<OnGroupAfterCreateTopicParams>("cms.onGroupAfterCreate");
-    const onGroupCreateError = createTopic<OnGroupCreateErrorTopicParams>("cms.onGroupCreateError");
-    /**
-     * Update
-     */
-    const onGroupBeforeUpdate =
-        createTopic<OnGroupBeforeUpdateTopicParams>("cms.onGroupBeforeUpdate");
-    const onGroupAfterUpdate = createTopic<OnGroupAfterUpdateTopicParams>("cms.onGroupAfterUpdate");
-    const onGroupUpdateError = createTopic<OnGroupUpdateErrorTopicParams>("cms.onGroupUpdateError");
-    /**
-     * Delete
-     */
-    const onGroupBeforeDelete =
-        createTopic<OnGroupBeforeDeleteTopicParams>("cms.onGroupBeforeDelete");
-    const onGroupAfterDelete = createTopic<OnGroupAfterDeleteTopicParams>("cms.onGroupAfterDelete");
-    const onGroupDeleteError = createTopic<OnGroupDeleteErrorTopicParams>("cms.onGroupDeleteError");
 
     /**
      * CRUD Methods
@@ -122,15 +86,6 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
     };
 
     return {
-        onGroupBeforeCreate,
-        onGroupAfterCreate,
-        onGroupCreateError,
-        onGroupBeforeUpdate,
-        onGroupAfterUpdate,
-        onGroupUpdateError,
-        onGroupBeforeDelete,
-        onGroupAfterDelete,
-        onGroupDeleteError,
         clearGroupsCache,
         getGroup: async id => {
             return context.benchmark.measure("headlessCms.crud.groups.getGroup", async () => {

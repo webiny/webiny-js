@@ -4,21 +4,8 @@ import type {
     CmsModel,
     CmsModelContext,
     CmsModelFieldToGraphQLPlugin,
-    ICmsModelListParams,
-    OnModelAfterCreateFromTopicParams,
-    OnModelAfterCreateTopicParams,
-    OnModelAfterDeleteTopicParams,
-    OnModelAfterUpdateTopicParams,
-    OnModelBeforeCreateFromTopicParams,
-    OnModelBeforeCreateTopicParams,
-    OnModelBeforeDeleteTopicParams,
-    OnModelBeforeUpdateTopicParams,
-    OnModelCreateErrorTopicParams,
-    OnModelCreateFromErrorParams,
-    OnModelDeleteErrorTopicParams,
-    OnModelUpdateErrorTopicParams
+    ICmsModelListParams
 } from "~/types/index.js";
-import { createTopic } from "@webiny/pubsub";
 import { CreateModelUseCase } from "~/features/contentModel/CreateModel/index.js";
 import { CreateModelFromUseCase } from "~/features/contentModel/CreateModelFrom/index.js";
 import { UpdateModelUseCase } from "~/features/contentModel/UpdateModel/index.js";
@@ -90,40 +77,6 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
     };
 
     /**
-     * Create
-     */
-    const onModelBeforeCreate =
-        createTopic<OnModelBeforeCreateTopicParams>("cms.onModelBeforeCreate");
-    const onModelAfterCreate = createTopic<OnModelAfterCreateTopicParams>("cms.onModelAfterCreate");
-    const onModelCreateError = createTopic<OnModelCreateErrorTopicParams>("cms.onModelCreateError");
-    /**
-     * Create from / clone
-     */
-    const onModelBeforeCreateFrom = createTopic<OnModelBeforeCreateFromTopicParams>(
-        "cms.onModelBeforeCreateFrom"
-    );
-    const onModelAfterCreateFrom = createTopic<OnModelAfterCreateFromTopicParams>(
-        "cms.onModelAfterCreateFrom"
-    );
-    const onModelCreateFromError = createTopic<OnModelCreateFromErrorParams>(
-        "cms.onModelCreateFromError"
-    );
-    /**
-     * Update
-     */
-    const onModelBeforeUpdate =
-        createTopic<OnModelBeforeUpdateTopicParams>("cms.onModelBeforeUpdate");
-    const onModelAfterUpdate = createTopic<OnModelAfterUpdateTopicParams>("cms.onModelAfterUpdate");
-    const onModelUpdateError = createTopic<OnModelUpdateErrorTopicParams>("cms.onModelUpdateError");
-    /**
-     * Delete
-     */
-    const onModelBeforeDelete =
-        createTopic<OnModelBeforeDeleteTopicParams>("cms.onModelBeforeDelete");
-    const onModelAfterDelete = createTopic<OnModelAfterDeleteTopicParams>("cms.onModelAfterDelete");
-    const onModelDeleteError = createTopic<OnModelDeleteErrorTopicParams>("cms.onModelDeleteError");
-
-    /**
      * CRUD methods
      */
     const createModel: CmsModelContext["createModel"] = async input => {
@@ -171,18 +124,6 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
     };
 
     return {
-        onModelBeforeCreate,
-        onModelAfterCreate,
-        onModelCreateError,
-        onModelBeforeCreateFrom,
-        onModelAfterCreateFrom,
-        onModelCreateFromError,
-        onModelBeforeUpdate,
-        onModelAfterUpdate,
-        onModelUpdateError,
-        onModelBeforeDelete,
-        onModelAfterDelete,
-        onModelDeleteError,
         clearModelsCache,
         getModel,
         getModelToAstConverter,
