@@ -1,5 +1,5 @@
 import type { Topic } from "@webiny/pubsub/types.js";
-import { CreateRevision } from "./CreateRevision.js";
+import { CreateRedirect } from "./CreateRedirect.js";
 import { CreateRedirectWithEvents } from "./CreateRedirectWithEvents.js";
 import type {
     OnRedirectAfterCreateTopicParams,
@@ -18,7 +18,7 @@ interface CreateRedirectUseCasesParams {
 }
 
 export const getCreateRedirectUseCase = (params: CreateRedirectUseCasesParams) => {
-    const createRedirect = new CreateRevision(params.createOperation);
+    const createRedirect = new CreateRedirect(params.createOperation);
     const createRedirectUseCase = new CreateRedirectWithEvents(params.topics, createRedirect);
 
     return {

@@ -5,31 +5,24 @@ import {
 } from "@webiny/api-core/features/EventPublisher";
 import { UpdatePageUseCase as UseCaseAbstraction, UpdatePageRepository } from "./abstractions.js";
 import { PageBeforeUpdateEvent, PageAfterUpdateEvent } from "./events.js";
-import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
-import { PageModel } from "~/domain/page/abstractions.js";
-import { EntryToPageMapper } from "~/domain/page/EntryToPageMapper.js";
-import { PageNotFoundError, PagePersistenceError } from "~/domain/page/errors.js";
+import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
 
 class UpdatePageUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private eventPublisher: EventPublisherAbstraction.Interface,
-        private getEntryById: GetEntryByIdUseCase.Interface,
-        private pageModel: PageModel.Interface,
+        private getPageById: GetPageByIdUseCase.Interface,
         private repository: UpdatePageRepository.Interface
     ) {}
 
     async execute(id: string, data: UseCaseAbstraction.UpdateData): UseCaseAbstraction.Return {
         // Get the original page for events
-        const getResult = await this.getEntryById.execute(this.pageModel, id);
+        const getResult = await this.getPageById.execute(id);
 
         if (getResult.isFail()) {
-            if (getResult.error.code === "Cms/Entry/NotFound") {
-                return Result.fail(new PageNotFoundError(id));
-            }
-            return Result.fail(new PagePersistenceError(getResult.error));
+            return getResult;
         }
 
-        const original = EntryToPageMapper.toPage(getResult.value);
+        const original = getResult.value;
 
         // Publish before update event
         const beforeEvent = new PageBeforeUpdateEvent({
@@ -61,5 +54,5 @@ class UpdatePageUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const UpdatePageUseCase = UseCaseAbstraction.createImplementation({
     implementation: UpdatePageUseCaseImpl,
-    dependencies: [EventPublisher, GetEntryByIdUseCase, PageModel, UpdatePageRepository]
+    dependencies: [EventPublisher, GetPageByIdUseCase, UpdatePageRepository]
 });

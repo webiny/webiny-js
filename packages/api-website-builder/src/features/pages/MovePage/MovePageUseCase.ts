@@ -3,43 +3,46 @@ import {
     EventPublisher,
     EventPublisher as EventPublisherAbstraction
 } from "@webiny/api-core/features/EventPublisher";
-import { PublishPageUseCase as UseCaseAbstraction, PublishPageRepository } from "./abstractions.js";
-import { PageBeforePublishEvent, PageAfterPublishEvent } from "./events.js";
+import { MovePageUseCase as UseCaseAbstraction, MovePageRepository } from "./abstractions.js";
+import { PageBeforeMoveEvent, PageAfterMoveEvent } from "./events.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
 
-class PublishPageUseCaseImpl implements UseCaseAbstraction.Interface {
+class MovePageUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private eventPublisher: EventPublisherAbstraction.Interface,
         private getPageById: GetPageByIdUseCase.Interface,
-        private repository: PublishPageRepository.Interface
+        private repository: MovePageRepository.Interface
     ) {}
 
     async execute(params: UseCaseAbstraction.Params): UseCaseAbstraction.Return {
-        // Get the page first for the before event
+        // Get the original page for events
         const getResult = await this.getPageById.execute(params.id);
 
         if (getResult.isFail()) {
             return getResult;
         }
 
-        const page = getResult.value;
+        const original = getResult.value;
 
-        // Publish before publish event
-        const beforeEvent = new PageBeforePublishEvent({
-            page
+        // Publish before move event
+        const beforeEvent = new PageBeforeMoveEvent({
+            original,
+            input: params
         });
 
         await this.eventPublisher.publish(beforeEvent);
 
-        // Execute the publish operation
+        // Execute the move operation
         const result = await this.repository.execute(params);
 
         if (result.isFail()) {
             return result;
         }
 
-        // Publish after publish event
-        const afterEvent = new PageAfterPublishEvent({
+        // Publish after move event
+        const afterEvent = new PageAfterMoveEvent({
+            original,
+            input: params,
             page: result.value
         });
 
@@ -49,8 +52,8 @@ class PublishPageUseCaseImpl implements UseCaseAbstraction.Interface {
     }
 }
 
-export const PublishPageUseCase = createImplementation({
+export const MovePageUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
-    implementation: PublishPageUseCaseImpl,
-    dependencies: [EventPublisher, GetPageByIdUseCase, PublishPageRepository]
+    implementation: MovePageUseCaseImpl,
+    dependencies: [EventPublisher, GetPageByIdUseCase, MovePageRepository]
 });

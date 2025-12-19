@@ -8,31 +8,24 @@ import {
     UnpublishPageRepository
 } from "./abstractions.js";
 import { PageBeforeUnpublishEvent, PageAfterUnpublishEvent } from "./events.js";
-import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
-import { PageModel } from "~/domain/page/abstractions.js";
-import { EntryToPageMapper } from "~/domain/page/EntryToPageMapper.js";
-import { PageNotFoundError, PagePersistenceError } from "~/domain/page/errors.js";
+import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
 
 class UnpublishPageUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private eventPublisher: EventPublisherAbstraction.Interface,
-        private getEntryById: GetEntryByIdUseCase.Interface,
-        private pageModel: PageModel.Interface,
+        private getPageById: GetPageByIdUseCase.Interface,
         private repository: UnpublishPageRepository.Interface
     ) {}
 
     async execute(params: UseCaseAbstraction.Params): UseCaseAbstraction.Return {
         // Get the page first for the before event
-        const getResult = await this.getEntryById.execute(this.pageModel, params.id);
+        const getResult = await this.getPageById.execute(params.id);
 
         if (getResult.isFail()) {
-            if (getResult.error.code === "Cms/Entry/NotFound") {
-                return Result.fail(new PageNotFoundError(params.id));
-            }
-            return Result.fail(new PagePersistenceError(getResult.error));
+            return getResult;
         }
 
-        const page = EntryToPageMapper.toPage(getResult.value);
+        const page = getResult.value;
 
         // Publish before unpublish event
         const beforeEvent = new PageBeforeUnpublishEvent({
@@ -61,5 +54,5 @@ class UnpublishPageUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const UnpublishPageUseCase = UseCaseAbstraction.createImplementation({
     implementation: UnpublishPageUseCaseImpl,
-    dependencies: [EventPublisher, GetEntryByIdUseCase, PageModel, UnpublishPageRepository]
+    dependencies: [EventPublisher, GetPageByIdUseCase, UnpublishPageRepository]
 });

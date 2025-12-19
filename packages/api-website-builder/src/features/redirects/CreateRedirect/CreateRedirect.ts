@@ -4,7 +4,7 @@ import type {
     WbRedirectsStorageOperations
 } from "~/context/redirects/redirects.types.js";
 
-export class CreateRevision implements ICreateRedirect {
+export class CreateRedirect implements ICreateRedirect {
     private readonly createOperation: WbRedirectsStorageOperations["create"];
 
     constructor(createOperation: WbRedirectsStorageOperations["create"]) {
