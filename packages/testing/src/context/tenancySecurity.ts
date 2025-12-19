@@ -1,12 +1,12 @@
 import type { Plugin } from "@webiny/plugins";
 import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
-import type { Context } from "~/types.js";
 import { createSecurityRolePlugin } from "@webiny/api-core/legacy/security/plugins/SecurityRolePlugin.js";
 import { createSecurityTeamPlugin } from "@webiny/api-core/legacy/security/plugins/SecurityTeamPlugin";
 import { IdentityData } from "@webiny/api-core/features/IdentityContext";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 
 interface Config {
     setupGraphQL?: boolean;
@@ -38,12 +38,12 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config): Plu
             description: "Full access",
             roles: ["full-access"]
         }),
-        new ContextPlugin<Context>(async context => {
+        new ContextPlugin<ApiCoreContext>(async context => {
             context.adminUsers.listUserTeams = async () => {
                 return await context.security.listTeams();
             };
         }),
-        new ContextPlugin<Context>(async context => {
+        new ContextPlugin<ApiCoreContext>(async context => {
             await context.tenancy.createTenant({
                 id: "root",
                 name: "Root",
@@ -76,7 +76,7 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config): Plu
                 tags: []
             });
         }),
-        new ContextPlugin<Context>(async context => {
+        new ContextPlugin<ApiCoreContext>(async context => {
             context.tenancy.setCurrentTenant({
                 id: "root",
                 name: "Root"
@@ -98,7 +98,7 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config): Plu
                 return permissions || [{ name: "*" }];
             });
         }),
-        new BeforeHandlerPlugin<Context>(context => {
+        new BeforeHandlerPlugin<ApiCoreContext>(context => {
             const { headers = {} } = context.request || {};
             if (headers["authorization"]) {
                 return context.security.authenticate(headers["authorization"]);
