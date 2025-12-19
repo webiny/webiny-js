@@ -23,6 +23,7 @@ export const GetPageRevisionsRepository = createAbstraction<IGetPageRevisionsRep
 export namespace GetPageRevisionsRepository {
     export type Interface = IGetPageRevisionsRepository;
     export type Error = RepositoryError;
+    export type Return = Promise<Result<WbPage[], RepositoryError>>;
 }
 
 /**
@@ -44,4 +45,5 @@ export const GetPageRevisionsUseCase =
 export namespace GetPageRevisionsUseCase {
     export type Interface = IGetPageRevisionsUseCase;
     export type Error = UseCaseError;
+    export type Return = Promise<Result<WbPage[], UseCaseError>>;
 }

@@ -1,10 +1,5 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type {
-    CmsModel,
-    IEntryState,
-    CmsEntryListSort,
-    CmsEntryListWhere
-} from "@webiny/api-headless-cms/types/index.js";
+import type { CmsModel, IEntryState } from "@webiny/api-headless-cms/types/index.js";
 import type { WbIdentity, WbLocation } from "~/domain/shared/abstractions.js";
 
 export interface WbPage {
@@ -28,20 +23,6 @@ export interface WbPage {
     bindings: Record<string, any>;
     elements: Record<string, any>;
     extensions?: Record<string, any>;
-}
-
-export interface ListPagesParams {
-    where: CmsEntryListWhere;
-    sort: CmsEntryListSort;
-    limit: number;
-    after: string | null;
-    search?: string;
-}
-
-export interface ListPagesMeta {
-    hasMoreItems: boolean;
-    totalCount: number;
-    cursor: string | null;
 }
 
 /**

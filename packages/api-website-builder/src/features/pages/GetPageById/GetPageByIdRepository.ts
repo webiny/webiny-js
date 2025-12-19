@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { GetPageByIdRepository as RepositoryAbstraction } from "./abstractions.js";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
-import { PageModel, type WbPage } from "~/domain/page/abstractions.js";
+import { PageModel } from "~/domain/page/abstractions.js";
 import { PageNotFoundError, PagePersistenceError } from "~/domain/page/errors.js";
 import { EntryToPageMapper } from "~/domain/page/EntryToPageMapper.js";
 
@@ -11,7 +11,7 @@ class GetPageByIdRepositoryImpl implements RepositoryAbstraction.Interface {
         private getEntryById: GetEntryByIdUseCase.Interface
     ) {}
 
-    async execute(id: string): Promise<Result<WbPage, RepositoryAbstraction.Error>> {
+    async execute(id: string): RepositoryAbstraction.Return {
         const result = await this.getEntryById.execute(this.pageModel, id);
 
         if (result.isFail()) {

@@ -2,15 +2,23 @@ import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { IEventHandler } from "@webiny/api-core/features/EventPublisher";
 import type { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import type { WbPage } from "~/domain/page/abstractions.js";
-import type { CreateWbPageData } from "~/context/pages/pages.types.js";
 import { PagePersistenceError, PageValidationError } from "~/domain/page/errors.js";
+
+// ============================================================================
+// Type Definitions
+// ============================================================================
+
+export type ICreateWbPageParams = Pick<
+    WbPage,
+    "properties" | "metadata" | "bindings" | "elements" | "location" | "extensions"
+>;
 
 // ============================================================================
 // Repository Abstraction
 // ============================================================================
 
 export interface ICreatePageRepository {
-    execute(data: CreateWbPageData): Promise<Result<WbPage, RepositoryError>>;
+    execute(data: ICreateWbPageParams): Promise<Result<WbPage, RepositoryError>>;
 }
 
 export interface ICreatePageRepositoryErrors {
@@ -25,6 +33,8 @@ export const CreatePageRepository =
 
 export namespace CreatePageRepository {
     export type Interface = ICreatePageRepository;
+    export type Params = ICreateWbPageParams;
+    export type Return = Promise<Result<WbPage, RepositoryError>>;
     export type Error = RepositoryError;
 }
 
@@ -33,7 +43,7 @@ export namespace CreatePageRepository {
 // ============================================================================
 
 export interface ICreatePageUseCase {
-    execute(data: CreateWbPageData): Promise<Result<WbPage, UseCaseError>>;
+    execute(data: ICreateWbPageParams): Promise<Result<WbPage, UseCaseError>>;
 }
 
 export interface ICreatePageUseCaseErrors {
@@ -47,6 +57,7 @@ export const CreatePageUseCase = createAbstraction<ICreatePageUseCase>("CreatePa
 
 export namespace CreatePageUseCase {
     export type Interface = ICreatePageUseCase;
+    export type Params = ICreateWbPageParams;
     export type Return = Promise<Result<WbPage, UseCaseError>>;
     export type Error = UseCaseError;
 }
@@ -56,7 +67,7 @@ export namespace CreatePageUseCase {
 // ============================================================================
 
 export interface PageBeforeCreatePayload {
-    input: CreateWbPageData;
+    input: ICreateWbPageParams;
 }
 
 export interface PageAfterCreatePayload {

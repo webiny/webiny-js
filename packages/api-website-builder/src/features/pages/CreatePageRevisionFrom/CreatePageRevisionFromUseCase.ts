@@ -9,7 +9,6 @@ import {
 } from "./abstractions.js";
 import { PageBeforeCreateRevisionFromEvent, PageAfterCreateRevisionFromEvent } from "./events.js";
 import type { WbPage } from "~/domain/page/abstractions.js";
-import type { CreateWbPageRevisionFromParams } from "~/context/pages/pages.types.js";
 
 class CreatePageRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
@@ -17,9 +16,7 @@ class CreatePageRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface 
         private repository: CreatePageRevisionFromRepository.Interface
     ) {}
 
-    async execute(
-        params: CreateWbPageRevisionFromParams
-    ): Promise<Result<WbPage, UseCaseAbstraction.Error>> {
+    async execute(params: CreatePageRevisionFromRepository.Params): UseCaseAbstraction.Return {
         // Publish before event
         const beforeEvent = new PageBeforeCreateRevisionFromEvent({
             params

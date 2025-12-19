@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
-import type { WbPage } from "~/context/pages/pages.types.js";
+import type { WbPage } from "~/domain/page/abstractions.js";
 import type { PageNotFoundError, PagePersistenceError } from "~/domain/page/errors.js";
 
 /**
@@ -23,6 +23,7 @@ export const GetPageByIdRepository =
 export namespace GetPageByIdRepository {
     export type Interface = IGetPageByIdRepository;
     export type Error = RepositoryError;
+    export type Return = Promise<Result<WbPage, RepositoryError>>;
 }
 
 /**
@@ -43,5 +44,6 @@ export const GetPageByIdUseCase = createAbstraction<IGetPageByIdUseCase>("GetPag
 
 export namespace GetPageByIdUseCase {
     export type Interface = IGetPageByIdUseCase;
+    export type Return = Promise<Result<WbPage, UseCaseError>>;
     export type Error = UseCaseError;
 }

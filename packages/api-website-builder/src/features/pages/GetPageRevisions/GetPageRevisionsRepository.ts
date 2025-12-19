@@ -2,7 +2,6 @@ import { Result } from "@webiny/feature/api";
 import { GetRevisionsByEntryIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetRevisionsByEntryId/index.js";
 import { GetPageRevisionsRepository as RepositoryAbstraction } from "./abstractions.js";
 import { PageModel } from "~/domain/page/abstractions.js";
-import type { WbPage } from "~/domain/page/abstractions.js";
 import { EntryToPageMapper } from "~/domain/page/EntryToPageMapper.js";
 import { PagePersistenceError } from "~/domain/page/errors.js";
 
@@ -12,7 +11,7 @@ class GetPageRevisionsRepositoryImpl implements RepositoryAbstraction.Interface 
         private getEntryRevisions: GetRevisionsByEntryIdUseCase.Interface
     ) {}
 
-    async execute(entryId: string): Promise<Result<WbPage[], RepositoryAbstraction.Error>> {
+    async execute(entryId: string): RepositoryAbstraction.Return {
         const result = await this.getEntryRevisions.execute(this.pageModel, entryId);
 
         if (result.isFail()) {

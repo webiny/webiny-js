@@ -1,17 +1,9 @@
-import { Result } from "@webiny/feature/api";
-import {
-    ListPagesUseCase as UseCaseAbstraction,
-    ListPagesRepository,
-    type ListPagesResult
-} from "./abstractions.js";
-import type { ListPagesParams } from "~/domain/page/abstractions.js";
+import { ListPagesUseCase as UseCaseAbstraction, ListPagesRepository } from "./abstractions.js";
 
 class ListPagesUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(private repository: ListPagesRepository.Interface) {}
 
-    async execute(
-        params: ListPagesParams
-    ): Promise<Result<ListPagesResult, UseCaseAbstraction.Error>> {
+    execute(params: UseCaseAbstraction.Params): UseCaseAbstraction.Return {
         return this.repository.execute(params);
     }
 }

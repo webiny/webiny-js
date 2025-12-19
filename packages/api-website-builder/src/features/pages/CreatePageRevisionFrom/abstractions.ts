@@ -2,7 +2,6 @@ import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { IEventHandler } from "@webiny/api-core/features/EventPublisher";
 import type { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import type { WbPage } from "~/domain/page/abstractions.js";
-import type { CreateWbPageRevisionFromParams } from "~/context/pages/pages.types.js";
 import {
     PageNotFoundError,
     PagePersistenceError,
@@ -10,16 +9,24 @@ import {
 } from "~/domain/page/errors.js";
 
 // ============================================================================
+// Type Definitions
+// ============================================================================
+
+export interface ICreateWbPageRevisionFromParams {
+    id: string;
+}
+
+// ============================================================================
 // Repository Abstraction
 // ============================================================================
 
 export interface ICreatePageRevisionFromRepository {
-    execute(params: CreateWbPageRevisionFromParams): Promise<Result<WbPage, RepositoryError>>;
+    execute(params: ICreateWbPageRevisionFromParams): Promise<Result<WbPage, RepositoryError>>;
 }
 
 export interface ICreatePageRevisionFromRepositoryErrors {
-    notFound: PageNotFoundError;
     validation: PageValidationError;
+    notFound: PageNotFoundError;
     persistence: PagePersistenceError;
 }
 
@@ -31,6 +38,8 @@ export const CreatePageRevisionFromRepository =
 
 export namespace CreatePageRevisionFromRepository {
     export type Interface = ICreatePageRevisionFromRepository;
+    export type Params = ICreateWbPageRevisionFromParams;
+    export type Return = Promise<Result<WbPage, RepositoryError>>;
     export type Error = RepositoryError;
 }
 
@@ -39,12 +48,12 @@ export namespace CreatePageRevisionFromRepository {
 // ============================================================================
 
 export interface ICreatePageRevisionFromUseCase {
-    execute(params: CreateWbPageRevisionFromParams): Promise<Result<WbPage, UseCaseError>>;
+    execute(params: ICreateWbPageRevisionFromParams): Promise<Result<WbPage, UseCaseError>>;
 }
 
 export interface ICreatePageRevisionFromUseCaseErrors {
-    notFound: PageNotFoundError;
     validation: PageValidationError;
+    notFound: PageNotFoundError;
     persistence: PagePersistenceError;
 }
 
@@ -66,7 +75,7 @@ export namespace CreatePageRevisionFromUseCase {
 // ============================================================================
 
 export interface PageBeforeCreateRevisionFromPayload {
-    params: CreateWbPageRevisionFromParams;
+    params: ICreateWbPageRevisionFromParams;
 }
 
 export interface PageAfterCreateRevisionFromPayload {

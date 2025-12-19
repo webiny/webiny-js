@@ -1,11 +1,9 @@
-import { Result } from "@webiny/feature/api";
 import { GetPageByIdUseCase as UseCaseAbstraction, GetPageByIdRepository } from "./abstractions.js";
-import type { WbPage } from "~/domain/page/abstractions.js";
 
 class GetPageByIdUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(private repository: GetPageByIdRepository.Interface) {}
 
-    async execute(id: string): Promise<Result<WbPage, UseCaseAbstraction.Error>> {
+    async execute(id: string): UseCaseAbstraction.Return {
         return this.repository.execute(id);
     }
 }

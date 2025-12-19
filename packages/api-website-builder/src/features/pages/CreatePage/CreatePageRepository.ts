@@ -1,12 +1,10 @@
 import { Result } from "@webiny/feature/api";
+import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry";
 import {
     CreatePageRepository as RepositoryAbstraction,
     type ICreatePageRepository
 } from "./abstractions.js";
-import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry";
 import { PageModel } from "~/domain/page/abstractions.js";
-import type { WbPage } from "~/domain/page/abstractions.js";
-import type { CreateWbPageData } from "~/context/pages/pages.types.js";
 import { EntryToPageMapper } from "~/domain/page/EntryToPageMapper.js";
 import { PagePersistenceError, PageValidationError } from "~/domain/page/errors.js";
 
@@ -16,7 +14,7 @@ class CreatePageRepositoryImpl implements ICreatePageRepository {
         private pageModel: PageModel.Interface
     ) {}
 
-    async execute(data: CreateWbPageData): Promise<Result<WbPage, RepositoryAbstraction.Error>> {
+    async execute(data: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
         // Create the entry using CMS CreateEntry use case
         const result = await this.createEntry.execute(this.pageModel, data);
 

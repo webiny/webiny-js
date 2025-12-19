@@ -23,6 +23,7 @@ export const GetPageByPathRepository =
 export namespace GetPageByPathRepository {
     export type Interface = IGetPageByPathRepository;
     export type Error = RepositoryError;
+    export type Return = Promise<Result<WbPage, RepositoryError>>;
 }
 
 /**
@@ -45,4 +46,5 @@ export const GetPageByPathUseCase =
 export namespace GetPageByPathUseCase {
     export type Interface = IGetPageByPathUseCase;
     export type Error = UseCaseError;
+    export type Return = Promise<Result<WbPage, UseCaseError>>;
 }
