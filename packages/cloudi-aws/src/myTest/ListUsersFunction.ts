@@ -3,7 +3,7 @@ import {
     ApiGatewayFunction,
     type APIGatewayEvent,
     type APIGatewayProxyResult
-} from "@cloudi/aws";
+} from "../index.js";
 import type { UserService } from "~/abstractions";
 import type { LoggerService } from "~/abstractions";
 

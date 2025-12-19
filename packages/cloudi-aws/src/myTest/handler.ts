@@ -1,10 +1,10 @@
 // handler.ts
-import { createFunction } from "@cloudi/aws";
-import { ListUsersFunction } from "~/features/ListUsersFunction";
+import { createFunction } from "../createFunction.js";
+import { ListUsersFunction } from "./ListUsersFunction";
 import { ConsoleLogger, DynamoDbUserService } from "~/services";
 
 // Handler automatically detects event type and executes the right function!
-export const handler = createFunction(async (container) => {
+export const handler = createFunction( (container) => {
     // Register services
     container.register(ConsoleLogger).inSingletonScope();
     container.register(DynamoDbUserService).inSingletonScope();

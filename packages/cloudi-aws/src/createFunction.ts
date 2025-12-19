@@ -18,49 +18,6 @@ export interface FunctionImplementation {
     canUse: (event: any) => boolean;
 }
 
-/**
- * Create a DI-enabled cloud function that auto-detects the handler based on event type
- *
- * @param setup - Composition root where you register implementations using container.register()
- *
- * @example
- * ```ts
- * // 1. Create implementations
- * export class ListUsersFunctionImpl implements ApiGatewayFunction.Interface {
- *   constructor(private userService: UserService.Interface) {}
- *   async execute(event: APIGatewayEvent): Promise<APIGatewayProxyResult> { }
- * }
- *
- * export const ListUsersFunction = ApiGatewayFunction.createImplementation({
- *   implementation: ListUsersFunctionImpl,
- *   dependencies: [UserService]
- * });
- *
- * export class ProcessOrderFunctionImpl implements SnsFunction.Interface {
- *   constructor(private orderService: OrderService.Interface) {}
- *   async execute(event: SNSEvent): Promise<SnsResult> { }
- * }
- *
- * export const ProcessOrderFunction = SnsFunction.createImplementation({
- *   implementation: ProcessOrderFunctionImpl,
- *   dependencies: [OrderService]
- * });
- *
- * // 2. Register all handlers in one Lambda
- * export const handler = createFunction(async (container) => {
- *   // Register services
- *   container.register(UserService).inSingletonScope();
- *   container.register(OrderService).inSingletonScope();
- *
- *   // Register multiple function implementations
- *   container.register(ListUsersFunction).inSingletonScope();
- *   container.register(ProcessOrderFunction).inSingletonScope();
- * });
- *
- * // The handler will automatically execute the right implementation
- * // based on the AWS event type (API Gateway, SNS, S3, etc.)
- * ```
- */
 export function createFunction(setup: FunctionSetup) {
     let container: Container | null = null;
     let registeredImplementations: FunctionImplementation[] = [];
