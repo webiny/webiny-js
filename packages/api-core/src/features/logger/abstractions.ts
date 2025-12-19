@@ -18,4 +18,3 @@ export const Logger = createAbstraction<ILogger>("Logger");
 export namespace Logger {
     export type Interface = ILogger;
 }
-
