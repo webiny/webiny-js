@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { makeDecoratable } from "@webiny/app-admin";
 import type { CmsDynamicZoneTemplate } from "~/types.js";
 import { TemplateIcon } from "~/admin/plugins/fieldRenderers/dynamicZone/TemplateIcon.js";
-import { Text } from "@webiny/admin-ui";
+import { Text, Button } from "@webiny/admin-ui";
 
 export interface TemplateCardProps {
     template: CmsDynamicZoneTemplate;
@@ -12,12 +12,16 @@ export interface TemplateCardProps {
 export const TemplateItem = makeDecoratable(
     "TemplateItem",
     ({ template, onTemplate }: TemplateCardProps) => {
+        const [isHovered, setIsHovered] = useState(false);
+
         return (
             // <DialogClose asChild>
             <div
                 onClick={() => onTemplate(template)}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
                 className={
-                    "flex flex-col justify-between bg-neutral-base shadow-sm overflow-hidden rounded-lg w-[173px] border-neutral-dimmed-darker border-sm"
+                    "flex flex-col justify-between bg-neutral-base overflow-hidden rounded-lg w-[173px] relative cursor-pointer"
                 }
             >
                 <div>
@@ -26,7 +30,7 @@ export const TemplateItem = makeDecoratable(
                             "flex items-center justify-center h-[117px] w-full bg-neutral-dimmed"
                         }
                     >
-                        <TemplateIcon icon={template.icon} style={{width: 40, height: 40}} />
+                        <TemplateIcon icon={template.icon} style={{ width: 40, height: 40 }} />
                     </div>
                     <div className={"py-sm-extra px-md"}>
                         <Text size={"md"} className={"mb-xs text-neutral-primary font-semibold"}>
@@ -37,6 +41,12 @@ export const TemplateItem = makeDecoratable(
                         </Text>
                     </div>
                 </div>
+
+                {isHovered && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-white/80">
+                        <Button variant="primary">Insert</Button>
+                    </div>
+                )}
             </div>
         );
     }
