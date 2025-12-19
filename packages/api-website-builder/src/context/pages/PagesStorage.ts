@@ -142,13 +142,14 @@ export class PagesStorage implements WbPagesStorageOperations {
             createdBy: entry.createdBy,
             savedOn: entry.savedOn,
             savedBy: entry.savedBy,
-            modifiedOn: entry.modifiedOn,
-            modifiedBy: entry.modifiedBy,
+            modifiedOn: entry.modifiedOn ?? null,
+            modifiedBy: entry.modifiedBy ?? null,
             locked: entry.locked,
             tenant: entry.tenant,
             // TODO figure out if we should make mapper extendable so Pages do not know about states?
             state: entry.state,
-            ...entry.values
+            ...entry.values,
+            extensions: entry.values.extensions ?? {},
         } as WbPage;
     }
 }
