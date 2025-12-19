@@ -5,6 +5,7 @@ import type { WbRedirectCrud } from "./redirects/redirects.types.js";
 import { PagesContext } from "./pages/pages.context.js";
 import { RedirectsContext } from "~/context/redirects/redirects.context.js";
 import { InvalidateRedirectsCache } from "~/features/redirects/index.js";
+import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 
 export class WebsiteBuilder {
     private readonly context: WebsiteBuilderContext;
@@ -46,7 +47,8 @@ export class WebsiteBuilder {
     }
 
     private async invalidateCache() {
-        const invalidateRedirectsCache = new InvalidateRedirectsCache(this.context.tasks);
+        const taskService = this.context.container.resolve(TaskService);
+        const invalidateRedirectsCache = new InvalidateRedirectsCache(taskService);
         await invalidateRedirectsCache.execute();
     }
 

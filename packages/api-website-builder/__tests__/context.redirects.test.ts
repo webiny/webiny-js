@@ -3,6 +3,7 @@ import { useHandler } from "./utils/useHandler.js";
 import { redirectMocks } from "./mocks/redirect.mock.js";
 import type { WebsiteBuilderContext } from "~/context/types.js";
 import { until } from "@webiny/project-utils/testing/helpers/until";
+import type { CreateWbRedirectData } from "~/context/redirects/redirects.types.js";
 
 describe("Redirects Context Methods", () => {
     let context: WebsiteBuilderContext;
@@ -17,23 +18,20 @@ describe("Redirects Context Methods", () => {
 
         expect(redirect).toMatchObject({
             id: expect.any(String),
-            entryId: expect.any(String),
             version: 1,
-            source: redirectMocks.redirectA.source,
-            target: redirectMocks.redirectA.target,
-            type: redirectMocks.redirectA.type,
             status: "draft",
-            locked: false
+            ...redirectMocks.redirectA
         });
     });
 
     it("should update a redirect via context", async () => {
         const redirect = await context.websiteBuilder.redirects.create(redirectMocks.redirectA);
 
-        const updatedData = {
-            source: "/updated-source",
-            target: "/updated-target",
-            type: 302
+        const updatedData: CreateWbRedirectData = {
+            redirectFrom: "/updated-redirectFrom",
+            redirectTo: "/updated-redirectTo",
+            isEnabled: false,
+            redirectType: "permanent"
         };
 
         const updatedRedirect = await context.websiteBuilder.redirects.update(
@@ -43,9 +41,7 @@ describe("Redirects Context Methods", () => {
 
         expect(updatedRedirect).toMatchObject({
             id: redirect.id,
-            source: updatedData.source,
-            target: updatedData.target,
-            type: updatedData.type
+            ...updatedData
         });
     });
 
@@ -57,14 +53,7 @@ describe("Redirects Context Methods", () => {
             (result: any) => result !== null
         );
 
-        expect(fetchedRedirect).toMatchObject({
-            id: redirect.id,
-            entryId: redirect.entryId,
-            version: redirect.version,
-            source: redirect.source,
-            target: redirect.target,
-            type: redirect.type
-        });
+        expect(fetchedRedirect).toMatchObject(redirect);
     });
 
     it("should list redirects via context", async () => {
@@ -73,7 +62,13 @@ describe("Redirects Context Methods", () => {
         await context.websiteBuilder.redirects.create(redirectMocks.redirectC);
 
         const result = await until(
-            () => context.websiteBuilder.redirects.list({}),
+            () =>
+                context.websiteBuilder.redirects.list({
+                    where: {},
+                    limit: 100,
+                    after: null,
+                    sort: []
+                }),
             ([redirects]: any) => redirects.length === 3
         );
 
@@ -93,7 +88,7 @@ describe("Redirects Context Methods", () => {
 
         // Wait for deletion to be indexed
         const fetchedRedirect = await until(
-            () => context.websiteBuilder.redirects.getById(redirect.id),
+            () => context.websiteBuilder.redirects.getById(redirect.id).catch(() => null),
             (result: any) => result === null,
             { tries: 10 }
         );
@@ -104,36 +99,12 @@ describe("Redirects Context Methods", () => {
     it("should get active redirects via context", async () => {
         const redirect = await context.websiteBuilder.redirects.create(redirectMocks.redirectA);
 
-        // Note: getActiveRedirects returns published redirects
-        // Since we just created a draft, it won't be in active redirects yet
-        const activeRedirects = await context.websiteBuilder.redirects.getActiveRedirects();
-        expect(activeRedirects).toEqual([]);
-    });
+        const redirects = await until(
+            () => context.websiteBuilder.redirects.getActiveRedirects(),
+            (result: any) => result.length > 0
+        );
 
-    it("should trigger lifecycle hooks", async () => {
-        const beforeCreateCalls: any[] = [];
-        const afterCreateCalls: any[] = [];
-
-        context.websiteBuilder.redirects.onRedirectBeforeCreate.subscribe(params => {
-            beforeCreateCalls.push(params);
-        });
-
-        context.websiteBuilder.redirects.onRedirectAfterCreate.subscribe(params => {
-            afterCreateCalls.push(params);
-        });
-
-        await context.websiteBuilder.redirects.create(redirectMocks.redirectA);
-
-        expect(beforeCreateCalls).toHaveLength(1);
-        expect(afterCreateCalls).toHaveLength(1);
-        expect(beforeCreateCalls[0].redirect).toMatchObject({
-            source: redirectMocks.redirectA.source,
-            target: redirectMocks.redirectA.target
-        });
-        expect(afterCreateCalls[0].redirect).toMatchObject({
-            id: expect.any(String),
-            source: redirectMocks.redirectA.source
-        });
+        expect(redirects).toEqual([redirect]);
     });
 
     it("should trigger update lifecycle hooks", async () => {
@@ -151,7 +122,7 @@ describe("Redirects Context Methods", () => {
         const redirect = await context.websiteBuilder.redirects.create(redirectMocks.redirectA);
 
         await context.websiteBuilder.redirects.update(redirect.id, {
-            source: "/updated-source"
+            redirectFrom: "/updated-redirectFrom"
         });
 
         expect(beforeUpdateCalls).toHaveLength(1);

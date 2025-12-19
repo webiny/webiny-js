@@ -11,14 +11,15 @@ import { getIntrospectionQuery } from "graphql";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
-import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
-import type { FileAliasStorageOperations } from "@webiny/api-file-manager/types.js";
 import { createWbSdk } from "~tests/utils/createWbSdk.js";
+import { createContextPlugin } from "@webiny/api";
+import { InvalidateCloudfrontCacheTaskDefinition } from "@webiny/api-file-manager-s3/features/FlushCache/InvalidateCacheTask.js";
+import { createBackgroundTasks } from "~tests/mocks/mockBackgroundTasks.js";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
@@ -43,7 +44,6 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const { permissions, identity, plugins = [] } = params;
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-    const fileManagerStorage = getStorageOps<FileAliasStorageOperations>("fileManager");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
     const testProjectLicense = params.testProjectLicense || createTestWcpLicense();
@@ -64,10 +64,10 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
                 storageOperations: cmsStorage.storageOperations
             }),
             createHeadlessCmsGraphQL(),
-            createFileManagerContext({
-                fileAliasStorageOperations: fileManagerStorage.storageOperations
+            createBackgroundTasks(),
+            createContextPlugin(context => {
+                context.container.register(InvalidateCloudfrontCacheTaskDefinition);
             }),
-            createFileManagerGraphQL(),
             createWebsiteBuilder(),
             plugins
         ],

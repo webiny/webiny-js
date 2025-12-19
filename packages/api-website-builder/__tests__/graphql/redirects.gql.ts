@@ -1,13 +1,9 @@
 const REDIRECT_DATA_FIELD = /* GraphQL */ `
     {
         id
-        entryId
-        version
-        source
-        target
-        type
-        status
-        locked
+        redirectFrom
+        redirectTo
+        redirectType
         savedOn
         createdOn
     }
@@ -23,7 +19,7 @@ const ERROR_FIELD = /* GraphQL */ `
 
 export const CREATE_REDIRECT = /* GraphQL */ `
     mutation CreateRedirect($data: WbRedirectCreateInput!) {
-        wb {
+        websiteBuilder {
             createRedirect(data: $data) {
                 data ${REDIRECT_DATA_FIELD}
                 error ${ERROR_FIELD}
@@ -34,7 +30,7 @@ export const CREATE_REDIRECT = /* GraphQL */ `
 
 export const UPDATE_REDIRECT = /* GraphQL */ `
     mutation UpdateRedirect($id: ID!, $data: WbRedirectUpdateInput!) {
-        wb {
+        websiteBuilder {
             updateRedirect(id: $id, data: $data) {
                 data ${REDIRECT_DATA_FIELD}
                 error ${ERROR_FIELD}
@@ -45,7 +41,7 @@ export const UPDATE_REDIRECT = /* GraphQL */ `
 
 export const MOVE_REDIRECT = /* GraphQL */ `
     mutation MoveRedirect($id: ID!, $folderId: ID!) {
-        wb {
+        websiteBuilder {
             moveRedirect(id: $id, folderId: $folderId) {
                 data
                 error ${ERROR_FIELD}
@@ -56,7 +52,7 @@ export const MOVE_REDIRECT = /* GraphQL */ `
 
 export const DELETE_REDIRECT = /* GraphQL */ `
     mutation DeleteRedirect($id: ID!) {
-        wb {
+        websiteBuilder {
             deleteRedirect(id: $id) {
                 data
                 error ${ERROR_FIELD}
@@ -67,7 +63,7 @@ export const DELETE_REDIRECT = /* GraphQL */ `
 
 export const LIST_REDIRECTS = /* GraphQL */ `
     query ListRedirects($limit: Int, $after: String, $where: WbRedirectsListWhereInput) {
-        wb {
+        websiteBuilder {
             listRedirects(limit: $limit, after: $after, where: $where) {
                 data ${REDIRECT_DATA_FIELD}
                 error ${ERROR_FIELD}

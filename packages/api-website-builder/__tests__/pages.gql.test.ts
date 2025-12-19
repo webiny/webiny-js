@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler.js";
-import { pageMocks, userMock } from "./mocks/page.mock.js";
+import { pageMocks } from "./mocks/page.mock.js";
 
 describe("Pages CRUD", () => {
     let handler: ReturnType<typeof useGraphQlHandler>;
@@ -14,19 +14,13 @@ describe("Pages CRUD", () => {
             data: pageMocks.pageA
         });
 
-        expect(response.data.wb.createPage.error).toBeNull();
-        const page = response.data.wb.createPage.data;
+        expect(response.data.websiteBuilder.createPage.error).toBeNull();
+        const page = response.data.websiteBuilder.createPage.data;
         expect(page).toMatchObject({
             id: expect.any(String),
-            entryId: expect.any(String),
             version: 1,
-            title: pageMocks.pageA.properties.title,
-            path: pageMocks.pageA.properties.path,
             status: "draft",
-            locked: false,
-            properties: pageMocks.pageA.properties,
-            bindings: pageMocks.pageA.bindings,
-            elements: pageMocks.pageA.elements
+            ...pageMocks.pageA
         });
     });
 
@@ -34,7 +28,7 @@ describe("Pages CRUD", () => {
         const [createResponse] = await handler.wb.createPage({
             data: pageMocks.pageA
         });
-        const page = createResponse.data.wb.createPage.data;
+        const page = createResponse.data.websiteBuilder.createPage.data;
 
         const updatedData = {
             properties: {
@@ -48,12 +42,10 @@ describe("Pages CRUD", () => {
             data: updatedData
         });
 
-        expect(updateResponse.data.wb.updatePage.error).toBeNull();
-        expect(updateResponse.data.wb.updatePage.data).toMatchObject({
+        expect(updateResponse.data.websiteBuilder.updatePage.error).toBeNull();
+        expect(updateResponse.data.websiteBuilder.updatePage.data).toMatchObject({
             id: page.id,
-            title: updatedData.properties.title,
-            path: updatedData.properties.path,
-            properties: updatedData.properties
+            ...updatedData
         });
     });
 
@@ -61,28 +53,22 @@ describe("Pages CRUD", () => {
         const [createResponse] = await handler.wb.createPage({
             data: pageMocks.pageA
         });
-        const page = createResponse.data.wb.createPage.data;
+        const page = createResponse.data.websiteBuilder.createPage.data;
 
         const fetchedPage = await handler.until(
             () => handler.wb.getPageById({ id: page.id }),
-            ([response]) => response.data.wb.getPageById.data !== null
+            ([response]) => response.data.websiteBuilder.getPageById.data !== null
         );
 
-        expect(fetchedPage[0].data.wb.getPageById.error).toBeNull();
-        expect(fetchedPage[0].data.wb.getPageById.data).toMatchObject({
-            id: page.id,
-            entryId: page.entryId,
-            version: page.version,
-            title: page.title,
-            path: page.path
-        });
+        expect(fetchedPage[0].data.websiteBuilder.getPageById.error).toBeNull();
+        expect(fetchedPage[0].data.websiteBuilder.getPageById.data).toMatchObject(page);
     });
 
     it("should get page by path", async () => {
         const [createResponse] = await handler.wb.createPage({
             data: pageMocks.pageA
         });
-        const page = createResponse.data.wb.createPage.data;
+        const page = createResponse.data.websiteBuilder.createPage.data;
 
         // Publish the page first so it's accessible by path
         await handler.wb.publishPage({ id: page.id });
@@ -91,8 +77,8 @@ describe("Pages CRUD", () => {
             path: pageMocks.pageA.properties.path
         });
 
-        expect(getResponse.data.wb.getPageByPath.error).toBeNull();
-        expect(getResponse.data.wb.getPageByPath.data).toMatchObject({
+        expect(getResponse.data.websiteBuilder.getPageByPath.error).toBeNull();
+        expect(getResponse.data.websiteBuilder.getPageByPath.data).toMatchObject({
             id: expect.any(String),
             properties: expect.objectContaining({
                 title: pageMocks.pageA.properties.title
@@ -107,12 +93,12 @@ describe("Pages CRUD", () => {
 
         const pages = await handler.until(
             () => handler.wb.listPages({ where: {} }),
-            ([response]) => response.data.wb.listPages.data.length === 3
+            ([response]) => response.data.websiteBuilder.listPages.data.length === 3
         );
 
-        expect(pages[0].data.wb.listPages.error).toBeNull();
-        expect(pages[0].data.wb.listPages.data).toHaveLength(3);
-        expect(pages[0].data.wb.listPages.meta).toMatchObject({
+        expect(pages[0].data.websiteBuilder.listPages.error).toBeNull();
+        expect(pages[0].data.websiteBuilder.listPages.data).toHaveLength(3);
+        expect(pages[0].data.websiteBuilder.listPages.meta).toMatchObject({
             hasMoreItems: false,
             totalCount: 3
         });
@@ -122,12 +108,12 @@ describe("Pages CRUD", () => {
         const [createResponse] = await handler.wb.createPage({
             data: pageMocks.pageA
         });
-        const page = createResponse.data.wb.createPage.data;
+        const page = createResponse.data.websiteBuilder.createPage.data;
 
         const [publishResponse] = await handler.wb.publishPage({ id: page.id });
 
-        expect(publishResponse.data.wb.publishPage.error).toBeNull();
-        expect(publishResponse.data.wb.publishPage.data).toMatchObject({
+        expect(publishResponse.data.websiteBuilder.publishPage.error).toBeNull();
+        expect(publishResponse.data.websiteBuilder.publishPage.data).toMatchObject({
             id: page.id,
             status: "published",
             locked: true
@@ -138,13 +124,13 @@ describe("Pages CRUD", () => {
         const [createResponse] = await handler.wb.createPage({
             data: pageMocks.pageA
         });
-        const page = createResponse.data.wb.createPage.data;
+        const page = createResponse.data.websiteBuilder.createPage.data;
 
         await handler.wb.publishPage({ id: page.id });
         const [unpublishResponse] = await handler.wb.unpublishPage({ id: page.id });
 
-        expect(unpublishResponse.data.wb.unpublishPage.error).toBeNull();
-        expect(unpublishResponse.data.wb.unpublishPage.data).toMatchObject({
+        expect(unpublishResponse.data.websiteBuilder.unpublishPage.error).toBeNull();
+        expect(unpublishResponse.data.websiteBuilder.unpublishPage.data).toMatchObject({
             id: page.id,
             status: "unpublished"
         });
@@ -154,18 +140,21 @@ describe("Pages CRUD", () => {
         const [createResponse] = await handler.wb.createPage({
             data: pageMocks.pageA
         });
-        const page = createResponse.data.wb.createPage.data;
+        const page = createResponse.data.websiteBuilder.createPage.data;
 
         const [duplicateResponse] = await handler.wb.duplicatePage({ id: page.id });
 
-        expect(duplicateResponse.data.wb.duplicatePage.error).toBeNull();
-        const duplicatedPage = duplicateResponse.data.wb.duplicatePage.data;
+        expect(duplicateResponse.data.websiteBuilder.duplicatePage.error).toBeNull();
+        const duplicatedPage = duplicateResponse.data.websiteBuilder.duplicatePage.data;
         expect(duplicatedPage).toMatchObject({
             id: expect.any(String),
             entryId: expect.any(String),
             version: 1,
             status: "draft",
-            locked: false
+            locked: false,
+            properties: {
+                title: `Copy of ${page.properties.title}`
+            }
         });
         expect(duplicatedPage.id).not.toBe(page.id);
         expect(duplicatedPage.entryId).not.toBe(page.entryId);
@@ -175,14 +164,14 @@ describe("Pages CRUD", () => {
         const [createResponse] = await handler.wb.createPage({
             data: pageMocks.pageA
         });
-        const page = createResponse.data.wb.createPage.data;
+        const page = createResponse.data.websiteBuilder.createPage.data;
 
         await handler.wb.publishPage({ id: page.id });
 
         const [revisionResponse] = await handler.wb.createPageRevisionFrom({ id: page.id });
 
-        expect(revisionResponse.data.wb.createPageRevisionFrom.error).toBeNull();
-        const newRevision = revisionResponse.data.wb.createPageRevisionFrom.data;
+        expect(revisionResponse.data.websiteBuilder.createPageRevisionFrom.error).toBeNull();
+        const newRevision = revisionResponse.data.websiteBuilder.createPageRevisionFrom.data;
         expect(newRevision).toMatchObject({
             entryId: page.entryId,
             version: 2,
@@ -195,43 +184,43 @@ describe("Pages CRUD", () => {
         const [createResponse] = await handler.wb.createPage({
             data: pageMocks.pageA
         });
-        const page = createResponse.data.wb.createPage.data;
+        const page = createResponse.data.websiteBuilder.createPage.data;
 
         await handler.wb.publishPage({ id: page.id });
         await handler.wb.createPageRevisionFrom({ id: page.id });
 
         const revisions = await handler.until(
             () => handler.wb.getPageRevisions({ entryId: page.entryId }),
-            ([response]) => response.data.wb.getPageRevisions.data.length === 2
+            ([response]) => response.data.websiteBuilder.getPageRevisions.data.length === 2
         );
 
-        expect(revisions[0].data.wb.getPageRevisions.error).toBeNull();
-        expect(revisions[0].data.wb.getPageRevisions.data).toHaveLength(2);
-        expect(revisions[0].data.wb.getPageRevisions.data[0].version).toBe(1);
-        expect(revisions[0].data.wb.getPageRevisions.data[1].version).toBe(2);
+        expect(revisions[0].data.websiteBuilder.getPageRevisions.error).toBeNull();
+        expect(revisions[0].data.websiteBuilder.getPageRevisions.data).toHaveLength(2);
+        expect(revisions[0].data.websiteBuilder.getPageRevisions.data[0].version).toBe(1);
+        expect(revisions[0].data.websiteBuilder.getPageRevisions.data[1].version).toBe(2);
     });
 
     it("should delete a page", async () => {
         const [createResponse] = await handler.wb.createPage({
             data: pageMocks.pageA
         });
-        const page = createResponse.data.wb.createPage.data;
+        const page = createResponse.data.websiteBuilder.createPage.data;
 
         const [deleteResponse] = await handler.wb.deletePage({ id: page.id });
 
-        expect(deleteResponse.data.wb.deletePage.error).toBeNull();
-        expect(deleteResponse.data.wb.deletePage.data).toBe(true);
+        expect(deleteResponse.data.websiteBuilder.deletePage.error).toBeNull();
+        expect(deleteResponse.data.websiteBuilder.deletePage.data).toBe(true);
 
         // Wait for deletion to be indexed
         await handler.until(
             () => handler.wb.getPageById({ id: page.id }),
-            ([response]) => response.data.wb.getPageById.data === null,
+            ([response]) => response.data.websiteBuilder.getPageById.data === null,
             { tries: 10 }
         );
 
         const [getResponse] = await handler.wb.getPageById({ id: page.id });
-        expect(getResponse.data.wb.getPageById.data).toBeNull();
-        expect(getResponse.data.wb.getPageById.error).not.toBeNull();
+        expect(getResponse.data.websiteBuilder.getPageById.data).toBeNull();
+        expect(getResponse.data.websiteBuilder.getPageById.error).not.toBeNull();
     });
 
     it("should enforce security rules", async () => {
@@ -250,18 +239,18 @@ describe("Pages CRUD", () => {
         const [createResponse] = await anonymousHandler.wb.createPage({
             data: pageMocks.pageA
         });
-        expect(createResponse.data.wb.createPage).toEqual(notAuthorizedResponse);
+        expect(createResponse.data.websiteBuilder.createPage).toEqual(notAuthorizedResponse);
 
         // Create a page with authenticated user
         const [authCreateResponse] = await handler.wb.createPage({
             data: pageMocks.pageA
         });
-        const page = authCreateResponse.data.wb.createPage.data;
+        const page = authCreateResponse.data.websiteBuilder.createPage.data;
         expect(page).toBeDefined();
 
         // Try to read with anonymous identity
         const [getResponse] = await anonymousHandler.wb.getPageById({ id: page.id });
-        expect(getResponse.data.wb.getPageById).toEqual(
+        expect(getResponse.data.websiteBuilder.getPageById).toEqual(
             expect.objectContaining(notAuthorizedResponse)
         );
 
@@ -270,21 +259,21 @@ describe("Pages CRUD", () => {
             id: page.id,
             data: { properties: { title: "Updated" } }
         });
-        expect(updateResponse.data.wb.updatePage).toEqual(
+        expect(updateResponse.data.websiteBuilder.updatePage).toEqual(
             expect.objectContaining(notAuthorizedResponse)
         );
 
         // Try to delete with anonymous identity
         const [deleteResponse] = await anonymousHandler.wb.deletePage({ id: page.id });
-        expect(deleteResponse.data.wb.deletePage).toEqual(
+        expect(deleteResponse.data.websiteBuilder.deletePage).toEqual(
             expect.objectContaining(notAuthorizedResponse)
         );
     });
 
     it("should get and update settings", async () => {
         const [getResponse] = await handler.wb.getSettings({});
-        expect(getResponse.data.wb.getSettings.error).toBeNull();
-        expect(getResponse.data.wb.getSettings.data).toMatchObject({
+        expect(getResponse.data.websiteBuilder.getSettings.error).toBeNull();
+        expect(getResponse.data.websiteBuilder.getSettings.data).toMatchObject({
             previewDomain: expect.any(String)
         });
 
@@ -293,18 +282,18 @@ describe("Pages CRUD", () => {
                 previewDomain: "http://localhost:4000"
             }
         });
-        expect(updateResponse.data.wb.updateSettings.error).toBeNull();
-        expect(updateResponse.data.wb.updateSettings.data).toBe(true);
+        expect(updateResponse.data.websiteBuilder.updateSettings.error).toBeNull();
+        expect(updateResponse.data.websiteBuilder.updateSettings.data).toBe(true);
 
         const [getUpdatedResponse] = await handler.wb.getSettings({});
-        expect(getUpdatedResponse.data.wb.getSettings.data.previewDomain).toBe(
+        expect(getUpdatedResponse.data.websiteBuilder.getSettings.data.previewDomain).toBe(
             "http://localhost:4000"
         );
     });
 
     it("should get and update integrations", async () => {
         const [getResponse] = await handler.wb.getIntegrations({});
-        expect(getResponse.data.wb.getIntegrations.error).toBeNull();
+        expect(getResponse.data.websiteBuilder.getIntegrations.error).toBeNull();
 
         const integrationData = {
             googleAnalytics: {
@@ -315,10 +304,12 @@ describe("Pages CRUD", () => {
         const [updateResponse] = await handler.wb.updateIntegrations({
             data: integrationData
         });
-        expect(updateResponse.data.wb.updateIntegrations.error).toBeNull();
-        expect(updateResponse.data.wb.updateIntegrations.data).toBe(true);
+        expect(updateResponse.data.websiteBuilder.updateIntegrations.error).toBeNull();
+        expect(updateResponse.data.websiteBuilder.updateIntegrations.data).toBe(true);
 
         const [getUpdatedResponse] = await handler.wb.getIntegrations({});
-        expect(getUpdatedResponse.data.wb.getIntegrations.data).toMatchObject(integrationData);
+        expect(getUpdatedResponse.data.websiteBuilder.getIntegrations.data).toMatchObject(
+            integrationData
+        );
     });
 });

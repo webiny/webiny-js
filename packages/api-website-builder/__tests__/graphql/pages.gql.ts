@@ -2,16 +2,18 @@ const PAGE_DATA_FIELD = /* GraphQL */ `
     {
         id
         entryId
-        version
-        title
-        path
         status
+        version
         locked
         properties
         bindings
         elements
+        metadata
         savedOn
         createdOn
+        wbyAco_location {
+            folderId
+        }
     }
 `;
 
@@ -25,7 +27,7 @@ const ERROR_FIELD = /* GraphQL */ `
 
 export const CREATE_PAGE = /* GraphQL */ `
     mutation CreatePage($data: WbPageCreateInput!) {
-        wb {
+        websiteBuilder {
             createPage(data: $data) {
                 data ${PAGE_DATA_FIELD}
                 error ${ERROR_FIELD}
@@ -36,7 +38,7 @@ export const CREATE_PAGE = /* GraphQL */ `
 
 export const UPDATE_PAGE = /* GraphQL */ `
     mutation UpdatePage($id: ID!, $data: WbPageUpdateInput!) {
-        wb {
+        websiteBuilder {
             updatePage(id: $id, data: $data) {
                 data ${PAGE_DATA_FIELD}
                 error ${ERROR_FIELD}
@@ -47,7 +49,7 @@ export const UPDATE_PAGE = /* GraphQL */ `
 
 export const PUBLISH_PAGE = /* GraphQL */ `
     mutation PublishPage($id: ID!) {
-        wb {
+        websiteBuilder {
             publishPage(id: $id) {
                 data ${PAGE_DATA_FIELD}
                 error ${ERROR_FIELD}
@@ -58,7 +60,7 @@ export const PUBLISH_PAGE = /* GraphQL */ `
 
 export const UNPUBLISH_PAGE = /* GraphQL */ `
     mutation UnpublishPage($id: ID!) {
-        wb {
+        websiteBuilder {
             unpublishPage(id: $id) {
                 data ${PAGE_DATA_FIELD}
                 error ${ERROR_FIELD}
@@ -69,7 +71,7 @@ export const UNPUBLISH_PAGE = /* GraphQL */ `
 
 export const DUPLICATE_PAGE = /* GraphQL */ `
     mutation DuplicatePage($id: ID!) {
-        wb {
+        websiteBuilder {
             duplicatePage(id: $id) {
                 data ${PAGE_DATA_FIELD}
                 error ${ERROR_FIELD}
@@ -80,7 +82,7 @@ export const DUPLICATE_PAGE = /* GraphQL */ `
 
 export const MOVE_PAGE = /* GraphQL */ `
     mutation MovePage($id: ID!, $folderId: ID!) {
-        wb {
+        websiteBuilder {
             movePage(id: $id, folderId: $folderId) {
                 data
                 error ${ERROR_FIELD}
@@ -91,7 +93,7 @@ export const MOVE_PAGE = /* GraphQL */ `
 
 export const CREATE_PAGE_REVISION_FROM = /* GraphQL */ `
     mutation CreatePageRevisionFrom($id: ID!) {
-        wb {
+        websiteBuilder {
             createPageRevisionFrom(id: $id) {
                 data ${PAGE_DATA_FIELD}
                 error ${ERROR_FIELD}
@@ -102,7 +104,7 @@ export const CREATE_PAGE_REVISION_FROM = /* GraphQL */ `
 
 export const DELETE_PAGE = /* GraphQL */ `
     mutation DeletePage($id: ID!) {
-        wb {
+        websiteBuilder {
             deletePage(id: $id) {
                 data
                 error ${ERROR_FIELD}
@@ -113,7 +115,7 @@ export const DELETE_PAGE = /* GraphQL */ `
 
 export const GET_PAGE_BY_PATH = /* GraphQL */ `
     query GetPageByPath($path: String!) {
-        wb {
+        websiteBuilder {
             getPageByPath(path: $path) {
                 data {
                     id
@@ -129,7 +131,7 @@ export const GET_PAGE_BY_PATH = /* GraphQL */ `
 
 export const GET_PAGE_BY_ID = /* GraphQL */ `
     query GetPageById($id: ID!) {
-        wb {
+        websiteBuilder {
             getPageById(id: $id) {
                 data ${PAGE_DATA_FIELD}
                 error ${ERROR_FIELD}
@@ -140,7 +142,7 @@ export const GET_PAGE_BY_ID = /* GraphQL */ `
 
 export const GET_PAGE_REVISIONS = /* GraphQL */ `
     query GetPageRevisions($entryId: ID!) {
-        wb {
+        websiteBuilder {
             getPageRevisions(entryId: $entryId) {
                 data {
                     id
@@ -159,7 +161,7 @@ export const GET_PAGE_REVISIONS = /* GraphQL */ `
 
 export const LIST_PAGES = /* GraphQL */ `
     query ListPages($limit: Int, $after: String, $where: WbPagesListWhereInput) {
-        wb {
+        websiteBuilder {
             listPages(limit: $limit, after: $after, where: $where) {
                 data ${PAGE_DATA_FIELD}
                 error ${ERROR_FIELD}
@@ -175,7 +177,7 @@ export const LIST_PAGES = /* GraphQL */ `
 
 export const GET_SETTINGS = /* GraphQL */ `
     query GetSettings {
-        wb {
+        websiteBuilder {
             getSettings {
                 data {
                     previewDomain
@@ -188,7 +190,7 @@ export const GET_SETTINGS = /* GraphQL */ `
 
 export const UPDATE_SETTINGS = /* GraphQL */ `
     mutation UpdateSettings($data: WbSettingsInput!) {
-        wb {
+        websiteBuilder {
             updateSettings(data: $data) {
                 data
                 error ${ERROR_FIELD}
@@ -199,7 +201,7 @@ export const UPDATE_SETTINGS = /* GraphQL */ `
 
 export const GET_INTEGRATIONS = /* GraphQL */ `
     query GetIntegrations {
-        wb {
+        websiteBuilder {
             getIntegrations {
                 data
                 error ${ERROR_FIELD}
@@ -210,7 +212,7 @@ export const GET_INTEGRATIONS = /* GraphQL */ `
 
 export const UPDATE_INTEGRATIONS = /* GraphQL */ `
     mutation UpdateIntegrations($data: JSON!) {
-        wb {
+        websiteBuilder {
             updateIntegrations(data: $data) {
                 data
                 error ${ERROR_FIELD}
@@ -221,7 +223,7 @@ export const UPDATE_INTEGRATIONS = /* GraphQL */ `
 
 export const GET_PAGE_MODEL = /* GraphQL */ `
     query GetPageModel {
-        wb {
+        websiteBuilder {
             getPageModel {
                 data {
                     modelId

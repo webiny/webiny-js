@@ -24,11 +24,11 @@ export interface WbRedirect {
 
 export type CreateWbRedirectData = Pick<
     WbRedirect,
-    "redirectFrom" | "redirectTo" | "redirectType" | "isEnabled"
+    "redirectFrom" | "redirectTo" | "redirectType" | "isEnabled" | "wbyAco_location"
 >;
 
 export interface UpdateWbRedirectData {
-    location?: WbLocation;
+    wbyAco_location?: WbLocation;
     redirectFrom?: string;
     redirectTo?: string;
     redirectType?: string;

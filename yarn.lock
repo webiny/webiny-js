@@ -14620,7 +14620,7 @@ __metadata:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-core-ddb": "npm:0.0.0"
-    "@webiny/api-file-manager": "npm:0.0.0"
+    "@webiny/api-file-manager-s3": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"

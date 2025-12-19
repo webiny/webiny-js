@@ -1,9 +1,4 @@
-import {
-    ErrorResponse,
-    GraphQLSchemaPlugin,
-    ListResponse,
-    Response
-} from "@webiny/handler-graphql";
+import { ErrorResponse, GraphQLSchemaPlugin, ListResponse } from "@webiny/handler-graphql";
 import { ensureAuthentication } from "~/utils/ensureAuthentication.js";
 import { resolve } from "~/utils/resolve.js";
 import type { WebsiteBuilderContext } from "~/context/types.js";
@@ -38,14 +33,18 @@ export const createRedirectsSchema = () => {
                     });
                 },
                 moveRedirect: async (_, { id, folderId }, context) => {
-                    ensureAuthentication(context);
-                    await context.websiteBuilder.redirects.move({ id, folderId });
-                    return new Response(true);
+                    return resolve(async () => {
+                        ensureAuthentication(context);
+                        await context.websiteBuilder.redirects.move({ id, folderId });
+                        return true;
+                    });
                 },
                 deleteRedirect: async (_, { id }, context) => {
-                    ensureAuthentication(context);
-                    await context.websiteBuilder.redirects.delete({ id });
-                    return new Response(true);
+                    return resolve(async () => {
+                        ensureAuthentication(context);
+                        await context.websiteBuilder.redirects.delete({ id });
+                        return true;
+                    });
                 }
             }
         }

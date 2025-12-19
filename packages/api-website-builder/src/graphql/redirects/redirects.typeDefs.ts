@@ -42,6 +42,7 @@ export const redirectsTypeDefs = /* GraphQL */ `
         redirectTo: String!
         redirectType: String!
         isEnabled: Boolean!
+        wbyAco_location: WbLocationInput
     }
 
     input WbRedirectsListWhereInput {

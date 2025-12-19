@@ -1,17 +1,31 @@
-export const redirectMocks = {
+import type { CreateWbRedirectData } from "~/context/redirects/redirects.types.js";
+
+export const redirectMocks: Record<string, CreateWbRedirectData> = {
     redirectA: {
-        source: "/old-page-a",
-        target: "/new-page-a",
-        type: 301
+        redirectFrom: "/old-page-a",
+        redirectTo: "/new-page-a",
+        redirectType: "permanent",
+        isEnabled: true,
+        wbyAco_location: {
+            folderId: "root"
+        }
     },
     redirectB: {
-        source: "/old-page-b",
-        target: "/new-page-b",
-        type: 302
+        redirectFrom: "/old-page-b",
+        redirectTo: "/new-page-b",
+        redirectType: "temporary",
+        isEnabled: true,
+        wbyAco_location: {
+            folderId: "root"
+        }
     },
     redirectC: {
-        source: "/old-page-c",
-        target: "/new-page-c",
-        type: 301
+        redirectFrom: "/old-page-c",
+        redirectTo: "/new-page-c",
+        redirectType: "permanent",
+        isEnabled: true,
+        wbyAco_location: {
+            folderId: "root"
+        }
     }
 };

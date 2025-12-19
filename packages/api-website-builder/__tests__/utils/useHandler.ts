@@ -13,6 +13,10 @@ import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import { createBackgroundTaskContext } from "@webiny/tasks";
+import { createContextPlugin } from "@webiny/api";
+import { InvalidateCloudfrontCacheTaskDefinition } from "@webiny/api-file-manager-s3/features/FlushCache/InvalidateCacheTask.js";
+import { createBackgroundTasks } from "~tests/mocks/mockBackgroundTasks.js";
 
 export interface UseHandlerParams {
     permissions?: SecurityPermission[];
@@ -39,8 +43,12 @@ export const useHandler = (params: UseHandlerParams = {}) => {
             createHeadlessCmsContext({
                 storageOperations: cmsStorage.storageOperations
             }),
+            createBackgroundTasks(),
             createHeadlessCmsGraphQL(),
             createWebsiteBuilder(),
+            createContextPlugin(context => {
+                context.container.register(InvalidateCloudfrontCacheTaskDefinition);
+            }),
             createEventHandler<any, WebsiteBuilderContext, WebsiteBuilderContext>(
                 async ({ context }) => {
                     return context;

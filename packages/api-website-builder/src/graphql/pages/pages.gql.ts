@@ -139,9 +139,11 @@ export const createPagesSchema = () => {
                     });
                 },
                 movePage: async (_, { id, folderId }, context) => {
-                    ensureAuthentication(context);
-                    await context.websiteBuilder.pages.move({ id, folderId });
-                    return new Response(true);
+                    return resolve(async () => {
+                        ensureAuthentication(context);
+                        await context.websiteBuilder.pages.move({ id, folderId });
+                        return true;
+                    });
                 },
                 createPageRevisionFrom: async (_, { id }, context) => {
                     return resolve(() => {
@@ -150,31 +152,37 @@ export const createPagesSchema = () => {
                     });
                 },
                 deletePage: async (_, { id }, context) => {
-                    ensureAuthentication(context);
-                    await context.websiteBuilder.pages.delete({ id });
-                    return new Response(true);
+                    return resolve(async () => {
+                        ensureAuthentication(context);
+                        await context.websiteBuilder.pages.delete({ id });
+                        return true;
+                    });
                 },
                 updateSettings: async (_, args, context) => {
-                    ensureAuthentication(context);
-                    const saveSettings = context.container.resolve(UpdateSettingsUseCase);
+                    return resolve(async () => {
+                        ensureAuthentication(context);
+                        const saveSettings = context.container.resolve(UpdateSettingsUseCase);
 
-                    await saveSettings.execute({
-                        name: WEBSITE_BUILDER_SETTINGS,
-                        data: args.data
+                        await saveSettings.execute({
+                            name: WEBSITE_BUILDER_SETTINGS,
+                            data: args.data
+                        });
+
+                        return true;
                     });
-
-                    return new Response(true);
                 },
                 updateIntegrations: async (_, args, context) => {
-                    ensureAuthentication(context);
-                    const saveSettings = context.container.resolve(UpdateSettingsUseCase);
+                    return resolve(async () => {
+                        ensureAuthentication(context);
+                        const saveSettings = context.container.resolve(UpdateSettingsUseCase);
 
-                    await saveSettings.execute({
-                        name: WEBSITE_BUILDER_INTEGRATIONS,
-                        data: args.data
+                        await saveSettings.execute({
+                            name: WEBSITE_BUILDER_INTEGRATIONS,
+                            data: args.data
+                        });
+
+                        return true;
                     });
-
-                    return new Response(true);
                 }
             }
         }
