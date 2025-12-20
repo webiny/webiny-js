@@ -204,24 +204,10 @@ describe("Settings Transporter CRUD", () => {
 
         const context = await noAccessHandle();
 
-        let saveResponse: any = null;
-        let saveError: any = null;
+        const saveSettings = context.container.resolve(SaveSettingsUseCase);
+        const saveResponse = await saveSettings.execute(input);
 
-        try {
-            const saveSettings = context.container.resolve(SaveSettingsUseCase);
-            saveResponse = await saveSettings.execute(input);
-        } catch (ex) {
-            saveError = {
-                message: ex.message,
-                code: ex.code,
-                data: ex.data
-            };
-        }
-
-        expect(saveResponse).toEqual(null);
-        expect(saveError).toEqual({
-            message: "Not allowed to update the mailer settings.",
-            code: "NOT_AUTHORIZED"
-        });
+        expect(saveResponse.isFail()).toEqual(true);
+        expect(saveResponse.error.code).toEqual("Mailer/Settings/NotAuthorized");
     });
 });

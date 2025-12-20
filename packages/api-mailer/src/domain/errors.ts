@@ -14,6 +14,14 @@ export class SettingsValidationError extends BaseError<{ errors: ZodError["error
     }
 }
 
+export class SettingsNotAuthorized extends BaseError {
+    override readonly code = "Mailer/Settings/NotAuthorized" as const;
+
+    constructor() {
+        super({ message: "Not allowed to update the mailer settings." });
+    }
+}
+
 export class SettingsPersistenceError extends BaseError<{ error: Error }> {
     override readonly code = "Mailer/Settings/Persistence" as const;
 

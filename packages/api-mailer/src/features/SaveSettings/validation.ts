@@ -10,9 +10,12 @@ const common = {
     user: zod.string().describe("User")
 };
 
-export const saveValidation = zod
-    .object({
-        ...common,
-        password: password.optional()
-    })
-    .required();
+export const saveValidation = zod.object({
+    ...common,
+    password: password
+        .nullish()
+        .optional()
+        .transform(value => {
+            return value === undefined ? null : value;
+        })
+});

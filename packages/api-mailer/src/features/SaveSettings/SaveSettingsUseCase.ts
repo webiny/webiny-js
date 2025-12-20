@@ -10,15 +10,27 @@ import {
 } from "./abstractions.js";
 import { MailerSettingsBeforeSaveEvent, MailerSettingsAfterSaveEvent } from "./events.js";
 import { saveValidation } from "./validation.js";
-import { SettingsValidationError, SettingsPersistenceError } from "~/domain/errors.js";
+import {
+    SettingsValidationError,
+    SettingsPersistenceError,
+    SettingsNotAuthorized
+} from "~/domain/errors.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 class SaveSettingsUseCaseImpl implements SaveSettingsUseCase.Interface {
     constructor(
+        private identityContext: IdentityContext.Interface,
         private eventPublisher: EventPublisherAbstraction.Interface,
         private repository: SaveSettingsRepository.Interface
     ) {}
 
     async execute(input: SaveSettingsInput): SaveSettingsUseCase.Return {
+        const permission = await this.identityContext.getPermission("mailer.settings");
+
+        if (!permission) {
+            return Result.fail(new SettingsNotAuthorized());
+        }
+
         // Validate input
         const validationResult = saveValidation.safeParse(input);
         if (!validationResult.success) {
@@ -46,5 +58,5 @@ class SaveSettingsUseCaseImpl implements SaveSettingsUseCase.Interface {
 
 export const SaveSettingsUseCaseImplementation = SaveSettingsUseCase.createImplementation({
     implementation: SaveSettingsUseCaseImpl,
-    dependencies: [EventPublisher, SaveSettingsRepository]
+    dependencies: [IdentityContext, EventPublisher, SaveSettingsRepository]
 });

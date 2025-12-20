@@ -13,7 +13,7 @@ class GetSettingsRepositoryImpl implements GetSettingsRepository.Interface {
         private encryption: Encryption.Interface
     ) {}
 
-    async get(): Promise<Result<TransportSettings | null, never>> {
+    async get(): Promise<Result<TransportSettings | null>> {
         const result = await this.getSettings.execute(SETTINGS_NAME);
 
         if (result.isFail()) {
@@ -25,7 +25,7 @@ class GetSettingsRepositoryImpl implements GetSettingsRepository.Interface {
             return Result.ok(null);
         }
 
-        const data = settings.data as GenericRecord<string>;
+        const data = settings.data as TransportSettings;
 
         // Decrypt password if present
         const password = data.password ? await this.encryption.decrypt(String(data.password)) : "";

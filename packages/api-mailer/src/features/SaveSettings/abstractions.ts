@@ -2,7 +2,7 @@ import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { DomainEvent, IEventHandler } from "@webiny/api-core/features/EventPublisher";
 import type { TransportSettings } from "~/types.js";
-import { SettingsValidationError, SettingsPersistenceError } from "~/domain/errors.js";
+import { SettingsValidationError, SettingsPersistenceError, SettingsNotAuthorized } from "~/domain/errors.js";
 
 export interface SaveSettingsInput {
     host: string;
@@ -16,6 +16,7 @@ export interface SaveSettingsInput {
 export interface ISaveSettingsErrors {
     validation: SettingsValidationError;
     persistence: SettingsPersistenceError;
+    notAuthorized: SettingsNotAuthorized;
 }
 
 type SaveSettingsError = ISaveSettingsErrors[keyof ISaveSettingsErrors];

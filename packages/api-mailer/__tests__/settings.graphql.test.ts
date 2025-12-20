@@ -142,10 +142,7 @@ describe("Mailer Settings GraphQL", () => {
                     getSettings: {
                         data: null,
                         error: {
-                            data: {
-                                description:
-                                    "To store the Mailer settings, you must have a password secret environment variable defined."
-                            },
+                            data: null,
                             message: "There must be a password secret defined!",
                             code: "PASSWORD_SECRET_ERROR"
                         }
@@ -170,10 +167,7 @@ describe("Mailer Settings GraphQL", () => {
                     saveSettings: {
                         data: null,
                         error: {
-                            data: {
-                                description:
-                                    "To store the Mailer settings, you must have a password secret environment variable defined."
-                            },
+                            data: null,
                             message: "There must be a password secret defined!",
                             code: "PASSWORD_SECRET_ERROR"
                         }
@@ -204,7 +198,7 @@ describe("Mailer Settings GraphQL", () => {
                         data: null,
                         error: {
                             data: null,
-                            code: "NOT_AUTHORIZED",
+                            code: "Mailer/Settings/NotAuthorized",
                             message: "Not allowed to update the mailer settings."
                         }
                     }
