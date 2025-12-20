@@ -1,7 +1,7 @@
 import WebinyError from "@webiny/error";
 import zod from "zod";
-import type { Topic } from "@webiny/pubsub/types.js";
-import type { OnTransportBeforeSendParams } from "~/types.js";
+import { MailBeforeSendEvent } from "./abstractions.js";
+import { DomainEventHandler } from "@webiny/feature/api";
 import type { SafeParseReturnType } from "zod";
 
 const requiredString = zod.string();
@@ -24,13 +24,12 @@ const schema = zod
 
 type SchemaType = zod.infer<typeof schema>;
 
-interface Params {
-    onTransportBeforeSend: Topic<OnTransportBeforeSendParams>;
-}
-export const attachOnTransportBeforeSend = (params: Params) => {
-    const { onTransportBeforeSend } = params;
+class MailBeforeSendValidationHandlerImpl
+    implements DomainEventHandler.Interface<MailBeforeSendEvent>
+{
+    async handle(event: MailBeforeSendEvent): Promise<void> {
+        const { data: input } = event.payload;
 
-    onTransportBeforeSend.subscribe(async ({ data: input }) => {
         let result: SafeParseReturnType<SchemaType, SchemaType>;
         try {
             result = schema.safeParse(input);
@@ -59,5 +58,11 @@ export const attachOnTransportBeforeSend = (params: Params) => {
                 }
             });
         }
-    });
-};
+    }
+}
+
+export const MailBeforeSendValidationHandler = DomainEventHandler.createHandler({
+    event: MailBeforeSendEvent,
+    implementation: MailBeforeSendValidationHandlerImpl,
+    dependencies: []
+});

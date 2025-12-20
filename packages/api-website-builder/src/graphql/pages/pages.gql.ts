@@ -1,4 +1,4 @@
-import { GetSettings } from "@webiny/api-core/features/GetSettings";
+import { GetSettingsUseCase } from "@webiny/api-core/features/GetSettings";
 import { UpdateSettingsUseCase } from "@webiny/api-core/features/UpdateSettings";
 import {
     ErrorResponse,
@@ -113,7 +113,7 @@ export const createPagesSchema = () => {
                 getSettings: async (_, __, context) => {
                     ensureAuthentication(context);
 
-                    const getSettings = context.container.resolve(GetSettings);
+                    const getSettings = context.container.resolve(GetSettingsUseCase);
                     const result = await getSettings.execute(WEBSITE_BUILDER_SETTINGS);
 
                     if (result.isFail()) {
@@ -132,7 +132,7 @@ export const createPagesSchema = () => {
                 },
                 getIntegrations: async (_, __, context) => {
                     ensureAuthentication(context);
-                    const getSettings = context.container.resolve(GetSettings);
+                    const getSettings = context.container.resolve(GetSettingsUseCase);
                     const settings = await getSettings.execute(WEBSITE_BUILDER_INTEGRATIONS);
                     if (settings.isFail()) {
                         return new Response({});
