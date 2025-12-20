@@ -1,20 +1,18 @@
 import { Result } from "@webiny/feature/api";
-import { EventPublisher } from "@webiny/feature/api";
-import WebinyError from "@webiny/error";
 import {
-    SaveSettings,
-    SaveSettingsRepository,
-    type SaveSettingsInput,
-    MailerSettingsBeforeSaveEvent,
-    MailerSettingsAfterSaveEvent
-} from "./abstractions.js";
+    EventPublisher,
+    EventPublisher as EventPublisherAbstraction
+} from "@webiny/api-core/features/EventPublisher";
+import WebinyError from "@webiny/error";
+import { SaveSettings, SaveSettingsRepository, type SaveSettingsInput } from "./abstractions.js";
+import { MailerSettingsBeforeSaveEvent, MailerSettingsAfterSaveEvent } from "./events.js";
 import { saveValidation } from "./validation.js";
 import type { TransportSettings } from "~/types.js";
 
 class SaveSettingsUseCaseImpl implements SaveSettings.Interface {
     constructor(
-        private repository: SaveSettingsRepository.Interface,
-        private eventPublisher: EventPublisher.Interface
+        private eventPublisher: EventPublisherAbstraction.Interface,
+        private repository: SaveSettingsRepository.Interface
     ) {}
 
     async execute(input: SaveSettingsInput): Promise<Result<TransportSettings, never>> {
@@ -27,25 +25,19 @@ class SaveSettingsUseCaseImpl implements SaveSettings.Interface {
         }
 
         // Publish before save event
-        await this.eventPublisher.publish(
-            new MailerSettingsBeforeSaveEvent({
-                payload: { input }
-            })
-        );
+        const beforeSaveEvent = new MailerSettingsBeforeSaveEvent({ input });
+        await this.eventPublisher.publish(beforeSaveEvent);
 
         // Save settings
         const result = await this.repository.save(input);
 
-        if (result.isError) {
+        if (result.isFail()) {
             throw new WebinyError("Failed to save settings", "SAVE_SETTINGS_ERROR", result.error);
         }
 
         // Publish after save event
-        await this.eventPublisher.publish(
-            new MailerSettingsAfterSaveEvent({
-                payload: { settings: result.value }
-            })
-        );
+        const afterSaveEvent = new MailerSettingsAfterSaveEvent({ settings: result.value });
+        await this.eventPublisher.publish(afterSaveEvent);
 
         return result;
     }
@@ -53,5 +45,5 @@ class SaveSettingsUseCaseImpl implements SaveSettings.Interface {
 
 export const SaveSettingsUseCaseImplementation = SaveSettings.createImplementation({
     implementation: SaveSettingsUseCaseImpl,
-    dependencies: [SaveSettingsRepository, EventPublisher]
+    dependencies: [EventPublisher, SaveSettingsRepository]
 });

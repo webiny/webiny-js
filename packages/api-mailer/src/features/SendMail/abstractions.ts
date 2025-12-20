@@ -1,13 +1,11 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import { DomainEvent } from "@webiny/feature/api";
+import type { DomainEvent, IEventHandler } from "@webiny/api-core/features/EventPublisher";
 import type { TransportSendData, TransportSendResponse } from "~/types.js";
 import type { MailerService } from "~/domain/MailerService/abstractions.js";
 
 export interface ISendMail {
-    execute<D = any>(
-        data: TransportSendData
-    ): Promise<Result<TransportSendResponse<D>, MailerService.Error>>;
+    execute(data: TransportSendData): Promise<Result<TransportSendResponse, MailerService.Error>>;
 }
 
 export const SendMail = createAbstraction<ISendMail>("SendMail");
@@ -21,17 +19,9 @@ export interface MailBeforeSendPayload {
     data: TransportSendData;
 }
 
-export class MailBeforeSendEvent extends DomainEvent<MailBeforeSendPayload> {
-    static eventName = "mailer.mail.beforeSend" as const;
-}
-
-export interface MailAfterSendPayload<D = any> {
+export interface MailAfterSendPayload {
     data: TransportSendData;
-    response: TransportSendResponse<D>;
-}
-
-export class MailAfterSendEvent<D = any> extends DomainEvent<MailAfterSendPayload<D>> {
-    static eventName = "mailer.mail.afterSend" as const;
+    response: TransportSendResponse;
 }
 
 export interface MailSendErrorPayload {
@@ -39,6 +29,27 @@ export interface MailSendErrorPayload {
     error: Error;
 }
 
-export class MailSendErrorEvent extends DomainEvent<MailSendErrorPayload> {
-    static eventName = "mailer.mail.sendError" as const;
+// Event Handler Abstractions
+export const MailBeforeSendHandler =
+    createAbstraction<IEventHandler<DomainEvent<MailBeforeSendPayload>>>("MailBeforeSendHandler");
+
+export namespace MailBeforeSendHandler {
+    export type Interface = IEventHandler<DomainEvent<MailBeforeSendPayload>>;
+    export type Event = DomainEvent<MailBeforeSendPayload>;
+}
+
+export const MailAfterSendHandler =
+    createAbstraction<IEventHandler<DomainEvent<MailAfterSendPayload>>>("MailAfterSendHandler");
+
+export namespace MailAfterSendHandler {
+    export type Interface = IEventHandler<DomainEvent<MailAfterSendPayload>>;
+    export type Event = DomainEvent<MailAfterSendPayload>;
+}
+
+export const MailSendErrorHandler =
+    createAbstraction<IEventHandler<DomainEvent<MailSendErrorPayload>>>("MailSendErrorHandler");
+
+export namespace MailSendErrorHandler {
+    export type Interface = IEventHandler<DomainEvent<MailSendErrorPayload>>;
+    export type Event = DomainEvent<MailSendErrorPayload>;
 }

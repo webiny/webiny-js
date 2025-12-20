@@ -1,6 +1,6 @@
-import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
+import type { DomainEvent, IEventHandler } from "@webiny/api-core/features/EventPublisher";
 import type { TransportSettings } from "~/types.js";
 
 export interface SaveSettingsInput {
@@ -38,15 +38,25 @@ export interface MailerSettingsBeforeSavePayload {
     input: SaveSettingsInput;
 }
 
-export class MailerSettingsBeforeSaveEvent extends DomainEvent<MailerSettingsBeforeSavePayload> {
-    static eventName = "mailer.settings.beforeSave" as const;
-
-}
-
 export interface MailerSettingsAfterSavePayload {
     settings: TransportSettings;
 }
 
-export class MailerSettingsAfterSaveEvent extends DomainEvent<MailerSettingsAfterSavePayload> {
-    static eventName = "mailer.settings.afterSave" as const;
+// Event Handler Abstractions
+export const MailerSettingsBeforeSaveHandler = createAbstraction<
+    IEventHandler<DomainEvent<MailerSettingsBeforeSavePayload>>
+>("MailerSettingsBeforeSaveHandler");
+
+export namespace MailerSettingsBeforeSaveHandler {
+    export type Interface = IEventHandler<DomainEvent<MailerSettingsBeforeSavePayload>>;
+    export type Event = DomainEvent<MailerSettingsBeforeSavePayload>;
+}
+
+export const MailerSettingsAfterSaveHandler = createAbstraction<
+    IEventHandler<DomainEvent<MailerSettingsAfterSavePayload>>
+>("MailerSettingsAfterSaveHandler");
+
+export namespace MailerSettingsAfterSaveHandler {
+    export type Interface = IEventHandler<DomainEvent<MailerSettingsAfterSavePayload>>;
+    export type Event = DomainEvent<MailerSettingsAfterSavePayload>;
 }

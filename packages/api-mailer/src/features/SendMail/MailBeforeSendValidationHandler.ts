@@ -1,7 +1,7 @@
 import WebinyError from "@webiny/error";
 import zod from "zod";
-import { MailBeforeSendEvent } from "./abstractions.js";
-import { DomainEventHandler } from "@webiny/feature/api";
+import { MailBeforeSendHandler } from "./abstractions.js";
+import type { MailBeforeSendEvent } from "./events.js";
 import type { SafeParseReturnType } from "zod";
 
 const requiredString = zod.string();
@@ -24,9 +24,7 @@ const schema = zod
 
 type SchemaType = zod.infer<typeof schema>;
 
-class MailBeforeSendValidationHandlerImpl
-    implements DomainEventHandler.Interface<MailBeforeSendEvent>
-{
+class MailBeforeSendValidationHandlerImpl implements MailBeforeSendHandler.Interface {
     async handle(event: MailBeforeSendEvent): Promise<void> {
         const { data: input } = event.payload;
 
@@ -61,8 +59,7 @@ class MailBeforeSendValidationHandlerImpl
     }
 }
 
-export const MailBeforeSendValidationHandler = DomainEventHandler.createHandler({
-    event: MailBeforeSendEvent,
+export const MailBeforeSendValidationHandler = MailBeforeSendHandler.createImplementation({
     implementation: MailBeforeSendValidationHandlerImpl,
     dependencies: []
 });

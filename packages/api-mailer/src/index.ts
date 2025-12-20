@@ -16,8 +16,29 @@ export {
 
 // Export feature abstractions
 export { GetSettings, GetSettingsRepository } from "~/features/GetSettings/abstractions.js";
-export { SaveSettings, SaveSettingsRepository } from "~/features/SaveSettings/abstractions.js";
-export { SendMail } from "~/features/SendMail/abstractions.js";
+export {
+    SaveSettings,
+    SaveSettingsRepository,
+    MailerSettingsBeforeSaveHandler,
+    MailerSettingsAfterSaveHandler
+} from "~/features/SaveSettings/abstractions.js";
+export {
+    SendMail,
+    MailBeforeSendHandler,
+    MailAfterSendHandler,
+    MailSendErrorHandler
+} from "~/features/SendMail/abstractions.js";
+
+// Export events
+export {
+    MailerSettingsBeforeSaveEvent,
+    MailerSettingsAfterSaveEvent
+} from "~/features/SaveSettings/events.js";
+export {
+    MailBeforeSendEvent,
+    MailAfterSendEvent,
+    MailSendErrorEvent
+} from "~/features/SendMail/events.js";
 
 // Export utilities
 export { SmtpConfig } from "~/features/SmtpTransport/SmtpConfig.js";
