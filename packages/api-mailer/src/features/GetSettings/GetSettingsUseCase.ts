@@ -1,8 +1,8 @@
 import { Result } from "@webiny/feature/api";
-import { GetSettings, GetSettingsRepository } from "./abstractions.js";
+import { GetSettingsUseCase, GetSettingsRepository } from "./abstractions.js";
 import type { TransportSettings } from "~/types.js";
 
-class GetSettingsUseCaseImpl implements GetSettings.Interface {
+class GetSettingsUseCaseImpl implements GetSettingsUseCase.Interface {
     constructor(private repository: GetSettingsRepository.Interface) {}
 
     execute(): Promise<Result<TransportSettings | null>> {
@@ -10,7 +10,7 @@ class GetSettingsUseCaseImpl implements GetSettings.Interface {
     }
 }
 
-export const GetSettingsUseCaseImplementation = GetSettings.createImplementation({
+export const GetSettingsUseCaseImplementation = GetSettingsUseCase.createImplementation({
     implementation: GetSettingsUseCaseImpl,
     dependencies: [GetSettingsRepository]
 });

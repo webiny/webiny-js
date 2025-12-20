@@ -20,12 +20,14 @@ class SaveSettingsRepositoryImpl implements SaveSettingsRepository.Interface {
         // Check if settings exist
         const existingResult = await this.getSettings.execute(SETTINGS_NAME);
         const existingSettings = existingResult.isOk() ? existingResult.value : null;
+        const transportSettings: Partial<TransportSettings> = existingSettings
+            ? existingSettings.data
+            : {};
 
         // If updating and no password provided, keep the existing password
         let passwordToStore = input.password || "";
         if (!input.password && existingSettings) {
-            const existingData = existingSettings.data as TransportSettings;
-            passwordToStore = existingData.password || "";
+            passwordToStore = transportSettings.password || "";
         }
 
         // Encrypt password
@@ -33,12 +35,12 @@ class SaveSettingsRepositoryImpl implements SaveSettingsRepository.Interface {
 
         // Prepare data
         const data = {
-            host: input.host,
-            port: input.port || DEFAULT_PORT,
-            user: input.user,
+            host: input.host ?? transportSettings.host,
+            port: input.port ?? transportSettings.port ?? DEFAULT_PORT,
+            user: input.user ?? transportSettings.user,
             password: encryptedPassword,
-            from: input.from,
-            replyTo: input.replyTo || ""
+            from: input.from ?? transportSettings.from,
+            replyTo: input.replyTo ?? transportSettings.replyTo ?? ""
         };
 
         // Save settings
@@ -52,16 +54,12 @@ class SaveSettingsRepositoryImpl implements SaveSettingsRepository.Interface {
         }
 
         // Return without encrypted password
-        const transportSettings: TransportSettings = {
-            host: input.host,
-            port: input.port || DEFAULT_PORT,
-            user: input.user,
-            password: "", // Don't return password
-            from: input.from,
-            replyTo: input.replyTo
+        const returnSettings: TransportSettings = {
+            ...data,
+            password: "" // Don't return password
         };
 
-        return Result.ok(transportSettings);
+        return Result.ok(returnSettings);
     }
 }
 

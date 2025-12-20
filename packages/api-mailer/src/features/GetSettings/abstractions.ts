@@ -13,12 +13,12 @@ export namespace GetSettingsRepository {
     export type Interface = IGetSettingsRepository;
 }
 
-export interface IGetSettings {
+export interface IGetSettingsUSeCase {
     execute(): Promise<Result<TransportSettings | null>>;
 }
 
-export const GetSettings = createAbstraction<IGetSettings>("GetSettings");
+export const GetSettingsUseCase = createAbstraction<IGetSettingsUSeCase>("GetSettingsUseCase");
 
-export namespace GetSettings {
-    export type Interface = IGetSettings;
+export namespace GetSettingsUseCase {
+    export type Interface = IGetSettingsUSeCase;
 }

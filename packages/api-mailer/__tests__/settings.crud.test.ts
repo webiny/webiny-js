@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { createContextHandler } from "./contextHandler";
+import { GetSettingsUseCase } from "~/features/GetSettings/index.js";
+import { SaveSettingsUseCase } from "~/features/SaveSettings/index.js";
 import { TransportSendData } from "~/types";
 
 vi.mock("nodemailer", () => {
@@ -29,34 +31,22 @@ describe("Settings Transporter CRUD", () => {
     });
 
     it("should not be possible to get or save settings without secret", async () => {
-        expect.assertions(4);
+        expect.assertions(2);
         const context = await handle();
 
         try {
-            await context.mailer.getSettings();
+            const getSettings = context.container.resolve(GetSettingsUseCase);
+            await getSettings.execute();
         } catch (ex) {
             expect(ex.message).toEqual("There must be a password secret defined!");
         }
 
         try {
-            await context.mailer.createSettings({
-                input: {}
-            });
-        } catch (ex) {
-            expect(ex.message).toEqual("There must be a password secret defined!");
-        }
-
-        try {
-            await context.mailer.updateSettings({
-                input: {}
-            });
-        } catch (ex) {
-            expect(ex.message).toEqual("There must be a password secret defined!");
-        }
-
-        try {
-            await context.mailer.saveSettings({
-                input: {}
+            const saveSettings = context.container.resolve(SaveSettingsUseCase);
+            await saveSettings.execute({
+                host: "test",
+                user: "test",
+                from: "test@test.com"
             });
         } catch (ex) {
             expect(ex.message).toEqual("There must be a password secret defined!");
@@ -71,16 +61,16 @@ describe("Settings Transporter CRUD", () => {
         replyTo: "replyTo@dummy-host.webiny"
     };
 
-    it("should not return response with password when creating settings", async () => {
+    it("should not return response with password when saving settings", async () => {
         process.env.WEBINY_MAILER_PASSWORD_SECRET = "really secret secret";
 
         const context = await handle();
 
-        const response = await context.mailer.createSettings({
-            input
-        });
+        const saveSettings = context.container.resolve(SaveSettingsUseCase);
+        const result = await saveSettings.execute(input);
 
-        expect(response).toEqual({
+        expect(result.isOk()).toBe(true);
+        expect(result.value).toEqual({
             ...input,
             port: 25,
             password: ""
@@ -92,16 +82,16 @@ describe("Settings Transporter CRUD", () => {
 
         const context = await handle();
 
-        await context.mailer.createSettings({
-            input
-        });
+        const saveSettings = context.container.resolve(SaveSettingsUseCase);
+        await saveSettings.execute(input);
 
-        const settings = await context.mailer.getSettings();
+        const getSettings = context.container.resolve(GetSettingsUseCase);
+        const result = await getSettings.execute();
 
-        expect(settings).toEqual({
+        expect(result.isOk()).toBe(true);
+        expect(result.value).toEqual({
             ...input,
-            port: 25,
-            id: expect.any(String)
+            port: 25
         });
     });
 
@@ -110,36 +100,30 @@ describe("Settings Transporter CRUD", () => {
 
         const context = await handle();
 
-        await context.mailer.createSettings({
-            input
+        const saveSettings = context.container.resolve(SaveSettingsUseCase);
+        await saveSettings.execute(input);
+
+        const updateResult = await saveSettings.execute({
+            ...input,
+            port: 30,
+            host: "dummy-host2.webiny"
         });
 
-        const settings = await context.mailer.getSettings();
-
-        const response = await context.mailer.updateSettings({
-            input: {
-                ...input,
-                port: 30,
-                host: "dummy-host2.webiny"
-            },
-            original: settings
-        });
-
-        expect(response).toEqual({
+        expect(updateResult.isOk()).toBe(true);
+        expect(updateResult.value).toEqual({
             ...input,
             port: 30,
             host: "dummy-host2.webiny",
             password: ""
         });
 
-        const responseWithNoOriginal = await context.mailer.updateSettings({
-            input: {
-                ...input,
-                host: "dummy-host3.webiny"
-            }
+        const updateResult2 = await saveSettings.execute({
+            ...input,
+            host: "dummy-host3.webiny"
         });
 
-        expect(responseWithNoOriginal).toEqual({
+        expect(updateResult2.isOk()).toBe(true);
+        expect(updateResult2.value).toEqual({
             ...input,
             port: 30,
             host: "dummy-host3.webiny",
@@ -152,38 +136,37 @@ describe("Settings Transporter CRUD", () => {
 
         const context = await handle();
 
-        await context.mailer.createSettings({
-            input
-        });
-
-        const settings = await context.mailer.getSettings();
+        const saveSettings = context.container.resolve(SaveSettingsUseCase);
+        await saveSettings.execute(input);
 
         const removedPasswordInput: Partial<typeof input> = {
             ...input
         };
         delete removedPasswordInput["password"];
 
-        const response = await context.mailer.updateSettings({
-            input: {
-                ...input,
-                port: 25,
-                host: "dummy-host2.webiny"
-            },
-            original: settings
+        const updateResult = await saveSettings.execute({
+            host: "dummy-host2.webiny",
+            user: input.user,
+            from: input.from,
+            port: 25
         });
 
-        expect(response).toEqual({
+        expect(updateResult.isOk()).toBe(true);
+        expect(updateResult.value).toEqual({
             ...input,
             port: 25,
             host: "dummy-host2.webiny",
             password: ""
         });
 
-        const afterUpdate = await context.mailer.getSettings();
+        const getSettings = context.container.resolve(GetSettingsUseCase);
+        const afterUpdate = await getSettings.execute();
 
-        expect(afterUpdate).toEqual({
-            ...settings,
+        expect(afterUpdate.isOk()).toBe(true);
+        expect(afterUpdate.value).toEqual({
+            ...input,
             password: input.password,
+            port: 25,
             host: "dummy-host2.webiny"
         });
     });
@@ -193,9 +176,8 @@ describe("Settings Transporter CRUD", () => {
 
         const fullCtx = await handle();
 
-        await fullCtx.mailer.createSettings({
-            input
-        });
+        const saveSettings = fullCtx.container.resolve(SaveSettingsUseCase);
+        await saveSettings.execute(input);
 
         const { handle: noAccessHandle } = createContextHandler({
             permissions: []
@@ -203,16 +185,17 @@ describe("Settings Transporter CRUD", () => {
 
         const context = await noAccessHandle();
 
-        const response = await context.mailer.getSettings();
+        const getSettings = context.container.resolve(GetSettingsUseCase);
+        const result = await getSettings.execute();
 
-        expect(response).toEqual({
+        expect(result.isOk()).toBe(true);
+        expect(result.value).toEqual({
             ...input,
-            port: 25,
-            id: expect.any(String)
+            port: 25
         });
     });
 
-    it("should not be possible to create or update settings due to no permissions", async () => {
+    it("should not be possible to save settings due to no permissions", async () => {
         process.env.WEBINY_MAILER_PASSWORD_SECRET = "really secret secret";
 
         const { handle: noAccessHandle } = createContextHandler({
@@ -221,44 +204,22 @@ describe("Settings Transporter CRUD", () => {
 
         const context = await noAccessHandle();
 
-        let createResponse: any = null;
-        let createError: any = null;
+        let saveResponse: any = null;
+        let saveError: any = null;
 
         try {
-            createResponse = await context.mailer.createSettings({
-                input
-            });
+            const saveSettings = context.container.resolve(SaveSettingsUseCase);
+            saveResponse = await saveSettings.execute(input);
         } catch (ex) {
-            createError = {
+            saveError = {
                 message: ex.message,
                 code: ex.code,
                 data: ex.data
             };
         }
 
-        expect(createResponse).toEqual(null);
-        expect(createError).toEqual({
-            message: "Not allowed to update the mailer settings.",
-            code: "NOT_AUTHORIZED"
-        });
-
-        let updateResponse: any = null;
-        let updateError: any = null;
-
-        try {
-            updateResponse = await context.mailer.updateSettings({
-                input
-            });
-        } catch (ex) {
-            updateError = {
-                message: ex.message,
-                code: ex.code,
-                data: ex.data
-            };
-        }
-
-        expect(updateResponse).toEqual(null);
-        expect(updateError).toEqual({
+        expect(saveResponse).toEqual(null);
+        expect(saveError).toEqual({
             message: "Not allowed to update the mailer settings.",
             code: "NOT_AUTHORIZED"
         });

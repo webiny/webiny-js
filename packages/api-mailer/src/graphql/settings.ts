@@ -1,5 +1,5 @@
 import { ErrorResponse, GraphQLSchemaPlugin, Response } from "@webiny/handler-graphql";
-import { GetSettings } from "~/features/GetSettings/abstractions.js";
+import { GetSettingsUseCase } from "~/features/GetSettings/abstractions.js";
 import { SaveSettingsUseCase } from "~/features/SaveSettings/abstractions.js";
 import type { Context } from "@webiny/api/types.js";
 
@@ -58,7 +58,7 @@ export const createSettingsGraphQL = () => {
             MailerQuery: {
                 getSettings: async (_, __, context) => {
                     try {
-                        const getSettings = context.container.resolve(GetSettings);
+                        const getSettings = context.container.resolve(GetSettingsUseCase);
                         const result = await getSettings.execute();
 
                         const settings = result.value;
