@@ -23,8 +23,8 @@ export const CancelReviewDialog = (props: ICancelReviewDialogProps) => {
             }
             actions={
                 <>
-                    <Dialog.CancelButton onClick={hide} />
-                    <Dialog.ConfirmButton text={"Cancel Content Review"} onClick={onCancelReview} />
+                    <Dialog.CancelAction onClick={hide} />
+                    <Dialog.ConfirmAction text={"Cancel Content Review"} onClick={onCancelReview} />
                 </>
             }
             showCloseButton={true}

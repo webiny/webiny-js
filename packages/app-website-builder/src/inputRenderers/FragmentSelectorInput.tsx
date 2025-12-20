@@ -4,19 +4,27 @@ import type { ElementInputRendererProps } from "~/BaseEditor/index.js";
 import { useSelectFromEditor } from "~/BaseEditor/hooks/useSelectFromEditor.js";
 import { toTitleCaseLabel } from "~/shared/toTitleCaseLabel.js";
 
+type Fragment =
+    | { type: "fixed"; name: string }
+    | { type: "component"; component: string; inputs: Record<string, any> };
+
 export const FragmentSelectorInputRenderer = ({
     value,
     onChange,
     label,
     input
 }: ElementInputRendererProps) => {
-    const fragmentNames = useSelectFromEditor<string[]>(state => state.fragments ?? []);
+    const fragments = useSelectFromEditor<Fragment[]>(state => state.fragments ?? []);
+
     const options = useMemo(() => {
-        return fragmentNames.sort().map(name => ({
-            label: toTitleCaseLabel(name),
-            value: name
-        }));
-    }, [fragmentNames]);
+        return fragments
+            .filter(fragment => fragment.type === "fixed")
+            .sort()
+            .map(fragment => ({
+                label: toTitleCaseLabel(fragment.name),
+                value: fragment.name
+            }));
+    }, [fragments]);
 
     return (
         <Select

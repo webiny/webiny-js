@@ -25,8 +25,8 @@ export const TakeOverDialog = (props: ITakeOverProps) => {
             }
             actions={
                 <>
-                    <Dialog.CancelButton onClick={hide} />
-                    <Dialog.ConfirmButton text={"Take Over Content Review"} onClick={onTakeOver} />
+                    <Dialog.CancelAction onClick={hide} />
+                    <Dialog.ConfirmAction text={"Take Over Content Review"} onClick={onTakeOver} />
                 </>
             }
             showCloseButton={true}

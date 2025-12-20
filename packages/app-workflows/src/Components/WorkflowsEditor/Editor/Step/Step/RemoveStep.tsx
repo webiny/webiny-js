@@ -22,8 +22,8 @@ export const RemoveStep = (props: IRemoveStepProps) => {
                 title={`Remove workflow step "${step.title}"?`}
                 actions={
                     <>
-                        <Dialog.CancelButton onClick={close} />
-                        <Dialog.ConfirmButton onClick={onRemove} />
+                        <Dialog.CancelAction onClick={close} />
+                        <Dialog.ConfirmAction onClick={onRemove} />
                     </>
                 }
                 showCloseButton={false}

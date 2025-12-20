@@ -11,7 +11,7 @@ export const Navigation = NavigationRenderer.createDecorator(() => {
         const title = <SimpleLink to={"/"}>{tenant.name}</SimpleLink>;
         const icon = (
             <SimpleLink to={"/"}>
-                <Sidebar.Icon element={tenant.logo} label={"Webiny"} />
+                <Sidebar.Icon element={tenant.squareLogo} label={"Webiny"} />
             </SimpleLink>
         );
 

@@ -43,8 +43,8 @@ export const ImageEditorDialog = (props: ImageEditorDialogProps) => {
             {...dialogProps}
             actions={
                 <>
-                    <Dialog.CancelButton />
-                    <Dialog.ConfirmButton
+                    <Dialog.CancelAction />
+                    <Dialog.ConfirmAction
                         text={"Save"}
                         data-testid="dialog-accept"
                         onClick={onSave}

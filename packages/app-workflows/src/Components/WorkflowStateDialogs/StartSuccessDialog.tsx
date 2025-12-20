@@ -23,7 +23,7 @@ export const StartSuccessDialog = (props: IStartSuccessDialogProps) => {
             }
             actions={
                 <>
-                    <Dialog.ConfirmButton text={"Close"} onClick={hide} />
+                    <Dialog.ConfirmAction text={"Close"} onClick={hide} />
                 </>
             }
             showCloseButton={true}

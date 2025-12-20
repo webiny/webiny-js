@@ -68,7 +68,7 @@ export const ResourcePage = (props: ResourcePageProps) => {
     return (
         <>
             <UnsetOnUnmount name={"metadata.resourceType"}>
-                <Input {...resourceTypeBind} type={"hidden"} />
+                <Input {...resourceTypeBind} className={"hidden"} />
             </UnsetOnUnmount>
             <Grid.Column span={12}>
                 <div className={"border-sm rounded-md border-neutral-muted p-sm"}>

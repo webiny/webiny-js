@@ -13,6 +13,10 @@ import { Commands } from "~/BaseEditor/index.js";
 import { $createElement } from "~/editorSdk/utils/index.js";
 import type { ScrollTracker } from "./ScrollTracker.js";
 
+type Fragment =
+    | { type: "fixed"; name: string }
+    | { type: "component"; component: string; inputs: Record<string, any> };
+
 export class PreviewEvents {
     private editor: Editor;
     private editorEventsRegistered = false;
@@ -103,7 +107,10 @@ export class PreviewEvents {
         });
 
         messenger.on("document.fragments", payload => {
-            const fragments: string[] = payload.fragments;
+            const fragments: Fragment[] = payload.fragments;
+
+            console.log("fragments", fragments);
+
             this.editor.updateEditor(state => {
                 state.fragments = fragments;
             });
@@ -114,17 +121,30 @@ export class PreviewEvents {
                 // We only have the default "root" element, create fragment elements.
                 let index = 0;
                 fragments.forEach(fragment => {
-                    $createElement(this.editor, {
-                        componentName: "Webiny/Fragment",
-                        parentId: "root",
-                        slot: "children",
-                        index,
-                        bindings: {
-                            inputs: {
-                                name: fragment
+                    if (fragment.type === "fixed") {
+                        $createElement(this.editor, {
+                            componentName: "Webiny/Fragment",
+                            parentId: "root",
+                            slot: "children",
+                            index,
+                            bindings: {
+                                inputs: {
+                                    name: fragment.name
+                                }
                             }
-                        }
-                    });
+                        });
+                    } else {
+                        $createElement(this.editor, {
+                            componentName: fragment.component,
+                            parentId: "root",
+                            slot: "children",
+                            index,
+                            bindings: {
+                                inputs: fragment.inputs
+                            }
+                        });
+                    }
+
                     index++;
                 });
             }

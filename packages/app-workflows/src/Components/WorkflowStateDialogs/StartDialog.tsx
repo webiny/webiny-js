@@ -24,8 +24,8 @@ export const StartDialog = (props: IStartDialogProps) => {
             }
             actions={
                 <>
-                    <Dialog.CancelButton onClick={hide} />
-                    <Dialog.ConfirmButton text={"Start Content Review"} onClick={onStart} />
+                    <Dialog.CancelAction onClick={hide} />
+                    <Dialog.ConfirmAction text={"Start Content Review"} onClick={onStart} />
                 </>
             }
             showCloseButton={true}
