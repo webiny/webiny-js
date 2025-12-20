@@ -3,25 +3,26 @@ import {
     EventPublisher,
     EventPublisher as EventPublisherAbstraction
 } from "@webiny/api-core/features/EventPublisher";
-import WebinyError from "@webiny/error";
-import { SaveSettings, SaveSettingsRepository, type SaveSettingsInput } from "./abstractions.js";
+import {
+    SaveSettingsUseCase,
+    SaveSettingsRepository,
+    type SaveSettingsInput
+} from "./abstractions.js";
 import { MailerSettingsBeforeSaveEvent, MailerSettingsAfterSaveEvent } from "./events.js";
 import { saveValidation } from "./validation.js";
-import type { TransportSettings } from "~/types.js";
+import { SettingsValidationError, SettingsPersistenceError } from "~/domain/errors.js";
 
-class SaveSettingsUseCaseImpl implements SaveSettings.Interface {
+class SaveSettingsUseCaseImpl implements SaveSettingsUseCase.Interface {
     constructor(
         private eventPublisher: EventPublisherAbstraction.Interface,
         private repository: SaveSettingsRepository.Interface
     ) {}
 
-    async execute(input: SaveSettingsInput): Promise<Result<TransportSettings, never>> {
+    async execute(input: SaveSettingsInput): SaveSettingsUseCase.Return {
         // Validate input
         const validationResult = saveValidation.safeParse(input);
         if (!validationResult.success) {
-            throw new WebinyError("Validation failed", "VALIDATION_ERROR", {
-                errors: validationResult.error.errors
-            });
+            return Result.fail(new SettingsValidationError(validationResult.error.errors));
         }
 
         // Publish before save event
@@ -29,10 +30,10 @@ class SaveSettingsUseCaseImpl implements SaveSettings.Interface {
         await this.eventPublisher.publish(beforeSaveEvent);
 
         // Save settings
-        const result = await this.repository.save(input);
+        const result = await this.repository.execute(input);
 
         if (result.isFail()) {
-            throw new WebinyError("Failed to save settings", "SAVE_SETTINGS_ERROR", result.error);
+            return Result.fail(new SettingsPersistenceError(result.error));
         }
 
         // Publish after save event
@@ -43,7 +44,7 @@ class SaveSettingsUseCaseImpl implements SaveSettings.Interface {
     }
 }
 
-export const SaveSettingsUseCaseImplementation = SaveSettings.createImplementation({
+export const SaveSettingsUseCaseImplementation = SaveSettingsUseCase.createImplementation({
     implementation: SaveSettingsUseCaseImpl,
     dependencies: [EventPublisher, SaveSettingsRepository]
 });

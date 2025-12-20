@@ -2,6 +2,7 @@ import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { DomainEvent, IEventHandler } from "@webiny/api-core/features/EventPublisher";
 import type { TransportSettings } from "~/types.js";
+import { SettingsValidationError, SettingsPersistenceError } from "~/domain/errors.js";
 
 export interface SaveSettingsInput {
     host: string;
@@ -12,8 +13,15 @@ export interface SaveSettingsInput {
     replyTo?: string;
 }
 
+export interface ISaveSettingsErrors {
+    validation: SettingsValidationError;
+    persistence: SettingsPersistenceError;
+}
+
+type SaveSettingsError = ISaveSettingsErrors[keyof ISaveSettingsErrors];
+
 export interface ISaveSettingsRepository {
-    save(input: SaveSettingsInput): Promise<Result<TransportSettings, never>>;
+    execute(input: SaveSettingsInput): Promise<Result<TransportSettings, SaveSettingsError>>;
 }
 
 export const SaveSettingsRepository =
@@ -21,16 +29,20 @@ export const SaveSettingsRepository =
 
 export namespace SaveSettingsRepository {
     export type Interface = ISaveSettingsRepository;
+    export type Return = Promise<Result<TransportSettings, SaveSettingsError>>;
+    export type Error = SaveSettingsError;
 }
 
 export interface ISaveSettings {
-    execute(input: SaveSettingsInput): Promise<Result<TransportSettings, never>>;
+    execute(input: SaveSettingsInput): Promise<Result<TransportSettings, SaveSettingsError>>;
 }
 
-export const SaveSettings = createAbstraction<ISaveSettings>("SaveSettings");
+export const SaveSettingsUseCase = createAbstraction<ISaveSettings>("SaveSettingsUseCase");
 
-export namespace SaveSettings {
+export namespace SaveSettingsUseCase {
     export type Interface = ISaveSettings;
+    export type Return = Promise<Result<TransportSettings, SaveSettingsError>>;
+    export type Error = SaveSettingsError;
 }
 
 // Domain Events

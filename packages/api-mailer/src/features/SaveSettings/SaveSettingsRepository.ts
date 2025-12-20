@@ -4,7 +4,7 @@ import { GetSettingsUseCase } from "@webiny/api-core/features/settings/GetSettin
 import { Encryption } from "~/domain/Encryption/abstractions.js";
 import { SaveSettingsRepository, type SaveSettingsInput } from "./abstractions.js";
 import type { TransportSettings } from "~/types.js";
-import WebinyError from "@webiny/error";
+import { SettingsPersistenceError } from "~/domain/errors.js";
 
 const SETTINGS_NAME = "mailerTransportSettings";
 const DEFAULT_PORT = 25;
@@ -16,7 +16,7 @@ class SaveSettingsRepositoryImpl implements SaveSettingsRepository.Interface {
         private encryption: Encryption.Interface
     ) {}
 
-    async save(input: SaveSettingsInput): Promise<Result<TransportSettings, never>> {
+    async execute(input: SaveSettingsInput): SaveSettingsRepository.Return {
         // Check if settings exist
         const existingResult = await this.getSettings.execute(SETTINGS_NAME);
         const existingSettings = existingResult.isOk() ? existingResult.value : null;
@@ -24,7 +24,7 @@ class SaveSettingsRepositoryImpl implements SaveSettingsRepository.Interface {
         // If updating and no password provided, keep the existing password
         let passwordToStore = input.password || "";
         if (!input.password && existingSettings) {
-            const existingData = existingSettings.data as any;
+            const existingData = existingSettings.data as TransportSettings;
             passwordToStore = existingData.password || "";
         }
 
@@ -48,11 +48,7 @@ class SaveSettingsRepositoryImpl implements SaveSettingsRepository.Interface {
         });
 
         if (result.isFail()) {
-            throw new WebinyError(
-                "Failed to save mailer settings",
-                "SAVE_SETTINGS_ERROR",
-                result.error
-            );
+            return Result.fail(new SettingsPersistenceError(result.error));
         }
 
         // Return without encrypted password

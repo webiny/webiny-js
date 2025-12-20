@@ -1,3 +1,5 @@
+// TODO: place types into appropriate domain abstractions
+
 /**
  * Interface to implement the actual mailer.
  */

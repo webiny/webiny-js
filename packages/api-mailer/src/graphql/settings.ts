@@ -1,6 +1,6 @@
 import { ErrorResponse, GraphQLSchemaPlugin, Response } from "@webiny/handler-graphql";
 import { GetSettings } from "~/features/GetSettings/abstractions.js";
-import { SaveSettings } from "~/features/SaveSettings/abstractions.js";
+import { SaveSettingsUseCase } from "~/features/SaveSettings/abstractions.js";
 import type { Context } from "@webiny/api/types.js";
 
 const emptyResolver = () => ({});
@@ -80,8 +80,12 @@ export const createSettingsGraphQL = () => {
             MailerMutation: {
                 saveSettings: async (_, args: any, context) => {
                     try {
-                        const saveSettings = context.container.resolve(SaveSettings);
+                        const saveSettings = context.container.resolve(SaveSettingsUseCase);
                         const result = await saveSettings.execute(args.data);
+
+                        if (result.isFail()) {
+                            return new ErrorResponse(result.error);
+                        }
 
                         const settings = result.value;
 
