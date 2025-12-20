@@ -3,7 +3,6 @@ import { GetSettingsUseCase as CoreGetSettings } from "@webiny/api-core/features
 import { Encryption } from "~/domain/Encryption/abstractions.js";
 import { GetSettingsRepository } from "./abstractions.js";
 import type { TransportSettings } from "~/types.js";
-import type { GenericRecord } from "@webiny/api/types.js";
 
 const SETTINGS_NAME = "mailerTransportSettings";
 

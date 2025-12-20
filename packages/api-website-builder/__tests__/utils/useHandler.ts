@@ -47,11 +47,9 @@ export const useHandler = (params: UseHandlerParams = {}) => {
             createContextPlugin(context => {
                 context.container.register(InvalidateCloudfrontCacheTaskDefinition);
             }),
-            createEventHandler<any, ApiCoreContext, ApiCoreContext>(
-                async ({ context }) => {
-                    return context;
-                }
-            ),
+            createEventHandler<any, ApiCoreContext, ApiCoreContext>(async ({ context }) => {
+                return context;
+            }),
             plugins
         ]
     });

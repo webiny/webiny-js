@@ -65,6 +65,7 @@ export const createSettingsGraphQL = () => {
 
                         // Remove password from response
                         if (settings?.password) {
+                            // eslint-disable-next-line @typescript-eslint/no-unused-vars
                             const { password, ...settingsWithoutPassword } = settings;
                             return new Response(settingsWithoutPassword);
                         }
@@ -92,6 +93,7 @@ export const createSettingsGraphQL = () => {
                         // Remove password from response
                         // TODO: create a GraphQL output mapper
                         if (settings?.password) {
+                            // eslint-disable-next-line @typescript-eslint/no-unused-vars
                             const { password, ...settingsWithoutPassword } = settings;
                             return new Response(settingsWithoutPassword);
                         }

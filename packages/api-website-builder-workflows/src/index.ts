@@ -1,23 +1,18 @@
-import { ContextPlugin } from "@webiny/handler/Context.js";
-import { attachLifecycleEvents } from "~/websiteBuilder/index.js";
-import { Context } from "./types.js";
-import { attachStateLifecycleEvents } from "~/state/index.js";
+import { createContextPlugin } from "@webiny/api";
+import { PageWorkflowsFeature } from "./features/PageWorkflows/feature.js";
 import { createWebsiteBuilderPageGraphQLExtension } from "~/graphql/page.js";
+import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 
 export const createWebsiteBuilderWorkflows = () => {
-    const plugin = new ContextPlugin<Context>(async context => {
-        if (!context.wcp.canUseWorkflows()) {
-            return;
-        } else if (!context.workflows) {
+    const plugin = createContextPlugin(async context => {
+        const wcpContext = context.container.resolve(WcpContext);
+
+        if (!wcpContext.canUseWorkflows()) {
             return;
         }
 
-        attachLifecycleEvents({
-            context
-        });
-        attachStateLifecycleEvents({
-            context
-        });
+        // Register features
+        PageWorkflowsFeature.register(context.container, context);
     });
 
     plugin.name = "website-builder-workflows.context";
