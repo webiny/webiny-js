@@ -1,5 +1,4 @@
 import type { ContentEntryTraverser } from "~/utils/contentEntryTraverser/ContentEntryTraverser.js";
-import type { Topic } from "@webiny/pubsub/types.js";
 import type {
     CmsDeleteEntryOptions,
     CmsEntry,

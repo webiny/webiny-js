@@ -13861,7 +13861,6 @@ __metadata:
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
-    "@webiny/pubsub": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     graphql: "npm:^16.12.0"
@@ -14404,7 +14403,6 @@ __metadata:
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
-    "@webiny/pubsub": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
@@ -14446,7 +14444,6 @@ __metadata:
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
-    "@webiny/pubsub": "npm:0.0.0"
     crypto-js: "npm:^4.2.0"
     graphql: "npm:^16.12.0"
     jest-dynalite: "npm:^3.6.1"
@@ -16388,17 +16385,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/pubsub@npm:0.0.0, @webiny/pubsub@workspace:packages/pubsub":
-  version: 0.0.0-use.local
-  resolution: "@webiny/pubsub@workspace:packages/pubsub"
-  dependencies:
-    "@webiny/build-tools": "npm:0.0.0"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-    vitest: "npm:^3.2.4"
-  languageName: unknown
-  linkType: soft
-
 "@webiny/pulumi-sdk@npm:0.0.0, @webiny/pulumi-sdk@workspace:packages/pulumi-sdk":
   version: 0.0.0-use.local
   resolution: "@webiny/pulumi-sdk@workspace:packages/pulumi-sdk"
@@ -16533,7 +16519,6 @@ __metadata:
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
-    "@webiny/pubsub": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     deep-equal: "npm:^2.2.3"
     lodash: "npm:^4.17.21"

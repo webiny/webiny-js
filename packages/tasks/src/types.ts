@@ -5,7 +5,6 @@ import type {
     CmsEntryMeta,
     CmsModel
 } from "@webiny/api-headless-cms/types/index.js";
-import type { Topic } from "@webiny/pubsub/types.js";
 import type { IResponseError } from "~/response/abstractions/index.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { IStepFunctionServiceFetchResult } from "~/service/StepFunctionServicePlugin.js";
@@ -159,33 +158,6 @@ export interface ITaskUpdateData<
     iterations?: number;
 }
 
-export interface OnTaskBeforeCreateTopicParams {
-    input: ITaskCreateData;
-}
-
-export interface OnTaskAfterCreateTopicParams {
-    input: ITaskCreateData;
-    task: ITask;
-}
-
-export interface OnTaskBeforeUpdateTopicParams {
-    input: ITaskUpdateData;
-    original: ITask;
-}
-
-export interface OnTaskAfterUpdateTopicParams {
-    input: ITaskUpdateData;
-    task: ITask;
-}
-
-export interface OnTaskBeforeDeleteTopicParams {
-    task: ITask;
-}
-
-export interface OnTaskAfterDeleteTopicParams {
-    task: ITask;
-}
-
 export interface ITaskLogCreateInput {
     executionName: string;
     iteration: number;
@@ -236,15 +208,6 @@ export interface ITasksContextCrudObject {
     getLog(id: string): Promise<ITaskLog | null>;
     getLatestLog(taskId: string): Promise<ITaskLog>;
     listLogs(params: IListTaskLogParams): Promise<IListTaskLogsResponse>;
-    /**
-     * Lifecycle events.
-     */
-    onTaskBeforeCreate: Topic<OnTaskBeforeCreateTopicParams>;
-    onTaskAfterCreate: Topic<OnTaskAfterCreateTopicParams>;
-    onTaskBeforeUpdate: Topic<OnTaskBeforeUpdateTopicParams>;
-    onTaskAfterUpdate: Topic<OnTaskAfterUpdateTopicParams>;
-    onTaskBeforeDelete: Topic<OnTaskBeforeDeleteTopicParams>;
-    onTaskAfterDelete: Topic<OnTaskAfterDeleteTopicParams>;
 }
 
 export interface ITasksContextDefinitionObject {

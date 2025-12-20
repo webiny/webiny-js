@@ -8,19 +8,12 @@ import type {
     ITaskLogCreateInput,
     ITaskLogUpdateInput,
     ITasksContextCrudObject,
-    ITaskUpdateData,
-    OnTaskAfterCreateTopicParams,
-    OnTaskAfterDeleteTopicParams,
-    OnTaskAfterUpdateTopicParams,
-    OnTaskBeforeCreateTopicParams,
-    OnTaskBeforeDeleteTopicParams,
-    OnTaskBeforeUpdateTopicParams
+    ITaskUpdateData
 } from "~/types.js";
 import { TaskDataStatus } from "~/types.js";
 import { WEBINY_TASK_LOG_MODEL_ID, WEBINY_TASK_MODEL_ID } from "./model.js";
 import type { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { createTopic } from "@webiny/pubsub";
 import { remapWhere } from "./where.js";
 import { createZodError, parseIdentifier } from "@webiny/utils";
 import zod from "zod";
@@ -39,6 +32,15 @@ import {
 } from "~/domain/errors.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
+import {
+    TaskBeforeCreateEvent,
+    TaskAfterCreateEvent,
+    TaskBeforeUpdateEvent,
+    TaskAfterUpdateEvent,
+    TaskBeforeDeleteEvent,
+    TaskAfterDeleteEvent
+} from "~/events/index.js";
 
 const createRevisionId = (id: string) => {
     const { id: entryId } = parseIdentifier(id);
@@ -120,13 +122,6 @@ const validateTaskInput = async (params: IValidateParams) => {
 };
 
 export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
-    const onTaskBeforeCreate = createTopic<OnTaskBeforeCreateTopicParams>("tasks.onBeforeCreate");
-    const onTaskAfterCreate = createTopic<OnTaskAfterCreateTopicParams>("tasks.onAfterCreate");
-    const onTaskBeforeUpdate = createTopic<OnTaskBeforeUpdateTopicParams>("tasks.onBeforeUpdate");
-    const onTaskAfterUpdate = createTopic<OnTaskAfterUpdateTopicParams>("tasks.onAfterUpdate");
-    const onTaskBeforeDelete = createTopic<OnTaskBeforeDeleteTopicParams>("tasks.onBeforeDelete");
-    const onTaskAfterDelete = createTopic<OnTaskAfterDeleteTopicParams>("tasks.onAfterDelete");
-
     const getTaskModel = async (): Promise<CmsModel> => {
         const identityContext = context.container.resolve(IdentityContext);
         return await identityContext.withoutAuthorization(async () => {
@@ -215,21 +210,36 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
         });
 
         const identityContext = context.container.resolve(IdentityContext);
-        const entry = await identityContext.withoutAuthorization(async () => {
+        const eventPublisher = context.container.resolve(EventPublisher);
+
+        const beforeCreateEvent = new TaskBeforeCreateEvent({
+            input: data
+        });
+        await eventPublisher.publish(beforeCreateEvent);
+
+        const result = await identityContext.withoutAuthorization(async () => {
             const model = await getTaskModel();
             const createEntry = context.container.resolve(CreateEntryUseCase);
-            const result = await createEntry.execute(model, {
+            return createEntry.execute(model, {
                 ...data,
                 iterations: 0,
                 taskStatus: TaskDataStatus.PENDING
             });
-            if (result.isFail()) {
-                throw result.error;
-            }
-            return result.value;
         });
 
-        return convertToTask(entry as unknown as CmsEntry<TaskService.Task>);
+        if (result.isFail()) {
+            throw result.error;
+        }
+
+        const task = convertToTask(result.value as unknown as CmsEntry<TaskService.Task>);
+
+        const afterCreateEvent = new TaskAfterCreateEvent({
+            input: data,
+            task
+        });
+        await eventPublisher.publish(afterCreateEvent);
+
+        return task;
     };
 
     const updateTask = async <
@@ -239,101 +249,138 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
         id: string,
         data: ITaskUpdateData<T, O>
     ) => {
-        const identityContext = context.container.resolve(IdentityContext);
-        const entry = await identityContext.withoutAuthorization(async () => {
-            const model = await getTaskModel();
-            const updateEntry = context.container.resolve(UpdateEntryUseCase);
-            const result = await updateEntry.execute(model, createRevisionId(id), {
-                ...data,
-                savedOn: new Date().toISOString()
-            });
-
-            if (result.isFail()) {
-                return null;
-            }
-
-            return result.value;
-        });
-
-        if (!entry) {
+        const original = await getTask<T, O>(id);
+        if (!original) {
             throw new TaskNotFoundError();
         }
 
-        return convertToTask<T, O>(entry as unknown as CmsEntry<TaskService.Task<T, O>>);
+        const identityContext = context.container.resolve(IdentityContext);
+        const eventPublisher = context.container.resolve(EventPublisher);
+
+        const beforeUpdateEvent = new TaskBeforeUpdateEvent({
+            input: data,
+            original
+        });
+        await eventPublisher.publish(beforeUpdateEvent);
+
+        const result = await identityContext.withoutAuthorization(async () => {
+            const model = await getTaskModel();
+            const updateEntry = context.container.resolve(UpdateEntryUseCase);
+            return updateEntry.execute(model, createRevisionId(id), {
+                ...data,
+                savedOn: new Date().toISOString()
+            });
+        });
+
+        if (result.isFail()) {
+            throw result.error;
+        }
+
+        const task = convertToTask<T, O>(
+            result.value as unknown as CmsEntry<TaskService.Task<T, O>>
+        );
+
+        const afterUpdateEvent = new TaskAfterUpdateEvent({
+            input: data,
+            task
+        });
+        await eventPublisher.publish(afterUpdateEvent);
+
+        return task;
     };
 
     const deleteTask = async (id: string) => {
+        const task = await getTask(id);
+        if (!task) {
+            throw new TaskNotFoundError();
+        }
+
         const identityContext = context.container.resolve(IdentityContext);
-        return identityContext.withoutAuthorization(async () => {
+        const eventPublisher = context.container.resolve(EventPublisher);
+
+        const beforeDeleteEvent = new TaskBeforeDeleteEvent({
+            task
+        });
+        await eventPublisher.publish(beforeDeleteEvent);
+
+        const result = await identityContext.withoutAuthorization(async () => {
             const model = await getTaskModel();
             const deleteEntry = context.container.resolve(DeleteEntryUseCase);
-            const result = await deleteEntry.execute(model, createRevisionId(id));
-            if (result.isFail()) {
-                throw new TaskNotFoundError();
-            }
-            return true;
+            return deleteEntry.execute(model, createRevisionId(id));
         });
+
+        if (result.isFail()) {
+            throw new TaskNotFoundError();
+        }
+
+        const afterDeleteEvent = new TaskAfterDeleteEvent({ task });
+        await eventPublisher.publish(afterDeleteEvent);
+
+        return true;
     };
 
     const createLog = async (task: Pick<TaskService.Task, "id">, data: ITaskLogCreateInput) => {
         const identityContext = context.container.resolve(IdentityContext);
-        const entry = await identityContext.withoutAuthorization(async () => {
+        const result = await identityContext.withoutAuthorization(async () => {
             const model = await getLogModel();
             const createEntry = context.container.resolve(CreateEntryUseCase);
-            const result = await createEntry.execute(model, {
+            return createEntry.execute(model, {
                 ...data,
                 task: task.id
             });
-            if (result.isFail()) {
-                throw result.error;
-            }
-            return result.value;
         });
 
-        return convertToLog(entry as unknown as CmsEntry<ITaskLog>);
+        if (result.isFail()) {
+            throw result.error;
+        }
+
+        return convertToLog(result.value as unknown as CmsEntry<ITaskLog>);
     };
 
     const updateLog = async (id: string, data: ITaskLogUpdateInput) => {
         const identityContext = context.container.resolve(IdentityContext);
-        const entry = await identityContext.withoutAuthorization(async () => {
+        const result = await identityContext.withoutAuthorization(async () => {
             const model = await getLogModel();
             const updateEntry = context.container.resolve(UpdateEntryUseCase);
-            const result = await updateEntry.execute(model, createRevisionId(id), data);
-            if (result.isFail()) {
-                throw new TaskLogNotFoundError();
-            }
-            return result.value;
+            return updateEntry.execute(model, createRevisionId(id), data);
         });
-        return convertToLog(entry as unknown as CmsEntry<ITaskLog>);
+
+        if (result.isFail()) {
+            throw new TaskLogNotFoundError();
+        }
+
+        return convertToLog(result.value as unknown as CmsEntry<ITaskLog>);
     };
 
     const deleteLog = async (id: string) => {
         const identityContext = context.container.resolve(IdentityContext);
-        return identityContext.withoutAuthorization(async () => {
+        const result = await identityContext.withoutAuthorization(async () => {
             const model = await getLogModel();
             const deleteEntry = context.container.resolve(DeleteEntryUseCase);
-            const result = await deleteEntry.execute(model, id);
-            if (result.isFail()) {
-                throw new TaskLogNotFoundError();
-            }
-            return true;
+            return deleteEntry.execute(model, id);
         });
+
+        if (result.isFail()) {
+            throw new TaskLogNotFoundError();
+        }
+
+        return true;
     };
 
     const getLog = async (id: string): Promise<ITaskLog | null> => {
         const identityContext = context.container.resolve(IdentityContext);
         try {
-            const entry = await identityContext.withoutAuthorization(async () => {
+            const result = await identityContext.withoutAuthorization(async () => {
                 const model = await getLogModel();
                 const getEntryById = context.container.resolve(GetEntryByIdUseCase);
-                const result = await getEntryById.execute(model, id);
-                if (result.isFail()) {
-                    throw result.error;
-                }
-                return result.value;
+                return getEntryById.execute(model, id);
             });
 
-            return convertToLog(entry as unknown as CmsEntry<ITaskLog>);
+            if (result.isFail()) {
+                throw result.error;
+            }
+
+            return convertToLog(result.value as unknown as CmsEntry<ITaskLog>);
         } catch (ex) {
             if (ex instanceof NotFoundError) {
                 return null;
@@ -390,12 +437,6 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
     };
 
     return {
-        onTaskBeforeCreate,
-        onTaskAfterCreate,
-        onTaskBeforeUpdate,
-        onTaskAfterUpdate,
-        onTaskBeforeDelete,
-        onTaskAfterDelete,
         getTask,
         listTasks,
         createTask,
