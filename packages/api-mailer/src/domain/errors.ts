@@ -1,6 +1,19 @@
 import { BaseError } from "@webiny/feature/api";
 import type { ZodError } from "zod";
 
+export class MailValidationError extends BaseError<{ errors: ZodError["errors"] }> {
+    override readonly code = "Mailer/SendMail/Validation" as const;
+
+    constructor(errors: ZodError["errors"]) {
+        super({
+            message: "Email params are invalid.",
+            data: {
+                errors
+            }
+        });
+    }
+}
+
 export class SettingsValidationError extends BaseError<{ errors: ZodError["errors"] }> {
     override readonly code = "Mailer/Settings/Validation" as const;
 

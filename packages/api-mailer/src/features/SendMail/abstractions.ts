@@ -3,15 +3,24 @@ import { Result } from "@webiny/feature/api";
 import type { DomainEvent, IEventHandler } from "@webiny/api-core/features/EventPublisher";
 import type { TransportSendData, TransportSendResponse } from "~/types.js";
 import type { MailerService } from "~/domain/MailerService/abstractions.js";
+import { MailValidationError } from "~/domain/errors.js";
 
-export interface ISendMail {
-    execute(data: TransportSendData): Promise<Result<TransportSendResponse, MailerService.Error>>;
+export interface ISendMailErrors {
+    validation: MailValidationError;
+    mailService: MailerService.Error;
 }
 
-export const SendMail = createAbstraction<ISendMail>("SendMail");
+type SendMailErrors = ISendMailErrors[keyof ISendMailErrors];
 
-export namespace SendMail {
-    export type Interface = ISendMail;
+export interface ISendMailUseCase {
+    execute(data: TransportSendData): Promise<Result<TransportSendResponse, SendMailErrors>>;
+}
+
+export const SendMailUseCase = createAbstraction<ISendMailUseCase>("SendMail");
+
+export namespace SendMailUseCase {
+    export type Interface = ISendMailUseCase;
+    export type Error = SendMailErrors;
 }
 
 // Domain Events
