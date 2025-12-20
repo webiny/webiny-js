@@ -90,6 +90,7 @@ export const createSettingsGraphQL = () => {
                         const settings = result.value;
 
                         // Remove password from response
+                        // TODO: create a GraphQL output mapper
                         if (settings?.password) {
                             const { password, ...settingsWithoutPassword } = settings;
                             return new Response(settingsWithoutPassword);
