@@ -78,6 +78,9 @@
       "@webiny/api-aco/features/folder/ListFolders": [
         "../api-aco/src/features/folder/ListFolders/index.js"
       ],
+      "@webiny/api-aco/features/folder/EnsureFolderIsEmpty": [
+        "../api-aco/src/features/folder/EnsureFolderIsEmpty/index.js"
+      ],
       "@webiny/api-aco/*": ["../api-aco/src/*"],
       "@webiny/api-aco": ["../api-aco/src"],
       "@webiny/api-audit-logs/*": ["../api-audit-logs/src/*"],

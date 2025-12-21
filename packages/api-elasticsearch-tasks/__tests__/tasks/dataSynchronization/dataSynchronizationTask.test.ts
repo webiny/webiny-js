@@ -3,7 +3,6 @@ import { createDataSynchronization, DATA_SYNCHRONIZATION_TASK } from "~/tasks";
 import { createRunner } from "@webiny/project-utils/testing/tasks";
 import { useHandler } from "~tests/helpers/useHandler";
 import type { IDataSynchronizationInput, IFactories } from "~/tasks/dataSynchronization/types";
-import { TaskDataStatus } from "@webiny/tasks/types";
 import {
     TaskDefinition,
     TaskResultStatus

@@ -30,9 +30,11 @@ class ListEntriesRepositoryImpl implements RepositoryAbstraction.Interface {
     ): Promise<Result<[CmsEntry<T>[], CmsEntryMeta], RepositoryAbstraction.Error>> {
         try {
             const limit = params.limit && params.limit > 0 ? params.limit : 50;
+            const sort = params.sort ?? ["createdOn_DESC"];
+
             const listParams: CmsEntryStorageOperationsListParams = {
-                sort: ["createdOn_DESC"],
                 ...params,
+                sort,
                 limit,
                 where: { ...params.where },
                 fields: this.searchableFieldsProvider({ fields: model.fields })
