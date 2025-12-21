@@ -31,6 +31,7 @@ class ListEntriesRepositoryImpl implements RepositoryAbstraction.Interface {
         try {
             const limit = params.limit && params.limit > 0 ? params.limit : 50;
             const listParams: CmsEntryStorageOperationsListParams = {
+                sort: ["createdOn_DESC"],
                 ...params,
                 limit,
                 where: { ...params.where },
