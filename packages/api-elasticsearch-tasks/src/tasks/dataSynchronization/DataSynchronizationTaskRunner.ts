@@ -34,12 +34,6 @@ export class DataSynchronizationTaskRunner {
          */
         //
         if (input.flow === "elasticsearchToDynamoDb" && !input.elasticsearchToDynamoDb?.finished) {
-            if (!this.manager.dbRegistry) {
-                return this.manager.controller.response.error(
-                    "DbRegistry is required for data synchronization but was not provided to Manager"
-                );
-            }
-
             const sync = this.factories.elasticsearchToDynamoDb({
                 manager: this.manager,
                 indexManager: this.indexManager,
