@@ -1,8 +1,7 @@
 import { WebinyError } from "@webiny/error";
-import { FolderBeforeDeleteHandler } from "@webiny/api-aco/features/folder/DeleteFolder/abstractions.js";
-import type { FolderBeforeDeleteEvent } from "@webiny/api-aco/features/folder/DeleteFolder/events.js";
+import { FolderBeforeDeleteHandler } from "@webiny/api-aco/features/folder/DeleteFolder";
 import { ListFilesUseCase } from "@webiny/api-file-manager/features/file/ListFiles/index.js";
-import { EnsureFolderIsEmpty } from "@webiny/api-aco/features/folder/EnsureFolderIsEmpty/abstractions.js";
+import { EnsureFolderIsEmpty } from "@webiny/api-aco/features/folder/EnsureFolderIsEmpty";
 
 class EnsureFolderIsEmptyBeforeDeleteImpl implements FolderBeforeDeleteHandler.Interface {
     constructor(
@@ -10,7 +9,7 @@ class EnsureFolderIsEmptyBeforeDeleteImpl implements FolderBeforeDeleteHandler.I
         private listFiles: ListFilesUseCase.Interface
     ) {}
 
-    async handle(event: FolderBeforeDeleteEvent): Promise<void> {
+    async handle(event: FolderBeforeDeleteHandler.Event): Promise<void> {
         const { folder } = event.payload;
 
         const { id, type } = folder;

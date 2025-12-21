@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { FolderAfterCreateHandler } from "@webiny/api-aco/features/folder/CreateFolder/index.js";
+import { FolderAfterCreateHandler } from "@webiny/api-aco/features/folder/CreateFolder";
 import { AuditLogsContext } from "~/abstractions.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";

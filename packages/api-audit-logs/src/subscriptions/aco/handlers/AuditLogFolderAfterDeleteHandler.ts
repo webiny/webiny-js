@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { FolderAfterDeleteHandler } from "@webiny/api-aco/features/folder/DeleteFolder/index.js";
+import { FolderAfterDeleteHandler } from "@webiny/api-aco/features/folder/DeleteFolder";
 import { AuditLogsContext } from "~/abstractions.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";

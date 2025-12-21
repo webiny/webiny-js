@@ -27,6 +27,8 @@
     "./features/folder/GetFolder": "./features/folder/GetFolder/index.js",
     "./features/folder/GetFolderHierarchy": "./features/folder/GetFolderHierarchy/index.js",
     "./features/folder/ListFolders": "./features/folder/ListFolders/index.js",
+    "./features/folder/EnsureFolderIsEmpty": "./features/folder/EnsureFolderIsEmpty/index.js",
+    "./*": "./*",
     ".": "./index.js"
   },
   "dependencies": {

@@ -44,12 +44,15 @@ export class ModelAlreadyExistsError extends BaseError<{ modelId: string }> {
     }
 }
 
-export class ModelPersistenceError extends BaseError {
+export class ModelPersistenceError extends BaseError<{ error: Error }> {
     override readonly code = "Cms/Model/PersistenceError" as const;
 
     constructor(error: Error) {
         super({
-            message: error.message
+            message: error.message,
+            data: {
+                error
+            }
         });
     }
 }
