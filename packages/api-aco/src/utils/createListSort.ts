@@ -7,7 +7,7 @@ import type {
 
 export const createListSort = (sort?: ListSort): CmsEntryListSort | undefined => {
     if (!sort) {
-        return;
+        return [`id_DESC`];
     }
 
     return Object.keys(sort).map(key => {

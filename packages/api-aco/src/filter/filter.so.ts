@@ -39,7 +39,7 @@ export const createFilterOperations = (
 
                 const [entries, meta] = await cms.listLatestEntries(model, {
                     ...params,
-                    sort: createListSort(sort) ?? [`id_DESC`],
+                    sort: createListSort(sort),
                     where: {
                         ...where,
                         createdBy
