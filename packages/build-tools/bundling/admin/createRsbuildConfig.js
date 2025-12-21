@@ -48,6 +48,10 @@ export const createRsbuildConfig = ({ cwd }) => {
                             {
                                 name: "preset-default",
                                 params: { overrides: { removeViewBox: false } }
+                            },
+                            {
+                                name: "removeAttrs",
+                                params: { attrs: "(width|height)" }
                             }
                         ]
                     }
