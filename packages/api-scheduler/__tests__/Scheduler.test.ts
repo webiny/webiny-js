@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { useHandler } from "~tests/mocks/context/useHandler.js";
+import { until } from "@webiny/project-utils/testing/helpers/until";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { createMockScheduleClient } from "./mocks/scheduleClient.js";
 import { ExecuteScheduledActionUseCase } from "~/features/ExecuteScheduledAction/abstractions.js";
@@ -9,6 +9,7 @@ import { ScheduledActionHandler } from "~/shared/abstractions.js";
 import { ScheduledActionId } from "~/domain/ScheduledActionId.js";
 import { ListScheduledActionsUseCase } from "~/features/ListScheduledActions/index.js";
 import { CancelScheduledActionUseCase } from "~/features/CancelScheduledAction/index.js";
+import { useHandler } from "~tests/mocks/context/useHandler.js";
 
 describe("Scheduler", () => {
     const targetId = "target-id#0001";
@@ -254,12 +255,19 @@ describe("Scheduler", () => {
         expect(scheduleResult1.isOk()).toBe(true);
         expect(scheduleResult2.isOk()).toBe(true);
 
-        const scheduledActionsResult = await listScheduledActions.execute({
-            where: { namespace, targetId }
-        });
-        expect(scheduledActionsResult.isOk()).toBe(true);
+        const scheduledActionsResult = await until(
+            async () => {
+                const result = await listScheduledActions.execute({
+                    where: { namespace, targetId }
+                });
+                return result.isOk() ? result.value : { items: [], meta: {} };
+            },
+            (result: any) => {
+                return result.items.length === 2;
+            }
+        );
 
-        const scheduledActions = scheduledActionsResult.value.items;
+        const scheduledActions = scheduledActionsResult.items;
 
         expect(scheduledActions.length).toBe(2);
 
@@ -268,7 +276,13 @@ describe("Scheduler", () => {
         }
 
         // Assert all actions were cancelled
-        const allActions = await listScheduledActions.execute({ where: { namespace } });
-        expect(allActions.value.items.length).toBe(0);
+        const allActions = await until(
+            async () => {
+                const result = await listScheduledActions.execute({ where: { namespace } });
+                return result.isOk() ? result.value : { items: [], meta: {} };
+            },
+            (result: any) => result.items.length === 0
+        );
+        expect(allActions.items.length).toBe(0);
     });
 });

@@ -1,5 +1,5 @@
 import { Result } from "@webiny/feature/api";
-import { ListEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/abstractions.js";
+import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/abstractions.js";
 import type { CmsEntryListWhere } from "@webiny/api-headless-cms/types/index.js";
 import {
     ListScheduledActionsUseCase as UseCaseAbstraction,
@@ -21,7 +21,7 @@ import { ScheduledActionPersistenceError } from "~/domain/errors.js";
  */
 class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
-        private listEntriesUseCase: ListEntriesUseCase.Interface,
+        private listEntriesUseCase: ListLatestEntriesUseCase.Interface,
         private model: ScheduledActionModel.Interface
     ) {}
 
@@ -66,5 +66,5 @@ class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const ListScheduledActionsUseCase = UseCaseAbstraction.createImplementation({
     implementation: ListScheduledActionsUseCaseImpl,
-    dependencies: [ListEntriesUseCase, ScheduledActionModel]
+    dependencies: [ListLatestEntriesUseCase, ScheduledActionModel]
 });
