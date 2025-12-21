@@ -60,7 +60,6 @@ export const MODEL_FIELDS = `
     titleFieldId
     descriptionFieldId
     imageFieldId
-    lockedFields
     layout
     tags
     fields {

@@ -4,11 +4,12 @@
   "references": [
     { "path": "../api" },
     { "path": "../api-headless-cms" },
-    { "path": "../aws-sdk" },
-    { "path": "../error" },
+    { "path": "../api-scheduler" },
+    { "path": "../feature" },
     { "path": "../handler-graphql" },
     { "path": "../utils" },
     { "path": "../api-core" },
+    { "path": "../aws-sdk" },
     { "path": "../handler" },
     { "path": "../handler-aws" },
     { "path": "../plugins" },
@@ -25,10 +26,27 @@
       "@webiny/api": ["../api/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
-      "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
-      "@webiny/aws-sdk": ["../aws-sdk/src"],
-      "@webiny/error/*": ["../error/src/*"],
-      "@webiny/error": ["../error/src"],
+      "@webiny/api-scheduler/features/ScheduleAction": [
+        "../api-scheduler/src/features/ScheduleAction/index.js"
+      ],
+      "@webiny/api-scheduler/features/GetScheduledAction": [
+        "../api-scheduler/src/features/GetScheduledAction/index.js"
+      ],
+      "@webiny/api-scheduler/features/ListScheduledActions": [
+        "../api-scheduler/src/features/ListScheduledActions/index.js"
+      ],
+      "@webiny/api-scheduler/features/CancelScheduledAction": [
+        "../api-scheduler/src/features/CancelScheduledAction/index.js"
+      ],
+      "@webiny/api-scheduler/features/ExecuteScheduledAction": [
+        "../api-scheduler/src/features/ExecuteScheduledAction/index.js"
+      ],
+      "@webiny/api-scheduler/*": ["../api-scheduler/src/*"],
+      "@webiny/api-scheduler": ["../api-scheduler/src"],
+      "@webiny/feature/api": ["../feature/src/api/index.js"],
+      "@webiny/feature/admin": ["../feature/src/admin/index.js"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/utils/*": ["../utils/src/*"],
@@ -40,6 +58,9 @@
         "../api-core/src/features/security/IdentityContext/index.js"
       ],
       "@webiny/api-core/features/WcpContext": ["../api-core/src/features/wcp/WcpContext/index.js"],
+      "@webiny/api-core/features/TaskService": [
+        "../api-core/src/features/task/TaskService/index.js"
+      ],
       "@webiny/api-core/features/settings": ["../api-core/src/features/settings/index.js"],
       "@webiny/api-core/features/GetSettings": [
         "../api-core/src/features/settings/GetSettings/index.js"
@@ -159,6 +180,8 @@
       ],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
+      "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
+      "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],

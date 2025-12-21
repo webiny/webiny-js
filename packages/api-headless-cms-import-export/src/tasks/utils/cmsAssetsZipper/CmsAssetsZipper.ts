@@ -94,8 +94,7 @@ export class CmsAssetsZipper implements ICmsAssetsZipper {
                         JSON.stringify({
                             assets: allLoadedAssets,
                             size: allLoadedAssets.reduce((total, file) => {
-                                const size = parseInt(file.size);
-                                return total + size;
+                                return total + file.size;
                             }, 0)
                         })
                     ),

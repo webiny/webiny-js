@@ -31,8 +31,7 @@ export class SecurityRolePlugin extends Plugin {
             system: false,
             plugin: true,
             createdBy: null,
-            createdOn: null,
-            webinyVersion: null
+            createdOn: null
         };
     }
 }

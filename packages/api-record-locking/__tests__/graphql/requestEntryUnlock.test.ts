@@ -92,7 +92,7 @@ describe("request entry unlock", () => {
                     unlockEntryRequest: {
                         data: null,
                         error: {
-                            code: "UNLOCK_REQUEST_ALREADY_SENT",
+                            code: "RecordLocking/Entry/UnlockRequestAlreadySentError",
                             data: {
                                 id: "someId#0001",
                                 type: "cms#author"

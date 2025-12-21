@@ -4,7 +4,6 @@
   "references": [
     { "path": "../api" },
     { "path": "../api-elasticsearch" },
-    { "path": "../api-log" },
     { "path": "../aws-sdk" },
     { "path": "../error" },
     { "path": "../handler-aws" },
@@ -22,8 +21,6 @@
       "@webiny/api": ["../api/src"],
       "@webiny/api-elasticsearch/*": ["../api-elasticsearch/src/*"],
       "@webiny/api-elasticsearch": ["../api-elasticsearch/src"],
-      "@webiny/api-log/*": ["../api-log/src/*"],
-      "@webiny/api-log": ["../api-log/src"],
       "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
       "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/error/*": ["../error/src/*"],

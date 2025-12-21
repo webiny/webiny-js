@@ -6,10 +6,10 @@ import { toSlug } from "~/utils/toSlug";
 
 describe("search", () => {
     const categoryManager = useCategoryManageHandler({
-        path: "manage/en-US"
+        path: "manage"
     });
     const fruitManager = useFruitManageHandler({
-        path: "manage/en-US"
+        path: "manage"
     });
     const { createFruit, listFruits } = fruitManager;
 

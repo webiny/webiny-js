@@ -595,8 +595,6 @@ export const createModel = (base?: Partial<Omit<CmsModel, "fields" | "layout">>)
         layout: fields.map(field => {
             return [field.id];
         }),
-        webinyVersion: "5.50.0",
-        locale: "en-US",
         tenant: "root",
         ...(base || {}),
         fields
@@ -916,13 +914,11 @@ const createBaseEntry = (values: Record<string, any>): CmsEntry => {
             displayName: "Admin User"
         },
         modelId: "test",
-        locale: "en-US",
         tenant: "root",
         meta: {},
         locked: false,
         status: "draft",
         version: 1,
-        webinyVersion: "w.w.w",
         values
     };
 };

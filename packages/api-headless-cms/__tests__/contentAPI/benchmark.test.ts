@@ -6,7 +6,7 @@ describe("benchmark points", () => {
     let elapsed = 0;
 
     const { createContentModelGroupMutation } = useGraphQLHandler({
-        path: "manage/en-US",
+        path: "manage",
         topPlugins: [
             new ContextPlugin(async context => {
                 context.benchmark.enable();
@@ -54,14 +54,6 @@ describe("benchmark points", () => {
             `Benchmark total time elapsed: ${elapsed}ms`,
             "Benchmark measurements:",
             [
-                {
-                    elapsed: expect.any(Number),
-                    end: expect.any(Date),
-                    memory: expect.any(Number),
-                    name: "headlessCms.createContext",
-                    category: "webiny",
-                    start: expect.any(Date)
-                },
                 {
                     elapsed: expect.any(Number),
                     end: expect.any(Date),

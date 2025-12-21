@@ -11,17 +11,20 @@ export interface IDataSynchronizationTaskRunnerParams {
     manager: IDataSynchronizationManager;
     indexManager: IIndexManager;
     factories: IFactories;
+    elasticsearchSynchronize: ElasticsearchSynchronize;
 }
 
 export class DataSynchronizationTaskRunner {
     private readonly manager: IDataSynchronizationManager;
     private readonly indexManager: IIndexManager;
     private readonly factories: IFactories;
+    private readonly elasticsearchSynchronize: ElasticsearchSynchronize;
 
     public constructor(params: IDataSynchronizationTaskRunnerParams) {
         this.manager = params.manager;
         this.indexManager = params.indexManager;
         this.factories = params.factories;
+        this.elasticsearchSynchronize = params.elasticsearchSynchronize;
     }
 
     public async run(input: IDataSynchronizationInput) {
@@ -34,10 +37,7 @@ export class DataSynchronizationTaskRunner {
             const sync = this.factories.elasticsearchToDynamoDb({
                 manager: this.manager,
                 indexManager: this.indexManager,
-                synchronize: new ElasticsearchSynchronize({
-                    context: this.manager.context,
-                    timer: this.manager.timer
-                }),
+                synchronize: this.elasticsearchSynchronize,
                 fetcher: new ElasticsearchFetcher({
                     client: this.manager.elasticsearch
                 })
@@ -45,13 +45,13 @@ export class DataSynchronizationTaskRunner {
             try {
                 return await sync.run(input);
             } catch (ex) {
-                return this.manager.response.error(ex);
+                return this.manager.controller.response.error(ex);
             }
         }
         /**
          * We are done.
          */
-        return this.manager.response.done();
+        return this.manager.controller.response.done();
     }
 
     private validateFlow(input: IDataSynchronizationInput): void {

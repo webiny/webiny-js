@@ -3,6 +3,9 @@
   "include": ["src"],
   "references": [
     { "path": "../api-aco/tsconfig.build.json" },
+    { "path": "../api-file-manager/tsconfig.build.json" },
+    { "path": "../error/tsconfig.build.json" },
+    { "path": "../feature/tsconfig.build.json" },
     { "path": "../api/tsconfig.build.json" },
     { "path": "../api-core/tsconfig.build.json" },
     { "path": "../api-headless-cms/tsconfig.build.json" },
@@ -10,6 +13,7 @@
     { "path": "../handler-aws/tsconfig.build.json" },
     { "path": "../handler-graphql/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
+    { "path": "../utils/tsconfig.build.json" },
     { "path": "../wcp/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -22,29 +26,40 @@
       "@webiny/api-aco/features/flp/FolderLevelPermissions": [
         "../api-aco/src/features/flp/FolderLevelPermissions/index.js"
       ],
-      "@webiny/api-aco/features/folders/CreateFolder": [
-        "../api-aco/src/features/folders/CreateFolder/index.js"
+      "@webiny/api-aco/features/folder/CreateFolder": [
+        "../api-aco/src/features/folder/CreateFolder/index.js"
       ],
-      "@webiny/api-aco/features/folders/UpdateFolder": [
-        "../api-aco/src/features/folders/UpdateFolder/index.js"
+      "@webiny/api-aco/features/folder/UpdateFolder": [
+        "../api-aco/src/features/folder/UpdateFolder/index.js"
       ],
-      "@webiny/api-aco/features/folders/DeleteFolder": [
-        "../api-aco/src/features/folders/DeleteFolder/index.js"
+      "@webiny/api-aco/features/folder/DeleteFolder": [
+        "../api-aco/src/features/folder/DeleteFolder/index.js"
       ],
-      "@webiny/api-aco/features/folders/GetAncestors": [
-        "../api-aco/src/features/folders/GetAncestors/index.js"
+      "@webiny/api-aco/features/folder/GetAncestors": [
+        "../api-aco/src/features/folder/GetAncestors/index.js"
       ],
-      "@webiny/api-aco/features/folders/GetFolder": [
-        "../api-aco/src/features/folders/GetFolder/index.js"
+      "@webiny/api-aco/features/folder/GetFolder": [
+        "../api-aco/src/features/folder/GetFolder/index.js"
       ],
-      "@webiny/api-aco/features/folders/GetFolderHierarchy": [
-        "../api-aco/src/features/folders/GetFolderHierarchy/index.js"
+      "@webiny/api-aco/features/folder/GetFolderHierarchy": [
+        "../api-aco/src/features/folder/GetFolderHierarchy/index.js"
       ],
-      "@webiny/api-aco/features/folders/ListFolders": [
-        "../api-aco/src/features/folders/ListFolders/index.js"
+      "@webiny/api-aco/features/folder/ListFolders": [
+        "../api-aco/src/features/folder/ListFolders/index.js"
+      ],
+      "@webiny/api-aco/features/folder/EnsureFolderIsEmpty": [
+        "../api-aco/src/features/folder/EnsureFolderIsEmpty/index.js"
       ],
       "@webiny/api-aco/*": ["../api-aco/src/*"],
       "@webiny/api-aco": ["../api-aco/src"],
+      "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],
+      "@webiny/api-file-manager": ["../api-file-manager/src"],
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"],
+      "@webiny/feature/api": ["../feature/src/api/index.js"],
+      "@webiny/feature/admin": ["../feature/src/admin/index.js"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
       "@webiny/api/*": ["../api/src/*"],
       "@webiny/api": ["../api/src"],
       "@webiny/api-core/features/EventPublisher": [
@@ -54,6 +69,9 @@
         "../api-core/src/features/security/IdentityContext/index.js"
       ],
       "@webiny/api-core/features/WcpContext": ["../api-core/src/features/wcp/WcpContext/index.js"],
+      "@webiny/api-core/features/TaskService": [
+        "../api-core/src/features/task/TaskService/index.js"
+      ],
       "@webiny/api-core/features/settings": ["../api-core/src/features/settings/index.js"],
       "@webiny/api-core/features/GetSettings": [
         "../api-core/src/features/settings/GetSettings/index.js"
@@ -183,6 +201,8 @@
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     },

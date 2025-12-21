@@ -22,24 +22,24 @@
     "@webiny/api": "0.0.0",
     "@webiny/api-core": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
-    "@webiny/error": "0.0.0",
+    "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
-    "@webiny/pubsub": "0.0.0",
-    "@webiny/tasks": "0.0.0",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@webiny/api-core-ddb": "0.0.0",
-    "@webiny/api-file-manager": "0.0.0",
+    "@webiny/api-file-manager-s3": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/project-utils": "0.0.0",
+    "@webiny/tasks": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "graphql": "^16.12.0",
     "prettier": "^3.6.2",
     "rimraf": "^6.0.1",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "vitest": "^3.2.4"
   }
 }

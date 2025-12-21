@@ -19,7 +19,7 @@ interface Category {
 
 describe("move content entry to another folder", () => {
     const manager = useCategoryManageHandler({
-        path: "manage/en-US"
+        path: "manage"
     });
 
     const getCategory = async (revision: string): Promise<Category> => {

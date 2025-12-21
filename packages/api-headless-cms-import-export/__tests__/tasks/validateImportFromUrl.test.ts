@@ -3,13 +3,13 @@ import { createRunner } from "@webiny/project-utils/testing/tasks";
 import { useHandler } from "~tests/helpers/useHandler";
 import type { Context, ICmsImportExportFile } from "~/types";
 import { CmsImportExportFileType } from "~/types";
-import { createValidateImportFromUrlTask } from "~/tasks";
 import type { NonEmptyArray } from "@webiny/api/types";
-import type { IValidateImportFromUrlInput } from "~/tasks/domain/abstractions/ValidateImportFromUrl";
 import { HeadObjectCommand, S3Client } from "@webiny/aws-sdk/client-s3";
 import { mockClient } from "aws-sdk-client-mock";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import { VALIDATE_IMPORT_FROM_URL_INTEGRITY_TASK } from "~/tasks/constants.js";
 
-vi.mock("~/tasks/utils/externalFileFetcher", () => {
+vi.mock("~/features/ValidateImportFromUrlTask/ExternalFileFetcher/ExternalFileFetcher.ts", () => {
     return {
         ExternalFileFetcher: function () {
             return {
@@ -76,15 +76,17 @@ vi.mock("~/tasks/utils/externalFileFetcher", () => {
 
 describe("validate import from url task", () => {
     let context: Context;
+    let definition: TaskDefinition.Interface;
 
     beforeEach(async () => {
         const { createContext } = useHandler();
         context = await createContext();
+
+        const tasks = context.container.resolveAll(TaskDefinition);
+        definition = tasks.find(task => task.id === VALIDATE_IMPORT_FROM_URL_INTEGRITY_TASK)!;
     });
 
     it("should run the task and return a error response - no task with given id", async () => {
-        const definition = createValidateImportFromUrlTask();
-
         const runner = createRunner({
             context,
             task: definition
@@ -109,8 +111,6 @@ describe("validate import from url task", () => {
     });
 
     it("should run the task and return a error response - faulty input", async () => {
-        const definition = createValidateImportFromUrlTask();
-
         const task = await context.tasks.createTask({
             name: 'Import Content Entries from URL Controller for "modelId"',
             definitionId: definition.id,
@@ -148,7 +148,6 @@ describe("validate import from url task", () => {
         mockedClient.on(HeadObjectCommand).resolves({
             ETag: `"checksum"`
         });
-        const definition = createValidateImportFromUrlTask();
 
         const files: NonEmptyArray<ICmsImportExportFile> = [
             {
@@ -278,8 +277,6 @@ describe("validate import from url task", () => {
         const mockedClient = mockClient(S3Client);
         mockedClient.on(HeadObjectCommand).resolves({});
 
-        const definition = createValidateImportFromUrlTask();
-
         const files: NonEmptyArray<ICmsImportExportFile> = [
             {
                 head: "https://example.com/file1.we.zip",
@@ -299,7 +296,7 @@ describe("validate import from url task", () => {
             }
         ];
 
-        const task = await context.tasks.createTask<IValidateImportFromUrlInput>({
+        const task = await context.tasks.createTask({
             name: 'Import Content Entries from URL Controller for "modelId"',
             definitionId: definition.id,
             input: {

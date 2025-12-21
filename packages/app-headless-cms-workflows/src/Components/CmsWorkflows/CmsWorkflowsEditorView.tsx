@@ -29,10 +29,10 @@ export const CmsWorkflowsEditorMenu = () => {
         <HasWorkflowsEditorPermission>
             <Menu
                 name={"headlessCMS.contentModels.workflows"}
-                pinnable={true}
                 parent={"headlessCMS"}
                 element={
                     <Menu.Link
+                        pinnable={true}
                         text={"Workflows"}
                         to={router.getLink(Routes.ContentModels.Workflows)}
                     />

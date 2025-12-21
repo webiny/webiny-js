@@ -18,12 +18,11 @@ import { deleteItem, getClean, put } from "@webiny/db-dynamodb";
 
 interface PartitionKeysParams {
     tenant: string;
-    locale: string;
 }
 
 const createPartitionKey = (params: PartitionKeysParams): string => {
-    const { tenant, locale } = params;
-    return `T#${tenant}#L#${locale}#CMS#CM`;
+    const { tenant } = params;
+    return `T#${tenant}#CMS#CM`;
 };
 
 interface SortKeyParams {

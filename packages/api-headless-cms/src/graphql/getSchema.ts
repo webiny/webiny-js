@@ -6,7 +6,6 @@ import type { GraphQLSchema } from "graphql";
 import { generateCacheId } from "./getSchema/generateCacheId.js";
 import { generateCacheKey } from "./getSchema/generateCacheKey.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
-import type { I18NLocale } from "@webiny/api-core/types/i18n.js";
 
 interface SchemaCache {
     key: string;
@@ -17,7 +16,6 @@ interface GetSchemaParams {
     context: CmsContext;
     type: ApiEndpoint;
     getTenant: () => Tenant;
-    getLocale: () => I18NLocale;
 }
 
 const schemaList = new Map<string, SchemaCache>();

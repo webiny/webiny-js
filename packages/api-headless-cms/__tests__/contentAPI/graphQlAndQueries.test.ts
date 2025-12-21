@@ -68,12 +68,12 @@ const categories = [
 
 describe(`graphql "and" queries`, () => {
     const manager = useCategoryManageHandler({
-        path: "manage/en-US"
+        path: "manage"
     });
     const { createCategory, listCategories } = manager;
 
     const { createProduct, listProducts } = useProductManageHandler({
-        path: "manage/en-US"
+        path: "manage"
     });
 
     const createProducts = async () => {

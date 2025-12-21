@@ -7,8 +7,7 @@ import {
     createTextFieldWithDuplicatedStorageId,
     createTextFieldWithDuplicateFieldId,
     createTextFieldWithDuplicateId,
-    createTextFieldWithoutFieldId,
-    createTextFieldWithoutStorageId
+    createTextFieldWithoutFieldId
 } from "./fields/text";
 import type { CmsModelField } from "./fields/types";
 import { createNumberField } from "~tests/validations/fields/number";
@@ -47,7 +46,6 @@ describe("Validate model fields", () => {
     let textFieldWithDuplicatedId: CmsModelField;
     let textFieldWithDuplicatedFieldId: CmsModelField;
     let textFieldWithDuplicatedStorageId: CmsModelField;
-    let textFieldWithoutStorageId: CmsModelField;
     /**
      * Number
      */
@@ -56,10 +54,9 @@ describe("Validate model fields", () => {
     beforeEach(async () => {
         const { handler, tenant } = useHandler({});
         context = await handler({
-            path: "/cms/manage/en-US",
+            path: "/cms/manage",
             headers: {
                 "x-webiny-cms-endpoint": "manage",
-                "x-webiny-cms-locale": "en-US",
                 "x-tenant": tenant.id
             }
         });
@@ -69,7 +66,6 @@ describe("Validate model fields", () => {
         textFieldWithDuplicatedId = createTextFieldWithDuplicateId();
         textFieldWithDuplicatedFieldId = createTextFieldWithDuplicateFieldId();
         textFieldWithDuplicatedStorageId = createTextFieldWithDuplicatedStorageId();
-        textFieldWithoutStorageId = createTextFieldWithoutStorageId();
         // number
         numberField = createNumberField();
     });
@@ -235,26 +231,6 @@ describe("Validate model fields", () => {
             message: `Cannot update content model because field "${textFieldWithDuplicatedStorageId.label}" has storageId "${textFieldWithDuplicatedStorageId.storageId}", which is already used.`,
             stack: expect.any(String)
         });
-    });
-
-    it("should assign fieldId to the storageId on locked field", async () => {
-        await validateModelFields({
-            context,
-            models: [],
-            model: createModel({
-                fields: [textField, textFieldWithoutStorageId],
-                layout: [[textField.id], [textFieldWithoutStorageId.id]],
-                lockedFields: [
-                    {
-                        fieldId: textFieldWithoutStorageId.id,
-                        multipleValues: textFieldWithoutStorageId.multipleValues,
-                        type: textFieldWithoutStorageId.type
-                    }
-                ]
-            })
-        });
-
-        expect(textFieldWithoutStorageId.storageId).toEqual(textFieldWithoutStorageId.fieldId);
     });
 
     it("should assign original field storageId to an updated one", async () => {

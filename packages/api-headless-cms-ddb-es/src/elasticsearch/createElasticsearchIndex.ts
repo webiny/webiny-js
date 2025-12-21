@@ -23,7 +23,6 @@ export const createElasticsearchIndex = async (params: CreateElasticsearchIndexP
         index,
         type: CmsEntryElasticsearchIndexPlugin.type,
         tenant: model.tenant,
-        locale: model.locale,
         plugins,
         onExists: () => {
             console.log(

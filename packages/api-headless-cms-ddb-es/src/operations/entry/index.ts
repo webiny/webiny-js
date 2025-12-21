@@ -145,7 +145,6 @@ export const createEntriesStorageOperations = (
         const revisionKeys = {
             PK: createPartitionKey({
                 id: entry.id,
-                locale: model.locale,
                 tenant: model.tenant
             }),
             SK: createRevisionSortKey(entry)
@@ -154,7 +153,6 @@ export const createEntriesStorageOperations = (
         const latestKeys = {
             PK: createPartitionKey({
                 id: entry.id,
-                locale: model.locale,
                 tenant: model.tenant
             }),
             SK: createLatestSortKey()
@@ -163,7 +161,6 @@ export const createEntriesStorageOperations = (
         const publishedKeys = {
             PK: createPartitionKey({
                 id: entry.id,
-                locale: model.locale,
                 tenant: model.tenant
             }),
             SK: createPublishedSortKey()
@@ -270,7 +267,6 @@ export const createEntriesStorageOperations = (
         const revisionKeys = {
             PK: createPartitionKey({
                 id: entry.id,
-                locale: model.locale,
                 tenant: model.tenant
             }),
             SK: createRevisionSortKey(entry)
@@ -278,7 +274,6 @@ export const createEntriesStorageOperations = (
         const latestKeys = {
             PK: createPartitionKey({
                 id: entry.id,
-                locale: model.locale,
                 tenant: model.tenant
             }),
             SK: createLatestSortKey()
@@ -287,7 +282,6 @@ export const createEntriesStorageOperations = (
         const publishedKeys = {
             PK: createPartitionKey({
                 id: entry.id,
-                locale: model.locale,
                 tenant: model.tenant
             }),
             SK: createPublishedSortKey()
@@ -334,7 +328,6 @@ export const createEntriesStorageOperations = (
                     ...publishedRevisionStorageEntry,
                     PK: createPartitionKey({
                         id: publishedRevisionStorageEntry.id,
-                        locale: model.locale,
                         tenant: model.tenant
                     }),
                     SK: createRevisionSortKey(publishedRevisionStorageEntry),
@@ -423,7 +416,6 @@ export const createEntriesStorageOperations = (
         const revisionKeys = {
             PK: createPartitionKey({
                 id: entry.id,
-                locale: model.locale,
                 tenant: model.tenant
             }),
             SK: createRevisionSortKey(entry)
@@ -431,7 +423,6 @@ export const createEntriesStorageOperations = (
         const latestKeys = {
             PK: createPartitionKey({
                 id: entry.id,
-                locale: model.locale,
                 tenant: model.tenant
             }),
             SK: createLatestSortKey()
@@ -440,7 +431,6 @@ export const createEntriesStorageOperations = (
         const publishedKeys = {
             PK: createPartitionKey({
                 id: entry.id,
-                locale: model.locale,
                 tenant: model.tenant
             }),
             SK: createPublishedSortKey()
@@ -538,7 +528,6 @@ export const createEntriesStorageOperations = (
                     ...updatedLatestStorageEntry,
                     PK: createPartitionKey({
                         id: latestStorageEntry.id,
-                        locale: model.locale,
                         tenant: model.tenant
                     }),
                     SK: createRevisionSortKey(latestStorageEntry),
@@ -624,7 +613,6 @@ export const createEntriesStorageOperations = (
 
         const partitionKey = createPartitionKey({
             id,
-            locale: model.locale,
             tenant: model.tenant
         });
         /**
@@ -771,7 +759,6 @@ export const createEntriesStorageOperations = (
 
         const partitionKey = createPartitionKey({
             id: entry.id,
-            locale: model.locale,
             tenant: model.tenant
         });
 
@@ -954,7 +941,6 @@ export const createEntriesStorageOperations = (
 
         const partitionKey = createPartitionKey({
             id: entry.id,
-            locale: model.locale,
             tenant: model.tenant
         });
 
@@ -1113,7 +1099,6 @@ export const createEntriesStorageOperations = (
 
         const partitionKey = createPartitionKey({
             id,
-            locale: model.locale,
             tenant: model.tenant
         });
 
@@ -1193,7 +1178,6 @@ export const createEntriesStorageOperations = (
 
         const partitionKey = createPartitionKey({
             id: entry.id,
-            locale: model.locale,
             tenant: model.tenant
         });
 
@@ -1263,7 +1247,6 @@ export const createEntriesStorageOperations = (
                 ...latestStorageEntry,
                 PK: createPartitionKey({
                     id: initialLatestStorageEntry.id,
-                    locale: model.locale,
                     tenant: model.tenant
                 }),
                 SK: createRevisionSortKey(initialLatestStorageEntry),
@@ -1352,7 +1335,6 @@ export const createEntriesStorageOperations = (
             entityBatch.delete({
                 PK: createPartitionKey({
                     id,
-                    locale: model.locale,
                     tenant: model.tenant
                 }),
                 SK: "L"
@@ -1361,7 +1343,6 @@ export const createEntriesStorageOperations = (
             elasticsearchEntityBatch.delete({
                 PK: createPartitionKey({
                     id,
-                    locale: model.locale,
                     tenant: model.tenant
                 }),
                 SK: "L"
@@ -1373,7 +1354,6 @@ export const createEntriesStorageOperations = (
             entityBatch.delete({
                 PK: createPartitionKey({
                     id,
-                    locale: model.locale,
                     tenant: model.tenant
                 }),
                 SK: "P"
@@ -1382,7 +1362,6 @@ export const createEntriesStorageOperations = (
             elasticsearchEntityBatch.delete({
                 PK: createPartitionKey({
                     id,
-                    locale: model.locale,
                     tenant: model.tenant
                 }),
                 SK: "P"
@@ -1395,7 +1374,6 @@ export const createEntriesStorageOperations = (
             entityBatch.delete({
                 PK: createPartitionKey({
                     id: revision.id,
-                    locale: model.locale,
                     tenant: model.tenant
                 }),
                 SK: createRevisionSortKey({
@@ -1519,7 +1497,6 @@ export const createEntriesStorageOperations = (
         const revisionKeys = {
             PK: createPartitionKey({
                 id: entry.id,
-                locale: model.locale,
                 tenant: model.tenant
             }),
             SK: createRevisionSortKey(entry)
@@ -1527,7 +1504,6 @@ export const createEntriesStorageOperations = (
         const latestKeys = {
             PK: createPartitionKey({
                 id: entry.id,
-                locale: model.locale,
                 tenant: model.tenant
             }),
             SK: createLatestSortKey()
@@ -1535,7 +1511,6 @@ export const createEntriesStorageOperations = (
         const publishedKeys = {
             PK: createPartitionKey({
                 id: entry.id,
-                locale: model.locale,
                 tenant: model.tenant
             }),
             SK: createPublishedSortKey()
@@ -1851,7 +1826,6 @@ export const createEntriesStorageOperations = (
 
         const partitionKey = createPartitionKey({
             id: entry.id,
-            locale: model.locale,
             tenant: model.tenant
         });
 
@@ -2076,13 +2050,12 @@ export const createEntriesStorageOperations = (
     ) => {
         const model = getStorageOperationsModel(initialModel);
 
-        const { tenant, locale } = model;
+        const { tenant } = model;
         const { entryId, version } = params;
         const queryParams: QueryOneParams = {
             entity,
             partitionKey: createPartitionKey({
                 tenant,
-                locale,
                 id: entryId
             }),
             options: {

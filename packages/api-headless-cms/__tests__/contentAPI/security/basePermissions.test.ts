@@ -135,9 +135,7 @@ describe("Content Groups / Models / Entries - Base Permissions Checks", () => {
                     own: false,
                     rwd: "r",
                     pw: "",
-                    groups: {
-                        "en-US": [modelGroup1.data.createContentModelGroup.data.id]
-                    }
+                    groups: [modelGroup1.data.createContentModelGroup.data.id]
                 },
                 { _src: "x", name: "cms.contentEntry", own: false, rwd: "r", pw: "" }
             ]
@@ -154,9 +152,7 @@ describe("Content Groups / Models / Entries - Base Permissions Checks", () => {
                     own: false,
                     rwd: "r",
                     pw: "",
-                    groups: {
-                        "en-US": [modelGroup2.data.createContentModelGroup.data.id]
-                    }
+                    groups: [modelGroup2.data.createContentModelGroup.data.id]
                 },
                 { _src: "y", name: "cms.contentEntry", own: false, rwd: "r", pw: "" }
             ]
@@ -297,9 +293,7 @@ describe("Content Groups / Models / Entries - Base Permissions Checks", () => {
                     own: false,
                     rwd: "rwd",
                     pw: "",
-                    models: {
-                        "en-US": ["testEntry1"]
-                    }
+                    models: ["testEntry1"]
                 },
                 { _src: "x", name: "cms.contentEntry", own: true, rwd: "rwd", pw: "" }
             ]
@@ -316,9 +310,7 @@ describe("Content Groups / Models / Entries - Base Permissions Checks", () => {
                     own: false,
                     rwd: "rwd",
                     pw: "",
-                    models: {
-                        "en-US": ["testEntry2"]
-                    }
+                    models: ["testEntry2"]
                 },
                 { _src: "y", name: "cms.contentEntry", own: true, rwd: "rwd", pw: "" }
             ]

@@ -154,7 +154,6 @@ export const createEntriesStorageOperations = (
 
         const partitionKey = createPartitionKey({
             id: entry.id,
-            locale: model.locale,
             tenant: model.tenant
         });
 
@@ -238,7 +237,6 @@ export const createEntriesStorageOperations = (
 
         const partitionKey = createPartitionKey({
             id: entry.id,
-            locale: model.locale,
             tenant: model.tenant
         });
 
@@ -337,7 +335,6 @@ export const createEntriesStorageOperations = (
 
         const partitionKey = createPartitionKey({
             id: entry.id,
-            locale: model.locale,
             tenant: model.tenant
         });
 
@@ -468,7 +465,6 @@ export const createEntriesStorageOperations = (
             entity,
             partitionKey: createPartitionKey({
                 id,
-                locale: model.locale,
                 tenant: model.tenant
             }),
             options: {
@@ -522,7 +518,6 @@ export const createEntriesStorageOperations = (
             entity,
             partitionKey: createPartitionKey({
                 id: entry.id,
-                locale: model.locale,
                 tenant: model.tenant
             }),
             options: {
@@ -599,7 +594,6 @@ export const createEntriesStorageOperations = (
             entity,
             partitionKey: createPartitionKey({
                 id,
-                locale: model.locale,
                 tenant: model.tenant
             }),
             options: {
@@ -663,7 +657,6 @@ export const createEntriesStorageOperations = (
             entity,
             partitionKey: createPartitionKey({
                 id: entry.id,
-                locale: model.locale,
                 tenant: model.tenant
             }),
             options: {
@@ -748,7 +741,6 @@ export const createEntriesStorageOperations = (
 
         const partitionKey = createPartitionKey({
             id: entry.id,
-            locale: model.locale,
             tenant: model.tenant
         });
 
@@ -838,7 +830,6 @@ export const createEntriesStorageOperations = (
         for (const id of entries) {
             const partitionKey = createPartitionKey({
                 id,
-                locale: model.locale,
                 tenant: model.tenant
             });
             entityBatch.delete({
@@ -857,7 +848,6 @@ export const createEntriesStorageOperations = (
             entityBatch.delete({
                 PK: createPartitionKey({
                     id: revision.id,
-                    locale: model.locale,
                     tenant: model.tenant
                 }),
                 SK: createRevisionSortKey({
@@ -1008,7 +998,6 @@ export const createEntriesStorageOperations = (
             entity,
             partitionKey: createPartitionKey({
                 tenant: model.tenant,
-                locale: model.locale,
                 id: entryId
             }),
             options: {
@@ -1197,7 +1186,6 @@ export const createEntriesStorageOperations = (
 
         const partitionKey = createPartitionKey({
             id: entry.id,
-            locale: model.locale,
             tenant: model.tenant
         });
 
@@ -1369,7 +1357,6 @@ export const createEntriesStorageOperations = (
 
         const partitionKey = createPartitionKey({
             id: entry.id,
-            locale: model.locale,
             tenant: model.tenant
         });
 

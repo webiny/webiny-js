@@ -1,48 +1,5 @@
-import type { ITaskDataInput, TaskResponseStatus } from "~/types.js";
 import type { IResponseError } from "./ResponseErrorResult.js";
-
-export type ITaskResponseResult<
-    I = ITaskDataInput,
-    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
-> =
-    | ITaskResponseDoneResult<O>
-    | ITaskResponseContinueResult<I>
-    | ITaskResponseErrorResult
-    | ITaskResponseAbortedResult;
-
-export interface ITaskResponseDoneResultOutput {
-    error?: IResponseError;
-    [key: string]:
-        | string
-        | string[]
-        | number
-        | boolean
-        | undefined
-        | Record<string, any>
-        | IResponseError;
-}
-export interface ITaskResponseDoneResult<
-    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
-> {
-    message?: string;
-    output?: O;
-    status: TaskResponseStatus.DONE;
-}
-
-export interface ITaskResponseContinueResult<T = ITaskDataInput> {
-    input: T;
-    wait?: number;
-    status: TaskResponseStatus.CONTINUE;
-}
-
-export interface ITaskResponseErrorResult {
-    error: IResponseError;
-    status: TaskResponseStatus.ERROR;
-}
-
-export interface ITaskResponseAbortedResult {
-    status: TaskResponseStatus.ABORTED;
-}
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 export interface ITaskResponseContinueOptionsUntil {
     date: Date;
@@ -56,12 +13,12 @@ export type ITaskResponseContinueOptions =
     | ITaskResponseContinueOptionsSeconds;
 
 export interface ITaskResponse<
-    T = ITaskDataInput,
-    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    I extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
+    O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput
 > {
-    done(output?: O): ITaskResponseDoneResult<O>;
-    done(message?: string, output?: O): ITaskResponseDoneResult<O>;
-    continue(data: T, options?: ITaskResponseContinueOptions): ITaskResponseContinueResult<T>;
-    error(error: IResponseError | Error | string): ITaskResponseErrorResult;
-    aborted(): ITaskResponseAbortedResult;
+    done(output?: O): TaskDefinition.ResultDone<O>;
+    done(message?: string, output?: O): TaskDefinition.ResultDone<O>;
+    continue(data: I, options?: ITaskResponseContinueOptions): TaskDefinition.ResultContinue<I>;
+    error(error: IResponseError | Error | string): TaskDefinition.ResultError;
+    aborted(): TaskDefinition.ResultAborted;
 }

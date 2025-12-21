@@ -4,12 +4,12 @@ import type { CmsContext } from "~/types";
 export const acceptIncomingChanges = () => {
     const plugin = new GraphQLSchemaPlugin<CmsContext>({
         typeDefs: /* GraphQL */ `
-            extend type CmsMutation {
+            extend type Mutation {
                 acceptIncomingChanges(modelId: String!, entryId: String!): CmsBooleanResponse
             }
         `,
         resolvers: {
-            CmsMutation: {
+            Mutation: {
                 acceptIncomingChanges: async () => {
                     return new Response(true);
                 }

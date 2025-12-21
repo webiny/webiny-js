@@ -1,16 +1,25 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createImportFromUrlControllerTask } from "~/tasks";
+import {
+    TaskDefinition,
+    TaskResultStatus
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import { TaskDataStatus } from "@webiny/api-core/features/task/TaskService/index.js";
 import { createRunner } from "@webiny/project-utils/testing/tasks";
 import type { Context, ICmsImportExportValidatedFile } from "~/types";
 import { CmsImportExportFileType } from "~/types";
 import { useHandler } from "~tests/helpers/useHandler";
-import { TaskDataStatus, TaskResponseStatus } from "@webiny/tasks";
 import { categoryModel } from "~tests/helpers/models";
 import type { NonEmptyArray } from "@webiny/api/types";
+import { IMPORT_FROM_URL_CONTROLLER_TASK } from "~/tasks/constants.js";
 
 vi.setConfig({
     testTimeout: 60_000
 });
+
+function getTaskDefinition(context: Context) {
+    const tasks = context.container.resolveAll(TaskDefinition);
+    return tasks.find(task => task.id === IMPORT_FROM_URL_CONTROLLER_TASK)!;
+}
 
 describe("import from url controller", () => {
     let context: Context;
@@ -21,7 +30,7 @@ describe("import from url controller", () => {
     });
 
     it("should run the task and fail because of missing model", async () => {
-        const definition = createImportFromUrlControllerTask();
+        const definition = getTaskDefinition(context);
 
         const task = await context.tasks.createTask({
             definitionId: definition.id,
@@ -48,7 +57,7 @@ describe("import from url controller", () => {
                     input: {}
                 }
             },
-            status: TaskResponseStatus.ERROR,
+            status: TaskResultStatus.ERROR,
             tenant: "root",
             webinyTaskDefinitionId: definition.id,
             webinyTaskId: task.id
@@ -56,7 +65,7 @@ describe("import from url controller", () => {
     });
 
     it("should run the task and fail because of missing files", async () => {
-        const definition = createImportFromUrlControllerTask();
+        const definition = getTaskDefinition(context);
 
         const task = await context.tasks.createTask({
             definitionId: definition.id,
@@ -87,7 +96,7 @@ describe("import from url controller", () => {
                     }
                 }
             },
-            status: TaskResponseStatus.ERROR,
+            status: TaskResultStatus.ERROR,
             tenant: "root",
             webinyTaskDefinitionId: definition.id,
             webinyTaskId: task.id
@@ -95,7 +104,7 @@ describe("import from url controller", () => {
     });
 
     it("should run the task and fail because of non-existing model", async () => {
-        const definition = createImportFromUrlControllerTask();
+        const definition = getTaskDefinition(context);
 
         const modelId = "nonExistingModelId";
 
@@ -143,7 +152,7 @@ describe("import from url controller", () => {
                     }
                 }
             },
-            status: TaskResponseStatus.ERROR,
+            status: TaskResultStatus.ERROR,
             tenant: "root",
             webinyTaskDefinitionId: definition.id,
             webinyTaskId: task.id
@@ -152,7 +161,7 @@ describe("import from url controller", () => {
 
     it("should run the task, trigger child tasks and return a continue response", async () => {
         expect.assertions(5);
-        const definition = createImportFromUrlControllerTask();
+        const definition = getTaskDefinition(context);
 
         const files: NonEmptyArray<ICmsImportExportValidatedFile> = [
             {
@@ -215,7 +224,7 @@ describe("import from url controller", () => {
                  */
                 // assertion #1
                 expect(result).toMatchObject({
-                    status: TaskResponseStatus.CONTINUE,
+                    status: TaskResultStatus.CONTINUE,
                     tenant: "root",
                     webinyTaskDefinitionId: definition.id,
                     webinyTaskId: task.id,
@@ -247,7 +256,7 @@ describe("import from url controller", () => {
 
         // assertion #2
         expect(result).toEqual({
-            status: TaskResponseStatus.DONE,
+            status: TaskResultStatus.DONE,
             tenant: "root",
             webinyTaskDefinitionId: definition.id,
             webinyTaskId: task.id,

@@ -1,0 +1,44 @@
+import { Result } from "@webiny/feature/api";
+import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
+import { GetFileRepository as RepositoryAbstraction } from "./abstractions.js";
+import { FileModel } from "~/domain/file/abstractions.js";
+import type { File } from "~/domain/file/types.js";
+import {
+    FileNotAuthorizedError,
+    FileNotFoundError,
+    FilePersistenceError
+} from "~/domain/file/errors.js";
+import { EntryToFileMapper } from "../shared/EntryToFileMapper.js";
+
+class GetFileRepositoryImpl implements RepositoryAbstraction.Interface {
+    constructor(
+        private getEntryById: GetEntryByIdUseCase.Interface,
+        private fileModel: FileModel.Interface
+    ) {}
+
+    async execute(id: string): Promise<Result<File, RepositoryAbstraction.Error>> {
+        const result = await this.getEntryById.execute(this.fileModel, `${id}#0001`);
+
+        if (result.isFail()) {
+            const error = result.error;
+
+            if (error.code === "Cms/Entry/NotFound") {
+                return Result.fail(new FileNotFoundError(id));
+            }
+
+            if (error.code === "Cms/Entry/NotAuthorized") {
+                return Result.fail(new FileNotAuthorizedError());
+            }
+            return Result.fail(new FilePersistenceError(result.error));
+        }
+
+        const file = EntryToFileMapper.toFile(result.value);
+
+        return Result.ok(file);
+    }
+}
+
+export const GetFileRepository = RepositoryAbstraction.createImplementation({
+    implementation: GetFileRepositoryImpl,
+    dependencies: [GetEntryByIdUseCase, FileModel]
+});

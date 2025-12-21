@@ -1,40 +1,37 @@
-import { createPrivateTaskDefinition } from "@webiny/tasks";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { DELETE_FLP_TASK_ID } from "~/flp/tasks/index.js";
-import { type AcoContext, type IDeleteFlpTaskInput, type IDeleteFlpTaskParams } from "~/types.js";
+import { type IDeleteFlpTaskInput } from "~/types.js";
 import { DeleteFlpUseCase } from "~/features/flp/DeleteFlp/index.js";
 
-class DeleteFlpTask {
-    public init = () => {
-        return createPrivateTaskDefinition<AcoContext, IDeleteFlpTaskInput>({
-            id: DELETE_FLP_TASK_ID,
-            title: "ACO - Delete FLP record",
-            description:
-                "Synchronizes the FLP catalog by deleting the FLP record based on the provided folder.",
-            disableDatabaseLogs: true,
-            run: async (params: IDeleteFlpTaskParams) => {
-                const { response, isAborted, input, context, isCloseToTimeout } = params;
+class DeleteFlpTaskImpl implements TaskDefinition.Interface<IDeleteFlpTaskInput> {
+    id = DELETE_FLP_TASK_ID;
+    title = "ACO - Delete FLP record";
+    description =
+        "Synchronizes the FLP catalog by deleting the FLP record based on the provided folder.";
+    disableDatabaseLogs = true;
 
-                const useCase = context.container.resolve(DeleteFlpUseCase);
+    constructor(private deleteFlp: DeleteFlpUseCase.Interface) {}
 
-                try {
-                    if (isAborted()) {
-                        return response.aborted();
-                    } else if (isCloseToTimeout()) {
-                        return response.continue(input);
-                    }
-
-                    await useCase.execute(input.folder);
-
-                    return response.done("Task done: FLP record deleted.");
-                } catch (error) {
-                    return response.error(error);
-                }
+    async run({ input, controller }: TaskDefinition.RunParams<IDeleteFlpTaskInput>) {
+        try {
+            if (controller.runtime.isAborted()) {
+                return controller.response.aborted();
             }
-        });
-    };
+
+            if (controller.runtime.isCloseToTimeout()) {
+                return controller.response.continue(input);
+            }
+
+            await this.deleteFlp.execute(input.folder);
+
+            return controller.response.done("Task done: FLP record deleted.");
+        } catch (error) {
+            return controller.response.error(error);
+        }
+    }
 }
 
-export const deleteFlpTask = () => {
-    const task = new DeleteFlpTask();
-    return task.init();
-};
+export const DeleteFlpTask = TaskDefinition.createImplementation({
+    implementation: DeleteFlpTaskImpl,
+    dependencies: [DeleteFlpUseCase]
+});

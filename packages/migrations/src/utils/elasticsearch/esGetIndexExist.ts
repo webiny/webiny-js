@@ -4,16 +4,15 @@ import { esGetIndexName } from "~/utils/index.js";
 export interface GetIndexExistParams {
     elasticsearchClient: Client;
     tenant: string;
-    locale: string;
     type: string;
     isHeadlessCmsModel?: boolean;
 }
 
 export const esGetIndexExist = async (params: GetIndexExistParams) => {
-    const { elasticsearchClient, tenant, locale, type, isHeadlessCmsModel } = params;
+    const { elasticsearchClient, tenant, type, isHeadlessCmsModel } = params;
 
     try {
-        const index = esGetIndexName({ tenant, locale, type, isHeadlessCmsModel });
+        const index = esGetIndexName({ tenant, type, isHeadlessCmsModel });
 
         const response = await elasticsearchClient.indices.exists({
             index

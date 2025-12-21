@@ -27,9 +27,9 @@ const customFieldPlugin = (): CmsModelFieldToGraphQLPlugin => ({
 });
 
 describe("content model test no field plugin", () => {
-    const readHandlerOpts = { path: "read/en-US" };
-    const manageHandlerOpts = { path: "manage/en-US" };
-    const previewHandlerOpts = { path: "preview/en-US" };
+    const readHandlerOpts = { path: "read" };
+    const manageHandlerOpts = { path: "manage" };
+    const previewHandlerOpts = { path: "preview" };
 
     const {
         createContentModelGroupMutation,
@@ -117,7 +117,7 @@ describe("content model test no field plugin", () => {
                         updateContentModel: {
                             data: null,
                             error: {
-                                code: "",
+                                code: "Cms/Model/ValidationError",
                                 data: null,
                                 message:
                                     'Cannot update content model because of the unknown "SOMETHING-INVALID-HERE" field.'

@@ -268,8 +268,7 @@ jobs:
         run: >-
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
-          '["", ${{ needs.constants.outputs.changed-packages }}]')" >>
-          "$GITHUB_OUTPUT"
+          '[""]')" >> "$GITHUB_OUTPUT"
       - name: Packages to test with Vitest
         id: list-packages
         run: >-
@@ -343,8 +342,7 @@ jobs:
         run: >-
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
-          '["ddb", ${{ needs.constants.outputs.changed-packages }}]')" >>
-          "$GITHUB_OUTPUT"
+          '["ddb"]')" >> "$GITHUB_OUTPUT"
       - name: Packages to test with Vitest
         id: list-packages
         run: >-
@@ -428,8 +426,7 @@ jobs:
         run: >-
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
-          '["ddb-os,ddb", ${{ needs.constants.outputs.changed-packages }}]')" >>
-          "$GITHUB_OUTPUT"
+          '["ddb-os,ddb"]')" >> "$GITHUB_OUTPUT"
       - name: Packages to test with Vitest
         id: list-packages
         run: >-

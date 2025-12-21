@@ -3,48 +3,39 @@ import type {
     AuditLogsContext,
     AuditLogsContextValue,
     IListAuditLogsParams,
-    IListAuditLogsResult,
-    OnAuditLogAfterCreateTopicParams,
-    OnAuditLogAfterUpdateTopicParams,
-    OnAuditLogBeforeCreateTopicParams,
-    OnAuditLogBeforeUpdateTopicParams
+    IListAuditLogsResult
 } from "~/types.js";
-import { createTopic } from "@webiny/pubsub";
 import { convertExpiresAtDaysToDate } from "~/utils/expiresAt.js";
 import type { IAuditLog, IAuditLogCreatedBy } from "~/storage/types.js";
 import { mdbid } from "@webiny/utils/mdbid.js";
 import type { IStorage, IStorageListParams } from "~/storage/abstractions/Storage.js";
 import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/index.js";
+import type { EventPublisher } from "@webiny/api-core/features/EventPublisher";
+import {
+    AuditLogBeforeCreateEvent,
+    AuditLogAfterCreateEvent,
+    AuditLogBeforeUpdateEvent,
+    AuditLogAfterUpdateEvent
+} from "~/events/index.js";
 
 export interface IAuditLogsContextValueParams {
     getContext: () => AuditLogsContext;
     deleteLogsAfterDays: number;
     storage: IStorage;
+    eventPublisher: EventPublisher.Interface;
 }
 
 class AuditLogsContextValueImpl implements AuditLogsContextValue {
     private readonly getContext;
     public readonly deleteLogsAfterDays;
-    public readonly onBeforeCreate;
-    public readonly onAfterCreate;
-    public readonly onBeforeUpdate;
-    public readonly onAfterUpdate;
     private readonly storage: IStorage;
+    private readonly eventPublisher: EventPublisher.Interface;
 
     public constructor(params: IAuditLogsContextValueParams) {
         this.getContext = params.getContext;
         this.deleteLogsAfterDays = params.deleteLogsAfterDays;
-        this.onBeforeCreate = createTopic<OnAuditLogBeforeCreateTopicParams>(
-            "auditLogs.onBeforeCreate"
-        );
-        this.onAfterCreate =
-            createTopic<OnAuditLogAfterCreateTopicParams>("auditLogs.onAfterCreate");
-        this.onBeforeUpdate = createTopic<OnAuditLogBeforeUpdateTopicParams>(
-            "auditLogs.onBeforeUpdate"
-        );
-        this.onAfterUpdate =
-            createTopic<OnAuditLogAfterUpdateTopicParams>("auditLogs.onAfterUpdate");
         this.storage = params.storage;
+        this.eventPublisher = params.eventPublisher;
     }
 
     public async createAuditLog(payload: AuditLogPayload): Promise<IAuditLog> {
@@ -62,22 +53,24 @@ class AuditLogsContextValueImpl implements AuditLogsContextValue {
         };
         await this.checkPermissions(auditLog);
 
-        await this.onBeforeCreate.publish({
+        const beforeCreateEvent = new AuditLogBeforeCreateEvent({
             auditLog: auditLog,
             context,
             setAuditLog(input) {
                 Object.assign(auditLog, input);
             }
         });
+        await this.eventPublisher.publish(beforeCreateEvent);
 
         const result = await this.storage.store({
             data: auditLog
         });
         if (result.success) {
-            await this.onAfterCreate.publish({
+            const afterCreateEvent = new AuditLogAfterCreateEvent({
                 auditLog: auditLog,
                 context
             });
+            await this.eventPublisher.publish(afterCreateEvent);
             return result.data;
         }
         throw result.error;
@@ -95,7 +88,7 @@ class AuditLogsContextValueImpl implements AuditLogsContextValue {
         };
         await this.checkPermissions(auditLog);
 
-        await this.onBeforeUpdate.publish({
+        const beforeUpdateEvent = new AuditLogBeforeUpdateEvent({
             original,
             auditLog,
             context,
@@ -103,16 +96,18 @@ class AuditLogsContextValueImpl implements AuditLogsContextValue {
                 Object.assign(auditLog, input);
             }
         });
+        await this.eventPublisher.publish(beforeUpdateEvent);
 
         const result = await this.storage.store({
             data: auditLog
         });
         if (result.success) {
-            await this.onAfterUpdate.publish({
+            const afterUpdateEvent = new AuditLogAfterUpdateEvent({
                 original: original,
                 auditLog: auditLog,
                 context
             });
+            await this.eventPublisher.publish(afterUpdateEvent);
             return result.data;
         }
         throw result.error;

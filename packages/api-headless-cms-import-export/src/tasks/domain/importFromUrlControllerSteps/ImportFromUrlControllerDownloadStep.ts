@@ -5,26 +5,28 @@ import type {
 } from "~/tasks/domain/abstractions/ImportFromUrlDownload.js";
 import { IMPORT_FROM_URL_DOWNLOAD_TASK } from "~/tasks/constants.js";
 import { getBackOffSeconds } from "~/tasks/utils/helpers/getBackOffSeconds.js";
-import type { Context } from "~/types.js";
-import { CmsImportExportFileType } from "~/types.js";
+import { CmsImportExportFileType, type Context } from "~/types.js";
 import type {
     IImportFromUrlControllerInput,
     IImportFromUrlControllerOutput
 } from "~/tasks/domain/abstractions/ImportFromUrlController.js";
 import { IImportFromUrlControllerInputStep } from "~/tasks/domain/abstractions/ImportFromUrlController.js";
-import type { ITask, ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import { getChildTasks } from "./getChildTasks.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 export class ImportFromUrlControllerDownloadStep<
-    C extends Context = Context,
     I extends IImportFromUrlControllerInput = IImportFromUrlControllerInput,
     O extends IImportFromUrlControllerOutput = IImportFromUrlControllerOutput
-> implements ImportFromUrlControllerStep<C, I, O>
+> implements ImportFromUrlControllerStep<I, O>
 {
-    public async execute(params: ITaskRunParams<C, I, O>): Promise<ITaskResponseResult<I, O>> {
-        const { context, response, input, trigger, store } = params;
+    constructor(private context: Context) {}
 
-        const task = store.getTask() as ITask<I, O>;
+    public async execute(
+        params: TaskDefinition.RunParams<I, O>
+    ): Promise<TaskDefinition.Result<I, O>> {
+        const { input, controller } = params;
+
+        const task = controller.state.getTask();
 
         const step = input.steps[IImportFromUrlControllerInputStep.DOWNLOAD];
         if (!step?.triggered) {
@@ -35,13 +37,13 @@ export class ImportFromUrlControllerDownloadStep<
                 );
             });
             if (files.length === 0) {
-                return response.error({
+                return controller.response.error({
                     message: `No files found in the provided data.`,
                     code: "NO_FILES_FOUND"
                 });
             }
             for (const file of files) {
-                await trigger<IImportFromUrlDownloadInput>({
+                await controller.task.trigger<IImportFromUrlDownloadInput>({
                     name: `Import From Url - Download`,
                     definition: IMPORT_FROM_URL_DOWNLOAD_TASK,
                     input: {
@@ -62,7 +64,7 @@ export class ImportFromUrlControllerDownloadStep<
                 }
             };
 
-            return response.continue(output, {
+            return controller.response.continue(output, {
                 seconds: getBackOffSeconds(task.iterations)
             });
         } else if (step.finished !== true) {
@@ -70,7 +72,7 @@ export class ImportFromUrlControllerDownloadStep<
                 IImportFromUrlDownloadInput,
                 IImportFromUrlDownloadOutput
             >({
-                context,
+                context: this.context,
                 task,
                 definition: IMPORT_FROM_URL_DOWNLOAD_TASK
             });
@@ -79,11 +81,11 @@ export class ImportFromUrlControllerDownloadStep<
              * If there are any running tasks, we should continue waiting.
              */
             if (running.length > 0) {
-                return response.continue(input, {
+                return controller.response.continue(input, {
                     seconds: getBackOffSeconds(task.iterations)
                 });
             } else if (collection.length === 0) {
-                return response.error({
+                return controller.response.error({
                     message: "No download tasks found. We are not continuing.",
                     code: "NO_DOWNLOAD_TASKS"
                 });
@@ -114,7 +116,7 @@ export class ImportFromUrlControllerDownloadStep<
             };
 
             if (failed.length > 0 || aborted.length > 0 || invalid.length > 0) {
-                return response.error({
+                return controller.response.error({
                     message: "Some download tasks failed.",
                     code: "DOWNLOAD_FAILED",
                     data: {
@@ -125,9 +127,9 @@ export class ImportFromUrlControllerDownloadStep<
                 });
             }
 
-            return response.continue(output);
+            return controller.response.continue(output);
         }
-        return response.error({
+        return controller.response.error({
             message: "Impossible to get to this point. Fatal error."
         });
     }

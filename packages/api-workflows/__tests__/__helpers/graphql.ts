@@ -1,17 +1,14 @@
 import type { GenericRecord } from "@webiny/api/types.js";
 import type {
-    IStoreWorkflowInput,
-    IWorkflowsContextListParams
-} from "~/context/abstractions/WorkflowsContext.js";
-import type { IMeta } from "~/context/abstractions/types.js";
-import type { IWorkflow } from "~/context/abstractions/Workflow.js";
-import type {
     IEnrichedWorkflowStateRecordStep,
     IWorkflowState,
     IWorkflowStateRecord
-} from "~/context/abstractions/WorkflowState.js";
-import type { IWorkflowStateContextListStatesParams } from "~/context/abstractions/WorkflowStateContext.js";
-import { RequiredDeep } from "type-fest";
+} from "~/domain/workflowState/abstractions.js";
+import { ListWorkflowsUseCase } from "~/features/workflow/ListWorkflows/index.js";
+import type { IWorkflow } from "~/domain/workflow/abstractions.js";
+import type { IMeta } from "~/types.js";
+import type { IStoreWorkflowInput } from "~/features/workflow/StoreWorkflow/index.js";
+import { ListWorkflowStatesUseCase } from "~/features/workflowState/ListWorkflowStates/index.js";
 
 export interface IWorkflowError {
     code: string;
@@ -129,7 +126,7 @@ export const GET_WORKFLOW_QUERY = /* GraphQL */ `
     }
 `;
 
-export type IListWorkflowVariables = IWorkflowsContextListParams;
+export type IListWorkflowVariables = ListWorkflowsUseCase.Params;
 
 export interface IListWorkflowResponse {
     data: {
@@ -161,7 +158,7 @@ export const LIST_WORKFLOWS_QUERY = /* GraphQL */ `
 export interface IStoreWorkflowVariables {
     app: string;
     id: string;
-    data: IStoreWorkflowInput;
+    data: Omit<IStoreWorkflowInput, "app" | "id">;
 }
 
 export interface IStoreWorkflowResponse {
@@ -271,7 +268,7 @@ export const GET_TARGET_WORKFLOW_STATE_QUERY = /* GraphQL */ `
     }
 `;
 
-export type IListTargetWorkflowStatesVariables = IWorkflowStateContextListStatesParams;
+export type IListTargetWorkflowStatesVariables = ListWorkflowStatesUseCase.Params;
 
 export interface IListTargetWorkflowStatesResponse {
     data: {
@@ -311,7 +308,7 @@ export const LIST_TARGET_WORKFLOW_STATES_QUERY = /* GraphQL */ `
     }
 `;
 
-export type IListOwnWorkflowStatesVariables = RequiredDeep<IWorkflowStateContextListStatesParams>;
+export type IListOwnWorkflowStatesVariables = ListWorkflowStatesUseCase.Params;
 
 export interface IListOwnWorkflowStatesResponse {
     data: {
@@ -347,8 +344,7 @@ export const LIST_OWN_WORKFLOW_STATES_QUERY = /* GraphQL */ `
     }
 `;
 
-export type IListRequestedWorkflowStatesVariables =
-    RequiredDeep<IWorkflowStateContextListStatesParams>;
+export type IListRequestedWorkflowStatesVariables = ListWorkflowStatesUseCase.Params;
 
 export interface IListRequestedWorkflowStatesResponse {
     data: {

@@ -1,11 +1,13 @@
 import { ErrorResponse, GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { Response, NotFoundResponse } from "@webiny/handler-graphql";
-import type { FileManagerContext, FileManagerContextObject, File } from "~/types.js";
+import type { File } from "~/domain/file/types.js";
 import type { Security } from "@webiny/api-core/types/security.js";
 import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/index.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
+import { ListFilesUseCase } from "~/features/file/ListFiles/index.js";
 
 export const getFileByUrl = () => {
-    const fileManagerGraphQL = new GraphQLSchemaPlugin<FileManagerContext>({
+    const fileManagerGraphQL = new GraphQLSchemaPlugin<ApiCoreContext>({
         typeDefs: /* GraphQL */ `
             extend type FmQuery {
                 getFileByUrl(url: String!): FmFileResponse
@@ -17,7 +19,7 @@ export const getFileByUrl = () => {
                     const { url } = args as { url: string };
                     const useCase = new SecureGetFileByUrl(
                         context.security,
-                        new GetFileByUrlUseCase(context.fileManager)
+                        new GetFileByUrlUseCase(context.container.resolve(ListFilesUseCase))
                     );
                     try {
                         const file = await useCase.execute(url);
@@ -42,23 +44,21 @@ interface IGetFileByUrl {
 }
 
 class GetFileByUrlUseCase implements IGetFileByUrl {
-    private readonly fileManager: FileManagerContextObject;
-
-    constructor(fileManager: FileManagerContextObject) {
-        this.fileManager = fileManager;
-    }
+    constructor(private listFiles: ListFilesUseCase.Interface) {}
 
     async execute(url: string): Promise<File | undefined> {
         const { pathname } = new URL(url);
         const isAlias = !pathname.startsWith("/files/") && !pathname.startsWith("/private/");
         const query = isAlias ? pathname : pathname.replace("/files/", "").replace("/private/", "");
 
-        const [files] = await this.fileManager.listFiles({
+        const filesResult = await this.listFiles.execute({
             where: {
                 OR: [{ key: query }, { aliases_contains: query }]
             },
             limit: 1
         });
+
+        const files = filesResult.value.items;
 
         return files.length ? files[0] : undefined;
     }

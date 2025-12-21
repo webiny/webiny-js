@@ -3,13 +3,13 @@ import { TaskRunner } from "~/runner";
 import { createMockEvent } from "~tests/mocks";
 import { ResponseErrorResult } from "~/response";
 import { createLiveContextFactory } from "~tests/live";
-import { taskDefinition } from "~tests/runner/taskDefinition";
+import { testDefinitionPlugin } from "~tests/runner/taskDefinition";
 import { timerFactory } from "@webiny/handler-aws/utils";
 import { TaskEventValidation } from "~/runner/TaskEventValidation";
 
 describe("task runner task not found", () => {
     const contextFactory = createLiveContextFactory({
-        plugins: [taskDefinition]
+        plugins: [testDefinitionPlugin]
     });
 
     it("should trigger a task run - error because task is not found", async () => {

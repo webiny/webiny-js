@@ -1,19 +1,10 @@
 import { createHandler } from "@webiny/handler-aws";
 import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import { until } from "@webiny/project-utils/testing/helpers/until";
-import {
-    CREATE_FILE,
-    CREATE_FILES,
-    DELETE_FILE,
-    GET_FILE,
-    LIST_FILES,
-    LIST_TAGS,
-    UPDATE_FILE
-} from "~tests/graphql/file";
-import { GET_SETTINGS, UPDATE_SETTINGS } from "~tests/graphql/fileManagerSettings";
 import type { HandlerParams } from "./plugins";
 import { handlerPlugins } from "./plugins";
 import { defaultIdentity } from "~tests/utils/tenancySecurity";
+import { createFileManagerSdk } from "~tests/utils/createFileManagerSdk.js";
 
 interface InvokeParams {
     httpMethod?: "POST";
@@ -51,39 +42,13 @@ export default (params: HandlerParams = {}) => {
         return [JSON.parse(response.body), response];
     };
 
+    const sdk = createFileManagerSdk(invoke);
+
     return {
         until,
         handler,
         invoke,
         identity: params.identity || defaultIdentity,
-        // Files
-        async createFile(variables: Record<string, any>, fields: string[] = []) {
-            return invoke({ body: { query: CREATE_FILE(fields), variables } });
-        },
-        async updateFile(variables: Record<string, any>, fields: string[] = []) {
-            return invoke({ body: { query: UPDATE_FILE(fields), variables } });
-        },
-        async createFiles(variables: Record<string, any>, fields: string[] = []) {
-            return invoke({ body: { query: CREATE_FILES(fields), variables } });
-        },
-        async deleteFile(variables: Record<string, any>) {
-            return invoke({ body: { query: DELETE_FILE, variables } });
-        },
-        async getFile(variables: Record<string, any>, fields: string[] = []) {
-            return invoke({ body: { query: GET_FILE(fields), variables } });
-        },
-        async listFiles(variables = {}, fields: string[] = []) {
-            return invoke({ body: { query: LIST_FILES(fields), variables } });
-        },
-        async listTags(variables = {}) {
-            return invoke({ body: { query: LIST_TAGS, variables } });
-        },
-        // File Manager settings
-        async getSettings(variables = {}) {
-            return invoke({ body: { query: GET_SETTINGS, variables } });
-        },
-        async updateSettings(variables: Record<string, any>) {
-            return invoke({ body: { query: UPDATE_SETTINGS, variables } });
-        }
+        ...sdk
     };
 };

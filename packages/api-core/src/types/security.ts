@@ -111,9 +111,6 @@ export interface Group {
     system: boolean;
     permissions: SecurityPermission[];
 
-    // Groups defined via plugins don't have `webinyVersion` specified.
-    webinyVersion: string | null;
-
     // Set to `true` when a group is defined via a plugin.
     plugin?: boolean;
 }
@@ -159,9 +156,6 @@ export interface Team {
     description: string;
     system: boolean;
     groups: string[];
-
-    // Teams defined via plugins don't have `webinyVersion` specified.
-    webinyVersion: string | null;
 
     // Set to `true` when a group is defined via a plugin.
     plugin?: boolean;
@@ -239,7 +233,6 @@ export interface TenantLink<TData = any> {
     tenant: string;
     type: string;
     data?: TData;
-    webinyVersion: string;
 }
 
 export interface PermissionsTenantLinkGroup {
@@ -266,7 +259,6 @@ export interface ApiKey {
     permissions: SecurityPermission[];
     createdBy: CreatedBy;
     createdOn: string;
-    webinyVersion?: string;
 }
 
 export interface ApiKeyPermission extends SecurityPermission {
@@ -339,7 +331,6 @@ export type StorageOperationsDeleteTeamParams = DeleteTeamParams;
 
 export interface StorageOperationsCreateTenantLinkParams extends CreateTenantLinkParams {
     createdOn: string;
-    webinyVersion: string;
 }
 
 export type StorageOperationsUpdateTenantLinkParams = UpdateTenantLinkParams;

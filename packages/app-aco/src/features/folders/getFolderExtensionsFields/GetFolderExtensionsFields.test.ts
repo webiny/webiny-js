@@ -136,8 +136,7 @@ describe("GetFolderExtensionsFields", () => {
         authorization: {
             permissions: false
         },
-        tags: ["type:model"],
-        webinyVersion: "0.0.0"
+        tags: ["type:model"]
     } as unknown as CmsModel;
 
     function setupTest(type: string) {

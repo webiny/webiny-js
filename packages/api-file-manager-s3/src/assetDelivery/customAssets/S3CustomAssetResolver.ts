@@ -50,7 +50,6 @@ export class S3CustomAssetResolver implements AssetResolver {
                 // These attributes do not change between the original and derived files.
                 id: metadata.id,
                 tenant: metadata.tenant,
-                locale: metadata.locale,
                 // Assign the size and content type of the requested file.
                 size: attrs.size,
                 contentType: attrs.contentType,

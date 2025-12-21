@@ -32,6 +32,7 @@ import { UrlSigner } from "~/tasks/utils/urlSigner/index.js";
 import { getBucket } from "~/tasks/utils/helpers/getBucket.js";
 import { createS3Client } from "~/tasks/utils/helpers/s3Client.js";
 import { AbortImportFromUrlUseCase } from "./useCases/abortImportFromUrl/index.js";
+import { ModelToAstConverter } from "@webiny/api-headless-cms/features/contentModel/ModelToAstConverter/index.js";
 
 export const createHeadlessCmsImportExportCrud = async (
     context: Context
@@ -51,7 +52,7 @@ export const createHeadlessCmsImportExportCrud = async (
     });
 
     const validateImportFromUrlUseCase = new ValidateImportFromUrlUseCase({
-        getModelToAstConverter: context.cms.getModelToAstConverter,
+        modelToAstConverter: context.container.resolve(ModelToAstConverter),
         getModel: context.cms.getModel
     });
     const validateImportFromUrlIntegrityUseCase = new ValidateImportFromUrlIntegrityUseCase({

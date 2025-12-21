@@ -3,16 +3,13 @@ import WebinyError from "@webiny/error";
 
 interface BasePartitionKeyParams {
     tenant: string;
-    locale: string;
 }
 const createBasePartitionKey = (params: BasePartitionKeyParams): string => {
-    const { tenant, locale } = params;
+    const { tenant } = params;
     if (!tenant) {
         throw new WebinyError(`Missing tenant variable when creating entry basePartitionKey`);
-    } else if (!locale) {
-        throw new WebinyError(`Missing tenant variable when creating entry basePartitionKey`);
     }
-    return `T#${tenant}#L#${locale}#CMS#CME`;
+    return `T#${tenant}#CMS#CME`;
 };
 
 export interface PartitionKeyParams extends BasePartitionKeyParams {
@@ -21,7 +18,7 @@ export interface PartitionKeyParams extends BasePartitionKeyParams {
 export const createPartitionKey = (params: PartitionKeyParams): string => {
     const { id: initialId } = params;
     const { id } = parseIdentifier(initialId);
-    return `${createBasePartitionKey(params)}#CME#${id}`;
+    return `${createBasePartitionKey(params)}#${id}`;
 };
 
 export interface SortKeyParams {
@@ -41,7 +38,6 @@ export const createPublishedSortKey = (): string => {
 
 export interface GSIPartitionKeyParams {
     tenant: string;
-    locale: string;
     modelId: string;
 }
 export const createGSIPartitionKey = (params: GSIPartitionKeyParams, type: "A" | "L" | "P") => {

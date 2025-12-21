@@ -5,7 +5,6 @@ import {
     createRoute,
     ResponseHeaders
 } from "@webiny/handler";
-import type { FileManagerContext } from "~/types.js";
 import { PrivateFilesAssetProcessor } from "./AssetDelivery/privateFiles/PrivateFilesAssetProcessor.js";
 import { PrivateAuthenticatedAuthorizer } from "./AssetDelivery/privateFiles/PrivateAuthenticatedAuthorizer.js";
 import { PrivateFileAssetRequestResolver } from "./AssetDelivery/privateFiles/PrivateFileAssetRequestResolver.js";
@@ -18,6 +17,7 @@ import {
     createAssetDeliveryConfig
 } from "./index.js";
 import type { Reply } from "@webiny/handler/types.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 
 const noCacheHeaders = ResponseHeaders.create({
     "content-type": "application/json",
@@ -68,7 +68,7 @@ export const setupAssetDelivery = (params: AssetDeliveryParams) => {
             let resolvedRequest: AssetRequest | undefined;
             let resolvedAsset: Asset | undefined;
 
-            // Create a `HandlerOnRequest` plugin to resolve `tenant` and `locale`, and allow the system to bootstrap.
+            // Create a `HandlerOnRequest` plugin to resolve `tenant`, and allow the system to bootstrap.
             const handlerOnRequest = createHandlerOnRequest(async (request, reply) => {
                 const requestResolver = configBuilder.getAssetRequestResolver();
                 resolvedRequest = await requestResolver.resolve(request);
@@ -97,19 +97,16 @@ export const setupAssetDelivery = (params: AssetDeliveryParams) => {
                     return false;
                 }
 
-                const assetLocale = resolvedAsset.getLocale();
-
                 request.headers = {
                     ...request.headers,
-                    "x-tenant": resolvedAsset.getTenant(),
-                    "x-i18n-locale": `default:${assetLocale};content:${assetLocale};`
+                    "x-tenant": resolvedAsset.getTenant()
                 };
 
                 return;
             });
 
             // Create the `Route` plugin, to handle all GET requests, and output the resolved asset.
-            const deliveryRoute = createRoute<FileManagerContext>(({ onGet, context }) => {
+            const deliveryRoute = createRoute<ApiCoreContext>(({ onGet, context }) => {
                 onGet(
                     "*",
                     async (_, reply) => {

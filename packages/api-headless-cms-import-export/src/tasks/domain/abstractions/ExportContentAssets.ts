@@ -1,10 +1,6 @@
 import type { CmsEntryListSort, CmsEntryListWhere } from "@webiny/api-headless-cms/types/index.js";
-import type {
-    ITaskResponseDoneResultOutput,
-    ITaskResponseResult,
-    ITaskRunParams
-} from "@webiny/tasks";
-import type { Context } from "~/types.js";
+import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 export interface IExportContentAssetsInputFile {
     readonly key: string;
@@ -27,14 +23,13 @@ export interface IExportContentAssetsOutputFile {
     readonly checksum: string;
 }
 
-export interface IExportContentAssetsOutput extends ITaskResponseDoneResultOutput {
+export interface IExportContentAssetsOutput extends TaskService.GenericOutput {
     files: IExportContentAssetsOutputFile[];
 }
 
 export interface IExportContentAssets<
-    C extends Context = Context,
     I extends IExportContentAssetsInput = IExportContentAssetsInput,
     O extends IExportContentAssetsOutput = IExportContentAssetsOutput
 > {
-    run(params: ITaskRunParams<C, I, O>): Promise<ITaskResponseResult<I, O>>;
+    run(params: TaskDefinition.RunParams<I, O>): Promise<TaskDefinition.Result<I, O>>;
 }

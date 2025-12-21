@@ -8,8 +8,8 @@ import {
 } from "~/response";
 import { createMockEvent } from "~tests/mocks";
 import type { ITaskEvent } from "~/handler/types";
-import { TaskResponseStatus } from "~/types";
 import { WebinyError } from "@webiny/error";
+import { TaskResultStatus } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 describe("response", () => {
     let event: ITaskEvent;
@@ -29,7 +29,6 @@ describe("response", () => {
                 aInput: true
             },
             wait: 30,
-            locale: event.locale,
             tenant: event.tenant,
             webinyTaskId: event.webinyTaskId
         });
@@ -41,11 +40,10 @@ describe("response", () => {
             input: {
                 aInput: true
             },
-            status: TaskResponseStatus.CONTINUE,
+            status: TaskResultStatus.CONTINUE,
             webinyTaskId: event.webinyTaskId,
             webinyTaskDefinitionId: event.webinyTaskDefinitionId,
             tenant: event.tenant,
-            locale: event.locale,
             wait: 30,
             delay: -1
         });
@@ -61,7 +59,6 @@ describe("response", () => {
             output: {
                 aDoneOutput: true
             },
-            locale: event.locale,
             tenant: event.tenant,
             webinyTaskId: event.webinyTaskId
         });
@@ -73,11 +70,10 @@ describe("response", () => {
             output: {
                 aDoneOutput: true
             },
-            status: TaskResponseStatus.DONE,
+            status: TaskResultStatus.DONE,
             webinyTaskId: event.webinyTaskId,
             webinyTaskDefinitionId: event.webinyTaskDefinitionId,
-            tenant: event.tenant,
-            locale: event.locale
+            tenant: event.tenant
         });
     });
 
@@ -95,8 +91,7 @@ describe("response", () => {
                 }
             }),
             webinyTaskId: event.webinyTaskId,
-            tenant: event.tenant,
-            locale: event.locale
+            tenant: event.tenant
         });
 
         expect(result).toBeInstanceOf(ResponseErrorResult);
@@ -109,11 +104,10 @@ describe("response", () => {
                     someData: true
                 }
             },
-            status: TaskResponseStatus.ERROR,
+            status: TaskResultStatus.ERROR,
             webinyTaskId: event.webinyTaskId,
             webinyTaskDefinitionId: event.webinyTaskDefinitionId,
-            tenant: event.tenant,
-            locale: event.locale
+            tenant: event.tenant
         });
     });
 
@@ -125,11 +119,10 @@ describe("response", () => {
         expect(result).toBeInstanceOf(ResponseAbortedResult);
 
         expect(result).toEqual({
-            status: TaskResponseStatus.ABORTED,
+            status: TaskResultStatus.ABORTED,
             webinyTaskId: event.webinyTaskId,
             webinyTaskDefinitionId: event.webinyTaskDefinitionId,
-            tenant: event.tenant,
-            locale: event.locale
+            tenant: event.tenant
         });
     });
 
@@ -143,10 +136,9 @@ describe("response", () => {
             output: {
                 aDoneOutput: true
             },
-            locale: event.locale,
             tenant: event.tenant,
             webinyTaskId: event.webinyTaskId,
-            status: TaskResponseStatus.DONE,
+            status: TaskResultStatus.DONE,
             webinyTaskDefinitionId: event.webinyTaskDefinitionId
         });
 
@@ -156,11 +148,10 @@ describe("response", () => {
             output: {
                 aDoneOutput: true
             },
-            status: TaskResponseStatus.DONE,
+            status: TaskResultStatus.DONE,
             webinyTaskId: event.webinyTaskId,
             webinyTaskDefinitionId: event.webinyTaskDefinitionId,
-            tenant: event.tenant,
-            locale: event.locale
+            tenant: event.tenant
         });
     });
 
@@ -175,10 +166,9 @@ describe("response", () => {
                 aInput: true
             },
             wait: 30,
-            locale: event.locale,
             tenant: event.tenant,
             webinyTaskId: event.webinyTaskId,
-            status: TaskResponseStatus.CONTINUE,
+            status: TaskResultStatus.CONTINUE,
             webinyTaskDefinitionId: event.webinyTaskDefinitionId,
             delay: -1
         });
@@ -189,11 +179,10 @@ describe("response", () => {
             input: {
                 aInput: true
             },
-            status: TaskResponseStatus.CONTINUE,
+            status: TaskResultStatus.CONTINUE,
             webinyTaskId: event.webinyTaskId,
             webinyTaskDefinitionId: event.webinyTaskDefinitionId,
             tenant: event.tenant,
-            locale: event.locale,
             wait: 30,
             delay: -1
         });
@@ -214,8 +203,7 @@ describe("response", () => {
             }),
             webinyTaskId: event.webinyTaskId,
             tenant: event.tenant,
-            locale: event.locale,
-            status: TaskResponseStatus.ERROR,
+            status: TaskResultStatus.ERROR,
             webinyTaskDefinitionId: event.webinyTaskDefinitionId
         });
 
@@ -228,11 +216,10 @@ describe("response", () => {
                     someData: true
                 }
             },
-            status: TaskResponseStatus.ERROR,
+            status: TaskResultStatus.ERROR,
             webinyTaskId: event.webinyTaskId,
             webinyTaskDefinitionId: event.webinyTaskDefinitionId,
-            tenant: event.tenant,
-            locale: event.locale
+            tenant: event.tenant
         });
     });
 
@@ -246,7 +233,6 @@ describe("response", () => {
                 aDoneOutput: true,
                 aLargeOutput: new Array(8000).fill("123456789011121314151617181920").join("")
             },
-            locale: event.locale,
             tenant: event.tenant,
             webinyTaskId: event.webinyTaskId
         });
@@ -259,11 +245,10 @@ describe("response", () => {
                 size: 240038,
                 max: 232 * 1024
             },
-            status: TaskResponseStatus.DONE,
+            status: TaskResultStatus.DONE,
             webinyTaskId: event.webinyTaskId,
             webinyTaskDefinitionId: event.webinyTaskDefinitionId,
-            tenant: event.tenant,
-            locale: event.locale
+            tenant: event.tenant
         });
     });
 });

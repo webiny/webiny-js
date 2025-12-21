@@ -1,6 +1,6 @@
 import type { ITaskEvent } from "~/handler/types.js";
-import type { Context, ITask, ITaskDataInput, ITaskDefinition, ITaskLog } from "~/types.js";
-import { TaskDataStatus, TaskResponseStatus } from "~/types.js";
+import type { Context, ITask, ITaskDataInput, ITaskLog } from "~/types.js";
+import { TaskDataStatus } from "~/types.js";
 import type { ITaskControl, ITaskRunner } from "./abstractions/index.js";
 import { TaskManager } from "./TaskManager.js";
 import type { IResponse, IResponseResult } from "~/response/abstractions/index.js";
@@ -8,6 +8,11 @@ import { DatabaseResponse, TaskResponse } from "~/response/index.js";
 import { TaskManagerStore } from "./TaskManagerStore.js";
 import { getErrorProperties } from "~/utils/getErrorProperties.js";
 import { AuthenticatedIdentity } from "@webiny/api-core/features/IdentityContext";
+import { TaskExecutionContext } from "~/features/TaskExecutionContext/index.js";
+import {
+    TaskDefinition,
+    TaskResultStatus
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 export class TaskControl implements ITaskControl {
     public readonly runner: ITaskRunner;
@@ -105,7 +110,6 @@ export class TaskControl implements ITaskControl {
             });
         }
 
-        const taskResponse = new TaskResponse(this.response);
         const store = new TaskManagerStore({
             context: this.context,
             task,
@@ -113,22 +117,26 @@ export class TaskControl implements ITaskControl {
             disableDatabaseLogs
         });
 
-        const manager = new TaskManager(
-            this.runner,
-            this.context,
-            this.response,
-            taskResponse,
-            store
-        );
+        // Populate TaskExecutionContext BEFORE executing task
+        const executionContext = this.context.container.resolve(TaskExecutionContext);
+        executionContext.setStore(store);
+        executionContext.setRunner(this.runner);
+        executionContext.setTimer(this.runner.timer);
+        executionContext.setResponse(new TaskResponse(this.response));
+
+        const manager = new TaskManager(this.context, this.response, store);
 
         const databaseResponse = new DatabaseResponse(this.response, store);
 
         try {
             const result = await manager.run(definition);
 
-            await this.runEvents(result, definition, task);
+            const responseResult = await databaseResponse.from(result);
 
-            return await databaseResponse.from(result);
+            // Get the updated task from store (no database read needed - store maintains local cache)
+            await this.runEvents(result, definition, store.getTask());
+
+            return responseResult;
         } catch (ex) {
             /**
              * We always want to store the error in the task log.
@@ -146,29 +154,30 @@ export class TaskControl implements ITaskControl {
                     }
                 })
             );
+        } finally {
+            // Clear execution context after task completes
+            executionContext.clear();
         }
     }
 
     private async runEvents(
         result: IResponseResult,
-        definition: ITaskDefinition,
+        definition: TaskDefinition.Runnable,
         task: ITask
     ): Promise<void> {
-        if (result.status === TaskResponseStatus.ERROR && definition.onError) {
+        if (result.status === TaskResultStatus.ERROR && definition.onError) {
             try {
                 await definition.onError({
-                    task,
-                    context: this.context
+                    task
                 });
             } catch (ex) {
                 console.error(`Error executing onError hook for task "${task.id}".`);
                 console.log(getErrorProperties(ex));
             }
-        } else if (result.status === TaskResponseStatus.DONE && definition.onDone) {
+        } else if (result.status === TaskResultStatus.DONE && definition.onDone) {
             try {
                 await definition.onDone({
-                    task,
-                    context: this.context
+                    task
                 });
             } catch (ex) {
                 console.error(`Error executing onDone hook for task "${task.id}".`);
@@ -177,7 +186,7 @@ export class TaskControl implements ITaskControl {
         }
     }
 
-    private async getTask<T = any>(id: string): Promise<ITask<T>> {
+    private async getTask<T extends TaskDefinition.TaskInput>(id: string): Promise<ITask<T>> {
         try {
             const task = await this.runner.context.tasks.getTask<T>(id);
             if (task) {

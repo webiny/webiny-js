@@ -33,7 +33,7 @@ const createExpectedListResponse = (folderId?: string) => {
 describe("extending the GraphQL", () => {
     it("should extend the model with a location field and update location via ACO method", async () => {
         const { getEntry, createEntry, updateEntryLocation } = useGraphQLHandler({
-            path: "manage/en-US"
+            path: "manage"
         });
 
         const [createResponse] = await createEntry({
@@ -98,7 +98,7 @@ describe("extending the GraphQL", () => {
 
     it("should list entries with location", async () => {
         const { createEntry, updateEntryLocation, listEntries } = useGraphQLHandler({
-            path: "manage/en-US"
+            path: "manage"
         });
 
         const [createResponse] = await createEntry({

@@ -5,56 +5,6 @@ import type {
 } from "~/utils/converters/ConverterCollection.js";
 import { ConverterCollection } from "~/utils/converters/ConverterCollection.js";
 import type { CmsModel, StorageOperationsCmsModel } from "~/types/index.js";
-import type { SemVer } from "semver";
-import semver from "semver";
-
-const featureVersion = semver.coerce("5.33.0") as SemVer;
-
-const isBetaOrNext = (model: CmsModel): boolean => {
-    if (!model.webinyVersion) {
-        return false;
-    } else if (model.webinyVersion.startsWith("0.0.0")) {
-        return true;
-    }
-    return model.webinyVersion.match(/next|beta|unstable/) !== null;
-};
-
-const isFeatureEnabled = (model: CmsModel): boolean => {
-    /**
-     * In case of disabled webinyVersion value, we disable this feature.
-     * This is only for testing...
-     */
-    const disableConversion = !!process.env.WEBINY_API_TEST_STORAGE_ID_CONVERSION_DISABLE;
-    if (model.webinyVersion === "disable" || disableConversion) {
-        return false;
-    }
-    /**
-     * If is a test environment, always have this turned on.
-     */
-    const nodeEnv = process.env.NODE_ENV as string;
-    if (nodeEnv === "test" || nodeEnv === "disable" || isBetaOrNext(model)) {
-        return true;
-    }
-    /**
-     * Possibility that the version is not defined, this means it is a quite old system where models did not change.
-     */
-    if (!model.webinyVersion) {
-        return false;
-    }
-    /**
-     * In case feature version value is greater than the model version, feature is not enabled as it is an older model with no storageId.
-     *
-     * TODO change if necessary after the update to the system
-     */
-    const modelVersion = semver.coerce(model.webinyVersion);
-    if (!modelVersion) {
-        console.log(`Warning: Model "${model.modelId}" does not have valid Webiny version set.`);
-        return true;
-    } else if (semver.compare(modelVersion, featureVersion) === -1) {
-        return false;
-    }
-    return true;
-};
 
 interface Params {
     /**
@@ -75,12 +25,6 @@ interface ConverterCollectionConvertParams
 export const createValueKeyToStorageConverter = (params: Params): CmsModelConverterCallable => {
     const { plugins, model } = params;
 
-    if (isFeatureEnabled(model) === false) {
-        return ({ values }: ConverterCollectionConvertParams) => {
-            return values || {};
-        };
-    }
-
     const converters = new ConverterCollection({
         plugins
     });
@@ -96,12 +40,6 @@ export const createValueKeyToStorageConverter = (params: Params): CmsModelConver
 
 export const createValueKeyFromStorageConverter = (params: Params): CmsModelConverterCallable => {
     const { plugins, model } = params;
-
-    if (isFeatureEnabled(model) === false) {
-        return ({ values }: ConverterCollectionConvertParams) => {
-            return values || {};
-        };
-    }
 
     const converters = new ConverterCollection({
         plugins

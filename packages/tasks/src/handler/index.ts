@@ -6,12 +6,12 @@ import type {
     Context as LambdaContext
 } from "@webiny/aws-sdk/types/index.js";
 import type { Context } from "~/types.js";
-import { TaskResponseStatus } from "~/types.js";
 import type { HandlerParams, ITaskRawEvent } from "~/handler/types.js";
 import { TaskRunner } from "~/runner/index.js";
 import type WebinyError from "@webiny/error";
 import { timerFactory } from "@webiny/handler-aws/utils/index.js";
 import { TaskEventValidation } from "~/runner/TaskEventValidation.js";
+import { TaskResultStatus } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 export interface HandlerCallable {
     (event: ITaskRawEvent, context: LambdaContext): Promise<APIGatewayProxyResult>;
@@ -45,7 +45,7 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
                     code: error.code,
                     data: error.data
                 },
-                status: TaskResponseStatus.ERROR
+                status: TaskResultStatus.ERROR
             };
             return reply.send();
         });

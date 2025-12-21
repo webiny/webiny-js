@@ -39,10 +39,6 @@ export interface CmsGroup {
      */
     tenant: string;
     /**
-     * Locale this group belongs to.
-     */
-    locale: string;
-    /**
      * Description for the group.
      */
     description: string | null;
@@ -62,10 +58,7 @@ export interface CmsGroup {
      * Date group was created or changed on.
      */
     savedOn?: string;
-    /**
-     * Which Webiny version was this record stored with.
-     */
-    webinyVersion: string;
+
     /**
      * Is group private?
      * This is meant to be used for some internal groups - will not be visible in the schema.

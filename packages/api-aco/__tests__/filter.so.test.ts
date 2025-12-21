@@ -3,6 +3,7 @@ import { filterMocks } from "./mocks/filter.mock";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 import { userMock } from "~tests/mocks/user.mock";
 import { Operation } from "~/filter/filter.types";
+import { until } from "@webiny/project-utils/testing/helpers/until.js";
 
 describe("`filter` CRUD", () => {
     const { aco } = useGraphQlHandler();
@@ -34,9 +35,16 @@ describe("`filter` CRUD", () => {
         });
 
         // Let's check whether both of the filter exists, listing them by `namespace`.
-        const [listResponse1] = await aco.listFilters({
-            where: { namespace: "demo-1" }
-        });
+        const [listResponse1] = await until(
+            () => {
+                return aco.listFilters({
+                    where: { namespace: "demo-1" }
+                });
+            },
+            result => {
+                return result[0].data.aco.listFilters.data.length === 2;
+            }
+        );
 
         expect(listResponse1).toEqual({
             data: {
@@ -123,7 +131,7 @@ describe("`filter` CRUD", () => {
                     getFilter: {
                         data: null,
                         error: {
-                            code: "NOT_FOUND",
+                            code: "Cms/Entry/NotFound",
                             data: null
                         }
                     }
@@ -160,7 +168,7 @@ describe("`filter` CRUD", () => {
                     createFilter: {
                         data: null,
                         error: {
-                            code: "VALIDATION_FAILED",
+                            code: "Cms/Entry/ValidationError",
                             message: "Validation failed.",
                             data: [
                                 {
@@ -192,7 +200,7 @@ describe("`filter` CRUD", () => {
                     createFilter: {
                         data: null,
                         error: {
-                            code: "VALIDATION_FAILED",
+                            code: "Cms/Entry/ValidationError",
                             message: "Validation failed.",
                             data: [
                                 {
@@ -237,7 +245,7 @@ describe("`filter` CRUD", () => {
                     createFilter: {
                         data: null,
                         error: {
-                            code: "VALIDATION_FAILED",
+                            code: "Cms/Entry/ValidationError",
                             message: "Validation failed.",
                             data: [
                                 {
@@ -304,7 +312,7 @@ describe("`filter` CRUD", () => {
                     createFilter: {
                         data: null,
                         error: {
-                            code: "VALIDATION_FAILED",
+                            code: "Cms/Entry/ValidationError",
                             message: "Validation failed.",
                             data: [
                                 {
@@ -347,7 +355,7 @@ describe("`filter` CRUD", () => {
                     createFilter: {
                         data: null,
                         error: {
-                            code: "VALIDATION_FAILED",
+                            code: "Cms/Entry/ValidationError",
                             message: "Validation failed.",
                             data: [
                                 {
@@ -391,8 +399,8 @@ describe("`filter` CRUD", () => {
         expect(result.data.aco.updateFilter).toEqual({
             data: null,
             error: {
-                code: "NOT_FOUND",
-                message: 'Entry by ID "any-id" not found.',
+                code: "Cms/Entry/NotFound",
+                message: 'Entry "any-id" was not found!',
                 data: null
             }
         });

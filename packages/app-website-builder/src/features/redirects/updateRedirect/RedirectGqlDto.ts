@@ -2,7 +2,7 @@ import type { WbIdentity, WbLocation } from "~/types.js";
 
 export interface RedirectGqlDto {
     id: string;
-    wbyAco_location: WbLocation;
+    location: WbLocation;
     createdBy: WbIdentity;
     createdOn: string;
     savedBy: WbIdentity;

@@ -1,15 +1,17 @@
 export const IS_INSTALLED_QUERY = /* GraphQL */ `
-    query IsCmsInstalled {
-        cms {
-            version
+    query IsInstalled {
+        system {
+            isSystemInstalled {
+                data
+            }
         }
     }
 `;
 
 export const INSTALL_MUTATION = /* GraphQL */ `
     mutation CmsInstall {
-        cms {
-            install {
+        system {
+            installSystem(installationInput: []) {
                 data
                 error {
                     message

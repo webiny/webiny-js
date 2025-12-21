@@ -1,15 +1,10 @@
 import type { IManager } from "~/types.js";
 import type { PrimitiveValue } from "@webiny/api-elasticsearch/types.js";
 import type { IIndexManager } from "~/settings/types.js";
-import type {
-    ITaskResponseAbortedResult,
-    ITaskResponseContinueResult,
-    ITaskResponseDoneResult,
-    ITaskResponseDoneResultOutput,
-    ITaskResponseErrorResult
-} from "@webiny/tasks";
 import type { IElasticsearchSynchronize } from "~/tasks/dataSynchronization/elasticsearch/abstractions/ElasticsearchSynchronize.js";
 import type { IElasticsearchFetcher } from "~/tasks/dataSynchronization/elasticsearch/abstractions/ElasticsearchFetcher.js";
+import type { IGenericOutput } from "@webiny/api-core/features/task/TaskService/index.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 export interface IDataSynchronizationInputValue {
     finished?: boolean;
@@ -26,13 +21,13 @@ export interface IDataSynchronizationInput {
     elasticsearchToDynamoDb?: IDataSynchronizationInputElasticsearchToDynamoDbValue;
 }
 
-export type IDataSynchronizationOutput = ITaskResponseDoneResultOutput;
+export type IDataSynchronizationOutput = IGenericOutput;
 
 export type ISynchronizationRunResult =
-    | ITaskResponseContinueResult<IDataSynchronizationInput>
-    | ITaskResponseDoneResult<IDataSynchronizationOutput>
-    | ITaskResponseErrorResult
-    | ITaskResponseAbortedResult;
+    | TaskDefinition.ResultContinue<IDataSynchronizationInput>
+    | TaskDefinition.ResultDone<IDataSynchronizationOutput>
+    | TaskDefinition.ResultError
+    | TaskDefinition.ResultAborted;
 
 export interface ISynchronization {
     run(input: IDataSynchronizationInput): Promise<ISynchronizationRunResult>;

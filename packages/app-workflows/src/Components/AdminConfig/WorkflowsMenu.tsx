@@ -12,7 +12,6 @@ export const WorkflowsMenu = () => {
     return (
         <Menu
             name={"workflows.contentReviews"}
-            pinnable={true}
             element={
                 <Menu.Link
                     icon={
@@ -23,6 +22,7 @@ export const WorkflowsMenu = () => {
                     }
                     text={"Content Reviews"}
                     to={router.getLink(Routes.Workflows.ContentReviews)}
+                    pinnable={true}
                 />
             }
         />

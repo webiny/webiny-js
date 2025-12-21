@@ -18,16 +18,13 @@ import { convertException } from "@webiny/utils";
 
 interface PartitionKeysParams {
     tenant: string;
-    locale: string;
 }
 const createPartitionKey = (params: PartitionKeysParams): string => {
-    const { tenant, locale } = params;
+    const { tenant } = params;
     if (!tenant) {
         throw new WebinyError(`Missing tenant variable when creating model partitionKey.`);
-    } else if (!locale) {
-        throw new WebinyError(`Missing locale variable when creating model partitionKey.`);
     }
-    return `T#${tenant}#L#${locale}#CMS#CM`;
+    return `T#${tenant}#CMS#CM`;
 };
 
 interface SortKeyParams {

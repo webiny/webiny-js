@@ -34,7 +34,7 @@ interface CanAccessModelParams extends GetModelsAccessControlListParams {
 }
 
 interface GetEntriesAccessControlListParams {
-    model: Pick<CmsModel, "modelId" | "createdBy" | "group" | "locale" | "authorization">;
+    model: Pick<CmsModel, "modelId" | "createdBy" | "group" | "authorization">;
     entry?: Pick<CmsEntry, "entryId" | "createdBy">;
 }
 
@@ -116,24 +116,6 @@ export class AccessControl {
         return true;
     }
 
-    async ensureCanAccessGroup(params: CanAccessGroupParams = {}) {
-        const canAccess = await this.canAccessGroup(params);
-        if (canAccess) {
-            return;
-        }
-
-        if ("group" in params) {
-            let groupName = "(could not determine name)";
-            if (params.group?.name) {
-                groupName = `"${params.group.name}"`;
-            }
-
-            throw new NotAuthorizedError(`Not allowed to access content model group ${groupName}.`);
-        }
-
-        throw new NotAuthorizedError(`Not allowed to access content model groups.`);
-    }
-
     async canAccessNonOwnedGroups(params: GetGroupsAccessControlListParams) {
         const acl = await this.getGroupsAccessControlList(params);
         return acl.some(ace => ace.canAccessNonOwned);
@@ -184,11 +166,11 @@ export class AccessControl {
                     }
 
                     const { groups } = groupsPermissions;
-                    if (!Array.isArray(groups[group.locale])) {
+                    if (!Array.isArray(groups)) {
                         continue;
                     }
 
-                    if (!groups[group.locale].includes(group.id)) {
+                    if (!groups.includes(group.id)) {
                         continue;
                     }
                 }
@@ -327,11 +309,11 @@ export class AccessControl {
                         continue;
                     }
 
-                    if (!Array.isArray(groupsPermissions.groups[model.locale])) {
+                    if (!Array.isArray(groupsPermissions.groups)) {
                         continue;
                     }
 
-                    if (!groupsPermissions.groups[model.locale].includes(model.group.id)) {
+                    if (!groupsPermissions.groups.includes(model.group.id)) {
                         continue;
                     }
                 }
@@ -385,11 +367,11 @@ export class AccessControl {
                         continue;
                     }
 
-                    if (!Array.isArray(models[params.model.locale])) {
+                    if (!Array.isArray(models)) {
                         continue;
                     }
 
-                    if (!models[params.model.locale].includes(params.model.modelId)) {
+                    if (!models.includes(params.model.modelId)) {
                         continue;
                     }
                 }
@@ -540,11 +522,11 @@ export class AccessControl {
             if (groupPermissions.groups) {
                 const { groups } = groupPermissions;
 
-                if (!Array.isArray(groups[model.locale])) {
+                if (!Array.isArray(groups)) {
                     continue;
                 }
 
-                if (!groups[model.locale].includes(model.group.id)) {
+                if (!groups.includes(model.group.id)) {
                     continue;
                 }
             }
@@ -569,11 +551,11 @@ export class AccessControl {
             }
 
             if (relatedModelsPermissions.models) {
-                if (!Array.isArray(relatedModelsPermissions.models[model.locale])) {
+                if (!Array.isArray(relatedModelsPermissions.models)) {
                     continue;
                 }
 
-                if (!relatedModelsPermissions.models[model.locale].includes(model.modelId)) {
+                if (!relatedModelsPermissions.models.includes(model.modelId)) {
                     continue;
                 }
             }

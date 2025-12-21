@@ -25,7 +25,7 @@ export class ValidateImportFromUrlIntegrityUseCase
     ): Promise<IValidateImportFromUrlIntegrityUseCaseExecuteResult> {
         const { files, model } = params;
 
-        const task = await this.triggerTask<IValidateImportFromUrlInput>({
+        const result = await this.triggerTask<IValidateImportFromUrlInput>({
             name: `Validate Import from URL Integrity`,
             definition: VALIDATE_IMPORT_FROM_URL_INTEGRITY_TASK,
             input: {
@@ -33,6 +33,8 @@ export class ValidateImportFromUrlIntegrityUseCase
                 files
             }
         });
+
+        const task = result.value;
 
         return {
             id: task.id,

@@ -3,7 +3,7 @@ import type {
     CmsEntryListParams,
     CmsEntryResolverFactory as ResolverFactory
 } from "~/types/index.js";
-import { NotFoundError } from "@webiny/handler-graphql";
+import { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
 
 type ResolveGet = ResolverFactory<any, CmsEntryListParams>;
 
@@ -16,7 +16,7 @@ export const resolveGet: ResolveGet =
                 limit: 1
             });
             if (!entry) {
-                throw new NotFoundError(`Entry not found!`);
+                return new ErrorResponse(new EntryNotFoundError());
             }
             return new Response(entry);
         } catch (e) {

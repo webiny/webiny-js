@@ -1,41 +1,23 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { configurations } from "~/configurations";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 import { getElasticsearchIndexPrefix } from "@webiny/api-elasticsearch";
 
 describe("Elasticsearch index", () => {
-    const withLocaleItems = [
-        ["root", "en-US"],
-        ["admin", "en-EN"],
-        ["root", "de-DE"],
-        ["admin", "en-GB"],
-        ["root,", "de"]
-    ];
+    const tenants = [["root"], ["admin"]];
 
-    beforeEach(() => {
-        process.env.WEBINY_ELASTICSEARCH_INDEX_LOCALE = undefined;
+    it.each(tenants)("should create index with tenant id as part of the name", async tenant => {
+        const prefix = getElasticsearchIndexPrefix();
+
+        const { index } = configurations.es({
+            model: {
+                tenant,
+                modelId: "testModel"
+            } as CmsModel
+        });
+
+        expect(index).toEqual(`${prefix}${tenant}-headless-cms-testModel`.toLowerCase());
     });
-
-    it.each(withLocaleItems)(
-        "should create index with locale code as part of the name",
-        async (tenant, locale) => {
-            process.env.WEBINY_ELASTICSEARCH_INDEX_LOCALE = "true";
-
-            const prefix = getElasticsearchIndexPrefix();
-
-            const { index } = configurations.es({
-                model: {
-                    tenant,
-                    locale,
-                    modelId: "testModel"
-                } as CmsModel
-            });
-
-            expect(index).toEqual(
-                `${prefix}${tenant}-headless-cms-${locale}-testModel`.toLowerCase()
-            );
-        }
-    );
 
     it("should throw error when missing tenant but it is required", async () => {
         expect(() => {
@@ -46,7 +28,6 @@ describe("Elasticsearch index", () => {
                      */
                     // @ts-expect-error
                     tenant: null,
-                    locale: "en-US",
                     modelId: "testModel"
                 }
             });
@@ -55,27 +36,9 @@ describe("Elasticsearch index", () => {
         );
     });
 
-    it("should throw error when missing locale but it is required", async () => {
-        expect(() => {
-            configurations.es({
-                model: {
-                    tenant: "root",
-                    /**
-                     * We expect error because we are testing the case when locale is missing.
-                     */
-                    // @ts-expect-error
-                    locale: null,
-                    modelId: "testModel"
-                }
-            });
-        }).toThrowError(
-            `Missing "locale" parameter when trying to create Elasticsearch index name.`
-        );
-    });
-
-    it.each(withLocaleItems)(
+    it.each(tenants)(
         "should be root tenant in the index, no matter which one is sent",
-        async (tenant, locale) => {
+        async tenant => {
             process.env.ELASTICSEARCH_SHARED_INDEXES = "true";
 
             const prefix = getElasticsearchIndexPrefix();
@@ -83,13 +46,10 @@ describe("Elasticsearch index", () => {
             const { index: noLocaleIndex } = configurations.es({
                 model: {
                     tenant,
-                    locale,
                     modelId: "testModel"
                 } as CmsModel
             });
-            expect(noLocaleIndex).toEqual(
-                `${prefix}root-headless-cms-${locale}-testModel`.toLowerCase()
-            );
+            expect(noLocaleIndex).toEqual(`${prefix}root-headless-cms-testModel`.toLowerCase());
         }
     );
 });

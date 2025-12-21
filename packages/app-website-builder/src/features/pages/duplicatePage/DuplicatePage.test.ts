@@ -9,7 +9,7 @@ describe("DuplicatePage", () => {
             id: "page-1-duplicated#0001",
             entryId: "page-1-duplicated",
             status: WbPageStatus.Draft,
-            wbyAco_location: {
+            location: {
                 folderId: "folder-1"
             },
             properties: {
@@ -36,7 +36,7 @@ describe("DuplicatePage", () => {
                 id: "page-1#0001",
                 entryId: "page-1",
                 status: WbPageStatus.Draft,
-                wbyAco_location: {
+                location: {
                     folderId: "folder-1"
                 },
                 properties: {

@@ -21,7 +21,7 @@ export class FilterRedirectsUseCase implements IFilterRedirectsUseCase {
         if (Object.values(cleanFilters).length === 0) {
             await this.repository.loadRedirects({
                 where: {
-                    wbyAco_location: {
+                    location: {
                         folderId: params.folderIds[0] ?? ROOT_FOLDER
                     }
                 }
@@ -34,7 +34,7 @@ export class FilterRedirectsUseCase implements IFilterRedirectsUseCase {
 
         if (params.folderIds.length > 0) {
             where = {
-                wbyAco_location: {
+                location: {
                     folderId_in: params.folderIds
                 }
             };

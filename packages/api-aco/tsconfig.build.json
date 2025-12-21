@@ -11,7 +11,6 @@
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../handler-graphql/tsconfig.build.json" },
-    { "path": "../pubsub/tsconfig.build.json" },
     { "path": "../shared-aco/tsconfig.build.json" },
     { "path": "../tasks/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
@@ -38,6 +37,9 @@
         "../api-core/src/features/security/IdentityContext/index.js"
       ],
       "@webiny/api-core/features/WcpContext": ["../api-core/src/features/wcp/WcpContext/index.js"],
+      "@webiny/api-core/features/TaskService": [
+        "../api-core/src/features/task/TaskService/index.js"
+      ],
       "@webiny/api-core/features/settings": ["../api-core/src/features/settings/index.js"],
       "@webiny/api-core/features/GetSettings": [
         "../api-core/src/features/settings/GetSettings/index.js"
@@ -173,8 +175,6 @@
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
-      "@webiny/pubsub/*": ["../pubsub/src/*"],
-      "@webiny/pubsub": ["../pubsub/src"],
       "@webiny/shared-aco/*": ["../shared-aco/src/*"],
       "@webiny/shared-aco": ["../shared-aco/src"],
       "@webiny/tasks/*": ["../tasks/src/*"],

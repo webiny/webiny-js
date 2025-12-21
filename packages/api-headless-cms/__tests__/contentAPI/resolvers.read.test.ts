@@ -14,12 +14,12 @@ const createPermissions = ({ groups, models }: { groups?: string[]; models?: str
     {
         name: "cms.contentModelGroup",
         rwd: "r",
-        groups: groups ? { "en-US": groups } : undefined
+        groups
     },
     {
         name: "cms.contentModel",
         rwd: "r",
-        models: models ? { "en-US": models } : undefined
+        models
     },
     {
         name: "cms.contentEntry",
@@ -30,10 +30,6 @@ const createPermissions = ({ groups, models }: { groups?: string[]; models?: str
     },
     {
         name: "cms.endpoint.preview"
-    },
-    {
-        name: "content.i18n",
-        locales: ["en-US"]
     }
 ];
 
@@ -81,11 +77,11 @@ vi.setConfig({
     testTimeout: 100_000
 });
 
-describe("READ - Resolvers", () => {
+describe.sequential("READ - Resolvers", () => {
     let contentModelGroup: CmsGroup;
 
-    const manageOpts = { path: "manage/en-US" };
-    const readOpts = { path: "read/en-US" };
+    const manageOpts = { path: "manage" };
+    const readOpts = { path: "read" };
 
     const {
         createContentModelMutation,
@@ -199,7 +195,7 @@ describe("READ - Resolvers", () => {
         });
     });
 
-    it(`should return a NOT_FOUND error when getting an entry by non-existing ID`, async () => {
+    it(`should return a ENTRY_NOT_FOUND error when getting an entry by non-existing ID`, async () => {
         const { getCategory } = useCategoryReadHandler(readOpts);
 
         const [response] = await getCategory({
@@ -213,8 +209,8 @@ describe("READ - Resolvers", () => {
                 getCategory: {
                     data: null,
                     error: {
-                        code: "NOT_FOUND",
-                        message: "Entry not found!",
+                        code: "Cms/Entry/NotFound",
+                        message: "Entry was not found!",
                         data: null
                     }
                 }
@@ -343,7 +339,7 @@ describe("READ - Resolvers", () => {
                 getCategory: {
                     data: null,
                     error: {
-                        code: "NOT_AUTHORIZED",
+                        code: "Cms/Entry/NotAuthorized",
                         message: 'Not allowed to access "category" entries.'
                     }
                 }
@@ -378,7 +374,7 @@ describe("READ - Resolvers", () => {
                 getCategory: {
                     data: null,
                     error: {
-                        code: "NOT_AUTHORIZED",
+                        code: "Cms/Entry/NotAuthorized",
                         message: 'Not allowed to access "category" entries.'
                     }
                 }

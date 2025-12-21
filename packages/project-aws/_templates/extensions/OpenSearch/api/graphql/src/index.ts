@@ -9,7 +9,7 @@ import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
 import elasticsearchClientContext, { createElasticsearchClient } from "@webiny/api-elasticsearch";
 import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
 import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb";
-import fileManagerS3, { createAssetDelivery } from "@webiny/api-file-manager-s3";
+import { createFileManagerS3, createAssetDelivery } from "@webiny/api-file-manager-s3";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb-es";
 import { createHcmsTasks } from "@webiny/api-headless-cms-tasks-ddb-es";
@@ -21,7 +21,6 @@ import { createAuditLogs } from "@webiny/api-audit-logs";
 import { createBackgroundTasks } from "@webiny/api-background-tasks-os";
 import { createWebsockets } from "@webiny/api-websockets";
 import { createRecordLocking } from "@webiny/api-record-locking";
-import { createLogger } from "@webiny/api-log";
 import { createHeadlessCmsScheduler } from "@webiny/api-headless-cms-scheduler";
 import { createSchedulerClient } from "@webiny/aws-sdk/client-scheduler";
 import { createMailerContext, createMailerGraphQL } from "@webiny/api-mailer";
@@ -49,9 +48,6 @@ export const handler = createHandler({
             driver: new DynamoDbDriver({ documentClient })
         }),
         securityPlugins(),
-        createLogger({
-            documentClient
-        }),
         createWebsockets(),
         createHeadlessCmsContext({
             storageOperations: createHeadlessCmsStorageOperations({
@@ -73,7 +69,7 @@ export const handler = createHandler({
         }),
         createFileManagerGraphQL(),
         createAssetDelivery({ documentClient }),
-        fileManagerS3(),
+        createFileManagerS3(),
         createAco({
             documentClient
         }),

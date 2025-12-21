@@ -21,7 +21,7 @@ export interface UpdatePageVariables {
             PageDto,
             | "id"
             | "entryId"
-            | "wbyAco_location"
+            | "location"
             | "status"
             | "createdOn"
             | "createdBy"

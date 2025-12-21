@@ -3,12 +3,11 @@ import { parseIdentifier, zeroPad } from "@webiny/utils";
 export interface PartitionKeyParams {
     id: string;
     tenant: string;
-    locale: string;
 }
 export const createPartitionKey = (params: PartitionKeyParams): string => {
-    const { tenant, locale, id: initialId } = params;
+    const { tenant, id: initialId } = params;
     const { id } = parseIdentifier(initialId);
-    return `T#${tenant}#L#${locale}#CMS#CME#${id}`;
+    return `T#${tenant}#CMS#CME#${id}`;
 };
 
 export interface SortKeyParams {

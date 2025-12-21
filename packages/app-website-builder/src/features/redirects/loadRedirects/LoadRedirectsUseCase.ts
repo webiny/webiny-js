@@ -14,7 +14,7 @@ export class LoadRedirectsUseCase implements ILoadRedirectsUseCase {
     async execute({ folderId, resetSearch }: LoadRedirectsUseCaseParams) {
         const params = {
             where: {
-                wbyAco_location: {
+                location: {
                     folderId
                 }
             },

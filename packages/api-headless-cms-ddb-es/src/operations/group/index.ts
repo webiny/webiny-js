@@ -20,11 +20,10 @@ import { deleteItem, put, cleanupItems } from "@webiny/db-dynamodb";
 
 interface PartitionKeyParams {
     tenant: string;
-    locale: string;
 }
 const createPartitionKey = (params: PartitionKeyParams): string => {
-    const { tenant, locale } = params;
-    return `T#${tenant}#L#${locale}#CMS#CMG`;
+    const { tenant } = params;
+    return `T#${tenant}#CMS#CMG`;
 };
 
 interface SortKeyParams {
@@ -79,7 +78,6 @@ export const createGroupsStorageOperations = (
                     ...keys
                 }
             });
-            return group;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not create group.",
@@ -104,7 +102,6 @@ export const createGroupsStorageOperations = (
                     ...keys
                 }
             });
-            return group;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not update group.",
@@ -125,7 +122,6 @@ export const createGroupsStorageOperations = (
                 entity,
                 keys
             });
-            return group;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not delete group.",
@@ -188,7 +184,6 @@ export const createGroupsStorageOperations = (
             ...initialWhere
         };
         delete where["tenant"];
-        delete where["locale"];
 
         const filteredItems = cleanupItems(
             entity,

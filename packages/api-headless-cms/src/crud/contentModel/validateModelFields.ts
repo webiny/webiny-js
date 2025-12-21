@@ -5,9 +5,7 @@ import type {
     CmsModel,
     CmsModelField,
     CmsModelFieldToGraphQLPlugin,
-    CmsModelFieldToGraphQLPluginValidateChildFieldsValidate,
-    CmsModelLockedFieldPlugin,
-    LockedField
+    CmsModelFieldToGraphQLPluginValidateChildFieldsValidate
 } from "~/types/index.js";
 import { createManageSDL } from "~/graphql/schema/createManageSDL.js";
 import { createFieldStorageId } from "./createFieldStorageId.js";
@@ -81,8 +79,7 @@ const createValidateChildFields = (
         validateFields({
             fields,
             originalFields,
-            plugins,
-            lockedFields: []
+            plugins
         });
     };
 };
@@ -91,11 +88,10 @@ interface ValidateFieldsParams {
     plugins: CmsModelFieldToGraphQLPlugin[];
     fields: CmsModelField[];
     originalFields: CmsModelField[];
-    lockedFields: LockedField[];
 }
 
 const validateFields = (params: ValidateFieldsParams) => {
-    const { plugins, fields, originalFields, lockedFields } = params;
+    const { plugins, fields, originalFields } = params;
 
     const idList: string[] = [];
     const fieldIdList: string[] = [];
@@ -145,30 +141,14 @@ const validateFields = (params: ValidateFieldsParams) => {
          * https://discuss.elastic.co/t/special-characters-in-field-names/10658/3
          * https://discuss.elastic.co/t/illegal-characters-in-elasticsearch-field-names/17196/2
          */
-        const isLocked = lockedFields.some(lockedField => {
-            return lockedField.fieldId === field.storageId || lockedField.fieldId === field.fieldId;
-        });
         if (!field.storageId) {
-            /**
-             * In case field is locked, we must set the storageId to the fieldId value.
-             * This should not happen, because we upgrade all the fields in 5.33.0, but let's have a check just in case of some upgrade miss.
-             */
-            //
-            if (isLocked) {
-                field.storageId = field.fieldId;
-            }
             /**
              * When having original field, just set the storageId to value from the originalField
              */
             //
-            else if (originalField) {
+            if (originalField) {
                 field.storageId = originalField.storageId;
-            }
-            /**
-             * The last case is when no original field and not locked - so this is a completely new field.
-             */
-            //
-            else {
+            } else {
                 field.storageId = createFieldStorageId(field);
             }
         }
@@ -271,7 +251,7 @@ export const validateModelFields = async (params: ValidateModelFieldsParams): Pr
     /**
      * There should be fields/locked fields in either model or data to be updated.
      */
-    const { fields = [], lockedFields = [] } = model;
+    const { fields = [] } = model;
 
     /**
      * Let's inspect the fields of the received content model. We prevent saving of a content model if it
@@ -284,7 +264,6 @@ export const validateModelFields = async (params: ValidateModelFieldsParams): Pr
     validateFields({
         fields,
         originalFields: original?.fields || [],
-        lockedFields,
         plugins: fieldTypePlugins
     });
 
@@ -310,9 +289,7 @@ export const validateModelFields = async (params: ValidateModelFieldsParams): Pr
         } catch (err) {
             throw new WebinyError(extractInvalidField(model, err));
         }
-        /**
-         *
-         */
+
         try {
             await createGraphQLSchema({
                 context,
@@ -334,63 +311,4 @@ export const validateModelFields = async (params: ValidateModelFieldsParams): Pr
     model.titleFieldId = getContentModelTitleFieldId(fields, titleFieldId);
     model.descriptionFieldId = getContentModelDescriptionFieldId(fields, descriptionFieldId);
     model.imageFieldId = getContentModelImageFieldId(fields, imageFieldId);
-
-    const cmsLockedFieldPlugins =
-        plugins.byType<CmsModelLockedFieldPlugin>("cms-model-locked-field");
-
-    /**
-     * We must not allow removal or changes in fields that are already in use in content entries.
-     * Locked fields still have fieldId (should be storageId) because of the old existing locked fields in the models.
-     */
-    for (const lockedField of lockedFields) {
-        const existingField = fields.find(item => item.storageId === lockedField.fieldId);
-
-        /**
-         * Starting with 5.33.0 fields can be deleted.
-         * Our UI gives a warning upon locked field deletion, but if user is managing fields through API directly - we cannot do anything.
-         */
-        if (!existingField) {
-            continue;
-        }
-
-        if (Boolean(lockedField.multipleValues) !== Boolean(existingField.multipleValues)) {
-            throw new WebinyError(
-                `Cannot change "multipleValues" for the "${lockedField.fieldId}" field because it's already in use in created content.`,
-                "ENTRY_FIELD_USED",
-                {
-                    reason: `"multipleValues" changed`,
-                    field: existingField
-                }
-            );
-        }
-
-        const fieldType = getBaseFieldType(existingField);
-        if (lockedField.type !== fieldType) {
-            throw new WebinyError(
-                `Cannot change field type for the "${lockedField.fieldId}" field because it's already in use in created content.`,
-                "ENTRY_FIELD_USED",
-                {
-                    reason: `"type" changed`,
-                    lockedFieldType: lockedField.type,
-                    existingFieldType: fieldType
-                }
-            );
-        }
-
-        /**
-         * Check `lockedField` invariant for specific field
-         */
-        const lockedFieldsByType = cmsLockedFieldPlugins.filter(
-            pl => pl.fieldType === getBaseFieldType(lockedField)
-        );
-        for (const plugin of lockedFieldsByType) {
-            if (typeof plugin.checkLockedField !== "function") {
-                continue;
-            }
-            plugin.checkLockedField({
-                lockedField,
-                field: existingField
-            });
-        }
-    }
 };

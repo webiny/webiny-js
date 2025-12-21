@@ -4,13 +4,13 @@ import { createMockEvent, createMockIdentity } from "~tests/mocks";
 import { ResponseContinueResult, ResponseDoneResult } from "~/response";
 import { TaskDataStatus } from "~/types";
 import { createLiveContextFactory } from "~tests/live";
-import { taskDefinition } from "~tests/runner/taskDefinition";
+import { testDefinitionPlugin, TASK_ID } from "~tests/runner/taskDefinition";
 import { TaskEventValidation } from "~/runner/TaskEventValidation";
 import { timerFactory } from "@webiny/handler-aws/utils";
 
 describe("task runner trigger and end successfully", () => {
     const contextFactory = createLiveContextFactory({
-        plugins: [taskDefinition]
+        plugins: [testDefinitionPlugin]
     });
 
     it("should trigger a task run and end it successfully", async () => {
@@ -19,7 +19,7 @@ describe("task runner trigger and end successfully", () => {
         const runner = new TaskRunner(context, timerFactory(), new TaskEventValidation());
 
         const task = await context.tasks.createTask({
-            definitionId: taskDefinition.id,
+            definitionId: TASK_ID,
             input: {},
             name: "My task name"
         });
@@ -27,7 +27,7 @@ describe("task runner trigger and end successfully", () => {
         const result = await runner.run(
             createMockEvent({
                 webinyTaskId: task.id,
-                webinyTaskDefinitionId: taskDefinition.id
+                webinyTaskDefinitionId: TASK_ID
             })
         );
 
@@ -35,7 +35,7 @@ describe("task runner trigger and end successfully", () => {
         expect(result).toEqual({
             status: "done",
             webinyTaskId: task.id,
-            webinyTaskDefinitionId: taskDefinition.id,
+            webinyTaskDefinitionId: TASK_ID,
             tenant: "root",
             message: "Task is done!",
             output: {
@@ -82,7 +82,7 @@ describe("task runner trigger and end successfully", () => {
         );
 
         const task = await context.tasks.createTask({
-            definitionId: taskDefinition.id,
+            definitionId: TASK_ID,
             input: {
                 aTaskInput: "yes"
             },
@@ -92,7 +92,7 @@ describe("task runner trigger and end successfully", () => {
         const result = await firstRunner.run(
             createMockEvent({
                 webinyTaskId: task.id,
-                webinyTaskDefinitionId: taskDefinition.id
+                webinyTaskDefinitionId: TASK_ID
             })
         );
 
@@ -100,7 +100,7 @@ describe("task runner trigger and end successfully", () => {
         expect(result).toEqual({
             status: "continue",
             webinyTaskId: task.id,
-            webinyTaskDefinitionId: taskDefinition.id,
+            webinyTaskDefinitionId: TASK_ID,
             tenant: "root",
             delay: -1,
             wait: undefined,
@@ -146,7 +146,7 @@ describe("task runner trigger and end successfully", () => {
         expect(doneResult).toEqual({
             status: "done",
             webinyTaskId: task.id,
-            webinyTaskDefinitionId: taskDefinition.id,
+            webinyTaskDefinitionId: TASK_ID,
             tenant: "root",
             message: "Task is done!",
             output: {

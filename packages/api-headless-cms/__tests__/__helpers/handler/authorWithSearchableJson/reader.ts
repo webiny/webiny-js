@@ -13,7 +13,7 @@ import { createAuthorWithSearchableJson } from "~tests/__helpers/models/authorWi
 export const useAuthorWithSearchableJsonReader = (params?: GraphQLHandlerParams) => {
     const modelPlugin = createAuthorWithSearchableJson();
     const contentHandler = useGraphQLHandler({
-        path: "read/en-US",
+        path: "read",
         plugins: [createDefaultGroup(), modelPlugin],
         ...params
     });

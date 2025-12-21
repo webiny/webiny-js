@@ -3,6 +3,15 @@ import { cn } from "~/utils.js";
 import { SIDEBAR_TRANSITION_DURATION } from "./constants.js";
 import { SidebarCache } from "./SidebarCache.js";
 
+type PinnedItemData = {
+    id: string;
+    text: React.ReactNode;
+    icon?: React.ReactNode;
+    to?: string;
+    onClick?: React.MouseEventHandler;
+    active?: boolean;
+};
+
 type SidebarContext = {
     state: "expanded" | "collapsed";
     expanded: boolean;
@@ -14,6 +23,12 @@ type SidebarContext = {
     togglePinned: () => void;
     toggleSectionExpanded: (sectionId: string) => void;
     isSectionExpanded: (sectionId: string) => boolean;
+    pinnedItems: string[];
+    toggleItemPinned: (itemId: string) => void;
+    isItemPinned: (itemId: string) => boolean;
+    registerPinnedItem: (data: PinnedItemData) => void;
+    unregisterPinnedItem: (itemId: string) => void;
+    getPinnedItemsData: () => PinnedItemData[];
 };
 
 const SidebarContext = React.createContext<SidebarContext | null>(null);
@@ -27,7 +42,10 @@ function useSidebar() {
     return context;
 }
 
-type SidebarProviderProps = React.HTMLAttributes<HTMLDivElement>;
+type SidebarProviderProps = React.HTMLAttributes<HTMLDivElement> & {
+    pinnedItems?: string[];
+    onChangePinnedItems?: (pinnedItems: string[]) => void;
+};
 
 interface SidebarState {
     expanded: boolean;
@@ -46,8 +64,17 @@ const createInitialSidebarState = (): SidebarState => {
     };
 };
 
-const SidebarProvider = ({ className, children, ...props }: SidebarProviderProps) => {
+const SidebarProvider = ({
+    className,
+    children,
+    pinnedItems = [],
+    onChangePinnedItems,
+    ...props
+}: SidebarProviderProps) => {
     const [sidebarState, setSidebarState] = React.useState<SidebarState>(createInitialSidebarState);
+    const [pinnedItemsData, setPinnedItemsData] = React.useState<Map<string, PinnedItemData>>(
+        new Map()
+    );
 
     // With this timeout, we prevent the sidebar glitching (quickly opening/closing) during mouse enter/leave events.
     const timeoutRef = React.useRef<number | null>(null);
@@ -124,6 +151,51 @@ const SidebarProvider = ({ className, children, ...props }: SidebarProviderProps
         [expandedSections]
     );
 
+    const toggleItemPinned = React.useCallback(
+        (itemId: string) => {
+            if (!onChangePinnedItems) {
+                return;
+            }
+
+            const newPinnedItems = pinnedItems.includes(itemId)
+                ? pinnedItems.filter(id => id !== itemId)
+                : [...pinnedItems, itemId];
+
+            onChangePinnedItems(newPinnedItems);
+        },
+        [pinnedItems, onChangePinnedItems]
+    );
+
+    const isItemPinned = React.useCallback(
+        (itemId: string) => {
+            return pinnedItems.includes(itemId);
+        },
+        [pinnedItems]
+    );
+
+    const registerPinnedItem = React.useCallback((data: PinnedItemData) => {
+        setPinnedItemsData(prev => {
+            const newMap = new Map(prev);
+            newMap.set(data.id, data);
+            return newMap;
+        });
+    }, []);
+
+    const unregisterPinnedItem = React.useCallback((itemId: string) => {
+        setPinnedItemsData(prev => {
+            const newMap = new Map(prev);
+            newMap.delete(itemId);
+            return newMap;
+        });
+    }, []);
+
+    const getPinnedItemsData = React.useCallback(() => {
+        // Sort by the order in pinnedItems array to maintain consistent ordering
+        return pinnedItems
+            .map(id => pinnedItemsData.get(id))
+            .filter((item): item is PinnedItemData => item !== undefined);
+    }, [pinnedItemsData, pinnedItems]);
+
     // We add a state so that we can do data-state="expanded" or "collapsed".
     // This makes it easier to style the sidebar with Tailwind classes.
     const state = expanded ? "expanded" : "collapsed";
@@ -140,7 +212,13 @@ const SidebarProvider = ({ className, children, ...props }: SidebarProviderProps
             toggleSectionExpanded,
             setPinned,
             togglePinned,
-            isSectionExpanded
+            isSectionExpanded,
+            pinnedItems,
+            toggleItemPinned,
+            isItemPinned,
+            registerPinnedItem,
+            unregisterPinnedItem,
+            getPinnedItemsData
         }),
         [
             state,
@@ -151,7 +229,13 @@ const SidebarProvider = ({ className, children, ...props }: SidebarProviderProps
             setExpanded,
             setPinned,
             toggleExpanded,
-            togglePinned
+            togglePinned,
+            pinnedItems,
+            toggleItemPinned,
+            isItemPinned,
+            registerPinnedItem,
+            unregisterPinnedItem,
+            getPinnedItemsData
         ]
     );
 
@@ -169,4 +253,4 @@ const SidebarProvider = ({ className, children, ...props }: SidebarProviderProps
 };
 SidebarProvider.displayName = "SidebarProvider";
 
-export { SidebarProvider, useSidebar };
+export { SidebarProvider, useSidebar, type PinnedItemData };

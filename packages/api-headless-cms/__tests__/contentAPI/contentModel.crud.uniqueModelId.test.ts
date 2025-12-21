@@ -3,7 +3,7 @@ import { CmsGroup } from "~/types";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 
 describe("content model test", () => {
-    const manageHandlerOpts = { path: "manage/en-US" };
+    const manageHandlerOpts = { path: "manage" };
 
     const { createContentModelGroupMutation } = useGraphQLHandler(manageHandlerOpts);
 
@@ -68,10 +68,8 @@ describe("content model test", () => {
                 createContentModel: {
                     data: null,
                     error: {
-                        code: "MODEL_ID_EXISTS",
-                        data: {
-                            input: "event"
-                        },
+                        code: "Cms/Model/ValidationError",
+                        data: null,
                         message: 'Content model with modelId "event" already exists.'
                     }
                 }
@@ -125,11 +123,9 @@ describe("content model test", () => {
                 createContentModel: {
                     data: null,
                     error: {
-                        code: "MODEL_SINGULAR_API_NAME_EXISTS",
-                        data: {
-                            input: "Event"
-                        },
-                        message: 'Content model with singularApiName "Event" already exists.'
+                        code: "Cms/Model/ValidationError",
+                        data: null,
+                        message: `Content model with singularApiName "Event" already exists.`
                     }
                 }
             }
@@ -152,10 +148,8 @@ describe("content model test", () => {
                 createContentModel: {
                     data: null,
                     error: {
-                        code: "MODEL_PLURAL_API_NAME_EXISTS",
-                        data: {
-                            input: "Events"
-                        },
+                        code: "Cms/Model/ValidationError",
+                        data: null,
                         message: 'Content model with pluralApiName "Events" already exists.'
                     }
                 }
@@ -191,10 +185,8 @@ describe("content model test", () => {
                 createContentModel: {
                     data: null,
                     error: {
-                        code: "MODEL_PLURAL_API_NAME_EXISTS",
-                        data: {
-                            input: "Events"
-                        },
+                        code: "Cms/Model/ValidationError",
+                        data: null,
                         message: 'Content model with pluralApiName "Events" already exists.'
                     }
                 }
@@ -216,10 +208,8 @@ describe("content model test", () => {
                 createContentModel: {
                     data: null,
                     error: {
-                        code: "MODEL_PLURAL_API_NAME_EXISTS",
-                        data: {
-                            input: "Events"
-                        },
+                        code: "Cms/Model/ValidationError",
+                        data: null,
                         message: 'Content model with pluralApiName "Events" already exists.'
                     }
                 }

@@ -10,7 +10,7 @@ const pluralApiName = "ModelWithDefaultFieldsPlural";
 describe("content model default fields", () => {
     const { createContentModelGroupMutation, createContentModelMutation, getContentModelQuery } =
         useGraphQLHandler({
-            path: "manage/en-US"
+            path: "manage"
         });
 
     let contentModelGroup: CmsGroup;

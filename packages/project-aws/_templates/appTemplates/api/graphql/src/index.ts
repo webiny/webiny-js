@@ -7,8 +7,9 @@ import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
 import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
+import { createFileManagerAco } from "@webiny/api-file-manager-aco";
 import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb";
-import fileManagerS3, { createAssetDelivery } from "@webiny/api-file-manager-s3";
+import { createFileManagerS3, createAssetDelivery } from "@webiny/api-file-manager-s3";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
 import { createHcmsTasks } from "@webiny/api-headless-cms-tasks";
@@ -20,8 +21,8 @@ import { createAuditLogs } from "@webiny/api-audit-logs";
 import { createBackgroundTasks } from "@webiny/api-background-tasks-ddb";
 import { createWebsockets } from "@webiny/api-websockets";
 import { createRecordLocking } from "@webiny/api-record-locking";
-import { createLogger } from "@webiny/api-log";
 import { createHeadlessCmsScheduler } from "@webiny/api-headless-cms-scheduler";
+import { createScheduler } from "@webiny/api-scheduler";
 import { createSchedulerClient } from "@webiny/aws-sdk/client-scheduler";
 import { createMailerContext, createMailerGraphQL } from "@webiny/api-mailer";
 import { createWorkflows } from "@webiny/api-workflows";
@@ -46,7 +47,6 @@ export const handler = createHandler({
             driver: new DynamoDbDriver({ documentClient })
         }),
         securityPlugins(),
-        createLogger({ documentClient }),
         createWebsockets(),
         createHeadlessCmsContext({
             storageOperations: createHeadlessCmsStorageOperations({ documentClient })
@@ -58,11 +58,12 @@ export const handler = createHandler({
         createRecordLocking(),
         createBackgroundTasks(),
         createFileManagerContext({
-            storageOperations: createFileManagerStorageOperations({ documentClient })
+            fileAliasStorageOperations: createFileManagerStorageOperations({ documentClient })
         }),
         createFileManagerGraphQL(),
+        createFileManagerAco(),
         createAssetDelivery({ documentClient }),
-        fileManagerS3(),
+        createFileManagerS3(),
         createAco({ documentClient }),
         createWorkflows(),
         createHeadlessCmsWorkflows(),
@@ -70,11 +71,12 @@ export const handler = createHandler({
         createAuditLogs(),
         createAcoHcmsContext(),
         createHcmsTasks(),
-        createHeadlessCmsScheduler({
+        createScheduler({
             getClient: config => {
                 return createSchedulerClient(config);
             }
         }),
+        createHeadlessCmsScheduler(),
         extensions()
     ],
     debug

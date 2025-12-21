@@ -8,7 +8,7 @@ import type { DataLoaderParams } from "./types.js";
 import { createBatchScheduleFn } from "./createBatchScheduleFn.js";
 
 export const createGetAllEntryRevisions = (params: DataLoaderParams) => {
-    const { entity, locale, tenant } = params;
+    const { entity, tenant } = params;
     return new DataLoader<string, CmsStorageEntry[]>(
         async (ids: readonly string[]) => {
             const results: Record<string, CmsStorageEntry[]> = {};
@@ -17,7 +17,6 @@ export const createGetAllEntryRevisions = (params: DataLoaderParams) => {
                     entity,
                     partitionKey: createPartitionKey({
                         tenant,
-                        locale,
                         id
                     }),
                     options: {

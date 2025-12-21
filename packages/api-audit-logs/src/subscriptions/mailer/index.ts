@@ -1,7 +1,7 @@
-import { onSettingsAfterUpdateHook } from "./settings.js";
+import { AuditLogMailerSettingsAfterSaveHandler } from "./handlers/AuditLogMailerSettingsAfterSaveHandler.js";
+import { AuditLogsContext } from "~/abstractions.js";
 
-import type { AuditLogsContext } from "~/types.js";
-
-export const createMailerHooks = (context: AuditLogsContext) => {
-    onSettingsAfterUpdateHook(context);
+export const createMailerHooks = (context: AuditLogsContext.Interface) => {
+    // Register mailer settings event handlers
+    context.container.register(AuditLogMailerSettingsAfterSaveHandler);
 };

@@ -13,7 +13,7 @@ if (process.env.WEBINY_ENABLE_VERSION_HEADER === "true") {
 
 describe("HTTP Options request", () => {
     const manageOpts = {
-        path: "manage/en-US",
+        path: "manage",
         plugins: [
             new ContextPlugin<CmsContext>(async () => {
                 throw new Error("This should not register.");

@@ -3,8 +3,6 @@ import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
 
 const pageModelPlugin = new CmsModelPlugin({
-    locale: "en-US",
-    lockedFields: [],
     modelId: "page",
     name: "Page",
     description: "",
@@ -84,11 +82,9 @@ const pageModelPlugin = new CmsModelPlugin({
 });
 
 const faqModelPlugin = new CmsModelPlugin({
-    lockedFields: [],
     modelId: "faq",
     name: "FAQ",
     titleFieldId: "id",
-    locale: "en-US",
     description: "",
     singularApiName: "FaqModelApiNameRef",
     pluralApiName: "FaqsModelApiNameRefs",
@@ -161,8 +157,6 @@ const faqModelPlugin = new CmsModelPlugin({
 });
 
 const faqGroupBannerModelPlugin = new CmsModelPlugin({
-    locale: "en-US",
-    lockedFields: [],
     modelId: "faqGroupBanner",
     name: "FAQ Group Banner",
     tenant: "root",
@@ -333,7 +327,7 @@ const faqGroupBannerModelPlugin = new CmsModelPlugin({
 describe("content model plugins - nested `ref` field union types", () => {
     const { introspect } = useGraphQLHandler({
         plugins: [pageModelPlugin, faqModelPlugin, faqGroupBannerModelPlugin],
-        path: "read/en-US"
+        path: "read"
     });
 
     it("must generate valid schema for nested `ref` field union", async () => {

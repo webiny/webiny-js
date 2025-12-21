@@ -3,12 +3,10 @@ import type DataLoader from "dataloader";
 export interface CacheKeyParams {
     name: string;
     tenant: string;
-    locale: string;
 }
 
 export interface ClearAllParams {
     tenant: string;
-    locale: string;
 }
 
 export class DataLoaderCache {
@@ -45,6 +43,6 @@ export class DataLoaderCache {
     }
 
     private createKey(params: CacheKeyParams): string {
-        return `${params.tenant}_${params.locale}_${params.name}`;
+        return `${params.tenant}_${params.name}`;
     }
 }

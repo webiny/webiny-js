@@ -55,10 +55,10 @@ const SidebarBase = (props: SidebarProps) => {
         <SidebarRoot {...rootProps}>
             <SidebarHeader {...headerProps} />
             <SidebarContent {...contentProps}>
-                <SidebarMenuRoot>{props.children}</SidebarMenuRoot>
+                <SidebarMenuRoot showPinnedItems={true}>{props.children}</SidebarMenuRoot>
             </SidebarContent>
             <SidebarFooter>
-                <SidebarMenuRoot>{footerProps.footer}</SidebarMenuRoot>
+                <SidebarMenuRoot showPinnedItems={false}>{footerProps.footer}</SidebarMenuRoot>
             </SidebarFooter>
         </SidebarRoot>
     );

@@ -1,5 +1,5 @@
 import type { CmsIdentity } from "./identity.js";
-import type { CmsModelField, CmsModelFieldInput, LockedField } from "./modelField.js";
+import type { CmsModelField, CmsModelFieldInput } from "./modelField.js";
 import type { CmsModelGroup } from "./modelGroup.js";
 
 /**
@@ -39,10 +39,6 @@ export interface CmsModel {
      * Model tenant.
      */
     tenant: string;
-    /**
-     * Locale this model belongs to.
-     */
-    locale: string;
     /**
      * Cms Group reference object.
      */
@@ -87,10 +83,6 @@ export interface CmsModel {
      */
     tags?: string[];
     /**
-     * List of locked fields. Updated when entry is saved and a field has been used.
-     */
-    lockedFields?: LockedField[];
-    /**
      * The field that is used as an entry title.
      * If not specified by the user, the system tries to assign the first available `text` field.
      */
@@ -105,10 +97,6 @@ export interface CmsModel {
      * If not set by the user, the system will try to assign a `file` field which has `imagesOnly` enabled.
      */
     imageFieldId?: string | null;
-    /**
-     * The version of Webiny which this record was stored with.
-     */
-    webinyVersion: string;
 
     /**
      * Is model private?
@@ -199,9 +187,4 @@ export interface CmsModelCreateInput {
  * @category GraphQL params
  * @category CmsModel
  */
-export interface CmsModelCreateFromInput extends CmsModelCreateInput {
-    /**
-     * Locale into which we want to clone the model into.
-     */
-    locale?: string;
-}
+export interface CmsModelCreateFromInput extends CmsModelCreateInput {}

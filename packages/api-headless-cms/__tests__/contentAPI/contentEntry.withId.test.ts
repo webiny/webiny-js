@@ -1,6 +1,6 @@
 /**
  * This test determines that a user can send a custom ID when creating a content entry.
- * The rest of functionality and limitations remain the same.
+ * The rest of the functionality and limitations remain the same.
  */
 import { beforeEach, describe, expect, it } from "vitest";
 import { setupContentModelGroup, setupContentModels } from "~tests/testHelpers/setup";
@@ -23,10 +23,10 @@ const createCategory = (input?: Partial<Category>): Category => {
 
 describe("Content entry with user defined ID", () => {
     const categoryManageHandler = useCategoryManageHandler({
-        path: "manage/en-US"
+        path: "manage"
     });
     const productManageHandler = useProductManageHandler({
-        path: "manage/en-US"
+        path: "manage"
     });
 
     beforeEach(async () => {
@@ -187,7 +187,7 @@ describe("Content entry with user defined ID", () => {
                 updateCategory: {
                     data: null,
                     error: {
-                        code: "CONTENT_ENTRY_UPDATE_ERROR",
+                        code: "Cms/Entry/Locked",
                         message: "Cannot update entry because it's locked.",
                         data: null
                     }
@@ -254,7 +254,7 @@ describe("Content entry with user defined ID", () => {
                 updateCategory: {
                     data: null,
                     error: {
-                        code: "CONTENT_ENTRY_UPDATE_ERROR",
+                        code: "Cms/Entry/Locked",
                         message: "Cannot update entry because it's locked.",
                         data: null
                     }

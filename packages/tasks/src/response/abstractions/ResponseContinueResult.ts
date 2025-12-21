@@ -1,5 +1,6 @@
-import type { ITaskDataInput, TaskResponseStatus } from "~/types.js";
+import type { ITaskDataInput } from "~/types.js";
 import type { IResponseBaseResult } from "./ResponseBaseResult.js";
+import { TaskResultStatus } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 /**
  * Wait can be used to pause next iteration of the Lambda execution.
@@ -19,5 +20,5 @@ export interface IResponseContinueResult<T = ITaskDataInput> extends IResponseBa
     input: T;
     wait?: number;
     delay: -1;
-    status: TaskResponseStatus.CONTINUE;
+    status: TaskResultStatus.CONTINUE;
 }

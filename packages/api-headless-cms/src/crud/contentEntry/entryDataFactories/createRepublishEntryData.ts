@@ -59,8 +59,6 @@ export const createRepublishEntryData = async ({
         ),
         revisionLastPublishedOn: getDate(currentDateTime),
         revisionLastPublishedBy: getIdentity(currentIdentity),
-
-        webinyVersion: context.WEBINY_VERSION,
         values
     };
 

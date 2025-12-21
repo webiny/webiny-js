@@ -14,7 +14,7 @@ export class CreatePageRepository implements ICreatePageRepository {
 
     async execute(page: Page) {
         const dto: PageDto = {
-            wbyAco_location: page.location,
+            location: page.location,
             properties: page.properties,
             metadata: page.metadata,
             elements: page.elements,

@@ -1,6 +1,5 @@
 export enum EntityType {
-    CMS = "headless-cms",
-    PAGE_BUILDER = "page-builder"
+    CMS = "headless-cms"
 }
 
 export interface IGetElasticsearchEntityTypeParams {
@@ -13,8 +12,6 @@ export const getElasticsearchEntityType = (
 ): EntityType => {
     if (params.index.includes("-headless-cms-")) {
         return EntityType.CMS;
-    } else if (params.index.endsWith("-page-builder")) {
-        return EntityType.PAGE_BUILDER;
     }
 
     throw new Error(`Unknown entity type for item "${JSON.stringify(params)}".`);

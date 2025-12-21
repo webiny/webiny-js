@@ -5,7 +5,7 @@ import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 
 describe("model delete", () => {
-    const manageOpts = { path: "manage/en-US" };
+    const manageOpts = { path: "manage" };
 
     const {
         createContentModelMutation,
@@ -102,10 +102,8 @@ describe("model delete", () => {
                 deleteContentModel: {
                     data: null,
                     error: {
-                        code: "CONTENT_MODEL_BEFORE_DELETE_HOOK_FAILED",
-                        data: {
-                            model: expect.any(Object)
-                        },
+                        code: "Cms/Model/CannotDeleteHasEntries",
+                        data: null,
                         message: `Cannot delete content model "category" because there are existing entries.`
                     }
                 }

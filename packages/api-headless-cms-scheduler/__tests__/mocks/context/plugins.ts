@@ -4,24 +4,20 @@ import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import type { PermissionsArg } from "./helpers";
 import { createPermissions } from "./helpers";
-import type { ContextPlugin } from "@webiny/api";
-import type { ScheduleContext } from "~/types.js";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
-import { createHeadlessCmsScheduler } from "~/index.js";
 import type {
     SchedulerClient,
     SchedulerClientConfig
 } from "@webiny/aws-sdk/client-scheduler/index.js";
 import { createSchedulerManifestPlugin } from "~tests/mocks/schedulerManifestPlugin.js";
-import { createMockTargetModelPlugins } from "~tests/mocks/targetModel.js";
 import apiKeyAuthentication from "@webiny/api-core/legacy/security/plugins/apiKeyAuthentication.js";
 import apiKeyAuthorization from "@webiny/api-core/legacy/security/plugins/apiKeyAuthorization.js";
-import type { ApiKey } from "@webiny/api-core/types/security.js";
 import { createApiCore } from "@webiny/api-core";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import { createScheduler } from "@webiny/api-scheduler";
 
 export interface CreateHandlerCoreParams {
     getScheduleClient: (config?: SchedulerClientConfig) => Pick<SchedulerClient, "send">;
@@ -42,15 +38,7 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
         name: "Root",
         parent: null
     };
-    const locale = "en-US";
-    const {
-        permissions,
-        identity,
-        plugins = [],
-        topPlugins = [],
-        bottomPlugins = [],
-        setupTenancyAndSecurityGraphQL
-    } = params;
+    const { permissions, identity, plugins = [], topPlugins = [], bottomPlugins = [] } = params;
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
@@ -58,9 +46,7 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
     return {
         storageOperations: cmsStorage.storageOperations,
         tenant,
-        locale,
         plugins: [
-            createMockTargetModelPlugins(),
             topPlugins,
             ...cmsStorage.plugins,
             createApiCore({
@@ -68,40 +54,10 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
                 testProjectLicense: createTestWcpLicense()
             }),
             ...createTenancyAndSecurity({
-                setupGraphQL: setupTenancyAndSecurityGraphQL,
                 permissions: createPermissions(permissions),
                 identity
             }),
             createSchedulerManifestPlugin(),
-            {
-                type: "context",
-                name: "context-security-tenant",
-                async apply(context) {
-                    context.security.getApiKeyByToken = async (
-                        token: string
-                    ): Promise<ApiKey | null> => {
-                        if (!token || token !== "aToken") {
-                            return null;
-                        }
-                        const apiKey = "a1234567890";
-                        return {
-                            id: apiKey,
-                            name: apiKey,
-                            tenant: tenant.id,
-                            permissions: identity?.permissions || [],
-                            token,
-                            createdBy: {
-                                id: "test",
-                                displayName: "test",
-                                type: "admin"
-                            },
-                            description: "test",
-                            createdOn: new Date().toISOString(),
-                            webinyVersion: context.WEBINY_VERSION
-                        };
-                    };
-                }
-            } as ContextPlugin<ScheduleContext>,
             apiKeyAuthentication({ identityType: "api-key" }),
             apiKeyAuthorization({ identityType: "api-key" }),
             createHeadlessCmsContext({
@@ -110,7 +66,7 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
             createHeadlessCmsGraphQL(),
             plugins,
             graphQLHandlerPlugins(),
-            createHeadlessCmsScheduler({
+            createScheduler({
                 getClient: config => {
                     return params.getScheduleClient(config);
                 }

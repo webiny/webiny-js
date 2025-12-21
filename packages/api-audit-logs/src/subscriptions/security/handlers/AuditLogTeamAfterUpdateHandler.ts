@@ -1,11 +1,11 @@
 import WebinyError from "@webiny/error";
 import { TeamAfterUpdateHandler } from "@webiny/api-core/features/UpdateTeam";
+import { AuditLogsContext } from "~/abstractions.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
-import type { AuditLogsContext } from "~/types.js";
 
-export class AuditLogTeamAfterUpdateHandler implements TeamAfterUpdateHandler.Interface {
-    constructor(private context: AuditLogsContext) {}
+class AuditLogTeamAfterUpdateHandlerImpl implements TeamAfterUpdateHandler.Interface {
+    constructor(private context: AuditLogsContext.Interface) {}
 
     async handle(event: TeamAfterUpdateHandler.Event): Promise<void> {
         try {
@@ -26,3 +26,8 @@ export class AuditLogTeamAfterUpdateHandler implements TeamAfterUpdateHandler.In
         }
     }
 }
+
+export const AuditLogTeamAfterUpdateHandler = TeamAfterUpdateHandler.createImplementation({
+    implementation: AuditLogTeamAfterUpdateHandlerImpl,
+    dependencies: [AuditLogsContext]
+});

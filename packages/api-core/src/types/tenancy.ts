@@ -14,7 +14,6 @@ export interface Tenant {
     isInstalled: boolean;
     settings: TenantSettings;
     parent: string | null;
-    webinyVersion?: string;
     createdOn: string;
     savedOn: string;
 }

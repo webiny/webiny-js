@@ -14,12 +14,11 @@ interface ConfigurationsElasticsearch {
 }
 
 export interface CmsElasticsearchParams {
-    model: Pick<CmsModel, "tenant" | "locale" | "modelId">;
+    model: Pick<CmsModel, "tenant" | "modelId">;
 }
 
 export interface ConfigurationsIndexSettingsParams {
     context: CmsContext;
-    model: Pick<CmsModel, "locale">;
 }
 
 export interface Configurations {
@@ -31,22 +30,17 @@ export interface Configurations {
 
 export const configurations: Configurations = {
     es({ model }) {
-        const { tenant, locale } = model;
+        const { tenant } = model;
 
         if (!tenant) {
             throw new WebinyError(
                 `Missing "tenant" parameter when trying to create Elasticsearch index name.`,
                 "TENANT_ERROR"
             );
-        } else if (!locale) {
-            throw new WebinyError(
-                `Missing "locale" parameter when trying to create Elasticsearch index name.`,
-                "LOCALE_ERROR"
-            );
         }
 
         const sharedIndex = isSharedElasticsearchIndex();
-        const index = [sharedIndex ? "root" : tenant, "headless-cms", locale, model.modelId]
+        const index = [sharedIndex ? "root" : tenant, "headless-cms", model.modelId]
             .join("-")
             .toLowerCase();
 
@@ -61,11 +55,10 @@ export const configurations: Configurations = {
             index: prefix + index
         };
     },
-    indexSettings: ({ context, model }) => {
+    indexSettings: ({ context }) => {
         const plugin = getLastAddedIndexPlugin<CmsEntryElasticsearchIndexPlugin>({
             container: context.plugins,
-            type: CmsEntryElasticsearchIndexPlugin.type,
-            locale: model.locale
+            type: CmsEntryElasticsearchIndexPlugin.type
         });
 
         return plugin ? plugin.body : {};

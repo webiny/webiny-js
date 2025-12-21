@@ -4,7 +4,6 @@ import { ROOT_FOLDER } from "~/constants.js";
 export interface RedirectData {
     id?: string;
     location?: WbLocation;
-    wbyAco_location?: WbLocation;
     createdBy?: WbIdentity;
     createdOn?: string;
     savedBy?: WbIdentity;
@@ -51,12 +50,6 @@ export class Redirect {
     }
 
     private createLocation(data: RedirectData): WbLocation {
-        if (data.wbyAco_location) {
-            return {
-                folderId: data.wbyAco_location.folderId
-            };
-        }
-
         if (data.location) {
             return {
                 folderId: data.location.folderId

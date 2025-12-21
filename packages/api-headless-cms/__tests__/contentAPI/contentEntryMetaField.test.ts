@@ -6,7 +6,7 @@ import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
 import { createMockCmsEntry } from "~tests/helpers/createMockCmsEntry";
 
 const manageOpts = {
-    path: "manage/en-US"
+    path: "manage"
 };
 
 const createMetaData = () => {
@@ -79,8 +79,7 @@ describe("Content Entry Meta Field", () => {
         });
         const model: CmsModel = {
             ...updateModelResponse.data.updateContentModel.data,
-            tenant: "root",
-            locale: "en-US"
+            tenant: "root"
         };
 
         return {
@@ -107,7 +106,6 @@ describe("Content Entry Meta Field", () => {
                 displayName: "admin"
             },
             modelId: model.modelId,
-            locale: model.locale,
             tenant: model.tenant,
             createdOn: new Date().toISOString(),
             savedOn: new Date().toISOString(),

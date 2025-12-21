@@ -1,36 +1,6 @@
-import type { Context, ITaskDataInput, ITaskDefinition } from "~/types";
-import { createTaskDefinition } from "~/task";
+import { createTaskDefinition } from "~tests/helpers/createTaskDefinition";
 
 export const MOCK_TASK_DEFINITION_ID = "myCustomTaskDefinition";
-
-export const createMockTaskDefinition = <I extends ITaskDataInput = ITaskDataInput>(
-    definition?: Partial<ITaskDefinition>
-) => {
-    return createTaskDefinition<Context, I>({
-        id: MOCK_TASK_DEFINITION_ID,
-        title: "A custom task defined via method",
-        run: async ({ response, isCloseToTimeout, input }) => {
-            try {
-                if (isCloseToTimeout()) {
-                    return response.continue({
-                        ...input
-                    });
-                }
-                return response.done("Task done!", {
-                    withSomeBoolean: true,
-                    withSomeNumber: 1,
-                    withSomeString: "yes!",
-                    withSomeObject: {
-                        testingObject: "yes!"
-                    }
-                });
-            } catch (ex) {
-                return response.error(ex);
-            }
-        },
-        ...definition
-    });
-};
 
 export const createMockTaskDefinitions = () => {
     return [
@@ -38,8 +8,8 @@ export const createMockTaskDefinitions = () => {
             id: "myCustomTaskNumber1",
             title: "A custom task defined via method #1",
             description: "This is a description of the task #1",
-            async run({ response }) {
-                return response.done("successfully ran the task #1", {
+            run({ controller }) {
+                return controller.response.done("successfully ran the task #1", {
                     task: "#1"
                 });
             }
@@ -48,8 +18,8 @@ export const createMockTaskDefinitions = () => {
             id: "myCustomTaskNumber2",
             title: "A custom task defined via method #2",
             description: "This is a description of the task #2",
-            async run({ response }) {
-                return response.done("successfully ran the task #2", {
+            run({ controller }) {
+                return controller.response.done("successfully ran the task #2", {
                     task: "#2"
                 });
             }
@@ -58,16 +28,9 @@ export const createMockTaskDefinitions = () => {
             id: "myCustomTaskNumber3",
             title: "A custom task defined via method #3",
             description: "This is a description of the task #3",
-            async run({ response }) {
-                return response.done("successfully ran the task #3", {
+            run({ controller }) {
+                return controller.response.done("successfully ran the task #3", {
                     task: "#3"
-                });
-            },
-            config: task => {
-                task.addField({
-                    type: "text",
-                    label: "Some Field",
-                    fieldId: "someField"
                 });
             }
         })

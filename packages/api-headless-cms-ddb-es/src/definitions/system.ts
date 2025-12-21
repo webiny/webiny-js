@@ -23,9 +23,6 @@ export const createSystemEntity = (params: CreateSystemEntityParams): Entity<any
             version: {
                 type: "string"
             },
-            locale: {
-                type: "string"
-            },
             tenant: {
                 type: "string"
             },

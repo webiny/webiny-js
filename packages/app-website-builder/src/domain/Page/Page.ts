@@ -7,7 +7,6 @@ export interface PageData {
     status?: WbStatus;
     version?: number;
     location?: WbLocation;
-    wbyAco_location?: WbLocation;
     properties?: Record<string, any>;
     metadata?: Record<string, any>;
     bindings?: Record<string, any>;
@@ -66,12 +65,6 @@ export class Page {
     }
 
     private createLocation(data: PageData): WbLocation {
-        if (data.wbyAco_location) {
-            return {
-                folderId: data.wbyAco_location.folderId
-            };
-        }
-
         if (data.location) {
             return {
                 folderId: data.location.folderId

@@ -1,8 +1,3 @@
-import type { Context as IWebsocketsContext } from "@webiny/api-websockets";
-import type { FileManagerContext } from "@webiny/api-file-manager/types.js";
-
-export type ThreatDetectionContext = FileManagerContext & IWebsocketsContext;
-
 export type GuardDutyEvent = {
     scanResultDetails: {
         scanResultStatus:

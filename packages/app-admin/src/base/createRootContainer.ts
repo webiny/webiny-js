@@ -30,7 +30,6 @@ export function createRootContainer() {
         telemetryUserId: process.env.REACT_APP_WEBINY_TELEMETRY_USER_ID,
         trashBinRetentionPeriodDays: trashBinRetention,
         wcpProjectId: process.env.REACT_APP_WCP_PROJECT_ID,
-        webinyVersion: String(process.env.REACT_APP_WEBINY_VERSION),
         websocketUrl: String(process.env.REACT_APP_WEBSOCKET_URL)
     });
 

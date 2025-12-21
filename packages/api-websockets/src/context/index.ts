@@ -1,10 +1,10 @@
 import { ContextPlugin } from "@webiny/handler";
 import type { Context } from "~/types.js";
-import { WebsocketsContext } from "./WebsocketsContext.js";
+import { WebsocketsContext as WebsocketsImplementation } from "./WebsocketsContext.js";
 import { WebsocketsConnectionRegistry } from "~/registry/index.js";
 import { WebsocketsTransport } from "~/transport/index.js";
+import { WebsocketService } from "~/features/WebsocketService/abstractions.js";
 
-export * from "./WebsocketsContext.js";
 export type * from "./abstractions/IWebsocketsContext.js";
 
 export const createWebsocketsContext = () => {
@@ -16,7 +16,9 @@ export const createWebsocketsContext = () => {
         const documentClient = context.db.driver.documentClient;
         const registry = new WebsocketsConnectionRegistry(documentClient);
         const transport = new WebsocketsTransport();
-        context.websockets = new WebsocketsContext(registry, transport);
+        context.websockets = new WebsocketsImplementation(registry, transport);
+
+        context.container.registerInstance(WebsocketService, context.websockets);
     });
 
     plugin.name = "websockets.context";
