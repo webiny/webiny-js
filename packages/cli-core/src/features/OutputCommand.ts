@@ -1,6 +1,11 @@
 import { createImplementation } from "@webiny/di";
 import { CliCommand, GetProjectSdkService, StdioService } from "~/abstractions/index.js";
 import { IBaseAppParams } from "~/abstractions/features/types.js";
+import {
+    createEnvOption,
+    createRegionOption,
+    createVariantOption
+} from "~/features/common/index.js";
 
 export interface IOutputCommandParams extends IBaseAppParams {
     json?: boolean;
@@ -27,35 +32,11 @@ export class OutputCommand implements CliCommand.Interface<IOutputCommandParams>
                 }
             ],
             options: [
-                {
-                    name: "env",
-                    description: "Environment name (dev, prod, etc.)",
-                    type: "string"
-                },
-                {
-                    name: "variant",
-                    description: "Variant of the app to watch",
-                    type: "string",
-                    validation: params => {
-                        const isValid = projectSdk.isValidVariantName(params.variant);
-                        if (isValid.isErr()) {
-                            throw isValid.error;
-                        }
-                        return true;
-                    }
-                },
-                {
-                    name: "region",
-                    description: "Region to target",
-                    type: "string",
-                    validation: params => {
-                        const isValid = projectSdk.isValidRegionName(params.region);
-                        if (isValid.isErr()) {
-                            throw isValid.error;
-                        }
-                        return true;
-                    }
-                },
+                createEnvOption(),
+                createVariantOption(projectSdk, {
+                    description: "Variant of the app to watch"
+                }),
+                createRegionOption(projectSdk),
                 {
                     name: "json",
                     description: "Emit output as JSON",

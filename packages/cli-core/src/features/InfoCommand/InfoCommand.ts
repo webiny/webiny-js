@@ -2,6 +2,7 @@ import { createImplementation } from "@webiny/di";
 import { CliCommand, GetProjectSdkService, UiService } from "~/abstractions/index.js";
 import { IBaseAppParams } from "~/abstractions/features/types.js";
 import { PrintInfoForEnv } from "./PrintInfoForEnv.js";
+import { createEnvOption, createVariantOption } from "~/features/common/index.js";
 
 export type IInfoCommandParams = Omit<IBaseAppParams, "app">;
 
@@ -18,23 +19,10 @@ export class InfoCommand implements CliCommand.Interface<IInfoCommandParams> {
             name: "info",
             description: "Lists relevant URLs for your Webiny project",
             options: [
-                {
-                    name: "env",
-                    description: "Environment name (dev, prod, etc.)",
-                    type: "string"
-                },
-                {
-                    name: "variant",
-                    description: "Variant of the app to watch",
-                    type: "string",
-                    validation: params => {
-                        const isValid = projectSdk.isValidVariantName(params.variant);
-                        if (isValid.isErr()) {
-                            throw isValid.error;
-                        }
-                        return true;
-                    }
-                }
+                createEnvOption(),
+                createVariantOption(projectSdk, {
+                    description: "Variant of the app to watch"
+                })
             ],
 
             handler: async params => {

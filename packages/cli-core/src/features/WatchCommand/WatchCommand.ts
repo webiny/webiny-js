@@ -1,6 +1,11 @@
 import { createImplementation } from "@webiny/di";
 import { CliCommand, GetProjectSdkService, StdioService, UiService } from "~/abstractions/index.js";
 import { IBaseAppParams } from "~/abstractions/features/types.js";
+import {
+    createEnvOption,
+    createRegionOption,
+    createVariantOption
+} from "~/features/common/index.js";
 import chalk from "chalk";
 import { getRandomColorForString } from "./getRandomColorForString.js";
 import { createPrefixer } from "./createPrefixer.js";
@@ -39,38 +44,16 @@ export class WatchCommand implements CliCommand.Interface<IWatchCommandParams> {
                 }
             ],
             options: [
-                {
-                    name: "env",
-                    description: "Environment name (dev, prod, etc.)",
-                    type: "string",
+                createEnvOption({
                     group: BASE_OPTIONS_GROUP
-                },
-                {
-                    name: "variant",
-                    description: "Variant of the app to watch",
-                    type: "string",
-                    validation: params => {
-                        const isValid = projectSdk.isValidVariantName(params.variant);
-                        if (isValid.isErr()) {
-                            throw isValid.error;
-                        }
-                        return true;
-                    },
+                }),
+                createVariantOption(projectSdk, {
+                    group: BASE_OPTIONS_GROUP,
+                    description: "Variant of the app to watch"
+                }),
+                createRegionOption(projectSdk, {
                     group: BASE_OPTIONS_GROUP
-                },
-                {
-                    name: "region",
-                    description: "Region to target",
-                    type: "string",
-                    validation: params => {
-                        const isValid = projectSdk.isValidRegionName(params.region);
-                        if (isValid.isErr()) {
-                            throw isValid.error;
-                        }
-                        return true;
-                    },
-                    group: BASE_OPTIONS_GROUP
-                },
+                }),
                 {
                     name: "package",
                     alias: "p",

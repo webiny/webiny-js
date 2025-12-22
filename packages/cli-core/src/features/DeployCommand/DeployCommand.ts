@@ -3,6 +3,11 @@ import { CliCommand, GetProjectSdkService, StdioService, UiService } from "~/abs
 import { DeployOutput } from "./deployOutputs/DeployOutput.js";
 import { AppName } from "@webiny/project";
 import { BuildRunner } from "~/features/BuildCommand/buildRunners/BuildRunner.js";
+import {
+    createEnvOption,
+    createRegionOption,
+    createVariantOption
+} from "~/features/common/index.js";
 import { setTimeout } from "node:timers/promises";
 import ora from "ora";
 import open from "open";
@@ -63,42 +68,18 @@ export class DeployCommand implements CliCommand.Interface<IDeployCommandParams>
                 }
             ],
             options: [
-                {
-                    name: "env",
-                    description: "Environment name (dev, prod, etc.)",
-                    type: "string",
-                    default: "dev",
+                createEnvOption({
                     validation: params => {
                         if (params.apps && params.apps.length > 0 && !params.env) {
                             throw new Error("Environment name is required when deploying an app.");
                         }
                         return true;
                     }
-                },
-                {
-                    name: "variant",
-                    description: "Variant of the app to deploy",
-                    type: "string",
-                    validation: params => {
-                        const isValid = projectSdk.isValidVariantName(params.variant);
-                        if (isValid.isErr()) {
-                            throw isValid.error;
-                        }
-                        return true;
-                    }
-                },
-                {
-                    name: "region",
-                    description: "Region to target",
-                    type: "string",
-                    validation: params => {
-                        const isValid = projectSdk.isValidRegionName(params.region);
-                        if (isValid.isErr()) {
-                            throw isValid.error;
-                        }
-                        return true;
-                    }
-                },
+                }),
+                createVariantOption(projectSdk, {
+                    description: "Variant of the app to deploy"
+                }),
+                createRegionOption(projectSdk),
                 {
                     name: "build",
                     description: "Build packages before deploying",

@@ -1,6 +1,11 @@
 import { createImplementation } from "@webiny/di";
 import { CliCommand, GetProjectSdkService, StdioService, UiService } from "~/abstractions/index.js";
 import { measureDuration } from "~/features/utils/index.js";
+import {
+    createEnvOption,
+    createRegionOption,
+    createVariantOption
+} from "~/features/common/index.js";
 import { PulumiError } from "@webiny/pulumi-sdk";
 import { AppName } from "@webiny/project";
 
@@ -45,42 +50,18 @@ export class DestroyCommand implements CliCommand.Interface<IDestroyCommandParam
                 }
             ],
             options: [
-                {
-                    name: "env",
-                    description: "Environment name (dev, prod, etc.)",
-                    type: "string",
-                    default: "dev",
+                createEnvOption({
                     validation: params => {
                         if ("app" in params && !params.env) {
                             throw new Error("Environment name is required when destroying an app.");
                         }
                         return true;
                     }
-                },
-                {
-                    name: "variant",
-                    description: "Variant of the app to destroy",
-                    type: "string",
-                    validation: params => {
-                        const isValid = projectSdk.isValidVariantName(params.variant);
-                        if (isValid.isErr()) {
-                            throw isValid.error;
-                        }
-                        return true;
-                    }
-                },
-                {
-                    name: "region",
-                    description: "Region to target",
-                    type: "string",
-                    validation: params => {
-                        const isValid = projectSdk.isValidRegionName(params.region);
-                        if (isValid.isErr()) {
-                            throw isValid.error;
-                        }
-                        return true;
-                    }
-                }
+                }),
+                createVariantOption(projectSdk, {
+                    description: "Variant of the app to destroy"
+                }),
+                createRegionOption(projectSdk)
             ],
             handler: async (params: IDestroyCommandParams) => {
                 if ("app" in params) {
