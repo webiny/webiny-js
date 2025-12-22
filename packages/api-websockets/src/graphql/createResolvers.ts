@@ -15,7 +15,6 @@ export interface IWebsocketsMutationDisconnectIdentityArgs {
 
 export interface IWebsocketsMutationDisconnectTenantArgs {
     tenant: string;
-    locale?: string;
 }
 
 export const createResolvers = (): Resolvers<Context> => {
@@ -64,8 +63,7 @@ export const createResolvers = (): Resolvers<Context> => {
                     await checkPermissions(context);
                     return await context.websockets.disconnect({
                         where: {
-                            tenant: args.tenant,
-                            locale: args.locale
+                            tenant: args.tenant
                         }
                     });
                 });

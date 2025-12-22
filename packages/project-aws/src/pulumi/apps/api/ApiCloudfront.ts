@@ -21,8 +21,7 @@ export const ApiCloudfront = createAppModule({
             "Authorization",
             "Accept",
             "Accept-Language",
-            "X-Tenant",
-            "X-I18n-Locale"
+            "X-Tenant"
         ];
 
         return app.addResource(aws.cloudfront.Distribution, {

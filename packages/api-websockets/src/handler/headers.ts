@@ -25,19 +25,13 @@ const getTenant = (body: IWebsocketsEventData, event: IWebsocketsIncomingEvent):
     return body?.tenant || event.queryStringParameters?.tenant || "root";
 };
 
-const getLocale = (body: IWebsocketsEventData, event: IWebsocketsIncomingEvent): string => {
-    return body?.locale || event.queryStringParameters?.locale || "en-US";
-};
-
 export const getEventValues = (event: IWebsocketsIncomingEvent) => {
     const body = getEventBody(event);
 
     const token = getToken(body, event);
     const tenant = getTenant(body, event);
-    const locale = getLocale(body, event);
     return {
         tenant,
-        locale,
         token,
         endpoint: "manage"
     };

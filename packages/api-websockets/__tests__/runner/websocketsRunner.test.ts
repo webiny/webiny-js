@@ -127,8 +127,7 @@ describe("websockets runner", () => {
             },
             body: JSON.stringify({
                 token: "aToken",
-                tenant: "root",
-                locale: "en-US"
+                tenant: "root"
             })
         });
         expect(result).toEqual({
@@ -163,8 +162,7 @@ describe("websockets runner", () => {
             },
             body: JSON.stringify({
                 token: "aToken",
-                tenant: "root",
-                locale: "en-US"
+                tenant: "root"
             })
         });
         expect(result).toEqual({
@@ -191,8 +189,7 @@ describe("websockets runner", () => {
             },
             body: JSON.stringify({
                 token: "aToken",
-                tenant: "root",
-                locale: "en-US"
+                tenant: "root"
             })
         });
         expect(result).toEqual({
@@ -219,8 +216,7 @@ describe("websockets runner", () => {
             },
             body: JSON.stringify({
                 token: "aToken",
-                tenant: "root",
-                locale: "en-US"
+                tenant: "root"
             })
         });
         expect(result).toEqual({
@@ -263,8 +259,7 @@ describe("websockets runner", () => {
             },
             body: JSON.stringify({
                 token: "aToken",
-                tenant: "root",
-                locale: "en-US"
+                tenant: "root"
             })
         });
         expect(connectResult).toEqual({
@@ -294,8 +289,7 @@ describe("websockets runner", () => {
             },
             body: JSON.stringify({
                 token: "aToken",
-                tenant: "root",
-                locale: "en-US"
+                tenant: "root"
             })
         });
         expect(result).toEqual({
@@ -333,8 +327,7 @@ describe("websockets runner", () => {
             },
             body: JSON.stringify({
                 token: "aToken",
-                tenant: "root",
-                locale: "en-US"
+                tenant: "root"
             })
         });
         expect(result).toEqual({

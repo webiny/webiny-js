@@ -14,7 +14,6 @@ export type IWebsocketsIdentity = Pick<SecurityIdentity, "id" | "displayName" | 
 export interface IWebsocketsContextListConnectionsParamsWhere {
     identityId?: string;
     tenant?: string;
-    locale?: string;
     connections?: string[];
 }
 

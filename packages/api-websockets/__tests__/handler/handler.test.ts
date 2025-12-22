@@ -46,7 +46,6 @@ describe("handler", () => {
                     messageId: "message123",
                     action: "mockAction",
                     token: "aToken",
-                    locale: "en-US",
                     tenant: "root"
                 })
             }),
@@ -85,7 +84,6 @@ describe("handler", () => {
                     messageId: "message123",
                     action: "mockAction",
                     token: "aToken",
-                    locale: "en-US",
                     tenant: "root"
                 })
             }),
@@ -131,7 +129,6 @@ describe("handler", () => {
                     messageId: "message123",
                     action: "mockAction",
                     token: "aToken",
-                    locale: "en-US",
                     tenant: "root"
                 })
             }),
@@ -162,7 +159,6 @@ describe("handler", () => {
                     messageId: "message123",
                     action: "mockAction",
                     token: "aToken",
-                    locale: "en-US",
                     tenant: "root"
                 })
             }),
@@ -208,7 +204,6 @@ describe("handler", () => {
                     messageId: "message123",
                     action: "mockAction",
                     token: "aToken",
-                    locale: "en-US",
                     tenant: "root"
                 })
             }),

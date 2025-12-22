@@ -27,7 +27,6 @@ describe("websockets context", () => {
         await registry.register({
             connectionId: "connection-1",
             tenant: "root",
-            locale: "en-US",
             identity: {
                 id: "id-1",
                 displayName: "John Doe",
@@ -47,7 +46,6 @@ describe("websockets context", () => {
             {
                 connectionId: "connection-1",
                 tenant: "root",
-                locale: "en-US",
                 identity: {
                     id: "id-1",
                     displayName: "John Doe",
@@ -70,7 +68,6 @@ describe("websockets context", () => {
         await registry.register({
             connectionId: "connection-1",
             tenant: "root",
-            locale: "en-US",
             identity: {
                 id: "id-1",
                 displayName: "John Doe",

@@ -7,11 +7,6 @@ export interface IWebsocketsActionPluginCallableParamsSend {
         data: T
     ): Promise<void>;
     toTenant<T extends GenericRecord = GenericRecord>(tenant: string, data: T): Promise<void>;
-    toTenantAndLocale<T extends GenericRecord = GenericRecord>(
-        tenant: string,
-        locale: string,
-        data: T
-    ): Promise<void>;
     toIdentity<T extends GenericRecord = GenericRecord>(identity: string, data: T): Promise<void>;
 }
 

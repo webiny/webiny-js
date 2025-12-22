@@ -53,7 +53,7 @@ export class WebsocketsContext implements IWebsocketsContextObject {
         } else if (where.connections) {
             return await this.registry.listViaConnections(where.connections);
         } else if (where.tenant) {
-            return await this.registry.listViaTenant(where.tenant, where.locale);
+            return await this.registry.listViaTenant(where.tenant);
         }
         return await this.registry.listAll();
     }
