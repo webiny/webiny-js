@@ -2,11 +2,7 @@ import { createImplementation } from "@webiny/di";
 import { CliCommand, GetProjectSdkService, StdioService, UiService } from "~/abstractions/index.js";
 import { IBaseAppParams } from "~/abstractions/features/types.js";
 import { BuildRunner } from "~/features/BuildCommand/buildRunners/BuildRunner.js";
-import {
-    createEnvOption,
-    createRegionOption,
-    createVariantOption
-} from "~/features/common/index.js";
+import { createBaseAppOptions } from "~/features/common/index.js";
 
 export type IBuildCommandParams = IBaseAppParams;
 
@@ -32,15 +28,7 @@ export class BuildCommand implements CliCommand.Interface<IBuildCommandParams> {
                     required: true
                 }
             ],
-            options: [
-                createEnvOption({
-                    required: true
-                }),
-                createVariantOption(projectSdk, {
-                    description: "Variant of the app to deploy"
-                }),
-                createRegionOption(projectSdk)
-            ],
+            options: [...createBaseAppOptions(projectSdk)],
             handler: async (params: IBuildCommandParams) => {
                 const stdio = this.stdioService;
                 const ui = this.ui;

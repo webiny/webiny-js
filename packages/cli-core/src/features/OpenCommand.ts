@@ -1,11 +1,7 @@
 import { createImplementation } from "@webiny/di";
 import { CliCommand, GetProjectSdkService, UiService } from "~/abstractions/index.js";
 import { IBaseAppParams } from "~/abstractions/features/types.js";
-import {
-    createEnvOption,
-    createRegionOption,
-    createVariantOption
-} from "~/features/common/index.js";
+import { createBaseAppOptions } from "~/features/common/index.js";
 import open from "open";
 
 export type IOpenCommandParams = Omit<IBaseAppParams, "app">;
@@ -24,13 +20,11 @@ export class OpenCommand implements CliCommand.Interface<IOpenCommandParams> {
             name: "open",
             description: "Quickly open Admin application in your default browser",
             options: [
-                createEnvOption({
-                    required: true
+                ...createBaseAppOptions(projectSdk, {
+                    variant: {
+                        description: "Variant of the app to watch"
+                    }
                 }),
-                createVariantOption(projectSdk, {
-                    description: "Variant of the app to watch"
-                }),
-                createRegionOption(projectSdk),
                 {
                     name: "json",
                     description: "Emit output as JSON",

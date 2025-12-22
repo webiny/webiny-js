@@ -1,11 +1,7 @@
 import { createImplementation } from "@webiny/di";
 import { CliCommand, GetProjectSdkService, StdioService, UiService } from "~/abstractions/index.js";
 import { measureDuration } from "~/features/utils/index.js";
-import {
-    createEnvOption,
-    createRegionOption,
-    createVariantOption
-} from "~/features/common/index.js";
+import { createBaseAppOptions } from "~/features/common/index.js";
 import { PulumiError } from "@webiny/pulumi-sdk";
 import { AppName } from "@webiny/project";
 
@@ -50,18 +46,18 @@ export class DestroyCommand implements CliCommand.Interface<IDestroyCommandParam
                 }
             ],
             options: [
-                createEnvOption({
-                    validation: params => {
-                        if ("app" in params && !params.env) {
-                            throw new Error("Environment name is required when destroying an app.");
+                ...createBaseAppOptions<IDestroyCommandParams>(projectSdk, {
+                    env: {
+                        validation: params => {
+                            if ("app" in params && !params.env) {
+                                throw new Error(
+                                    "Environment name is required when destroying an app."
+                                );
+                            }
+                            return true;
                         }
-                        return true;
                     }
-                }),
-                createVariantOption(projectSdk, {
-                    description: "Variant of the app to destroy"
-                }),
-                createRegionOption(projectSdk)
+                })
             ],
             handler: async (params: IDestroyCommandParams) => {
                 if ("app" in params) {

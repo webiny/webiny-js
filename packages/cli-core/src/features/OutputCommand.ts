@@ -1,11 +1,7 @@
 import { createImplementation } from "@webiny/di";
 import { CliCommand, GetProjectSdkService, StdioService } from "~/abstractions/index.js";
 import { IBaseAppParams } from "~/abstractions/features/types.js";
-import {
-    createEnvOption,
-    createRegionOption,
-    createVariantOption
-} from "~/features/common/index.js";
+import { createBaseAppOptions } from "~/features/common/index.js";
 
 export interface IOutputCommandParams extends IBaseAppParams {
     json?: boolean;
@@ -32,11 +28,11 @@ export class OutputCommand implements CliCommand.Interface<IOutputCommandParams>
                 }
             ],
             options: [
-                createEnvOption(),
-                createVariantOption(projectSdk, {
-                    description: "Variant of the app to watch"
+                ...createBaseAppOptions(projectSdk, {
+                    variant: {
+                        description: "Variant of the app to watch"
+                    }
                 }),
-                createRegionOption(projectSdk),
                 {
                     name: "json",
                     description: "Emit output as JSON",

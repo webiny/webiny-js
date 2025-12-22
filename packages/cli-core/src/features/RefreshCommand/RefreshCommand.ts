@@ -2,11 +2,7 @@ import { createImplementation } from "@webiny/di";
 import { CliCommand, GetProjectSdkService, StdioService } from "~/abstractions/index.js";
 import { ManuallyReportedError } from "~/utils/ManuallyReportedError.js";
 import { IBaseAppParams } from "~/abstractions/features/types.js";
-import {
-    createEnvOption,
-    createRegionOption,
-    createVariantOption
-} from "~/features/common/index.js";
+import { createBaseAppOptions } from "~/features/common/index.js";
 
 export interface IRefreshCommandParams extends IBaseAppParams {
     command: string[];
@@ -34,18 +30,16 @@ export class RefreshCommand implements CliCommand.Interface<IRefreshCommandParam
                 }
             ],
             options: [
-                createEnvOption({
-                    validation: params => {
-                        if ("app" in params && !params.env) {
-                            throw new Error("Environment name is required.");
+                ...createBaseAppOptions<IRefreshCommandParams>(projectSdk, {
+                    env: {
+                        validation: params => {
+                            if ("app" in params && !params.env) {
+                                throw new Error("Environment name is required.");
+                            }
+                            return true;
                         }
-                        return true;
                     }
-                }),
-                createVariantOption(projectSdk, {
-                    description: "Variant of the app to refresh"
-                }),
-                createRegionOption(projectSdk)
+                })
             ],
             handler: async (params: IRefreshCommandParams) => {
                 const projectSdk = await this.getProjectSdkService.execute();

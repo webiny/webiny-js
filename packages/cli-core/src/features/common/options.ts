@@ -19,7 +19,7 @@ export const createVariantOption = <T extends { variant?: string }>(
 ): CliCommand.OptionDefinition<T> => {
     return {
         name: "variant",
-        description: "Variant of the app",
+        description: "Variant name",
         type: "string",
         validation: params => {
             const isValid = projectSdk.isValidVariantName(params.variant);
@@ -49,4 +49,19 @@ export const createRegionOption = <T extends { region?: string }>(
         },
         ...overrides
     };
+};
+
+export const createBaseAppOptions = <T extends { variant?: string; region?: string }>(
+    projectSdk: ProjectSdk,
+    overrides: {
+        env?: Partial<CliCommand.OptionDefinition<T>>;
+        variant?: Partial<CliCommand.OptionDefinition<T>>;
+        region?: Partial<CliCommand.OptionDefinition<T>>;
+    } = {}
+): CliCommand.OptionDefinition<T>[] => {
+    return [
+        createEnvOption(overrides.env),
+        createVariantOption(projectSdk, overrides.variant),
+        createRegionOption(projectSdk, overrides.region)
+    ];
 };

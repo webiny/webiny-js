@@ -3,11 +3,7 @@ import { CliCommand, GetProjectSdkService, StdioService, UiService } from "~/abs
 import { DeployOutput } from "./deployOutputs/DeployOutput.js";
 import { AppName } from "@webiny/project";
 import { BuildRunner } from "~/features/BuildCommand/buildRunners/BuildRunner.js";
-import {
-    createEnvOption,
-    createRegionOption,
-    createVariantOption
-} from "~/features/common/index.js";
+import { createBaseAppOptions } from "~/features/common/index.js";
 import { setTimeout } from "node:timers/promises";
 import ora from "ora";
 import open from "open";
@@ -68,18 +64,18 @@ export class DeployCommand implements CliCommand.Interface<IDeployCommandParams>
                 }
             ],
             options: [
-                createEnvOption({
-                    validation: params => {
-                        if (params.apps && params.apps.length > 0 && !params.env) {
-                            throw new Error("Environment name is required when deploying an app.");
+                ...createBaseAppOptions<IDeployCommandParams>(projectSdk, {
+                    env: {
+                        validation: params => {
+                            if (params.apps && params.apps.length > 0 && !params.env) {
+                                throw new Error(
+                                    "Environment name is required when deploying an app."
+                                );
+                            }
+                            return true;
                         }
-                        return true;
                     }
                 }),
-                createVariantOption(projectSdk, {
-                    description: "Variant of the app to deploy"
-                }),
-                createRegionOption(projectSdk),
                 {
                     name: "build",
                     description: "Build packages before deploying",
