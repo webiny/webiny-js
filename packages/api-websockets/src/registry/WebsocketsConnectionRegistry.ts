@@ -131,9 +131,7 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
     /**
      * Uses GSI2 keys
      */
-    public async listViaTenant(
-        tenant: string,
-    ): Promise<IWebsocketsConnectionRegistryData[]> {
+    public async listViaTenant(tenant: string): Promise<IWebsocketsConnectionRegistryData[]> {
         const options: Partial<EntityQueryOptions> = {
             beginsWith: `T#${tenant}`
         };
