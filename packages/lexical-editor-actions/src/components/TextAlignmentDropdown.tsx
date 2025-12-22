@@ -6,11 +6,9 @@ import { useDeriveValueFromSelection } from "@webiny/lexical-editor/hooks/useCur
 export const TextAlignmentDropdown = () => {
     const { applyTextAlignment, outdentText, indentText } = useTextAlignmentAction();
 
-    // const isRTL = useDeriveValueFromSelection(({ rangeSelection }) => {
-    //     return rangeSelection ? $isParentElementRTL(rangeSelection) : false;
-    // });
-
-    const isRTL = false;
+    const isRTL = useDeriveValueFromSelection(({ rangeSelection }) => {
+        return rangeSelection ? $isParentElementRTL(rangeSelection) : false;
+    });
 
     return (
         <DropDown

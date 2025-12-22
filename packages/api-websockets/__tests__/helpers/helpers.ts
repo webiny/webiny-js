@@ -1,5 +1,3 @@
-import { ContextPlugin } from "@webiny/api";
-import type { Context } from "~tests/types";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 export interface PermissionsArg {
