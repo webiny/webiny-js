@@ -4,7 +4,7 @@
   "type": "module",
   "dependencies": {
     "@emotion/styled": "11.10.6",
-    "@lexical/selection": "^0.35.0",
+    "@lexical/selection": "^0.39.0",
     "@webiny/lexical-editor": "0.0.0",
     "@webiny/ui": "0.0.0",
     "emotion": "10.0.27",

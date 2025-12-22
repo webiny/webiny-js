@@ -45,21 +45,24 @@ export const allNodes: ReadonlyArray<Klass<LexicalNode> | LexicalNodeReplacement
         replace: BaseParagraphNode,
         with: () => {
             return new ParagraphNode();
-        }
+        },
+        withKlass: ParagraphNode
     },
     HeadingNode,
     {
         replace: BaseHeadingNode,
         with: (node: BaseHeadingNode) => {
             return new HeadingNode(node.getTag());
-        }
+        },
+        withKlass: HeadingNode
     },
     QuoteNode,
     {
         replace: BaseQuoteNode,
         with: () => {
             return new QuoteNode();
-        }
+        },
+        withKlass: QuoteNode
     },
     ImageNode,
     ListNode,

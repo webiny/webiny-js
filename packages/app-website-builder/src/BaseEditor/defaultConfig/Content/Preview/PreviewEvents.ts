@@ -109,8 +109,6 @@ export class PreviewEvents {
         messenger.on("document.fragments", payload => {
             const fragments: Fragment[] = payload.fragments;
 
-            console.log("fragments", fragments);
-
             this.editor.updateEditor(state => {
                 state.fragments = fragments;
             });
