@@ -12,8 +12,14 @@ class ListPagesRepositoryImpl implements RepositoryAbstraction.Interface {
     ) {}
 
     async execute(params: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
+        const where: any = { ...params.where };
+        if (where.location) {
+            where["wbyAco_location"] = where.location;
+            delete where.location;
+        }
+
         const result = await this.listLatestEntries.execute(this.pageModel, {
-            where: params.where,
+            where,
             sort: params.sort,
             limit: params.limit,
             after: params.after,
