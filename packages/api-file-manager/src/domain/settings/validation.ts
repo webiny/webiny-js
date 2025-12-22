@@ -8,12 +8,20 @@ const uploadMinFileSizeValidation = zod
     .min(MIN_FILE_SIZE, {
         message: `Value needs to be greater than or equal to ${MIN_FILE_SIZE}.`
     })
+    .nullish()
+    .transform(value => {
+        return value || MIN_FILE_SIZE;
+    })
     .optional();
 
 const uploadMaxFileSizeValidation = zod
     .number()
     .max(MAX_FILE_SIZE, {
         message: `Value needs to be lesser than or equal to ${MAX_FILE_SIZE}.`
+    })
+    .nullish()
+    .transform(value => {
+        return value || MAX_FILE_SIZE;
     })
     .optional();
 

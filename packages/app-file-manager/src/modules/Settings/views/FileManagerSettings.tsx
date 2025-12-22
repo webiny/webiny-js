@@ -2,24 +2,23 @@ import * as React from "react";
 import { Button, Grid, Input, OverlayLoader } from "@webiny/admin-ui";
 import { Form } from "@webiny/form";
 import { Mutation, Query } from "@apollo/react-components";
-import { useSnackbar } from "@webiny/app-admin";
-import type { GetSettingsResponse } from "../graphql.js";
-import graphql from "../graphql.js";
-import get from "lodash/get.js";
-import { validation } from "@webiny/validation";
-
 import {
+    CenteredView,
     SimpleForm,
     SimpleFormContent,
     SimpleFormFooter,
     SimpleFormHeader,
-    CenteredView
+    useSnackbar
 } from "@webiny/app-admin";
+import type { GetSettingsResponse } from "../graphql.js";
+import graphql from "../graphql.js";
+import get from "lodash/get.js";
+import { validation } from "@webiny/validation";
 import type { QueryGetSettingsResult, Settings } from "~/types.js";
 import type { MutationFunction, MutationResult } from "@apollo/react-common";
 
 function prefixValidator(value: string) {
-    if (!value.endsWith("/files/")) {
+    if (!value || !value.endsWith("/files/")) {
         throw Error(`File URL prefix must end with "/files/"`);
     }
 }
@@ -54,6 +53,12 @@ export const FileManagerSettings = () => {
                                     if (!data) {
                                         return;
                                     }
+                                    const error = result.data.fileManager.updateSettings.error;
+                                    if (error) {
+                                        showSnackbar(`Error updating settings: ${error.message}`);
+                                        console.error(error);
+                                        return;
+                                    }
 
                                     data.fileManager.getSettings.data = {
                                         ...data.fileManager.getSettings.data,
@@ -64,9 +69,9 @@ export const FileManagerSettings = () => {
                                         query: graphql.GET_SETTINGS,
                                         data
                                     });
+                                    showSnackbar("Settings updated successfully.");
                                 }
                             });
-                            showSnackbar("Settings updated successfully.");
                         };
                         return (
                             <CenteredView>
