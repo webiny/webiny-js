@@ -1,4 +1,5 @@
 import { Container } from "@webiny/di";
+import type { Context } from "@webiny/aws-sdk/types/index.js";
 import type { FunctionSetup } from "./types.js";
 import {
     ApiGatewayEventQualifier,
@@ -14,7 +15,9 @@ import {
     SqsEventHandler,
     S3EventHandler,
     EventBridgeEventHandler,
-    DynamoDBEventHandler
+    DynamoDBEventHandler,
+    AwsLambdaContext,
+    AwsLambdaEvent
 } from "./abstractions/index.js";
 import {
     apiGatewayEventQualifier,
@@ -58,7 +61,7 @@ const EVENT_TYPE_MAPPINGS = [
 export function createFunction(setup: FunctionSetup) {
     let container: Container | null = null;
 
-    return async (event: any): Promise<any> => {
+    return async (event: any, context: Context): Promise<any> => {
         // Initialize on cold start
         if (!container) {
             container = new Container();
@@ -75,6 +78,10 @@ export function createFunction(setup: FunctionSetup) {
             await setup(container);
         }
 
+        // Register the current event and context for this invocation
+        container.registerInstance(AwsLambdaEvent, event);
+        container.registerInstance(AwsLambdaContext, context);
+
         // Run event through qualifiers to determine event type
         for (const mapping of EVENT_TYPE_MAPPINGS) {
             const qualifier = container.resolve(mapping.qualifier);
@@ -90,9 +97,7 @@ export function createFunction(setup: FunctionSetup) {
                 }
 
                 // Execute all handlers for this event type
-                const results = await Promise.all(
-                    handlers.map(handler => handler.execute(event))
-                );
+                const results = await Promise.all(handlers.map(handler => handler.execute(event)));
 
                 // Return the first result (or combine them if multiple handlers)
                 return results[0];
@@ -105,4 +110,3 @@ export function createFunction(setup: FunctionSetup) {
         );
     };
 }
-

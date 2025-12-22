@@ -4,7 +4,11 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "declarationMap": true,
-    "composite": true
+    "composite": true,
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"]
+    }
   },
   "include": ["src/**/*"]
 }
