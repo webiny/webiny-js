@@ -1,6 +1,5 @@
 import type { SQSEvent, SQSRecord } from "@webiny/aws-sdk/types/index.js";
 import { createAbstraction } from "./createAbstraction.js";
-import type { NextFunction } from "../types.js";
 
 export interface SqsResult {
     success: boolean;
@@ -9,20 +8,16 @@ export interface SqsResult {
 }
 
 /**
- * Abstraction for SQS Lambda functions
+ * Abstraction for SQS event handlers
  */
-export interface ISqsFunction {
-    /**
-     * Handle the SQS event
-     * If this handler cannot process the event, it should call next() to pass to the next handler
-     */
-    execute(event: SQSEvent, next: NextFunction): Promise<SqsResult>;
+export interface ISqsEventHandler {
+    execute(event: SQSEvent): Promise<SqsResult>;
 }
 
-export const SqsFunction = createAbstraction<ISqsFunction>("SqsFunction");
+export const SqsEventHandler = createAbstraction<ISqsEventHandler>("SqsEventHandler");
 
-export namespace SqsFunction {
-    export type Interface = ISqsFunction;
+export namespace SqsEventHandler {
+    export type Interface = ISqsEventHandler;
     export type Result = SqsResult;
 }
 

@@ -1,6 +1,5 @@
 import type { DynamoDBStreamEvent, DynamoDBRecord } from "@webiny/aws-sdk/types/index.js";
 import { createAbstraction } from "./createAbstraction.js";
-import type { NextFunction } from "../types.js";
 
 export interface DynamoDBResult {
     success: boolean;
@@ -9,20 +8,16 @@ export interface DynamoDBResult {
 }
 
 /**
- * Abstraction for DynamoDB Stream Lambda functions
+ * Abstraction for DynamoDB Stream event handlers
  */
-export interface IDynamoDBFunction {
-    /**
-     * Handle the DynamoDB Stream event
-     * If this handler cannot process the event, it should call next() to pass to the next handler
-     */
-    execute(event: DynamoDBStreamEvent, next: NextFunction): Promise<DynamoDBResult>;
+export interface IDynamoDBEventHandler {
+    execute(event: DynamoDBStreamEvent): Promise<DynamoDBResult>;
 }
 
-export const DynamoDBFunction = createAbstraction<IDynamoDBFunction>("DynamoDBFunction");
+export const DynamoDBEventHandler = createAbstraction<IDynamoDBEventHandler>("DynamoDBEventHandler");
 
-export namespace DynamoDBFunction {
-    export type Interface = IDynamoDBFunction;
+export namespace DynamoDBEventHandler {
+    export type Interface = IDynamoDBEventHandler;
     export type Result = DynamoDBResult;
 }
 

@@ -1,26 +1,20 @@
 // features/ListUsersFunction.ts
 import { createImplementation } from "@webiny/di";
 import {
-    ApiGatewayFunction,
+    ApiGatewayEventHandler,
     type APIGatewayEvent,
-    type APIGatewayProxyResult,
-    type NextFunction
+    type APIGatewayProxyResult
 } from "../index.js";
 import type { UserService } from "~/abstractions";
 import type { LoggerService } from "~/abstractions";
 
-export class ListUsersFunction implements ApiGatewayFunction.Interface {
+export class ListUsersHandler implements ApiGatewayEventHandler.Interface {
     constructor(
         private userService: UserService.Interface,
         private logger: LoggerService.Interface
     ) {}
 
-    async execute(event: APIGatewayEvent, next: NextFunction): Promise<APIGatewayProxyResult> {
-        // Middleware pattern: check if this handler can process the event
-        if (!event.httpMethod) {
-            return next();
-        }
-
+    async execute(event: APIGatewayEvent): Promise<APIGatewayProxyResult> {
         this.logger.info("Listing users");
 
         try {
@@ -44,8 +38,8 @@ export class ListUsersFunction implements ApiGatewayFunction.Interface {
 }
 
 // Export using createImplementation from @webiny/di
-export const listUsersFunction = createImplementation({
-    abstraction: ApiGatewayFunction,
-    implementation: ListUsersFunction,
+export const listUsersHandler = createImplementation({
+    abstraction: ApiGatewayEventHandler,
+    implementation: ListUsersHandler,
     dependencies: [UserService, LoggerService]
 });

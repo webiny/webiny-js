@@ -1,6 +1,5 @@
 import type { SNSEvent, SNSEventRecord } from "@webiny/aws-sdk/types/index.js";
 import { createAbstraction } from "./createAbstraction.js";
-import type { NextFunction } from "../types.js";
 
 export interface SnsResult {
     success: boolean;
@@ -9,20 +8,19 @@ export interface SnsResult {
 }
 
 /**
- * Abstraction for SNS Lambda functions
+ * Abstraction for SNS event handlers
  */
-export interface ISnsFunction {
+export interface ISnsEventHandler {
     /**
      * Handle the SNS event
-     * If this handler cannot process the event, it should call next() to pass to the next handler
      */
-    execute(event: SNSEvent, next: NextFunction): Promise<SnsResult>;
+    execute(event: SNSEvent): Promise<SnsResult>;
 }
 
-export const SnsFunction = createAbstraction<ISnsFunction>("SnsFunction");
+export const SnsEventHandler = createAbstraction<ISnsEventHandler>("SnsEventHandler");
 
-export namespace SnsFunction {
-    export type Interface = ISnsFunction;
+export namespace SnsEventHandler {
+    export type Interface = ISnsEventHandler;
     export type Result = SnsResult;
 }
 

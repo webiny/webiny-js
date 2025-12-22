@@ -1,6 +1,5 @@
 import type { S3Event, S3EventRecord } from "@webiny/aws-sdk/types/index.js";
 import { createAbstraction } from "./createAbstraction.js";
-import type { NextFunction } from "../types.js";
 
 export interface S3Result {
     success: boolean;
@@ -9,20 +8,16 @@ export interface S3Result {
 }
 
 /**
- * Abstraction for S3 Lambda functions
+ * Abstraction for S3 event handlers
  */
-export interface IS3Function {
-    /**
-     * Handle the S3 event
-     * If this handler cannot process the event, it should call next() to pass to the next handler
-     */
-    execute(event: S3Event, next: NextFunction): Promise<S3Result>;
+export interface IS3EventHandler {
+    execute(event: S3Event): Promise<S3Result>;
 }
 
-export const S3Function = createAbstraction<IS3Function>("S3Function");
+export const S3EventHandler = createAbstraction<IS3EventHandler>("S3EventHandler");
 
-export namespace S3Function {
-    export type Interface = IS3Function;
+export namespace S3EventHandler {
+    export type Interface = IS3EventHandler;
     export type Result = S3Result;
 }
 

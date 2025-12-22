@@ -1,20 +1,18 @@
 /**
- * Example: Process Order SNS Function
+ * Example: Process Order SNS Handler
  *
- * This example demonstrates how to create a Lambda function that:
- * - Implements the SnsFunction interface
+ * This example demonstrates how to create a Lambda handler that:
+ * - Implements the SnsEventHandler interface
  * - Processes SNS events
  * - Uses dependency injection for services
- * - Uses middleware pattern with next() to handle event routing
  * - Exports using createImplementation from @webiny/di
  */
 
 import { createImplementation } from "@webiny/di";
 import {
-    SnsFunction,
+    SnsEventHandler,
     type SNSEvent,
-    type SnsResult,
-    type NextFunction
+    type SnsResult
 } from "../index.js";
 
 // Example service interfaces (you would define these in your abstractions)
@@ -32,21 +30,15 @@ declare const OrderService: any;
 declare const LoggerService: any;
 
 /**
- * Implementation of the ProcessOrder function
+ * Implementation of the ProcessOrder handler
  */
-export class ProcessOrderFunction implements SnsFunction.Interface {
+export class ProcessOrderHandler implements SnsEventHandler.Interface {
     constructor(
         private orderService: IOrderService,
         private logger: ILoggerService
     ) {}
 
-    async execute(event: SNSEvent, next: NextFunction): Promise<SnsResult> {
-        // Middleware pattern: check if this handler can process the event
-        // If not an SNS event, pass to the next handler
-        if (!Array.isArray(event.Records) || event.Records[0]?.EventSource !== "aws:sns") {
-            return next();
-        }
-
+    async execute(event: SNSEvent): Promise<SnsResult> {
         this.logger.info("Processing SNS event", {
             recordCount: event.Records.length
         });
@@ -87,9 +79,9 @@ export class ProcessOrderFunction implements SnsFunction.Interface {
 /**
  * Export the implementation using createImplementation from @webiny/di
  */
-export const processOrderFunction = createImplementation({
-    abstraction: SnsFunction,
-    implementation: ProcessOrderFunction,
+export const processOrderHandler = createImplementation({
+    abstraction: SnsEventHandler,
+    implementation: ProcessOrderHandler,
     dependencies: [OrderService, LoggerService]
 });
 
@@ -97,7 +89,7 @@ export const processOrderFunction = createImplementation({
  * Example usage in handler file:
  *
  * import { createFunction } from "@cloudi/aws";
- * import { processOrderFunction } from "./features/ProcessOrderFunction.example";
+ * import { processOrderHandler } from "./features/ProcessOrderFunction.example";
  * import { consoleLogger, dynamoDbOrderService } from "./services";
  *
  * export const handler = createFunction((container) => {
@@ -105,8 +97,8 @@ export const processOrderFunction = createImplementation({
  *   container.register(consoleLogger).inSingletonScope();
  *   container.register(dynamoDbOrderService).inSingletonScope();
  *
- *   // Register the function implementation
- *   container.register(processOrderFunction).inSingletonScope();
+ *   // Register handler - event will be automatically qualified as SNS
+ *   container.register(processOrderHandler).inSingletonScope();
  * });
  */
 

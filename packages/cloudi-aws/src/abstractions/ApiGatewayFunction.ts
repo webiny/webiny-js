@@ -3,23 +3,21 @@ import type {
     APIGatewayProxyResult
 } from "@webiny/aws-sdk/types/index.js";
 import { createAbstraction } from "./createAbstraction.js";
-import type { NextFunction } from "../types.js";
 
 /**
- * Abstraction for API Gateway Lambda functions
+ * Abstraction for API Gateway event handlers
  */
-export interface IApiGatewayFunction {
+export interface IApiGatewayEventHandler {
     /**
      * Handle the API Gateway event
-     * If this handler cannot process the event, it should call next() to pass to the next handler
      */
-    execute(event: APIGatewayEvent, next: NextFunction): Promise<APIGatewayProxyResult>;
+    execute(event: APIGatewayEvent): Promise<APIGatewayProxyResult>;
 }
 
-export const ApiGatewayFunction = createAbstraction<IApiGatewayFunction>("ApiGatewayFunction");
+export const ApiGatewayEventHandler = createAbstraction<IApiGatewayEventHandler>("ApiGatewayEventHandler");
 
-export namespace ApiGatewayFunction {
-    export type Interface = IApiGatewayFunction;
+export namespace ApiGatewayEventHandler {
+    export type Interface = IApiGatewayEventHandler;
 }
 
 export type { APIGatewayEvent, APIGatewayProxyResult };

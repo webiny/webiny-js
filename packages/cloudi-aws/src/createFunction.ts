@@ -1,68 +1,108 @@
 import { Container } from "@webiny/di";
-import type { FunctionSetup, NextFunction } from "./types.js";
+import type { FunctionSetup } from "./types.js";
+import {
+    ApiGatewayEventQualifier,
+    SnsEventQualifier,
+    SqsEventQualifier,
+    S3EventQualifier,
+    EventBridgeEventQualifier,
+    DynamoDBEventQualifier
+} from "./abstractions/index.js";
+import {
+    ApiGatewayEventHandler,
+    SnsEventHandler,
+    SqsEventHandler,
+    S3EventHandler,
+    EventBridgeEventHandler,
+    DynamoDBEventHandler
+} from "./abstractions/index.js";
+import {
+    apiGatewayEventQualifier,
+    snsEventQualifier,
+    sqsEventQualifier,
+    s3EventQualifier,
+    eventBridgeEventQualifier,
+    dynamoDBEventQualifier
+} from "./features/index.js";
 
 /**
- * Generic function interface that all implementations should follow
+ * Event type to handler abstraction mapping
  */
-export interface ICloudFunction<TEvent = any, TResult = any> {
-    execute(event: TEvent, next: NextFunction): Promise<TResult>;
-}
-
-/**
- * Function implementation metadata
- */
-export interface FunctionImplementation {
-    abstraction: any;
-    implementation: new (...args: any[]) => ICloudFunction;
-    dependencies: Array<any>;
-}
+const EVENT_TYPE_MAPPINGS = [
+    {
+        qualifier: ApiGatewayEventQualifier,
+        handler: ApiGatewayEventHandler
+    },
+    {
+        qualifier: SnsEventQualifier,
+        handler: SnsEventHandler
+    },
+    {
+        qualifier: SqsEventQualifier,
+        handler: SqsEventHandler
+    },
+    {
+        qualifier: S3EventQualifier,
+        handler: S3EventHandler
+    },
+    {
+        qualifier: EventBridgeEventQualifier,
+        handler: EventBridgeEventHandler
+    },
+    {
+        qualifier: DynamoDBEventQualifier,
+        handler: DynamoDBEventHandler
+    }
+];
 
 export function createFunction(setup: FunctionSetup) {
     let container: Container | null = null;
-    let registeredImplementations: FunctionImplementation[] = [];
 
     return async (event: any): Promise<any> => {
         // Initialize on cold start
         if (!container) {
             container = new Container();
 
-            // Intercept register calls to collect implementations
-            const originalRegister = container.register.bind(container);
-            container.register = function (implementation: any) {
-                // If it's a function implementation, store it
-                if (implementation && implementation.abstraction) {
-                    registeredImplementations.push(implementation as FunctionImplementation);
-                }
-                return originalRegister(implementation);
-            } as any;
+            // Register all built-in qualifiers
+            container.register(apiGatewayEventQualifier).inSingletonScope();
+            container.register(snsEventQualifier).inSingletonScope();
+            container.register(sqsEventQualifier).inSingletonScope();
+            container.register(s3EventQualifier).inSingletonScope();
+            container.register(eventBridgeEventQualifier).inSingletonScope();
+            container.register(dynamoDBEventQualifier).inSingletonScope();
 
             // Run user setup - this is the composition root
             await setup(container);
-
-            // Restore original register (though it won't be called again after setup)
-            container.register = originalRegister;
         }
 
-        // Build middleware chain
-        let currentIndex = 0;
+        // Run event through qualifiers to determine event type
+        for (const mapping of EVENT_TYPE_MAPPINGS) {
+            const qualifier = container.resolve(mapping.qualifier);
 
-        const next: NextFunction = async () => {
-            if (currentIndex >= registeredImplementations.length) {
-                throw new Error(
-                    `No registered function implementation handled this event. ` +
-                    `Registered ${registeredImplementations.length} implementations. ` +
-                    `Event type: ${JSON.stringify(Object.keys(event).slice(0, 5))}`
+            if (qualifier.execute(event)) {
+                // Get all handlers for this event type
+                const handlers = container.resolveAll(mapping.handler);
+
+                if (handlers.length === 0) {
+                    throw new Error(
+                        `Event qualified as ${mapping.handler.name} but no handlers registered`
+                    );
+                }
+
+                // Execute all handlers for this event type
+                const results = await Promise.all(
+                    handlers.map(handler => handler.execute(event))
                 );
+
+                // Return the first result (or combine them if multiple handlers)
+                return results[0];
             }
+        }
 
-            const implementation = registeredImplementations[currentIndex++];
-            const functionInstance = container!.resolve(implementation.abstraction);
-
-            return functionInstance.execute(event, next);
-        };
-
-        // Start the middleware chain
-        return next();
+        // No qualifier matched
+        throw new Error(
+            `No event qualifier matched this event. Event keys: ${JSON.stringify(Object.keys(event).slice(0, 5))}`
+        );
     };
 }
 

@@ -1,20 +1,18 @@
 /**
- * Example: List Users API Gateway Function
+ * Example: List Users API Gateway Handler
  *
- * This example demonstrates how to create a Lambda function that:
- * - Implements the ApiGatewayFunction interface
+ * This example demonstrates how to create a Lambda handler that:
+ * - Implements the ApiGatewayEventHandler interface
  * - Uses dependency injection for services
- * - Uses middleware pattern with next() to handle event routing
  * - Exports using createImplementation from @webiny/di
  * - Registers with container.register()
  */
 
 import { createImplementation } from "@webiny/di";
 import {
-    ApiGatewayFunction,
+    ApiGatewayEventHandler,
     type APIGatewayEvent,
-    type APIGatewayProxyResult,
-    type NextFunction
+    type APIGatewayProxyResult
 } from "../index.js";
 
 // Example service interfaces (you would define these in your abstractions)
@@ -32,21 +30,15 @@ declare const UserService: any;
 declare const LoggerService: any;
 
 /**
- * Implementation of the ListUsers function
+ * Implementation of the ListUsers handler
  */
-export class ListUsersFunction implements ApiGatewayFunction.Interface {
+export class ListUsersHandler implements ApiGatewayEventHandler.Interface {
     constructor(
         private userService: IUserService,
         private logger: ILoggerService
     ) {}
 
-    async execute(event: APIGatewayEvent, next: NextFunction): Promise<APIGatewayProxyResult> {
-        // Middleware pattern: check if this handler can process the event
-        // If not an API Gateway event, pass to the next handler
-        if (!event.httpMethod) {
-            return next();
-        }
-
+    async execute(event: APIGatewayEvent): Promise<APIGatewayProxyResult> {
         this.logger.info("Handling list users request", {
             path: event.path,
             method: event.httpMethod
@@ -90,9 +82,9 @@ export class ListUsersFunction implements ApiGatewayFunction.Interface {
 /**
  * Export the implementation using createImplementation from @webiny/di
  */
-export const listUsersFunction = createImplementation({
-    abstraction: ApiGatewayFunction,
-    implementation: ListUsersFunction,
+export const listUsersHandler = createImplementation({
+    abstraction: ApiGatewayEventHandler,
+    implementation: ListUsersHandler,
     dependencies: [UserService, LoggerService]
 });
 
@@ -100,26 +92,16 @@ export const listUsersFunction = createImplementation({
  * Example usage in handler file:
  *
  * import { createFunction } from "@cloudi/aws";
- * import { listUsersFunction } from "./features/ListUsersFunction.example";
- * import { processOrderFunction } from "./features/ProcessOrderFunction.example";
- * import { consoleLogger, dynamoDbUserService, dynamoDbOrderService } from "./services";
+ * import { listUsersHandler } from "./features/ListUsersFunction.example";
+ * import { consoleLogger, dynamoDbUserService } from "./services";
  *
- * // Single handler that can handle multiple event types!
  * export const handler = createFunction((container) => {
  *   // Register services
  *   container.register(consoleLogger).inSingletonScope();
  *   container.register(dynamoDbUserService).inSingletonScope();
- *   container.register(dynamoDbOrderService).inSingletonScope();
  *
- *   // Register multiple function implementations
- *   // The middleware pattern will automatically route to the correct handler
- *   container.register(listUsersFunction).inSingletonScope();      // Handles API Gateway events
- *   container.register(processOrderFunction).inSingletonScope();   // Handles SNS events
+ *   // Register handler - event will be automatically qualified as API Gateway
+ *   container.register(listUsersHandler).inSingletonScope();
  * });
- *
- * // Deploy this single Lambda function with multiple triggers:
- * // - API Gateway trigger for HTTP requests
- * // - SNS topic trigger for order processing
- * // The middleware chain automatically executes the right implementation!
  */
 

@@ -10,6 +10,7 @@
  * Deploy this as a single Lambda with multiple triggers!
  */
 
+import { createImplementation, Abstraction } from "@webiny/di";
 import {
     createFunction,
     ApiGatewayFunction,
@@ -28,7 +29,6 @@ import {
 // Service Abstractions (you'd define these in your abstractions folder)
 // ============================================================================
 
-import { Abstraction } from "@webiny/di";
 
 interface ILogger {
     info(message: string, meta?: any): void;
@@ -56,7 +56,7 @@ const FileProcessor = new Abstraction<IFileProcessor>("FileProcessor");
 // Handler 1: List Users (API Gateway)
 // ============================================================================
 
-class ListUsersHandlerImpl implements ApiGatewayFunction.Interface {
+class ListUsersHandler implements ApiGatewayFunction.Interface {
     constructor(
         private userService: IUserService,
         private logger: ILogger
@@ -107,8 +107,9 @@ class ListUsersHandlerImpl implements ApiGatewayFunction.Interface {
     }
 }
 
-const ListUsersHandler = ApiGatewayFunction.createImplementation({
-    implementation: ListUsersHandlerImpl,
+const listUsersHandler = createImplementation({
+    abstraction: ApiGatewayFunction,
+    implementation: ListUsersHandler,
     dependencies: [UserService, Logger]
 });
 
@@ -116,7 +117,7 @@ const ListUsersHandler = ApiGatewayFunction.createImplementation({
 // Handler 2: User Notification (SNS)
 // ============================================================================
 
-class UserNotificationHandlerImpl implements SnsFunction.Interface {
+class UserNotificationHandler implements SnsFunction.Interface {
     constructor(
         private notificationService: INotificationService,
         private logger: ILogger
@@ -169,8 +170,9 @@ class UserNotificationHandlerImpl implements SnsFunction.Interface {
     }
 }
 
-const UserNotificationHandler = SnsFunction.createImplementation({
-    implementation: UserNotificationHandlerImpl,
+const userNotificationHandler = createImplementation({
+    abstraction: SnsFunction,
+    implementation: UserNotificationHandler,
     dependencies: [NotificationService, Logger]
 });
 
@@ -178,7 +180,7 @@ const UserNotificationHandler = SnsFunction.createImplementation({
 // Handler 3: File Upload (S3)
 // ============================================================================
 
-class FileUploadHandlerImpl implements S3Function.Interface {
+class FileUploadHandler implements S3Function.Interface {
     constructor(
         private fileProcessor: IFileProcessor,
         private logger: ILogger
@@ -229,8 +231,9 @@ class FileUploadHandlerImpl implements S3Function.Interface {
     }
 }
 
-const FileUploadHandler = S3Function.createImplementation({
-    implementation: FileUploadHandlerImpl,
+const fileUploadHandler = createImplementation({
+    abstraction: S3Function,
+    implementation: FileUploadHandler,
     dependencies: [FileProcessor, Logger]
 });
 
@@ -238,7 +241,7 @@ const FileUploadHandler = S3Function.createImplementation({
 // Service Implementations (simplified for example)
 // ============================================================================
 
-class ConsoleLoggerImpl implements ILogger {
+class ConsoleLogger implements ILogger {
     info(message: string, meta?: any): void {
         console.log(`[INFO] ${message}`, meta || "");
     }
@@ -248,13 +251,13 @@ class ConsoleLoggerImpl implements ILogger {
     }
 }
 
-const ConsoleLogger = {
+const consoleLogger = createImplementation({
     abstraction: Logger,
-    implementation: ConsoleLoggerImpl,
+    implementation: ConsoleLogger,
     dependencies: []
-};
+});
 
-class MockUserServiceImpl implements IUserService {
+class MockUserService implements IUserService {
     async listUsers() {
         return [
             { id: "1", name: "Alice", email: "alice@example.com" },
@@ -263,13 +266,13 @@ class MockUserServiceImpl implements IUserService {
     }
 }
 
-const MockUserService = {
+const mockUserService = createImplementation({
     abstraction: UserService,
-    implementation: MockUserServiceImpl,
+    implementation: MockUserService,
     dependencies: []
-};
+});
 
-class MockNotificationServiceImpl implements INotificationService {
+class MockNotificationService implements INotificationService {
     constructor(private logger: ILogger) {}
 
     async sendNotification(userId: string, message: string): Promise<void> {
@@ -278,13 +281,13 @@ class MockNotificationServiceImpl implements INotificationService {
     }
 }
 
-const MockNotificationService = {
+const mockNotificationService = createImplementation({
     abstraction: NotificationService,
-    implementation: MockNotificationServiceImpl,
+    implementation: MockNotificationService,
     dependencies: [Logger]
-};
+});
 
-class MockFileProcessorImpl implements IFileProcessor {
+class MockFileProcessor implements IFileProcessor {
     constructor(private logger: ILogger) {}
 
     async processFile(bucket: string, key: string): Promise<void> {
@@ -293,11 +296,11 @@ class MockFileProcessorImpl implements IFileProcessor {
     }
 }
 
-const MockFileProcessor = {
+const mockFileProcessor = createImplementation({
     abstraction: FileProcessor,
-    implementation: MockFileProcessorImpl,
+    implementation: MockFileProcessor,
     dependencies: [Logger]
-};
+});
 
 // ============================================================================
 // Lambda Handler - Composition Root
@@ -313,17 +316,17 @@ const MockFileProcessor = {
  */
 export const handler = createFunction((container) => {
     // Register services
-    container.register(ConsoleLogger).inSingletonScope();
-    container.register(MockUserService).inSingletonScope();
-    container.register(MockNotificationService).inSingletonScope();
-    container.register(MockFileProcessor).inSingletonScope();
+    container.register(consoleLogger).inSingletonScope();
+    container.register(mockUserService).inSingletonScope();
+    container.register(mockNotificationService).inSingletonScope();
+    container.register(mockFileProcessor).inSingletonScope();
 
     // Register function handlers
     // Order matters! Handlers are called in registration order.
     // Each handler checks if it can process the event, and calls next() if not.
-    container.register(ListUsersHandler).inSingletonScope();         // First: Check for API GW
-    container.register(UserNotificationHandler).inSingletonScope();  // Second: Check for SNS
-    container.register(FileUploadHandler).inSingletonScope();        // Third: Check for S3
+    container.register(listUsersHandler).inSingletonScope();         // First: Check for API GW
+    container.register(userNotificationHandler).inSingletonScope();  // Second: Check for SNS
+    container.register(fileUploadHandler).inSingletonScope();        // Third: Check for S3
 });
 
 // ============================================================================
