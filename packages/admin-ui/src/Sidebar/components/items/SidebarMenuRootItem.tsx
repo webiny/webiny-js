@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState, useEffect } from "react";
 import { cn, makeDecoratable, withStaticProps } from "~/utils.js";
 import { SidebarMenuRootButton } from "./SidebarMenuRootButton.js";
 import { SidebarMenuItemIcon } from "./SidebarMenuItemIcon.js";
@@ -7,18 +7,28 @@ import { SidebarMenuSub } from "./SidebarMenuSub.js";
 import { Collapsible } from "radix-ui";
 import { Icon } from "~/Icon/index.js";
 import { ReactComponent as KeyboardArrowRightIcon } from "@webiny/icons/keyboard_arrow_down.svg";
+import { ReactComponent as PinIcon } from "@webiny/icons/push_pin.svg";
+import { ReactComponent as UnPinIcon } from "@webiny/icons/push_pin_off.svg";
 import { type SidebarMenuItemProps } from "./SidebarMenuItem.js";
 import { useSidebarMenu } from "~/Sidebar/components/items/SidebarMenuProvider.js";
 import { useSidebar } from "~/Sidebar/index.js";
 
-const SidebarMenuItemBase = ({ children, className, ...buttonProps }: SidebarMenuItemProps) => {
-    const { currentLevel } = useSidebarMenu();
+const SidebarMenuItemBase = ({
+    children,
+    className,
+    pinnable,
+    action,
+    ...buttonProps
+}: SidebarMenuItemProps) => {
+    const { currentLevel, parentIcon } = useSidebarMenu();
     const sidebar = useSidebar();
     const [showChevron, setShowChevron] = useState(false);
 
     const menuItemId = useMemo(() => {
         return btoa(`sidebar-item-${currentLevel}-${buttonProps.text}`);
     }, [buttonProps.text, currentLevel]);
+
+    const effectiveIcon = buttonProps.icon || parentIcon;
 
     const isSectionExpanded = useMemo(() => {
         return sidebar.isSectionExpanded(menuItemId);
@@ -39,9 +49,79 @@ const SidebarMenuItemBase = ({ children, className, ...buttonProps }: SidebarMen
         return undefined;
     }, [sidebar.expanded]);
 
+    const isPinned = sidebar.isItemPinned(menuItemId);
+
+    // Register on mount if already pinned, unregister on unmount
+    // Re-register when active state changes to keep pinned items in sync
+    useEffect(() => {
+        if (pinnable && isPinned) {
+            sidebar.registerPinnedItem({
+                id: menuItemId,
+                text: buttonProps.text,
+                icon: effectiveIcon,
+                to: buttonProps.to,
+                onClick: buttonProps.onClick,
+                active: buttonProps.active
+            });
+        }
+
+        return () => {
+            if (pinnable) {
+                sidebar.unregisterPinnedItem(menuItemId);
+            }
+        };
+    }, [pinnable, isPinned, menuItemId, buttonProps.active]);
+
+    const pinAction = useMemo(() => {
+        if (!pinnable) {
+            return action;
+        }
+
+        const handlePinClick = (e: React.MouseEvent) => {
+            e.stopPropagation();
+            e.preventDefault();
+
+            if (isPinned) {
+                sidebar.unregisterPinnedItem(menuItemId);
+            } else {
+                sidebar.registerPinnedItem({
+                    id: menuItemId,
+                    text: buttonProps.text,
+                    icon: effectiveIcon,
+                    to: buttonProps.to,
+                    onClick: buttonProps.onClick,
+                    active: buttonProps.active
+                });
+            }
+
+            sidebar.toggleItemPinned(menuItemId);
+        };
+
+        const pinButton = (
+            <SidebarMenuItemAction
+                element={isPinned ? <UnPinIcon /> : <PinIcon />}
+                onClick={handlePinClick}
+                showOnHover={true}
+            />
+        );
+
+        // If there's a custom action, combine them
+        // Don't modify the custom action - it should keep its original behavior
+        if (action) {
+            return (
+                <div className="flex items-center gap-xs">
+                    {pinButton}
+                    {action}
+                </div>
+            );
+        }
+
+        return pinButton;
+    }, [pinnable, isPinned, action, sidebar, menuItemId]);
+
     const sidebarMenuButton = useMemo(() => {
         if (!children) {
-            return <SidebarMenuRootButton {...buttonProps} />;
+            return <SidebarMenuRootButton {...buttonProps} action={pinAction} />;
         }
 
         const chevron = showChevron ? (
@@ -57,6 +137,15 @@ const SidebarMenuItemBase = ({ children, className, ...buttonProps }: SidebarMen
             />
         ) : null;
 
+        const collapsibleAction = pinnable ? (
+            <div className="flex items-center gap-xs">
+                {pinAction}
+                {chevron}
+            </div>
+        ) : (
+            chevron
+        );
+
         return (
             <Collapsible.Root
                 className={cn("w-full group/menu-item-collapsible")}
@@ -64,14 +153,23 @@ const SidebarMenuItemBase = ({ children, className, ...buttonProps }: SidebarMen
                 onOpenChange={toggleSectionExpanded}
             >
                 <Collapsible.Trigger asChild>
-                    <SidebarMenuRootButton {...buttonProps} action={chevron} />
+                    <SidebarMenuRootButton {...buttonProps} action={collapsibleAction} />
                 </Collapsible.Trigger>
                 <Collapsible.Content forceMount className={"hidden data-[state=open]:block!"}>
-                    <SidebarMenuSub>{children}</SidebarMenuSub>
+                    <SidebarMenuSub parentIcon={buttonProps.icon}>{children}</SidebarMenuSub>
                 </Collapsible.Content>
             </Collapsible.Root>
         );
-    }, [children, buttonProps, menuItemId, isSectionExpanded, toggleSectionExpanded, showChevron]);
+    }, [
+        children,
+        buttonProps,
+        menuItemId,
+        isSectionExpanded,
+        toggleSectionExpanded,
+        showChevron,
+        pinnable,
+        pinAction
+    ]);
 
     return (
         <li
