@@ -7,6 +7,12 @@ const fields = /* GraphQL */ `
             uploadMaxFileSize
             srcPrefix
         }
+        error {
+            message
+            data
+            code
+            stack
+        }
     }
 `;
 

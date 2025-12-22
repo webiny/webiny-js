@@ -8,8 +8,14 @@ import { useHotkeys } from "react-hotkeyz";
 import { observer } from "mobx-react-lite";
 import { type DataTableSorting, Scrollbar } from "@webiny/admin-ui";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { LeftPanel, RightPanel, SplitView, OverlayLayout, useSnackbar } from "@webiny/app-admin";
-import { useTenancy } from "@webiny/app-admin";
+import {
+    LeftPanel,
+    OverlayLayout,
+    RightPanel,
+    SplitView,
+    useSnackbar,
+    useTenancy
+} from "@webiny/app-admin";
 import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider/index.js";
 import { outputFileSelectionError } from "./outputFileSelectionError.js";
 import { LeftSidebar } from "./LeftSidebar.js";
@@ -275,100 +281,93 @@ const FileManagerView = () => {
 
         return element;
     };
-
     return (
-        <>
-            <Files
-                multiple
-                maxSize={view.settings ? view.settings.uploadMaxFileSize + "b" : "1TB"}
-                multipleMaxSize={"1TB"}
-                accept={view.accept}
-                onSuccess={files => {
-                    const filesToUpload = files
-                        .map(file => file.src.file)
-                        .filter(Boolean) as File[];
-                    uploadFiles(filesToUpload);
-                }}
-                onError={errors => {
-                    const message = outputFileSelectionError(errors);
-                    showSnackbar(message);
-                }}
-            >
-                {({ getDropZoneProps, browseFiles }) =>
-                    withOverlay(
-                        <>
-                            <FileDetails
-                                loading={drawerLoading}
-                                file={currentFile}
-                                open={Boolean(view.showingFileDetails)}
-                                onClose={view.hideFileDetails}
-                                onSave={updateFile}
-                            />
-                            <SplitView layoutId={layoutId}>
-                                <LeftPanel span={2}>
-                                    <LeftSidebar
-                                        currentFolder={view.folderId}
-                                        onFolderClick={view.setFolderId}
-                                    >
-                                        {browser.filterByTags ? (
-                                            <TagsList
-                                                loading={view.tags.loading}
-                                                activeTags={view.tags.activeTags}
-                                                tags={view.tags.allTags}
-                                                onActivatedTagsChange={view.tags.setActiveTags}
-                                            />
-                                        ) : null}
-                                    </LeftSidebar>
-                                </LeftPanel>
-                                <RightPanel span={10}>
+        <Files
+            multiple
+            maxSize={view.settings ? view.settings.uploadMaxFileSize + "b" : "1TB"}
+            multipleMaxSize={"1TB"}
+            accept={view.accept}
+            onSuccess={files => {
+                const filesToUpload = files.map(file => file.src.file).filter(Boolean) as File[];
+                uploadFiles(filesToUpload);
+            }}
+            onError={errors => {
+                const message = outputFileSelectionError(errors);
+                showSnackbar(message);
+            }}
+        >
+            {({ getDropZoneProps, browseFiles }) =>
+                withOverlay(
+                    <>
+                        <FileDetails
+                            loading={drawerLoading}
+                            file={currentFile}
+                            open={Boolean(view.showingFileDetails)}
+                            onClose={view.hideFileDetails}
+                            onSave={updateFile}
+                        />
+                        <SplitView layoutId={layoutId}>
+                            <LeftPanel span={2}>
+                                <LeftSidebar
+                                    currentFolder={view.folderId}
+                                    onFolderClick={view.setFolderId}
+                                >
+                                    {browser.filterByTags ? (
+                                        <TagsList
+                                            loading={view.tags.loading}
+                                            activeTags={view.tags.activeTags}
+                                            tags={view.tags.allTags}
+                                            onActivatedTagsChange={view.tags.setActiveTags}
+                                        />
+                                    ) : null}
+                                </LeftSidebar>
+                            </LeftPanel>
+                            <RightPanel span={10}>
+                                <div
+                                    className={"flex flex-col relative"}
+                                    style={{ height: "calc(100vh - 69px" }}
+                                >
+                                    <Header browseFiles={browseFiles} />
                                     <div
-                                        className={"flex flex-col relative"}
-                                        style={{ height: "calc(100vh - 69px" }}
+                                        className={"flex-1"}
+                                        {...getDropZoneProps({
+                                            onDragOver: () => view.setDragging(true),
+                                            onDragLeave: () => view.setDragging(false),
+                                            onDrop: () => view.setDragging(false)
+                                        })}
+                                        data-testid={"fm-list-wrapper"}
                                     >
-                                        <Header browseFiles={browseFiles} />
-                                        <div
-                                            className={"flex-1"}
-                                            {...getDropZoneProps({
-                                                onDragOver: () => view.setDragging(true),
-                                                onDragLeave: () => view.setDragging(false),
-                                                onDrop: () => view.setDragging(false)
-                                            })}
-                                            data-testid={"fm-list-wrapper"}
+                                        <BulkActions />
+                                        <Filters />
+                                        <Scrollbar
+                                            onScrollFrame={scrollFrame =>
+                                                loadMoreOnScroll({ scrollFrame })
+                                            }
                                         >
-                                            <BulkActions />
-                                            <Filters />
-                                            <Scrollbar
-                                                onScrollFrame={scrollFrame =>
-                                                    loadMoreOnScroll({ scrollFrame })
-                                                }
-                                            >
-                                                {renderList(browseFiles)}
-                                            </Scrollbar>
-                                            {view.dragging && <FileDropPlaceholder />}
-                                            <UploadStatus
-                                                numberOfFiles={filesBeingUploaded}
-                                                progress={progress}
-                                                isVisible={view.isUploadProgressIndicatorVisible}
-                                                setIsVisible={
-                                                    view.setIsUploadProgressIndicatorVisible
-                                                }
-                                            />
-                                        </div>
-                                        <BottomInfoBar
-                                            accept={view.accept}
-                                            listing={view.isListLoadingMore}
-                                            loading={view.isListLoading}
-                                            totalCount={view.meta?.totalCount ?? 0}
-                                            currentCount={view.files.length}
+                                            {renderList(browseFiles)}
+                                        </Scrollbar>
+                                        {view.dragging && <FileDropPlaceholder />}
+                                        <UploadStatus
+                                            numberOfFiles={filesBeingUploaded}
+                                            progress={progress}
+                                            isVisible={view.isUploadProgressIndicatorVisible}
+                                            setIsVisible={view.setIsUploadProgressIndicatorVisible}
                                         />
                                     </div>
-                                </RightPanel>
-                            </SplitView>
-                        </>
-                    )
-                }
-            </Files>
-        </>
+                                    <BottomInfoBar
+                                        accept={view.accept}
+                                        listing={view.isListLoadingMore}
+                                        loading={view.isListLoading}
+                                        totalCount={view.meta?.totalCount ?? 0}
+                                        currentCount={view.files.length}
+                                    />
+                                </div>
+                            </RightPanel>
+                        </SplitView>
+                    </>
+                )
+            }
+        </Files>
     );
 };
 
