@@ -1,5 +1,5 @@
 import React from "react";
-import { Dialog, Grid } from "@webiny/admin-ui";
+import { Dialog, Grid, Icon } from "@webiny/admin-ui";
 import { ReactComponent as StartIcon } from "@webiny/icons/check.svg";
 import { YouCanTrackAllContentReviewsHere } from "~/Components/Common/index.js";
 
@@ -17,7 +17,12 @@ export const StartSuccessDialog = (props: IStartSuccessDialogProps) => {
             onOpenChange={hide}
             title={
                 <>
-                    <StartIcon className={"fill-success"} />
+                    <Icon
+                        label={"Content Review Started"}
+                        size={"md"}
+                        className={"fill-success"}
+                        icon={<StartIcon />}
+                    />
                     <strong>{title}</strong> Content Review Started
                 </>
             }

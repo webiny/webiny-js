@@ -10,7 +10,7 @@ export class WorkflowStateNotFoundError extends BaseError<{
 
     constructor(data: { id?: string; app?: string; targetRevisionId?: string }) {
         super({
-            message: "Workflow state not found",
+            message: "Workflow state not found.",
             data
         });
     }

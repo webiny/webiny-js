@@ -1,5 +1,5 @@
 import type { IWorkflowStateStepModel } from "~/Models/index.js";
-import { Dialog, Grid } from "@webiny/admin-ui";
+import { Dialog, Grid, Icon } from "@webiny/admin-ui";
 import React from "react";
 import { WorkflowStateValue } from "~/types.js";
 import { ReactComponent as RejectIcon } from "@webiny/icons/do_not_disturb.svg";
@@ -19,14 +19,24 @@ const Title = (props: ITitleProps) => {
     if (step.state === WorkflowStateValue.rejected) {
         return (
             <>
-                <RejectIcon className={"fill-destructive"} />
+                <Icon
+                    label={`${step.title} Rejected!`}
+                    size={"md"}
+                    className={"fill-destructive"}
+                    icon={<RejectIcon />}
+                />
                 {step.title} Rejected!
             </>
         );
     }
     return (
         <>
-            <ApproveIcon className={"fill-success"} />
+            <Icon
+                label={`${step.title} Approved!`}
+                size={"md"}
+                className={"fill-success"}
+                icon={<ApproveIcon />}
+            />
             {step.title} Approved!
         </>
     );

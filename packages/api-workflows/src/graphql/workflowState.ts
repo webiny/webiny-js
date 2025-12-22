@@ -21,6 +21,7 @@ import { RejectWorkflowStateStepUseCase } from "~/features/workflowState/RejectW
 import { CancelWorkflowStateUseCase } from "~/features/workflowState/CancelWorkflowState/index.js";
 import { TakeOverWorkflowStateStepUseCase } from "~/features/workflowState/TakeOverWorkflowStateStep/index.js";
 import { WorkflowState } from "~/domain/workflowState/WorkflowState.js";
+import { WorkflowStateNotFoundError } from "~/domain/workflowState/errors.js";
 
 export const createWorkflowStateSchema = () => {
     return new GraphQLSchemaPlugin({
@@ -219,7 +220,7 @@ export const createWorkflowStateSchema = () => {
                     });
                 },
                 getTargetWorkflowState: async (_, args, context) => {
-                    return resolve<WorkflowState>(async () => {
+                    return resolve<WorkflowState | null>(async () => {
                         const result = await getTargetWorkflowStateValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
@@ -232,8 +233,13 @@ export const createWorkflowStateSchema = () => {
                             app: result.data.app,
                             targetRevisionId: result.data.targetRevisionId
                         });
-
+                        /**
+                         * TODO determine if we want to throw error or return null when not found.
+                         */
                         if (stateResult.isFail()) {
+                            if (stateResult.error instanceof WorkflowStateNotFoundError) {
+                                return null;
+                            }
                             throw stateResult.error;
                         }
 
