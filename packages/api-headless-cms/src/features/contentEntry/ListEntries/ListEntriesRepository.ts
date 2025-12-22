@@ -8,7 +8,8 @@ import type {
     CmsEntryMeta,
     CmsEntryStorageOperationsListParams,
     CmsEntryValues,
-    CmsModel
+    CmsModel,
+    ICmsEntryLocation
 } from "~/types/index.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
 import { EntryFromStorageTransform, SearchableFieldsProvider } from "~/legacy/abstractions.js";
@@ -31,12 +32,18 @@ class ListEntriesRepositoryImpl implements RepositoryAbstraction.Interface {
         try {
             const limit = params.limit && params.limit > 0 ? params.limit : 50;
             const sort = params.sort ?? ["createdOn_DESC"];
+            const where: NonNullable<CmsEntryListParams["where"]> = params.where ?? {};
+
+            if (where.location) {
+                where.wbyAco_location = where.location as ICmsEntryLocation;
+                delete where.location;
+            }
 
             const listParams: CmsEntryStorageOperationsListParams = {
                 ...params,
                 sort,
                 limit,
-                where: { ...params.where },
+                where,
                 fields: this.searchableFieldsProvider({ fields: model.fields })
             };
 

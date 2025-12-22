@@ -80,7 +80,7 @@ class RestoreEntryFromBinUseCaseImpl implements UseCaseAbstraction.Interface {
             location: {
                 folderId: originalEntry.binOriginalFolderId
             },
-            binOriginalFolderId: null,
+            binOriginalFolderId: undefined,
 
             // Entry-level meta fields
             restoredOn: getDate(currentDateTime, null),

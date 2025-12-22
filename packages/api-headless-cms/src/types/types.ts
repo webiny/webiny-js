@@ -301,7 +301,7 @@ export interface CmsEntryValues {
 }
 
 export interface ICmsEntryLocation {
-    folderId?: string | null;
+    folderId?: string;
 }
 
 export interface IEntryState {
@@ -495,9 +495,9 @@ export interface CmsEntry<T = CmsEntryValues> {
     wbyDeleted?: boolean | null;
     /**
      * This field preserves the original folderId value, as the ROOT_FOLDER is set upon deletion.
-     * The value is utilized when restoring the entry from the trash bin.
+     * The value is used when restoring the entry from the trash bin.
      */
-    binOriginalFolderId?: string | null;
+    binOriginalFolderId?: string;
 
     state?: IEntryState;
 }
