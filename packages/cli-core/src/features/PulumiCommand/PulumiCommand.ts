@@ -31,7 +31,7 @@ export class PulumiCommand implements CliCommand.Interface<IPulumiCommandParams>
                     required: true
                 }
             ],
-            options: [...createBaseAppOptions<IPulumiCommandParams>(projectSdk)],
+            options: createBaseAppOptions(projectSdk),
             handler: async (params: IPulumiCommandParams) => {
                 const projectSdk = await this.getProjectSdkService.execute();
 

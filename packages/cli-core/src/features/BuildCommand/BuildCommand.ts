@@ -28,7 +28,7 @@ export class BuildCommand implements CliCommand.Interface<IBuildCommandParams> {
                     required: true
                 }
             ],
-            options: [...createBaseAppOptions(projectSdk)],
+            options: createBaseAppOptions(projectSdk),
             handler: async (params: IBuildCommandParams) => {
                 const stdio = this.stdioService;
                 const ui = this.ui;

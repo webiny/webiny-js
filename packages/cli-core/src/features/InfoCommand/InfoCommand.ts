@@ -18,14 +18,7 @@ export class InfoCommand implements CliCommand.Interface<IInfoCommandParams> {
         return {
             name: "info",
             description: "Lists relevant URLs for your Webiny project",
-            options: [
-                ...createBaseAppOptions(projectSdk, {
-                    variant: {
-                        description: "Variant of the app to watch"
-                    }
-                }).filter(opt => opt.name !== "region")
-            ],
-
+            options: createBaseAppOptions(projectSdk),
             handler: async params => {
                 const ui = this.uiService;
 

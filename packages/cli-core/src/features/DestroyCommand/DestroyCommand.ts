@@ -45,7 +45,7 @@ export class DestroyCommand implements CliCommand.Interface<IDestroyCommandParam
                     type: "string"
                 }
             ],
-            options: [...createBaseAppOptions<IDestroyCommandParams>(projectSdk)],
+            options: createBaseAppOptions(projectSdk),
             handler: async (params: IDestroyCommandParams) => {
                 if ("app" in params) {
                     return this.destroyApp(params);

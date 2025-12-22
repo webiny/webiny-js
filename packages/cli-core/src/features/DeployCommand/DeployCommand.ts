@@ -64,7 +64,7 @@ export class DeployCommand implements CliCommand.Interface<IDeployCommandParams>
                 }
             ],
             options: [
-                ...createBaseAppOptions<IDeployCommandParams>(projectSdk),
+                ...createBaseAppOptions(projectSdk),
                 {
                     name: "build",
                     description: "Build packages before deploying",
