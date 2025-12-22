@@ -1,5 +1,5 @@
 import type { S3Event, S3EventRecord } from "@webiny/aws-sdk/types/index.js";
-import { createAbstraction } from "./createAbstraction.js";
+import { createAbstraction } from "../abstractions/createAbstraction.js";
 
 export interface S3Result {
     success: boolean;

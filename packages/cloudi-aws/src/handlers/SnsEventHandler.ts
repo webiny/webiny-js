@@ -1,5 +1,5 @@
 import type { SNSEvent, SNSEventRecord } from "@webiny/aws-sdk/types/index.js";
-import { createAbstraction } from "./createAbstraction.js";
+import { createAbstraction } from "../abstractions/createAbstraction.js";
 
 export interface SnsResult {
     success: boolean;

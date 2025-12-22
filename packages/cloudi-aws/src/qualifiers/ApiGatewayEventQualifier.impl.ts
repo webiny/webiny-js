@@ -1,5 +1,5 @@
 import { createImplementation } from "@webiny/di";
-import { ApiGatewayEventQualifier } from "~/abstractions/ApiGatewayEventQualifier.js";
+import { ApiGatewayEventQualifier } from "./ApiGatewayEventQualifier.js";
 
 export class ApiGatewayEventQualifierImpl implements ApiGatewayEventQualifier.Interface {
     execute(event: any): boolean {

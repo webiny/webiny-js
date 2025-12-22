@@ -1,5 +1,5 @@
 import { createImplementation } from "@webiny/di";
-import { EventBridgeEventQualifier } from "~/abstractions/EventBridgeEventQualifier.js";
+import { EventBridgeEventQualifier } from "./EventBridgeEventQualifier.js";
 
 export class EventBridgeEventQualifierImpl implements EventBridgeEventQualifier.Interface {
     execute(event: any): boolean {

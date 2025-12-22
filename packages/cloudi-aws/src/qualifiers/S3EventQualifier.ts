@@ -1,4 +1,4 @@
-import { createAbstraction } from "./createAbstraction.js";
+import { createAbstraction } from "../abstractions/createAbstraction.js";
 
 /**
  * Abstraction for S3 event qualifier

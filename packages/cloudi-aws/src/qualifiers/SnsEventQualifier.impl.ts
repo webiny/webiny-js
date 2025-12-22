@@ -1,5 +1,5 @@
 import { createImplementation } from "@webiny/di";
-import { SnsEventQualifier } from "~/abstractions/SnsEventQualifier.js";
+import { SnsEventQualifier } from "./SnsEventQualifier.js";
 
 export class SnsEventQualifierImpl implements SnsEventQualifier.Interface {
     execute(event: any): boolean {
