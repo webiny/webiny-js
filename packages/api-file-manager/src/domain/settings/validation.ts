@@ -1,7 +1,5 @@
 import zod from "zod";
-
-const MIN_FILE_SIZE = 0;
-const MAX_FILE_SIZE = 10737418240;
+import { MAX_FILE_SIZE, MIN_FILE_SIZE } from "./constants.js";
 
 const uploadMinFileSizeValidation = zod
     .number()
@@ -31,8 +29,11 @@ export const updateSettingsValidation = zod.object({
     srcPrefix: zod
         .string()
         .optional()
+        .nullish()
         .transform(value => {
-            if (typeof value === "string") {
+            if (!value) {
+                return "";
+            } else if (typeof value === "string") {
                 return value.endsWith("/") ? value : value + "/";
             }
             return value;

@@ -21,7 +21,7 @@ class SettingsInstallerImpl implements AppInstaller.Interface {
         const { domain } = manifest?.api.cloudfront;
 
         await this.updateSettings.execute({
-            srcPrefix: `${domain}/files`
+            srcPrefix: `${domain}/files/`
         });
     }
 

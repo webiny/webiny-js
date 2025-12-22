@@ -18,7 +18,9 @@ import type { QueryGetSettingsResult, Settings } from "~/types.js";
 import type { MutationFunction, MutationResult } from "@apollo/react-common";
 
 function prefixValidator(value: string) {
-    if (!value || !value.endsWith("/files/")) {
+    if (!value) {
+        return;
+    } else if (!value.endsWith("/files/")) {
         throw Error(`File URL prefix must end with "/files/"`);
     }
 }
