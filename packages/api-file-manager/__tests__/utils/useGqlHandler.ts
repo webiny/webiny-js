@@ -5,6 +5,8 @@ import type { HandlerParams } from "./plugins";
 import { handlerPlugins } from "./plugins";
 import { defaultIdentity } from "~tests/utils/tenancySecurity";
 import { createFileManagerSdk } from "~tests/utils/createFileManagerSdk.js";
+import { ServiceDiscovery } from "@webiny/api";
+import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 
 interface InvokeParams {
     httpMethod?: "POST";
@@ -20,6 +22,7 @@ export default (params: HandlerParams = {}) => {
     const handler = createHandler({
         plugins: handlerPlugins(params)
     });
+    ServiceDiscovery.setDocumentClient(getDocumentClient());
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
     const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }: InvokeParams) => {

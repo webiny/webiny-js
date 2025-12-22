@@ -18,7 +18,7 @@ class SettingsInstallerImpl implements AppInstaller.Interface {
     async install(): Promise<void> {
         // TODO: move this to api-core with a proper abstraction
         const manifest = await ServiceDiscovery.load();
-        const { domain } = manifest?.api.cloudfront;
+        const { domain } = manifest?.api?.cloudfront || {};
 
         await this.updateSettings.execute({
             srcPrefix: `${domain}/files/`

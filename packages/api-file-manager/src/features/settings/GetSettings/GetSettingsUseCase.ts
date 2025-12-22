@@ -17,7 +17,7 @@ class GetSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
 
         // TODO: move this to api-core with a proper abstraction
         const manifest = await ServiceDiscovery.load();
-        const { domain } = manifest?.api.cloudfront;
+        const { domain } = manifest?.api?.cloudfront || {};
         const defaultSettings: FileManagerSettings = {
             uploadMinFileSize: MIN_FILE_SIZE,
             uploadMaxFileSize: MAX_FILE_SIZE,
