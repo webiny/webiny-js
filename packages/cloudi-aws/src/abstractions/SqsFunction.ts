@@ -1,6 +1,7 @@
 import type { SQSEvent, SQSRecord } from "@webiny/aws-sdk/types/index.js";
-import { createAbstraction } from "./createAbstraction.js";
 import type { Abstraction } from "@webiny/di";
+import { Abstraction as AbstractionClass } from "@webiny/di";
+import type { NextFunction } from "../types.js";
 
 export interface SqsResult {
     success: boolean;
@@ -14,22 +15,16 @@ export interface SqsResult {
 export interface ISqsFunction {
     /**
      * Handle the SQS event
+     * If this handler cannot process the event, it should call next() to pass to the next handler
      */
-    execute(event: SQSEvent): Promise<SqsResult>;
+    execute(event: SQSEvent, next: NextFunction): Promise<SqsResult>;
 }
 
-export const SqsFunction = createAbstraction<ISqsFunction>("SqsFunction");
+export const SqsFunction = new AbstractionClass<ISqsFunction>("SqsFunction");
 
 export namespace SqsFunction {
     export type Interface = ISqsFunction;
     export type Result = SqsResult;
-
-    /**
-     * Detect if the event is an SQS event
-     */
-    export function canUse(event: any): event is SQSEvent {
-        return Array.isArray(event.Records) && event.Records[0]?.eventSource === "aws:sqs";
-    }
 
     export function createImplementation<T extends ISqsFunction>(config: {
         implementation: new (...args: any[]) => T;
@@ -38,8 +33,7 @@ export namespace SqsFunction {
         return {
             abstraction: SqsFunction,
             implementation: config.implementation,
-            dependencies: config.dependencies,
-            canUse: SqsFunction.canUse
+            dependencies: config.dependencies
         };
     }
 }

@@ -2,8 +2,9 @@ import type {
     APIGatewayEvent,
     APIGatewayProxyResult
 } from "@webiny/aws-sdk/types/index.js";
-import { createAbstraction } from "./createAbstraction.js";
 import type { Abstraction } from "@webiny/di";
+import { Abstraction as AbstractionClass } from "@webiny/di";
+import type { NextFunction } from "../types.js";
 
 /**
  * Abstraction for API Gateway Lambda functions
@@ -11,21 +12,15 @@ import type { Abstraction } from "@webiny/di";
 export interface IApiGatewayFunction {
     /**
      * Handle the API Gateway event
+     * If this handler cannot process the event, it should call next() to pass to the next handler
      */
-    execute(event: APIGatewayEvent): Promise<APIGatewayProxyResult>;
+    execute(event: APIGatewayEvent, next: NextFunction): Promise<APIGatewayProxyResult>;
 }
 
-export const ApiGatewayFunction = createAbstraction<IApiGatewayFunction>("ApiGatewayFunction");
+export const ApiGatewayFunction = new AbstractionClass<IApiGatewayFunction>("ApiGatewayFunction");
 
 export namespace ApiGatewayFunction {
     export type Interface = IApiGatewayFunction;
-
-    /**
-     * Detect if the event is an API Gateway event
-     */
-    export function canUse(event: any): event is APIGatewayEvent {
-        return !!event.httpMethod && !!event.requestContext;
-    }
 
     export function createImplementation<T extends IApiGatewayFunction>(config: {
         implementation: new (...args: any[]) => T;
@@ -34,8 +29,7 @@ export namespace ApiGatewayFunction {
         return {
             abstraction: ApiGatewayFunction,
             implementation: config.implementation,
-            dependencies: config.dependencies,
-            canUse: ApiGatewayFunction.canUse
+            dependencies: config.dependencies
         };
     }
 }

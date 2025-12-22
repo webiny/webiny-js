@@ -1,6 +1,7 @@
 import type { SNSEvent, SNSEventRecord } from "@webiny/aws-sdk/types/index.js";
-import { createAbstraction } from "./createAbstraction.js";
 import type { Abstraction } from "@webiny/di";
+import { Abstraction as AbstractionClass } from "@webiny/di";
+import type { NextFunction } from "../types.js";
 
 export interface SnsResult {
     success: boolean;
@@ -14,22 +15,16 @@ export interface SnsResult {
 export interface ISnsFunction {
     /**
      * Handle the SNS event
+     * If this handler cannot process the event, it should call next() to pass to the next handler
      */
-    execute(event: SNSEvent): Promise<SnsResult>;
+    execute(event: SNSEvent, next: NextFunction): Promise<SnsResult>;
 }
 
-export const SnsFunction = createAbstraction<ISnsFunction>("SnsFunction");
+export const SnsFunction = new AbstractionClass<ISnsFunction>("SnsFunction");
 
 export namespace SnsFunction {
     export type Interface = ISnsFunction;
     export type Result = SnsResult;
-
-    /**
-     * Detect if the event is an SNS event
-     */
-    export function canUse(event: any): event is SNSEvent {
-        return Array.isArray(event.Records) && event.Records[0]?.EventSource === "aws:sns";
-    }
 
     export function createImplementation<T extends ISnsFunction>(config: {
         implementation: new (...args: any[]) => T;
@@ -38,8 +33,7 @@ export namespace SnsFunction {
         return {
             abstraction: SnsFunction,
             implementation: config.implementation,
-            dependencies: config.dependencies,
-            canUse: SnsFunction.canUse
+            dependencies: config.dependencies
         };
     }
 }

@@ -1,6 +1,7 @@
 import type { S3Event, S3EventRecord } from "@webiny/aws-sdk/types/index.js";
-import { createAbstraction } from "./createAbstraction.js";
 import type { Abstraction } from "@webiny/di";
+import { Abstraction as AbstractionClass } from "@webiny/di";
+import type { NextFunction } from "../types.js";
 
 export interface S3Result {
     success: boolean;
@@ -14,22 +15,16 @@ export interface S3Result {
 export interface IS3Function {
     /**
      * Handle the S3 event
+     * If this handler cannot process the event, it should call next() to pass to the next handler
      */
-    execute(event: S3Event): Promise<S3Result>;
+    execute(event: S3Event, next: NextFunction): Promise<S3Result>;
 }
 
-export const S3Function = createAbstraction<IS3Function>("S3Function");
+export const S3Function = new AbstractionClass<IS3Function>("S3Function");
 
 export namespace S3Function {
     export type Interface = IS3Function;
     export type Result = S3Result;
-
-    /**
-     * Detect if the event is an S3 event
-     */
-    export function canUse(event: any): event is S3Event {
-        return Array.isArray(event.Records) && event.Records[0]?.eventSource === "aws:s3";
-    }
 
     export function createImplementation<T extends IS3Function>(config: {
         implementation: new (...args: any[]) => T;
@@ -38,8 +33,7 @@ export namespace S3Function {
         return {
             abstraction: S3Function,
             implementation: config.implementation,
-            dependencies: config.dependencies,
-            canUse: S3Function.canUse
+            dependencies: config.dependencies
         };
     }
 }

@@ -4,6 +4,7 @@
  * This example demonstrates how to create a Lambda function that:
  * - Implements the ApiGatewayFunction interface
  * - Uses dependency injection for services
+ * - Uses middleware pattern with next() to handle event routing
  * - Exports using ApiGatewayFunction.createImplementation()
  * - Registers with container.register()
  */
@@ -11,7 +12,8 @@
 import {
     ApiGatewayFunction,
     type APIGatewayEvent,
-    type APIGatewayProxyResult
+    type APIGatewayProxyResult,
+    type NextFunction
 } from "../index.js";
 
 // Example service interfaces (you would define these in your abstractions)
@@ -37,7 +39,13 @@ export class ListUsersFunctionImpl implements ApiGatewayFunction.Interface {
         private logger: ILoggerService
     ) {}
 
-    async execute(event: APIGatewayEvent): Promise<APIGatewayProxyResult> {
+    async execute(event: APIGatewayEvent, next: NextFunction): Promise<APIGatewayProxyResult> {
+        // Middleware pattern: check if this handler can process the event
+        // If not an API Gateway event, pass to the next handler
+        if (!event.httpMethod) {
+            return next();
+        }
+
         this.logger.info("Handling list users request", {
             path: event.path,
             method: event.httpMethod
@@ -95,14 +103,14 @@ export const ListUsersFunction = ApiGatewayFunction.createImplementation({
  * import { ConsoleLogger, DynamoDbUserService, DynamoDbOrderService } from "./services";
  *
  * // Single handler that can handle multiple event types!
- * export const handler = createFunction(async (container) => {
+ * export const handler = createFunction((container) => {
  *   // Register services
  *   container.register(ConsoleLogger).inSingletonScope();
  *   container.register(DynamoDbUserService).inSingletonScope();
  *   container.register(DynamoDbOrderService).inSingletonScope();
  *
  *   // Register multiple function implementations
- *   // The handler will automatically detect which one to execute based on the event
+ *   // The middleware pattern will automatically route to the correct handler
  *   container.register(ListUsersFunction).inSingletonScope();      // Handles API Gateway events
  *   container.register(ProcessOrderFunction).inSingletonScope();   // Handles SNS events
  * });
@@ -110,6 +118,6 @@ export const ListUsersFunction = ApiGatewayFunction.createImplementation({
  * // Deploy this single Lambda function with multiple triggers:
  * // - API Gateway trigger for HTTP requests
  * // - SNS topic trigger for order processing
- * // The handler automatically executes the right implementation!
+ * // The middleware chain automatically executes the right implementation!
  */
 

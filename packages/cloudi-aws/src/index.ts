@@ -6,7 +6,7 @@
 
 // Core
 export { createFunction, type ICloudFunction } from "./createFunction.js";
-export type { FunctionSetup, FunctionHandler, CreateFunctionOptions } from "./types.js";
+export type { FunctionSetup, FunctionHandler, CreateFunctionOptions, NextFunction } from "./types.js";
 
 // Abstractions
 export * from "./abstractions/index.js";

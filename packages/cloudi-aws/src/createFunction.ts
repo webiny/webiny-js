@@ -1,21 +1,20 @@
 import { Container } from "@webiny/di";
-import type { FunctionSetup } from "./types.js";
+import type { FunctionSetup, NextFunction } from "./types.js";
 
 /**
  * Generic function interface that all implementations should follow
  */
 export interface ICloudFunction<TEvent = any, TResult = any> {
-    execute(event: TEvent): Promise<TResult>;
+    execute(event: TEvent, next: NextFunction): Promise<TResult>;
 }
 
 /**
- * Function implementation with canUse detection
+ * Function implementation metadata
  */
 export interface FunctionImplementation {
     abstraction: any;
     implementation: new (...args: any[]) => ICloudFunction;
     dependencies: Array<any>;
-    canUse: (event: any) => boolean;
 }
 
 export function createFunction(setup: FunctionSetup) {
@@ -30,8 +29,8 @@ export function createFunction(setup: FunctionSetup) {
             // Intercept register calls to collect implementations
             const originalRegister = container.register.bind(container);
             container.register = function (implementation: any) {
-                // If it's a function implementation with canUse, store it
-                if (implementation && implementation.canUse && implementation.abstraction) {
+                // If it's a function implementation, store it
+                if (implementation && implementation.abstraction) {
                     registeredImplementations.push(implementation as FunctionImplementation);
                 }
                 return originalRegister(implementation);
@@ -44,24 +43,26 @@ export function createFunction(setup: FunctionSetup) {
             container.register = originalRegister;
         }
 
-        // Find the matching handler based on the event
-        const matchingImplementation = registeredImplementations.find(impl =>
-            impl.canUse(event)
-        );
+        // Build middleware chain
+        let currentIndex = 0;
 
-        if (!matchingImplementation) {
-            throw new Error(
-                `No registered function implementation can handle this event. ` +
+        const next: NextFunction = async () => {
+            if (currentIndex >= registeredImplementations.length) {
+                throw new Error(
+                    `No registered function implementation handled this event. ` +
                     `Registered ${registeredImplementations.length} implementations. ` +
                     `Event type: ${JSON.stringify(Object.keys(event).slice(0, 5))}`
-            );
-        }
+                );
+            }
 
-        // Resolve the function instance from container
-        const functionInstance = container.resolve(matchingImplementation.abstraction);
+            const implementation = registeredImplementations[currentIndex++];
+            const functionInstance = container!.resolve(implementation.abstraction);
 
-        // Execute the function
-        return functionInstance.execute(event);
+            return functionInstance.execute(event, next);
+        };
+
+        // Start the middleware chain
+        return next();
     };
 }
 

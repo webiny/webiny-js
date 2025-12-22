@@ -1,5 +1,6 @@
-import { createAbstraction } from "./createAbstraction.js";
 import type { Abstraction } from "@webiny/di";
+import { Abstraction as AbstractionClass } from "@webiny/di";
+import type { NextFunction } from "../types.js";
 
 /**
  * Abstraction for raw/generic Lambda functions
@@ -8,21 +9,15 @@ import type { Abstraction } from "@webiny/di";
 export interface IRawFunction<TEvent = any, TResult = any> {
     /**
      * Handle the raw event
+     * If this handler cannot process the event, it should call next() to pass to the next handler
      */
-    execute(event: TEvent): Promise<TResult>;
+    execute(event: TEvent, next: NextFunction): Promise<TResult>;
 }
 
-export const RawFunction = createAbstraction<IRawFunction>("RawFunction");
+export const RawFunction = new AbstractionClass<IRawFunction>("RawFunction");
 
 export namespace RawFunction {
     export type Interface<TEvent = any, TResult = any> = IRawFunction<TEvent, TResult>;
-
-    /**
-     * RawFunction is a fallback that can handle any event
-     */
-    export function canUse(_event: any): _event is any {
-        return true;
-    }
 
     export function createImplementation<T extends IRawFunction>(config: {
         implementation: new (...args: any[]) => T;
@@ -31,8 +26,7 @@ export namespace RawFunction {
         return {
             abstraction: RawFunction,
             implementation: config.implementation,
-            dependencies: config.dependencies,
-            canUse: RawFunction.canUse
+            dependencies: config.dependencies
         };
     }
 }

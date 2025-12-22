@@ -1,6 +1,7 @@
 import type { DynamoDBStreamEvent, DynamoDBRecord } from "@webiny/aws-sdk/types/index.js";
-import { createAbstraction } from "./createAbstraction.js";
 import type { Abstraction } from "@webiny/di";
+import { Abstraction as AbstractionClass } from "@webiny/di";
+import type { NextFunction } from "../types.js";
 
 export interface DynamoDBResult {
     success: boolean;
@@ -14,22 +15,16 @@ export interface DynamoDBResult {
 export interface IDynamoDBFunction {
     /**
      * Handle the DynamoDB Stream event
+     * If this handler cannot process the event, it should call next() to pass to the next handler
      */
-    execute(event: DynamoDBStreamEvent): Promise<DynamoDBResult>;
+    execute(event: DynamoDBStreamEvent, next: NextFunction): Promise<DynamoDBResult>;
 }
 
-export const DynamoDBFunction = createAbstraction<IDynamoDBFunction>("DynamoDBFunction");
+export const DynamoDBFunction = new AbstractionClass<IDynamoDBFunction>("DynamoDBFunction");
 
 export namespace DynamoDBFunction {
     export type Interface = IDynamoDBFunction;
     export type Result = DynamoDBResult;
-
-    /**
-     * Detect if the event is a DynamoDB Stream event
-     */
-    export function canUse(event: any): event is DynamoDBStreamEvent {
-        return Array.isArray(event.Records) && event.Records[0]?.eventSource === "aws:dynamodb";
-    }
 
     export function createImplementation<T extends IDynamoDBFunction>(config: {
         implementation: new (...args: any[]) => T;
@@ -38,8 +33,7 @@ export namespace DynamoDBFunction {
         return {
             abstraction: DynamoDBFunction,
             implementation: config.implementation,
-            dependencies: config.dependencies,
-            canUse: DynamoDBFunction.canUse
+            dependencies: config.dependencies
         };
     }
 }

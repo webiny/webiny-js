@@ -5,13 +5,15 @@
  * - Implements the SnsFunction interface
  * - Processes SNS events
  * - Uses dependency injection for services
+ * - Uses middleware pattern with next() to handle event routing
  * - Exports using SnsFunction.createImplementation()
  */
 
 import {
     SnsFunction,
     type SNSEvent,
-    type SnsResult
+    type SnsResult,
+    type NextFunction
 } from "../index.js";
 
 // Example service interfaces (you would define these in your abstractions)
@@ -37,7 +39,13 @@ export class ProcessOrderFunctionImpl implements SnsFunction.Interface {
         private logger: ILoggerService
     ) {}
 
-    async execute(event: SNSEvent): Promise<SnsResult> {
+    async execute(event: SNSEvent, next: NextFunction): Promise<SnsResult> {
+        // Middleware pattern: check if this handler can process the event
+        // If not an SNS event, pass to the next handler
+        if (!Array.isArray(event.Records) || event.Records[0]?.EventSource !== "aws:sns") {
+            return next();
+        }
+
         this.logger.info("Processing SNS event", {
             recordCount: event.Records.length
         });
@@ -90,7 +98,7 @@ export const ProcessOrderFunction = SnsFunction.createImplementation({
  * import { ProcessOrderFunction } from "./features/ProcessOrderFunction.example";
  * import { ConsoleLogger, DynamoDbOrderService } from "./services";
  *
- * export const handler = createFunction(async (container) => {
+ * export const handler = createFunction((container) => {
  *   // Register services
  *   container.register(ConsoleLogger).inSingletonScope();
  *   container.register(DynamoDbOrderService).inSingletonScope();

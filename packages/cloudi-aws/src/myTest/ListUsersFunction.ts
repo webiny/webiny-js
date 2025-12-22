@@ -2,7 +2,8 @@
 import {
     ApiGatewayFunction,
     type APIGatewayEvent,
-    type APIGatewayProxyResult
+    type APIGatewayProxyResult,
+    type NextFunction
 } from "../index.js";
 import type { UserService } from "~/abstractions";
 import type { LoggerService } from "~/abstractions";
@@ -13,7 +14,12 @@ export class ListUsersFunctionImpl implements ApiGatewayFunction.Interface {
         private logger: LoggerService.Interface
     ) {}
 
-    async execute(event: APIGatewayEvent): Promise<APIGatewayProxyResult> {
+    async execute(event: APIGatewayEvent, next: NextFunction): Promise<APIGatewayProxyResult> {
+        // Middleware pattern: check if this handler can process the event
+        if (!event.httpMethod) {
+            return next();
+        }
+
         this.logger.info("Listing users");
 
         try {
