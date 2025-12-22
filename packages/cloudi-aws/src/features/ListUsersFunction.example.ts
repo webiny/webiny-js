@@ -5,10 +5,11 @@
  * - Implements the ApiGatewayFunction interface
  * - Uses dependency injection for services
  * - Uses middleware pattern with next() to handle event routing
- * - Exports using ApiGatewayFunction.createImplementation()
+ * - Exports using createImplementation from @webiny/di
  * - Registers with container.register()
  */
 
+import { createImplementation } from "@webiny/di";
 import {
     ApiGatewayFunction,
     type APIGatewayEvent,
@@ -33,7 +34,7 @@ declare const LoggerService: any;
 /**
  * Implementation of the ListUsers function
  */
-export class ListUsersFunctionImpl implements ApiGatewayFunction.Interface {
+export class ListUsersFunction implements ApiGatewayFunction.Interface {
     constructor(
         private userService: IUserService,
         private logger: ILoggerService
@@ -87,10 +88,11 @@ export class ListUsersFunctionImpl implements ApiGatewayFunction.Interface {
 }
 
 /**
- * Export the implementation using ApiGatewayFunction.createImplementation
+ * Export the implementation using createImplementation from @webiny/di
  */
-export const ListUsersFunction = ApiGatewayFunction.createImplementation({
-    implementation: ListUsersFunctionImpl,
+export const listUsersFunction = createImplementation({
+    abstraction: ApiGatewayFunction,
+    implementation: ListUsersFunction,
     dependencies: [UserService, LoggerService]
 });
 
@@ -98,21 +100,21 @@ export const ListUsersFunction = ApiGatewayFunction.createImplementation({
  * Example usage in handler file:
  *
  * import { createFunction } from "@cloudi/aws";
- * import { ListUsersFunction } from "./features/ListUsersFunction.example";
- * import { ProcessOrderFunction } from "./features/ProcessOrderFunction.example";
- * import { ConsoleLogger, DynamoDbUserService, DynamoDbOrderService } from "./services";
+ * import { listUsersFunction } from "./features/ListUsersFunction.example";
+ * import { processOrderFunction } from "./features/ProcessOrderFunction.example";
+ * import { consoleLogger, dynamoDbUserService, dynamoDbOrderService } from "./services";
  *
  * // Single handler that can handle multiple event types!
  * export const handler = createFunction((container) => {
  *   // Register services
- *   container.register(ConsoleLogger).inSingletonScope();
- *   container.register(DynamoDbUserService).inSingletonScope();
- *   container.register(DynamoDbOrderService).inSingletonScope();
+ *   container.register(consoleLogger).inSingletonScope();
+ *   container.register(dynamoDbUserService).inSingletonScope();
+ *   container.register(dynamoDbOrderService).inSingletonScope();
  *
  *   // Register multiple function implementations
  *   // The middleware pattern will automatically route to the correct handler
- *   container.register(ListUsersFunction).inSingletonScope();      // Handles API Gateway events
- *   container.register(ProcessOrderFunction).inSingletonScope();   // Handles SNS events
+ *   container.register(listUsersFunction).inSingletonScope();      // Handles API Gateway events
+ *   container.register(processOrderFunction).inSingletonScope();   // Handles SNS events
  * });
  *
  * // Deploy this single Lambda function with multiple triggers:

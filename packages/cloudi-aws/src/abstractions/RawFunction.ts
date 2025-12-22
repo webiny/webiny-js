@@ -1,5 +1,4 @@
-import type { Abstraction } from "@webiny/di";
-import { Abstraction as AbstractionClass } from "@webiny/di";
+import { createAbstraction } from "./createAbstraction.js";
 import type { NextFunction } from "../types.js";
 
 /**
@@ -14,20 +13,9 @@ export interface IRawFunction<TEvent = any, TResult = any> {
     execute(event: TEvent, next: NextFunction): Promise<TResult>;
 }
 
-export const RawFunction = new AbstractionClass<IRawFunction>("RawFunction");
+export const RawFunction = createAbstraction<IRawFunction>("RawFunction");
 
 export namespace RawFunction {
     export type Interface<TEvent = any, TResult = any> = IRawFunction<TEvent, TResult>;
-
-    export function createImplementation<T extends IRawFunction>(config: {
-        implementation: new (...args: any[]) => T;
-        dependencies: Array<Abstraction<any>>;
-    }) {
-        return {
-            abstraction: RawFunction,
-            implementation: config.implementation,
-            dependencies: config.dependencies
-        };
-    }
 }
 

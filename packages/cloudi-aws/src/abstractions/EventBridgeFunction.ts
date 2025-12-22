@@ -1,6 +1,5 @@
 import type { EventBridgeEvent } from "@webiny/aws-sdk/types/index.js";
-import type { Abstraction } from "@webiny/di";
-import { Abstraction as AbstractionClass } from "@webiny/di";
+import { createAbstraction } from "./createAbstraction.js";
 import type { NextFunction } from "../types.js";
 
 export interface EventBridgeResult {
@@ -19,7 +18,7 @@ export interface IEventBridgeFunction<TDetailType extends string = string, TDeta
     execute(event: EventBridgeEvent<TDetailType, TDetail>, next: NextFunction): Promise<EventBridgeResult>;
 }
 
-export const EventBridgeFunction = new AbstractionClass<IEventBridgeFunction>("EventBridgeFunction");
+export const EventBridgeFunction = createAbstraction<IEventBridgeFunction>("EventBridgeFunction");
 
 export namespace EventBridgeFunction {
     export type Interface<TDetailType extends string = string, TDetail = any> = IEventBridgeFunction<
@@ -27,17 +26,6 @@ export namespace EventBridgeFunction {
         TDetail
     >;
     export type Result = EventBridgeResult;
-
-    export function createImplementation<T extends IEventBridgeFunction>(config: {
-        implementation: new (...args: any[]) => T;
-        dependencies: Array<Abstraction<any>>;
-    }) {
-        return {
-            abstraction: EventBridgeFunction,
-            implementation: config.implementation,
-            dependencies: config.dependencies
-        };
-    }
 }
 
 export type { EventBridgeEvent };

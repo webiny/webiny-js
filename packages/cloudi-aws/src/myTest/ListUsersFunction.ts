@@ -1,4 +1,5 @@
 // features/ListUsersFunction.ts
+import { createImplementation } from "@webiny/di";
 import {
     ApiGatewayFunction,
     type APIGatewayEvent,
@@ -8,7 +9,7 @@ import {
 import type { UserService } from "~/abstractions";
 import type { LoggerService } from "~/abstractions";
 
-export class ListUsersFunctionImpl implements ApiGatewayFunction.Interface {
+export class ListUsersFunction implements ApiGatewayFunction.Interface {
     constructor(
         private userService: UserService.Interface,
         private logger: LoggerService.Interface
@@ -42,8 +43,9 @@ export class ListUsersFunctionImpl implements ApiGatewayFunction.Interface {
     }
 }
 
-// Export using ApiGatewayFunction.createImplementation
-export const ListUsersFunction = ApiGatewayFunction.createImplementation({
-    implementation: ListUsersFunctionImpl,
+// Export using createImplementation from @webiny/di
+export const listUsersFunction = createImplementation({
+    abstraction: ApiGatewayFunction,
+    implementation: ListUsersFunction,
     dependencies: [UserService, LoggerService]
 });

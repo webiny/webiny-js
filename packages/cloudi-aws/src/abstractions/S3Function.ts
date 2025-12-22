@@ -1,6 +1,5 @@
 import type { S3Event, S3EventRecord } from "@webiny/aws-sdk/types/index.js";
-import type { Abstraction } from "@webiny/di";
-import { Abstraction as AbstractionClass } from "@webiny/di";
+import { createAbstraction } from "./createAbstraction.js";
 import type { NextFunction } from "../types.js";
 
 export interface S3Result {
@@ -20,22 +19,11 @@ export interface IS3Function {
     execute(event: S3Event, next: NextFunction): Promise<S3Result>;
 }
 
-export const S3Function = new AbstractionClass<IS3Function>("S3Function");
+export const S3Function = createAbstraction<IS3Function>("S3Function");
 
 export namespace S3Function {
     export type Interface = IS3Function;
     export type Result = S3Result;
-
-    export function createImplementation<T extends IS3Function>(config: {
-        implementation: new (...args: any[]) => T;
-        dependencies: Array<Abstraction<any>>;
-    }) {
-        return {
-            abstraction: S3Function,
-            implementation: config.implementation,
-            dependencies: config.dependencies
-        };
-    }
 }
 
 export type { S3Event, S3EventRecord };

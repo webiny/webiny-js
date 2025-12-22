@@ -2,8 +2,7 @@ import type {
     APIGatewayEvent,
     APIGatewayProxyResult
 } from "@webiny/aws-sdk/types/index.js";
-import type { Abstraction } from "@webiny/di";
-import { Abstraction as AbstractionClass } from "@webiny/di";
+import { createAbstraction } from "./createAbstraction.js";
 import type { NextFunction } from "../types.js";
 
 /**
@@ -17,21 +16,10 @@ export interface IApiGatewayFunction {
     execute(event: APIGatewayEvent, next: NextFunction): Promise<APIGatewayProxyResult>;
 }
 
-export const ApiGatewayFunction = new AbstractionClass<IApiGatewayFunction>("ApiGatewayFunction");
+export const ApiGatewayFunction = createAbstraction<IApiGatewayFunction>("ApiGatewayFunction");
 
 export namespace ApiGatewayFunction {
     export type Interface = IApiGatewayFunction;
-
-    export function createImplementation<T extends IApiGatewayFunction>(config: {
-        implementation: new (...args: any[]) => T;
-        dependencies: Array<Abstraction<any>>;
-    }) {
-        return {
-            abstraction: ApiGatewayFunction,
-            implementation: config.implementation,
-            dependencies: config.dependencies
-        };
-    }
 }
 
 export type { APIGatewayEvent, APIGatewayProxyResult };

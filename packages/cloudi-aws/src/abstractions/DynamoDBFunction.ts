@@ -1,6 +1,5 @@
 import type { DynamoDBStreamEvent, DynamoDBRecord } from "@webiny/aws-sdk/types/index.js";
-import type { Abstraction } from "@webiny/di";
-import { Abstraction as AbstractionClass } from "@webiny/di";
+import { createAbstraction } from "./createAbstraction.js";
 import type { NextFunction } from "../types.js";
 
 export interface DynamoDBResult {
@@ -20,22 +19,11 @@ export interface IDynamoDBFunction {
     execute(event: DynamoDBStreamEvent, next: NextFunction): Promise<DynamoDBResult>;
 }
 
-export const DynamoDBFunction = new AbstractionClass<IDynamoDBFunction>("DynamoDBFunction");
+export const DynamoDBFunction = createAbstraction<IDynamoDBFunction>("DynamoDBFunction");
 
 export namespace DynamoDBFunction {
     export type Interface = IDynamoDBFunction;
     export type Result = DynamoDBResult;
-
-    export function createImplementation<T extends IDynamoDBFunction>(config: {
-        implementation: new (...args: any[]) => T;
-        dependencies: Array<Abstraction<any>>;
-    }) {
-        return {
-            abstraction: DynamoDBFunction,
-            implementation: config.implementation,
-            dependencies: config.dependencies
-        };
-    }
 }
 
 export type { DynamoDBStreamEvent, DynamoDBRecord };

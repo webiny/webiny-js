@@ -6,9 +6,10 @@
  * - Processes SNS events
  * - Uses dependency injection for services
  * - Uses middleware pattern with next() to handle event routing
- * - Exports using SnsFunction.createImplementation()
+ * - Exports using createImplementation from @webiny/di
  */
 
+import { createImplementation } from "@webiny/di";
 import {
     SnsFunction,
     type SNSEvent,
@@ -33,7 +34,7 @@ declare const LoggerService: any;
 /**
  * Implementation of the ProcessOrder function
  */
-export class ProcessOrderFunctionImpl implements SnsFunction.Interface {
+export class ProcessOrderFunction implements SnsFunction.Interface {
     constructor(
         private orderService: IOrderService,
         private logger: ILoggerService
@@ -84,10 +85,11 @@ export class ProcessOrderFunctionImpl implements SnsFunction.Interface {
 }
 
 /**
- * Export the implementation using SnsFunction.createImplementation
+ * Export the implementation using createImplementation from @webiny/di
  */
-export const ProcessOrderFunction = SnsFunction.createImplementation({
-    implementation: ProcessOrderFunctionImpl,
+export const processOrderFunction = createImplementation({
+    abstraction: SnsFunction,
+    implementation: ProcessOrderFunction,
     dependencies: [OrderService, LoggerService]
 });
 
@@ -95,16 +97,16 @@ export const ProcessOrderFunction = SnsFunction.createImplementation({
  * Example usage in handler file:
  *
  * import { createFunction } from "@cloudi/aws";
- * import { ProcessOrderFunction } from "./features/ProcessOrderFunction.example";
- * import { ConsoleLogger, DynamoDbOrderService } from "./services";
+ * import { processOrderFunction } from "./features/ProcessOrderFunction.example";
+ * import { consoleLogger, dynamoDbOrderService } from "./services";
  *
  * export const handler = createFunction((container) => {
  *   // Register services
- *   container.register(ConsoleLogger).inSingletonScope();
- *   container.register(DynamoDbOrderService).inSingletonScope();
+ *   container.register(consoleLogger).inSingletonScope();
+ *   container.register(dynamoDbOrderService).inSingletonScope();
  *
  *   // Register the function implementation
- *   container.register(ProcessOrderFunction).inSingletonScope();
+ *   container.register(processOrderFunction).inSingletonScope();
  * });
  */
 

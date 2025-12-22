@@ -3,6 +3,7 @@
 ## Basic Handler Template
 
 ```typescript
+import { createImplementation } from "@webiny/di";
 import {
     ApiGatewayFunction,
     type APIGatewayEvent,
@@ -10,7 +11,7 @@ import {
     type NextFunction
 } from "@cloudi/aws";
 
-class MyHandlerImpl implements ApiGatewayFunction.Interface {
+class MyHandler implements ApiGatewayFunction.Interface {
     constructor(private myService: MyService.Interface) {}
 
     async execute(event: APIGatewayEvent, next: NextFunction): Promise<APIGatewayProxyResult> {
@@ -31,8 +32,9 @@ class MyHandlerImpl implements ApiGatewayFunction.Interface {
     }
 }
 
-export const MyHandler = ApiGatewayFunction.createImplementation({
-    implementation: MyHandlerImpl,
+export const myHandler = createImplementation({
+    abstraction: ApiGatewayFunction,
+    implementation: MyHandler,
     dependencies: [MyService]
 });
 ```
@@ -86,19 +88,19 @@ if (!Array.isArray(event.Records) || event.Records[0]?.eventSource !== "aws:dyna
 ```typescript
 // handler.ts
 import { createFunction } from "@cloudi/aws";
-import { MyApiHandler } from "./features/MyApiHandler";
-import { MySnsHandler } from "./features/MySnsHandler";
-import { MyS3Handler } from "./features/MyS3Handler";
+import { myApiHandler } from "./features/MyApiHandler";
+import { mySnsHandler } from "./features/MySnsHandler";
+import { myS3Handler } from "./features/MyS3Handler";
 
 export const handler = createFunction((container) => {
     // Register services
-    container.register(Logger).inSingletonScope();
-    container.register(UserService).inSingletonScope();
+    container.register(logger).inSingletonScope();
+    container.register(userService).inSingletonScope();
 
     // Register handlers (order matters!)
-    container.register(MyApiHandler).inSingletonScope();
-    container.register(MySnsHandler).inSingletonScope();
-    container.register(MyS3Handler).inSingletonScope();
+    container.register(myApiHandler).inSingletonScope();
+    container.register(mySnsHandler).inSingletonScope();
+    container.register(myS3Handler).inSingletonScope();
 });
 ```
 
@@ -119,6 +121,7 @@ export const handler = createFunction((container) => {
 ```typescript
 // Core
 import { createFunction, type NextFunction } from "@cloudi/aws";
+import { createImplementation } from "@webiny/di";
 
 // Abstractions
 import {
