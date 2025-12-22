@@ -1,6 +1,6 @@
 # Folder Structure Reorganization
 
-The event handlers and qualifiers have been reorganized into dedicated folders for better code organization.
+The event handlers and qualifiers have been reorganized into a nested structure under `abstractions/` and `features/`.
 
 ## New Structure
 
@@ -10,38 +10,41 @@ src/
 │   ├── createAbstraction.ts      # Helper for creating abstractions
 │   ├── AwsLambdaContext.ts       # AWS Lambda Context abstraction
 │   ├── AwsLambdaEvent.ts         # AWS Lambda Event abstraction
-│   └── index.ts                  # Re-exports from handlers/ and qualifiers/
-│
-├── handlers/
-│   ├── ApiGatewayEventHandler.ts
-│   ├── DynamoDBEventHandler.ts
-│   ├── EventBridgeEventHandler.ts
-│   ├── RawEventHandler.ts
-│   ├── S3EventHandler.ts
-│   ├── SnsEventHandler.ts
-│   ├── SqsEventHandler.ts
-│   └── index.ts
-│
-├── qualifiers/
-│   ├── ApiGatewayEventQualifier.ts
-│   ├── ApiGatewayEventQualifier.impl.ts
-│   ├── DynamoDBEventQualifier.ts
-│   ├── DynamoDBEventQualifier.impl.ts
-│   ├── EventBridgeEventQualifier.ts
-│   ├── EventBridgeEventQualifier.impl.ts
-│   ├── S3EventQualifier.ts
-│   ├── S3EventQualifier.impl.ts
-│   ├── SnsEventQualifier.ts
-│   ├── SnsEventQualifier.impl.ts
-│   ├── SqsEventQualifier.ts
-│   ├── SqsEventQualifier.impl.ts
-│   └── index.ts
+│   ├── index.ts                  # Re-exports from handlers/ and qualifiers/
+│   │
+│   ├── handlers/
+│   │   ├── ApiGatewayEventHandler.ts
+│   │   ├── DynamoDBEventHandler.ts
+│   │   ├── EventBridgeEventHandler.ts
+│   │   ├── RawEventHandler.ts
+│   │   ├── S3EventHandler.ts
+│   │   ├── SnsEventHandler.ts
+│   │   ├── SqsEventHandler.ts
+│   │   └── index.ts
+│   │
+│   └── qualifiers/
+│       ├── ApiGatewayEventQualifier.ts
+│       ├── DynamoDBEventQualifier.ts
+│       ├── EventBridgeEventQualifier.ts
+│       ├── S3EventQualifier.ts
+│       ├── SnsEventQualifier.ts
+│       ├── SqsEventQualifier.ts
+│       └── index.ts
 │
 ├── features/
 │   ├── ListUsersFunction.example.ts
 │   ├── ProcessOrderFunction.example.ts
 │   ├── README.md
-│   └── index.ts                  # Re-exports from qualifiers/
+│   ├── index.ts                  # Re-exports from qualifiers/
+│   │
+│   └── qualifiers/
+│       ├── ApiGatewayEventQualifier.ts
+│       ├── DynamoDBEventQualifier.ts
+│       ├── EventBridgeEventQualifier.ts
+│       ├── S3EventQualifier.ts
+│       ├── SnsEventQualifier.ts
+│       ├── SqsEventQualifier.ts
+│       └── index.ts
 │
 ├── examples/
 │   ├── logger-with-context.example.ts
@@ -54,38 +57,49 @@ src/
 
 ## What Changed
 
-### 1. **handlers/** folder
+### 1. **abstractions/handlers/** folder
 
 - Contains all event handler **abstractions**
 - Each handler file defines:
   - Interface (e.g., `IApiGatewayEventHandler`)
   - Abstraction (e.g., `ApiGatewayEventHandler`)
   - Namespace with type aliases
+- Imports `createAbstraction` from `../createAbstraction.js`
 
-### 2. **qualifiers/** folder
+### 2. **abstractions/qualifiers/** folder
 
-- Contains both **abstractions** and **implementations** for event qualifiers
+- Contains event qualifier **abstractions only**
 - Abstraction files (e.g., `ApiGatewayEventQualifier.ts`):
   - Define the interface
   - Create the abstraction
-- Implementation files (e.g., `ApiGatewayEventQualifier.impl.ts`):
+- Imports `createAbstraction` from `../createAbstraction.js`
+
+### 3. **features/qualifiers/** folder
+
+- Contains event qualifier **implementations only**
+- Implementation files (e.g., `ApiGatewayEventQualifier.ts`):
   - Implement the qualifier logic
   - Export the implementation using `createImplementation`
+- Imports abstractions from `../../abstractions/qualifiers/[Name].js`
+- **Note**: Same filename as abstractions, but in different folder (`features/qualifiers/` vs `abstractions/qualifiers/`)
 
-### 3. **abstractions/** folder
+### 4. **abstractions/** folder root
 
-- Now only contains:
+- Contains:
   - `createAbstraction.ts` - Helper function
   - `AwsLambdaContext.ts` - Core abstraction
   - `AwsLambdaEvent.ts` - Core abstraction
   - `index.ts` - Re-exports from handlers/ and qualifiers/
+  - `handlers/` - Handler abstractions
+  - `qualifiers/` - Qualifier abstractions
 
-### 4. **features/** folder
+### 5. **features/** folder
 
-- Now only contains:
+- Contains:
   - Example files (ListUsersFunction, ProcessOrderFunction)
   - README
-  - index.ts that re-exports qualifier implementations
+  - index.ts that re-exports from qualifiers/
+  - `qualifiers/` - Qualifier implementations
 
 ## Import Paths
 
@@ -98,23 +112,51 @@ import {
   ApiGatewayEventHandler,
   SnsEventHandler,
   ApiGatewayEventQualifier,
-  AwsLambdaContext
+  AwsLambdaContext,
+  apiGatewayEventQualifier
 } from "@cloudi/aws";
 ```
 
 ### Internally
 
-- Handlers import `createAbstraction` from `../abstractions/createAbstraction.js`
-- Qualifiers import `createAbstraction` from `../abstractions/createAbstraction.js`
-- Qualifier implementations import their abstraction from `./[Name]EventQualifier.js`
+**Handler abstractions:**
+
+```typescript
+import { createAbstraction } from "../createAbstraction.js";
+```
+
+**Qualifier abstractions:**
+
+```typescript
+import { createAbstraction } from "../createAbstraction.js";
+```
+
+**Qualifier implementations:**
+
+```typescript
+import { ApiGatewayEventQualifier } from "../../abstractions/qualifiers/ApiGatewayEventQualifier.js";
+```
+
+**Main index files:**
+
+- `abstractions/index.ts` exports from `./handlers/index.js` and `./qualifiers/index.js`
+- `features/index.ts` exports from `./qualifiers/index.js`
 
 ## Benefits
 
-1. **Better Organization**: Related files are grouped together
-2. **Clearer Separation**: Handlers and qualifiers are in separate folders
-3. **Easier Navigation**: Finding event handlers or qualifiers is intuitive
+1. **Logical Grouping**: Abstractions are under `abstractions/`, implementations under `features/`
+2. **Clear Separation**: Handlers and qualifiers have their own subfolders
+3. **Easier Navigation**: Related files are nested together
 4. **Scalability**: Easy to add new handlers or qualifiers
 5. **Backward Compatible**: All existing imports continue to work
+
+## File Naming Convention
+
+- **Handler Abstractions**: `[EventType]EventHandler.ts` (in `abstractions/handlers/`)
+- **Qualifier Abstractions**: `[EventType]EventQualifier.ts` (in `abstractions/qualifiers/`)
+- **Qualifier Implementations**: `[EventType]EventQualifier.ts` (in `features/qualifiers/`)
+- **Note**: Qualifier abstractions and implementations share the same filename but live in different directories
+- All handler implementations are created by users
 
 ## Migration Notes
 
@@ -130,8 +172,8 @@ import { apiGatewayEventQualifier } from "@cloudi/aws/features/ApiGatewayEventQu
 ### New
 
 ```typescript
-import { ApiGatewayEventHandler } from "@cloudi/aws/handlers/ApiGatewayEventHandler";
-import { apiGatewayEventQualifier } from "@cloudi/aws/qualifiers/ApiGatewayEventQualifier.impl";
+import { ApiGatewayEventHandler } from "@cloudi/aws/abstractions/handlers/ApiGatewayEventHandler";
+import { apiGatewayEventQualifier } from "@cloudi/aws/features/qualifiers/ApiGatewayEventQualifier";
 ```
 
 ### Recommended (unchanged)

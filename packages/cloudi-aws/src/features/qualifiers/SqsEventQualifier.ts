@@ -1,5 +1,5 @@
 import { createImplementation } from "@webiny/di";
-import { SqsEventQualifier } from "./SqsEventQualifier.js";
+import { SqsEventQualifier } from "../../abstractions/qualifiers/SqsEventQualifier.js";
 
 export class SqsEventQualifierImpl implements SqsEventQualifier.Interface {
     execute(event: any): boolean {

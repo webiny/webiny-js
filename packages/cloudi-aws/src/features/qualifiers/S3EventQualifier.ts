@@ -1,5 +1,5 @@
 import { createImplementation } from "@webiny/di";
-import { S3EventQualifier } from "./S3EventQualifier.js";
+import { S3EventQualifier } from "../../abstractions/qualifiers/S3EventQualifier.js";
 
 export class S3EventQualifierImpl implements S3EventQualifier.Interface {
     execute(event: any): boolean {
@@ -12,4 +12,3 @@ export const s3EventQualifier = createImplementation({
     implementation: S3EventQualifierImpl,
     dependencies: []
 });
-

@@ -1,4 +1,4 @@
-import { createAbstraction } from "../abstractions/createAbstraction.js";
+import { createAbstraction } from "../createAbstraction.js";
 
 /**
  * Abstraction for API Gateway event qualifier

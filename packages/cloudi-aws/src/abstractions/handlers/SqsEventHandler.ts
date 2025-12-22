@@ -1,5 +1,5 @@
 import type { SQSEvent, SQSRecord } from "@webiny/aws-sdk/types/index.js";
-import { createAbstraction } from "../abstractions/createAbstraction.js";
+import { createAbstraction } from "../createAbstraction.js";
 
 export interface SqsResult {
     success: boolean;

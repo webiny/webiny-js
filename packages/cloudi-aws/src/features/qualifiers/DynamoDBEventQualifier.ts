@@ -1,5 +1,5 @@
 import { createImplementation } from "@webiny/di";
-import { DynamoDBEventQualifier } from "./DynamoDBEventQualifier.js";
+import { DynamoDBEventQualifier } from "../../abstractions/qualifiers/DynamoDBEventQualifier.js";
 
 export class DynamoDBEventQualifierImpl implements DynamoDBEventQualifier.Interface {
     execute(event: any): boolean {
