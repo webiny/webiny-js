@@ -31,18 +31,7 @@ export class PulumiCommand implements CliCommand.Interface<IPulumiCommandParams>
                     required: true
                 }
             ],
-            options: [
-                ...createBaseAppOptions<IPulumiCommandParams>(projectSdk, {
-                    env: {
-                        validation: params => {
-                            if ("app" in params && !params.env) {
-                                throw new Error("Environment name is required.");
-                            }
-                            return true;
-                        }
-                    }
-                })
-            ],
+            options: [...createBaseAppOptions<IPulumiCommandParams>(projectSdk)],
             handler: async (params: IPulumiCommandParams) => {
                 const projectSdk = await this.getProjectSdkService.execute();
 

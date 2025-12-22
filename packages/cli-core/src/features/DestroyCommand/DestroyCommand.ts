@@ -45,20 +45,7 @@ export class DestroyCommand implements CliCommand.Interface<IDestroyCommandParam
                     type: "string"
                 }
             ],
-            options: [
-                ...createBaseAppOptions<IDestroyCommandParams>(projectSdk, {
-                    env: {
-                        validation: params => {
-                            if ("app" in params && !params.env) {
-                                throw new Error(
-                                    "Environment name is required when destroying an app."
-                                );
-                            }
-                            return true;
-                        }
-                    }
-                })
-            ],
+            options: [...createBaseAppOptions<IDestroyCommandParams>(projectSdk)],
             handler: async (params: IDestroyCommandParams) => {
                 if ("app" in params) {
                     return this.destroyApp(params);

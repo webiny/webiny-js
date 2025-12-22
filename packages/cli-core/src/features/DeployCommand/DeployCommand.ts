@@ -64,18 +64,7 @@ export class DeployCommand implements CliCommand.Interface<IDeployCommandParams>
                 }
             ],
             options: [
-                ...createBaseAppOptions<IDeployCommandParams>(projectSdk, {
-                    env: {
-                        validation: params => {
-                            if (params.apps && params.apps.length > 0 && !params.env) {
-                                throw new Error(
-                                    "Environment name is required when deploying an app."
-                                );
-                            }
-                            return true;
-                        }
-                    }
-                }),
+                ...createBaseAppOptions<IDeployCommandParams>(projectSdk),
                 {
                     name: "build",
                     description: "Build packages before deploying",

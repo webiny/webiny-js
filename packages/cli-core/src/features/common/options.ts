@@ -1,7 +1,7 @@
 import { CliCommand } from "~/abstractions/index.js";
 import { ProjectSdk } from "@webiny/project";
 
-export const createEnvOption = <T>(
+export const createEnvOption = <T extends { env?: string }>(
     overrides: Partial<CliCommand.OptionDefinition<T>> = {}
 ): CliCommand.OptionDefinition<T> => {
     return {
@@ -9,6 +9,14 @@ export const createEnvOption = <T>(
         description: "Environment name (dev, prod, etc.)",
         type: "string",
         default: "dev",
+        validation: params => {
+            const p = params as any;
+            const hasApp = p.app || (p.apps && p.apps.length > 0);
+            if (hasApp && !p.env) {
+                throw new Error("Environment name is required.");
+            }
+            return true;
+        },
         ...overrides
     };
 };
@@ -51,7 +59,7 @@ export const createRegionOption = <T extends { region?: string }>(
     };
 };
 
-export const createBaseAppOptions = <T extends { variant?: string; region?: string }>(
+export const createBaseAppOptions = <T extends { env?: string; variant?: string; region?: string }>(
     projectSdk: ProjectSdk,
     overrides: {
         env?: Partial<CliCommand.OptionDefinition<T>>;

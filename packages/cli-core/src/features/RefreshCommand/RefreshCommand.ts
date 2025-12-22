@@ -29,18 +29,7 @@ export class RefreshCommand implements CliCommand.Interface<IRefreshCommandParam
                     required: true
                 }
             ],
-            options: [
-                ...createBaseAppOptions<IRefreshCommandParams>(projectSdk, {
-                    env: {
-                        validation: params => {
-                            if ("app" in params && !params.env) {
-                                throw new Error("Environment name is required.");
-                            }
-                            return true;
-                        }
-                    }
-                })
-            ],
+            options: [...createBaseAppOptions<IRefreshCommandParams>(projectSdk)],
             handler: async (params: IRefreshCommandParams) => {
                 const projectSdk = await this.getProjectSdkService.execute();
 
