@@ -106,6 +106,8 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
         });
         if (!this.workflow) {
             return;
+        } else if (!this.targetRevisionId) {
+            return;
         }
 
         const state = await this.repository.getTargetState(this.app, this.targetRevisionId);

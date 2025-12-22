@@ -1,6 +1,6 @@
 import React from "react";
 import type { IWorkflowStatePresenter } from "~/Presenters/index.js";
-import { Button, Popover } from "@webiny/admin-ui";
+import { Button, Icon as IconWrap, Popover } from "@webiny/admin-ui";
 import { ReactComponent as WorkflowStateTooltipIcon } from "@webiny/icons/list.svg";
 import { WorkflowStateTooltipContent } from "./WorkflowStateTooltipContent.js";
 import { observer } from "mobx-react-lite";
@@ -23,7 +23,13 @@ const WorkflowStateTooltipObserver = observer((props: IWorkflowStateTooltipButto
                 <span>
                     <Button
                         variant={"secondary"}
-                        text={Icon ? <Icon /> : <WorkflowStateTooltipIcon />}
+                        text={
+                            <IconWrap
+                                label={"Tooltip"}
+                                size={"sm"}
+                                icon={Icon ? <Icon /> : <WorkflowStateTooltipIcon />}
+                            />
+                        }
                     />
                 </span>
             }

@@ -1,5 +1,5 @@
 import React from "react";
-import { Dialog, Grid, OverlayLoader } from "@webiny/admin-ui";
+import { Dialog, Grid, Icon, OverlayLoader } from "@webiny/admin-ui";
 import { ReactComponent as CancelReviewIcon } from "@webiny/icons/check.svg";
 
 interface ICancelReviewDialogProps {
@@ -17,7 +17,12 @@ export const CancelReviewDialog = (props: ICancelReviewDialogProps) => {
             onOpenChange={hide}
             title={
                 <>
-                    <CancelReviewIcon className={"fill-success"} />
+                    <Icon
+                        label={"Cancel Content Review?"}
+                        size={"md"}
+                        className={"fill-success"}
+                        icon={<CancelReviewIcon />}
+                    />
                     Cancel Content Review?
                 </>
             }

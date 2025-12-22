@@ -3,7 +3,7 @@ import { ReactComponent as Add } from "@webiny/icons/add.svg";
 import { Step } from "./Step.js";
 import { generateAlphaNumericId } from "@webiny/utils/generateId.js";
 import type { IWorkflowStep, IWorkflowStepTeam } from "~/types.js";
-import { Button, Grid } from "@webiny/admin-ui";
+import { Button, Grid, Icon } from "@webiny/admin-ui";
 import { NonEmptyArray } from "@webiny/app/types.js";
 
 export interface IAddNewStepProps {
@@ -61,7 +61,11 @@ export const NewStep = (props: IAddNewStepProps) => {
                     "text-center p-sm-extra border-sm border-dashed border-neutral-muted rounded-lg"
                 }
             >
-                <Button variant={"ghost"} onClick={onClick} icon={<Add />}>
+                <Button
+                    variant={"ghost"}
+                    onClick={onClick}
+                    icon={<Icon label={"Add"} size={"sm"} icon={<Add />} />}
+                >
                     Add new custom step
                 </Button>
             </Grid.Column>

@@ -16,7 +16,7 @@ export const WorkflowStateOptionsStart = (props: IWorkflowStateOptionsStartProps
     }
     return (
         <DropdownMenu.Item
-            icon={<Icon icon={<StartIcon />} label={"Start"} />}
+            icon={<Icon icon={<StartIcon />} size={"sm"} label={"Start"} />}
             text={"Start Step Review"}
             onClick={onClick}
         />

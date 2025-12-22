@@ -1,5 +1,5 @@
 import React from "react";
-import { Dialog, Grid } from "@webiny/admin-ui";
+import { Dialog, Grid, Icon } from "@webiny/admin-ui";
 import { ReactComponent as RejectIcon } from "@webiny/icons/do_not_disturb.svg";
 import { YouCanTrackAllContentReviewsHere } from "~/Components/Common/index.js";
 
@@ -17,7 +17,12 @@ export const RejectSuccessDialog = (props: IRejectSuccessDialogProps) => {
             onOpenChange={hide}
             title={
                 <>
-                    <RejectIcon className={"fill-destructive"} />
+                    <Icon
+                        label={"Rejected"}
+                        size={"md"}
+                        className={"fill-destructive"}
+                        icon={<RejectIcon />}
+                    />
                     {title} Rejected
                 </>
             }
