@@ -29,15 +29,9 @@ export const createFileManagerContext = ({
 
     fmContextPlugin.name = "file-manager.createContext";
 
-    return [
-        // Main context plugin
-        fmContextPlugin,
-
-        // Background task
-        createFileTaggingTask(),
-
+    if (process.env.WEBINY_API_AI_IMAGE_TAGGING === "true") {
         // Trigger background task
-        new ContextPlugin<FileManagerContext>(context => {
+        const aiImageTaggingPlugin = new ContextPlugin<FileManagerContext>(context => {
             context.fileManager.onFileAfterCreate.subscribe(({ file }) => {
                 context.tasks.trigger({
                     definition: "fmAiImageTagging",
@@ -47,8 +41,11 @@ export const createFileManagerContext = ({
                     name: "AI Image Tagging Task"
                 });
             });
-        })
-    ];
+        });
+        return [fmContextPlugin, createFileTaggingTask(), aiImageTaggingPlugin];
+    }
+
+    return [fmContextPlugin];
 };
 
 export const createFileManagerGraphQL = () => {
