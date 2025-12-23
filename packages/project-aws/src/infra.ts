@@ -37,8 +37,10 @@ export const Infra = {
     OpenSearch,
     PulumiResourceNamePrefix,
     ProductionEnvironments,
-    AwsDefaultRegion,
-    AwsTags,
+    Aws: {
+        DefaultRegion: AwsDefaultRegion,
+        Tags: AwsTags
+    },
     Admin: {
         BeforeBuild: AdminBeforeBuild,
         BeforeDeploy: AdminBeforeDeploy,
