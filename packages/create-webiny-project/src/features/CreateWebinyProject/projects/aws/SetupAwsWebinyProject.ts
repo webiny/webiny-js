@@ -13,13 +13,11 @@ export class SetupAwsWebinyProject {
         const getTemplatesFolderPath = new GetTemplatesFolderPath();
         const templatesFolderPath = getTemplatesFolderPath.execute();
 
-        const baseTemplatePath = path.join(templatesFolderPath, "aws", "base");
         const storageTemplatePath = path.join(templatesFolderPath, "aws", awsArgs.storageOps);
 
         const getProjectRoot = new GetProjectRootPath();
         const projectRootFolderPath = getProjectRoot.execute(cliArgs);
 
-        fs.copySync(baseTemplatePath, projectRootFolderPath);
         fs.copySync(storageTemplatePath, projectRootFolderPath);
     }
 
