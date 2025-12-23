@@ -28,7 +28,7 @@ import {
     Vpc
 } from "./pulumi/extensions/index.js";
 
-import { OpenSearch, ElasticSearch } from "./extensions/index.js";
+import { OpenSearch, ElasticSearch, AwsDefaultRegion } from "./extensions/index.js";
 
 export const Infra = {
     Vpc,
@@ -37,6 +37,7 @@ export const Infra = {
     OpenSearch,
     PulumiResourceNamePrefix,
     ProductionEnvironments,
+    AwsDefaultRegion,
     AwsTags,
     Admin: {
         BeforeBuild: AdminBeforeBuild,

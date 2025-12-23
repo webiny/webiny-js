@@ -125,6 +125,7 @@ import {
 } from "./extensions/pulumi/index.js";
 
 import { projectDecorator as projectDecoratorExt } from "./extensions/projectDecorator.js";
+import { envVar as envVarExt } from "./extensions/envVar.js";
 
 export const createProjectSdkContainer = async (
     params: Partial<ProjectSdkParamsService.Params>
@@ -224,6 +225,12 @@ export const createProjectSdkContainer = async (
     });
 
     await container.resolve(ValidateProjectConfig).execute(projectExtensions);
+
+    // Apply environment variables from extensions.
+    const envVarExtensions = projectExtensions.extensionsByType(envVarExt);
+    for (const envVarExtension of envVarExtensions) {
+        process.env[envVarExtension.params.name] = envVarExtension.params.value;
+    }
 
     const project = container.resolve(GetProject).execute();
 
