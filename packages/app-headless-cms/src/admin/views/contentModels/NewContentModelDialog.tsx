@@ -7,32 +7,30 @@ import { CircularProgress } from "@webiny/ui/Progress/index.js";
 import { validation } from "@webiny/validation";
 import { useApolloClient, useMutation, useQuery } from "../../hooks/index.js";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { ButtonPrimary } from "@webiny/ui/Button/index.js";
-import * as UID from "@webiny/ui/Dialog/index.js";
-import { Cell, Grid } from "@webiny/ui/Grid/index.js";
+import { Dialog, DialogProps, Grid } from "@webiny/admin-ui";
 import { CMS_MODEL_SINGLETON_TAG } from "@webiny/app-headless-cms-common";
 import { addModelToGroupCache, addModelToListCache } from "./cache.js";
-import * as GQL from "../../viewsGraphql.js";
 import type {
     CreateCmsModelMutationResponse,
     CreateCmsModelMutationVariables,
     ListMenuCmsGroupsQueryResponse
 } from "../../viewsGraphql.js";
+import * as GQL from "../../viewsGraphql.js";
 import type { CmsModel } from "~/types.js";
 import type { CmsGroupOption } from "./types.js";
-import { Dialog } from "~/admin/components/Dialog.js";
 import { createApiNameValidator } from "~/admin/views/contentModels/helpers/apiNameValidator.js";
 import { createNameValidator } from "~/admin/views/contentModels/helpers/nameValidator.js";
 import { Checkbox } from "@webiny/ui/Checkbox/index.js";
 import { IconPicker } from "~/admin/components/IconPicker.js";
 import { Switch } from "@webiny/ui/Switch/index.js";
 import { Routes } from "~/routes.js";
+import { ScrollArea } from "@webiny/admin-ui/ScrollArea";
 
 const t = i18n.ns("app-headless-cms/admin/views/content-models/new-content-model-dialog");
 
 export interface NewContentModelDialogProps {
     open: boolean;
-    onClose: UID.DialogOnClose;
+    onClose: DialogProps["onClose"];
 }
 
 interface CmsModelData {
@@ -162,135 +160,135 @@ const NewContentModelDialog = ({ open, onClose }: NewContentModelDialogProps) =>
     );
 
     return (
-        <Dialog open={open} onClose={onClose} data-testid="cms-new-content-model-modal">
-            {open && (
-                <Form<CmsModelData> data={{ group, singleton: false }} onSubmit={onSubmit}>
-                    {({ Bind, submit, data }) => {
-                        return (
-                            <>
-                                {loading && (
-                                    <CircularProgress label={"Creating content model..."} />
-                                )}
-                                <UID.DialogTitle>{t`New Content Model`}</UID.DialogTitle>
-                                <UID.DialogContent>
-                                    <Grid>
-                                        <Cell span={12}>
-                                            <Bind
-                                                name={"name"}
-                                                validators={[
-                                                    validation.create("required,maxLength:100"),
-                                                    nameValidator
-                                                ]}
-                                            >
+        <Form<CmsModelData> data={{ group, singleton: false }} onSubmit={onSubmit}>
+            {({ Bind, submit, data }) => {
+                return (
+                    <Dialog
+                        open={open}
+                        onClose={onClose}
+                        data-testid="cms-new-content-model-modal"
+                        title={t`New Content Model`}
+                        actions={
+                            <Dialog.ConfirmAction onClick={submit}>
+                                + {t`Create Model`}
+                            </Dialog.ConfirmAction>
+                        }
+                    >
+                        <>
+                            {loading && <CircularProgress label={"Creating content model..."} />}
+                            <ScrollArea className="max-h-[70vh] flex flex-col">
+                                <Grid>
+                                    <Grid.Column span={12}>
+                                        <Bind
+                                            name={"name"}
+                                            validators={[
+                                                validation.create("required,maxLength:100"),
+                                                nameValidator
+                                            ]}
+                                        >
+                                            <Input
+                                                label={t`Name`}
+                                                description={t`The name of the content model. Use the singular form, e.g. Author Category, not Author Categories.`}
+                                                data-testid="cms.newcontentmodeldialog.name"
+                                            />
+                                        </Bind>
+                                    </Grid.Column>
+                                    <Grid.Column span={12}>
+                                        <Bind
+                                            name={"singularApiName"}
+                                            validators={[
+                                                validation.create("required,maxLength:100"),
+                                                apiNameValidator
+                                            ]}
+                                        >
+                                            <Input
+                                                label={t`Singular API Name`}
+                                                description={t`The API name of the content model. For example: AuthorCategory.`}
+                                                data-testid="cms.newcontentmodeldialog.singularApiName"
+                                            />
+                                        </Bind>
+                                    </Grid.Column>
+                                    <Grid.Column span={12}>
+                                        <Bind name={"singleton"} defaultValue={false}>
+                                            <Switch
+                                                description={t`Create a model that can hold only one entry. Cannot be changed later.`}
+                                                label={t`Single entry model`}
+                                                data-testid="cms.newcontentmodeldialog.singleton"
+                                            />
+                                        </Bind>
+                                    </Grid.Column>
+                                    <Grid.Column span={12}>
+                                        <Bind
+                                            name={"pluralApiName"}
+                                            validators={
+                                                data.singleton
+                                                    ? []
+                                                    : [
+                                                          validation.create(
+                                                              "required,maxLength:100"
+                                                          ),
+                                                          apiNameValidator
+                                                      ]
+                                            }
+                                        >
+                                            <Input
+                                                disabled={data.singleton}
+                                                label={t`Plural API Name`}
+                                                description={t`The plural API name of the content model. For example: AuthorCategories.`}
+                                                data-testid="cms.newcontentmodeldialog.pluralApiName"
+                                            />
+                                        </Bind>
+                                    </Grid.Column>
+                                    <Grid.Column span={12}>
+                                        <Bind
+                                            name={"group"}
+                                            validators={validation.create("required")}
+                                        >
+                                            <Select
+                                                description={t`Choose a content model group`}
+                                                label={t`Content model group`}
+                                                options={contentModelGroups}
+                                                data-testid="cms.newcontentmodeldialog.selectgroup"
+                                            />
+                                        </Bind>
+                                    </Grid.Column>
+                                    <Grid.Column span={12}>
+                                        <Bind name="icon">
+                                            <IconPicker
+                                                label={t`Icon`}
+                                                description={t`Choose an icon to represent the model.`}
+                                            />
+                                        </Bind>
+                                    </Grid.Column>
+                                    <Grid.Column span={12}>
+                                        <Bind name="description">
+                                            {props => (
                                                 <Input
-                                                    label={t`Name`}
-                                                    description={t`The name of the content model. Use the singular form, e.g. Author Category, not Author Categories.`}
-                                                    data-testid="cms.newcontentmodeldialog.name"
+                                                    {...props}
+                                                    rows={4}
+                                                    maxLength={200}
+                                                    label={t`Description`}
+                                                    data-testid="cms.newcontentmodeldialog.description"
                                                 />
-                                            </Bind>
-                                        </Cell>
-                                        <Cell span={12}>
-                                            <Bind
-                                                name={"singularApiName"}
-                                                validators={[
-                                                    validation.create("required,maxLength:100"),
-                                                    apiNameValidator
-                                                ]}
-                                            >
-                                                <Input
-                                                    label={t`Singular API Name`}
-                                                    description={t`The API name of the content model. For example: AuthorCategory.`}
-                                                    data-testid="cms.newcontentmodeldialog.singularApiName"
-                                                />
-                                            </Bind>
-                                        </Cell>
-                                        <Cell span={12}>
-                                            <Bind name={"singleton"} defaultValue={false}>
-                                                <Switch
-                                                    description={t`Create a model that can hold only one entry. Cannot be changed later.`}
-                                                    label={t`Single entry model`}
-                                                    data-testid="cms.newcontentmodeldialog.singleton"
-                                                />
-                                            </Bind>
-                                        </Cell>
-                                        <Cell span={12}>
-                                            <Bind
-                                                name={"pluralApiName"}
-                                                validators={
-                                                    data.singleton
-                                                        ? []
-                                                        : [
-                                                              validation.create(
-                                                                  "required,maxLength:100"
-                                                              ),
-                                                              apiNameValidator
-                                                          ]
-                                                }
-                                            >
-                                                <Input
-                                                    disabled={data.singleton}
-                                                    label={t`Plural API Name`}
-                                                    description={t`The plural API name of the content model. For example: AuthorCategories.`}
-                                                    data-testid="cms.newcontentmodeldialog.pluralApiName"
-                                                />
-                                            </Bind>
-                                        </Cell>
-                                        <Cell span={12}>
-                                            <Bind
-                                                name={"group"}
-                                                validators={validation.create("required")}
-                                            >
-                                                <Select
-                                                    description={t`Choose a content model group`}
-                                                    label={t`Content model group`}
-                                                    options={contentModelGroups}
-                                                    data-testid="cms.newcontentmodeldialog.selectgroup"
-                                                />
-                                            </Bind>
-                                        </Cell>
-                                        <Cell span={12}>
-                                            <Bind name="icon">
-                                                <IconPicker
-                                                    label={t`Icon`}
-                                                    description={t`Choose an icon to represent the model.`}
-                                                />
-                                            </Bind>
-                                        </Cell>
-                                        <Cell span={12}>
-                                            <Bind name="description">
-                                                {props => (
-                                                    <Input
-                                                        {...props}
-                                                        rows={4}
-                                                        maxLength={200}
-                                                        label={t`Description`}
-                                                        data-testid="cms.newcontentmodeldialog.description"
-                                                    />
-                                                )}
-                                            </Bind>
-                                        </Cell>
-                                        <Cell span={12}>
-                                            <Bind name={"defaultFields"} defaultValue={true}>
-                                                <Checkbox
-                                                    description={t`Create model with default title (text), description (long text) and image (file) fields`}
-                                                    label={t`Create model with default fields`}
-                                                    data-testid="cms.newcontentmodeldialog.defaultfields"
-                                                />
-                                            </Bind>
-                                        </Cell>
-                                    </Grid>
-                                </UID.DialogContent>
-                                <UID.DialogActions>
-                                    <ButtonPrimary onClick={submit}>
-                                        + {t`Create Model`}
-                                    </ButtonPrimary>
-                                </UID.DialogActions>
-                            </>
-                        );
-                    }}
-                </Form>
-            )}
-        </Dialog>
+                                            )}
+                                        </Bind>
+                                    </Grid.Column>
+                                    <Grid.Column span={12}>
+                                        <Bind name={"defaultFields"} defaultValue={true}>
+                                            <Checkbox
+                                                description={t`Create model with default title (text), description (long text) and image (file) fields`}
+                                                label={t`Create model with default fields`}
+                                                data-testid="cms.newcontentmodeldialog.defaultfields"
+                                            />
+                                        </Bind>
+                                    </Grid.Column>
+                                </Grid>
+                            </ScrollArea>
+                        </>
+                    </Dialog>
+                );
+            }}
+        </Form>
     );
 };
 
