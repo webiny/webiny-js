@@ -21,7 +21,6 @@ export class FileToEntryMapper {
                 meta: file.meta || {},
                 accessControl: file.accessControl,
                 tags: file.tags || [],
-                aliases: file.aliases || [],
                 extensions: file.extensions
             }
         };

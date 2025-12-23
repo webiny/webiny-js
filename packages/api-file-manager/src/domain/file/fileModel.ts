@@ -124,15 +124,6 @@ const tagsField = () => {
     });
 };
 
-const aliasesField = () => {
-    return createModelField({
-        label: "Aliases",
-        type: "text",
-        multipleValues: true,
-        validation: [required()]
-    });
-};
-
 const locationField = () => {
     return createModelField({
         type: "object",
@@ -167,8 +158,7 @@ export const createFileModel = (params: CreateFileModelDefinitionParams) => {
         typeField(),
         sizeField(),
         metaField(),
-        tagsField(),
-        aliasesField()
+        tagsField()
     ];
 
     if (params.withPrivateFiles) {

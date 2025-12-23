@@ -7,7 +7,6 @@ import {
 } from "@webiny/api-headless-cms";
 import { createFileManagerContext, createFileManagerGraphQL } from "~/index";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
-import type { FileAliasStorageOperations } from "~/types";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import type { PluginCollection } from "@webiny/plugins/types";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
@@ -26,7 +25,6 @@ export const handlerPlugins = (params: HandlerParams) => {
     const { permissions, identity, plugins = [] } = params;
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-    const fileManagerStorage = getStorageOps<FileAliasStorageOperations>("fileManager");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
     const testProjectLicense = createTestWcpLicense();
@@ -37,7 +35,6 @@ export const handlerPlugins = (params: HandlerParams) => {
             testProjectLicense
         }),
         ...cmsStorage.plugins,
-        ...fileManagerStorage.plugins,
         graphqlHandlerPlugins(),
         ...createTenancyAndSecurity({ permissions, identity }),
         new CmsParametersPlugin(async () => {
@@ -47,9 +44,7 @@ export const handlerPlugins = (params: HandlerParams) => {
         }),
         createHeadlessCmsContext({ storageOperations: cmsStorage.storageOperations }),
         createHeadlessCmsGraphQL(),
-        createFileManagerContext({
-            fileAliasStorageOperations: fileManagerStorage.storageOperations
-        }),
+        createFileManagerContext(),
         createFileManagerGraphQL(),
         /**
          * Make sure we dont have undefined plugins value.

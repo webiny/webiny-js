@@ -14,8 +14,7 @@ const fileData = {
     name: "filenameA.png",
     size: 123456,
     type: "image/png",
-    tags: ["sketch"],
-    aliases: []
+    tags: ["sketch"]
 };
 
 describe("File lifecycle events", () => {

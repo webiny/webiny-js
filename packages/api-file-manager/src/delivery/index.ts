@@ -10,7 +10,6 @@ export type * from "./AssetDelivery/abstractions/AssetTransformationStrategy.js"
 export * from "./AssetDelivery/abstractions/AssetReply.js";
 export * from "./AssetDelivery/createAssetDeliveryPluginLoader.js";
 export * from "./AssetDelivery/FilesAssetRequestResolver.js";
-export * from "./AssetDelivery/AliasAssetRequestResolver.js";
 export * from "./AssetDelivery/SetCacheControlHeaders.js";
 export * from "./AssetDelivery/SetResponseHeaders.js";
 export * from "./AssetDelivery/privateFiles/PublicCache.js";
