@@ -19,6 +19,12 @@ export class SetupAwsWebinyProject {
         const projectRootFolderPath = getProjectRoot.execute(cliArgs);
 
         fs.copySync(storageTemplatePath, projectRootFolderPath);
+
+        // Update .env file.
+        const webinyConfigTsxEnvFilePath = path.join(projectRootFolderPath, "webiny.config.tsx");
+        let content = fs.readFileSync(webinyConfigTsxEnvFilePath).toString();
+        content = content.replace("{REGION}", awsArgs.region);
+        fs.writeFileSync(webinyConfigTsxEnvFilePath, content);
     }
 
     private async getAwsArgs(cliArgs: CliParams) {

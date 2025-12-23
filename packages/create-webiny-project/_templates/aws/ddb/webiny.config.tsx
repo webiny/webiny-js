@@ -1,5 +1,10 @@
 import React from "react";
+import { Infra } from "webiny/extensions";
 
 export const Extensions = () => {
-    return <>{/* Register extensions here. */}</>;
+    return (
+        <>
+            <Infra.Aws.DefaultRegion name={"{REGION}"} />
+        </>
+    );
 };
