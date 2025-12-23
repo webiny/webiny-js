@@ -52,12 +52,12 @@ export const HorizontalScrolling: Story = {
                 art: "https://images.unsplash.com/photo-1465869185982-5a1a7522cbcb?auto=format&fit=crop&w=300&q=80"
             },
             {
-                artist: "Tom Byrom",
-                art: "https://images.unsplash.com/photo-1548516173-3db52219d651?auto=format&fit=crop&w=300&q=80"
+                artist: "Ornella Binni",
+                art: "https://images.unsplash.com/photo-1465869185982-5a1a7522cbcb?auto=format&fit=crop&w=300&q=80"
             },
             {
-                artist: "Vladimir Malyavko",
-                art: "https://images.unsplash.com/photo-1665984867752-6370ab5ae693?auto=format&fit=crop&w=300&q=80"
+                artist: "Ornella Binni",
+                art: "https://images.unsplash.com/photo-1465869185982-5a1a7522cbcb?auto=format&fit=crop&w=300&q=80"
             }
         ];
 

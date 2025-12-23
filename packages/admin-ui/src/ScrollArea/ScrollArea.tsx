@@ -8,6 +8,8 @@ const ScrollArea = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
     <ScrollAreaPrimitive.Root
         ref={ref}
+        type="hover"
+        scrollHideDelay={600}
         className={cn("relative overflow-hidden", className)}
         {...props}
     >
@@ -28,14 +30,15 @@ const ScrollBar = React.forwardRef<
         ref={ref}
         orientation={orientation}
         className={cn(
-            "flex touch-none select-none transition-colors",
+            "flex touch-none select-none transition-opacity duration-300 ease-in-out",
+            "data-[state=hidden]:opacity-0 data-[state=visible]:opacity-100",
             orientation === "vertical" && "h-full w-2.5 border-l border-l-transparent p-[1px]",
             orientation === "horizontal" && "h-2.5 flex-col border-t border-t-transparent p-[1px]",
             className
         )}
         {...props}
     >
-        <ScrollAreaPrimitive.ScrollAreaThumb className="bg-neutral-200 relative flex-1 rounded-full" />
+        <ScrollAreaPrimitive.ScrollAreaThumb className="bg-neutral-dimmed relative flex-1 rounded-full transition-colors" />
     </ScrollAreaPrimitive.ScrollAreaScrollbar>
 ));
 ScrollBar.displayName = ScrollAreaPrimitive.ScrollAreaScrollbar.displayName;
