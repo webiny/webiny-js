@@ -35,6 +35,8 @@ import { ApproveWorkflowStateStepFeature } from "~/features/workflowState/Approv
 import { RejectWorkflowStateStepFeature } from "~/features/workflowState/RejectWorkflowStateStep/feature.js";
 import { TakeOverWorkflowStateStepFeature } from "~/features/workflowState/TakeOverWorkflowStateStep/feature.js";
 import { GetUserTeamsFeature } from "~/features/internal/GetUserTeams/feature.js";
+import { ListNotificationsFeature } from "~/features/notifications/ListNotifications/index.js";
+import { createNotificationsGraphQL } from "~/graphql/notifications.js";
 
 export const createWorkflows = () => {
     const plugin = new ContextPlugin(async context => {
@@ -72,6 +74,9 @@ export const createWorkflows = () => {
         context.container.register(WorkflowMapper);
         context.container.register(WorkflowStateMapper);
 
+        // Register notification features
+        ListNotificationsFeature.register(context.container);
+
         // Register workflow features
         GetWorkflowFeature.register(context.container);
         ListWorkflowsFeature.register(context.container);
@@ -99,7 +104,11 @@ export const createWorkflows = () => {
         RejectWorkflowStateStepFeature.register(context.container);
         TakeOverWorkflowStateStepFeature.register(context.container);
 
-        context.plugins.register(createWorkflowsSchema(), createWorkflowStateSchema());
+        context.plugins.register(
+            createNotificationsGraphQL(),
+            createWorkflowsSchema(),
+            createWorkflowStateSchema()
+        );
     });
 
     plugin.name = "workflows.context";

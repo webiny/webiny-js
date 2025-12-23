@@ -1,10 +1,16 @@
-import type { IWorkflow, IWorkflowApplication, IWorkflowStep } from "~/types.js";
+import type {
+    IWorkflow,
+    IWorkflowApplication,
+    IWorkflowNotification,
+    IWorkflowStep
+} from "~/types.js";
 import type { IWorkflowError } from "~/Gateways/index.js";
 import type { IWorkflowModel } from "~/Models/index.js";
 
 export interface IWorkflowsViewModel {
     dirty: boolean;
     workflows: IWorkflow[];
+    notifications: IWorkflowNotification[];
     workflow: IWorkflow | null;
     loading: boolean;
     error: IWorkflowError | null;

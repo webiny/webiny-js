@@ -1,3 +1,7 @@
+export type { IWorkflowNotificationsRepository } from "./abstractions/WorkflowNotificationsRepository.js";
+export { WorkflowNotificationsRepository } from "./WorkflowNotificationsRepository.js";
+export type { IWorkflowNotificationsRepositoryParams } from "./WorkflowNotificationsRepository.js";
+
 export type { IWorkflowsRepository } from "./abstractions/WorkflowsRepository.js";
 export { WorkflowsRepository } from "./WorkflowsRepository.js";
 export type { IWorkflowsRepositoryParams } from "./WorkflowsRepository.js";

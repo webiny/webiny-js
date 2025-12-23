@@ -1,8 +1,8 @@
 import React, { useMemo } from "react";
 import type { IWorkflow, IWorkflowApplication, IWorkflowStep } from "~/types.js";
-import { WorkflowsRepository } from "~/Repositories/index.js";
+import { WorkflowNotificationsRepository, WorkflowsRepository } from "~/Repositories/index.js";
 import { WorkflowsPresenter } from "~/Presenters/index.js";
-import { WorkflowsGateway } from "~/Gateways/index.js";
+import { WorkflowNotificationsGateway, WorkflowsGateway } from "~/Gateways/index.js";
 import type { NonEmptyArray } from "@webiny/app/types.js";
 import { mdbid } from "@webiny/utils/mdbid.js";
 import { useApolloClient } from "@apollo/react-hooks";
@@ -29,15 +29,24 @@ export const WorkflowEditor = (props: IWorkflowPresenterProps) => {
         const defaultWorkflow = createDefaultWorkflow({
             app: app.id
         });
-        const gateway = new WorkflowsGateway({
+        const workflowsGateway = new WorkflowsGateway({
             client
         });
-        const repository = new WorkflowsRepository({
-            gateway
+        const workflowsRepository = new WorkflowsRepository({
+            gateway: workflowsGateway
         });
+        
+        const notificationsGateway = new WorkflowNotificationsGateway({
+            client
+        });
+        const notificationsRepository = new WorkflowNotificationsRepository({
+            gateway: notificationsGateway
+        });
+        
         return new WorkflowsPresenter({
             app,
-            repository,
+            workflowsRepository,
+            notificationsRepository,
             defaultWorkflow
         });
     }, [app]);

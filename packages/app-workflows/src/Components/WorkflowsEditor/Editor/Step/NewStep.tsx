@@ -2,12 +2,13 @@ import React, { useCallback, useState } from "react";
 import { ReactComponent as Add } from "@webiny/icons/add.svg";
 import { Step } from "./Step.js";
 import { generateAlphaNumericId } from "@webiny/utils/generateId.js";
-import type { IWorkflowStep, IWorkflowStepTeam } from "~/types.js";
+import type { IWorkflowNotification, IWorkflowStep, IWorkflowStepTeam } from "~/types.js";
 import { Button, Grid, Icon } from "@webiny/admin-ui";
 import { NonEmptyArray } from "@webiny/app/types.js";
 
 export interface IAddNewStepProps {
     onAdd: (step: IWorkflowStep) => void;
+    notifications: IWorkflowNotification[];
 }
 
 const createWorkflowStep = (): IWorkflowStep => {
@@ -22,7 +23,7 @@ const createWorkflowStep = (): IWorkflowStep => {
 };
 
 export const NewStep = (props: IAddNewStepProps) => {
-    const { onAdd } = props;
+    const { onAdd, notifications } = props;
     const [step, setStep] = useState<IWorkflowStep | null>(null);
 
     const onClick = useCallback(() => {
@@ -49,6 +50,7 @@ export const NewStep = (props: IAddNewStepProps) => {
                 onSave={onSave}
                 step={step}
                 open={true}
+                notifications={notifications}
             />
         );
     }
