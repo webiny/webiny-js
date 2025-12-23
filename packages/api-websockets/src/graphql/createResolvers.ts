@@ -29,7 +29,13 @@ export const createResolvers = (): Resolvers<Context> => {
             listConnections: async (_, args: IWebsocketsContextListConnectionsParams, context) => {
                 return resolve(async () => {
                     await checkPermissions(context);
-                    return await context.websockets.listConnections(args);
+                    const result = await context.websockets.listConnections(args);
+
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+
+                    return result.value;
                 });
             }
         },
@@ -37,11 +43,17 @@ export const createResolvers = (): Resolvers<Context> => {
             disconnect: async (_, args: IWebsocketsMutationDisconnectConnectionsArgs, context) => {
                 return resolve(async () => {
                     await checkPermissions(context);
-                    return await context.websockets.disconnect({
+                    const result = await context.websockets.disconnect({
                         where: {
                             connections: args.connections
                         }
                     });
+
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+
+                    return result.value;
                 });
             },
             disconnectIdentity: async (
@@ -51,27 +63,45 @@ export const createResolvers = (): Resolvers<Context> => {
             ) => {
                 return resolve<IWebsocketsConnectionRegistryData[]>(async () => {
                     await checkPermissions(context);
-                    return await context.websockets.disconnect({
+                    const result = await context.websockets.disconnect({
                         where: {
                             identityId: args.identityId
                         }
                     });
+
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+
+                    return result.value;
                 });
             },
             disconnectTenant: async (_, args: IWebsocketsMutationDisconnectTenantArgs, context) => {
                 return resolve<IWebsocketsConnectionRegistryData[]>(async () => {
                     await checkPermissions(context);
-                    return await context.websockets.disconnect({
+                    const result = await context.websockets.disconnect({
                         where: {
                             tenant: args.tenant
                         }
                     });
+
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+
+                    return result.value;
                 });
             },
             disconnectAll: async (_, __, context) => {
                 return resolve<IWebsocketsConnectionRegistryData[]>(async () => {
                     await checkPermissions(context);
-                    return await context.websockets.disconnect();
+                    const result = await context.websockets.disconnect();
+
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+
+                    return result.value;
                 });
             }
         }

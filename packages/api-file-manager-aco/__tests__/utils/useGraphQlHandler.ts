@@ -23,7 +23,6 @@ import { createTenancyAndSecurity } from "./tenancySecurity";
 import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
 import { createFileManagerSdk } from "../../../api-file-manager/__tests__/utils/createFileManagerSdk.js";
 import { createFileManagerAco } from "~/index.js";
-import type { FileAliasStorageOperations } from "@webiny/api-file-manager/types.js";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
@@ -55,7 +54,6 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
-    const fileManagerStorage = getStorageOps<FileAliasStorageOperations>("fileManager");
 
     const testProjectLicense = params.testProjectLicense || createTestWcpLicense();
 
@@ -76,9 +74,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             createHeadlessCmsContext({ storageOperations: cmsStorage.storageOperations }),
             createHeadlessCmsGraphQL(),
             createAco({ documentClient }),
-            createFileManagerContext({
-                fileAliasStorageOperations: fileManagerStorage.storageOperations
-            }),
+            createFileManagerContext(),
             createFileManagerGraphQL(),
             createFileManagerAco(),
             plugins

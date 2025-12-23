@@ -1,4 +1,3 @@
-import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import {
     createHandlerOnRequest,
     createModifyFastifyPlugin,
@@ -12,7 +11,6 @@ import type { Asset, AssetRequest } from "./index.js";
 import {
     AssetDeliveryConfigBuilder,
     AssetDeliveryConfigModifierPlugin,
-    AliasAssetRequestResolver,
     FilesAssetRequestResolver,
     createAssetDeliveryConfig
 } from "./index.js";
@@ -36,11 +34,7 @@ function assertAssetWasResolved(asset: Asset | undefined): asserts asset is Asse
     }
 }
 
-export interface AssetDeliveryParams {
-    documentClient: DynamoDBDocument;
-}
-
-export const setupAssetDelivery = (params: AssetDeliveryParams) => {
+export const setupAssetDelivery = () => {
     const outputAsset = async (reply: Reply, asset: Asset) => {
         const assetReply = await asset.output();
         const headers = assetReply.getHeaders();
@@ -156,11 +150,6 @@ export const setupAssetDelivery = (params: AssetDeliveryParams) => {
             config.decorateAssetRequestResolver(() => {
                 // This resolver works with `/files/*` requests.
                 return new FilesAssetRequestResolver();
-            });
-
-            config.decorateAssetRequestResolver(({ assetRequestResolver }) => {
-                // This resolver tries to resolve the request using aliases.
-                return new AliasAssetRequestResolver(params.documentClient, assetRequestResolver);
             });
 
             config.decorateAssetRequestResolver(({ assetRequestResolver }) => {

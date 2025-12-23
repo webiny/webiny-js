@@ -3,7 +3,7 @@ import type { PluginFactory } from "@webiny/plugins/types.js";
 import { createThreatDetectionPluginLoader } from "~/assetDelivery/threatDetection/index.js";
 import type { AssetDeliveryParams } from "~/assetDelivery/types.js";
 
-export const createAssetDelivery = (params: AssetDeliveryParams): PluginFactory[] => {
+export const createAssetDelivery = (params: AssetDeliveryParams = {}): PluginFactory[] => {
     return [
         /**
          * We only want to load this plugin in the context of the Asset Delivery Lambda function.

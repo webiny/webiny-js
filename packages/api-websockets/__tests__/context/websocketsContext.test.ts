@@ -22,7 +22,7 @@ describe("websockets context", () => {
                 identityId: "id-1"
             }
         });
-        expect(resultNoConnections).toEqual([]);
+        expect(resultNoConnections.value).toEqual([]);
 
         await registry.register({
             connectionId: "connection-1",
@@ -42,7 +42,7 @@ describe("websockets context", () => {
                 identityId: "id-1"
             }
         });
-        expect(resultWithConnections).toEqual([
+        expect(resultWithConnections.value).toEqual([
             {
                 connectionId: "connection-1",
                 tenant: "root",

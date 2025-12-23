@@ -18,7 +18,6 @@ export interface CreateFileInput {
     extensions?: Record<string, any>;
     tags?: string[];
     location?: { folderId: string };
-    aliases?: string[];
     // System attributes
     createdOn?: string;
     createdBy?: CreatedBy;

@@ -26,7 +26,6 @@ export interface File {
         folderId: string;
     };
     tags: string[];
-    aliases: string[];
     createdOn: string;
     modifiedOn: string | undefined;
     savedOn: string;
@@ -34,12 +33,6 @@ export interface File {
     modifiedBy: CreatedBy | undefined;
     savedBy: CreatedBy;
     extensions?: Record<string, any>;
-}
-
-export interface FileAlias {
-    tenant: string;
-    fileId: string;
-    alias: string;
 }
 
 export interface FileInput {
@@ -62,6 +55,5 @@ export interface FileInput {
         folderId: string;
     };
     tags: string[];
-    aliases: string[];
     extensions?: Record<string, any>;
 }
