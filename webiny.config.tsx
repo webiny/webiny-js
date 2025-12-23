@@ -17,7 +17,7 @@ export const Extensions = () => {
             <Infra.OpenSearch enabled={false} />
             <Infra.AwsTags tags={{ OWNER: "me", PROJECT: "my-project" }} />
             <Infra.AwsTags tags={{ OWNER2: "me2", PROJECT2: "my-project-2" }} />
-            <Infra.AwsDefaultRegion name={'eu-central-1'} />
+            <Infra.AwsDefaultRegion name={"eu-central-1"} />
 
             {/*<Infra.Admin.CustomDomains
                 domains={["my.domain.com"]}

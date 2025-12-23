@@ -11,4 +11,3 @@ export const envVar = defineExtension({
         value: z.string().describe("The environment variable value.")
     })
 });
-
