@@ -1,5 +1,5 @@
 import React from "react";
-import { cn, IconButton, Text, TimeAgo } from "@webiny/admin-ui";
+import { cn, IconButton, Text, TimeAgo, Icon } from "@webiny/admin-ui";
 import { FolderIcon, FolderSharedIcon } from "../FolderIcons/index.js";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg";
 import { OptionsMenu } from "@webiny/app-admin";
@@ -16,9 +16,15 @@ export const FolderGridItem = ({ folderActions, onClick }: FolderGridItemProps) 
     const { id, title, hasNonInheritedPermissions, canManagePermissions, canManageStructure } =
         folder;
 
-    let icon = <FolderIcon />;
+    let icon = <Icon icon={<FolderIcon />} label={folder.title} className={"w-[90px] h-[90px]"} />;
     if (hasNonInheritedPermissions && canManagePermissions) {
-        icon = <FolderSharedIcon />;
+        icon = (
+            <Icon
+                icon={<FolderSharedIcon />}
+                label={folder.title}
+                className={"w-[90px] h-[90px]"}
+            />
+        );
     }
 
     return (
