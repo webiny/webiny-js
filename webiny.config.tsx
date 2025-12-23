@@ -1,5 +1,5 @@
 import React from "react";
-import { Admin, Cli, Infra, Project, Security } from "webiny/extensions";
+import { Cli, Infra, Project, Security } from "webiny/extensions";
 
 // import { Okta } from "@webiny/okta";
 

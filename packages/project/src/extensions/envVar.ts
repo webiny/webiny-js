@@ -7,7 +7,8 @@ export const envVar = defineExtension({
     description: "Set an environment variable in the project context.",
     multiple: true,
     paramsSchema: z.object({
-        name: z.string().describe("The environment variable name."),
+        // TODO: enable using `name` instead of `varName` for better consistency.
+        varName: z.string().describe("The environment variable name."),
         value: z.string().describe("The environment variable value.")
     })
 });

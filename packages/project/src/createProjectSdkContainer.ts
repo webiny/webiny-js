@@ -229,7 +229,7 @@ export const createProjectSdkContainer = async (
     // Apply environment variables from extensions.
     const envVarExtensions = projectExtensions.extensionsByType(envVarExt);
     for (const envVarExtension of envVarExtensions) {
-        process.env[envVarExtension.params.name] = envVarExtension.params.value;
+        process.env[envVarExtension.params.varName] = envVarExtension.params.value;
     }
 
     const project = container.resolve(GetProject).execute();

@@ -7,5 +7,5 @@ export interface AwsDefaultRegionProps {
 
 export const AwsDefaultRegion = (props: AwsDefaultRegionProps) => {
     const EnvVar = envVar.ReactComponent;
-    return <EnvVar name="AWS_REGION" value={props.name} />;
+    return <EnvVar varName="AWS_REGION" value={props.name} />;
 };
