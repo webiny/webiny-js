@@ -17,6 +17,12 @@ class ValidateWorkflowStateOnEntryBeforePublishImpl implements EntryBeforePublis
         const app = createWorkflowAppName({ model });
 
         const stateResult = await this.getTargetState.execute({ app, targetRevisionId: entry.id });
+
+        if (stateResult.isFail()) {
+            // If there's no state to deal with, exit early.
+            return;
+        }
+
         const state = stateResult.value;
 
         if (state?.done) {
