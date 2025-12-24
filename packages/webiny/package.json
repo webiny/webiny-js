@@ -28,6 +28,7 @@
   },
   "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f",
   "exports": {
+    "./configs/tsconfig.json": "./configs/tsconfig.json",
     "./api/features/eventPublisher": "./api/features/eventPublisher.js",
     "./api/security/features/IdentityContext": "./api/security/features/IdentityContext.js",
     "./api/wcp/WcpContext": "./api/wcp/WcpContext.js",
