@@ -31,6 +31,8 @@ accounts:
         - "GitHubActionsWebinyJs -> DeployWebinyProjectGroup3"
         - "GitHubActionsWebinyJs -> DeployWebinyProjectExtra"
         - "GitHubActionsWebinyJsAdminAccess -> AdministratorAccess"
+      IAMOpenIdConnectProvider:
+        - "arn:aws:iam::726952677045:oidc-provider/token.actions.githubusercontent.com"
 
 resource-types:
   excludes:
