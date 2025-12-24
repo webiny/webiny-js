@@ -1,1 +1,1 @@
-/// <reference types="webiny/global.d.ts";
+/// <reference types="webiny/global.d.ts" />
