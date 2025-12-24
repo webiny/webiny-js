@@ -2,7 +2,6 @@ import React from "react";
 import { AdminConfig } from "webiny/admin/configs";
 import { ReactComponent as SquareLogo } from "./webiny-square.svg";
 import { ReactComponent as HorizontalLogo } from "./webiny-horizontal.svg";
-import Loggoo  from "./logo.png";
 
 const { Tenant } = AdminConfig;
 
