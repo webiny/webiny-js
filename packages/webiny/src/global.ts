@@ -4,7 +4,7 @@
  *
  * This file ensures all type augmentations are loaded without requiring explicit imports.
  */
-import "@webiny/tasks/global.js";
+// import "@webiny/tasks/global.js";
 
 declare module "*.png" {
     const png: string;
