@@ -1,7 +1,0 @@
-{
-  "extends": "@webiny/build-tools/configs/tsconfig.build.json",
-  "compilerOptions": {
-    "typeRoots": ["node_modules/@types", "./types"]
-  },
-  "exclude": ["node_modules", "dist", "**jest**", "**resources.js"]
-}
