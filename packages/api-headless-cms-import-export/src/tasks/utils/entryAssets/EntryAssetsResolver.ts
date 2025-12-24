@@ -23,7 +23,6 @@ const createResolvedAsset = (file: File): IResolvedAsset => {
         type: file.type,
         name: file.name,
         meta: file.meta,
-        aliases: file.aliases || [],
         location: file.location,
         tags: file.tags,
         extensions: file.extensions
@@ -39,30 +38,16 @@ export class EntryAssetsResolver implements IEntryAssetsResolver {
 
     public async resolve(input: IAsset[]): Promise<IResolvedAsset[]> {
         const keys: string[] = [];
-        const aliases: string[] = [];
         for (const asset of input) {
             if (asset.key) {
                 keys.push(asset.key);
-            } else if (asset.alias) {
-                aliases.push(asset.alias);
             }
         }
 
         const assets: IResolvedAsset[] = [];
         const where: Record<string, any> = {};
-        if (keys.length > 0 && aliases.length > 0) {
-            where.OR = [
-                {
-                    key_in: keys
-                },
-                {
-                    aliases_in: aliases
-                }
-            ];
-        } else if (keys.length > 0) {
+        if (keys.length > 0) {
             where.key_in = keys;
-        } else if (aliases.length > 0) {
-            where.aliases_in = aliases;
         } else {
             return assets;
         }

@@ -6,19 +6,6 @@ import type { SecurityPermission } from "@webiny/app-security/types.js";
 
 export type { Icon } from "~/components/IconPicker/types.js";
 
-export interface AdminFileManagerFileTypePluginRenderParams {
-    file: FileItem;
-}
-
-export type AdminFileManagerFileTypePlugin = Plugin & {
-    type: "admin-file-manager-file-type";
-    types: string[];
-    render(params: AdminFileManagerFileTypePluginRenderParams): React.ReactNode;
-    fileDetails?: {
-        actions: Array<React.ComponentType | React.Component>;
-    };
-};
-
 export interface AdminInstallationPluginRenderParams {
     onInstalled: () => Promise<void>;
 }
@@ -49,7 +36,6 @@ export interface FileItem {
     size: number;
     type: string;
     tags: string[];
-    aliases: string[];
     createdOn: string;
     createdBy: {
         id: string;

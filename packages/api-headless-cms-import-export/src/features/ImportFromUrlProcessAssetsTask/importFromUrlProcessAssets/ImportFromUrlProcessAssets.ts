@@ -203,7 +203,6 @@ export class ImportFromUrlProcessAssets<
                 type: record.type,
                 name: record.name,
                 meta: record.meta,
-                aliases: record.aliases,
                 extensions: record.extensions,
                 location: record.location,
                 tags: record.tags

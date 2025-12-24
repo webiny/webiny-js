@@ -1,8 +1,7 @@
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { ContextPlugin } from "@webiny/api";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import type { FileAliasStorageOperations, FilePermission, SettingsPermission } from "~/types.js";
-import type { AssetDeliveryParams } from "./delivery/setupAssetDelivery.js";
+import type { FilePermission, SettingsPermission } from "~/types.js";
 import { setupAssetDelivery } from "./delivery/setupAssetDelivery.js";
 import { createGraphQLSchemaPlugin } from "./graphql/index.js";
 import { FileManagerFeature } from "~/features/FileManagerFeature.js";
@@ -18,13 +17,7 @@ import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/i
 export * from "./modelModifier/CmsModelModifier.js";
 export * from "./delivery/index.js";
 
-interface FileManagerContextParams {
-    fileAliasStorageOperations: FileAliasStorageOperations;
-}
-
-// TODO: implement file alias storage
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const createFileManagerContext = (_: FileManagerContextParams) => {
+export const createFileManagerContext = () => {
     const plugin = new ContextPlugin<ApiCoreContext>(async context => {
         const tenantContext = context.container.resolve(TenantContext);
         const getModel = context.container.resolve(GetModelUseCase);
@@ -72,6 +65,6 @@ export const createFileManagerGraphQL = () => {
     return createGraphQLSchemaPlugin();
 };
 
-export const createAssetDelivery = (config: AssetDeliveryParams) => {
-    return setupAssetDelivery(config);
+export const createAssetDelivery = () => {
+    return setupAssetDelivery();
 };

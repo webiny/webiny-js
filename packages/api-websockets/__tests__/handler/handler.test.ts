@@ -72,7 +72,7 @@ describe("handler", () => {
                 identityId: "id-12345678"
             }
         });
-        expect(connectionsBeforeConnect).toHaveLength(0);
+        expect(connectionsBeforeConnect.value).toHaveLength(0);
 
         const result = await handler(
             createMockEvent({
@@ -102,7 +102,7 @@ describe("handler", () => {
                 identityId: "id-12345678"
             }
         });
-        expect(connectionsAfterConnect).toHaveLength(1);
+        expect(connectionsAfterConnect.value).toHaveLength(1);
     });
 
     it("should run handler with the given event - disconnect route - ok status", async () => {
@@ -117,7 +117,7 @@ describe("handler", () => {
                 identityId: "id-12345678"
             }
         });
-        expect(connectionsBeforeConnect).toHaveLength(0);
+        expect(connectionsBeforeConnect.value).toHaveLength(0);
 
         const connectResult = await handler(
             createMockEvent({
@@ -147,7 +147,7 @@ describe("handler", () => {
                 identityId: "id-12345678"
             }
         });
-        expect(connectionsAfterConnect).toHaveLength(1);
+        expect(connectionsAfterConnect.value).toHaveLength(1);
 
         const disconnectResult = await handler(
             createMockEvent({
@@ -177,7 +177,7 @@ describe("handler", () => {
                 identityId: "id-12345678"
             }
         });
-        expect(connectionsAfterDisconnect).toHaveLength(0);
+        expect(connectionsAfterDisconnect.value).toHaveLength(0);
     });
 
     it("should run handler with the given event - disconnect route - error status due to no existing connection", async () => {
@@ -192,7 +192,7 @@ describe("handler", () => {
                 identityId: "id-12345678"
             }
         });
-        expect(connectionsBeforeDisconnect).toHaveLength(0);
+        expect(connectionsBeforeDisconnect.value).toHaveLength(0);
 
         const disconnectResult = await handler(
             createMockEvent({

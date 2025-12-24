@@ -48,12 +48,11 @@ class GetFileByUrlUseCase implements IGetFileByUrl {
 
     async execute(url: string): Promise<File | undefined> {
         const { pathname } = new URL(url);
-        const isAlias = !pathname.startsWith("/files/") && !pathname.startsWith("/private/");
-        const query = isAlias ? pathname : pathname.replace("/files/", "").replace("/private/", "");
+        const query = pathname.replace("/files/", "").replace("/private/", "");
 
         const filesResult = await this.listFiles.execute({
             where: {
-                OR: [{ key: query }, { aliases_contains: query }]
+                key: query
             },
             limit: 1
         });

@@ -39,7 +39,6 @@ import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
-import type { FileAliasStorageOperations } from "@webiny/api-file-manager/types.js";
 import { createAcoSdk } from "~tests/utils/createAcoSdk.js";
 
 export interface UseGQLHandlerParams {
@@ -66,7 +65,6 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const { permissions, identity, plugins = [] } = params;
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-    const fileManagerStorage = getStorageOps<FileAliasStorageOperations>("fileManager");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
     const testProjectLicense = params.testProjectLicense || createTestWcpLicense();
@@ -87,9 +85,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
                 storageOperations: cmsStorage.storageOperations
             }),
             createHeadlessCmsGraphQL(),
-            createFileManagerContext({
-                fileAliasStorageOperations: fileManagerStorage.storageOperations
-            }),
+            createFileManagerContext(),
             createFileManagerGraphQL(),
             createHeadlessCmsGraphQL(),
             createAco({ documentClient }),
