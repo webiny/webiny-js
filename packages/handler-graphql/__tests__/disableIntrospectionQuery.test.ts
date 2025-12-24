@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import useGqlHandler from "./useGqlHandler";
 import { BeforeHandlerPlugin } from "@webiny/handler";
-import { booksCrudPlugin, booksSchema } from "~tests/mocks/booksSchema";
+import { booksCrudPlugin, booksSchema } from "~tests/mocks/booksSchema.legacy.js";
 
 const disableIntrospectionPlugin = new BeforeHandlerPlugin(async context => {
     // Check in the context.request.body if there is an introspection query.

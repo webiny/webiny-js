@@ -75,7 +75,7 @@ export default (options: HandlerGraphQLOptions = {}): Plugin[] => {
             const contextCacheKey = createCacheKey(context as Context);
             if (!schema || cacheKey !== contextCacheKey) {
                 try {
-                    schema = createGraphQLSchema(context);
+                    schema = await createGraphQLSchema(context);
                     cacheKey = contextCacheKey;
                 } catch (ex) {
                     return reply.code(500).send(formatErrorPayload(ex));
