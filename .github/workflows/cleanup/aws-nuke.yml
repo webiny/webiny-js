@@ -20,6 +20,8 @@ accounts:
       IAMRole:
         - "GitHubActionsWebinyJs"
         - "GitHubActionsWebinyJsAdminAccess"
+      IAMUser:
+        - "webiny-ci"
       IAMPolicy:
         - "DeployWebinyProjectGroup1"
         - "DeployWebinyProjectGroup2"
@@ -37,3 +39,4 @@ accounts:
 resource-types:
   excludes:
     - Budget
+    - OpenSearchDomain
