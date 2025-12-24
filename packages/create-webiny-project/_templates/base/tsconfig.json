@@ -1,5 +1,5 @@
 {
-  "extends": "@webiny/build-tools/configs/tsconfig.build.json",
+  "extends": "webiny/presets/tsconfig.json",
   "noEmit": true,
   "include": ["webiny-env.d.ts", "**/*.ts", "**/*.tsx"]
 }
