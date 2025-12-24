@@ -1,8 +1,8 @@
 import { describe, test, expect } from "vitest";
 import useGqlHandler from "./useGqlHandler";
-import { booksSchema, booksCrudPlugin } from "~tests/mocks/booksSchema.legacy";
-import { createGraphQLSchemaPlugin } from "~/plugins";
-import { createResolverDecorator } from "~/index";
+import { booksSchemaPlugin, booksCrudPlugin } from "~tests/mocks/booksSchema";
+import { GraphQLResolverDecorators } from "~/graphql/abstractions";
+import { createContextPlugin } from "@webiny/handler";
 import type { Context } from "./types";
 
 describe("GraphQL Handler", () => {
@@ -16,14 +16,17 @@ describe("GraphQL Handler", () => {
     });
 
     test("should return introspection query result", async () => {
-        const { introspect } = useGqlHandler({ plugins: [booksSchema] });
+        const { introspect } = useGqlHandler({ plugins: [booksSchemaPlugin] });
         const [response] = await introspect();
         expect(response.errors).toBeFalsy();
         expect(response.data.__schema).toBeTruthy();
     });
 
     test("should return logs in the extensions", async () => {
-        const { invoke } = useGqlHandler({ debug: true, plugins: [booksCrudPlugin, booksSchema] });
+        const { invoke } = useGqlHandler({
+            debug: true,
+            plugins: [booksCrudPlugin, booksSchemaPlugin]
+        });
         const [response] = await invoke({ body: { query: `{ books { name } }` } });
         expect(response.errors).toBeFalsy();
         expect(response.data.books.length).toBe(2);
@@ -31,7 +34,10 @@ describe("GraphQL Handler", () => {
     });
 
     test("should return logs for specific queries when executed in batch", async () => {
-        const { invoke } = useGqlHandler({ debug: true, plugins: [booksCrudPlugin, booksSchema] });
+        const { invoke } = useGqlHandler({
+            debug: true,
+            plugins: [booksCrudPlugin, booksSchemaPlugin]
+        });
         const [[r1, r2, r3]] = await invoke({
             body: [
                 { query: `{ books { name } }` },
@@ -83,40 +89,79 @@ describe("GraphQL Handler", () => {
     });
 
     test("should compose resolvers", async () => {
-        const lowerCaseName = createResolverDecorator<any, any, Context>(
-            resolver => async (parent, args, context, info) => {
-                const name = (await resolver(parent, args, context, info)) as string;
-
-                return name.toLowerCase();
+        // Create decorator implementations
+        class LowerCaseNameDecorator implements GraphQLResolverDecorators.Interface {
+            getDecorators() {
+                return {
+                    "Book.name": [
+                        (resolver: any) =>
+                            async (parent: any, args: any, context: any, info: any) => {
+                                const name = (await resolver(
+                                    parent,
+                                    args,
+                                    context,
+                                    info
+                                )) as string;
+                                return name.toLowerCase();
+                            }
+                    ]
+                };
             }
-        );
+        }
 
-        const listBooks = createResolverDecorator(() => async () => {
-            return [{ name: "Article 1" }];
+        class ListBooksDecorator implements GraphQLResolverDecorators.Interface {
+            getDecorators() {
+                return {
+                    "Query.books": [
+                        () => async () => {
+                            return [{ name: "Article 1" }];
+                        }
+                    ]
+                };
+            }
+        }
+
+        class AddNameSuffixDecorator implements GraphQLResolverDecorators.Interface {
+            getDecorators() {
+                return {
+                    "Book.name": [
+                        (resolver: any) =>
+                            async (...args: any[]) => {
+                                const name = await resolver(...args);
+                                return `${name} (suffix)`;
+                            }
+                    ]
+                };
+            }
+        }
+
+        const LowerCaseNameDecoratorImpl = GraphQLResolverDecorators.createImplementation({
+            implementation: LowerCaseNameDecorator,
+            dependencies: []
         });
 
-        const decorator1 = createGraphQLSchemaPlugin({
-            resolverDecorators: {
-                "Query.books": [listBooks],
-                "Book.name": [lowerCaseName]
-            }
+        const ListBooksDecoratorImpl = GraphQLResolverDecorators.createImplementation({
+            implementation: ListBooksDecorator,
+            dependencies: []
         });
 
-        const addNameSuffix = createResolverDecorator(resolver => async (...args) => {
-            const name = await resolver(...args);
-
-            return `${name} (suffix)`;
+        const AddNameSuffixDecoratorImpl = GraphQLResolverDecorators.createImplementation({
+            implementation: AddNameSuffixDecorator,
+            dependencies: []
         });
 
-        const decorator2 = createGraphQLSchemaPlugin({
-            resolverDecorators: {
-                "Book.name": [addNameSuffix]
-            }
+        const decorator1Plugin = createContextPlugin<Context>(context => {
+            context.container.register(ListBooksDecoratorImpl);
+            context.container.register(LowerCaseNameDecoratorImpl);
+        });
+
+        const decorator2Plugin = createContextPlugin<Context>(context => {
+            context.container.register(AddNameSuffixDecoratorImpl);
         });
 
         const { invoke } = useGqlHandler({
             debug: true,
-            plugins: [booksCrudPlugin, booksSchema, decorator1, decorator2]
+            plugins: [booksCrudPlugin, booksSchemaPlugin, decorator1Plugin, decorator2Plugin]
         });
         const [response] = await invoke({ body: { query: `{ books { name } }` } });
         expect(response.errors).toBeFalsy();
