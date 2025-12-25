@@ -40,7 +40,11 @@ import {
     SettingsAfterDelete as SettingsAfterDeleteExt
 } from "./eventHandlers/index.js";
 
+// Generic extension that supports any API abstraction.
+import { GenericExtension as AnyExtension } from "./GenericExtension.js";
+
 // Exports.
+export const GenericExtension = AnyExtension.ReactComponent;
 export const ApiKeyBeforeCreate = ApiKeyBeforeCreateExt.ReactComponent;
 export const ApiKeyAfterCreate = ApiKeyAfterCreateExt.ReactComponent;
 export const ApiKeyBeforeUpdate = ApiKeyBeforeUpdateExt.ReactComponent;
@@ -89,6 +93,7 @@ export const SettingsAfterDelete = SettingsAfterDeleteExt.ReactComponent;
 
 // Definitions (used internally). 👇
 export const definitions = [
+    AnyExtension.definition,
     ApiKeyBeforeCreateExt.definition,
     ApiKeyAfterCreateExt.definition,
     ApiKeyBeforeUpdateExt.definition,
