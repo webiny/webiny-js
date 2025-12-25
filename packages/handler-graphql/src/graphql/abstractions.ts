@@ -1,29 +1,16 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type {
     Resolvers as IResolvers,
-    TypeDefs,
+    TypeDefs as ITypeDefs,
     ResolverDecorators as IResolverDecorators
 } from "~/types.js";
 
-export interface IGraphQLSchema {
-    getTypeDefs(): Promise<TypeDefs> | TypeDefs;
-}
-
-export const GraphQLSchema = createAbstraction<IGraphQLSchema>("GraphQLSchema");
-
-export namespace GraphQLSchema {
-    export type Interface = IGraphQLSchema;
+export interface IGraphQLTypeDefs {
+    getTypeDefs(): Promise<ITypeDefs> | ITypeDefs;
 }
 
 export interface IGraphQLResolvers {
     getResolvers(): Promise<IResolvers<any>> | IResolvers<any>;
-}
-
-export const GraphQLResolvers = createAbstraction<IGraphQLResolvers>("GraphQLResolvers");
-
-export namespace GraphQLResolvers {
-    export type Interface = IGraphQLResolvers;
-    export type Resolvers = IResolvers<any>;
 }
 
 export interface IGraphQLResolverDecorators {
@@ -37,4 +24,13 @@ export const GraphQLResolverDecorators = createAbstraction<IGraphQLResolverDecor
 export namespace GraphQLResolverDecorators {
     export type Interface = IGraphQLResolverDecorators;
     export type ResolverDecorators = IResolverDecorators;
+}
+
+export interface IGraphQLSchema extends IGraphQLTypeDefs, IGraphQLResolvers {}
+
+export const GraphQLSchema = createAbstraction<IGraphQLSchema>("GraphQLSchema");
+export namespace GraphQLSchema {
+    export type Interface = IGraphQLSchema;
+    export type TypeDefs = ITypeDefs;
+    export type Resolvers = IResolvers<any>;
 }
