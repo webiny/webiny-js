@@ -4,7 +4,7 @@ import type { ResolverDecorators, Resolvers, TypeDefs } from "~/types.js";
 interface ISchemaParts {
     typeDefs: TypeDefs;
     resolvers: Resolvers<any>[];
-    resolverDecorators: ResolverDecorators[]
+    resolverDecorators: ResolverDecorators[];
 }
 
 export interface IGraphQLSchemaBuilder {
