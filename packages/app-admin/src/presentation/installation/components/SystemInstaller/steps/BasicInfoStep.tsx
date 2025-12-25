@@ -11,6 +11,19 @@ interface StepProps {
     nextStep: ISystemInstallerPresenter["nextStep"];
 }
 
+type ExternalLinkProps = {
+    to: string;
+    children: React.ReactNode;
+};
+
+const ExternalLink = ({ to, children }: ExternalLinkProps) => {
+    return (
+        <a href={to} target={"_blank"} rel="noreferrer">
+            {children}
+        </a>
+    );
+};
+
 export const BasicInfoStep = ({ nextStep }: StepProps) => {
     return (
         <Container
@@ -30,12 +43,19 @@ export const BasicInfoStep = ({ nextStep }: StepProps) => {
 
 const referralOptions = referralSources.map(label => ({ label, value: label }));
 
+const requireChecked = (value: boolean) => {
+    if (!value) {
+        throw Error(`You must accept our Terms of Service and Privacy Policy.`);
+    }
+};
+
 const BasicInfoFormInputs = () => {
     const form = useForm();
 
     const tosBind = useBind({
         name: "basicInfo.termsOfService",
-        defaultValue: false
+        defaultValue: false,
+        validators: requireChecked
     });
 
     return (
@@ -66,7 +86,19 @@ const BasicInfoFormInputs = () => {
                 <Checkbox
                     onChange={tosBind.onChange}
                     checked={tosBind.value}
-                    label={"I agree to Webiny’s Terms of Service and Privacy policy."}
+                    label={
+                        <>
+                            I agree to Webiny’s{" "}
+                            <ExternalLink to={"https://www.webiny.com/terms-of-service"}>
+                                Terms of Service
+                            </ExternalLink>{" "}
+                            and{" "}
+                            <ExternalLink to={"https://www.webiny.com/privacy-policy"}>
+                                Privacy Policy
+                            </ExternalLink>
+                        </>
+                    }
+                    validation={tosBind.validation}
                 />
             </Grid.Column>
             <Grid.Column span={12}>
