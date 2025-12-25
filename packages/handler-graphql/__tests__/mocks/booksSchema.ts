@@ -1,6 +1,6 @@
 import { createContextPlugin } from "@webiny/handler";
 import type { Book, Context } from "~tests/types";
-import { GraphQLSchema, GraphQLResolvers } from "~/graphql/abstractions.js";
+import { GraphQLSchema } from "~/graphql/abstractions.js";
 
 export const books: Book[] = [
     {
@@ -11,7 +11,7 @@ export const books: Book[] = [
     }
 ];
 
-class BooksTypeDefsProvider implements GraphQLSchema.Interface {
+class BooksSchema implements GraphQLSchema.Interface {
     getTypeDefs() {
         return /* GraphQL */ `
             type Book {
@@ -28,14 +28,7 @@ class BooksTypeDefsProvider implements GraphQLSchema.Interface {
             }
         `;
     }
-}
 
-export const BooksTypeDefsProviderImpl = GraphQLSchema.createImplementation({
-    implementation: BooksTypeDefsProvider,
-    dependencies: []
-});
-
-class BooksResolversProvider implements GraphQLResolvers.Interface {
     getResolvers() {
         return {
             Query: {
@@ -70,8 +63,8 @@ class BooksResolversProvider implements GraphQLResolvers.Interface {
     }
 }
 
-export const BooksResolversProviderImpl = GraphQLResolvers.createImplementation({
-    implementation: BooksResolversProvider,
+export const BooksSchemaImpl = GraphQLSchema.createImplementation({
+    implementation: BooksSchema,
     dependencies: []
 });
 
@@ -85,6 +78,5 @@ export const booksCrudPlugin = createContextPlugin<Context>(async context => {
 });
 
 export const booksSchemaPlugin = createContextPlugin<Context>(context => {
-    context.container.register(BooksTypeDefsProviderImpl);
-    context.container.register(BooksResolversProviderImpl);
+    context.container.register(BooksSchemaImpl);
 });
