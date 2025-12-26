@@ -1,7 +1,6 @@
 import type {
     CmsEntry,
     CmsEntryListParams,
-    CmsEntryMeta,
     CmsEntryValues
 } from "@webiny/api-headless-cms/types/index.js";
 import { type CmsModel } from "@webiny/api-headless-cms/types/index.js";

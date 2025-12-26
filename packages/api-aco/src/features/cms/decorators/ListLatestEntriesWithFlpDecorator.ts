@@ -4,9 +4,7 @@ import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/cont
 import type {
     CmsModel,
     CmsEntryValues,
-    CmsEntryListParams,
-    CmsEntry,
-    CmsEntryMeta
+    CmsEntryListParams
 } from "@webiny/api-headless-cms/types/index.js";
 import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 import { ListEntriesFactory } from "~/utils/decorators/ListEntriesFactory.js";
