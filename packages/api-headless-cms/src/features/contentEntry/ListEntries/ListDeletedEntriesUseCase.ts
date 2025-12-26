@@ -1,14 +1,7 @@
-import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
 import { ListDeletedEntriesUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { ListEntriesUseCase } from "./abstractions.js";
-import type {
-    CmsEntry,
-    CmsEntryListParams,
-    CmsEntryMeta,
-    CmsEntryValues,
-    CmsModel
-} from "~/types/index.js";
+import type { CmsEntryListParams, CmsEntryValues, CmsModel } from "~/types/index.js";
 
 /**
  * ListDeletedEntriesUseCase - Lists deleted entries for manage API.
@@ -20,7 +13,7 @@ class ListDeletedEntriesUseCaseImpl implements UseCaseAbstraction.Interface {
     async execute<T extends CmsEntryValues>(
         model: CmsModel,
         params?: CmsEntryListParams
-    ): Promise<Result<[CmsEntry<T>[], CmsEntryMeta], UseCaseAbstraction.Error>> {
+    ): UseCaseAbstraction.Return<T> {
         const { where, ...rest } = params || {};
 
         // Add latest: true and wbyDeleted: true filters

@@ -427,106 +427,96 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             model: CmsModel,
             params: CmsEntryListParams
         ): Promise<[CmsEntry<T>[], CmsEntryMeta]> {
-            return context.benchmark.measure("headlessCms.crud.entries.listEntries", async () => {
-                const useCase = context.container.resolve(ListEntriesUseCase);
-                const result = await useCase.execute<T>(model, params);
+            const useCase = context.container.resolve(ListEntriesUseCase);
+            const result = await useCase.execute<T>(model, params);
 
-                if (result.isFail()) {
-                    const error = result.error;
-                    throw new WebinyError(
-                        error.message || "Could not list entries.",
-                        error.code || "LIST_ENTRIES_ERROR",
-                        {
-                            error,
-                            params,
-                            model
-                        }
-                    );
-                }
+            if (result.isFail()) {
+                const error = result.error;
+                throw new WebinyError(
+                    error.message || "Could not list entries.",
+                    error.code || "LIST_ENTRIES_ERROR",
+                    {
+                        error,
+                        params,
+                        model
+                    }
+                );
+            }
 
-                return result.value;
-            });
+            const { entries, meta } = result.value;
+
+            return [entries, meta];
         },
         async listLatestEntries<T extends CmsEntryValues = CmsEntryValues>(
             model: CmsModel,
             params?: CmsEntryListParams
         ): Promise<[CmsEntry<T>[], CmsEntryMeta]> {
-            return context.benchmark.measure(
-                "headlessCms.crud.entries.listLatestEntries",
-                async () => {
-                    const useCase = context.container.resolve(ListLatestEntriesUseCase);
-                    const result = await useCase.execute<T>(model, params);
+            const useCase = context.container.resolve(ListLatestEntriesUseCase);
+            const result = await useCase.execute<T>(model, params);
 
-                    if (result.isFail()) {
-                        const error = result.error;
-                        throw new WebinyError(
-                            error.message || "Could not list latest entries.",
-                            error.code || "LIST_LATEST_ENTRIES_ERROR",
-                            {
-                                error,
-                                params,
-                                model
-                            }
-                        );
+            if (result.isFail()) {
+                const error = result.error;
+                throw new WebinyError(
+                    error.message || "Could not list latest entries.",
+                    error.code || "LIST_LATEST_ENTRIES_ERROR",
+                    {
+                        error,
+                        params,
+                        model
                     }
+                );
+            }
 
-                    return result.value;
-                }
-            );
+            const { entries, meta } = result.value;
+
+            return [entries, meta];
         },
         async listDeletedEntries<T extends CmsEntryValues = CmsEntryValues>(
             model: CmsModel,
             params?: CmsEntryListParams
         ): Promise<[CmsEntry<T>[], CmsEntryMeta]> {
-            return context.benchmark.measure(
-                "headlessCms.crud.entries.listDeletedEntries",
-                async () => {
-                    const useCase = context.container.resolve(ListDeletedEntriesUseCase);
-                    const result = await useCase.execute<T>(model, params);
+            const useCase = context.container.resolve(ListDeletedEntriesUseCase);
+            const result = await useCase.execute<T>(model, params);
 
-                    if (result.isFail()) {
-                        const error = result.error;
-                        throw new WebinyError(
-                            error.message || "Could not list deleted entries.",
-                            error.code || "LIST_DELETED_ENTRIES_ERROR",
-                            {
-                                error,
-                                params,
-                                model
-                            }
-                        );
+            if (result.isFail()) {
+                const error = result.error;
+                throw new WebinyError(
+                    error.message || "Could not list deleted entries.",
+                    error.code || "LIST_DELETED_ENTRIES_ERROR",
+                    {
+                        error,
+                        params,
+                        model
                     }
+                );
+            }
 
-                    return result.value;
-                }
-            );
+            const { entries, meta } = result.value;
+
+            return [entries, meta];
         },
         async listPublishedEntries<T extends CmsEntryValues = CmsEntryValues>(
             model: CmsModel,
             params?: CmsEntryListParams
         ): Promise<[CmsEntry<T>[], CmsEntryMeta]> {
-            return context.benchmark.measure(
-                "headlessCms.crud.entries.listPublishedEntries",
-                async () => {
-                    const useCase = context.container.resolve(ListPublishedEntriesUseCase);
-                    const result = await useCase.execute<T>(model, params);
+            const useCase = context.container.resolve(ListPublishedEntriesUseCase);
+            const result = await useCase.execute<T>(model, params);
 
-                    if (result.isFail()) {
-                        const error = result.error;
-                        throw new WebinyError(
-                            error.message || "Could not list published entries.",
-                            error.code || "LIST_PUBLISHED_ENTRIES_ERROR",
-                            {
-                                error,
-                                params,
-                                model
-                            }
-                        );
+            if (result.isFail()) {
+                const error = result.error;
+                throw new WebinyError(
+                    error.message || "Could not list published entries.",
+                    error.code || "LIST_PUBLISHED_ENTRIES_ERROR",
+                    {
+                        error,
+                        params,
+                        model
                     }
+                );
+            }
 
-                    return result.value;
-                }
-            );
+            const { entries, meta } = result.value;
+            return [entries, meta];
         },
         async createEntry<T extends CmsEntryValues = CmsEntryValues>(
             model: CmsModel,
