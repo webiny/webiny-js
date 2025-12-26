@@ -7,11 +7,3 @@ export const resolve = async (fn: () => Promise<any>) => {
         return new ErrorResponse(e);
     }
 };
-export const resolveList = async (fn: () => Promise<any>) => {
-    try {
-        const [items, meta] = await fn();
-        return new ListResponse(items, meta);
-    } catch (e) {
-        return new ErrorResponse(e);
-    }
-};

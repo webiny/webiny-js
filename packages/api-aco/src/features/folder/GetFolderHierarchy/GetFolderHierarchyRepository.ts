@@ -40,7 +40,7 @@ class GetFolderHierarchyRepositoryImpl implements IGetFolderHierarchyRepository 
             return Result.fail(new FolderPersistenceError(rootFoldersResult.error));
         }
 
-        const [rootEntries] = rootFoldersResult.value;
+        const { entries: rootEntries } = rootFoldersResult.value;
         siblings.push(...rootEntries.map(entry => EntryToFolderMapper.toFolder(entry)));
 
         if (params.id === ROOT_FOLDER) {
@@ -78,7 +78,7 @@ class GetFolderHierarchyRepositoryImpl implements IGetFolderHierarchyRepository 
             return Result.fail(new FolderPersistenceError(childFoldersResult.error));
         }
 
-        const [childEntries] = childFoldersResult.value;
+        const { entries: childEntries } = childFoldersResult.value;
         siblings.push(...childEntries.map(entry => EntryToFolderMapper.toFolder(entry)));
 
         return Result.ok({

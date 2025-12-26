@@ -19,7 +19,7 @@ class ListFoldersWithFolderLevelPermissionsImpl implements ListFoldersUseCase.In
             return Result.fail(result.error);
         }
 
-        const [folders, meta] = result.value;
+        const { folders, meta } = result.value;
 
         // Fetch FLP records for ROOT folders and populate the catalog.
         const rootFlps = await this.folderLevelPermissions.listFolderLevelPermissions({
@@ -65,7 +65,7 @@ class ListFoldersWithFolderLevelPermissionsImpl implements ListFoldersUseCase.In
             })
         );
 
-        return Result.ok([foldersWithPermissions.filter(Boolean) as Folder[], meta]);
+        return Result.ok({ folders: foldersWithPermissions.filter(Boolean) as Folder[], meta });
     }
 
     private hasFlp(id: string): boolean {

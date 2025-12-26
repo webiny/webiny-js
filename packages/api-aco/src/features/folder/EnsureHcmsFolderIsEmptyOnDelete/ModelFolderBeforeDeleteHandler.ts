@@ -28,7 +28,7 @@ class ModelFolderBeforeDeleteHandlerImpl implements FolderBeforeDeleteHandler.In
         }
 
         const result = await this.ensureFolderIsEmpty.execute(type, id, async () => {
-            const entries = await this.listEntries.execute(modelResult.value, {
+            const result = await this.listEntries.execute(modelResult.value, {
                 where: {
                     latest: true,
                     wbyAco_location: {
@@ -38,9 +38,9 @@ class ModelFolderBeforeDeleteHandlerImpl implements FolderBeforeDeleteHandler.In
                 limit: 1
             });
 
-            const [content] = entries.value;
+            const { entries } = result.value;
 
-            return content.length > 0;
+            return entries.length > 0;
         });
 
         if (result.isFail()) {

@@ -67,8 +67,8 @@ export const createFoldersSchema = (params: CreateFolderTypeDefsParams) => {
                         if (result.isFail()) {
                             throw result.error;
                         }
-                        const [entries, meta] = result.value;
-                        return new ListResponse(entries, meta);
+                        const { folders, meta } = result.value;
+                        return new ListResponse(folders, meta);
                     } catch (e) {
                         return new ErrorResponse(e);
                     }
@@ -83,8 +83,8 @@ export const createFoldersSchema = (params: CreateFolderTypeDefsParams) => {
                         if (result.isFail()) {
                             throw result.error;
                         }
-                        const [entries] = result.value;
-                        const foldersPromises = entries.map(folder => {
+                        const { folders } = result.value;
+                        const foldersPromises = folders.map(folder => {
                             const canManageStructure = flp.canManageFolderStructure(
                                 folder as unknown as FolderLevelPermission
                             );

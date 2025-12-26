@@ -73,7 +73,7 @@ class SyncFlpTaskImpl implements TaskDefinition.Interface<ISyncFlpTaskInput> {
                         }
                     });
 
-                    const [folders] = result.value;
+                    const { folders } = result.value;
 
                     for (const folder of folders) {
                         await controller.task.trigger<IUpdateFlpTaskInput>({
@@ -111,7 +111,7 @@ class SyncFlpTaskImpl implements TaskDefinition.Interface<ISyncFlpTaskInput> {
                     }
                 });
 
-                const [folders] = result.value;
+                const { folders } = result.value;
 
                 for (const folder of folders) {
                     await controller.task.trigger<IUpdateFlpTaskInput>({

@@ -18,7 +18,7 @@ class ListRedirectsRepositoryImpl implements RepositoryAbstraction.Interface {
             return Result.fail(new RedirectPersistenceError(result.error));
         }
 
-        const [entries, meta] = result.value;
+        const { entries, meta } = result.value;
         const redirects = entries.map(entry => EntryToRedirectMapper.toRedirect(entry));
 
         return Result.ok({ redirects, meta });

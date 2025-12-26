@@ -107,9 +107,9 @@ export class DeleteModel implements IDeleteModel {
                 limit: 1000
             });
 
-            const [items, meta] = listResult.value;
+            const { folders, meta } = listResult.value;
 
-            for (const item of items) {
+            for (const item of folders) {
                 const result = await deleteFolder.execute(item.id);
                 if (result.isFail()) {
                     return controller.response.error(result.error);

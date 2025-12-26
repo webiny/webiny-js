@@ -28,7 +28,7 @@ class ListWorkflowsRepositoryImpl implements Repository.Interface {
             return Result.fail(new WorkflowPersistenceError(listResult.error));
         }
 
-        const [entries, meta] = listResult.value;
+        const { entries, meta } = listResult.value;
 
         const items = entries.map(entry => this.mapper.fromCmsEntry(entry));
 

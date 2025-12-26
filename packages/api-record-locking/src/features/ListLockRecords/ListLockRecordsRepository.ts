@@ -33,7 +33,7 @@ class ListLockRecordsRepositoryImpl implements RepositoryAbstraction.Interface {
                 return Result.fail(new LockRecordPersistenceError(result.error));
             }
 
-            const [entries, meta] = result.value;
+            const { entries, meta } = result.value;
 
             const items = entries.map(entry => new LockRecord(entry, this.config.timeout));
 

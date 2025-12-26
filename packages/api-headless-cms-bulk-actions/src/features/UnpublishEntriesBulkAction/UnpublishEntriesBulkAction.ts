@@ -17,9 +17,7 @@ class UnpublishEntriesBulkActionImpl implements EntriesBulkAction.Interface {
     ): Promise<EntriesBulkAction.LoadDataResult> {
         const entriesResult = await this.listPublishedEntries.execute(model, params);
 
-        const [entries, meta] = entriesResult.value;
-
-        return { entries, meta };
+        return entriesResult.value;
     }
 
     async processData(

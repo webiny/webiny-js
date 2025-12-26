@@ -17,9 +17,7 @@ class DeleteEntriesBulkActionImpl implements EntriesBulkAction.Interface {
     ): Promise<EntriesBulkAction.LoadDataResult> {
         const entriesResult = await this.listDeletedEntries.execute(model, params);
 
-        const [entries, meta] = entriesResult.value;
-
-        return { entries, meta };
+        return entriesResult.value;
     }
 
     async processData(

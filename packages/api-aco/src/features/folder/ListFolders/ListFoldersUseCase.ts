@@ -1,15 +1,11 @@
-import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
 import { ListFoldersUseCase as UseCaseAbstraction, ListFoldersRepository } from "./abstractions.js";
-import type { Folder, ListFoldersParams } from "~/folder/folder.types.js";
-import type { ListMeta } from "~/types.js";
+import type { ListFoldersParams } from "~/folder/folder.types.js";
 
 class ListFoldersUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(private repository: ListFoldersRepository.Interface) {}
 
-    async execute(
-        params: ListFoldersParams
-    ): Promise<Result<[Folder[], ListMeta], UseCaseAbstraction.Error>> {
+    async execute(params: ListFoldersParams): UseCaseAbstraction.Return {
         return await this.repository.execute(params);
     }
 }

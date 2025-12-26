@@ -90,7 +90,7 @@ class EmptyTrashBinTask
                         model,
                         listEntriesParams
                     );
-                    const [entries, meta] = listResult.value;
+                    const { entries, meta } = listResult.value;
 
                     if (meta.totalCount === 0) {
                         break;

@@ -24,19 +24,19 @@ class ListLatestEntriesWithFlpDecoratorImpl implements ListLatestEntriesUseCase.
     async execute<T extends CmsEntryValues>(
         model: CmsModel,
         params?: CmsEntryListParams
-    ): Promise<Result<[CmsEntry<T>[], CmsEntryMeta], ListLatestEntriesUseCase.Error>> {
+    ): ListLatestEntriesUseCase.Return<T> {
         const loader = async (params?: CmsEntryListParams) => {
-            const result = await this.decoratee.execute(model, params);
+            const result = await this.decoratee.execute<T>(model, params);
             return result.value;
         };
 
-        const [entries, meta] = await this.listEntriesHandler.execute({
+        const { entries, meta } = await this.listEntriesHandler.execute<T>({
             model,
             dataLoader: loader,
             initialParams: params
         });
 
-        return Result.ok([entries, meta]) as Result<[CmsEntry<T>[], CmsEntryMeta]>;
+        return Result.ok({ entries, meta });
     }
 }
 

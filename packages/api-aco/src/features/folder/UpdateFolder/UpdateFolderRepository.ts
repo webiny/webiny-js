@@ -97,7 +97,7 @@ class UpdateFolderRepositoryImpl implements IUpdateFolderRepository {
             return Result.fail(new FolderPersistenceError(result.error));
         }
 
-        const [entries] = result.value;
+        const { entries } = result.value;
 
         if (entries.length > 0) {
             return Result.fail(
