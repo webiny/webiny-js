@@ -19,6 +19,7 @@
     "@webiny/app-headless-cms-common": "0.0.0",
     "@webiny/app-security": "0.0.0",
     "@webiny/app-utils": "0.0.0",
+    "@webiny/feature": "0.0.0",
     "@webiny/form": "0.0.0",
     "@webiny/icons": "0.0.0",
     "@webiny/plugins": "0.0.0",
@@ -32,7 +33,6 @@
     "lodash": "^4.17.21",
     "mobx": "^6.15.0",
     "mobx-react-lite": "^3.4.3",
-    "pako": "^2.1.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hotkeyz": "^1.0.4",
@@ -43,10 +43,13 @@
   "devDependencies": {
     "@types/react": "18.2.79",
     "@webiny/build-tools": "0.0.0",
+    "@webiny/di": "^0.2.3",
+    "@webiny/wcp": "0.0.0",
     "apollo-client": "^2.6.10",
     "apollo-link": "^1.2.14",
     "rimraf": "^6.0.1",
     "typescript": "5.9.3",
+    "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.2.4"
   },
   "publishConfig": {

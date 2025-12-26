@@ -11,5 +11,3 @@ export const useDialogs = () => {
 
     return context;
 };
-
-export { useCustomDialog } from "./CustomDialog.js";

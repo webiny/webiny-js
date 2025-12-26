@@ -62,7 +62,7 @@ export const createFilesTypeDefs = (params: CreateFilesTypeDefsParams): string =
         excludeFields: ["entryId", "status"]
     });
 
-    const excludeFromSorterts = ["tags", "aliases"];
+    const excludeFromSorterts = ["tags"];
 
     const sortEnumRender = renderSortEnum({
         model,

@@ -7,7 +7,7 @@ import { useFile } from "~/hooks/useFile.js";
 export const CopyFile = () => {
     const { file } = useFile();
     const { copyFileUrl } = useCopyFile({ file });
-    const { OptionsMenuItem } = FileManagerViewConfig.Browser.FileAction;
+    const { OptionsMenuItem } = FileManagerViewConfig.Browser.File.Action;
 
     return (
         <OptionsMenuItem

@@ -9,7 +9,6 @@ type Env = {
     telemetryUserId: string | undefined;
     trashBinRetentionPeriodDays: number;
     wcpProjectId: string | undefined;
-    webinyVersion: string;
     websocketUrl: string;
     graphqlClient?: {
         retries: {

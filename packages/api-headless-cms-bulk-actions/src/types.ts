@@ -1,11 +1,7 @@
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import type { Context as BaseContext } from "@webiny/handler/types.js";
-import type {
-    Context as TasksContext,
-    ITaskResponseDoneResultOutput,
-    ITaskRunParams
-} from "@webiny/tasks/types.js";
-import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
+import type { Context as TasksContext, ITaskIdentity } from "@webiny/tasks/types.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 export interface HcmsBulkActionsContext extends BaseContext, CmsContext, TasksContext {}
 
@@ -17,18 +13,17 @@ export interface IBulkActionOperationInput {
     modelId: string;
     ids: string[];
     data?: Record<string, any>;
-    identity: SecurityIdentity;
+    identity: ITaskIdentity;
     done?: string[];
     failed?: string[];
 }
 
-export interface IBulkActionOperationOutput extends ITaskResponseDoneResultOutput {
+export interface IBulkActionOperationOutput {
     done: string[];
     failed: string[];
 }
 
-export type IBulkActionOperationTaskParams = ITaskRunParams<
-    HcmsBulkActionsContext,
+export type IBulkActionOperationTaskParams = TaskDefinition.RunParams<
     IBulkActionOperationInput,
     IBulkActionOperationOutput
 >;
@@ -46,7 +41,7 @@ export enum BulkActionOperationByModelAction {
 
 export interface IBulkActionOperationByModelInput {
     modelId: string;
-    identity?: SecurityIdentity;
+    identity?: ITaskIdentity;
     where?: Record<string, any>;
     search?: string;
     after?: string | null;
@@ -54,13 +49,12 @@ export interface IBulkActionOperationByModelInput {
     action?: BulkActionOperationByModelAction;
 }
 
-export interface IBulkActionOperationByModelOutput extends ITaskResponseDoneResultOutput {
+export interface IBulkActionOperationByModelOutput {
     done: string[];
     failed: string[];
 }
 
-export type IBulkActionOperationByModelTaskParams = ITaskRunParams<
-    HcmsBulkActionsContext,
+export type IBulkActionOperationByModelTaskParams = TaskDefinition.RunParams<
     IBulkActionOperationByModelInput,
     IBulkActionOperationByModelOutput
 >;
@@ -73,10 +67,9 @@ export interface IEmptyTrashBinsInput {
     executedTenantIds?: string[] | null;
 }
 
-export type IEmptyTrashBinsOutput = ITaskResponseDoneResultOutput;
+export type IEmptyTrashBinsOutput = TaskDefinition.ResultDone;
 
-export type IEmptyTrashBinsTaskParams = ITaskRunParams<
-    HcmsBulkActionsContext,
+export type IEmptyTrashBinsTaskParams = TaskDefinition.RunParams<
     IEmptyTrashBinsInput,
     IEmptyTrashBinsOutput
 >;

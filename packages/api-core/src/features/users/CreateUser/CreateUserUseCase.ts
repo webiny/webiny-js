@@ -78,8 +78,7 @@ class CreateUserUseCaseImpl implements UseCaseAbstraction.Interface {
             displayName,
             createdOn: new Date().toISOString(),
             createdBy,
-            tenant,
-            webinyVersion: process.env.WEBINY_VERSION as string
+            tenant
         };
 
         // 8. Publish before event

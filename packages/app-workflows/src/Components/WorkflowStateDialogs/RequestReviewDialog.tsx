@@ -1,5 +1,5 @@
 import React from "react";
-import { Dialog, Grid, OverlayLoader } from "@webiny/admin-ui";
+import { Dialog, Grid, Icon, OverlayLoader } from "@webiny/admin-ui";
 import { ReactComponent as RequestReviewIcon } from "@webiny/icons/check.svg";
 
 interface IRequestReviewDialogProps {
@@ -17,14 +17,19 @@ export const RequestReviewDialog = (props: IRequestReviewDialogProps) => {
             onOpenChange={hide}
             title={
                 <>
-                    <RequestReviewIcon className={"fill-success"} />
+                    <Icon
+                        label={"Request Content Review?"}
+                        size={"md"}
+                        className={"fill-success"}
+                        icon={<RequestReviewIcon />}
+                    />
                     Request Content Review?
                 </>
             }
             actions={
                 <>
-                    <Dialog.CancelButton onClick={hide} />
-                    <Dialog.ConfirmButton
+                    <Dialog.CancelAction onClick={hide} />
+                    <Dialog.ConfirmAction
                         text={"Request Content Review"}
                         onClick={onRequestReview}
                     />

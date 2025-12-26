@@ -159,7 +159,6 @@ export interface FileInput {
     size: number;
     type: string;
     tags: string[];
-    aliases?: string[];
     meta?: Record<string, any>;
 }
 

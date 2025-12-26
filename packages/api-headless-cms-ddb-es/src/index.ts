@@ -1,7 +1,6 @@
 import dynamoDbValueFilters from "@webiny/db-dynamodb/plugins/filters/index.js";
 import elasticsearchPlugins from "./elasticsearch/index.js";
 import dynamoDbPlugins from "./dynamoDb/index.js";
-import { createSystemStorageOperations } from "./operations/system/index.js";
 import { createModelsStorageOperations } from "./operations/model/index.js";
 import { createEntriesStorageOperations } from "./operations/entry/index.js";
 import type { StorageOperationsFactory } from "~/types.js";
@@ -12,7 +11,6 @@ import { createGroupEntity } from "~/definitions/group.js";
 import { createModelEntity } from "~/definitions/model.js";
 import { createEntryEntity } from "~/definitions/entry.js";
 import { createEntryElasticsearchEntity } from "~/definitions/entryElasticsearch.js";
-import { createSystemEntity } from "~/definitions/system.js";
 import { createElasticsearchIndex } from "~/elasticsearch/createElasticsearchIndex.js";
 import { PluginsContainer } from "@webiny/plugins";
 import { createGroupsStorageOperations } from "~/operations/group/index.js";
@@ -32,8 +30,11 @@ import {
 import { createFilterPlugins } from "~/operations/entry/elasticsearch/filtering/plugins/index.js";
 import { CmsEntryFilterPlugin } from "~/plugins/CmsEntryFilterPlugin.js";
 import { StorageOperationsCmsModelPlugin, StorageTransformPlugin } from "@webiny/api-headless-cms";
-import { createIndexTaskPluginTest } from "~/tasks/createIndexTaskPlugin.js";
+import { createCreateIndexTask } from "~/tasks/createIndexTaskPlugin.js";
 import { CompressorPlugin } from "@webiny/api";
+import { ModelBeforeCreateHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";
+import { ModelBeforeCreateFromHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModelFrom/events.js";
+import { ModelAfterDeleteHandler } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/events.js";
 
 export * from "./plugins/index.js";
 
@@ -57,11 +58,6 @@ export const createStorageOperations: StorageOperationsFactory = params => {
     });
 
     const entities = {
-        system: createSystemEntity({
-            entityName: ENTITIES.SYSTEM,
-            table: tableInstance,
-            attributes: attributes ? attributes[ENTITIES.SYSTEM] : {}
-        }),
         groups: createGroupEntity({
             entityName: ENTITIES.GROUPS,
             table: tableInstance,
@@ -138,14 +134,16 @@ export const createStorageOperations: StorageOperationsFactory = params => {
             if (!context.elasticsearch) {
                 context.elasticsearch = elasticsearch;
             }
+
+            /**
+             * This registers the task implementation
+             */
+            createCreateIndexTask(context);
+
             /**
              * Pass the plugins to the parent context.
              */
-            context.plugins.register([
-                dynamoDbPlugins(),
-                createIndexTaskPluginTest(),
-                elasticsearchIndexPlugins()
-            ]);
+            context.plugins.register([dynamoDbPlugins(), elasticsearchIndexPlugins()]);
             /**
              * We need to fetch all the plugin types in the list from the main container.
              * This way we do not need to register plugins in the storage plugins contains.
@@ -173,41 +171,41 @@ export const createStorageOperations: StorageOperationsFactory = params => {
             entries.dataLoaders.clearAll();
         },
         init: async context => {
-            context.cms.onModelBeforeCreate.subscribe(async ({ model }) => {
-                await createElasticsearchIndex({
-                    client: elasticsearch,
-                    model,
-                    plugins
-                });
-            });
-            context.cms.onModelBeforeCreateFrom.subscribe(async ({ model }) => {
-                await createElasticsearchIndex({
-                    client: elasticsearch,
-                    model,
-                    plugins
-                });
-            });
-            context.cms.onModelAfterDelete.subscribe(async ({ model }) => {
-                await deleteElasticsearchIndex({
-                    client: elasticsearch,
-                    model
-                });
-            });
+            context.container.registerFactory(ModelBeforeCreateHandler, () => ({
+                async handle(event) {
+                    const { model } = event.payload;
+                    await createElasticsearchIndex({
+                        client: elasticsearch,
+                        model,
+                        plugins
+                    });
+                }
+            }));
 
-            context.cms.onModelInitialize.subscribe(async ({ model }) => {
-                await createElasticsearchIndex({
-                    client: elasticsearch,
-                    model,
-                    plugins
-                });
-            });
+            context.container.registerFactory(ModelBeforeCreateFromHandler, () => ({
+                async handle(event) {
+                    const { model } = event.payload;
+                    await createElasticsearchIndex({
+                        client: elasticsearch,
+                        model,
+                        plugins
+                    });
+                }
+            }));
+
+            context.container.registerFactory(ModelAfterDeleteHandler, () => ({
+                async handle(event) {
+                    const { model } = event.payload;
+                    await deleteElasticsearchIndex({
+                        client: elasticsearch,
+                        model
+                    });
+                }
+            }));
         },
         getEntities: () => entities,
         getTable: () => tableInstance,
         getEsTable: () => tableElasticsearchInstance,
-        system: createSystemStorageOperations({
-            entity: entities.system
-        }),
         groups: createGroupsStorageOperations({
             entity: entities.groups,
             plugins

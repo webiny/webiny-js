@@ -9,7 +9,7 @@ import { createGetProduct } from "./product/getProductFactory";
 
 describe("complex product nestedObject filtering", () => {
     const options = {
-        path: "manage/en-US"
+        path: "manage"
     };
 
     const categoryManager = useCategoryManageHandler(options);

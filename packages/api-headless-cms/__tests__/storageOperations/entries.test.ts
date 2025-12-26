@@ -9,7 +9,7 @@ vi.setConfig({
 
 describe("Entries storage operations", () => {
     const { storageOperations, plugins } = useGraphQLHandler({
-        path: "manage/en-US"
+        path: "manage"
     });
 
     /**

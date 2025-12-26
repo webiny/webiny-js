@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import type { GenericFormData } from "@webiny/form";
 import { useSnackbar } from "~/hooks/index.js";
 import { Dialog, type DialogProps } from "./Dialog.js";
-import { CustomDialog } from "./CustomDialog.js";
 import { createProvider } from "@webiny/app";
 import { generateId } from "@webiny/utils";
 
@@ -24,14 +23,8 @@ interface ShowDialogParams {
     size?: "sm" | "md" | "lg" | "xl" | "full";
 }
 
-interface ShowCustomDialogParams {
-    element: JSX.Element;
-    onSubmit?: (data: GenericFormData) => void;
-}
-
 export interface DialogsContext {
     showDialog: (params: ShowDialogParams) => () => void;
-    showCustomDialog: (params: ShowCustomDialogParams) => () => void;
     closeAllDialogs: () => void;
 }
 
@@ -74,16 +67,6 @@ export const DialogsProvider = ({ children }: DialogsProviderProps) => {
 
     const showDialog = (params: ShowDialogParams) => {
         const newDialog = initializeState({ ...params, open: true });
-        setDialogs(dialogs => new Map(dialogs).set(newDialog.id, newDialog));
-        return () => closeDialog(newDialog.id);
-    };
-
-    const showCustomDialog = ({ onSubmit, element }: ShowCustomDialogParams) => {
-        const newDialog = initializeState({
-            element,
-            onAccept: onSubmit,
-            open: true
-        });
         setDialogs(dialogs => new Map(dialogs).set(newDialog.id, newDialog));
         return () => closeDialog(newDialog.id);
     };
@@ -142,7 +125,6 @@ export const DialogsProvider = ({ children }: DialogsProviderProps) => {
 
     const context = {
         showDialog,
-        showCustomDialog,
         closeDialog,
         closeAllDialogs
     };
@@ -150,41 +132,29 @@ export const DialogsProvider = ({ children }: DialogsProviderProps) => {
     return (
         <DialogsContext.Provider value={context}>
             {children}
-            {Array.from(dialogs.values()).map(dialog =>
-                dialog.element ? (
-                    <CustomDialog
-                        key={dialog.id}
-                        open={dialog.open}
-                        loading={dialog.loading}
-                        closeDialog={() => closeDialog(dialog.id)}
-                        onSubmit={data => onSubmit(dialog.id, data)}
-                    >
-                        {dialog.element}
-                    </CustomDialog>
-                ) : (
-                    <Dialog
-                        key={dialog.id}
-                        description={dialog.description}
-                        dismissible={dialog.dismissible ?? true}
-                        icon={dialog.icon ?? <></>}
-                        title={dialog.title}
-                        content={dialog.content}
-                        open={dialog.open}
-                        acceptLabel={dialog.acceptLabel}
-                        cancelLabel={dialog.cancelLabel}
-                        loadingLabel={dialog.loadingLabel}
-                        dataLoadingLabel={dialog.dataLoadingLabel}
-                        loading={dialog.loading}
-                        closeDialog={() => {
-                            closeDialog(dialog.id);
-                            dialog.onClose && dialog.onClose();
-                        }}
-                        onSubmit={data => onSubmit(dialog.id, data)}
-                        formData={dialog.formData}
-                        size={dialog.size}
-                    />
-                )
-            )}
+            {Array.from(dialogs.values()).map(dialog => (
+                <Dialog
+                    key={dialog.id}
+                    description={dialog.description}
+                    dismissible={dialog.dismissible ?? true}
+                    icon={dialog.icon ?? <></>}
+                    title={dialog.title}
+                    content={dialog.content}
+                    open={dialog.open}
+                    acceptLabel={dialog.acceptLabel}
+                    cancelLabel={dialog.cancelLabel}
+                    loadingLabel={dialog.loadingLabel}
+                    dataLoadingLabel={dialog.dataLoadingLabel}
+                    loading={dialog.loading}
+                    closeDialog={() => {
+                        closeDialog(dialog.id);
+                        dialog.onClose && dialog.onClose();
+                    }}
+                    onSubmit={data => onSubmit(dialog.id, data)}
+                    formData={dialog.formData}
+                    size={dialog.size}
+                />
+            ))}
         </DialogsContext.Provider>
     );
 };

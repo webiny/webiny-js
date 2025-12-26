@@ -54,7 +54,11 @@ export const FinishSetupStep = ({
                         )}
                         {isInstalled ? (
                             <Grid.Column span={12}>
-                                <Text size={"md"} className={"text-neutral-dimmed"}>
+                                <Text
+                                    as="div"
+                                    size={"md"}
+                                    className={"text-neutral-strong text-center"}
+                                >
                                     Setup complete! Everything went smooth as a breeze!
                                 </Text>
                             </Grid.Column>

@@ -21,8 +21,7 @@ const mockModel: CmsModel = {
     group: {
         id: "group",
         name: "group"
-    },
-    webinyVersion: "0.0.0"
+    }
 };
 const createdBy: CmsIdentity = {
     id: "a",
@@ -42,9 +41,7 @@ const mockEntry: CmsEntry<MockCmsEntryValues> = {
     },
     status: "draft",
     locked: false,
-    locale: "en-US",
     tenant: "root",
-    webinyVersion: "0.0.0",
     createdBy,
     ownedBy: createdBy,
     meta: {},

@@ -2,9 +2,9 @@ import type { CmsModelField, CmsModelFieldToGraphQLPlugin } from "~/types/index.
 import { createGraphQLInputField } from "./helpers.js";
 
 interface CreateListFiltersParams {
-    field: CmsModelField;
+    field: Pick<CmsModelField, "fieldId" | "settings">;
 }
-const createListFilters = ({ field }: CreateListFiltersParams) => {
+const createListFilters = ({ field }: CreateListFiltersParams): string => {
     return `
         ${field.fieldId}: String
         ${field.fieldId}_not: String

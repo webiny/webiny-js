@@ -1,10 +1,6 @@
+import { createContextPlugin } from "@webiny/api";
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
-import { createTenancyAndSecurity } from "./tenancySecurity.js";
-import type { PermissionsArg } from "./helpers.js";
-import { createPermissions } from "./helpers.js";
-import type { ContextPlugin } from "@webiny/api";
-import type { Context } from "~/types.js";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import { createBackgroundTaskContext } from "@webiny/tasks";
@@ -18,6 +14,9 @@ import apiKeyAuthentication from "@webiny/api-core/legacy/security/plugins/apiKe
 import apiKeyAuthorization from "@webiny/api-core/legacy/security/plugins/apiKeyAuthorization.js";
 import type { ApiKey } from "@webiny/api-core/types/security.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import { createTenancyAndSecurity } from "./tenancySecurity.js";
+import type { PermissionsArg } from "./helpers.js";
+import { createPermissions } from "./helpers.js";
 
 export interface CreateHandlerCoreParams {
     setupTenancyAndSecurityGraphQL?: boolean;
@@ -66,35 +65,31 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
                 permissions: createPermissions(permissions),
                 identity
             }),
-            {
-                type: "context",
-                name: "context-security-tenant",
-                async apply(context) {
-                    context.security.getApiKeyByToken = async (
-                        token: string
-                    ): Promise<ApiKey | null> => {
-                        if (!token || token !== "aToken") {
-                            return null;
-                        }
-                        const apiKey = "a1234567890";
-                        return {
-                            id: apiKey,
-                            name: apiKey,
-                            tenant: tenant.id,
-                            permissions: identity?.permissions || [],
-                            token,
-                            createdBy: {
-                                id: "test",
-                                displayName: "test",
-                                type: "admin"
-                            },
-                            description: "test",
-                            createdOn: new Date().toISOString(),
-                            webinyVersion: context.WEBINY_VERSION
-                        };
+            createContextPlugin(context => {
+                // @ts-expect-error We're moving away from context object!
+                context.security.getApiKeyByToken = async (
+                    token: string
+                ): Promise<ApiKey | null> => {
+                    if (!token || token !== "aToken") {
+                        return null;
+                    }
+                    const apiKey = "a1234567890";
+                    return {
+                        id: apiKey,
+                        name: apiKey,
+                        tenant: tenant.id,
+                        permissions: identity?.permissions || [],
+                        token,
+                        createdBy: {
+                            id: "test",
+                            displayName: "test",
+                            type: "admin"
+                        },
+                        description: "test",
+                        createdOn: new Date().toISOString()
                     };
-                }
-            } as ContextPlugin<Context>,
+                };
+            }),
             apiKeyAuthentication({ identityType: "api-key" }),
             apiKeyAuthorization({ identityType: "api-key" }),
             createHeadlessCmsContext({

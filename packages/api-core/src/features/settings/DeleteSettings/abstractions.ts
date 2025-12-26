@@ -11,14 +11,15 @@ type DeleteSettingsError =
     | IDeleteSettingsErrors[keyof IDeleteSettingsErrors]
     | SettingsRepository.Error;
 
-export interface IDeleteSettings {
+export interface IDeleteSettingsUseCase {
     execute(name: string): Promise<Result<void, DeleteSettingsError>>;
 }
 
-export const DeleteSettings = createAbstraction<IDeleteSettings>("DeleteSettings");
+export const DeleteSettingsUseCase =
+    createAbstraction<IDeleteSettingsUseCase>("DeleteSettingsUseCase");
 
-export namespace DeleteSettings {
-    export type Interface = IDeleteSettings;
+export namespace DeleteSettingsUseCase {
+    export type Interface = IDeleteSettingsUseCase;
     export type Error = DeleteSettingsError;
 }
 

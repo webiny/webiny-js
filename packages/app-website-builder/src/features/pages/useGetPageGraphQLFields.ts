@@ -1,33 +1,27 @@
-export const useGetPageGraphQLFields = (fields: string[]) => {
-    return /* GraphQL */ `{
-        id
-        entryId
-        status
-        version
-        wbyAco_location {
+export const useGetPageGraphQLFields = (fields: string[]): string[] => {
+    return [
+        `id`,
+        `entryId`,
+        `status`,
+        `version`,
+        `location {
             folderId
-        }
-        createdOn
-        createdBy {
+        }`,
+        `createdOn`,
+        `createdBy {
             id
             displayName
-        }
-        savedOn
-        savedBy {
+        }`,
+        `savedOn`,
+        `savedBy {
             id
             displayName
-        }
-        modifiedOn
-        modifiedBy {
+        }`,
+        `modifiedOn`,
+        `modifiedBy {
             id
             displayName
-        }
-        ${fields
-            .map(
-                field => `
-            ${field}
-        `
-            )
-            .join("\n")}
-    }`;
+        }`,
+        ...fields
+    ];
 };

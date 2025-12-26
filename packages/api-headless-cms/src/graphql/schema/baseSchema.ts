@@ -140,14 +140,17 @@ const createSchema = (plugins: PluginsContainer): IGraphQLSchemaPlugin<CmsContex
             }
 
             type CmsEntryState {
+                workflowId: String
                 stepId: ID
                 stepName: String
                 state: CmsEntryStateType
             }
 
             input ListWhereInputCmsEntryState {
+                workflowId: String
                 stepId: ID
                 state: CmsEntryStateType
+                stepName: String
             }
         `,
         resolvers: {}
@@ -165,7 +168,11 @@ const createSchema = (plugins: PluginsContainer): IGraphQLSchemaPlugin<CmsContex
 };
 
 export const createBaseSchema = () => {
-    return new ContextPlugin(async context => {
+    const plugin = new ContextPlugin(async context => {
         context.plugins.register(...createSchema(context.plugins));
     });
+
+    plugin.name = "headless-cms.graphql.createBaseSchema";
+
+    return plugin;
 };

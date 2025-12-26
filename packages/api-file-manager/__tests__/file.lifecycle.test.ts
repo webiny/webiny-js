@@ -4,8 +4,6 @@ import useGqlHandler from "~tests/utils/useGqlHandler";
 import { assignFileLifecycleEvents, tracker } from "./mocks/lifecycleEvents";
 import { ROOT_FOLDER } from "~/contants";
 
-const WEBINY_VERSION = process.env.WEBINY_VERSION;
-
 const TAG = "webiny";
 
 const id = mdbid();
@@ -16,8 +14,7 @@ const fileData = {
     name: "filenameA.png",
     size: 123456,
     type: "image/png",
-    tags: ["sketch"],
-    aliases: []
+    tags: ["sketch"]
 };
 
 describe("File lifecycle events", () => {
@@ -27,8 +24,6 @@ describe("File lifecycle events", () => {
 
     const hookParamsExpected = {
         id: expect.any(String),
-        createdOn: expect.stringMatching(/^20/),
-        savedOn: expect.stringMatching(/^20/),
         createdBy: {
             id: "12345678",
             displayName: "John Doe",
@@ -38,13 +33,7 @@ describe("File lifecycle events", () => {
             id: "12345678",
             displayName: "John Doe",
             type: "admin"
-        },
-        tenant: "root",
-        locale: "en-US",
-        meta: {
-            private: false
-        },
-        webinyVersion: WEBINY_VERSION
+        }
     };
 
     beforeEach(() => {
@@ -90,8 +79,7 @@ describe("File lifecycle events", () => {
                 ...hookParamsExpected,
                 location: {
                     folderId: ROOT_FOLDER
-                },
-                savedOn: expect.any(String)
+                }
             }
         });
         const afterCreate = tracker.getLast("file:beforeCreate");
@@ -101,8 +89,7 @@ describe("File lifecycle events", () => {
                 ...hookParamsExpected,
                 location: {
                     folderId: ROOT_FOLDER
-                },
-                savedOn: expect.any(String)
+                }
             }
         });
     });
@@ -226,8 +213,8 @@ describe("File lifecycle events", () => {
             file: {
                 ...fileData,
                 ...hookParamsExpected,
-                modifiedOn: null,
-                modifiedBy: null,
+                modifiedOn: undefined,
+                modifiedBy: undefined,
                 location: {
                     folderId: ROOT_FOLDER
                 },
@@ -239,8 +226,8 @@ describe("File lifecycle events", () => {
             file: {
                 ...fileData,
                 ...hookParamsExpected,
-                modifiedOn: null,
-                modifiedBy: null,
+                modifiedOn: undefined,
+                modifiedBy: undefined,
                 location: {
                     folderId: ROOT_FOLDER
                 },
@@ -287,13 +274,9 @@ describe("File lifecycle events", () => {
             files: [
                 {
                     ...fileData,
-                    ...hookParamsExpected,
-                    modifiedOn: null,
-                    modifiedBy: null,
                     location: {
                         folderId: ROOT_FOLDER
-                    },
-                    savedOn: expect.any(String)
+                    }
                 }
             ]
         });
@@ -303,12 +286,9 @@ describe("File lifecycle events", () => {
                 {
                     ...fileData,
                     ...hookParamsExpected,
-                    modifiedOn: null,
-                    modifiedBy: null,
                     location: {
                         folderId: ROOT_FOLDER
-                    },
-                    savedOn: expect.any(String)
+                    }
                 }
             ]
         });

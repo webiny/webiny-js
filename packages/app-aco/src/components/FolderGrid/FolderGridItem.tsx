@@ -1,24 +1,30 @@
 import React from "react";
-import { cn, IconButton, Text, TimeAgo } from "@webiny/admin-ui";
+import { cn, IconButton, Text, TimeAgo, Icon } from "@webiny/admin-ui";
 import { FolderIcon, FolderSharedIcon } from "../FolderIcons/index.js";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg";
 import { OptionsMenu } from "@webiny/app-admin";
-import { useAcoConfig } from "~/config/index.js";
+import type { FolderActionConfig } from "~/config/index.js";
 import { useFolder } from "~/hooks/index.js";
 
-export interface FolderProps {
+export interface FolderGridItemProps {
+    folderActions: FolderActionConfig[];
     onClick: (id: string) => void;
 }
 
-export const FolderGridItem = ({ onClick }: FolderProps) => {
+export const FolderGridItem = ({ folderActions, onClick }: FolderGridItemProps) => {
     const { folder } = useFolder();
-    const { folder: folderConfig } = useAcoConfig();
     const { id, title, hasNonInheritedPermissions, canManagePermissions, canManageStructure } =
         folder;
 
-    let icon = <FolderIcon />;
+    let icon = <Icon icon={<FolderIcon />} label={folder.title} className={"w-[90px] h-[90px]"} />;
     if (hasNonInheritedPermissions && canManagePermissions) {
-        icon = <FolderSharedIcon />;
+        icon = (
+            <Icon
+                icon={<FolderSharedIcon />}
+                label={folder.title}
+                className={"w-[90px] h-[90px]"}
+            />
+        );
     }
 
     return (
@@ -54,7 +60,7 @@ export const FolderGridItem = ({ onClick }: FolderProps) => {
                         ])}
                     >
                         <OptionsMenu
-                            actions={folderConfig.actions}
+                            actions={folderActions}
                             data-testid={"folder.grid.menu-action"}
                             trigger={
                                 <IconButton

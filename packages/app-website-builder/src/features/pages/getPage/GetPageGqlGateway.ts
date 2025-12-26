@@ -17,11 +17,13 @@ export interface GetPageQueryVariables {
     id: string;
 }
 
-export const GET_PAGE = (PAGE_FIELDS: string) => gql`
+export const GET_PAGE = (fields: string[]) => gql`
     query GetPage($id: ID!) {
         websiteBuilder {
             getPageById(id: $id) {
-                data ${PAGE_FIELDS}
+                data {
+                    ${fields.join("\n")}
+                }
                 error {
                     code
                     data
@@ -33,15 +35,15 @@ export const GET_PAGE = (PAGE_FIELDS: string) => gql`
 `;
 
 export class GetPageGqlGateway implements IGetPageGateway {
-    private client: ApolloClient<any>;
-    private modelFields: string;
+    private readonly client;
+    private readonly modelFields;
 
-    constructor(client: ApolloClient<any>, modelFields: string) {
+    public constructor(client: ApolloClient<object>, modelFields: string[]) {
         this.client = client;
         this.modelFields = modelFields;
     }
 
-    async execute(id: string) {
+    public async execute(id: string) {
         if (!id) {
             throw new Error("Page `id` is mandatory");
         }

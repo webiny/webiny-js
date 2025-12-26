@@ -6,7 +6,6 @@ export interface ISchedulerListExecuteParamsWhere {
     targetId?: string;
     title_contains?: string;
     title_not_contains?: string;
-    targetEntryId?: string;
     type?: ScheduleType;
     scheduledBy?: string;
     scheduledOn?: Date;

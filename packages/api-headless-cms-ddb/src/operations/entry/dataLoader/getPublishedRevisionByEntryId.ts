@@ -8,7 +8,7 @@ import { parseIdentifier } from "@webiny/utils";
 import { createBatchScheduleFn } from "./createBatchScheduleFn.js";
 
 export const createGetPublishedRevisionByEntryId = (params: DataLoaderParams) => {
-    const { entity, locale, tenant } = params;
+    const { entity, tenant } = params;
 
     const publishedKey = createPublishedSortKey();
     return new DataLoader<string, CmsStorageEntry[]>(
@@ -17,7 +17,6 @@ export const createGetPublishedRevisionByEntryId = (params: DataLoaderParams) =>
                 (collection, id) => {
                     const partitionKey = createPartitionKey({
                         tenant,
-                        locale,
                         id
                     });
                     if (collection[partitionKey]) {

@@ -12,7 +12,7 @@ describe("import cms structure", () => {
         listContentModelsQuery,
         listContentModelGroupsQuery
     } = useGraphQLHandler({
-        path: "manage/en-US"
+        path: "manage"
     });
 
     it("should return error as there are no groups to validate", async () => {
@@ -135,7 +135,7 @@ describe("import cms structure", () => {
 
     it("should show errors when trying to validate groups which already exist in the system", async () => {
         const { validateCmsStructureMutation } = useGraphQLHandler({
-            path: "manage/en-US",
+            path: "manage",
             plugins: [
                 createCmsGroup({
                     id: "group-1-original",
@@ -848,7 +848,7 @@ describe("import cms structure", () => {
             listContentModelsQuery,
             listContentModelGroupsQuery
         } = useGraphQLHandler({
-            path: "manage/en-US",
+            path: "manage",
             plugins: [structurePlugins]
         });
 

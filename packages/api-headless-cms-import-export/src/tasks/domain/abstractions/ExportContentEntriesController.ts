@@ -3,19 +3,15 @@ import type {
     CmsEntryListWhere,
     CmsModelField
 } from "@webiny/api-headless-cms/types/index.js";
-import type {
-    ITaskResponseDoneResultOutput,
-    ITaskResponseResult,
-    ITaskRunParams
-} from "@webiny/tasks";
-import type { CmsImportExportFileType, Context } from "~/types.js";
+import type { CmsImportExportFileType } from "~/types.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 export enum ExportContentEntriesControllerState {
     entryExport = "entryExport",
     assetsExport = "assetsExport"
 }
 
-export interface IExportContentEntriesControllerInput {
+export interface IControllerInput {
     modelId: string;
     exportAssets: boolean;
     contentEntriesTaskId?: string;
@@ -27,7 +23,7 @@ export interface IExportContentEntriesControllerInput {
     state?: ExportContentEntriesControllerState;
 }
 
-export interface IExportContentEntriesControllerOutputFile {
+export interface IControllerOutputFile {
     readonly key: string;
     readonly checksum: string;
     readonly type: CmsImportExportFileType;
@@ -38,15 +34,14 @@ export interface IExportedCmsModel {
     fields: CmsModelField[];
 }
 
-export interface IExportContentEntriesControllerOutput extends ITaskResponseDoneResultOutput {
+export interface IControllerOutput extends TaskDefinition.TaskOutput {
     model: IExportedCmsModel;
-    files: IExportContentEntriesControllerOutputFile[];
+    files: IControllerOutputFile[];
 }
 
 export interface IExportContentEntriesController<
-    C extends Context = Context,
-    I extends IExportContentEntriesControllerInput = IExportContentEntriesControllerInput,
-    O extends IExportContentEntriesControllerOutput = IExportContentEntriesControllerOutput
+    I extends IControllerInput = IControllerInput,
+    O extends IControllerOutput = IControllerOutput
 > {
-    run(params: ITaskRunParams<C, I, O>): Promise<ITaskResponseResult<I, O>>;
+    run(params: TaskDefinition.RunParams<I, O>): Promise<TaskDefinition.Result<I, O>>;
 }

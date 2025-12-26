@@ -4,7 +4,7 @@ import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { pubSubTracker } from "./mocks/lifecycleHooks";
 
 describe("content model test reserved model ids", () => {
-    const manageHandlerOpts = { path: "manage/en-US" };
+    const manageHandlerOpts = { path: "manage" };
 
     const { createContentModelGroupMutation, createContentModelMutation } =
         useGraphQLHandler(manageHandlerOpts);
@@ -41,7 +41,7 @@ describe("content model test reserved model ids", () => {
                 createContentModel: {
                     data: null,
                     error: {
-                        code: "MODEL_ID_NOT_ALLOWED",
+                        code: "Cms/Model/ValidationError",
                         data: {
                             input: "contentModel"
                         },
@@ -66,7 +66,7 @@ describe("content model test reserved model ids", () => {
                 createContentModel: {
                     data: null,
                     error: {
-                        code: "MODEL_ID_NOT_ALLOWED",
+                        code: "Cms/Model/ValidationError",
                         data: {
                             input: "contentModelGroup"
                         },

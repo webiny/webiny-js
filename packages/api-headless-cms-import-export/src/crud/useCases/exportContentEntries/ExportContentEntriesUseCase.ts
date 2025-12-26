@@ -4,8 +4,8 @@ import type {
     IExportContentEntriesUseCaseExecuteParams
 } from "./abstractions/ExportContentEntriesUseCase.js";
 import type {
-    IExportContentEntriesControllerInput,
-    IExportContentEntriesControllerOutput
+    IControllerInput,
+    IControllerOutput
 } from "~/tasks/domain/abstractions/ExportContentEntriesController.js";
 import { EXPORT_CONTENT_ENTRIES_CONTROLLER_TASK } from "~/tasks/constants.js";
 import { convertTaskToCmsExportRecord } from "~/crud/utils/convertTaskToExportRecord.js";
@@ -25,10 +25,7 @@ export class ExportContentEntriesUseCase implements IExportContentEntriesUseCase
     public async execute(
         params: IExportContentEntriesUseCaseExecuteParams
     ): Promise<ICmsImportExportRecord> {
-        const task = await this.triggerTask<
-            IExportContentEntriesControllerInput,
-            IExportContentEntriesControllerOutput
-        >({
+        const task = await this.triggerTask<IControllerInput, IControllerOutput>({
             name: `Export Content Entries and Assets Controller for "${params.modelId}"`,
             input: {
                 modelId: params.modelId,
@@ -40,6 +37,6 @@ export class ExportContentEntriesUseCase implements IExportContentEntriesUseCase
             definition: EXPORT_CONTENT_ENTRIES_CONTROLLER_TASK
         });
 
-        return convertTaskToCmsExportRecord(task);
+        return convertTaskToCmsExportRecord(task.value);
     }
 }

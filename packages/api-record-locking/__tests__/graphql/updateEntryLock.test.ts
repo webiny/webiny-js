@@ -76,9 +76,12 @@ describe("update entry lock", () => {
                     updateEntryLock: {
                         data: null,
                         error: {
-                            code: "LOCK_UPDATE_ERROR",
-                            data: null,
-                            message: "Cannot update lock record. Record is locked by another user."
+                            code: "RecordLocking/Identity/MismatchError",
+                            data: {
+                                currentId: "anotherUserId",
+                                targetId: "id-12345678"
+                            },
+                            message: "Identity mismatch - cannot perform action."
                         }
                     }
                 }

@@ -84,7 +84,6 @@ export interface CmsModel {
     version: number;
     layout?: CmsEditorFieldsLayout;
     fields: CmsModelField[];
-    lockedFields: CmsModelField[];
     icon: string;
     name: string;
     modelId: string;

@@ -3,13 +3,12 @@ import { getElasticsearchIndexPrefix, isSharedElasticsearchIndex } from "@webiny
 
 export interface EsGetIndexNameParams {
     tenant: string;
-    locale: string;
     type: string;
     isHeadlessCmsModel?: boolean;
 }
 
 export const esGetIndexName = (params: EsGetIndexNameParams) => {
-    const { tenant, locale, type, isHeadlessCmsModel } = params;
+    const { tenant, type, isHeadlessCmsModel } = params;
 
     if (!type) {
         throw new WebinyError(
@@ -28,18 +27,8 @@ export const esGetIndexName = (params: EsGetIndexNameParams) => {
     const sharedIndex = isSharedElasticsearchIndex();
 
     const tenantId = sharedIndex ? "root" : tenant;
-    let localeCode: string | null = null;
-    if (isHeadlessCmsModel || process.env.WEBINY_ELASTICSEARCH_INDEX_LOCALE === "true") {
-        if (!locale) {
-            throw new WebinyError(
-                `Missing "locale" parameter when trying to create Elasticsearch index name.`,
-                "LOCALE_ERROR"
-            );
-        }
-        localeCode = locale;
-    }
 
-    const index = [tenantId, isHeadlessCmsModel && "headless-cms", localeCode, type]
+    const index = [tenantId, isHeadlessCmsModel && "headless-cms", type]
         .filter(Boolean)
         .join("-")
         .toLowerCase();

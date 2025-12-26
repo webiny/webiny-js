@@ -92,7 +92,7 @@ export class ImportFromUrlUseCase implements IImportFromUrlUseCase {
          * Now we need to check if the actual import task already exists.
          * We don't want to run the import task multiple times.
          */
-        const importTask = await this.triggerTask<
+        const importTaskResult = await this.triggerTask<
             IImportFromUrlControllerInput,
             IImportFromUrlControllerOutput
         >({
@@ -109,6 +109,8 @@ export class ImportFromUrlUseCase implements IImportFromUrlUseCase {
             },
             parent: integrityTask
         });
+
+        const importTask = importTaskResult.value;
 
         await this.updateTask(integrityTask.id, {
             output: {

@@ -14,7 +14,7 @@ export class LoadPagesUseCase implements ILoadPagesUseCase {
     async execute({ folderId, resetSearch }: LoadPagesUseCaseParams) {
         const params = {
             where: {
-                wbyAco_location: {
+                location: {
                     folderId
                 }
             },

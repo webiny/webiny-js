@@ -3,7 +3,7 @@ import type { IResponseContinueParams, IResponseContinueResult } from "./Respons
 import type { IResponseDoneParams, IResponseDoneResult } from "./ResponseDoneResult.js";
 import type { IResponseErrorParams, IResponseErrorResult } from "./ResponseErrorResult.js";
 import type { IResponseAbortedResult } from "./ResponseAbortedResult.js";
-import type { ITaskResponseDoneResultOutput } from "~/response/abstractions/TaskResponse.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 export type IResponseFromParams =
     | IResponseDoneResult
@@ -22,7 +22,7 @@ export interface IResponse {
     setEvent: (event: ITaskEvent) => void;
 
     from: (params: IResponseFromParams) => IResponseResult;
-    done: <O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput>(
+    done: <O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput>(
         params?: IResponseDoneParams<O>
     ) => IResponseDoneResult<O>;
     aborted: () => IResponseAbortedResult;

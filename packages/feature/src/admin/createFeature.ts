@@ -12,13 +12,13 @@ export function createFeature<
 >(def: {
     name: string;
     register: (container: Container, ...args: TParams) => void;
-    resolve: (container: Container) => TExports;
+    resolve?: (container: Container) => TExports;
 }): FeatureDefinition<TExports, TParams> {
     return {
         name: def.name,
         register: def.register,
         resolve: (container: Container): TExports => {
-            return def.resolve(container);
+            return (def.resolve ? def.resolve(container) : undefined) as TExports;
         }
     };
 }

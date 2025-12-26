@@ -1,12 +1,10 @@
-import type { CmsContext, CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
+import type { CmsEntry, CmsEntryValues } from "~/types/index.js";
 import { STATUS_UNPUBLISHED } from "./statuses.js";
 import { getIdentity } from "~/utils/identity.js";
 import { getDate } from "~/utils/date.js";
 import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 
 type CreateRepublishEntryDataParams = {
-    model: CmsModel;
-    context: CmsContext;
     getIdentity: () => SecurityIdentity;
     originalEntry: CmsEntry;
 };

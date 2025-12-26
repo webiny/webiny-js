@@ -4,6 +4,7 @@ import type {
     UpdateCmsEntryInput,
     UpdateCmsEntryOptionsInput
 } from "~/types/index.js";
+import { UpdateSingletonEntryUseCase } from "~/features/contentEntry/UpdateSingletonEntry/index.js";
 
 interface ResolveUpdateArgs {
     data: UpdateCmsEntryInput;
@@ -15,12 +16,12 @@ type ResolveUpdate = ResolverFactory<any, ResolveUpdateArgs>;
 export const resolveUpdate: ResolveUpdate =
     ({ model }) =>
     async (_: unknown, args, context) => {
-        try {
-            const manager = await context.cms.getSingletonEntryManager(model.modelId);
-            const entry = await manager.update(args.data, args.options);
+        const updateEntry = await context.container.resolve(UpdateSingletonEntryUseCase);
+        const entry = await updateEntry.execute(model, args.data, args.options);
 
-            return new Response(entry);
-        } catch (e) {
-            return new ErrorResponse(e);
+        if (entry.isFail()) {
+            return new ErrorResponse(entry.error);
         }
+
+        return new Response(entry.value);
     };

@@ -35,6 +35,7 @@ describe("Write Permissions Checks", () => {
         });
 
         expectNotAuthorized(notCreatedModel.data.createContentModel, {
+            code: "Cms/Model/NotAuthorized",
             message: "Not allowed to access content models."
         });
 
@@ -108,6 +109,7 @@ describe("Write Permissions Checks", () => {
         });
 
         expectNotAuthorized(notUpdatedModel.data.updateContentModel, {
+            code: "Cms/Model/NotAuthorized",
             message: "Not allowed to access content models."
         });
 

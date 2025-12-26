@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, test } from "vitest";
 import { identity } from "../testHelpers/helpers";
 import { toSlug } from "~/utils/toSlug";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
@@ -37,7 +37,7 @@ const createPermissions = (groups: string[]) => [
     {
         name: "cms.contentModelGroup",
         rwd: "rwd",
-        groups: groups ? { "en-US": groups } : undefined
+        groups: groups ?? undefined
     },
     {
         name: "cms.endpoint.read"
@@ -47,23 +47,19 @@ const createPermissions = (groups: string[]) => [
     },
     {
         name: "cms.endpoint.preview"
-    },
-    {
-        name: "content.i18n",
-        locales: ["en-US"]
     }
 ];
 
-describe("Cms Group crud test", () => {
+describe("Group crud test", () => {
     const {
         getContentModelGroupQuery,
         listContentModelGroupsQuery,
         createContentModelGroupMutation,
         updateContentModelGroupMutation,
         deleteContentModelGroupMutation
-    } = useGraphQLHandler({ path: "manage/en-us" });
+    } = useGraphQLHandler({ path: "manage" });
 
-    it("content model group create, read, update, delete and list all at once", async () => {
+    test("content model group create, read, update, delete and list all at once", async () => {
         const updatedContentModelGroups = [];
         const prefixes = Array.from(Array(TestHelperEnum.MODELS_AMOUNT).keys()).map(prefix => {
             return createContentModelGroupPrefix(prefix);
@@ -178,7 +174,7 @@ describe("Cms Group crud test", () => {
         });
     });
 
-    it("error when getting non-existing content model group", async () => {
+    test("error when getting non-existing content model group", async () => {
         const [response] = await getContentModelGroupQuery({
             id: "nonExistingId"
         });
@@ -187,8 +183,8 @@ describe("Cms Group crud test", () => {
                 getContentModelGroup: {
                     data: null,
                     error: {
-                        message: `Cms Group "nonExistingId" was not found!`,
-                        code: "NOT_FOUND",
+                        message: `Group "nonExistingId" was not found!`,
+                        code: "Cms/ModelGroup/NotFound",
                         data: null
                     }
                 }
@@ -196,7 +192,7 @@ describe("Cms Group crud test", () => {
         });
     });
 
-    it("error when trying to update non-existing content model group", async () => {
+    test("error when trying to update non-existing content model group", async () => {
         const [response] = await updateContentModelGroupMutation({
             id: "nonExistingIdUpdate",
             data: {
@@ -209,8 +205,8 @@ describe("Cms Group crud test", () => {
                 updateContentModelGroup: {
                     data: null,
                     error: {
-                        message: `Cms Group "nonExistingIdUpdate" was not found!`,
-                        code: "NOT_FOUND",
+                        message: `Group "nonExistingIdUpdate" was not found!`,
+                        code: "Cms/ModelGroup/NotFound",
                         data: null
                     }
                 }
@@ -218,7 +214,7 @@ describe("Cms Group crud test", () => {
         });
     });
 
-    it("error when trying to delete non-existing content model group", async () => {
+    test("error when trying to delete non-existing content model group", async () => {
         const [response] = await deleteContentModelGroupMutation({
             id: "nonExistingIdDelete"
         });
@@ -227,8 +223,8 @@ describe("Cms Group crud test", () => {
                 deleteContentModelGroup: {
                     data: null,
                     error: {
-                        message: `Cms Group "nonExistingIdDelete" was not found!`,
-                        code: "NOT_FOUND",
+                        message: `Group "nonExistingIdDelete" was not found!`,
+                        code: "Cms/ModelGroup/NotFound",
                         data: null
                     }
                 }
@@ -236,7 +232,7 @@ describe("Cms Group crud test", () => {
         });
     });
 
-    it("error when trying to create a content model group with incomplete data", async () => {
+    test("error when trying to create a content model group with incomplete data", async () => {
         const [nameResponse] = await createContentModelGroupMutation({
             data: {
                 name: "",
@@ -251,7 +247,7 @@ describe("Cms Group crud test", () => {
                     data: null,
                     error: {
                         message: `Validation failed.`,
-                        code: "VALIDATION_FAILED_INVALID_FIELDS",
+                        code: "Cms/ModelGroup/ValidationFailed",
                         data: {
                             invalidFields: {
                                 name: expect.any(Object)
@@ -277,7 +273,7 @@ describe("Cms Group crud test", () => {
                     data: null,
                     error: {
                         message: `Validation failed.`,
-                        code: "VALIDATION_FAILED_INVALID_FIELDS",
+                        code: "Cms/ModelGroup/ValidationFailed",
                         data: {
                             invalidFields: {
                                 icon: expect.any(Object)
@@ -289,7 +285,7 @@ describe("Cms Group crud test", () => {
         });
     });
 
-    it("error when trying to create a new content model group with no name or slug", async () => {
+    test("error when trying to create a new content model group with no name or slug", async () => {
         const [response] = await createContentModelGroupMutation({
             data: {
                 name: "",
@@ -303,7 +299,7 @@ describe("Cms Group crud test", () => {
                     data: null,
                     error: {
                         message: `Validation failed.`,
-                        code: "VALIDATION_FAILED_INVALID_FIELDS",
+                        code: "Cms/ModelGroup/ValidationFailed",
                         data: {
                             invalidFields: {
                                 name: expect.any(Object),
@@ -316,7 +312,7 @@ describe("Cms Group crud test", () => {
         });
     });
 
-    it("error when trying to create a new content model group with same slug as existing one in the database", async () => {
+    test("error when trying to create a new content model group with same slug as existing one in the database", async () => {
         await createContentModelGroupMutation({
             data: {
                 name: "content model group",
@@ -339,8 +335,8 @@ describe("Cms Group crud test", () => {
                 createContentModelGroup: {
                     data: null,
                     error: {
-                        message: `Cms Group with the slug "content-model-group" already exists.`,
-                        code: "SLUG_ALREADY_EXISTS",
+                        message: `Group with the slug "content-model-group" already exists.`,
+                        code: "Cms/ModelGroup/SlugTaken",
                         data: expect.any(Object)
                     }
                 }
@@ -348,8 +344,8 @@ describe("Cms Group crud test", () => {
         });
     });
 
-    it("list specific content model groups", async () => {
-        // Create few content model groups
+    test("list specific content model groups", async () => {
+        // Create several content model groups
         const prefixes = Array.from(Array(TestHelperEnum.MODELS_AMOUNT).keys()).map(prefix => {
             return createContentModelGroupPrefix(prefix);
         });
@@ -380,9 +376,10 @@ describe("Cms Group crud test", () => {
         }
 
         // Create listGroups query with permission for only specific groups
+        const localPermissions = createPermissions([groups[0]]);
         const { listContentModelGroupsQuery: listGroups } = useGraphQLHandler({
-            path: "manage/en-us",
-            permissions: createPermissions([groups[0]])
+            path: "manage",
+            permissions: localPermissions
         });
 
         const [response] = await listGroups();
@@ -391,7 +388,7 @@ describe("Cms Group crud test", () => {
         expect(response.data.listContentModelGroups.data[0].id).toEqual(groups[0]);
     });
 
-    it("should allow to create a group with custom ID", async () => {
+    test("should allow to create a group with custom ID", async () => {
         const data = {
             id: "a-custom-group-id",
             name: "My Group With ID",

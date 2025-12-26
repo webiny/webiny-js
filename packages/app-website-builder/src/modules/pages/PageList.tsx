@@ -1,12 +1,6 @@
 import React from "react";
-import {
-    useRoute,
-    useRouter,
-    AdminLayout,
-    CompositionScope,
-    DialogsProvider
-} from "@webiny/app-admin";
-import { AcoWithConfig, NavigateFolderProvider } from "@webiny/app-aco";
+import { useRoute, useRouter, AdminLayout, DialogsProvider } from "@webiny/app-admin";
+import { NavigateFolderProvider } from "@webiny/app-aco";
 import { FoldersProvider } from "@webiny/app-aco/contexts/folders.js";
 import { PagesList } from "./PagesList/PagesList.js";
 import { WB_PAGE_APP } from "~/constants.js";
@@ -27,24 +21,20 @@ export const PageList = () => {
     };
 
     return (
-        <CompositionScope name={"wbPage"}>
-            <AdminLayout title={"Pages - Website Builder"}>
-                <PageListWithConfig>
-                    <AcoWithConfig>
-                        <FoldersProvider type={WB_PAGE_APP}>
-                            <NavigateFolderProvider
-                                folderId={route.params.folderId}
-                                createStorageKey={createStorageKey}
-                                navigateToFolder={navigateToFolder}
-                            >
-                                <DialogsProvider>
-                                    <PagesList />
-                                </DialogsProvider>
-                            </NavigateFolderProvider>
-                        </FoldersProvider>
-                    </AcoWithConfig>
-                </PageListWithConfig>
-            </AdminLayout>
-        </CompositionScope>
+        <AdminLayout title={"Pages - Website Builder"}>
+            <PageListWithConfig>
+                <FoldersProvider type={WB_PAGE_APP}>
+                    <NavigateFolderProvider
+                        folderId={route.params.folderId}
+                        createStorageKey={createStorageKey}
+                        navigateToFolder={navigateToFolder}
+                    >
+                        <DialogsProvider>
+                            <PagesList />
+                        </DialogsProvider>
+                    </NavigateFolderProvider>
+                </FoldersProvider>
+            </PageListWithConfig>
+        </AdminLayout>
     );
 };

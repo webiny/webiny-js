@@ -1,5 +1,4 @@
 import React, { useCallback, useState } from "react";
-import { AcoWithConfig } from "@webiny/app-aco";
 import { SchedulerRenderer } from "~/Presentation/SchedulerRenderer/index.js";
 import { CompositionScope } from "@webiny/react-composition";
 import { SchedulerListWithConfig } from "~/Presentation/configs/index.js";
@@ -60,11 +59,9 @@ export const Scheduler = ({ render, ...rest }: SchedulerProps) => {
         <>
             {show && (
                 <CompositionScope name={"scheduler"}>
-                    <AcoWithConfig>
-                        <SchedulerListWithConfig>
-                            <SchedulerRenderer {...rest} onClose={onClose} />
-                        </SchedulerListWithConfig>
-                    </AcoWithConfig>
+                    <SchedulerListWithConfig>
+                        <SchedulerRenderer {...rest} onClose={onClose} />
+                    </SchedulerListWithConfig>
                 </CompositionScope>
             )}
             {render ? render({ showScheduler }) : null}

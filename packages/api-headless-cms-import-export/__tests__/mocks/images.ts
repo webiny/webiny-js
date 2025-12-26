@@ -5,7 +5,6 @@ interface IImageData {
     id: string;
     url: string;
     size: number;
-    aliases: string[];
     key: string;
     name: string;
     type: string;
@@ -78,7 +77,6 @@ class ImageData {
             id: generateAlphaNumericId(),
             url: config.url,
             size: config.size || 100,
-            aliases: config.aliases || [],
             key: pathname,
             type: "image/jpeg",
             tags: config.tags || [],
@@ -95,26 +93,22 @@ class ImageData {
 export const createImages = (): ImageData[] => {
     return [
         new ImageData({
-            url: "https://aCloundfrontDistributionId.cloudfront.net/files/fileId1234/image-1-in-its-own-directory.jpg",
-            aliases: ["alias-image-1-in-its-own-directory.jpg"]
+            url: "https://aCloundfrontDistributionId.cloudfront.net/files/fileId1234/image-1-in-its-own-directory.jpg"
         }),
         new ImageData({
             url: "https://aCloundfrontDistributionId.cloudfront.net/files/fileId2345/image-2-in-its-own-directory.jpg"
         }),
         new ImageData({
-            url: "https://aCloundfrontDistributionId.cloudfront.net/files/image-3-no-directory.jpg",
-            aliases: ["alias-image-3-no-directory.jpg"]
+            url: "https://aCloundfrontDistributionId.cloudfront.net/files/image-3-no-directory.jpg"
         }),
         new ImageData({
-            url: "https://aCloundfrontDistributionId.cloudfront.net/files/fileId4567/image-4-in-its-own-directory.jpg",
-            aliases: ["alias-image-4-in-its-own-directory.jpg"]
+            url: "https://aCloundfrontDistributionId.cloudfront.net/files/fileId4567/image-4-in-its-own-directory.jpg"
         }),
         new ImageData({
             url: "https://aCloundfrontDistributionId.cloudfront.net/files/image-5-no-directory.jpg"
         }),
         new ImageData({
-            url: "https://aCloundfrontDistributionId.cloudfront.net/files/fileId6789/image-6-in-its-own-directory.jpg",
-            aliases: ["alias-image-6-in-its-own-directory.jpg"]
+            url: "https://aCloundfrontDistributionId.cloudfront.net/files/fileId6789/image-6-in-its-own-directory.jpg"
         })
     ];
 };

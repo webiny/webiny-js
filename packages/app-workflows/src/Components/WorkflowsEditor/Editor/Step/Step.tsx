@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { Accordion, Card, Grid } from "@webiny/admin-ui";
+import { Accordion, Card, Grid, Icon } from "@webiny/admin-ui";
 import type { IWorkflowStep } from "~/types.js";
 import { ReactComponent as ArrowUp } from "@webiny/icons/arrow_upward.svg";
 import { ReactComponent as ArrowDown } from "@webiny/icons/arrow_downward.svg";
@@ -145,7 +145,6 @@ export const Step = observer(
                                             </Grid.Column>
                                         </Grid>
                                     </Card>
-                                    <div className={"size-lg"} />
                                 </>
                             ) : (
                                 <Accordion
@@ -165,14 +164,26 @@ export const Step = observer(
                                                     <Accordion.Item.Action
                                                         onClick={moveUp}
                                                         disabled={!canMoveUp(step)}
-                                                        icon={<ArrowUp />}
+                                                        icon={
+                                                            <Icon
+                                                                label={"Move step up"}
+                                                                size={"md"}
+                                                                icon={<ArrowUp />}
+                                                            />
+                                                        }
                                                     />
                                                 )}
                                                 {canMoveDown && (
                                                     <Accordion.Item.Action
                                                         onClick={moveDown}
                                                         disabled={!canMoveDown(step)}
-                                                        icon={<ArrowDown />}
+                                                        icon={
+                                                            <Icon
+                                                                label={"Move step down"}
+                                                                size={"md"}
+                                                                icon={<ArrowDown />}
+                                                            />
+                                                        }
                                                     />
                                                 )}
                                                 <Accordion.Item.Action.Separator />

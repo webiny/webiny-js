@@ -1,6 +1,6 @@
-import type { ITaskResponseDoneResultOutput } from "@webiny/tasks";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
-export interface IMockDataManagerInput {
+export interface IMockDataManagerInput extends TaskDefinition.TaskInput {
     modelId: string;
     amount: number;
     seconds?: number;
@@ -9,4 +9,4 @@ export interface IMockDataManagerInput {
     overwrite?: boolean;
 }
 
-export type IMockDataManagerOutput = ITaskResponseDoneResultOutput;
+export type IMockDataManagerOutput = TaskDefinition.TaskOutput;

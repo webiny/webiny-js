@@ -150,7 +150,6 @@ export interface CmsModelFieldToElasticsearchPlugin extends Plugin {
 export type Attributes = Record<string, AttributeDefinition>;
 
 export enum ENTITIES {
-    SYSTEM = "CmsSystem",
     GROUPS = "CmsGroups",
     MODELS = "CmsModels",
     ENTRIES = "CmsEntries",
@@ -177,10 +176,7 @@ export interface CmsContext extends BaseCmsContext {
 export interface HeadlessCmsStorageOperations extends BaseHeadlessCmsStorageOperations<CmsContext> {
     getTable: () => Table<string, string, string>;
     getEsTable: () => Table<string, string, string>;
-    getEntities: () => Record<
-        "system" | "groups" | "models" | "entries" | "entriesEs",
-        Entity<any>
-    >;
+    getEntities: () => Record<"groups" | "models" | "entries" | "entriesEs", Entity<any>>;
 }
 
 export interface StorageOperationsFactory {
@@ -192,7 +188,7 @@ export interface CmsEntryStorageOperations extends BaseCmsEntryStorageOperations
 }
 
 export interface DataLoadersHandlerInterfaceClearAllParams {
-    model: Pick<CmsModel, "tenant" | "locale">;
+    model: Pick<CmsModel, "tenant">;
 }
 export interface DataLoadersHandlerInterface {
     clearAll: (params?: DataLoadersHandlerInterfaceClearAllParams) => void;

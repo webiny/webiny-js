@@ -23,8 +23,13 @@ const CmsContentModelsMenu = ({ canAccess }: ChildMenuProps) => {
         <Menu
             name={"headlessCMS.contentModels.models"}
             parent={"headlessCMS"}
-            pinnable={true}
-            element={<Menu.Link text={"Models"} to={router.getLink(Routes.ContentModels.List)} />}
+            element={
+                <Menu.Link
+                    text={"Models"}
+                    to={router.getLink(Routes.ContentModels.List)}
+                    pinnable={true}
+                />
+            }
         />
     );
 };
@@ -39,9 +44,12 @@ const CmsContentGroupsMenu = ({ canAccess }: ChildMenuProps) => {
         <Menu
             name={"headlessCMS.contentModels.groups"}
             parent={"headlessCMS"}
-            pinnable={true}
             element={
-                <Menu.Link text={"Groups"} to={router.getLink(Routes.ContentModelGroups.List)} />
+                <Menu.Link
+                    text={"Groups"}
+                    to={router.getLink(Routes.ContentModelGroups.List)}
+                    pinnable={true}
+                />
             }
         />
     );

@@ -6,6 +6,7 @@ import { FoldersProvider as FoldersContextProvider } from "./folders.js";
 import { SearchRecordsProvider as SearchRecordsContextProvider } from "./records.js";
 import { AcoListProvider } from "~/contexts/acoList.js";
 import { NavigateFolderProvider } from "~/contexts/navigateFolder.js";
+import type { ColumnConfig } from "~/config/table/Column.js";
 
 export interface AcoAppProviderContext {
     app: AcoApp;
@@ -25,8 +26,9 @@ export type AcoAppProviderProps = {
     client: ApolloClient<any>;
     navigateToFolder: (folderId: string) => void;
     createNavigateFolderStorageKey: () => string;
-    own?: boolean;
     model: AcoModel;
+    columns: ColumnConfig[];
+    own?: boolean;
     getFields?: () => AcoModelField[];
 };
 
@@ -52,6 +54,7 @@ export const AcoAppProvider = ({
     id,
     client,
     model,
+    columns,
     getFields,
     navigateToFolder,
     createNavigateFolderStorageKey,
@@ -82,7 +85,7 @@ export const AcoAppProvider = ({
     return (
         <AcoAppContext.Provider value={value}>
             <FoldersContextProvider>
-                <SearchRecordsContextProvider>
+                <SearchRecordsContextProvider columns={columns}>
                     <NavigateFolderProvider
                         folderId={folderId}
                         createStorageKey={createNavigateFolderStorageKey}

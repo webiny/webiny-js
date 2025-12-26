@@ -12,7 +12,7 @@ import type { EntityQueryOptions } from "@webiny/db-dynamodb/toolbox.js";
 
 const PK = `WS#CONNECTIONS`;
 const GSI1_PK = "WS#CONNECTIONS#IDENTITY";
-const GSI2_PK = "WS#CONNECTIONS#TENANT#LOCALE";
+const GSI2_PK = "WS#CONNECTIONS#TENANT";
 
 interface IWebsocketsConnectionRegistryDbItem {
     PK: string;
@@ -34,13 +34,12 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
     public async register(
         params: IWebsocketsConnectionRegistryRegisterParams
     ): Promise<IWebsocketsConnectionRegistryData> {
-        const { connectionId, tenant, locale, identity, domainName, stage, connectedOn } = params;
+        const { connectionId, tenant, identity, domainName, stage, connectedOn } = params;
 
         const data: IWebsocketsConnectionRegistryData = {
             connectionId,
             identity,
             tenant,
-            locale,
             domainName,
             stage,
             connectedOn
@@ -132,18 +131,11 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
     /**
      * Uses GSI2 keys
      */
-    public async listViaTenant(
-        tenant: string,
-        locale?: string
-    ): Promise<IWebsocketsConnectionRegistryData[]> {
-        let options: Partial<EntityQueryOptions> = {
-            beginsWith: `T#${tenant}#L#`
+    public async listViaTenant(tenant: string): Promise<IWebsocketsConnectionRegistryData[]> {
+        const options: Partial<EntityQueryOptions> = {
+            beginsWith: `T#${tenant}`
         };
-        if (locale) {
-            options = {
-                eq: `T#${tenant}#L#${locale}`
-            };
-        }
+
         const items = await queryAll<IWebsocketsConnectionRegistryDbItem>({
             entity: this.entity,
             partitionKey: GSI2_PK,
@@ -171,7 +163,7 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
     }
 
     private async store(data: IWebsocketsConnectionRegistryData) {
-        const { connectionId, tenant, locale, identity } = data;
+        const { connectionId, tenant, identity } = data;
         const item: IWebsocketsConnectionRegistryDbItem = {
             // to find specific identity related to given connection
             PK,
@@ -179,9 +171,9 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
             // to find all connections related to given identity
             GSI1_PK,
             GSI1_SK: identity.id,
-            // to find all connections related to given tenant/locale combination
+            // to find all connections related to given tenant
             GSI2_PK,
-            GSI2_SK: `T#${tenant}#L#${locale}`,
+            GSI2_SK: `T#${tenant}`,
             data
         };
         try {

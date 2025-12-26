@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { decrypt, encrypt } from "~/crud/settings/password";
+import { decrypt, encrypt } from "~/features/Encryption/utils/password.js";
 
 const secret = "someReallySecretSecretWithRandomNumbersOrLettersOrSomethingElse";
 const password = "GZPJWYVIYnUX99dGnk1N";

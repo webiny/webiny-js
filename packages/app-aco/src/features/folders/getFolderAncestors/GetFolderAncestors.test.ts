@@ -1,14 +1,19 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { folderCacheFactory } from "../cache/FoldersCacheFactory.js";
-import { Folder } from "../Folder.js";
-import { GetFolderAncestors } from "./GetFolderAncestors.js";
+import { describe, it, expect } from "vitest";
+import { Container } from "@webiny/di";
+import { ListCache } from "~/features/folders/cache/index.js";
+import { Folder } from "~/domain/folder/Folder.js";
+import { FoldersContext } from "~/features/folders/abstractions.js";
+import { FoldersCache } from "~/features/folders/abstractions.js";
+import { GetFolderAncestorsFeature } from "~/features/folders/getFolderAncestors/feature.js";
+import { GetFolderAncestorsUseCase } from "~/features/folders/getFolderAncestors/abstractions.js";
 
 describe("GetFolderAncestors", () => {
     const type = "abc";
-    const foldersCache = folderCacheFactory.getCache(type);
 
-    beforeEach(() => {
-        foldersCache.clear();
+    function setupTest() {
+        const container = new Container();
+        const foldersCache = new ListCache<Folder>();
+
         foldersCache.addItems([
             Folder.create({
                 id: "folder-1",
@@ -51,14 +56,19 @@ describe("GetFolderAncestors", () => {
                 type
             })
         ]);
-    });
+
+        container.registerInstance(FoldersContext, { type });
+        container.registerInstance(FoldersCache, foldersCache);
+
+        GetFolderAncestorsFeature.register(container);
+
+        return { container, foldersCache, useCase: container.resolve(GetFolderAncestorsUseCase) };
+    }
 
     it("should return all ancestors of a folder", () => {
-        const getFolderAncestors = GetFolderAncestors.getInstance(type);
+        const { useCase } = setupTest();
 
-        const ancestors = getFolderAncestors.execute({
-            id: "folder-4"
-        });
+        const ancestors = useCase.execute("folder-4");
 
         expect(ancestors).toEqual([
             {
@@ -89,11 +99,9 @@ describe("GetFolderAncestors", () => {
     });
 
     it("should return an empty array if the folder has no ancestors", () => {
-        const getFolderAncestors = GetFolderAncestors.getInstance(type);
+        const { useCase } = setupTest();
 
-        const ancestors = getFolderAncestors.execute({
-            id: "folder-1"
-        });
+        const ancestors = useCase.execute("folder-1");
 
         expect(ancestors).toEqual([
             {
@@ -108,11 +116,9 @@ describe("GetFolderAncestors", () => {
     });
 
     it("should return an empty array if the folder does not exist", () => {
-        const getFolderAncestors = GetFolderAncestors.getInstance(type);
+        const { useCase } = setupTest();
 
-        const ancestors = getFolderAncestors.execute({
-            id: "non-existing-folder"
-        });
+        const ancestors = useCase.execute("non-existing-folder");
 
         expect(ancestors).toEqual([]);
     });

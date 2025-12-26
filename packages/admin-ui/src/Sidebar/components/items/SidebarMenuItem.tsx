@@ -17,6 +17,7 @@ export interface SidebarMenuItemBaseProps {
     variant?: "group-label";
     active?: boolean;
     disabled?: boolean;
+    pinnable?: boolean;
 }
 
 type SidebarMenuItemButtonProps = SidebarMenuItemBaseProps & {

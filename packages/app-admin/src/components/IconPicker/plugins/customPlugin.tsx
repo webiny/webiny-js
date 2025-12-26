@@ -49,8 +49,7 @@ const IconFilePicker = ({ onUpload, onChange }: IconFilePickerProps) => {
             onChange={onChange}
             scope="scope:iconPicker"
             accept={["image/svg+xml"]}
-        >
-            {({ showFileManager }) => (
+            render={({ showFileManager }) => (
                 <Button
                     variant={"primary"}
                     text={"Browse"}
@@ -59,7 +58,7 @@ const IconFilePicker = ({ onUpload, onChange }: IconFilePickerProps) => {
                     }}
                 />
             )}
-        </FileManager>
+        ></FileManager>
     );
 };
 

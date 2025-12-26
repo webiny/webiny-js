@@ -9,7 +9,7 @@ interface ICommentDialogProps {
 export const CommentDialog = (props: ICommentDialogProps) => {
     const { presenter } = props;
 
-    const step = presenter.vm.step;
+    const step = presenter.vm.dialog?.step;
 
     if (!step) {
         return null;

@@ -5,7 +5,7 @@ import type { CmsGroup, CmsModel } from "~/types";
 import { useArticleManageHandler } from "~tests/testHelpers/useArticleManageHandler";
 
 describe("revision id scalar", () => {
-    const manageHandlerOpts = { path: "manage/en-US" };
+    const manageHandlerOpts = { path: "manage" };
 
     const { createContentModelGroupMutation, createContentModelMutation, createArticle } =
         useArticleManageHandler(manageHandlerOpts);

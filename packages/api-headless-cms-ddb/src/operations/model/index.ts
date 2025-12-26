@@ -14,19 +14,17 @@ import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup.js";
 import type { QueryAllParams } from "@webiny/db-dynamodb/utils/query.js";
 import { queryAllClean } from "@webiny/db-dynamodb/utils/query.js";
 import { deleteItem, put } from "@webiny/db-dynamodb";
+import { convertException } from "@webiny/utils";
 
 interface PartitionKeysParams {
     tenant: string;
-    locale: string;
 }
 const createPartitionKey = (params: PartitionKeysParams): string => {
-    const { tenant, locale } = params;
+    const { tenant } = params;
     if (!tenant) {
         throw new WebinyError(`Missing tenant variable when creating model partitionKey.`);
-    } else if (!locale) {
-        throw new WebinyError(`Missing locale variable when creating model partitionKey.`);
     }
-    return `T#${tenant}#L#${locale}#CMS#CM`;
+    return `T#${tenant}#CMS#CM`;
 };
 
 interface SortKeyParams {
@@ -76,7 +74,7 @@ export const createModelsStorageOperations = (
             return model;
         } catch (ex) {
             throw new WebinyError(`Could not create CMS Content Model.`, "CREATE_MODEL_ERROR", {
-                error: ex,
+                error: convertException(ex),
                 model,
                 keys
             });

@@ -1,6 +1,6 @@
 import { ExtensionDefinitionModel } from "./models/index.js";
-import { type DefineExtensionParams } from "./types.js";
-import { type z } from "zod";
+import type { DefineExtensionParams } from "./types.js";
+import type { z } from "zod";
 
 export function createExtensionDefinition<TParamsSchema extends z.ZodTypeAny>(
     extensionParams: DefineExtensionParams<TParamsSchema>

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { getBaseConfiguration, getJapaneseConfiguration } from "~/indexConfiguration";
+import { getBaseConfiguration } from "~/indexConfiguration";
 import { ElasticsearchIndexRequestBody } from "~/types";
 import { createElasticsearchClient } from "./helpers";
 import { getElasticsearchIndexPrefix } from "~/indexPrefix";
@@ -7,10 +7,7 @@ import { getElasticsearchIndexPrefix } from "~/indexPrefix";
 /**
  * Add configurations when added to the code.
  */
-const settings: [string, ElasticsearchIndexRequestBody][] = [
-    ["base", getBaseConfiguration()],
-    ["japanese", getJapaneseConfiguration()]
-];
+const settings: [string, ElasticsearchIndexRequestBody][] = [["base", getBaseConfiguration()]];
 
 describe("Elasticsearch Index Mapping And Settings", () => {
     const client = createElasticsearchClient();

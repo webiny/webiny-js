@@ -3,13 +3,17 @@ import type {
     CmsEntryListSortAsc,
     CmsEntryListSortDesc
 } from "@webiny/api-headless-cms/types/index.js";
-import { type DateOnType, ScheduleType } from "~/scheduler/types.js";
-import { dateToISOString } from "~/scheduler/dates.js";
+import { dateToISOString } from "./dates.js";
 
 export const getScheduleSchema = zod.object({
     modelId: zod.string(),
     id: zod.string()
 });
+
+export enum ScheduleType {
+    publish = "publish",
+    unpublish = "unpublish"
+}
 
 const publishAndUnpublishSchemaType = zod.nativeEnum(ScheduleType);
 
@@ -18,7 +22,7 @@ export const listScheduleSchema = zod.object({
     where: zod
         .object({
             targetId: zod.string().optional(),
-            targetEntryId: zod.string().optional(),
+            namespace: zod.string().optional(),
             title_contains: zod.string().optional(),
             title_not_contains: zod.string().optional(),
             type: publishAndUnpublishSchemaType.optional(),
@@ -69,18 +73,10 @@ export const listScheduleSchema = zod.object({
     after: zod.string().optional()
 });
 
-const dateOnSchema = zod
-    .date()
-    .optional()
-    .transform<DateOnType | undefined>(value => {
-        return value instanceof Date ? value : undefined;
-    });
-
 const schedulerInputSchema = zod.discriminatedUnion("immediately", [
     zod.object({
         immediately: zod.literal(true),
         scheduleOn: zod.never().optional(),
-        dateOn: zod.date().optional(),
         type: publishAndUnpublishSchemaType
     }),
     zod.object({
@@ -90,7 +86,6 @@ const schedulerInputSchema = zod.discriminatedUnion("immediately", [
                 return new Date(value);
             })
         ),
-        dateOn: dateOnSchema,
         type: publishAndUnpublishSchemaType
     })
 ]);

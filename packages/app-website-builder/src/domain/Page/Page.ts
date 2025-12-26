@@ -7,7 +7,6 @@ export interface PageData {
     status?: WbStatus;
     version?: number;
     location?: WbLocation;
-    wbyAco_location?: WbLocation;
     properties?: Record<string, any>;
     metadata?: Record<string, any>;
     bindings?: Record<string, any>;
@@ -56,6 +55,9 @@ export class Page {
         this.savedOn = data.savedOn ?? "";
         this.modifiedBy = this.createIdentity(data.modifiedBy);
         this.modifiedOn = data.modifiedOn ?? "";
+        // TODO remove when implemented in a proper way
+        // @ts-expect-error
+        this.workflows = data.workflows || null;
     }
 
     static create(data: PageData) {
@@ -63,12 +65,6 @@ export class Page {
     }
 
     private createLocation(data: PageData): WbLocation {
-        if (data.wbyAco_location) {
-            return {
-                folderId: data.wbyAco_location.folderId
-            };
-        }
-
         if (data.location) {
             return {
                 folderId: data.location.folderId

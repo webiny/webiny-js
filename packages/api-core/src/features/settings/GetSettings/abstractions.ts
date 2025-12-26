@@ -3,19 +3,21 @@ import { Result } from "@webiny/feature/api";
 import type { ISettings } from "~/domain/settings/index.js";
 import { SettingsRepository } from "../shared/abstractions.js";
 
-export interface IGetSettingsErrors {
+export interface IGetSettingsUseCaseErrors {
     // Add use-case-specific errors here if needed
 }
 
-type GetSettingsError = IGetSettingsErrors[keyof IGetSettingsErrors] | SettingsRepository.Error;
+type UseCaseError =
+    | IGetSettingsUseCaseErrors[keyof IGetSettingsUseCaseErrors]
+    | SettingsRepository.Error;
 
-export interface IGetSettings {
-    execute(name: string): Promise<Result<ISettings, GetSettingsError>>;
+export interface IGetSettingsUseCase {
+    execute(name: string): Promise<Result<ISettings, UseCaseError>>;
 }
 
-export const GetSettings = createAbstraction<IGetSettings>("GetSettings");
+export const GetSettingsUseCase = createAbstraction<IGetSettingsUseCase>("GetSettingsUseCase");
 
-export namespace GetSettings {
-    export type Interface = IGetSettings;
-    export type Error = GetSettingsError;
+export namespace GetSettingsUseCase {
+    export type Interface = IGetSettingsUseCase;
+    export type Error = UseCaseError;
 }

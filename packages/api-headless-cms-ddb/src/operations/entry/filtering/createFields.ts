@@ -5,6 +5,7 @@ import type { PluginsContainer } from "@webiny/plugins";
 import type { CmsFieldFilterValueTransformPlugin } from "~/types.js";
 import { CmsEntryFieldFilterPathPlugin } from "~/plugins/index.js";
 import { getMappedPlugins } from "./mapPlugins.js";
+import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldType.js";
 
 interface Params {
     fields: CmsModelField[];
@@ -26,8 +27,9 @@ interface AddFieldsToCollectionParams {
 const createFieldCollection = (params: AddFieldsToCollectionParams): FieldCollection => {
     const { fields, parents, transformValuePlugins, valuePathPlugins, system } = params;
     return fields.reduce<FieldCollection>((collection, field) => {
-        const transformPlugin = transformValuePlugins[field.type];
-        const valuePathPlugin = valuePathPlugins[field.type];
+        const fieldType = getBaseFieldType(field);
+        const transformPlugin = transformValuePlugins[fieldType];
+        const valuePathPlugin = valuePathPlugins[fieldType];
 
         const basePath = system ? [] : ["values"];
         /**

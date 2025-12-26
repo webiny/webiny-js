@@ -1,6 +1,4 @@
 import React from "react";
-import { ReactComponent as CloseIcon } from "@webiny/icons/highlight_off.svg";
-import { IconButton, Tooltip } from "@webiny/admin-ui";
 import type { DecoratableComponent } from "@webiny/app-admin";
 import { makeDecoratable, withDecoratorFactory } from "@webiny/app-admin";
 import type { CmsDynamicZoneTemplate } from "~/types.js";
@@ -23,33 +21,7 @@ export interface TemplateGalleryListProps {
 }
 
 const GalleryList = makeDecoratable("TemplateGalleryList", (props: TemplateGalleryListProps) => {
-    return (
-        <div className={"p-md rounded-sm bg-neutral-dimmed grid grid-cols-4 gap-md"}>
-            {props.children}
-        </div>
-    );
-});
-
-export interface CloseGalleryProps {
-    onClose: () => void;
-}
-
-const CloseGallery = makeDecoratable("TemplateGalleryClose", (props: CloseGalleryProps) => {
-    return (
-        <div className={"w-full text-center mt-md"}>
-            <Tooltip
-                content={"Close"}
-                trigger={
-                    <IconButton
-                        onClick={props.onClose}
-                        icon={<CloseIcon />}
-                        size={"lg"}
-                        variant={"ghost"}
-                    />
-                }
-            />
-        </div>
-    );
+    return <div className={"gap-md flex"}>{props.children}</div>;
 });
 
 export interface TemplateGalleryProps {
@@ -73,7 +45,6 @@ const Gallery = makeDecoratable("TemplateGallery", (props: TemplateGalleryProps)
                     />
                 ))}
             </GalleryList>
-            <CloseGallery onClose={props.onClose} />
         </GalleryContainer>
     );
 });
@@ -99,6 +70,5 @@ function withShouldRender<T extends DecoratableComponent>(Component: T) {
 export const TemplateGallery = Object.assign(withShouldRender(Gallery), {
     Container: withShouldRender(GalleryContainer),
     List: withShouldRender(GalleryList),
-    Item: withShouldRender(TemplateItem),
-    Close: withShouldRender(CloseGallery)
+    Item: withShouldRender(TemplateItem)
 });

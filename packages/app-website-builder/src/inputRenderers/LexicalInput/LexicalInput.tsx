@@ -66,8 +66,8 @@ const EditorDialog = (props: EditorDialogProps) => {
             showCloseButton={false}
             actions={
                 <>
-                    <Dialog.CancelButton onClick={props.onClose} />
-                    <Dialog.ConfirmButton
+                    <Dialog.CancelAction onClick={props.onClose} />
+                    <Dialog.ConfirmAction
                         text={"Save Changes"}
                         onClick={() => {
                             props.onChange(localValue);

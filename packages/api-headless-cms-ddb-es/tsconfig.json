@@ -14,7 +14,6 @@
     { "path": "../utils" },
     { "path": "../api-core" },
     { "path": "../api-dynamodb-to-elasticsearch" },
-    { "path": "../api-log" },
     { "path": "../handler" },
     { "path": "../handler-aws" },
     { "path": "../handler-graphql" },
@@ -55,6 +54,9 @@
         "../api-core/src/features/security/IdentityContext/index.js"
       ],
       "@webiny/api-core/features/WcpContext": ["../api-core/src/features/wcp/WcpContext/index.js"],
+      "@webiny/api-core/features/TaskService": [
+        "../api-core/src/features/task/TaskService/index.js"
+      ],
       "@webiny/api-core/features/settings": ["../api-core/src/features/settings/index.js"],
       "@webiny/api-core/features/GetSettings": [
         "../api-core/src/features/settings/GetSettings/index.js"
@@ -176,8 +178,6 @@
       "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-dynamodb-to-elasticsearch/*": ["../api-dynamodb-to-elasticsearch/src/*"],
       "@webiny/api-dynamodb-to-elasticsearch": ["../api-dynamodb-to-elasticsearch/src"],
-      "@webiny/api-log/*": ["../api-log/src/*"],
-      "@webiny/api-log": ["../api-log/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],

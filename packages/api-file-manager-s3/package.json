@@ -16,12 +16,11 @@
     "@webiny/api-file-manager": "0.0.0",
     "@webiny/api-websockets": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
-    "@webiny/error": "0.0.0",
+    "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/plugins": "0.0.0",
-    "@webiny/tasks": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/validation": "0.0.0",
     "mime": "^3.0.0",
@@ -29,7 +28,7 @@
     "p-map": "^7.0.3",
     "p-reduce": "^3.0.0",
     "sanitize-filename": "^1.6.3",
-    "sharp": "^0.34.4"
+    "sharp": "^0.34.5"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",

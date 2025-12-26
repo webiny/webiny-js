@@ -13,4 +13,3 @@ export * from "./notContains.js";
 export * from "./notIn.js";
 export * from "./startsWith.js";
 export * from "./notStartsWith.js";
-export * from "./japanese/contains.js";

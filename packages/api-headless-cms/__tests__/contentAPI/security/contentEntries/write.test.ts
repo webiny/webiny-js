@@ -29,6 +29,7 @@ describe("Write Permissions Checks", () => {
         const failedCreateTestEntryResponse = await manageApiB.createTestEntry();
 
         expectNotAuthorized(failedCreateTestEntryResponse, {
+            code: "Cms/Entry/NotAuthorized",
             message: 'Not allowed to access "testModel" entries.'
         });
 
@@ -74,6 +75,7 @@ describe("Write Permissions Checks", () => {
         });
 
         expectNotAuthorized(failedUpdateTestEntryResponse, {
+            code: "Cms/Entry/NotAuthorized",
             message: 'Not allowed to access "testModel" entries.'
         });
 

@@ -10,7 +10,7 @@ describe("CreatePageRevisionFrom", () => {
             entryId: "page-1",
             status: WbPageStatus.Draft,
             version: 2,
-            wbyAco_location: {
+            location: {
                 folderId: "folder-1"
             },
             properties: {
@@ -38,7 +38,7 @@ describe("CreatePageRevisionFrom", () => {
                 id: "page-1#0001",
                 entryId: "page-1",
                 status: WbPageStatus.Draft,
-                wbyAco_location: {
+                location: {
                     folderId: "folder-1"
                 },
                 properties: {

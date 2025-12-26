@@ -130,7 +130,7 @@ export class DefaultGetProjectConfigService implements GetProjectConfigService.I
                         });
 
                         if (!extDef) {
-                            this.loggerService.debug(
+                            this.loggerService.warn(
                                 `Could not find extension definition for type: ${extensionType}. Skipping...`
                             );
                             return null;

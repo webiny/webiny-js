@@ -1,0 +1,40 @@
+import { WebinyError } from "@webiny/error";
+import { PageBeforePublishHandler } from "@webiny/api-website-builder/features/pages/PublishPage/index.js";
+import { WB_PAGE_APP } from "~/utils/appName.js";
+import { GetTargetWorkflowStateUseCase } from "@webiny/api-workflows/features/workflowState/GetTargetWorkflowState/index.js";
+
+class ValidateWorkflowStateOnPageBeforePublishImpl implements PageBeforePublishHandler.Interface {
+    constructor(private getTargetState: GetTargetWorkflowStateUseCase.Interface) {}
+
+    async handle(event: PageBeforePublishHandler.Event): Promise<void> {
+        const { page } = event.payload;
+
+        const stateResult = await this.getTargetState.execute({
+            app: WB_PAGE_APP,
+            targetRevisionId: page.id
+        });
+        const state = stateResult.value;
+
+        if (state?.done) {
+            return;
+        }
+
+        throw new WebinyError(
+            "Cannot publish page because its workflow state is not completed.",
+            "WORKFLOW_STATE_NOT_COMPLETED",
+            {
+                app: WB_PAGE_APP,
+                pageId: page.id,
+                state: {
+                    ...state
+                }
+            }
+        );
+    }
+}
+
+export const ValidateWorkflowStateOnPageBeforePublish =
+    PageBeforePublishHandler.createImplementation({
+        implementation: ValidateWorkflowStateOnPageBeforePublishImpl,
+        dependencies: [GetTargetWorkflowStateUseCase]
+    });

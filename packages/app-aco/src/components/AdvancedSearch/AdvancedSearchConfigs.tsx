@@ -13,7 +13,7 @@ const { AdvancedSearch } = AcoConfig;
 
 export const AdvancedSearchConfigs = React.memo(() => {
     return (
-        <AcoConfig>
+        <>
             <AdvancedSearch.FieldRenderer name={"text"} type={FieldType.TEXT} element={<Input />} />
             <AdvancedSearch.FieldRenderer name={"date"} type={FieldType.DATE} element={<Input />} />
             <AdvancedSearch.FieldRenderer name={"time"} type={FieldType.TIME} element={<Input />} />
@@ -42,7 +42,7 @@ export const AdvancedSearchConfigs = React.memo(() => {
                 type={FieldType.PREDEFINED_VALUES}
                 element={<PredefinedValues />}
             />
-        </AcoConfig>
+        </>
     );
 });
 

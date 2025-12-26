@@ -10,18 +10,13 @@ const getConnectedOn = (connectedAt?: number) => {
 
 export const createWebsocketsRouteConnectPlugin = () => {
     const plugin = createWebsocketsRoutePlugin(WebsocketsEventRoute.connect, async params => {
-        const { registry, event, response, getTenant, getLocale, getIdentity } = params;
+        const { registry, event, response, getTenant, getIdentity } = params;
 
         const tenant = getTenant();
-        const locale = getLocale();
         const identity = getIdentity();
         if (!tenant) {
             return response.error({
                 message: "Missing tenant."
-            });
-        } else if (!locale) {
-            return response.error({
-                message: "Missing locale."
             });
         } else if (!identity) {
             return response.error({
@@ -33,7 +28,6 @@ export const createWebsocketsRouteConnectPlugin = () => {
             identity,
             connectionId: event.requestContext.connectionId,
             tenant,
-            locale,
             domainName: event.requestContext.domainName,
             stage: event.requestContext.stage,
             connectedOn: getConnectedOn(event.requestContext.connectedAt)

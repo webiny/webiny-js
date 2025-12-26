@@ -1,40 +1,37 @@
-import { createPrivateTaskDefinition } from "@webiny/tasks";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { CREATE_FLP_TASK_ID } from "~/flp/tasks/index.js";
-import { type AcoContext, type ICreateFlpTaskInput, type ICreateFlpTaskParams } from "~/types.js";
+import { type ICreateFlpTaskInput } from "~/types.js";
 import { CreateFlpUseCase } from "~/features/flp/CreateFlp/index.js";
 
-class CreateFlpTask {
-    public init = () => {
-        return createPrivateTaskDefinition<AcoContext, ICreateFlpTaskInput>({
-            id: CREATE_FLP_TASK_ID,
-            title: "ACO - Create FLP record",
-            description:
-                "Synchronizes the FLP catalog by creating the FLP record based on the provided folder.",
-            disableDatabaseLogs: true,
-            run: async (params: ICreateFlpTaskParams) => {
-                const { response, isAborted, input, context, isCloseToTimeout } = params;
+class CreateFlpTaskImpl implements TaskDefinition.Interface<ICreateFlpTaskInput> {
+    id = CREATE_FLP_TASK_ID;
+    title = "ACO - Create FLP record";
+    description =
+        "Synchronizes the FLP catalog by creating the FLP record based on the provided folder.";
+    disableDatabaseLogs = true;
 
-                const useCase = context.container.resolve(CreateFlpUseCase);
+    constructor(private createFlp: CreateFlpUseCase.Interface) {}
 
-                try {
-                    if (isAborted()) {
-                        return response.aborted();
-                    } else if (isCloseToTimeout()) {
-                        return response.continue(input);
-                    }
-
-                    await useCase.execute(input.folder);
-
-                    return response.done("Task done: FLP record created.");
-                } catch (error) {
-                    return response.error(error);
-                }
+    async run({ input, controller }: TaskDefinition.RunParams<ICreateFlpTaskInput>) {
+        try {
+            if (controller.runtime.isAborted()) {
+                return controller.response.aborted();
             }
-        });
-    };
+
+            if (controller.runtime.isCloseToTimeout()) {
+                return controller.response.continue(input);
+            }
+
+            await this.createFlp.execute(input.folder);
+
+            return controller.response.done("Task done: FLP record created.");
+        } catch (error) {
+            return controller.response.error(error);
+        }
+    }
 }
 
-export const createFlpTask = () => {
-    const task = new CreateFlpTask();
-    return task.init();
-};
+export const CreateFlpTask = TaskDefinition.createImplementation({
+    implementation: CreateFlpTaskImpl,
+    dependencies: [CreateFlpUseCase]
+});

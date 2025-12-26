@@ -2,6 +2,7 @@ import { extensionDefinitions } from "./extensionDefinitions.js";
 import { projectDecorator } from "./projectDecorator.js";
 import { projectId } from "./projectId.js";
 import { telemetry } from "./telemetry.js";
+import { envVar } from "./envVar.js";
 
 // Hooks.
 import {
@@ -41,6 +42,7 @@ export const Telemetry = telemetry.ReactComponent;
 export const ProjectId = projectId.ReactComponent;
 export const ProjectDecorator = projectDecorator.ReactComponent;
 export const ExtensionDefinitions = extensionDefinitions.ReactComponent;
+export const EnvVar = envVar.ReactComponent;
 
 // Hooks.
 export const BeforeBuild = beforeBuild.ReactComponent;
@@ -77,6 +79,7 @@ export const definitions = [
     projectId.definition,
     projectDecorator.definition,
     extensionDefinitions.definition,
+    envVar.definition,
 
     // Hooks.
     adminAfterBuild.definition,

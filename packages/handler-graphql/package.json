@@ -21,6 +21,7 @@
     "@graphql-tools/utils": "^10.11.0",
     "@webiny/api": "0.0.0",
     "@webiny/error": "0.0.0",
+    "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",

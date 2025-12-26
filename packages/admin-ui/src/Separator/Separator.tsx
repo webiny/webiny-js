@@ -21,7 +21,8 @@ const separatorVariants = cva("shrink-0", {
             base: "bg-white",
             dimmed: "bg-neutral-dimmed",
             muted: "bg-neutral-muted",
-            strong: "bg-neutral-strong"
+            strong: "bg-neutral-strong",
+            accent: "bg-primary"
         }
     },
     compoundVariants: [
@@ -43,23 +44,96 @@ const separatorVariants = cva("shrink-0", {
     }
 });
 
-type SeparatorProps = SeparatorPrimitive.SeparatorProps & VariantProps<typeof separatorVariants>;
+type SeparatorPosition = "start" | "middle" | "end";
+
+type SeparatorProps = Omit<SeparatorPrimitive.SeparatorProps, "children"> &
+    VariantProps<typeof separatorVariants> & {
+        children?: React.ReactNode;
+        labelPosition?: SeparatorPosition;
+    };
 
 const SeparatorBase = ({
     className,
-    orientation,
+    orientation = "horizontal",
     margin,
     variant,
     decorative = true,
+    children,
+    labelPosition = "middle",
     ...props
-}: SeparatorProps) => (
-    <SeparatorPrimitive.Root
-        decorative={decorative}
-        orientation={orientation}
-        className={separatorVariants({ orientation, margin, variant, className })}
-        {...props}
-    />
-);
+}: SeparatorProps) => {
+    // If no children, render simple separator
+    if (!children) {
+        return (
+            <SeparatorPrimitive.Root
+                decorative={decorative}
+                orientation={orientation}
+                className={separatorVariants({ orientation, margin, variant, className })}
+                {...props}
+            />
+        );
+    }
+
+    // With children, render separator with label
+    const isHorizontal = orientation === "horizontal";
+    const containerClass = isHorizontal
+        ? "flex items-center w-full"
+        : "flex flex-col items-center h-full";
+    const separatorClass = separatorVariants({ orientation, variant });
+    const textColor = variant === "accent" ? "text-accent-primary" : "text-neutral-primary";
+    const baseLabelClass = `${textColor} text-md font-semibold`;
+
+    const renderContent = () => {
+        if (labelPosition === "start") {
+            return (
+                <>
+                    <span className={`${baseLabelClass} pr-md`}>{children}</span>
+                    <SeparatorPrimitive.Root
+                        decorative={decorative}
+                        orientation={orientation}
+                        className={`${separatorClass} flex-1`}
+                        {...props}
+                    />
+                </>
+            );
+        }
+
+        if (labelPosition === "end") {
+            return (
+                <>
+                    <SeparatorPrimitive.Root
+                        decorative={decorative}
+                        orientation={orientation}
+                        className={`${separatorClass} flex-1`}
+                        {...props}
+                    />
+                    <span className={`${baseLabelClass} pl-md`}>{children}</span>
+                </>
+            );
+        }
+
+        // middle (default)
+        return (
+            <>
+                <SeparatorPrimitive.Root
+                    decorative={decorative}
+                    orientation={orientation}
+                    className={`${separatorClass} flex-1`}
+                    {...props}
+                />
+                <span className={`${baseLabelClass} px-md`}>{children}</span>
+                <SeparatorPrimitive.Root
+                    decorative={decorative}
+                    orientation={orientation}
+                    className={`${separatorClass} flex-1`}
+                    {...props}
+                />
+            </>
+        );
+    };
+
+    return <div className={`${containerClass} ${className || ""}`}>{renderContent()}</div>;
+};
 
 const Separator = makeDecoratable("Separator", SeparatorBase);
 

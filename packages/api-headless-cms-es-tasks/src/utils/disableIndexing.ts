@@ -4,7 +4,7 @@ import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 
 export interface IDisableIndexingParams {
     client: Client;
-    model: Pick<CmsModel, "modelId" | "tenant" | "locale">;
+    model: Pick<CmsModel, "modelId" | "tenant">;
 }
 
 export const disableIndexing = async (params: IDisableIndexingParams) => {

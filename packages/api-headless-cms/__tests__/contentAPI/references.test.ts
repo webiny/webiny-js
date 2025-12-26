@@ -122,8 +122,8 @@ const extractReadArticle = (item: any, category?: any): Record<string, any> => {
 };
 
 describe("entry references", () => {
-    const manageOpts = { path: "manage/en-US" };
-    const readOpts = { path: "read/en-US" };
+    const manageOpts = { path: "manage" };
+    const readOpts = { path: "read" };
 
     const mainManager = useGraphQLHandler(manageOpts);
 

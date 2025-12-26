@@ -8,16 +8,14 @@ import { useCategoryReadHandler } from "../testHelpers/useCategoryReadHandler";
 import { useProductManageHandler } from "../testHelpers/useProductManageHandler";
 import { createStorageOperationsContext } from "~tests/storageOperations/context";
 
-const webinyVersion = "0.0.0";
-
 interface CreateEntryResult {
     entry: CmsEntry;
     input: Record<string, any>;
 }
 
 describe("Republish entries", () => {
-    const readOpts = { path: "read/en-US" };
-    const manageOpts = { path: "manage/en-US" };
+    const readOpts = { path: "read" };
+    const manageOpts = { path: "manage" };
 
     const {
         createContentModelMutation,
@@ -75,8 +73,7 @@ describe("Republish entries", () => {
         });
         return {
             ...update.data.updateContentModel.data,
-            tenant: "root",
-            locale: "en-US"
+            tenant: "root"
         };
     };
 
@@ -145,9 +142,7 @@ describe("Republish entries", () => {
             entry: {
                 id: `${id}#0001`,
                 entryId: id,
-                locale: model.locale,
                 tenant: model.tenant,
-                webinyVersion,
                 locked: false,
                 values: input,
                 createdOn: date.toISOString(),

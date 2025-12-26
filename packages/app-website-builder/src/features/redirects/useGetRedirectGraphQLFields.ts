@@ -2,7 +2,7 @@ export const useGetRedirectGraphQLFields = () => {
     return /* GraphQL */ `
         {
             id
-            wbyAco_location {
+            location {
                 folderId
             }
             createdOn

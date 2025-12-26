@@ -25,7 +25,6 @@ export const createBackgroundTaskDefinition = (
                     "webinyTaskId.$": "$.detail.webinyTaskId",
                     "webinyTaskDefinitionId.$": "$.detail.webinyTaskDefinitionId",
                     "tenant.$": "$.detail.tenant",
-                    "locale.$": "$.detail.locale",
                     "delay.$": "$.detail.delay"
                 }
             },
@@ -49,7 +48,6 @@ export const createBackgroundTaskDefinition = (
                     payload: {
                         "webinyTaskId.$": "$.webinyTaskId",
                         "webinyTaskDefinitionId.$": "$.webinyTaskDefinitionId",
-                        "locale.$": "$.locale",
                         "tenant.$": "$.tenant",
                         "delay.$": "$.delay",
                         endpoint: "manage",

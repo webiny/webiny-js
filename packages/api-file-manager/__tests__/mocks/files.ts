@@ -13,8 +13,7 @@ export const fileAData = {
     name: "filenameA.png",
     size: 123456,
     type: "image/png",
-    tags: ["sketch", "file-a", "webiny"],
-    aliases: []
+    tags: ["sketch", "file-a", "webiny"]
 };
 export const fileBData = {
     id: ids.B,
@@ -22,8 +21,7 @@ export const fileBData = {
     name: "filenameB.png",
     size: 123456,
     type: "image/png",
-    tags: ["art", "file-b"],
-    aliases: []
+    tags: ["art", "file-b"]
 };
 export const fileCData = {
     id: ids.C,
@@ -31,8 +29,7 @@ export const fileCData = {
     name: "filenameC.png",
     size: 123456,
     type: "image/png",
-    tags: ["art", "sketch", "webiny", "file-c"],
-    aliases: []
+    tags: ["art", "sketch", "webiny", "file-c"]
 };
 export const fileDData = {
     id: ids.D,
@@ -40,6 +37,5 @@ export const fileDData = {
     name: "filenameD.png",
     size: 123456,
     type: "image/png",
-    tags: ["scope:apw:file-d", "scope:apw", "scope:apw:media"],
-    aliases: []
+    tags: ["scope:apw:file-d", "scope:apw", "scope:apw:media"]
 };

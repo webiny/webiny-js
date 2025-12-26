@@ -1,4 +1,4 @@
-import type { WCP_FEATURE_LABEL } from "~/index.js";
+import type { WCP_FEATURE_LABEL } from "./index.js";
 
 export interface WcpProject {
     orgId: string;

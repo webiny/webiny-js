@@ -7,7 +7,7 @@ import { createLatestSortKey, createPartitionKey } from "~/operations/entry/keys
 import type { DataLoaderParams } from "./types.js";
 
 export const createGetLatestRevisionByEntryId = (params: DataLoaderParams) => {
-    const { entity, locale, tenant } = params;
+    const { entity, tenant } = params;
 
     const latestKey = createLatestSortKey();
 
@@ -17,7 +17,6 @@ export const createGetLatestRevisionByEntryId = (params: DataLoaderParams) => {
                 (collection, id) => {
                     const partitionKey = createPartitionKey({
                         tenant,
-                        locale,
                         id
                     });
                     if (collection[partitionKey]) {

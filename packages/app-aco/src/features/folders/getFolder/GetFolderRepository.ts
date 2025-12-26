@@ -1,19 +1,21 @@
-import { Folder } from "../Folder.js";
-import type { ListCache } from "../cache/index.js";
-import type { IGetFolderRepository } from "./IGetFolderRepository.js";
-import type { IGetFolderGateway } from "./IGetFolderGateway.js";
+import { Folder } from "~/domain/folder/Folder.js";
+import { GetFolderRepository as RepositoryAbstraction } from "./abstractions.js";
+import { GetFolderGateway } from "./abstractions.js";
+import { FoldersCache } from "~/features/folders/abstractions.js";
 
-export class GetFolderRepository implements IGetFolderRepository {
-    private cache: ListCache<Folder>;
-    private gateway: IGetFolderGateway;
-
-    constructor(cache: ListCache<Folder>, gateway: IGetFolderGateway) {
-        this.cache = cache;
-        this.gateway = gateway;
-    }
+class GetFolderRepositoryImpl implements RepositoryAbstraction.Interface {
+    constructor(
+        private cache: FoldersCache.Interface,
+        private gateway: GetFolderGateway.Interface
+    ) {}
 
     async execute(id: string) {
         const response = await this.gateway.execute(id);
         this.cache.addItems([Folder.create(response)]);
     }
 }
+
+export const GetFolderRepository = RepositoryAbstraction.createImplementation({
+    implementation: GetFolderRepositoryImpl,
+    dependencies: [FoldersCache, GetFolderGateway]
+});

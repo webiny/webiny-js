@@ -23,8 +23,7 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config): Plu
         new ContextPlugin<Context>(context => {
             context.tenancy.setCurrentTenant({
                 id: context.request.headers["x-tenant"] || "root",
-                name: context.request.headers["x-tenant"] || "Root",
-                webinyVersion: context.WEBINY_VERSION
+                name: context.request.headers["x-tenant"] || "Root"
             } as unknown as Tenant);
 
             context.security.addAuthenticator(async () => {

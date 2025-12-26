@@ -39,6 +39,7 @@ describe("Delete Permissions Checks", () => {
         });
 
         expectNotAuthorized(modelDeletion.data.deleteContentModel, {
+            code: "Cms/Model/NotAuthorized",
             message: "Not allowed to access content models."
         });
 

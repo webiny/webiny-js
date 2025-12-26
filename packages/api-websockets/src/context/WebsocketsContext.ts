@@ -1,4 +1,4 @@
-import WebinyError from "@webiny/error";
+import { Result } from "@webiny/feature/api";
 import type {
     IWebsocketsConnectionRegistry,
     IWebsocketsConnectionRegistryData
@@ -15,6 +15,12 @@ import type {
     IWebsocketsTransportSendData
 } from "~/transport/index.js";
 import type { GenericRecord } from "@webiny/api/types.js";
+import {
+    WebsocketServiceError,
+    WebsocketForceDisconnectError,
+    WebsocketForceDisconnectNotificationError
+} from "~/features/WebsocketService/errors.js";
+import { WebsocketService } from "~/features/WebsocketService/index.js";
 
 export class WebsocketsContext implements IWebsocketsContextObject {
     public readonly registry: IWebsocketsConnectionRegistry;
@@ -28,41 +34,72 @@ export class WebsocketsContext implements IWebsocketsContextObject {
     public async send<T extends GenericRecord = GenericRecord>(
         identity: Pick<IWebsocketsIdentity, "id">,
         data: IWebsocketsTransportSendData<T>
-    ): Promise<void> {
-        const connections = await this.listConnections({
+    ): Promise<Result<void, WebsocketService.Error>> {
+        const result = await this.listConnections({
             where: {
                 identityId: identity.id
             }
         });
-        return this.transport.send<T>(connections, data);
+
+        if (result.isFail()) {
+            return Result.fail(result.error);
+        }
+
+        try {
+            await this.transport.send<T>(result.value, data);
+        } catch (error) {
+            return Result.fail(new WebsocketServiceError(error));
+        }
+
+        return Result.ok();
     }
 
     public async sendToConnections<T extends GenericRecord = GenericRecord>(
         connections: IWebsocketsTransportSendConnection[],
         data: IWebsocketsTransportSendData<T>
-    ): Promise<void> {
-        return this.transport.send<T>(connections, data);
+    ): Promise<Result<void, WebsocketService.Error>> {
+        try {
+            await this.transport.send<T>(connections, data);
+        } catch (error) {
+            return Result.fail(new WebsocketServiceError(error));
+        }
+
+        return Result.ok();
     }
 
     public async listConnections(
         params?: IWebsocketsContextListConnectionsParams
-    ): Promise<IWebsocketsConnectionRegistryData[]> {
-        const where = params?.where || {};
-        if (where.identityId) {
-            return await this.registry.listViaIdentity(where.identityId);
-        } else if (where.connections) {
-            return await this.registry.listViaConnections(where.connections);
-        } else if (where.tenant) {
-            return await this.registry.listViaTenant(where.tenant, where.locale);
+    ): Promise<Result<IWebsocketsConnectionRegistryData[], WebsocketService.Error>> {
+        let connections: IWebsocketsConnectionRegistryData[] = [];
+
+        try {
+            const where = params?.where || {};
+            if (where.identityId) {
+                connections = await this.registry.listViaIdentity(where.identityId);
+            } else if (where.connections) {
+                connections = await this.registry.listViaConnections(where.connections);
+            } else if (where.tenant) {
+                connections = await this.registry.listViaTenant(where.tenant);
+            } else {
+                connections = await this.registry.listAll();
+            }
+        } catch (error) {
+            return Result.fail(new WebsocketServiceError(error));
         }
-        return await this.registry.listAll();
+
+        return Result.ok(connections);
     }
 
     public async disconnect(
         params?: IWebsocketsContextDisconnectConnectionsParams,
         notify = true
-    ): Promise<IWebsocketsConnectionRegistryData[]> {
-        const connections = await this.listConnections(params);
+    ): Promise<Result<IWebsocketsConnectionRegistryData[], WebsocketService.Error>> {
+        const result = await this.listConnections(params);
+        if (result.isFail()) {
+            return Result.fail(result.error);
+        }
+
+        const connections = result.value;
 
         for (const connection of connections) {
             try {
@@ -71,35 +108,23 @@ export class WebsocketsContext implements IWebsocketsContextObject {
                 // do nothing
             }
         }
+
         if (notify) {
             try {
                 await this.transport.send(connections, {
                     action: "forcedDisconnect"
                 });
-            } catch (ex) {
-                throw new WebinyError(
-                    "Failed to notify the clients about the forced disconnect.",
-                    "FORCED_DISCONNECT_NOTIFICATION_ERROR",
-                    {
-                        connections,
-                        error: ex
-                    }
-                );
+            } catch (error) {
+                return Result.fail(new WebsocketForceDisconnectNotificationError(error));
             }
         }
+
         try {
             await this.transport.disconnect(connections);
-        } catch (ex) {
-            throw new WebinyError(
-                "Failed to forcefully disconnect the Websocket clients.",
-                "FORCED_DISCONNECT_ERROR",
-                {
-                    connections,
-                    error: ex
-                }
-            );
+        } catch (error) {
+            return Result.fail(new WebsocketForceDisconnectError(error));
         }
 
-        return connections;
+        return Result.ok(connections);
     }
 }

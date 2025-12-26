@@ -10,7 +10,7 @@ import type {
     CmsModelFieldValidatorValidateParams
 } from "./types.js";
 import type { GetCmsModelFieldAst } from "./modelAst.js";
-import type { CmsModelField, CmsModelFieldType, LockedField } from "./modelField.js";
+import type { CmsModelField, CmsModelFieldType } from "./modelField.js";
 import type { CmsModel } from "./model.js";
 
 /**
@@ -279,32 +279,6 @@ export interface CmsModelFieldToGraphQLPlugin<TField extends CmsModelField = Cms
      * Get field AST.
      */
     getFieldAst?: GetCmsModelFieldAst<TField>;
-}
-
-/**
- * Check for content model locked field.
- * A custom plugin definable by the user.
- *
- * @category CmsModel
- * @category Plugin
- */
-export interface CmsModelLockedFieldPlugin extends Plugin {
-    /**
-     * A plugin type
-     */
-    type: "cms-model-locked-field";
-    /**
-     * A unique identifier of the field type (text, number, json, myField, ...).
-     */
-    fieldType: string;
-    /**
-     * A method to check if field really is locked.
-     */
-    checkLockedField?: (params: { lockedField: LockedField; field: CmsModelField }) => void;
-    /**
-     * A method to get the locked field data.
-     */
-    getLockedFieldData?: (params: { field: CmsModelField }) => Record<string, any>;
 }
 
 /**

@@ -5,7 +5,7 @@ import { IdentityData } from "@webiny/api-core/features/IdentityContext";
 
 describe("content entry custom identities", () => {
     const manager = useCategoryManageHandler({
-        path: "manage/en-US"
+        path: "manage"
     });
 
     const mockIdentityOne: IdentityData = {

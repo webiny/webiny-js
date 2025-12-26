@@ -9,11 +9,7 @@ export type { ColumnConfig };
 type ColumnProps = React.ComponentProps<typeof AcoConfig.Table.Column>;
 
 const BaseColumn = (props: ColumnProps) => {
-    return (
-        <AcoConfig>
-            <Table.Column {...props} />
-        </AcoConfig>
-    );
+    return <Table.Column {...props} />;
 };
 
 export const Column = Object.assign(BaseColumn, {

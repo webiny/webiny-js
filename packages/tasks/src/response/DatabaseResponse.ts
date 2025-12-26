@@ -1,4 +1,4 @@
-import { TaskDataStatus, TaskResponseStatus } from "~/types.js";
+import { TaskDataStatus } from "~/types.js";
 import { NotFoundError } from "@webiny/handler-graphql";
 import type {
     IResponse,
@@ -13,6 +13,7 @@ import type {
 } from "./abstractions/index.js";
 import type { ITaskManagerStorePrivate } from "~/runner/abstractions/index.js";
 import { getErrorProperties } from "~/utils/getErrorProperties.js";
+import { TaskResultStatus } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 export class DatabaseResponse implements IResponseAsync {
     public readonly response: IResponse;
@@ -26,13 +27,13 @@ export class DatabaseResponse implements IResponseAsync {
 
     public from(result: IResponseResult): Promise<IResponseResult> {
         switch (result.status) {
-            case TaskResponseStatus.DONE:
+            case TaskResultStatus.DONE:
                 return this.done(result);
-            case TaskResponseStatus.CONTINUE:
+            case TaskResultStatus.CONTINUE:
                 return this.continue(result);
-            case TaskResponseStatus.ERROR:
+            case TaskResultStatus.ERROR:
                 return this.error(result);
-            case TaskResponseStatus.ABORTED:
+            case TaskResultStatus.ABORTED:
                 return this.aborted();
         }
     }

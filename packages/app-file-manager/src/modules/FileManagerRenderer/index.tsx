@@ -5,7 +5,7 @@ import { FileManagerViewConfig as FileManagerConfig } from "~/index.js";
 import { FileManagerRenderer } from "./FileManagerView/index.js";
 import { FilterByType } from "./filters/FilterByType.js";
 import { ActionDelete, ActionEdit, ActionMove } from "~/components/BulkActions/index.js";
-import { Name, Tags, Aliases, AccessControl } from "~/components/fields/index.js";
+import { Name, Tags, AccessControl } from "~/components/fields/index.js";
 import {
     CellActions,
     CellAuthor,
@@ -42,14 +42,14 @@ export const FileManagerRendererModule = () => {
                 <Browser.BulkAction name={"move"} element={<ActionMove />} />
                 <Browser.BulkAction name={"delete"} element={<ActionDelete />} />
                 {/* Folder Actions */}
-                <Browser.FolderAction name={"edit"} element={<EditFolder />} />
-                <Browser.FolderAction name={"permissions"} element={<SetFolderPermissions />} />
-                <Browser.FolderAction name={"delete"} element={<DeleteFolder />} />
+                <Browser.Folder.Action name={"edit"} element={<EditFolder />} />
+                <Browser.Folder.Action name={"permissions"} element={<SetFolderPermissions />} />
+                <Browser.Folder.Action name={"delete"} element={<DeleteFolder />} />
                 {/* File Actions */}
-                <Browser.FileAction name={"copy"} element={<CopyFile />} />
-                <Browser.FileAction name={"edit"} element={<EditFile />} />
-                <Browser.FileAction name={"move"} element={<MoveFile />} />
-                <Browser.FileAction name={"delete"} element={<DeleteFile />} />
+                <Browser.File.Action name={"copy"} element={<CopyFile />} />
+                <Browser.File.Action name={"edit"} element={<EditFile />} />
+                <Browser.File.Action name={"move"} element={<MoveFile />} />
+                <Browser.File.Action name={"delete"} element={<DeleteFile />} />
                 {/* Table Columns */}
                 <Browser.Table.Column
                     name={"name"}
@@ -92,7 +92,6 @@ export const FileManagerRendererModule = () => {
                 <FileDetails.Field name={"name"} element={<Name />} />
                 <FileDetails.Field name={"tags"} element={<Tags />} />
                 <Browser.BulkEditField name={"tags"} element={<Tags />} />
-                <FileDetails.Field name={"aliases"} element={<Aliases />} />
                 <FileDetails.GroupFields value={false} />
                 {/* File Details Actions */}
                 <FileActions />

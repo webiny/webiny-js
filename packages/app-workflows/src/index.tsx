@@ -16,7 +16,7 @@ import { WorkflowsEditor } from "./Components/WorkflowsEditor/index.js";
 import { HasWorkflowsEditorPermission } from "./Components/WorkflowsPermissions/index.js";
 
 export { useCanUseWorkflows } from "./hooks/canUseWorkflows.js";
-export { useWorkflowState } from "./Components/WorkflowState/useWorkflowState.js";
+export { useWorkflowState } from "./Components/WorkflowState/index.js";
 export type { IWorkflowApplication, IWorkflowState } from "~/types.js";
 export { WorkflowStateValue } from "~/types.js";
 export { useWorkflowsPermission } from "./Components/WorkflowsPermissions/index.js";

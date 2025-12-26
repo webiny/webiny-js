@@ -1,16 +1,15 @@
-import type ApolloClient from "apollo-client";
 import gql from "graphql-tag";
-import type {
-    IListFoldersByParentIdsGateway,
-    ListFoldersByParentIdsGatewayParams
-} from "./IListFoldersByParentIdsGateway.js";
-import type { AcoError, FolderItem } from "~/types.js";
-import { ROOT_FOLDER } from "~/constants.js";
+import { ApolloClient } from "@webiny/app-admin/features/apolloClient/abstraction.js";
+import type { FolderDto } from "~/domain/folder/FolderDto.js";
+import { RootFolder } from "~/domain/folder/RootFolder.js";
+import { FolderModelProvider } from "~/features/folders/abstractions.js";
+import { ListFoldersByParentIdsGateway as GatewayAbstraction } from "./abstractions.js";
+import type { AcoError } from "~/types.js";
 
 export interface ListFoldersByParentIdsResponse {
     aco: {
         listFolders: {
-            data: FolderItem[] | null;
+            data: FolderDto[] | null;
             error: AcoError | null;
         };
     };
@@ -39,23 +38,22 @@ export const LIST_FOLDERS_BY_PARENT_IDS = (FOLDER_FIELDS: string) => gql`
     }
 `;
 
-export class ListFoldersByParentIdsGqlGateway implements IListFoldersByParentIdsGateway {
-    private client: ApolloClient<any>;
-    private modelFields: string;
+class ListFoldersByParentIdsGqlGatewayImpl implements GatewayAbstraction.Interface {
+    constructor(
+        private client: ApolloClient.Interface,
+        private folderModelProvider: FolderModelProvider.Interface
+    ) {}
 
-    constructor(client: ApolloClient<any>, modelFields: string) {
-        this.client = client;
-        this.modelFields = modelFields;
-    }
+    async execute(type: string, parentIds: string[]) {
+        const fields = await this.folderModelProvider.getGraphQLSelection();
 
-    async execute({ parentIds, ...params }: ListFoldersByParentIdsGatewayParams) {
         const { data: response } = await this.client.query<
             ListFoldersByParentIdsResponse,
             ListFoldersByParentIdsQueryVariables
         >({
-            query: LIST_FOLDERS_BY_PARENT_IDS(this.modelFields),
+            query: LIST_FOLDERS_BY_PARENT_IDS(fields),
             variables: {
-                ...params,
+                type,
                 parentIds_in: parentIds,
                 limit: 10000
             },
@@ -72,37 +70,11 @@ export class ListFoldersByParentIdsGqlGateway implements IListFoldersByParentIds
             throw new Error(error?.message || "Could not fetch folders");
         }
 
-        return [this.getRootFolder(), ...(data || [])];
-    }
-
-    private getRootFolder(): FolderItem {
-        return {
-            id: ROOT_FOLDER,
-            title: "Home",
-            permissions: [],
-            parentId: "0",
-            path: ROOT_FOLDER,
-            slug: "",
-            createdOn: "",
-            createdBy: {
-                id: "",
-                displayName: "",
-                type: ""
-            },
-            hasNonInheritedPermissions: false,
-            canManagePermissions: true,
-            canManageStructure: true,
-            canManageContent: true,
-            savedOn: "",
-            savedBy: {
-                id: "",
-                displayName: "",
-                type: ""
-            },
-            modifiedOn: null,
-            modifiedBy: null,
-            type: "$ROOT",
-            extensions: {}
-        };
+        return [RootFolder.create(), ...(data || [])];
     }
 }
+
+export const ListFoldersByParentIdsGqlGateway = GatewayAbstraction.createImplementation({
+    implementation: ListFoldersByParentIdsGqlGatewayImpl,
+    dependencies: [ApolloClient, FolderModelProvider]
+});

@@ -1,13 +1,11 @@
 import type { ITask } from "@webiny/tasks";
 import { createCmsImportExportRecord } from "~/domain/CmsImportExportRecord.js";
 import type {
-    IExportContentEntriesControllerInput,
-    IExportContentEntriesControllerOutput
+    IControllerInput,
+    IControllerOutput
 } from "~/tasks/domain/abstractions/ExportContentEntriesController.js";
 
-export const convertTaskToCmsExportRecord = (
-    task: ITask<IExportContentEntriesControllerInput, IExportContentEntriesControllerOutput>
-) => {
+export const convertTaskToCmsExportRecord = (task: ITask<IControllerInput, IControllerOutput>) => {
     return createCmsImportExportRecord({
         id: task.id,
         createdOn: task.createdOn,

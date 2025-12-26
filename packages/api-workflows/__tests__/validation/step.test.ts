@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { stepValidation } from "~/validation/step.js";
+import { stepValidation } from "~/graphql/validation/step.js";
 
 describe("step validation", () => {
     it("should validate a workflow step with all required fields", async () => {

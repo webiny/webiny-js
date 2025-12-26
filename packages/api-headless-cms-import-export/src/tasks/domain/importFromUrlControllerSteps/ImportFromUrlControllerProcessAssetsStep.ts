@@ -1,28 +1,30 @@
-import type { Context } from "~/types.js";
-import { CmsImportExportFileType } from "~/types.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import { CmsImportExportFileType, type Context } from "~/types.js";
 import type {
     IImportFromUrlControllerInput,
     IImportFromUrlControllerOutput
 } from "~/tasks/domain/abstractions/ImportFromUrlController.js";
 import { IImportFromUrlControllerInputStep } from "~/tasks/domain/abstractions/ImportFromUrlController.js";
 import type { ImportFromUrlControllerStep } from "~/tasks/domain/importFromUrlControllerSteps/abstractions/ImportFromUrlControllerStep.js";
-import type { ITask, ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import { prependImportPath } from "~/tasks/utils/helpers/importPath.js";
 import { getBackOffSeconds } from "~/tasks/utils/helpers/getBackOffSeconds.js";
 import { IMPORT_FROM_URL_PROCESS_ASSETS_TASK } from "~/tasks/constants.js";
 import { getChildTasks } from "~/tasks/domain/importFromUrlControllerSteps/getChildTasks.js";
-import type { IImportFromUrlProcessAssetsInput } from "../importFromUrlProcessAssets/abstractions/ImportFromUrlProcessAssets.js";
+import type { IImportFromUrlProcessAssetsInput } from "~/features/ImportFromUrlProcessAssetsTask/importFromUrlProcessAssets/abstractions/ImportFromUrlProcessAssets.js";
 
 export class ImportFromUrlControllerProcessAssetsStep<
-    C extends Context = Context,
     I extends IImportFromUrlControllerInput = IImportFromUrlControllerInput,
     O extends IImportFromUrlControllerOutput = IImportFromUrlControllerOutput
-> implements ImportFromUrlControllerStep<C, I, O>
+> implements ImportFromUrlControllerStep<I, O>
 {
-    public async execute(params: ITaskRunParams<C, I, O>): Promise<ITaskResponseResult<I, O>> {
-        const { response, input, trigger, store, context } = params;
+    constructor(private context: Context) {}
 
-        const task = store.getTask() as ITask<I, O>;
+    public async execute(
+        params: TaskDefinition.RunParams<I, O>
+    ): Promise<TaskDefinition.Result<I, O>> {
+        const { input, controller } = params;
+
+        const task = controller.state.getTask();
 
         const step = input.steps[IImportFromUrlControllerInputStep.PROCESS_ASSETS];
         if (!step?.triggered) {
@@ -41,12 +43,12 @@ export class ImportFromUrlControllerProcessAssetsStep<
                     failed: [],
                     invalid: []
                 };
-                return response.done(output as O);
+                return controller.response.done(output as O);
             }
             const inputFiles: string[] = [];
             for (const file of files) {
                 const key = prependImportPath(file.key);
-                await trigger<IImportFromUrlProcessAssetsInput>({
+                await controller.task.trigger<IImportFromUrlProcessAssetsInput>({
                     name: `Import From Url - Process assets`,
                     definition: IMPORT_FROM_URL_PROCESS_ASSETS_TASK,
                     input: {
@@ -73,12 +75,12 @@ export class ImportFromUrlControllerProcessAssetsStep<
                 }
             };
 
-            return response.continue(output, {
+            return controller.response.continue(output, {
                 seconds: getBackOffSeconds(task.iterations)
             });
         } else if (step.finished !== true) {
             const { failed, running, invalid, aborted, collection, done } = await getChildTasks({
-                context,
+                context: this.context,
                 task,
                 definition: IMPORT_FROM_URL_PROCESS_ASSETS_TASK
             });
@@ -87,11 +89,11 @@ export class ImportFromUrlControllerProcessAssetsStep<
              * If there are any running tasks, we should continue waiting.
              */
             if (running.length > 0) {
-                return response.continue(input, {
+                return controller.response.continue(input, {
                     seconds: getBackOffSeconds(task.iterations)
                 });
             } else if (collection.length === 0) {
-                return response.error({
+                return controller.response.error({
                     message: "No process assets tasks found. We are not continuing.",
                     code: "NO_PROCESS_ASSETS_TASKS"
                 });
@@ -111,9 +113,9 @@ export class ImportFromUrlControllerProcessAssetsStep<
                     }
                 }
             };
-            return response.continue(output);
+            return controller.response.continue(output);
         }
-        return response.error({
+        return controller.response.error({
             message: "Impossible to get to this point. Fatal error."
         });
     }

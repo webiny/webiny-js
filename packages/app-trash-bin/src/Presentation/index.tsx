@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { AcoWithConfig } from "@webiny/app-aco";
 import type {
     ITrashBinDeleteItemGateway,
     ITrashBinListGateway,
@@ -85,16 +84,14 @@ export const TrashBin = ({ render, ...rest }: TrashBinProps) => {
         <>
             {show && (
                 <CompositionScope name={"trash"}>
-                    <AcoWithConfig>
-                        <TrashBinListWithConfig>
-                            <TrashBinRenderer
-                                {...rest}
-                                onClose={onClose}
-                                onItemAfterRestore={onItemAfterRestore}
-                                retentionPeriod={retentionPeriod}
-                            />
-                        </TrashBinListWithConfig>
-                    </AcoWithConfig>
+                    <TrashBinListWithConfig>
+                        <TrashBinRenderer
+                            {...rest}
+                            onClose={onClose}
+                            onItemAfterRestore={onItemAfterRestore}
+                            retentionPeriod={retentionPeriod}
+                        />
+                    </TrashBinListWithConfig>
                 </CompositionScope>
             )}
             {render ? render({ showTrashBin }) : null}

@@ -24,10 +24,6 @@ export const createModelEntity = (params: CreateModelEntityParams): Entity<any> 
                 type: "string",
                 required: true
             },
-            webinyVersion: {
-                type: "string",
-                required: true
-            },
             name: {
                 type: "string",
                 required: true
@@ -41,10 +37,6 @@ export const createModelEntity = (params: CreateModelEntityParams): Entity<any> 
                 required: true
             },
             pluralApiName: {
-                type: "string",
-                required: true
-            },
-            locale: {
                 type: "string",
                 required: true
             },
@@ -82,10 +74,6 @@ export const createModelEntity = (params: CreateModelEntityParams): Entity<any> 
                 type: "list",
                 required: false,
                 default: []
-            },
-            lockedFields: {
-                type: "list",
-                required: true
             },
             titleFieldId: {
                 type: "string"

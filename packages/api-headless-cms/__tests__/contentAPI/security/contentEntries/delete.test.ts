@@ -34,6 +34,7 @@ describe("Delete Permissions Checks", () => {
         });
 
         expectNotAuthorized(failedEntryDeletion, {
+            code: "Cms/Entry/NotAuthorized",
             message: 'Not allowed to access "testModel" entries.'
         });
 

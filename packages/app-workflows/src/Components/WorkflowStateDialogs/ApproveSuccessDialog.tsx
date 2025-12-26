@@ -1,5 +1,5 @@
 import React from "react";
-import { Dialog, Grid } from "@webiny/admin-ui";
+import { Dialog, Grid, Icon } from "@webiny/admin-ui";
 import { ReactComponent as ApproveIcon } from "@webiny/icons/check.svg";
 import { YouCanTrackAllContentReviewsHere } from "~/Components/Common/index.js";
 
@@ -17,13 +17,18 @@ export const ApproveSuccessDialog = (props: IApproveSuccessDialogProps) => {
             onOpenChange={hide}
             title={
                 <>
-                    <ApproveIcon className={"fill-success"} />
+                    <Icon
+                        label={"Approved"}
+                        size={"md"}
+                        className={"fill-success"}
+                        icon={<ApproveIcon className={"fill-success"} />}
+                    />
                     {title} Approved
                 </>
             }
             actions={
                 <>
-                    <Dialog.ConfirmButton text={"Close"} onClick={hide} />
+                    <Dialog.ConfirmAction text={"Close"} onClick={hide} />
                 </>
             }
             showCloseButton={true}

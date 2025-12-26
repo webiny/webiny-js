@@ -51,7 +51,6 @@ export interface AdminUser extends BaseUserAttributes {
     tenant: string;
     createdOn: string;
     createdBy: CreatedBy | null | undefined;
-    webinyVersion: string;
 }
 
 export interface GetUserParams {

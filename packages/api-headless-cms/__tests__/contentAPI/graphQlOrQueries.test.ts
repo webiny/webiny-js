@@ -14,7 +14,7 @@ const categories = [
 
 describe(`graphql "or" queries`, () => {
     const manager = useCategoryManageHandler({
-        path: "manage/en-US"
+        path: "manage"
     });
     const { createCategory, listCategories } = manager;
 

@@ -23,6 +23,7 @@ import { Extension as WebsiteBuilder } from "@webiny/app-website-builder/Extensi
 import { SchedulerConfigs } from "@webiny/app-headless-cms-scheduler";
 import { Components as WorkflowComponents } from "@webiny/app-workflows";
 import { CmsWorkflows } from "@webiny/app-headless-cms-workflows";
+import { WebsiteBuilderWorkflows } from "@webiny/app-website-builder-workflows";
 
 export interface AdminProps extends Omit<BaseAdminProps, "createApolloClient"> {
     createApolloClient?: BaseAdminProps["createApolloClient"];
@@ -54,6 +55,7 @@ const App = (props: AdminProps) => {
             <WebsiteBuilder />
             <WorkflowComponents.App.WorkflowsAdminApp />
             <CmsWorkflows />
+            <WebsiteBuilderWorkflows />
             {props.children}
         </BaseAdmin>
     );

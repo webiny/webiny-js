@@ -15,7 +15,7 @@ const variants = cva("group peer block border-r-sm border-neutral-dimmed bg-neut
 });
 
 const SidebarRoot = ({ side = "left", className, children, ...props }: SidebarRootProps) => {
-    const { state, setExpanded, pinned } = useSidebar();
+    const { state, setExpanded, pinned, expanded } = useSidebar();
 
     const elementRef = useRef<HTMLDivElement>(null);
 
@@ -33,8 +33,14 @@ const SidebarRoot = ({ side = "left", className, children, ...props }: SidebarRo
             timeoutRef.current = null;
         }
 
-        setExpanded(true);
-    }, [pinned, setExpanded]);
+        // Add delay before opening to prevent accidental openings
+        timeoutRef.current = window.setTimeout(() => {
+            // Only set expanded if it's not already expanded
+            if (!expanded) {
+                setExpanded(true);
+            }
+        }, 300);
+    }, [pinned, setExpanded, expanded]);
 
     const onMouseLeave = useCallback<React.MouseEventHandler<HTMLDivElement>>(() => {
         // If the sidebar is pinned, we don't want to close the sidebar on mouse leave.
@@ -42,10 +48,15 @@ const SidebarRoot = ({ side = "left", className, children, ...props }: SidebarRo
             return;
         }
 
+        if (timeoutRef.current) {
+            window.clearTimeout(timeoutRef.current);
+            timeoutRef.current = null;
+        }
+
         // With this timeout, we prevent the sidebar glitching (quickly opening/closing) during mouse enter/leave events.
         timeoutRef.current = window.setTimeout(() => {
             setExpanded(false);
-        }, 50);
+        }, 300);
     }, [pinned, setExpanded]);
 
     return (
@@ -78,6 +89,13 @@ const SidebarRoot = ({ side = "left", className, children, ...props }: SidebarRo
                     {children}
                 </div>
             </div>
+
+            <div
+                data-sidebar={"extra-hover-area"}
+                className={
+                    "absolute top-0 left-[theme(spacing.sidebar-collapsed)] h-full w-sm hidden group-data-[state=collapsed]:block"
+                }
+            />
         </div>
     );
 };

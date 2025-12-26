@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createGraphQLHandler } from "~tests/__helpers/handler.js";
-import type { IWorkflow } from "~/context/abstractions/Workflow.js";
 import { FULL_ACCESS_TEAM_ID } from "@webiny/testing";
+import type { IWorkflow } from "~/domain/workflow/abstractions.js";
 
 describe("workflow graphql", () => {
     const handler = createGraphQLHandler();
@@ -191,8 +191,11 @@ describe("workflow graphql", () => {
                     deleteWorkflow: {
                         data: null,
                         error: {
-                            code: "NOT_FOUND",
-                            data: null,
+                            code: "Workflows/Workflow/NotFound",
+                            data: {
+                                app: "test",
+                                id: "workflow-1"
+                            },
                             message: `Workflow in app "test" with id "workflow-1" was not found!`
                         }
                     }

@@ -18,10 +18,10 @@ type Categories = CmsEntry[];
 
 describe("restore entries", () => {
     const manager = useCategoryManageHandler({
-        path: "manage/en-US"
+        path: "manage"
     });
     const reader = useCategoryReadHandler({
-        path: "read/en-US"
+        path: "read"
     });
 
     const createCategory = async (data: CreateCategoryParams) => {
@@ -135,7 +135,7 @@ describe("restore entries", () => {
                 getCategory: {
                     data: null,
                     error: {
-                        code: "NOT_FOUND",
+                        code: "Cms/Entry/NotFound",
                         message: expect.any(String)
                     }
                 }
@@ -146,7 +146,7 @@ describe("restore entries", () => {
                 getCategory: {
                     data: null,
                     error: {
-                        code: "NOT_FOUND",
+                        code: "Cms/Entry/NotFound",
                         message: expect.any(String)
                     }
                 }
@@ -218,7 +218,7 @@ describe("restore entries", () => {
                 restoreCategoryFromBin: {
                     data: null,
                     error: {
-                        code: "NOT_FOUND",
+                        code: "Cms/Entry/NotFound",
                         data: null,
                         message: `Entry "${categoryToRestore.entryId}" was not found!`
                     }
@@ -301,7 +301,7 @@ describe("restore entries", () => {
                 restoreCategoryFromBin: {
                     data: null,
                     error: {
-                        code: "NOT_FOUND",
+                        code: "Cms/Entry/NotFound",
                         data: null,
                         message: `Entry "${categoryToRestore.entryId}" was not found!`
                     }

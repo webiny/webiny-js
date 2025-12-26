@@ -1,10 +1,10 @@
+import { Context } from "@webiny/handler";
+import type { LambdaContext } from "@webiny/handler-aws/types.js";
+import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
+import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/index.js";
 import type { CreateHandlerCoreParams } from "./plugins.js";
 import { createHandlerCore } from "./plugins.js";
-import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
-import type { Context } from "~/types.js";
 import { defaultIdentity } from "./tenancySecurity.js";
-import type { LambdaContext } from "@webiny/handler-aws/types.js";
-import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/index.js";
 
 export interface HandlerEvent {
     path: string;

@@ -80,7 +80,7 @@ export const expectNotAuthorized = (
     expect(testData).toEqual({
         data: null,
         error: {
-            code: "NOT_AUTHORIZED",
+            code: errorData?.code ?? "NOT_AUTHORIZED",
             message: errorData?.message ?? "Not authorized!",
             data: null
         }

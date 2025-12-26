@@ -1,13 +1,16 @@
-import type { Context } from "~/types.js";
 import { GraphQLSchemaPlugin, NotFoundError, resolve, resolveList } from "@webiny/handler-graphql";
-import { listWorkflowsValidation } from "~/validation/listWorkflows.js";
 import { createZodError } from "@webiny/utils";
-import { getWorkflowValidation } from "~/validation/getWorkflow.js";
-import { storeWorkflowValidation } from "~/validation/storeWorkflow.js";
-import { deleteWorkflowValidation } from "~/validation/deleteWorkflow.js";
+import { listWorkflowsValidation } from "./validation/listWorkflows.js";
+import { getWorkflowValidation } from "./validation/getWorkflow.js";
+import { storeWorkflowValidation } from "./validation/storeWorkflow.js";
+import { deleteWorkflowValidation } from "./validation/deleteWorkflow.js";
+import { GetWorkflowUseCase } from "~/features/workflow/GetWorkflow/index.js";
+import { ListWorkflowsUseCase } from "~/features/workflow/ListWorkflows/index.js";
+import { StoreWorkflowUseCase } from "~/features/workflow/StoreWorkflow/index.js";
+import { DeleteWorkflowUseCase } from "~/features/workflow/DeleteWorkflow/index.js";
 
 export const createWorkflowsSchema = () => {
-    return new GraphQLSchemaPlugin<Context>({
+    return new GraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
             type WorkflowError {
                 code: String
@@ -148,13 +151,16 @@ export const createWorkflowsSchema = () => {
                             throw createZodError(result.error);
                         }
 
-                        const workflow = await context.workflows.getWorkflow(args);
-                        if (workflow) {
-                            return workflow;
+                        const getWorkflow = context.container.resolve(GetWorkflowUseCase);
+                        const workflowResult = await getWorkflow.execute(args);
+
+                        if (workflowResult.isFail()) {
+                            throw new NotFoundError(
+                                `Workflow in app "${args.app}" with id "${args.id}" was not found!`
+                            );
                         }
-                        throw new NotFoundError(
-                            `Workflow in app "${args.app}" with id "${args.id}" was not found!`
-                        );
+
+                        return workflowResult.value;
                     });
                 },
                 listWorkflows: async (_, args, context) => {
@@ -163,7 +169,15 @@ export const createWorkflowsSchema = () => {
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
-                        return await context.workflows.listWorkflows(result.data);
+
+                        const listWorkflows = context.container.resolve(ListWorkflowsUseCase);
+                        const listResult = await listWorkflows.execute(result.data);
+
+                        if (listResult.isFail()) {
+                            throw listResult.error;
+                        }
+
+                        return listResult.value;
                     });
                 }
             },
@@ -174,11 +188,19 @@ export const createWorkflowsSchema = () => {
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
-                        return context.workflows.storeWorkflow(
-                            result.data.app,
-                            result.data.id,
-                            result.data.data
-                        );
+
+                        const storeWorkflow = context.container.resolve(StoreWorkflowUseCase);
+                        const storeResult = await storeWorkflow.execute({
+                            app: result.data.app,
+                            id: result.data.id,
+                            ...result.data.data
+                        });
+
+                        if (storeResult.isFail()) {
+                            throw storeResult.error;
+                        }
+
+                        return storeResult.value;
                     });
                 },
                 deleteWorkflow: async (_, args, context) => {
@@ -187,10 +209,18 @@ export const createWorkflowsSchema = () => {
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
-                        return await context.workflows.deleteWorkflow(
-                            result.data.app,
-                            result.data.id
-                        );
+
+                        const deleteWorkflow = context.container.resolve(DeleteWorkflowUseCase);
+                        const deleteResult = await deleteWorkflow.execute({
+                            app: result.data.app,
+                            id: result.data.id
+                        });
+
+                        if (deleteResult.isFail()) {
+                            throw deleteResult.error;
+                        }
+
+                        return true;
                     });
                 }
             }

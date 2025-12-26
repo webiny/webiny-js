@@ -1,6 +1,5 @@
 import fs from "fs-extra";
 import path from "path";
-import { renames } from "./renames.js";
 import { runInteractivePrompt } from "./runInteractivePrompt.js";
 import { CliParams } from "../../../../types.js";
 import { GetProjectRootPath } from "../../../../services/index.js";
@@ -14,30 +13,18 @@ export class SetupAwsWebinyProject {
         const getTemplatesFolderPath = new GetTemplatesFolderPath();
         const templatesFolderPath = getTemplatesFolderPath.execute();
 
-        const baseTemplatePath = path.join(templatesFolderPath, "aws", "base");
         const storageTemplatePath = path.join(templatesFolderPath, "aws", awsArgs.storageOps);
 
         const getProjectRoot = new GetProjectRootPath();
         const projectRootFolderPath = getProjectRoot.execute(cliArgs);
 
-        fs.copySync(baseTemplatePath, projectRootFolderPath);
         fs.copySync(storageTemplatePath, projectRootFolderPath);
 
-        for (let i = 0; i < renames.length; i++) {
-            fs.moveSync(
-                path.join(projectRootFolderPath, renames[i].prev),
-                path.join(projectRootFolderPath, renames[i].next),
-                {
-                    overwrite: true
-                }
-            );
-        }
-
         // Update .env file.
-        const rootEnvFilePath = path.join(projectRootFolderPath, ".env");
-        let content = fs.readFileSync(rootEnvFilePath).toString();
+        const webinyConfigTsxEnvFilePath = path.join(projectRootFolderPath, "webiny.config.tsx");
+        let content = fs.readFileSync(webinyConfigTsxEnvFilePath).toString();
         content = content.replace("{REGION}", awsArgs.region);
-        fs.writeFileSync(rootEnvFilePath, content);
+        fs.writeFileSync(webinyConfigTsxEnvFilePath, content);
     }
 
     private async getAwsArgs(cliArgs: CliParams) {

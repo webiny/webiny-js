@@ -1,5 +1,4 @@
 import type { SecurityPermission, SecurityIdentity, CreatedBy } from "~/types/security.js";
-import { NotAuthorizedError } from "~/features/security/shared/index.js";
 
 const FULL_ACCESS_PERMISSION_NAME = "*";
 
@@ -13,10 +12,6 @@ export type EnsureParams = Partial<{
     rwd: string;
     pw: string;
     owns: CreatedBy;
-}>;
-
-export type Options = Partial<{
-    throw: boolean;
 }>;
 
 export class AppPermissions<TPermission extends SecurityPermission = SecurityPermission> {
@@ -37,7 +32,7 @@ export class AppPermissions<TPermission extends SecurityPermission = SecurityPer
         ].filter(Boolean);
     }
 
-    async ensure(params: EnsureParams = {}, options: Options = {}): Promise<boolean> {
+    async ensure(params: EnsureParams = {}): Promise<boolean> {
         if (await this.hasFullAccess()) {
             return true;
         }
@@ -52,10 +47,6 @@ export class AppPermissions<TPermission extends SecurityPermission = SecurityPer
             const identity = await this.getIdentity();
             if (identity.id === params.owns.id) {
                 return true;
-            }
-
-            if (options.throw !== false) {
-                throw new NotAuthorizedError();
             }
 
             return false;
@@ -74,15 +65,7 @@ export class AppPermissions<TPermission extends SecurityPermission = SecurityPer
             return true;
         });
 
-        if (hasPermission) {
-            return true;
-        }
-
-        if (options.throw === false) {
-            return false;
-        }
-
-        throw new NotAuthorizedError();
+        return hasPermission;
     }
 
     async hasFullAccess() {

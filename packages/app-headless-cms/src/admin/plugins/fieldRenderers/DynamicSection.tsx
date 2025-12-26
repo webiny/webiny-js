@@ -14,7 +14,7 @@ import {
     FormComponentDescription,
     FormComponentErrorMessage,
     Grid,
-    Heading
+    Separator
 } from "@webiny/admin-ui";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
@@ -81,29 +81,24 @@ const DynamicSection = ({
                 return (
                     <Bind.ValidationContainer>
                         <ParentFieldProvider value={value} path={Bind.parentName}>
-                            {showLabel ? (
-                                <div
-                                    className={
-                                        "relative mb-xl mt-md border-b-sm border-accent-dimmed"
-                                    }
-                                >
-                                    <Heading
-                                        level={6}
-                                        className={
-                                            "webiny_group-label-text absolute bottom-[-10px] pr-sm text-accent-primary bg-white"
-                                        }
-                                    >
-                                        {`${field.label} ${
-                                            bindFieldValue.length
-                                                ? `(${bindFieldValue.length})`
-                                                : ""
-                                        }`}
-                                    </Heading>
+                            {showLabel && (
+                                <div className={"mb-sm flex flex-col gap-y-sm"}>
+                                    <Separator labelPosition={"start"} variant={"accent"}>
+                                        <span
+                                            className={"text-accent-primary text-lg font-semibold"}
+                                        >
+                                            {`${field.label} ${
+                                                bindFieldValue.length
+                                                    ? `(${bindFieldValue.length})`
+                                                    : ""
+                                            }`}
+                                        </span>
+                                    </Separator>
                                     {field.helpText && (
                                         <FormComponentDescription text={field.helpText} />
                                     )}
                                 </div>
-                            ) : null}
+                            )}
                             <Grid className={classSet(gridClassName, style.gridContainer)}>
                                 <>
                                     {bindFieldValue.map((_, index) => {

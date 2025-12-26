@@ -1,25 +1,30 @@
-import { useCallback } from "react";
-import { useApolloClient } from "@apollo/react-hooks";
-import { UpdateFolderGqlGateway } from "./UpdateFolderGqlGateway.js";
-import { UpdateFolder } from "./UpdateFolder.js";
-import type { UpdateFolderParams } from "./IUpdateFolderUseCase.js";
-import { useFoldersType, useGetFolderGraphQLSelection } from "~/hooks/index.js";
+import { useCallback, useEffect, useState } from "react";
+import { autorun } from "mobx";
+import { useFeature } from "@webiny/app";
+import { UpdateFolderFeature } from "./feature.js";
+import { UpdateFolderParams } from "./abstractions.js";
 
 export const useUpdateFolder = () => {
-    const client = useApolloClient();
-    const type = useFoldersType();
-    const fields = useGetFolderGraphQLSelection();
-    const gateway = new UpdateFolderGqlGateway(client, fields);
+    const { useCase, loading: loadingState } = useFeature(UpdateFolderFeature);
+
+    const [loading, setLoading] = useState<boolean>(false);
 
     const updateFolder = useCallback(
-        (params: UpdateFolderParams) => {
-            const instance = UpdateFolder.getInstance(type, gateway);
-            return instance.execute(params);
+        (folder: UpdateFolderParams) => {
+            return useCase.execute(folder);
         },
-        [type, gateway]
+        [useCase]
     );
 
+    useEffect(() => {
+        return autorun(() => {
+            const isLoading = loadingState.isLoading("update");
+            setLoading(isLoading);
+        });
+    }, [loadingState]);
+
     return {
-        updateFolder
+        updateFolder,
+        loading
     };
 };

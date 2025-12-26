@@ -1,13 +1,10 @@
 import { ContextPlugin } from "@webiny/api";
-import { createEntryHooks } from "~/hooks/entry/index.js";
 import type { HcmsAcoContext } from "~/types.js";
+import { SetLocationOnEntryRestoreFeature } from "~/features/SetLocationOnEntryRestore/index.js";
 
 export const createAcoHcmsContext = () => {
-    const plugin = new ContextPlugin<HcmsAcoContext>(async context => {
-        if (!context.aco) {
-            return;
-        }
-        createEntryHooks(context);
+    const plugin = new ContextPlugin<HcmsAcoContext>(context => {
+        SetLocationOnEntryRestoreFeature.register(context.container);
     });
 
     plugin.name = "hcms-aco.createContext";

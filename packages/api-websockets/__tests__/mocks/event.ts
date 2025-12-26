@@ -4,16 +4,14 @@ import { WebsocketsEventRequestContextEventType, WebsocketsEventRoute } from "~/
 
 export interface CreateMockEventInput extends PartialDeep<IWebsocketsIncomingEvent> {
     tenant?: string;
-    locale?: string;
     token?: string;
 }
 
 export const createMockEvent = (input: CreateMockEventInput = {}): IWebsocketsIncomingEvent => {
-    const { requestContext, body, tenant, locale, token } = input || {};
+    const { requestContext, body, tenant, token } = input || {};
     return {
         queryStringParameters: {
             tenant: tenant || "root",
-            locale: locale || "en-US",
             ...input.queryStringParameters
         },
         requestContext: {
@@ -29,8 +27,7 @@ export const createMockEvent = (input: CreateMockEventInput = {}): IWebsocketsIn
             body ||
             JSON.stringify({
                 token: token || "aToken",
-                tenant: tenant || "root",
-                locale: locale || "en-US"
+                tenant: tenant || "root"
             })
     };
 };

@@ -16,7 +16,7 @@ describe("get lock record", () => {
                     getLockRecord: {
                         data: null,
                         error: {
-                            code: "NOT_FOUND",
+                            code: "RecordLocking/LockRecord/NotFoundError",
                             message: "Lock record not found.",
                             data: null
                         }

@@ -36,12 +36,20 @@ export const Default: Story = {
     }
 };
 
-export const VariantAccent: Story = {
+export const VariantLight: Story = {
+    render: () => {
+        const [value, setValue] = useState("item1");
+
+        return <SegmentedControl items={items} value={value} onChange={setValue} variant="light" />;
+    }
+};
+
+export const VariantDimmed: Story = {
     render: () => {
         const [value, setValue] = useState("item1");
 
         return (
-            <SegmentedControl items={items} value={value} onChange={setValue} variant="accent" />
+            <SegmentedControl items={items} value={value} onChange={setValue} variant="dimmed" />
         );
     }
 };

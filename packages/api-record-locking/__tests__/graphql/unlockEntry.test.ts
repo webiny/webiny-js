@@ -27,12 +27,9 @@ describe("unlock entry", () => {
                     unlockEntry: {
                         data: null,
                         error: {
-                            code: "LOCK_RECORD_NOT_FOUND",
-                            data: {
-                                id: "someId#0001",
-                                type: "cms#author"
-                            },
-                            message: "Lock Record not found."
+                            code: "RecordLocking/LockRecord/NotFoundError",
+                            message: "Lock record not found.",
+                            data: null
                         }
                     }
                 }
@@ -139,7 +136,7 @@ describe("unlock entry", () => {
                     getLockRecord: {
                         data: null,
                         error: {
-                            code: "NOT_FOUND",
+                            code: "RecordLocking/LockRecord/NotFoundError",
                             data: null,
                             message: "Lock record not found."
                         }

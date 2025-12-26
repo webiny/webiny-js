@@ -15,8 +15,11 @@ export const WorkflowStateBarRejected = WorkflowStateBarComponent.createDecorato
         if (!step) {
             return <Original {...props} />;
         }
+
         return (
             <Alert
+                icon={null}
+                swatchColor={step.color}
                 actions={
                     <>
                         <Alert.Action

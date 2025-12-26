@@ -6,8 +6,11 @@ regions:
   - eu-central-1
   - global
 
-account-blocklist:
+blocklist:
   - "999999999999" # We don't have "production" accounts.
+
+bypass-alias-check-accounts:
+  - 726952677045
 
 accounts:
   "726952677045":
@@ -17,6 +20,8 @@ accounts:
       IAMRole:
         - "GitHubActionsWebinyJs"
         - "GitHubActionsWebinyJsAdminAccess"
+      IAMUser:
+        - "webiny-ci"
       IAMPolicy:
         - "DeployWebinyProjectGroup1"
         - "DeployWebinyProjectGroup2"
@@ -28,28 +33,10 @@ accounts:
         - "GitHubActionsWebinyJs -> DeployWebinyProjectGroup3"
         - "GitHubActionsWebinyJs -> DeployWebinyProjectExtra"
         - "GitHubActionsWebinyJsAdminAccess -> AdministratorAccess"
+      IAMOpenIdConnectProvider:
+        - "arn:aws:iam::726952677045:oidc-provider/token.actions.githubusercontent.com"
 
 resource-types:
-  # These resource types will be destroyed.
-  # List of all resource types: https://github.com/rebuy-de/aws-nuke/tree/main/resources
-  targets:
-    - APIGatewayV2API
-    - S3Object
-    - S3Bucket
-    - CloudWatchLogsLogGroup
-    - LambdaFunction
-    - CloudFrontDistribution
-    - CloudFrontDistributionDeployment
-    - CloudFrontFunction
-    - CloudFrontOriginAccessIdentity
-    - CognitoUserPool
-    - CognitoUserPoolClient
-    - IAMPolicy
-    - IAMRole
-    - IAMRolePolicy
-    - IAMRolePolicyAttachment
-    - DynamoDBTable
-    - CloudWatchEventsRule
-    - CloudWatchEventsTarget
-    - CloudWatchEventsBuses
-    - SQSQueue
+  excludes:
+    - Budget
+    - OpenSearchDomain

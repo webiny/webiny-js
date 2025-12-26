@@ -8,7 +8,7 @@ export const ChangeEntryStatus = () => {
     const { entry } = useEntry();
     const { canPublish, canUnpublish } = usePermission();
     const { publishEntryRevision, unpublishEntryRevision } = useContentEntry();
-    const { OptionsMenuItem } = ContentEntryListConfig.Browser.EntryAction;
+    const { OptionsMenuItem } = ContentEntryListConfig.Browser.Entry.Action;
 
     if (entry.meta.status === "published" && canUnpublish("cms.contentEntry")) {
         return (

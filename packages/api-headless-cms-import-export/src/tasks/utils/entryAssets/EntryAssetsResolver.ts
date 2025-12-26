@@ -1,19 +1,14 @@
-import type {
-    File,
-    FileListMeta,
-    FileListWhereParams,
-    FilesListOpts
-} from "@webiny/api-file-manager/types.js";
+import type { File } from "@webiny/api-file-manager/domain/file/types.js";
 import type { IEntryAssetsResolver, IResolvedAsset } from "./abstractions/EntryAssetsResolver.js";
 import type { IAsset } from "./abstractions/EntryAssets.js";
 
 export interface IFetchFilesCbResult {
     items: File[];
-    meta: FileListMeta;
+    meta: Record<string, any>;
 }
 
 export interface IFetchFilesCb {
-    (opts?: FilesListOpts): Promise<IFetchFilesCbResult>;
+    (opts?: Record<string, any>): Promise<IFetchFilesCbResult>;
 }
 
 export interface IEntryAssetsResolverParams {
@@ -21,28 +16,17 @@ export interface IEntryAssetsResolverParams {
 }
 
 const createResolvedAsset = (file: File): IResolvedAsset => {
-    const result: IResolvedAsset = {
-        ...file,
-        aliases: file.aliases || []
+    return {
+        id: file.id,
+        key: file.key,
+        size: file.size,
+        type: file.type,
+        name: file.name,
+        meta: file.meta,
+        location: file.location,
+        tags: file.tags,
+        extensions: file.extensions
     };
-    /**
-     * We need to remove unnecessary fields from the resolved assets.
-     *
-     * We cannot return specific fields, rather than deleting unnecessary ones, because a user can extend the file model
-     * so we would not know which fields to return.
-     */
-    delete result.savedBy;
-    delete result.savedOn;
-    delete result.modifiedBy;
-    delete result.modifiedOn;
-    delete result.accessControl;
-    delete result.createdBy;
-    delete result.createdOn;
-    delete result.tenant;
-    delete result.locale;
-    delete result.webinyVersion;
-
-    return result;
 };
 
 export class EntryAssetsResolver implements IEntryAssetsResolver {
@@ -54,30 +38,16 @@ export class EntryAssetsResolver implements IEntryAssetsResolver {
 
     public async resolve(input: IAsset[]): Promise<IResolvedAsset[]> {
         const keys: string[] = [];
-        const aliases: string[] = [];
         for (const asset of input) {
             if (asset.key) {
                 keys.push(asset.key);
-            } else if (asset.alias) {
-                aliases.push(asset.alias);
             }
         }
 
         const assets: IResolvedAsset[] = [];
-        const where: FileListWhereParams = {};
-        if (keys.length > 0 && aliases.length > 0) {
-            where.OR = [
-                {
-                    key_in: keys
-                },
-                {
-                    aliases_in: aliases
-                }
-            ];
-        } else if (keys.length > 0) {
+        const where: Record<string, any> = {};
+        if (keys.length > 0) {
             where.key_in = keys;
-        } else if (aliases.length > 0) {
-            where.aliases_in = aliases;
         } else {
             return assets;
         }

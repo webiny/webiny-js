@@ -1,8 +1,8 @@
-import { getWcpProjectEnvironment } from "~/getWcpProjectEnvironment.js";
-import type { DecryptedWcpProjectLicense, ILicense, WcpProject } from "~/types.js";
-import { getWcpProjectLicense } from "~/licenses.js";
-import { NullLicense } from "~/NullLicense.js";
-import type { WCP_FEATURE_LABEL } from "~/index.js";
+import { getWcpProjectEnvironment } from "./getWcpProjectEnvironment.js";
+import type { DecryptedWcpProjectLicense, ILicense, WcpProject } from "./types.js";
+import { getWcpProjectLicense } from "./licenses.js";
+import { NullLicense } from "./NullLicense.js";
+import type { WCP_FEATURE_LABEL } from "./index.js";
 
 export class License implements ILicense {
     private readonly license: DecryptedWcpProjectLicense;

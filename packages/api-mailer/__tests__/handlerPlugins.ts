@@ -50,8 +50,8 @@ export const createHandlerPlugins = (params?: CreateHandlerParams) => {
         createHeadlessCmsContext({
             storageOperations: cmsStorage.storageOperations
         }),
-        ...createMailerContext(),
-        ...createMailerGraphQL(),
+        createMailerContext(),
+        createMailerGraphQL(),
         plugins
     ];
 };

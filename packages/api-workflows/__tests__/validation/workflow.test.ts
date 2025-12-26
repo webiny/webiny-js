@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { workflowValidation } from "~/validation/workflow";
+import { workflowValidation } from "~/graphql/validation/workflow.js";
 
 describe("workflow validation", () => {
     it("should validate a simple workflow", async () => {

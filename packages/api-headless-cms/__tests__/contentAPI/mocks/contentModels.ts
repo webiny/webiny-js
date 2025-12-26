@@ -4,7 +4,6 @@ import type { CmsGroupPlugin, CmsModelInput, CmsModelPlugin } from "~/plugins";
 import { createCmsGroupPlugin, createCmsModelPlugin } from "~/plugins";
 
 const contentModelGroup = createContentModelGroup();
-const webinyVersion = "0.0.0";
 
 export interface Fruit {
     id?: string;
@@ -96,9 +95,7 @@ const models: CmsModel[] = [
     {
         createdOn: new Date().toISOString(),
         savedOn: new Date().toISOString(),
-        locale: "en-US",
         titleFieldId: "title",
-        lockedFields: [],
         name: "Test Entry",
         description: "This is a test model with test entries.",
         modelId: "testModel",
@@ -166,17 +163,14 @@ const models: CmsModel[] = [
                 }
             }
         ],
-        tenant: "root",
-        webinyVersion: "0.0.0"
+        tenant: "root"
     },
 
     // category
     {
         createdOn: new Date().toISOString(),
         savedOn: new Date().toISOString(),
-        locale: "en-US",
         titleFieldId: "title",
-        lockedFields: [],
         name: "Category",
         description: "Product category",
         modelId: "category",
@@ -244,16 +238,13 @@ const models: CmsModel[] = [
                 }
             }
         ],
-        tenant: "root",
-        webinyVersion: "0.0.0"
+        tenant: "root"
     },
     // category
     {
         createdOn: new Date().toISOString(),
         savedOn: new Date().toISOString(),
-        locale: "en-US",
         titleFieldId: "title",
-        lockedFields: [],
         name: "Category Singleton",
         description: "Product category Singleton",
         modelId: "categorySingleton",
@@ -347,16 +338,13 @@ const models: CmsModel[] = [
                 }
             }
         ],
-        tenant: "root",
-        webinyVersion: "0.0.0"
+        tenant: "root"
     },
     // product
     {
         createdOn: new Date().toISOString(),
         savedOn: new Date().toISOString(),
-        locale: "en-US",
         titleFieldId: "title",
-        lockedFields: [],
         name: "Product",
         modelId: "product",
         singularApiName: "ProductApiSingular",
@@ -952,16 +940,13 @@ const models: CmsModel[] = [
                 }
             }
         ],
-        tenant: "root",
-        webinyVersion: "0.0.0"
+        tenant: "root"
     },
     // product review
     {
         createdOn: new Date().toISOString(),
         savedOn: new Date().toISOString(),
-        locale: "en-US",
         titleFieldId: "text",
-        lockedFields: [],
         name: "Review",
         description: "Product review",
         modelId: "review",
@@ -1061,16 +1046,13 @@ const models: CmsModel[] = [
                 }
             }
         ],
-        tenant: "root",
-        webinyVersion
+        tenant: "root"
     },
     // author
     {
         createdOn: new Date().toISOString(),
         savedOn: new Date().toISOString(),
-        locale: "en-US",
         titleFieldId: "fullName",
-        lockedFields: [],
         name: "Author",
         description: "Author",
         modelId: "author",
@@ -1107,16 +1089,13 @@ const models: CmsModel[] = [
                 }
             }
         ],
-        tenant: "root",
-        webinyVersion
+        tenant: "root"
     },
     // fruit
     {
         createdOn: new Date().toISOString(),
         savedOn: new Date().toISOString(),
-        locale: "en-US",
         titleFieldId: "name",
-        lockedFields: [],
         name: "Fruit",
         description: "Fruit",
         modelId: "fruit",
@@ -1615,16 +1594,13 @@ const models: CmsModel[] = [
                 }
             }
         ],
-        tenant: "root",
-        webinyVersion
+        tenant: "root"
     },
     // bug
     {
         createdOn: new Date().toISOString(),
         savedOn: new Date().toISOString(),
-        locale: "en-US",
         titleFieldId: "name",
-        lockedFields: [],
         name: "Bug",
         description: "Debuggable bugs",
         modelId: "bug",
@@ -1755,16 +1731,13 @@ const models: CmsModel[] = [
                 }
             }
         ],
-        tenant: "root",
-        webinyVersion
+        tenant: "root"
     },
     // article
     {
         createdOn: new Date().toISOString(),
         savedOn: new Date().toISOString(),
-        locale: "en-US",
         titleFieldId: "title",
-        lockedFields: [],
         name: "Article",
         description: "Article with multiple categories",
         modelId: "article",
@@ -1859,8 +1832,7 @@ const models: CmsModel[] = [
                 }
             }
         ],
-        tenant: "root",
-        webinyVersion
+        tenant: "root"
     },
     // Wrap
     /**
@@ -1921,10 +1893,8 @@ const models: CmsModel[] = [
         ],
         layout: [],
         tenant: "root",
-        locale: "en-US",
         titleFieldId: "title",
-        description: "Wrapper model for ref field with multiple models",
-        webinyVersion
+        description: "Wrapper model for ref field with multiple models"
     }
 ];
 

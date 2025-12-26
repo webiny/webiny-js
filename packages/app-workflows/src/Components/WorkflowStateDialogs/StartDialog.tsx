@@ -1,5 +1,5 @@
 import React from "react";
-import { Dialog, Grid, OverlayLoader } from "@webiny/admin-ui";
+import { Dialog, Grid, Icon, OverlayLoader } from "@webiny/admin-ui";
 import { ReactComponent as StartIcon } from "@webiny/icons/check.svg";
 
 interface IStartDialogProps {
@@ -18,14 +18,19 @@ export const StartDialog = (props: IStartDialogProps) => {
             onOpenChange={hide}
             title={
                 <>
-                    <StartIcon className={"fill-success"} />
+                    <Icon
+                        label={"Start Content Review"}
+                        size={"md"}
+                        className={"fill-success"}
+                        icon={<StartIcon />}
+                    />
                     Start Content Review?
                 </>
             }
             actions={
                 <>
-                    <Dialog.CancelButton onClick={hide} />
-                    <Dialog.ConfirmButton text={"Start Content Review"} onClick={onStart} />
+                    <Dialog.CancelAction onClick={hide} />
+                    <Dialog.ConfirmAction text={"Start Content Review"} onClick={onStart} />
                 </>
             }
             showCloseButton={true}

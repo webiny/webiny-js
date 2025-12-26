@@ -55,15 +55,6 @@ export const createInitialQuery = (params: Params): ElasticsearchBoolQueryConfig
                 "modelId.keyword": model.modelId
             }
         });
-        /**
-         * TODO determine if we want to search across locales?
-         * This search would anyway work for a single model and when sharing index.
-         */
-        query.filter.push({
-            term: {
-                "locale.keyword": model.locale
-            }
-        });
     }
 
     /**

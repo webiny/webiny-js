@@ -10,7 +10,8 @@ export interface TenantProps {
 
 export type TenantConfig = {
     name: string;
-    logo: React.ReactNode;
+    squareLogo: React.ReactNode;
+    horizontalLogo: React.ReactNode;
 };
 
 const BaseTenant = ({ children }: TenantProps) => {

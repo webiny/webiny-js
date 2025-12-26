@@ -16,14 +16,7 @@ export const ApiCloudfront = createAppModule({
             whitelistedNames: ["wby-id-token"]
         };
 
-        const forwardHeaders = [
-            "Origin",
-            "Authorization",
-            "Accept",
-            "Accept-Language",
-            "X-Tenant",
-            "X-I18n-Locale"
-        ];
+        const forwardHeaders = ["Origin", "Authorization", "Accept", "Accept-Language", "X-Tenant"];
 
         return app.addResource(aws.cloudfront.Distribution, {
             name: "api-cloudfront",

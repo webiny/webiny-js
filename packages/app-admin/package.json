@@ -39,7 +39,7 @@
     "@webiny/admin-ui": "0.0.0",
     "@webiny/app": "0.0.0",
     "@webiny/app-security": "0.0.0",
-    "@webiny/di": "^0.2.1",
+    "@webiny/di": "^0.2.3",
     "@webiny/feature": "0.0.0",
     "@webiny/form": "0.0.0",
     "@webiny/icons": "0.0.0",

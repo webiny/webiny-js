@@ -6,48 +6,43 @@ import {
     AccordionBackgroundProvider,
     useAccordionBackground
 } from "./components/AccordionBackgroundProvider.js";
+import { AccordionPropsProvider, useAccordionProps } from "./components/AccordionPropsProvider.js";
 
 const accordionVariants = cva("group w-full", {
     variants: {
         variant: {
             container: "accordion-variant-container gap-xs flex flex-col rounded-lg",
             underline: "accordion-variant-underline"
-        },
-        background: {
-            base: "bg-neutral-base",
-            light: "bg-neutral-light",
-            transparent: "bg-transparent"
-        },
-        border: {
-            none: "",
-            accent: "border-md border-neutral-dimmed-darker"
         }
     },
     defaultVariants: {
-        variant: "container",
-        background: "base"
+        variant: "underline"
     }
 });
 
 type AccordionProps = React.ComponentPropsWithoutRef<typeof AccordionRoot> &
     VariantProps<typeof accordionVariants> & {
         children: React.ReactNode;
+        background?: "base" | "light" | "transparent";
+        border?: "none" | "accent";
+        openClosedIndicatorPosition?: "left" | "right";
     };
 
-const AccordionBase = ({
-    children,
-    variant,
-    border,
-    background: backgroundProp = "base",
-    className
-}: AccordionProps) => {
+const AccordionBase = (props: AccordionProps) => {
+    const { children, variant, background: backgroundProp = "light", className } = props;
+
     const background = useAccordionBackground(backgroundProp);
 
     return (
         <AccordionBackgroundProvider currentBackground={background}>
-            <div className={cn(accordionVariants({ variant, background, border }), className)}>
-                {children}
-            </div>
+            <AccordionPropsProvider props={props}>
+                <div
+                    data-accordion="base"
+                    className={cn(accordionVariants({ variant }), className)}
+                >
+                    {children}
+                </div>
+            </AccordionPropsProvider>
         </AccordionBackgroundProvider>
     );
 };
@@ -58,4 +53,5 @@ export const Accordion = withStaticProps(DecoratableAccordion, {
     Item: AccordionItem
 });
 
+export { useAccordionProps };
 export type { AccordionProps, AccordionItemProps };

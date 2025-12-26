@@ -24,8 +24,7 @@ class TenantLinksRepositoryImpl implements RepositoryAbstraction.Interface {
             await this.storageOperations.createTenantLinks(
                 inputs.map(input => ({
                     ...input,
-                    createdOn: new Date().toISOString(),
-                    webinyVersion: process.env.WEBINY_VERSION as string
+                    createdOn: new Date().toISOString()
                 }))
             );
             return Result.ok();

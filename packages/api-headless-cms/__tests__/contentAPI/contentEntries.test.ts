@@ -93,7 +93,7 @@ type CmsEntry<T = Record<string, any>> = T & {
 };
 
 describe("Content entries", () => {
-    const manageOpts = { path: "manage/en-US" };
+    const manageOpts = { path: "manage" };
 
     const mainManager = useGraphQLHandler(manageOpts);
 

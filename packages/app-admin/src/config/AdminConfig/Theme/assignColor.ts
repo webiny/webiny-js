@@ -23,7 +23,7 @@ const assignColorToCssVar = (
     const varName = `--color-${palette}-${shadeLevel}`;
 
     const hsl = color.toHsl();
-    const varValue = `${hsl.h}, ${hsl.s * 100}%, ${hsl.l * 100}%`;
+    const varValue = `hsla(${hsl.h}, ${hsl.s * 100}%, ${hsl.l * 100}%)`;
     document.documentElement.style.setProperty(varName, varValue);
 };
 

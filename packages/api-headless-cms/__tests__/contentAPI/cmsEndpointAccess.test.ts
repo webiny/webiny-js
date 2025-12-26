@@ -8,9 +8,9 @@ import models from "./mocks/contentModels";
 describe("Endpoint access", () => {
     let contentModelGroup: CmsGroup;
 
-    const manageOpts = { path: "manage/en-US" };
-    const readOpts = { path: "read/en-US" };
-    const previewOpts = { path: "preview/en-US" };
+    const manageOpts = { path: "manage" };
+    const readOpts = { path: "read" };
+    const previewOpts = { path: "preview" };
     const defaultPermissions = [
         {
             name: "content.i18n",

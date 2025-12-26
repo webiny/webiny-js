@@ -6,5 +6,5 @@ export interface ICmsEntryFetcherResult {
 }
 
 export interface ICmsEntryFetcher {
-    (after?: string): Promise<ICmsEntryFetcherResult>;
+    (after?: string | null): Promise<ICmsEntryFetcherResult>;
 }

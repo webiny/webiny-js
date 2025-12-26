@@ -4,7 +4,7 @@ import { configurations } from "@webiny/api-headless-cms-ddb-es/configurations.j
 
 interface IEnableIndexingParams {
     client: Client;
-    model: Pick<CmsModel, "modelId" | "tenant" | "locale">;
+    model: Pick<CmsModel, "modelId" | "tenant">;
 }
 
 export const enableIndexing = async (params: IEnableIndexingParams) => {

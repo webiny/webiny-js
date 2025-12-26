@@ -23,6 +23,7 @@ describe("Write Permissions Checks", () => {
         });
 
         expectNotAuthorized(modelGroup.data.createContentModelGroup, {
+            code: "Cms/ModelGroup/NotAuthorized",
             message: "Not allowed to access content model groups."
         });
 
@@ -73,6 +74,7 @@ describe("Write Permissions Checks", () => {
         });
 
         expectNotAuthorized(notUpdatedModelGroup.data.updateContentModelGroup, {
+            code: "Cms/ModelGroup/NotAuthorized",
             message: "Not allowed to access content model groups."
         });
 

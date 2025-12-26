@@ -6,7 +6,7 @@ import upperFirst from "lodash/upperFirst";
 import pluralize from "pluralize";
 
 describe("ContentModel modelId variations", () => {
-    const manageHandlerOpts = { path: "manage/en-US" };
+    const manageHandlerOpts = { path: "manage" };
 
     const { createContentModelGroupMutation, createContentModelMutation } =
         useGraphQLHandler(manageHandlerOpts);
@@ -58,7 +58,7 @@ describe("ContentModel modelId variations", () => {
                     createContentModel: {
                         data: null,
                         error: {
-                            code: "MODEL_SINGULAR_API_NAME_ENDING_NOT_ALLOWED",
+                            code: "Cms/Model/ValidationError",
                             data: {
                                 input: singularApiName,
                                 disallowedEnding: [
@@ -100,7 +100,7 @@ describe("ContentModel modelId variations", () => {
                     createContentModel: {
                         data: null,
                         error: {
-                            code: "MODEL_PLURAL_API_NAME_NOT_ENDING_ALLOWED",
+                            code: "Cms/Model/ValidationError",
                             data: {
                                 input: pluralApiName,
                                 disallowedEnding: [

@@ -5,7 +5,6 @@ export interface IListConnectionsVariables {
     where?: {
         identityId?: string;
         tenant?: string;
-        locale?: string;
     };
 }
 
@@ -35,7 +34,6 @@ export const LIST_CONNECTIONS = /* GraphQL */ `
                     }
                     connectedOn
                     tenant
-                    locale
                 }
                 error {
                     message
@@ -80,7 +78,6 @@ export const DISCONNECT_IDENTITY_CONNECTIONS = /* GraphQL */ `
                     }
                     connectedOn
                     tenant
-                    locale
                 }
                 error {
                     message
@@ -93,11 +90,10 @@ export const DISCONNECT_IDENTITY_CONNECTIONS = /* GraphQL */ `
 `;
 
 /**
- * Disconnect all connections for a given tenant / locale.
+ * Disconnect all connections for a given tenant
  */
 export interface IDisconnectTenantConnectionsVariables {
     tenant: string;
-    locale?: string;
 }
 
 export interface IDisconnectTenantConnectionsResponse {
@@ -112,9 +108,9 @@ export interface IDisconnectTenantConnectionsResponse {
 }
 
 export const DISCONNECT_TENANT_CONNECTIONS = /* GraphQL */ `
-    mutation DisconnectIdentityConnections($tenant: String!, $locale: String) {
+    mutation DisconnectIdentityConnections($tenant: String!) {
         websockets {
-            disconnectTenant(tenant: $tenant, locale: $locale) {
+            disconnectTenant(tenant: $tenant) {
                 data {
                     connectionId
                     domainName
@@ -126,7 +122,6 @@ export const DISCONNECT_TENANT_CONNECTIONS = /* GraphQL */ `
                     }
                     connectedOn
                     tenant
-                    locale
                 }
                 error {
                     message
@@ -171,7 +166,6 @@ export const DISCONNECT_CONNECTIONS = /* GraphQL */ `
                     }
                     connectedOn
                     tenant
-                    locale
                 }
                 error {
                     message
@@ -213,7 +207,6 @@ export const DISCONNECT_ALL_CONNECTIONS = /* GraphQL */ `
                     }
                     connectedOn
                     tenant
-                    locale
                 }
                 error {
                     message

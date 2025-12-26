@@ -1,0 +1,14 @@
+import { createFeature } from "@webiny/feature/api";
+import type { Container } from "@webiny/di";
+import { ListFoldersRepository } from "./ListFoldersRepository.js";
+import { ListFoldersUseCase } from "./ListFoldersUseCase.js";
+import { ListFoldersWithFolderLevelPermissions } from "./decorators/ListFoldersWithFolderLevelPermissions.js";
+
+export const ListFoldersFeature = createFeature({
+    name: "ListFolders",
+    register(container: Container) {
+        container.register(ListFoldersRepository).inSingletonScope();
+        container.register(ListFoldersUseCase);
+        container.registerDecorator(ListFoldersWithFolderLevelPermissions);
+    }
+});
