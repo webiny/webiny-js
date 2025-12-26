@@ -29,9 +29,9 @@ class ListWorkflowStatesRepositoryImpl implements Repository.Interface {
             return Result.fail(new WorkflowStatePersistenceError(listResult.error));
         }
 
-        const [items, meta] = listResult.value;
+        const { entries, meta } = listResult.value;
 
-        const records = items.map(item => this.mapper.fromCmsEntry(item));
+        const records = entries.map(item => this.mapper.fromCmsEntry(item));
 
         return Result.ok({
             items: records,

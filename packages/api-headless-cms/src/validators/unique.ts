@@ -32,7 +32,7 @@ export const createUniqueValidator = (): CmsModelFieldValidatorPlugin => {
                         limit: 1
                     });
 
-                    return listResult.value[0].length === 0;
+                    return listResult.value.entries.length === 0;
                 } catch (ex) {
                     throw new WebinyError(
                         "Error while checking if the field value is unique.",

@@ -178,7 +178,7 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
         params?: IListTaskParams
     ) => {
         const identityContext = context.container.resolve(IdentityContext);
-        const [items, meta] = await identityContext.withoutAuthorization(async () => {
+        const { entries, meta } = await identityContext.withoutAuthorization(async () => {
             const model = await getTaskModel();
             const listLatestEntries = context.container.resolve(ListLatestEntriesUseCase);
             const result = await listLatestEntries.execute<TaskService.Task<T, O>>(model, {
@@ -192,7 +192,7 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
         });
 
         return {
-            items: items.map(item => convertToTask<T, O>(item)),
+            items: entries.map(item => convertToTask<T, O>(item)),
             meta
         };
     };
@@ -404,8 +404,8 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
             if (result.isFail()) {
                 throw result.error;
             }
-            const [items] = result.value;
-            const [item] = items;
+            const { entries } = result.value;
+            const [item] = entries;
             if (!item) {
                 throw new NotFoundError(`No existing latest log found for task "${taskId}".`);
             }
@@ -417,7 +417,7 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
 
     const listLogs = async (params: IListTaskLogParams) => {
         const identityContext = context.container.resolve(IdentityContext);
-        const [items, meta] = await identityContext.withoutAuthorization(async () => {
+        const { entries, meta } = await identityContext.withoutAuthorization(async () => {
             const model = await getLogModel();
             const listLatestEntries = context.container.resolve(ListLatestEntriesUseCase);
             const result = await listLatestEntries.execute<ITaskLog>(model, {
@@ -431,7 +431,7 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
         });
 
         return {
-            items: items.map(item => convertToLog(item)),
+            items: entries.map(item => convertToLog(item)),
             meta
         };
     };

@@ -24,7 +24,7 @@ class ListPagesRepositoryImpl implements RepositoryAbstraction.Interface {
             return Result.fail(new PagePersistenceError(result.error));
         }
 
-        const [entries, meta] = result.value;
+        const { entries, meta } = result.value;
         const pages = entries.map(entry => EntryToPageMapper.toPage(entry));
 
         return Result.ok({ pages, meta });

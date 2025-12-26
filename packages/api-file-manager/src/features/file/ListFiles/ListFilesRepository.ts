@@ -30,9 +30,9 @@ class ListFilesRepositoryImpl implements RepositoryAbstraction.Interface {
             return Result.fail(new FilePersistenceError(result.error));
         }
 
-        const [items, meta] = result.value;
+        const { entries, meta } = result.value;
 
-        const files = items.map(entry => EntryToFileMapper.toFile(entry));
+        const files = entries.map(entry => EntryToFileMapper.toFile(entry));
 
         return Result.ok({
             items: files,

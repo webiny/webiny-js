@@ -452,7 +452,7 @@ export const createContentEntriesSchema = ({
                                 fields: fields || []
                             });
 
-                            const [entries] = result.value;
+                            const { entries } = result.value;
 
                             return entries.map((entry: CmsEntry) => {
                                 return createCmsEntryRecord(model, entry);

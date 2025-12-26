@@ -4,13 +4,7 @@ import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
 import { ListEntriesUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { ListEntriesRepository } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
-import type {
-    CmsEntry,
-    CmsEntryListParams,
-    CmsEntryMeta,
-    CmsEntryValues,
-    CmsModel
-} from "~/types/index.js";
+import type { CmsEntryListParams, CmsEntryValues, CmsModel } from "~/types/index.js";
 import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 
 /**
@@ -31,7 +25,7 @@ class ListEntriesUseCaseImpl implements UseCaseAbstraction.Interface {
     async execute<T extends CmsEntryValues>(
         model: CmsModel,
         params?: CmsEntryListParams
-    ): Promise<Result<[CmsEntry<T>[], CmsEntryMeta], UseCaseAbstraction.Error>> {
+    ): UseCaseAbstraction.Return<T> {
         // Check access control
         const canAccess = await this.accessControl.canAccessEntry({ model });
         if (!canAccess) {

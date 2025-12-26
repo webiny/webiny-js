@@ -10,6 +10,11 @@ import type {
 import type { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 
+export interface IListEntriesResult<T extends CmsEntryValues = CmsEntryValues> {
+    entries: CmsEntry<T>[];
+    meta: CmsEntryMeta;
+}
+
 /**
  * Base ListEntries Use Case - Internal base use case for listing entries.
  * Used by specific variants (Latest, Published, Deleted).
@@ -18,7 +23,7 @@ export interface IListEntriesUseCase {
     execute<T extends CmsEntryValues>(
         model: CmsModel,
         params?: CmsEntryListParams
-    ): Promise<Result<[CmsEntry<T>[], CmsEntryMeta], UseCaseError>>;
+    ): Promise<Result<IListEntriesResult<T>, UseCaseError>>;
 }
 
 export interface IListEntriesUseCaseErrors {
@@ -32,6 +37,9 @@ export const ListEntriesUseCase = createAbstraction<IListEntriesUseCase>("ListEn
 
 export namespace ListEntriesUseCase {
     export type Interface = IListEntriesUseCase;
+    export type Return<T extends CmsEntryValues = CmsEntryValues> = Promise<
+        Result<IListEntriesResult<T>, UseCaseError>
+    >;
     export type Error = UseCaseError;
 }
 
@@ -42,7 +50,7 @@ export interface IListLatestEntriesUseCase {
     execute<T extends CmsEntryValues>(
         model: CmsModel,
         params?: CmsEntryListParams
-    ): Promise<Result<[CmsEntry<T>[], CmsEntryMeta], UseCaseError>>;
+    ): Promise<Result<IListEntriesResult<T>, UseCaseError>>;
 }
 
 export const ListLatestEntriesUseCase = createAbstraction<IListLatestEntriesUseCase>(
@@ -51,6 +59,9 @@ export const ListLatestEntriesUseCase = createAbstraction<IListLatestEntriesUseC
 
 export namespace ListLatestEntriesUseCase {
     export type Interface = IListLatestEntriesUseCase;
+    export type Return<T extends CmsEntryValues = CmsEntryValues> = Promise<
+        Result<IListEntriesResult<T>, UseCaseError>
+    >;
     export type Error = UseCaseError;
 }
 
@@ -61,7 +72,7 @@ export interface IListPublishedEntriesUseCase {
     execute<T extends CmsEntryValues>(
         model: CmsModel,
         params?: CmsEntryListParams
-    ): Promise<Result<[CmsEntry<T>[], CmsEntryMeta], UseCaseError>>;
+    ): Promise<Result<IListEntriesResult<T>, UseCaseError>>;
 }
 
 export const ListPublishedEntriesUseCase = createAbstraction<IListPublishedEntriesUseCase>(
@@ -70,6 +81,9 @@ export const ListPublishedEntriesUseCase = createAbstraction<IListPublishedEntri
 
 export namespace ListPublishedEntriesUseCase {
     export type Interface = IListPublishedEntriesUseCase;
+    export type Return<T extends CmsEntryValues = CmsEntryValues> = Promise<
+        Result<IListEntriesResult<T>, UseCaseError>
+    >;
     export type Error = UseCaseError;
 }
 
@@ -80,7 +94,7 @@ export interface IListDeletedEntriesUseCase {
     execute<T extends CmsEntryValues>(
         model: CmsModel,
         params?: CmsEntryListParams
-    ): Promise<Result<[CmsEntry<T>[], CmsEntryMeta], UseCaseError>>;
+    ): Promise<Result<IListEntriesResult<T>, UseCaseError>>;
 }
 
 export const ListDeletedEntriesUseCase = createAbstraction<IListDeletedEntriesUseCase>(
@@ -89,6 +103,9 @@ export const ListDeletedEntriesUseCase = createAbstraction<IListDeletedEntriesUs
 
 export namespace ListDeletedEntriesUseCase {
     export type Interface = IListDeletedEntriesUseCase;
+    export type Return<T extends CmsEntryValues = CmsEntryValues> = Promise<
+        Result<IListEntriesResult<T>, UseCaseError>
+    >;
     export type Error = UseCaseError;
 }
 
@@ -99,7 +116,7 @@ export interface IListEntriesRepository {
     execute<T extends CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryListParams
-    ): Promise<Result<[CmsEntry<T>[], CmsEntryMeta], RepositoryError>>;
+    ): Promise<Result<IListEntriesResult<T>, RepositoryError>>;
 }
 
 export interface IListEntriesRepositoryErrors {
@@ -113,5 +130,8 @@ export const ListEntriesRepository =
 
 export namespace ListEntriesRepository {
     export type Interface = IListEntriesRepository;
+    export type Return<T extends CmsEntryValues = CmsEntryValues> = Promise<
+        Result<IListEntriesResult<T>, RepositoryError>
+    >;
     export type Error = RepositoryError;
 }

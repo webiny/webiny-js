@@ -27,7 +27,7 @@ class GetEntryUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(result.error);
         }
 
-        const [entries] = result.value;
+        const { entries } = result.value;
         const entry = entries[0];
 
         if (!entry) {

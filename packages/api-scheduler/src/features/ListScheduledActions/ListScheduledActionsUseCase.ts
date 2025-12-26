@@ -42,10 +42,10 @@ class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new ScheduledActionPersistenceError(listResult.error));
         }
 
-        const [items, meta] = listResult.value;
+        const { entries, meta } = listResult.value;
 
         // Transform entries to IScheduledAction format
-        const scheduledActions: IScheduledAction[] = items.map(entry => ({
+        const scheduledActions: IScheduledAction[] = entries.map(entry => ({
             id: entry.entryId,
             title: entry.values.title,
             namespace: entry.values.namespace,

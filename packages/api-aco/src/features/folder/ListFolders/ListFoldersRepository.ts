@@ -5,8 +5,7 @@ import {
 } from "./abstractions.js";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries";
 import { FolderModel } from "~/domain/folder/abstractions.js";
-import type { Folder, ListFoldersParams } from "~/folder/folder.types.js";
-import type { ListMeta } from "~/types.js";
+import type { ListFoldersParams } from "~/folder/folder.types.js";
 import { EntryToFolderMapper } from "../shared/EntryToFolderMapper.js";
 import { FolderPersistenceError } from "~/domain/folder/errors.js";
 import { createListSort } from "~/utils/createListSort.js";
@@ -18,9 +17,7 @@ class ListFoldersRepositoryImpl implements IListFoldersRepository {
         private folderModel: FolderModel.Interface
     ) {}
 
-    async execute(
-        params: ListFoldersParams
-    ): Promise<Result<[Folder[], ListMeta], RepositoryAbstraction.Error>> {
+    async execute(params: ListFoldersParams): RepositoryAbstraction.Return {
         const { sort, where } = params;
 
         const listSort =
@@ -41,9 +38,9 @@ class ListFoldersRepositoryImpl implements IListFoldersRepository {
             return Result.fail(new FolderPersistenceError(result.error));
         }
 
-        const [entries, meta] = result.value;
+        const { entries, meta } = result.value;
         const folders = entries.map(entry => EntryToFolderMapper.toFolder(entry));
-        return Result.ok([folders, meta]);
+        return Result.ok({ folders, meta });
     }
 }
 

@@ -33,9 +33,9 @@ class GetTargetWorkflowStateRepositoryImpl implements Repository.Interface {
             return Result.fail(new WorkflowStatePersistenceError(listResult.error));
         }
 
-        const [items, meta] = listResult.value;
+        const { entries, meta } = listResult.value;
 
-        if (items.length === 0) {
+        if (entries.length === 0) {
             return Result.fail(
                 new WorkflowStateNotFoundError({
                     app: input.app,
@@ -49,12 +49,12 @@ class GetTargetWorkflowStateRepositoryImpl implements Repository.Interface {
                 new MultipleWorkflowsFoundError({
                     app: input.app,
                     targetRevisionId: input.targetRevisionId,
-                    items
+                    items: entries
                 })
             );
         }
 
-        const record = this.mapper.fromCmsEntry(items[0]);
+        const record = this.mapper.fromCmsEntry(entries[0]);
         return Result.ok(record);
     }
 }

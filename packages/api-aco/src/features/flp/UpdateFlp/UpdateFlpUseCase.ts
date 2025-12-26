@@ -199,9 +199,7 @@ export class UpdateFlpUseCase implements UseCaseAbstraction.Interface {
             throw result.error;
         }
 
-        const [folders] = result.value;
-
-        return await Promise.all(folders.map(folder => this.getFlp(folder)));
+        return await Promise.all(result.value.folders.map(folder => this.getFlp(folder)));
     }
 
     private async getFlp({

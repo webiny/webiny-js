@@ -50,7 +50,7 @@ class GetAncestorsRepositoryImpl implements IGetAncestorsRepository {
             return Result.fail(new FolderPersistenceError(result.error));
         }
 
-        const [entries] = result.value;
+        const { entries } = result.value;
         const folders = entries.map(entry => EntryToFolderMapper.toFolder(entry));
 
         // Create a Map with folders, using folder.id as key

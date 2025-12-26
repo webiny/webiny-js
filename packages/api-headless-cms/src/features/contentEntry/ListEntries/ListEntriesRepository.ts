@@ -28,7 +28,7 @@ class ListEntriesRepositoryImpl implements RepositoryAbstraction.Interface {
     async execute<T extends CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryListParams
-    ): Promise<Result<[CmsEntry<T>[], CmsEntryMeta], RepositoryAbstraction.Error>> {
+    ): RepositoryAbstraction.Return<T> {
         try {
             const limit = params.limit && params.limit > 0 ? params.limit : 50;
             const sort = params.sort ?? ["createdOn_DESC"];
@@ -62,7 +62,7 @@ class ListEntriesRepositoryImpl implements RepositoryAbstraction.Interface {
                 cursor: result.hasMoreItems ? result.cursor : null
             };
 
-            return Result.ok([items as CmsEntry<T>[], meta]);
+            return Result.ok({ entries: items as CmsEntry<T>[], meta });
         } catch (error) {
             return Result.fail(new EntryPersistenceError(error as Error));
         }

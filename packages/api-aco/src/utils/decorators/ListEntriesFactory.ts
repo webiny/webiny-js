@@ -1,16 +1,17 @@
 import type {
     CmsEntry,
     CmsEntryListParams,
-    CmsEntryMeta
+    CmsEntryValues
 } from "@webiny/api-headless-cms/types/index.js";
 import { type CmsModel } from "@webiny/api-headless-cms/types/index.js";
+import type { IListEntriesResult } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/abstractions.js";
 import { hasRootFolderId } from "~/utils/decorators/hasRootFolderId.js";
 import type { FolderPermission } from "~/flp/flp.types.js";
 import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 
-interface ListEntriesFactoryCallbackParams {
+interface ListEntriesFactoryCallbackParams<T extends CmsEntryValues> {
     model: CmsModel;
-    dataLoader: (params?: CmsEntryListParams) => Promise<[CmsEntry[], CmsEntryMeta]>;
+    dataLoader: (params?: CmsEntryListParams) => Promise<IListEntriesResult<T>>;
     initialParams?: CmsEntryListParams;
 }
 
@@ -23,11 +24,11 @@ export class ListEntriesFactory {
         this.permissionsCache = new Map();
     }
 
-    public async execute({
+    public async execute<T extends CmsEntryValues = CmsEntryValues>({
         model,
         dataLoader,
         initialParams = {}
-    }: ListEntriesFactoryCallbackParams): Promise<[CmsEntry[], CmsEntryMeta]> {
+    }: ListEntriesFactoryCallbackParams<T>): Promise<IListEntriesResult<T>> {
         const limit = initialParams?.limit || 50;
         const where = initialParams?.where;
         const params = { ...initialParams, limit };
@@ -38,7 +39,7 @@ export class ListEntriesFactory {
             return dataLoader(params);
         }
 
-        const resultEntries: CmsEntry[] = [];
+        const resultEntries: CmsEntry<T>[] = [];
         let totalCount = 0;
         let hasMoreItems = true;
         let cursor: string | null = null;
@@ -48,10 +49,10 @@ export class ListEntriesFactory {
         // Process entries in batches until we have enough results or reach the end
         while (!fetchedAll) {
             const queryParams: CmsEntryListParams = { ...params, after: afterCursor };
-            const [entries, currentMeta] = await dataLoader(queryParams);
+            const { entries, meta } = await dataLoader(queryParams);
 
             if (totalCount === 0) {
-                totalCount = currentMeta.totalCount;
+                totalCount = meta.totalCount;
             }
 
             // Process each entry and check folder permissions
@@ -88,16 +89,16 @@ export class ListEntriesFactory {
             }
 
             // Determine if we need to fetch more entries
-            if (!currentMeta.hasMoreItems || resultEntries.length >= limit) {
+            if (!meta.hasMoreItems || resultEntries.length >= limit) {
                 fetchedAll = true;
-                hasMoreItems = currentMeta.hasMoreItems;
-                cursor = currentMeta.cursor;
+                hasMoreItems = meta.hasMoreItems;
+                cursor = meta.cursor;
             } else {
-                afterCursor = currentMeta.cursor;
+                afterCursor = meta.cursor;
             }
         }
 
-        return [resultEntries, { totalCount, hasMoreItems, cursor }];
+        return { entries: resultEntries, meta: { totalCount, hasMoreItems, cursor } };
     }
 
     private async getPermissions(folderId: string): Promise<FolderPermission[]> {
