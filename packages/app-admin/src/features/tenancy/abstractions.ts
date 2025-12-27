@@ -8,7 +8,6 @@ export interface Tenant {
 export interface ITenancyService {
     getCurrentTenant(): string | null;
     setTenant(tenantId: string | null): void;
-    getIsMultiTenant(): boolean;
     onTenantChange(callback: (tenantId: string | null) => void): () => void;
 }
 

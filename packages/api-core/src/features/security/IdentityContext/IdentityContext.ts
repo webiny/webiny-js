@@ -104,6 +104,7 @@ class IdentityContextImpl implements Abstraction.Interface {
 
     async listPermissions(): Promise<SecurityPermission[]> {
         const permissions = await this.authorizationContext.loadPermissions();
+        // TODO: extract this into a decorator
         return this.applyAaclLogic(permissions);
     }
 

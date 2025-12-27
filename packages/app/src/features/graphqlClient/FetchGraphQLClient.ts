@@ -1,6 +1,7 @@
 import { createImplementation } from "@webiny/di";
 import { GraphQLClient } from "./abstractions.js";
 import { EnvConfig } from "~/features/envConfig/index.js";
+import { RequestValue } from "~/features/graphqlClient/RequestValue.js";
 
 class GraphQLClientImpl implements GraphQLClient.Interface {
     private readonly graphqlApiUrl: string;
@@ -9,17 +10,24 @@ class GraphQLClientImpl implements GraphQLClient.Interface {
         this.graphqlApiUrl = envConfig.get("graphqlApiUrl");
     }
 
-    async execute<TVariables = any, TResult = any>(
+    async execute<TResult = any, TVariables = any>(
         params: GraphQLClient.Request<TVariables>
     ): Promise<TResult> {
-        const { query, variables, headers = {} } = params;
+        const request = RequestValue.from(params);
 
-        const body = JSON.stringify({ query, variables });
+        const body = JSON.stringify({
+            query: request.queryAsString,
+            variables: request.variables,
+            operationName: request.operationName
+        });
 
-        return this.fetch<TResult>(body, headers);
+        return this.fetch<TResult>(body, request.headers);
     }
 
-    private async fetch<TResult = any>(body: string, headers: Record<string, any>) {
+    private async fetch<TResult = any>(
+        body: string,
+        headers: GraphQLClient.Headers = {}
+    ): Promise<TResult> {
         let response: Response;
         try {
             response = await fetch(this.graphqlApiUrl, {

@@ -1,13 +1,15 @@
 import { Container } from "@webiny/di";
 import { createFeature } from "@webiny/feature/admin";
+import { LocalStorageFeature } from "@webiny/app/features/localStorage/feature.js";
 import { TenancyService as TenancyServiceAbstraction } from "./abstractions.js";
 import { TenancyService } from "./TenancyService.js";
-import { LocalStorageFeature } from "@webiny/app/features/localStorage";
+import { GraphQLClientDecorator } from "./GraphQLClientDecorator.js";
 
 export const TenancyFeature = createFeature({
     name: "Tenancy",
     register(container: Container) {
         container.register(TenancyService).inSingletonScope();
+        container.registerDecorator(GraphQLClientDecorator);
     },
     resolve(container: Container) {
         const service = container.resolve(TenancyServiceAbstraction);

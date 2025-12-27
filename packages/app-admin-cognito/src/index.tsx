@@ -20,6 +20,7 @@ import { LoggingIn } from "~/views/LoggingIn.js";
 import type { FederatedIdentityProvider } from "~/federatedIdentityProviders.js";
 import { FederatedProviders } from "~/components/FederatedProviders.js";
 import { View } from "~/components/View.js";
+import { useAuthenticationContext } from "@webiny/app-admin/presentation/security/useAuthenticationContext.js";
 
 export const Components = {
     View,
@@ -103,12 +104,15 @@ export const createAuthentication: AuthenticationFactory = ({
         const { children } = props;
         const [loadingIdentity, setLoadingIdentity] = useState(false);
         const { setIdentity, setIdTokenProvider } = useSecurity();
+        const authContext = useAuthenticationContext();
         const client = useApolloClient();
 
         const onToken = useCallback(async (token: CognitoIdToken) => {
             const { payload, logout } = token;
 
             setLoadingIdentity(true);
+
+            authContext.setLogoutCallback(logout);
 
             try {
                 const { id, displayName, type, permissions, ...data } = await getIdentityData({
@@ -148,6 +152,13 @@ export const createAuthentication: AuthenticationFactory = ({
              * it when sending requests to external services (APIs, websockets,...).
              */
             setIdTokenProvider(async () => {
+                const user = await Auth.currentSession();
+                const idToken = user.getIdToken();
+
+                return idToken ? idToken.getJwtToken() : undefined;
+            });
+
+            authContext.setIdTokenProvider(async () => {
                 const user = await Auth.currentSession();
                 const idToken = user.getIdToken();
 

@@ -1,8 +1,6 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import { createImplementation } from "@webiny/di";
 import { TenancyService as Abstraction } from "./abstractions.js";
 import { LocalStorageService } from "@webiny/app/features/localStorage";
-import { WcpService } from "~/features/wcp/abstractions.js";
 
 const LOCAL_STORAGE_KEY = "tenantId";
 const DEFAULT_TENANT = "root";
@@ -11,10 +9,7 @@ class TenancyServiceImpl implements Abstraction.Interface {
     private currentTenant: string | null = null;
     private changeCallbacks = new Set<(tenantId: string | null) => void>();
 
-    constructor(
-        private localStorage: LocalStorageService.Interface,
-        private wcp: WcpService.Interface
-    ) {
+    constructor(private localStorage: LocalStorageService.Interface) {
         makeAutoObservable(this, {}, { autoBind: true });
         this.initialize();
     }
@@ -48,10 +43,6 @@ class TenancyServiceImpl implements Abstraction.Interface {
         }
     }
 
-    getIsMultiTenant(): boolean {
-        return this.wcp.canUseFeature("multiTenancy");
-    }
-
     onTenantChange(callback: (tenantId: string | null) => void): () => void {
         this.changeCallbacks.add(callback);
         return () => {
@@ -70,8 +61,7 @@ class TenancyServiceImpl implements Abstraction.Interface {
     }
 }
 
-export const TenancyService = createImplementation({
-    abstraction: Abstraction,
+export const TenancyService = Abstraction.createImplementation({
     implementation: TenancyServiceImpl,
-    dependencies: [LocalStorageService, WcpService]
+    dependencies: [LocalStorageService]
 });
