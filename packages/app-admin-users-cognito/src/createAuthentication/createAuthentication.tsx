@@ -3,9 +3,9 @@ import type { DocumentNode } from "graphql";
 import type { AuthenticationFactoryConfig as BaseConfig } from "@webiny/app-admin-cognito";
 import { createAuthentication as baseCreateAuthentication } from "@webiny/app-admin-cognito";
 import { useTags } from "@webiny/app-admin";
-import { useTenancy, withTenant } from "@webiny/app-admin";
+import { withTenant } from "@webiny/app-admin";
 import { NotAuthorizedError } from "./NotAuthorizedError/index.js";
-import { createGetIdentityData, LOGIN_ST, LOGIN_MT } from "~/createGetIdentityData/index.js";
+import { createGetIdentityData, LOGIN } from "~/createGetIdentityData/index.js";
 import type { GetIdentityDataCallable } from "~/createGetIdentityData/createGetIdentityData.js";
 
 export interface CreateAuthenticationConfig extends Partial<BaseConfig> {
@@ -27,8 +27,7 @@ export const createAuthentication = (config: CreateAuthenticationConfig = {}) =>
         const WithGetIdentityData = ({
             children
         }: Omit<WithGetIdentityDataProps, "getIdentityData">) => {
-            const { isMultiTenant } = useTenancy();
-            const loginMutation = config.loginMutation || (isMultiTenant ? LOGIN_MT : LOGIN_ST);
+            const loginMutation = config.loginMutation || LOGIN;
             const getIdentityData = config.getIdentityData || createGetIdentityData(loginMutation);
             /**
              * TODO @ts-refactor

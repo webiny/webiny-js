@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
 
-export const LOGIN_MT = gql`
+export const LOGIN = gql`
     mutation Login {
         security {
             login {
@@ -23,35 +23,6 @@ export const LOGIN_MT = gql`
                             image
                             parent
                         }
-                        permissions
-                        profile {
-                            email
-                            firstName
-                            lastName
-                            avatar
-                            gravatar
-                        }
-                    }
-                }
-                error {
-                    code
-                    message
-                    data
-                }
-            }
-        }
-    }
-`;
-
-export const LOGIN_ST = gql`
-    mutation Login {
-        security {
-            login {
-                data {
-                    ... on AdminUserIdentity {
-                        id
-                        displayName
-                        type
                         permissions
                         profile {
                             email

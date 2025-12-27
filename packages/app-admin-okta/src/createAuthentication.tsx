@@ -10,10 +10,10 @@ import { plugins } from "@webiny/plugins";
 import { CircularProgress } from "@webiny/ui/Progress/index.js";
 import { useSecurity } from "@webiny/app-serverless-cms";
 import { ApolloLinkPlugin } from "@webiny/app/plugins/ApolloLinkPlugin.js";
-import { useTenancy, withTenant } from "@webiny/app-admin";
+import { withTenant } from "@webiny/app-admin";
 import OktaSignInWidget from "./OktaSignInWidget.js";
 import type { GetIdentityDataCallable } from "./createGetIdentityData/index.js";
-import { createGetIdentityData, LOGIN_MT, LOGIN_ST } from "./createGetIdentityData/index.js";
+import { createGetIdentityData, LOGIN } from "./createGetIdentityData/index.js";
 import type { SecurityPermission } from "@webiny/app-security/types.js";
 
 const noop = () => {
@@ -66,8 +66,7 @@ export const createAuthentication = ({
 }: Config) => {
     const withGetIdentityData = (Component: React.ComponentType<WithGetIdentityDataProps>) => {
         return function WithGetIdentityData({ children }: WithGetIdentityDataFunctionProps) {
-            const { isMultiTenant } = useTenancy();
-            const loginMutation = config.loginMutation || (isMultiTenant ? LOGIN_MT : LOGIN_ST);
+            const loginMutation = config.loginMutation || LOGIN;
             const getIdentityData = config.getIdentityData || createGetIdentityData(loginMutation);
 
             return <Component getIdentityData={getIdentityData}>{children}</Component>;

@@ -1,7 +1,6 @@
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/index.js";
-import type { SecurityContext } from "~/types/security.js";
-import { Response } from "@webiny/handler-graphql";
+import { Response, GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { getDefaultTenant as baseGetDefaultTenant } from "~/features/security/utils/getDefaultTenant.js";
+import type { SecurityContext } from "~/types/security.js";
 
 const emptyResolver = () => ({});
 

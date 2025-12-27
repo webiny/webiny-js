@@ -1,4 +1,4 @@
-import { LOGIN_ST } from "./graphql.js";
+import { LOGIN } from "./graphql.js";
 import type { DocumentNode } from "graphql";
 import type { ApolloClient } from "apollo-client";
 
@@ -17,7 +17,7 @@ export interface CreateGetIdentityDataCallable {
 /**
  * A factory
  */
-export const createGetIdentityData: CreateGetIdentityDataCallable = (mutation = LOGIN_ST) => {
+export const createGetIdentityData: CreateGetIdentityDataCallable = (mutation = LOGIN) => {
     return async ({ client }) => {
         const response = await client.mutate({ mutation });
         const { data, error } = response.data.security.login;

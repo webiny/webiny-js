@@ -14,10 +14,10 @@ import { useAuth0, Auth0Provider } from "@auth0/auth0-react";
 import { plugins } from "@webiny/plugins";
 import { ApolloLinkPlugin } from "@webiny/app/plugins/ApolloLinkPlugin.js";
 import { useSecurity } from "@webiny/app-serverless-cms";
-import { useTenancy, withTenant } from "@webiny/app-admin";
+import { withTenant } from "@webiny/app-admin";
 import type { SecurityPermission } from "@webiny/app-security/types.js";
 import type { GetIdentityDataCallable } from "./createGetIdentityData/index.js";
-import { createGetIdentityData, LOGIN_MT, LOGIN_ST } from "./createGetIdentityData/index.js";
+import { createGetIdentityData, LOGIN } from "./createGetIdentityData/index.js";
 import { LoginContent, LoginLayout } from "~/components/index.js";
 
 export type Auth0Options = Auth0ProviderOptions;
@@ -91,8 +91,7 @@ export const createAuthentication = ({
         Component: React.ComponentType<WithGetIdentityDataProps>
     ): React.ComponentType<PropsWithChildren> => {
         return function WithGetIdentityData({ children }) {
-            const { isMultiTenant } = useTenancy();
-            const loginMutation = config.loginMutation || (isMultiTenant ? LOGIN_MT : LOGIN_ST);
+            const loginMutation = config.loginMutation || LOGIN;
             const getIdentityData = config.getIdentityData || createGetIdentityData(loginMutation);
 
             return <Component getIdentityData={getIdentityData}>{children}</Component>;
