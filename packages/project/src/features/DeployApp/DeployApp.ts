@@ -6,6 +6,7 @@ import {
     GetProject,
     GetPulumiService,
     LoggerService,
+    ProjectSdkParamsService,
     PulumiGetSecretsProviderService,
     PulumiSelectStackService
 } from "~/abstractions/index.js";
@@ -26,7 +27,8 @@ export class DefaultDeployApp implements DeployApp.Interface {
         private pulumiSelectStackService: PulumiSelectStackService.Interface,
         private getPulumiService: GetPulumiService.Interface,
         private pulumiGetSecretsProviderService: PulumiGetSecretsProviderService.Interface,
-        private logger: LoggerService.Interface
+        private logger: LoggerService.Interface,
+        private projectSdkParamsService: ProjectSdkParamsService.Interface
     ) {}
 
     async execute(params: DeployApp.Params) {
@@ -42,12 +44,13 @@ export class DefaultDeployApp implements DeployApp.Interface {
 
         const pulumi = await this.getPulumiService.execute({ app });
         const project = await this.getProject.execute();
+        const sdkParams = this.projectSdkParamsService.get();
 
         const env = createEnvConfiguration({
             configurations: [
-                withRegion(params),
-                withEnv(params),
-                withEnvVariant(params),
+                withRegion({ region: sdkParams.region }),
+                withEnv({ env: sdkParams.env }),
+                withEnvVariant({ variant: sdkParams.variant }),
                 withProjectName({ project }),
                 withPulumiConfigPassphrase()
             ]
@@ -102,6 +105,7 @@ export const deployApp = createImplementation({
         PulumiSelectStackService,
         GetPulumiService,
         PulumiGetSecretsProviderService,
-        LoggerService
+        LoggerService,
+        ProjectSdkParamsService
     ]
 });
