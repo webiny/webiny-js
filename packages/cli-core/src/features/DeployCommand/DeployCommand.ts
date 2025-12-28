@@ -117,16 +117,16 @@ export class DeployCommand implements CliCommand.Interface<IDeployCommandParams>
                     }
 
                     // 3. Start deploying apps one-by-one.
-                    isFirstDeployment && ui.newLine();
+                    isFirstDeployment && ui.emptyLine();
 
                     // Deploy all apps in the project.
                     ui.info("Deploying %s app...", "Core");
                     await this.deployApp({ ...params, app: "core" });
-                    ui.newLine();
+                    ui.emptyLine();
 
                     ui.info("Deploying %s app...", "API");
                     await this.deployApp({ ...params, app: "api" });
-                    ui.newLine();
+                    ui.emptyLine();
                     ui.info("Deploying %s app...", "Admin");
                     await this.deployApp({ ...params, app: "admin" });
 
@@ -141,7 +141,7 @@ export class DeployCommand implements CliCommand.Interface<IDeployCommandParams>
                         uiService: this.uiService
                     });
 
-                    ui.newLine();
+                    ui.emptyLine();
                     ui.textBold("Project Details");
                     await printInfoForEnv.execute(params);
 
@@ -197,7 +197,7 @@ export class DeployCommand implements CliCommand.Interface<IDeployCommandParams>
 
             if (!buildRunner.isEmpty()) {
                 await buildRunner.run();
-                ui.newLine();
+                ui.emptyLine();
             }
         }
 

@@ -145,7 +145,7 @@ export class LoginCommand implements CliCommand.Interface<ILoginCommandParams> {
 
                 await sleep();
 
-                ui.newLine();
+                ui.emptyLine();
                 ui.textBold("Next Steps");
 
                 if (!projectLinked) {

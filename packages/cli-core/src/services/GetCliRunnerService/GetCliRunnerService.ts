@@ -93,7 +93,7 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
                     process.exit(1);
                 }
 
-                ui.newLine();
+                ui.emptyLine();
                 ui.error(invalidParamsMessage);
 
                 process.exit(1);
@@ -113,13 +113,13 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
 
             const argv = this.getArgvService.execute();
             if (argv.showStackTrace && realError.stack) {
-                ui.newLine();
+                ui.emptyLine();
                 ui.debug("Stack trace:");
                 ui.text(realError.stack);
             }
 
             if (error instanceof GracefulError) {
-                ui.newLine();
+                ui.emptyLine();
                 ui.text(bgYellow(bold("💡 How can I resolve this?")));
                 ui.text(error.message);
             }
