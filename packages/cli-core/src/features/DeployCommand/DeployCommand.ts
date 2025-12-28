@@ -96,7 +96,7 @@ export class DeployCommand implements CliCommand.Interface<IDeployCommandParams>
                         const app = await projectSdk.getApp(appName);
                         ui.info("Deploying %s app...", app.getDisplayName());
                         await this.deployApp(appParams);
-                        ui.newLine();
+                        ui.emptyLine();
                     }
                 } else {
                     const isCi = projectSdk.isCi();
@@ -151,7 +151,7 @@ export class DeployCommand implements CliCommand.Interface<IDeployCommandParams>
                     });
 
                     if (isFirstDeployment && adminAppOutput) {
-                        ui.newLine();
+                        ui.emptyLine();
                         ui.info(
                             "The final step is to open the %s app in your browser and complete the installation wizard.",
                             "Admin"
@@ -167,7 +167,7 @@ export class DeployCommand implements CliCommand.Interface<IDeployCommandParams>
                             spinner.fail(`Failed to open Admin in your browser.`);
 
                             await sleep(1000);
-                            ui.newLine();
+                            ui.emptyLine();
                             ui.warning(
                                 `Failed to open %s app in your browser. To finish the setup and start using the project, please visit %s and complete the installation wizard.`,
                                 "Admin",

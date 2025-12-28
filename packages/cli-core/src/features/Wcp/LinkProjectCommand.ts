@@ -48,7 +48,7 @@ export class LinkProjectCommand implements CliCommand.Interface<void> {
                             return;
                         }
 
-                        ui.newLine();
+                        ui.emptyLine();
                     }
                 }
 

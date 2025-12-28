@@ -87,12 +87,12 @@ export class AboutCommand implements CliCommand.Interface<IAboutCommandParams> {
                     for (const key of Object.keys(data) as Array<keyof typeof data>) {
                         ui.raw(key.padEnd(36));
                         ui.raw(data[key] || NO_VALUE);
-                        ui.newLine();
+                        ui.emptyLine();
                     }
 
                     const isLastSection = index === 3;
                     if (!isLastSection) {
-                        ui.newLine();
+                        ui.emptyLine();
                     }
                 });
             }
