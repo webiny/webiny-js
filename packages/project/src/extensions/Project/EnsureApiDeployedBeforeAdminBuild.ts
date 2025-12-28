@@ -1,10 +1,17 @@
-import { AdminBeforeBuild, GetAppStackOutput } from "~/abstractions/index.js";
+import {
+    AdminBeforeBuild,
+    GetAppStackOutput,
+    ProjectSdkParamsService
+} from "~/abstractions/index.js";
 import { GracefulError } from "@webiny/project";
 
 const NO_DEPLOYMENT_CHECKS_FLAG_NAME = "--no-deployment-checks";
 
 class EnsureApiDeployedBeforeAdminBuildImpl implements AdminBeforeBuild.Interface {
-    constructor(private getAppStackOutput: GetAppStackOutput.Interface) {}
+    constructor(
+        private getAppStackOutput: GetAppStackOutput.Interface,
+        private projectSdkParamsService: ProjectSdkParamsService.Interface
+    ) {}
 
     async execute(params: AdminBeforeBuild.Params) {
         // Just in case, we want to allow users to skip the system requirements check.
@@ -18,7 +25,8 @@ class EnsureApiDeployedBeforeAdminBuildImpl implements AdminBeforeBuild.Interfac
             return;
         }
 
-        const cmd = `yarn webiny deploy api --env ${params.env}`;
+        const sdkParams = this.projectSdkParamsService.get();
+        const cmd = `yarn webiny deploy api --env ${sdkParams.env}`;
 
         const error = new Error("Cannot build Admin before deploying API.");
         const message = [
@@ -41,5 +49,5 @@ class EnsureApiDeployedBeforeAdminBuildImpl implements AdminBeforeBuild.Interfac
 
 export const EnsureApiDeployedBeforeAdminBuild = AdminBeforeBuild.createImplementation({
     implementation: EnsureApiDeployedBeforeAdminBuildImpl,
-    dependencies: [GetAppStackOutput]
+    dependencies: [GetAppStackOutput, ProjectSdkParamsService]
 });

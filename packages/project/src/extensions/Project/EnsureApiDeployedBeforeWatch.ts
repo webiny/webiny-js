@@ -1,10 +1,17 @@
-import { ApiBeforeWatch, GetAppStackOutput } from "~/abstractions/index.js";
+import {
+    ApiBeforeWatch,
+    GetAppStackOutput,
+    ProjectSdkParamsService
+} from "~/abstractions/index.js";
 import { GracefulError } from "@webiny/project";
 
 const NO_DEPLOYMENT_CHECKS_FLAG_NAME = "--no-deployment-checks";
 
 class EnsureApiDeployedBeforeWatchImpl implements ApiBeforeWatch.Interface {
-    constructor(private getAppStackOutput: GetAppStackOutput.Interface) {}
+    constructor(
+        private getAppStackOutput: GetAppStackOutput.Interface,
+        private projectSdkParamsService: ProjectSdkParamsService.Interface
+    ) {}
 
     async execute(params: ApiBeforeWatch.Params) {
         // Just in case, we want to allow users to skip the system requirements check.
@@ -19,7 +26,8 @@ class EnsureApiDeployedBeforeWatchImpl implements ApiBeforeWatch.Interface {
         }
 
         const error = new Error(`Cannot watch API before deploying it.`);
-        const cmd = `yarn webiny deploy api --env ${params.env}`;
+        const sdkParams = this.projectSdkParamsService.get();
+        const cmd = `yarn webiny deploy api --env ${sdkParams.env}`;
 
         const message = [
             `Before watching %s, please deploy it first by running: %s.`,
@@ -34,5 +42,5 @@ class EnsureApiDeployedBeforeWatchImpl implements ApiBeforeWatch.Interface {
 
 export const EnsureApiDeployedBeforeWatch = ApiBeforeWatch.createImplementation({
     implementation: EnsureApiDeployedBeforeWatchImpl,
-    dependencies: [GetAppStackOutput]
+    dependencies: [GetAppStackOutput, ProjectSdkParamsService]
 });
