@@ -15,10 +15,10 @@ export class DefaultPulumiGetStackExportService implements PulumiGetStackExportS
         private loggerService: LoggerService.Interface
     ) {}
 
-    async execute(app: AppModel, params: PulumiGetStackExportService.Params) {
+    async execute(app: AppModel) {
         const pulumi = await this.getPulumiService.execute({ app });
 
-        await this.pulumiSelectStackService.execute(app, params);
+        await this.pulumiSelectStackService.execute(app);
 
         const stackOutputString = await pulumi.run({
             command: ["stack", "export"],
@@ -36,8 +36,7 @@ export class DefaultPulumiGetStackExportService implements PulumiGetStackExportS
             this.loggerService.error(
                 "Could not parse stack export as JSON.",
                 stackOutputString.stdout,
-                app,
-                params
+                app
             );
             return null;
         }

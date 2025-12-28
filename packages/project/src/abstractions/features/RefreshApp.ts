@@ -1,10 +1,10 @@
 import { createAbstraction } from "~/abstractions/createAbstraction.js";
-import { type IBaseAppParams } from "~/abstractions/types.js";
+import { type AppName } from "~/abstractions/types.js";
 import { type ExecaChildProcess } from "execa";
 
 export type IPulumiProcess = ExecaChildProcess<string>;
 
-export type IRefreshAppParams = IBaseAppParams;
+export type IRefreshAppParams = { app: AppName };
 
 interface IRefreshApp {
     execute(params: IRefreshAppParams): Promise<{ pulumiProcess: IPulumiProcess }>;

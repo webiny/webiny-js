@@ -1,5 +1,10 @@
 import { createImplementation } from "@webiny/di";
-import { BuildAppWorkspaceService, GetApp, LoggerService } from "~/abstractions/index.js";
+import {
+    BuildAppWorkspaceService,
+    GetApp,
+    LoggerService,
+    ProjectSdkParamsService
+} from "~/abstractions/index.js";
 
 import path from "path";
 import fs from "fs";
@@ -11,27 +16,29 @@ const wait = () => new Promise(resolve => setTimeout(resolve, 10));
 export class DefaultBuildAppWorkspaceService implements BuildAppWorkspaceService.Interface {
     constructor(
         private getApp: GetApp.Interface,
-        private loggerService: LoggerService.Interface
+        private loggerService: LoggerService.Interface,
+        private projectSdkParamsService: ProjectSdkParamsService.Interface
     ) {}
 
     async execute(
-        params: BuildAppWorkspaceService.Params,
+        appName: GetApp.AppName,
         options: BuildAppWorkspaceService.Options = {}
     ) {
-        this.loggerService.debug({ params, options }, "Building app workspace...");
+        const sdkParams = this.projectSdkParamsService.get();
+        this.loggerService.debug({ appName, options }, "Building app workspace...");
 
-        if (!params.env) {
+        if (!sdkParams.env) {
             throw new Error(`Please specify environment, for example "dev".`);
         }
 
         const templatesFolderPath = getTemplatesFolderPath();
 
-        const app = this.getApp.execute(params.app);
+        const app = this.getApp.execute(appName);
         if (app.paths.workspaceFolder.existsSync()) {
             // Only skip rebuild if the forceRebuild option is not set to true.
             if (options.forceRebuild !== true) {
                 this.loggerService.debug(
-                    { appName: params.app },
+                    { appName },
                     "App workspace already exists, skipping rebuild."
                 );
                 return;
@@ -56,7 +63,7 @@ export class DefaultBuildAppWorkspaceService implements BuildAppWorkspaceService
         // Wait a bit and make sure the files are ready to have their content replaced.
         await wait();
 
-        const { env, variant } = params;
+        const { env, variant } = sdkParams;
 
         replaceInPath(path.join(appWorkspaceFolderPath, "/**/*.{ts,js,yaml}"), [
             { find: "{PROJECT_ID}", replaceWith: app.name },
@@ -75,5 +82,5 @@ export class DefaultBuildAppWorkspaceService implements BuildAppWorkspaceService
 export const buildAppWorkspaceService = createImplementation({
     abstraction: BuildAppWorkspaceService,
     implementation: DefaultBuildAppWorkspaceService,
-    dependencies: [GetApp, LoggerService]
+    dependencies: [GetApp, LoggerService, ProjectSdkParamsService]
 });

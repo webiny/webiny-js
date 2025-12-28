@@ -32,11 +32,11 @@ export class DefaultDeployApp implements DeployApp.Interface {
     ) {}
 
     async execute(params: DeployApp.Params) {
-        await this.buildAppWorkspaceService.execute(params);
+        await this.buildAppWorkspaceService.execute(params.app);
 
         const app = this.getApp.execute(params.app);
 
-        await this.pulumiSelectStackService.execute(app, params);
+        await this.pulumiSelectStackService.execute(app);
 
         // A Pulumi refresh might be executed before the deploy. For example,
         // this is needed if the user run the watch command prior to the deploy.

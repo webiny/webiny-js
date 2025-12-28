@@ -1,10 +1,11 @@
 import { createAbstraction } from "~/abstractions/createAbstraction.js";
-import { type IBaseAppParams } from "~/abstractions/types.js";
+import { type AppName } from "~/abstractions/types.js";
 import { type ExecaChildProcess } from "execa";
 
 type IPulumiProcess = ExecaChildProcess<string>;
 
-export interface IGetAppOutputParams extends IBaseAppParams {
+export interface IGetAppOutputParams {
+    app: AppName;
     json?: boolean;
 }
 

@@ -1,8 +1,7 @@
 import { createAbstraction } from "~/abstractions/createAbstraction.js";
-import { type IBaseAppParams } from "~/abstractions/types.js";
 import { type GetApp } from "~/abstractions/index.js";
 
-export interface IListPackagesServiceParams extends Omit<IBaseAppParams, "app" | "env"> {
+export interface IListPackagesServiceParams {
     app?: GetApp.AppName;
     env?: string;
     whitelist?: string[];

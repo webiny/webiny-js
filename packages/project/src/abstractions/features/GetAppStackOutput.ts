@@ -1,7 +1,7 @@
 import { createAbstraction } from "~/abstractions/createAbstraction.js";
-import { type IBaseAppParams } from "~/abstractions/types.js";
+import { type AppName } from "~/abstractions/types.js";
 
-export type IGetAppStackOutputParams = IBaseAppParams;
+export type IGetAppStackOutputParams = { app: AppName };
 
 export interface IStackOutput {
     /**

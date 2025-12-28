@@ -1,10 +1,11 @@
 import { createAbstraction } from "~/abstractions/createAbstraction.js";
-import { type IBaseAppParams } from "~/abstractions/types.js";
+import { type AppName } from "~/abstractions/types.js";
 import { type ExecaChildProcess } from "execa";
 
 type IPulumiProcess = ExecaChildProcess<string>;
 
-interface IDeployAppParams extends IBaseAppParams {
+interface IDeployAppParams {
+    app: AppName;
     preview?: boolean;
     debug?: boolean;
     dataMigrationLogStreaming?: boolean;
