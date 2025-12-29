@@ -22,6 +22,11 @@ accounts:
         - "GitHubActionsWebinyJsAdminAccess"
       IAMUser:
         - "webiny-ci"
+      IAMUserPolicyAttachment:
+        - "webiny-ci -> AdministratorAccess"
+      IAMUserAccessKey:
+        - property: UserName
+          value: "webiny-ci"
       IAMPolicy:
         - "DeployWebinyProjectGroup1"
         - "DeployWebinyProjectGroup2"
