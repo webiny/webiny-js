@@ -9,7 +9,7 @@ import {
     type AaclPermission
 } from "@webiny/app-admin";
 import { Form } from "@webiny/form";
-import { useSecurity } from "@webiny/app-security";
+import { useSecurity } from "@webiny/app-admin";
 
 const t = i18n.ns("app-file-manager/admin/plugins/permissionRenderer");
 

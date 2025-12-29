@@ -16,7 +16,7 @@ class RetryGraphQLClientImpl implements GraphQLClient.Interface {
         this.baseDelayMs = gqlClientConfig?.retries.delayInMillis ?? 100;
     }
 
-    async execute<TVariables = any, TResult = any>(
+    async execute<TResult = any, TVariables = any>(
         params: GraphQLClient.Request<TVariables>
     ): Promise<TResult> {
         let lastError: Error | undefined;

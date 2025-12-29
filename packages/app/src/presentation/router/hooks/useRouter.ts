@@ -1,5 +1,5 @@
 import { type ReactRoute, RouteElementRegistry } from "~/presentation/router/index.js";
-import { RouterFeature } from "~/features/router/index.js";
+import { RouterFeature } from "~/features/router/feature.js";
 import { useFeature } from "~/shared/di/useFeature.js";
 import { useContainer } from "~/shared/di/DiContainerProvider.js";
 

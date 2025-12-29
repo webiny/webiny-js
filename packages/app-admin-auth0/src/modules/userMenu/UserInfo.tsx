@@ -1,7 +1,7 @@
 import React from "react";
 import { AdminConfig } from "@webiny/app-admin";
 import { Text } from "@webiny/admin-ui";
-import { useSecurity } from "@webiny/app-security";
+import { useSecurity } from "@webiny/app-admin";
 
 const { Menu } = AdminConfig;
 

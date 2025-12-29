@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
-import { useSecurity } from "@webiny/app-security";
-import type { CmsGroup, CmsIdentity, CmsModel, CmsSecurityPermission } from "~/types.js";
+import { useIdentity } from "@webiny/app-admin";
 import { makeDecoratable } from "@webiny/react-composition";
+import type { CmsGroup, CmsIdentity, CmsModel, CmsSecurityPermission } from "~/types.js";
 
 export interface CreatableItem {
     createdBy?: Pick<CmsIdentity, "id">;
@@ -13,16 +13,17 @@ interface CanReadEntriesCallableParams {
 }
 
 export const usePermission = makeDecoratable(() => {
-    const { identity, getIdentityId, getPermission, getPermissions } = useSecurity();
+    const { identity } = useIdentity();
 
-    const hasFullAccess = useMemo(() => !!getPermission("cms.*"), [identity]);
+    const hasFullAccess = useMemo(() => !!identity.getPermission("cms.*"), [identity]);
 
     const canRead = useCallback(
         (permissionName: string): boolean => {
             if (hasFullAccess) {
                 return true;
             }
-            const permissions = getPermissions<CmsSecurityPermission>(permissionName);
+            const permissions =
+                identity.getPermissions<CmsSecurityPermission>(permissionName) ?? [];
 
             if (!permissions.length) {
                 return false;
@@ -45,13 +46,14 @@ export const usePermission = makeDecoratable(() => {
                 return true;
             }
 
-            const permissions = getPermissions<CmsSecurityPermission>("cms.contentEntry");
+            const permissions =
+                identity.getPermissions<CmsSecurityPermission>("cms.contentEntry") ?? [];
             if (!permissions.length) {
                 return false;
             }
 
             // Check "contentModel" list.
-            const contentModelPermissions = getPermissions("cms.contentModel");
+            const contentModelPermissions = identity.getPermissions("cms.contentModel");
 
             // "all" means user has access to all models.
             let allowedModels: "all" | string[] = [];
@@ -75,7 +77,7 @@ export const usePermission = makeDecoratable(() => {
             }
 
             // Check "contentModelGroup" list.
-            const contentModelGroupPermissions = getPermissions("cms.contentModelGroup");
+            const contentModelGroupPermissions = identity.getPermissions("cms.contentModelGroup");
 
             // "all" means user has access to all models.
             let allowedModelGroups: "all" | string[] = [];
@@ -123,7 +125,7 @@ export const usePermission = makeDecoratable(() => {
                 return true;
             }
 
-            const permissions = getPermissions<CmsSecurityPermission>(permissionName);
+            const permissions = identity.getPermissions<CmsSecurityPermission>(permissionName);
 
             if (!permissions.length || !identity) {
                 return false;
@@ -138,7 +140,7 @@ export const usePermission = makeDecoratable(() => {
                         return true;
                     }
 
-                    if (item?.createdBy?.id === getIdentityId()) {
+                    if (item?.createdBy?.id === identity.id) {
                         return true;
                     }
                 }
@@ -166,7 +168,7 @@ export const usePermission = makeDecoratable(() => {
                 return true;
             }
 
-            const permissions = getPermissions<CmsSecurityPermission>(permissionName);
+            const permissions = identity.getPermissions<CmsSecurityPermission>(permissionName);
             if (!permissions.length) {
                 return false;
             }
@@ -188,7 +190,7 @@ export const usePermission = makeDecoratable(() => {
                 return true;
             }
 
-            const permissions = getPermissions<CmsSecurityPermission>(permissionName);
+            const permissions = identity.getPermissions<CmsSecurityPermission>(permissionName);
 
             if (!permissions.length) {
                 return false;
@@ -199,7 +201,7 @@ export const usePermission = makeDecoratable(() => {
                     // Using optional chaining here because there might be cases where the item
                     // or its `createdBy` property is not defined. In that case, we want to
                     // return `false` and not throw an error.
-                    return item?.createdBy?.id === getIdentityId();
+                    return item?.createdBy?.id === identity.id;
                 }
 
                 if (typeof permission.rwd === "string") {
@@ -217,7 +219,7 @@ export const usePermission = makeDecoratable(() => {
             if (hasFullAccess) {
                 return true;
             }
-            const permissions = getPermissions<CmsSecurityPermission>(permissionName);
+            const permissions = identity.getPermissions<CmsSecurityPermission>(permissionName);
 
             if (!permissions.length) {
                 return false;
@@ -235,7 +237,7 @@ export const usePermission = makeDecoratable(() => {
             if (hasFullAccess) {
                 return true;
             }
-            const permissions = getPermissions<CmsSecurityPermission>(permissionName);
+            const permissions = identity.getPermissions<CmsSecurityPermission>(permissionName);
 
             if (!permissions.length) {
                 return false;
@@ -253,7 +255,7 @@ export const usePermission = makeDecoratable(() => {
             if (hasFullAccess) {
                 return true;
             }
-            const permissions = getPermissions<CmsSecurityPermission>(permissionName);
+            const permissions = identity.getPermissions<CmsSecurityPermission>(permissionName);
 
             if (!permissions.length) {
                 return false;
@@ -271,7 +273,7 @@ export const usePermission = makeDecoratable(() => {
     const canCreateContentModels = canCreate("cms.contentModel");
     const canCreateContentModelGroups = canCreate("cms.contentModelGroup");
     const canAccessManageEndpoint = useMemo(() => {
-        return getPermission("cms.endpoint.manage") !== undefined;
+        return identity.getPermission("cms.endpoint.manage") !== undefined;
     }, [identity]);
 
     return {

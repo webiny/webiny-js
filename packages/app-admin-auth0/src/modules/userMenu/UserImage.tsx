@@ -1,14 +1,10 @@
 import React from "react";
 import { makeDecoratable } from "@webiny/app-serverless-cms";
 import { Avatar } from "@webiny/admin-ui";
-import { useSecurity } from "@webiny/app-security";
+import { useSecurity } from "@webiny/app-admin";
 
 export const UserImage = makeDecoratable("UserImage", () => {
     const { identity } = useSecurity();
-
-    if (!identity) {
-        return null;
-    }
 
     const { displayName } = identity;
 

@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import omit from "lodash/omit.js";
 import { useApolloClient } from "@apollo/react-hooks";
 import WebinyError from "@webiny/error";
-import { useSecurity } from "@webiny/app-security";
+import { useIdentity } from "@webiny/app-admin";
 import type {
     CreateFileMutationResponse,
     CreateFileMutationVariables,
@@ -83,7 +83,7 @@ interface ListTagsOptions {
 const FM_FULL_ACCESS_PERMISSION_NAME = "fm.*";
 
 const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
-    const { identity, getIdentityId, getPermissions, getPermission } = useSecurity();
+    const { identity } = useIdentity();
     const client = useApolloClient();
     const fileModel = useFileModel();
     const [modelFields] = useState(getFileGraphQLSelection(fileModel));
@@ -92,11 +92,11 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
     // `own: true` defines full RWD access to files created by the user.
 
     const fmFilePermissions = useMemo<FileManagerSecurityPermission[]>(() => {
-        return getPermissions<FileManagerSecurityPermission>("fm.file");
+        return identity.getPermissions<FileManagerSecurityPermission>("fm.file");
     }, [identity]);
 
     const hasFullAccess = useMemo(
-        () => !!getPermission(FM_FULL_ACCESS_PERMISSION_NAME),
+        () => !!identity.getPermission(FM_FULL_ACCESS_PERMISSION_NAME),
         [identity]
     );
 
@@ -113,7 +113,7 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
                 hasFullAccess ||
                 fmFilePermissions.some(({ rwd, own }) => {
                     if (own) {
-                        const identityId = getIdentityId();
+                        const identityId = identity.id;
                         const createdById = item.createdBy?.id;
                         return identityId && identityId === createdById;
                     }
@@ -158,7 +158,7 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
                 hasFullAccess ||
                 fmFilePermissions.some(({ rwd, own }) => {
                     if (own) {
-                        const identityId = getIdentityId();
+                        const identityId = identity.id;
                         const createdById = item.createdBy?.id;
                         return identityId && identityId === createdById;
                     }

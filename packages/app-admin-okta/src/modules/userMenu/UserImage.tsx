@@ -1,16 +1,10 @@
 import React from "react";
 import { makeDecoratable } from "@webiny/app-serverless-cms";
 import { Avatar } from "@webiny/admin-ui";
-import { useSecurity } from "@webiny/app-security";
+import { useIdentity } from "@webiny/app-admin";
 
 export const UserImage = makeDecoratable("UserImage", () => {
-    const { identity } = useSecurity();
-
-    if (!identity) {
-        return null;
-    }
-
-    const { displayName } = identity;
+    const { identity } = useIdentity();
 
     return (
         <Avatar
@@ -18,7 +12,7 @@ export const UserImage = makeDecoratable("UserImage", () => {
             variant={"strong"}
             fallback={
                 <Avatar.Fallback className={"uppercase"} delayMs={0}>
-                    {displayName[0]}
+                    {identity.displayName[0]}
                 </Avatar.Fallback>
             }
         />

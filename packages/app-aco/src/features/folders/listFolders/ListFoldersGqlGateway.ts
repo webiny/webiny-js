@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { ApolloClient } from "@webiny/app-admin/features/apolloClient/abstraction.js";
+import { GraphQLClient } from "@webiny/app/features/graphqlClient/index.js";
 import type { FolderDto } from "~/domain/folder/FolderDto.js";
 import { RootFolder } from "~/domain/folder/RootFolder.js";
 import { FolderModelProvider } from "~/features/folders/abstractions.js";
@@ -39,28 +39,20 @@ export const LIST_FOLDERS = (FOLDER_FIELDS: string) => gql`
 
 class ListFoldersGqlGatewayImpl implements GatewayAbstraction.Interface {
     constructor(
-        private client: ApolloClient.Interface,
+        private client: GraphQLClient.Interface,
         private folderModelProvider: FolderModelProvider.Interface
     ) {}
 
     async execute(type: string) {
         const fields = await this.folderModelProvider.getGraphQLSelection();
 
-        const { data: response } = await this.client.query<
-            ListFoldersResponse,
-            ListFoldersQueryVariables
-        >({
+        const response = await this.client.execute<ListFoldersResponse, ListFoldersQueryVariables>({
             query: LIST_FOLDERS(fields),
             variables: {
                 type,
                 limit: 10000
-            },
-            fetchPolicy: "network-only"
+            }
         });
-
-        if (!response) {
-            throw new Error("Network error while listing folders.");
-        }
 
         const { data, error } = response.aco.listFolders;
 
@@ -74,5 +66,5 @@ class ListFoldersGqlGatewayImpl implements GatewayAbstraction.Interface {
 
 export const ListFoldersGqlGateway = GatewayAbstraction.createImplementation({
     implementation: ListFoldersGqlGatewayImpl,
-    dependencies: [ApolloClient, FolderModelProvider]
+    dependencies: [GraphQLClient, FolderModelProvider]
 });

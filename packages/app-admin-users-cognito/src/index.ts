@@ -1,6 +1,5 @@
 import { Components as BaseComponents } from "@webiny/app-admin-cognito";
 export * from "./createAuthentication/index.js";
-export * from "./createGetIdentityData/index.js";
 export { Cognito } from "./Cognito.js";
 export { CognitoLogin } from "./CognitoLogin.js";
 

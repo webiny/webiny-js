@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
+    { "path": "../feature/tsconfig.build.json" },
     { "path": "../i18n/tsconfig.build.json" },
     { "path": "../i18n-react/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
@@ -15,6 +16,10 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
+      "@webiny/feature/api": ["../feature/src/api/index.js"],
+      "@webiny/feature/admin": ["../feature/src/admin/index.js"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
       "@webiny/i18n/*": ["../i18n/src/*"],
       "@webiny/i18n": ["../i18n/src"],
       "@webiny/i18n-react/*": ["../i18n-react/src/*"],

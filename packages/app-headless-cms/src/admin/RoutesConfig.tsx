@@ -1,6 +1,6 @@
 import React, { lazy, Suspense } from "react";
 import Helmet from "react-helmet";
-import { SecureRoute, HasPermission } from "@webiny/app-security/components/index.js";
+import { SecureRoute, HasPermission } from "@webiny/app-admin";
 import { OverlayLoader } from "@webiny/admin-ui";
 import { CompositionScope } from "@webiny/react-composition";
 import { AdminConfig, AdminLayout } from "@webiny/app-admin";

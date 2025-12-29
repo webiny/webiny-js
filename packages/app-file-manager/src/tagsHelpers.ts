@@ -1,6 +1,6 @@
 import { DEFAULT_SCOPE } from "~/constants.js";
 import type { TagItem } from "@webiny/app-aco/types.js";
-import { useSecurity } from "@webiny/app-security";
+import { useSecurity } from "@webiny/app-admin";
 
 interface GetTagsInitialParams {
     scope?: string;

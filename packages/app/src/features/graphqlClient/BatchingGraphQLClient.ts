@@ -1,17 +1,17 @@
-// features/graphqlClient/BatchingGraphQLClient.ts
 import { createDecorator } from "@webiny/di";
 import { GraphQLClient } from "./abstractions.js";
 import { EnvConfig } from "~/features/envConfig/index.js";
-import type { DocumentNode } from "graphql";
+import { RequestValue } from "~/features/graphqlClient/RequestValue.js";
 
-interface BatchedRequest<TVariables = any> {
-    request: GraphQLClient.Request<TVariables>;
+interface BatchedRequest {
+    request: RequestValue;
     resolve: (value: any) => void;
     reject: (error: any) => void;
 }
 
 interface BatchOperation {
-    query: DocumentNode | string;
+    operationName: string | undefined;
+    query: string;
     variables?: any;
 }
 
@@ -34,7 +34,7 @@ class BatchingGraphQLClientImpl implements GraphQLClient.Interface {
         params: GraphQLClient.Request<TVariables>
     ): Promise<TResult> {
         return new Promise((resolve, reject) => {
-            this.queue.push({ request: params, resolve, reject });
+            this.queue.push({ request: RequestValue.from(params), resolve, reject });
 
             if (this.queue.length >= this.maxBatchSize) {
                 this.flush();
@@ -65,7 +65,7 @@ class BatchingGraphQLClientImpl implements GraphQLClient.Interface {
         if (batch.length === 1) {
             const { request, resolve, reject } = batch[0];
             try {
-                const result = await this.decoratee.execute(request);
+                const result = await this.decoratee.execute(request.request);
                 resolve(result);
             } catch (error) {
                 reject(error);
@@ -76,7 +76,8 @@ class BatchingGraphQLClientImpl implements GraphQLClient.Interface {
         // Multiple requests - batch them
         const batchedOperations = batch.map(({ request }): BatchOperation => {
             return {
-                query: request.query,
+                query: request.queryAsString,
+                operationName: request.operationName,
                 variables: request.variables
             };
         });
@@ -98,7 +99,7 @@ class BatchingGraphQLClientImpl implements GraphQLClient.Interface {
 
     private async executeBatch(
         operations: BatchOperation[],
-        headers?: Record<string, string>
+        headers?: GraphQLClient.Headers
     ): Promise<any[]> {
         let response: Response;
 

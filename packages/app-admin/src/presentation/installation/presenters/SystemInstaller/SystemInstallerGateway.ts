@@ -62,7 +62,7 @@ class SystemInstallerGraphQLGateway implements Abstraction.Interface {
     constructor(private client: GraphQLClient.Interface) {}
 
     async isSystemInstalled(): Promise<boolean> {
-        const response = await this.client.execute<any, IsSystemInstalledResponse>({
+        const response = await this.client.execute<IsSystemInstalledResponse>({
             query: IS_SYSTEM_INSTALLED
         });
 
@@ -74,7 +74,7 @@ class SystemInstallerGraphQLGateway implements Abstraction.Interface {
     }
 
     async installSystem(data: InstallationInput): Promise<void> {
-        const response = await this.client.execute<any, InstallSystemResponse>({
+        const response = await this.client.execute<InstallSystemResponse>({
             query: INSTALL_SYSTEM,
             variables: {
                 installationInput: data

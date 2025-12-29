@@ -4,7 +4,7 @@ import { css } from "emotion";
 import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography/index.js";
 import { useTenancy } from "@webiny/app-admin";
-import { useSecurity } from "@webiny/app-security";
+import { useSecurity } from "@webiny/app-admin";
 import { makeDecoratable } from "@webiny/app-admin";
 import authErrorImg from "./SecureRouteError.svg";
 
@@ -18,7 +18,8 @@ const ContentWrapper = styled("div")({
 const styles = {
     authErrorImgStyle: css({
         width: "192px",
-        paddingBottom: "24px"
+        paddingBottom: "24px",
+        margin: "0 auto"
     }),
     bodyStyle: css({
         color: "var(--mdc-theme-text-primary-on-background)",

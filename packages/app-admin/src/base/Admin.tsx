@@ -13,6 +13,7 @@ import { WcpProvider } from "~/presentation/wcp/WcpProvider.js";
 import { createTenancyProvider } from "~/presentation/tenancy/createTenancyProvider.js";
 import { TelemetryAdminAppStart } from "./TelemetryAdminAppStart.js";
 import { ApolloClientFeature } from "~/features/apolloClient/feature.js";
+import { SecurityFeature } from "~/features/security/SecurityFeature.js";
 
 export interface AdminProps {
     createApolloClient: ApolloClientFactory;
@@ -26,6 +27,7 @@ export const Admin = ({ children, createApolloClient }: AdminProps) => {
     const apolloClient = createApolloClient({ uri });
 
     ApolloClientFeature.register(container, apolloClient);
+    SecurityFeature.register(container);
 
     const ApolloProvider = createApolloProvider(apolloClient);
     const UIProviders = createUiProviders();

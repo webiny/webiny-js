@@ -8,7 +8,6 @@ import type {
     FormAPI
 } from "@webiny/form";
 import type { IconName, IconPrefix } from "@fortawesome/fontawesome-svg-core";
-import type { SecurityPermission } from "@webiny/app-security/types.js";
 import type {
     CmsModelFieldValidator,
     CmsModelFieldValidatorsFactory,
@@ -19,6 +18,7 @@ import type { CmsIdentity } from "~/types/shared.js";
 import type { SourceType } from "dnd-core";
 import type { IconPickerIconDto } from "@webiny/admin-ui";
 import { GenericRecord } from "@webiny/app/types.js";
+import { Identity } from "@webiny/app-admin/domain/Identity.js";
 
 export type DragObjectWithType = {
     type: SourceType;
@@ -542,7 +542,7 @@ export interface CmsContentFormRendererPlugin extends Plugin {
  * Data types
  * #########################
  */
-export interface CmsSecurityPermission extends SecurityPermission {
+export interface CmsSecurityPermission extends Identity.Permission {
     accessLevel?: "full" | "no" | "custom";
     models?: Record<string, string>;
     groups?: Record<string, string>;
