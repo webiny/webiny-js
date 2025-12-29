@@ -8,7 +8,7 @@ export class DefaultIsTelemetryEnabled implements IsTelemetryEnabled.Interface {
     async execute() {
         const projectConfig = await this.getProjectConfigService.execute();
 
-        const [telemetry] = projectConfig.extensionsByType<any>(TelemetryExtension);
+        const [telemetry] = projectConfig.extensionsByType(TelemetryExtension);
 
         const telemetryDisabled = telemetry && telemetry.params.enabled === false;
         return !telemetryDisabled;
