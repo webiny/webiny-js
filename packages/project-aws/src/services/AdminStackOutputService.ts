@@ -8,9 +8,7 @@ export class DefaultAdminStackOutputServiceExt implements AdminStackOutputServic
     async execute<
         TOutput extends AdminStackOutputServiceExt.Output = AdminStackOutputServiceExt.Output
     >(): Promise<TOutput | null> {
-        return this.getAppStackOutput.execute<TOutput>({
-            app: "admin"
-        });
+        return this.getAppStackOutput.execute<TOutput>("admin");
     }
 }
 

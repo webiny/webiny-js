@@ -1,5 +1,5 @@
 import { createAppModule, type PulumiAppModule } from "@webiny/pulumi";
-import { getStackOutput } from "@webiny/project";
+import { ProjectSdk } from "@webiny/project";
 
 export type CoreOutput = PulumiAppModule<typeof CoreOutput>;
 
@@ -43,10 +43,9 @@ export const CoreOutput = createAppModule({
     name: "CoreOutput",
     config(app) {
         return app.addHandler(async () => {
-            const output = await getStackOutput({
-                app: "core"
-            });
+            const sdk = await ProjectSdk.init();
 
+            const output = await sdk.getAppStackOutput("core");
             if (!output) {
                 throw new Error("Core application is not deployed.");
             }

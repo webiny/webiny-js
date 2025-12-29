@@ -8,9 +8,7 @@ export class DefaultApiStackOutputServiceExt implements ApiStackOutputServiceExt
     async execute<
         TOutput extends ApiStackOutputServiceExt.Output = ApiStackOutputServiceExt.Output
     >(): Promise<TOutput | null> {
-        return this.getAppStackOutput.execute<TOutput>({
-            app: "api"
-        });
+        return this.getAppStackOutput.execute<TOutput>("api");
     }
 }
 

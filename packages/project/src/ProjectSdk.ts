@@ -28,6 +28,7 @@ import {
     WcpService,
     GetProjectVersionService
 } from "~/abstractions/index.js";
+import { type AppName } from "~/abstractions/types.js";
 import { isValidRegionName, isValidVariantName } from "./utils/index.js";
 
 const projectSdkCache = new Map<string, ProjectSdk>();
@@ -103,8 +104,8 @@ export class ProjectSdk {
 
     async getAppStackOutput<
         TOutput extends GetAppStackOutput.StackOutput = GetAppStackOutput.StackOutput
-    >(params: GetAppStackOutput.Params) {
-        return this.container.resolve(GetAppStackOutput).execute<TOutput>(params);
+    >(appName: AppName) {
+        return this.container.resolve(GetAppStackOutput).execute<TOutput>(appName);
     }
 
     async getAppStackExport<

@@ -19,7 +19,7 @@ class EnsureApiDeployedBeforeWatchImpl implements ApiBeforeWatch.Interface {
             return;
         }
 
-        const output = await this.getAppStackOutput.execute({ ...params, app: "api" });
+        const output = await this.getAppStackOutput.execute("api");
         const apiDeployed = output && Object.keys(output).length > 0;
         if (apiDeployed) {
             return;

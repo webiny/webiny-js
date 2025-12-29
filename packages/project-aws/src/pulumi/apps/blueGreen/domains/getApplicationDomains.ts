@@ -77,9 +77,7 @@ export const getApplicationDomains = async (
         for (const app of apps) {
             promises.push(
                 new Promise<IPromiseResult>(async resolve => {
-                    const result = await getStackOutput<IDefaultStackOutput>({
-                        app
-                    });
+                    const result = await getStackOutput<IDefaultStackOutput>(app);
 
                     resolve({
                         env: stack.env,

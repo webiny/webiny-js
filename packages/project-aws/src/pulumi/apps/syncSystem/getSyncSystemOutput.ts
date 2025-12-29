@@ -2,9 +2,7 @@ import { getStackOutput } from "@webiny/project";
 import type { IGetSyncSystemOutputResult } from "~/pulumi/apps/syncSystem/types.js";
 
 export const getSyncSystemOutput = () => {
-    return getStackOutput<IGetSyncSystemOutputResult>({
-        app: "sync"
-    });
+    return getStackOutput<IGetSyncSystemOutputResult>("sync");
 };
 
 export const asyncGetSyncSystemOutput = async (): Promise<IGetSyncSystemOutputResult> => {

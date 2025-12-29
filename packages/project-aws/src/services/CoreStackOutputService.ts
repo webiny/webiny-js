@@ -8,9 +8,7 @@ export class DefaultCoreStackOutputServiceExt implements CoreStackOutputServiceE
     async execute<
         TOutput extends CoreStackOutputServiceExt.Output = CoreStackOutputServiceExt.Output
     >(): Promise<TOutput | null> {
-        return this.getAppStackOutput.execute<TOutput>({
-            app: "core"
-        });
+        return this.getAppStackOutput.execute<TOutput>("core");
     }
 }
 

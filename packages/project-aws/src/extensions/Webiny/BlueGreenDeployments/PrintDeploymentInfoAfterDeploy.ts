@@ -30,9 +30,7 @@ class PrintDeploymentInfoAfterDeployImpl implements AfterDeploy.Interface {
 
         const { blue, green } = chalk;
 
-        const bg = await this.getAppStackOutput.execute<IBlueGreenStackOutput>({
-            app: "blueGreen"
-        });
+        const bg = await this.getAppStackOutput.execute<IBlueGreenStackOutput>("blueGreen");
 
         if (!bg) {
             this.ui.info(
