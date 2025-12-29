@@ -30,7 +30,7 @@ import {
 } from "~/abstractions/index.js";
 import { isValidRegionName, isValidVariantName } from "./utils/index.js";
 
-let cachedProjectSdk: ProjectSdk | null = null;
+const projectSdkCache = new Map<string, ProjectSdk>();
 
 export class ProjectSdk {
     container: Container;
@@ -40,14 +40,24 @@ export class ProjectSdk {
     }
 
     static async init(params: Partial<ProjectSdkParamsService.Params> = {}) {
-        if (cachedProjectSdk) {
-            return cachedProjectSdk;
+        const cacheKey = ProjectSdk.getCacheKey(params);
+
+        if (projectSdkCache.has(cacheKey)) {
+            return projectSdkCache.get(cacheKey)!;
         }
 
         const container = await createProjectSdkContainer(params);
-        cachedProjectSdk = new ProjectSdk(container);
+        const instance = new ProjectSdk(container);
+        projectSdkCache.set(cacheKey, instance);
 
-        return cachedProjectSdk;
+        return instance;
+    }
+
+    private static getCacheKey(params: Partial<ProjectSdkParamsService.Params>): string {
+        const env = params.env || "";
+        const variant = params.variant || "";
+        const region = params.region || "";
+        return `${env}:${variant}:${region}`;
     }
 
     // Project-related methods.

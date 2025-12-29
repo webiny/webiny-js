@@ -1,8 +1,14 @@
 import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { type ProjectSdk } from "@webiny/project";
 
+export interface IGetProjectSdkParams {
+    env?: string;
+    variant?: string;
+    region?: string;
+}
+
 export interface IGetProjectSdkService {
-    execute(): Promise<ProjectSdk>;
+    execute(params?: IGetProjectSdkParams): Promise<ProjectSdk>;
 }
 
 export const GetProjectSdkService =
@@ -10,4 +16,5 @@ export const GetProjectSdkService =
 
 export namespace GetProjectSdkService {
     export type Interface = IGetProjectSdkService;
+    export type Params = IGetProjectSdkParams;
 }
