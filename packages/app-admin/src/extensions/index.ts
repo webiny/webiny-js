@@ -1,4 +1,4 @@
-import { adminExtension as AdminExtension } from "./AdminExtension.js";
+import { AdminExtension } from "./AdminExtension.js";
 
 export { AdminExtension };
 

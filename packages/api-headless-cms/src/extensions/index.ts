@@ -1,4 +1,4 @@
-import { onEntryBeforeCreate as OnEntryBeforeCreate } from "./entryHooks/index.js";
+import { OnEntryBeforeCreate } from "./entryHooks/index.js";
 
 export { OnEntryBeforeCreate };
 

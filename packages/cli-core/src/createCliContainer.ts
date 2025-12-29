@@ -57,7 +57,7 @@ import {
     commandsWithGracefulErrorHandling,
     deployCommandWithTelemetry
 } from "./decorators/index.js";
-import { CliCommand } from "~/extensions";
+import { CliCommand } from "~/extensions/index.js";
 
 const { bgYellow, bold } = chalk;
 

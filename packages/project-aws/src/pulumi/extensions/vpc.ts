@@ -1,7 +1,7 @@
 import { defineExtension } from "@webiny/project/defineExtension/index.js";
 import { z } from "zod";
 
-export const vpc = defineExtension({
+export const Vpc = defineExtension({
     type: "Infra/Vpc",
     tags: { runtimeContext: "project" },
     description: "Apply VPC settings to AWS resources during deployment.",

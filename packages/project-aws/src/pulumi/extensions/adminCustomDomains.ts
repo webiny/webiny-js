@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { defineExtension } from "@webiny/project/defineExtension/index.js";
 
-export const adminCustomDomains = defineExtension({
+export const AdminCustomDomains = defineExtension({
     type: "Infra/Admin/CustomDomains",
     tags: { runtimeContext: "project" },
     description: "Configure custom domains for the Admin app.",

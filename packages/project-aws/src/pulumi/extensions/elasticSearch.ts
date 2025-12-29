@@ -1,7 +1,7 @@
 import { defineExtension } from "@webiny/project/defineExtension/index.js";
 import { z } from "zod";
 
-export const elasticSearch = defineExtension({
+export const ElasticSearch = defineExtension({
     type: "Infra/ElasticSearch",
     tags: { runtimeContext: "project" },
     description: "Enable and configure Elasticsearch integration.",

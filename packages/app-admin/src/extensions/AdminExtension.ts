@@ -4,7 +4,7 @@ import path from "path";
 import Case from "case";
 import { type JsxFragment, Node, Project } from "ts-morph";
 
-export const adminExtension = defineExtension({
+export const AdminExtension = defineExtension({
     type: "Admin/Extension",
     tags: { runtimeContext: "app-build", appName: "admin" },
     description: "Extend the Admin application with custom functionality.",

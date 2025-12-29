@@ -1,6 +1,6 @@
-import { cliCommand as CliCommand } from "./CliCommand.js";
-import { cliCommandDecorator } from "~/extensions/CliCommandDecorator.js";
+import { CliCommand } from "./CliCommand.js";
+import { CliCommandDecorator } from "~/extensions/CliCommandDecorator.js";
 
 export { CliCommand };
 
-export const definitions = [CliCommand.definition, cliCommandDecorator.definition];
+export const definitions = [CliCommand.definition, CliCommandDecorator.definition];
