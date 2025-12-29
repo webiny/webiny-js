@@ -1,4 +1,3 @@
-import gql from "graphql-tag";
 import { GraphQLClient } from "@webiny/app/features/graphqlClient/index.js";
 import type { FolderDto } from "~/domain/folder/FolderDto.js";
 import { RootFolder } from "~/domain/folder/RootFolder.js";
