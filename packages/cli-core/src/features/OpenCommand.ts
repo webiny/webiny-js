@@ -34,11 +34,7 @@ export class OpenCommand implements CliCommand.Interface<IOpenCommandParams> {
             handler: async (args: IOpenCommandParams) => {
                 ui.info(`Opening %s...`, "Admin app");
 
-                const appOutput = await projectSdk.getAppStackOutput<{ appUrl: string }>({
-                    app: "admin",
-                    env: args.env,
-                    variant: args.variant
-                });
+                const appOutput = await projectSdk.getAppStackOutput<{ appUrl: string }>("admin");
 
                 if (!appOutput) {
                     throw new Error(
