@@ -1,18 +1,14 @@
-import { CoreBeforeDeploy, UiService } from "@webiny/project/abstractions/index.js";
-import { getStackOutput, GracefulError } from "@webiny/project";
-
-interface ICoreStackOutput {
-    elasticsearchDomainEndpoint?: string;
-    elasticsearchDomainArn?: string;
-    [key: string]: any;
-}
+import { CoreBeforeDeploy } from "@webiny/project/abstractions/index.js";
+import { GracefulError } from "@webiny/project";
+import { CoreStackOutputService } from "../../abstractions/index.js";
 
 class EnsureEsWasDeployedImpl implements CoreBeforeDeploy.Interface {
-    constructor(private uiService: UiService.Interface) {}
+    constructor(private coreStackOutputService: CoreStackOutputService.Interface) {}
 
-    async execute(params: CoreBeforeDeploy.Params) {
+    async execute() {
         // Get the stack output from the core application
-        const output = await getStackOutput<ICoreStackOutput>(params);
+        // CoreStackOutputService automatically uses env/variant/region from ProjectSdkParamsService
+        const output = await this.coreStackOutputService.execute();
 
         // If there's no output, Core hasn't been deployed yet, so we can proceed.
         if (!output) {
@@ -51,5 +47,5 @@ class EnsureEsWasDeployedImpl implements CoreBeforeDeploy.Interface {
 
 export const EnsureEsWasDeployed = CoreBeforeDeploy.createImplementation({
     implementation: EnsureEsWasDeployedImpl,
-    dependencies: [UiService]
+    dependencies: [CoreStackOutputService]
 });

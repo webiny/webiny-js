@@ -1,5 +1,6 @@
 import { extensionDefinitions } from "./extensionDefinitions.js";
 import { projectDecorator } from "./projectDecorator.js";
+import { projectImplementation } from "./projectImplementation.js";
 import { projectId } from "./projectId.js";
 import { telemetry } from "./telemetry.js";
 import { envVar } from "./envVar.js";
@@ -41,6 +42,7 @@ import {
 export const Telemetry = telemetry.ReactComponent;
 export const ProjectId = projectId.ReactComponent;
 export const ProjectDecorator = projectDecorator.ReactComponent;
+export const ProjectImplementation = projectImplementation.ReactComponent;
 export const ExtensionDefinitions = extensionDefinitions.ReactComponent;
 export const EnvVar = envVar.ReactComponent;
 
@@ -78,6 +80,7 @@ export const definitions = [
     telemetry.definition,
     projectId.definition,
     projectDecorator.definition,
+    projectImplementation.definition,
     extensionDefinitions.definition,
     envVar.definition,
 

@@ -1,8 +1,10 @@
-import { getStackOutput } from "@webiny/project";
 import { ProjectSdkParamsService } from "@webiny/project/abstractions/index.js";
+import { CoreStackOutputService, ApiStackOutputService } from "../../../abstractions/index.js";
 
 interface ISetAdminEnvVarsDi {
     projectSdkParamsService: ProjectSdkParamsService.Interface;
+    coreStackOutputService: CoreStackOutputService.Interface;
+    apiStackOutputService: ApiStackOutputService.Interface;
 }
 
 export class SetAdminEnvVars {
@@ -13,7 +15,7 @@ export class SetAdminEnvVars {
     }
 
     async execute() {
-        const { projectSdkParamsService } = this.di;
+        const { projectSdkParamsService, coreStackOutputService, apiStackOutputService } = this.di;
         const sdkParams = projectSdkParamsService.get();
 
         // Set basic admin env vars
@@ -22,13 +24,11 @@ export class SetAdminEnvVars {
         process.env.WEBINY_ADMIN_TRASH_BIN_RETENTION_PERIOD_DAYS =
             process.env.WEBINY_TRASH_BIN_RETENTION_PERIOD_DAYS || "";
 
-        // Load Core app stack output
-        const coreOutput = await getStackOutput<{
+        // Load Core app stack output (automatically uses env/variant/region from ProjectSdkParamsService)
+        const coreOutput = await coreStackOutputService.execute<{
             deploymentId: string;
             cognitoUserPoolDomain?: string;
-        }>({
-            app: "core"
-        });
+        }>();
 
         if (coreOutput) {
             process.env.WEBINY_ADMIN_DEPLOYMENT_ID = coreOutput.deploymentId;
@@ -39,17 +39,15 @@ export class SetAdminEnvVars {
             }
         }
 
-        // Load API app stack output
-        const apiOutput = await getStackOutput<{
+        // Load API app stack output (automatically uses env/variant/region from ProjectSdkParamsService)
+        const apiOutput = await apiStackOutputService.execute<{
             region: string;
             apiUrl: string;
             cognitoUserPoolId: string;
             cognitoAppClientId: string;
             cognitoUserPoolPasswordPolicy: any;
             websocketApiUrl: string;
-        }>({
-            app: "api"
-        });
+        }>();
 
         if (apiOutput) {
             process.env.REACT_APP_USER_POOL_REGION = apiOutput.region;

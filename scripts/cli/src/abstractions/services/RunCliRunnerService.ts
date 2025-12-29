@@ -1,7 +1,7 @@
 import { Abstraction } from "@webiny/di";
 
 export interface IRunCliRunnerService {
-    execute(argv: string[]): any;
+    execute(): any;
 }
 
 export const RunCliRunnerService = new Abstraction<IRunCliRunnerService>("RunCliRunnerService");
