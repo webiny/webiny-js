@@ -1,22 +1,13 @@
-import type { Identity } from "~/domain/Identity.js";
 import { AuthenticationContext as Abstraction, InternalIdTokenProvider } from "./abstractions.js";
-import { AuthenticationRepository } from "./abstractions.js";
 
 const noop = () => undefined;
 
 class AuthenticationContextImpl implements Abstraction.Interface {
     private logoutCallback: Abstraction.LogoutCallback = noop;
 
-    constructor(
-        private idTokenProvider: InternalIdTokenProvider.Interface,
-        private repository: AuthenticationRepository.Interface
-    ) {}
+    constructor(private idTokenProvider: InternalIdTokenProvider.Interface) {}
 
-    async login(identityType: string): Promise<Identity> {
-        return await this.repository.login(identityType);
-    }
-
-    async logout(): Promise<void> {
+    async clear(): Promise<void> {
         await this.logoutCallback();
         this.idTokenProvider.setTokenProvider(noop);
         this.logoutCallback = noop;
@@ -25,6 +16,10 @@ class AuthenticationContextImpl implements Abstraction.Interface {
     getIdToken: Abstraction.IdTokenProvider = () => {
         return this.idTokenProvider.getTokenProvider()();
     };
+
+    getLogoutCallback(): Abstraction.LogoutCallback {
+        return this.logoutCallback;
+    }
 
     setIdTokenProvider(provider: Abstraction.IdTokenProvider): void {
         this.idTokenProvider.setTokenProvider(provider);
@@ -37,5 +32,5 @@ class AuthenticationContextImpl implements Abstraction.Interface {
 
 export const AuthenticationContext = Abstraction.createImplementation({
     implementation: AuthenticationContextImpl,
-    dependencies: [InternalIdTokenProvider, AuthenticationRepository]
+    dependencies: [InternalIdTokenProvider]
 });

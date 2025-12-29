@@ -1,4 +1,4 @@
-export const createLoginMutation = (identityType: string) => {
+export const createLoginMutation = (identityType: string, fieldSelections: string[]) => {
     return /* GraphQL */ `
         mutation Login {
             security {
@@ -8,26 +8,14 @@ export const createLoginMutation = (identityType: string) => {
                             id
                             displayName
                             type
-                            profile {
-                                email
-                                firstName
-                                lastName
-                                avatar
-                                gravatar
-                            }
+                            ${fieldSelections.join("\n")}
                             currentTenant {
                                 id
                                 name
-                                description
-                                image
-                                parent
                             }
                             defaultTenant {
                                 id
                                 name
-                                description
-                                image
-                                parent
                             }
                             permissions
                         }

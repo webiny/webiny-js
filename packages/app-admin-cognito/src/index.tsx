@@ -84,8 +84,15 @@ export const createAuthentication: AuthenticationFactory = ({
     Object.keys(config).forEach(key => config[key] === undefined && delete config[key]);
     Auth.configure({ ...defaultOptions, ...config });
 
+    const idTokenProvider = async () => {
+        const user = await Auth.currentSession();
+        const idToken = user.getIdToken();
+
+        return idToken ? idToken.getJwtToken() : undefined;
+    };
+
     const Authentication = (props: AuthenticationProps) => {
-        const authContext = useAuthentication();
+        const authentication = useAuthentication();
         const { children } = props;
         const [loadingIdentity, setLoadingIdentity] = useState(false);
 
@@ -95,15 +102,10 @@ export const createAuthentication: AuthenticationFactory = ({
             setLoadingIdentity(true);
 
             try {
-                await authContext.login({
+                await authentication.login({
                     identityType: "AdminUserIdentity",
-                    idTokenProvider: async () => {
-                        const user = await Auth.currentSession();
-                        const idToken = user.getIdToken();
-
-                        return idToken ? idToken.getJwtToken() : undefined;
-                    },
-                    logoutCallback: logout ?? (() => void 0)
+                    idTokenProvider,
+                    logoutCallback: logout
                 });
             } catch (err) {
                 console.log("ERROR", err);

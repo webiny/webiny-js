@@ -1,4 +1,4 @@
-import { LogInUseCase as UseCase } from "./abstractions.js";
+import { LogInRepository, LogInUseCase as UseCase } from "./abstractions.js";
 import { AuthenticationContext } from "~/features/security/AuthenticationContext/index.js";
 import { IdentityContext } from "~/features/security/IdentityContext/index.js";
 import type { Identity } from "~/domain/Identity.js";
@@ -6,7 +6,8 @@ import type { Identity } from "~/domain/Identity.js";
 class LoginUseCaseImpl implements UseCase.Interface {
     constructor(
         private authContext: AuthenticationContext.Interface,
-        private identityContext: IdentityContext.Interface
+        private identityContext: IdentityContext.Interface,
+        private logInRepository: LogInRepository.Interface
     ) {}
 
     async execute(params: UseCase.Params): Promise<void> {
@@ -19,8 +20,7 @@ class LoginUseCaseImpl implements UseCase.Interface {
         // TODO: if it's a multi-tenant system, and current tenant is not known (no URL param, no localStorage),
         // execute the GET_DEFAULT_TENANT query to first determine the tenant. Only then login the user.
 
-        // 2. Execute login
-        const identity = await this.authContext.login(params.identityType);
+        const identity = await this.logInRepository.login(params.identityType);
 
         // 3. Ensure identity has some permissions
         this.validatePermissions(identity.getPermissions());
@@ -39,5 +39,5 @@ class LoginUseCaseImpl implements UseCase.Interface {
 
 export const LogInUseCase = UseCase.createImplementation({
     implementation: LoginUseCaseImpl,
-    dependencies: [AuthenticationContext, IdentityContext]
+    dependencies: [AuthenticationContext, IdentityContext, LogInRepository]
 });

@@ -9,8 +9,13 @@ class LogOutUseCaseImpl implements UseCase.Interface {
     ) {}
 
     async execute(): Promise<void> {
-        this.identityContext.setIdentity(undefined);
-        await this.authContext.logout();
+        const logoutCallback = this.authContext.getLogoutCallback();
+
+        // Clear state
+        this.identityContext.clear();
+        this.authContext.clear();
+
+        await logoutCallback();
     }
 }
 

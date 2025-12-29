@@ -13,13 +13,12 @@ class IdentityContextImpl implements Abstraction.Interface {
         return this.identity;
     }
 
-    setIdentity(identity: Identity | undefined): void {
-        if (!identity) {
-            this.identity = Identity.createAnonymous();
-            return;
-        }
-
+    setIdentity(identity: Identity): void {
         this.identity = identity;
+    }
+
+    clear() {
+        this.identity = Identity.createAnonymous();
     }
 }
 
