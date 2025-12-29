@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { Accordion, Card, Grid, Icon } from "@webiny/admin-ui";
-import type { IWorkflowNotification, IWorkflowStep } from "~/types.js";
+import type { IWorkflowNotificationType, IWorkflowStep } from "~/types.js";
 import { ReactComponent as ArrowUp } from "@webiny/icons/arrow_upward.svg";
 import { ReactComponent as ArrowDown } from "@webiny/icons/arrow_downward.svg";
 import { observer } from "mobx-react-lite";
@@ -23,7 +23,7 @@ export interface IStepProps {
     onMoveDown?: (step: Pick<IWorkflowStep, "id">) => void;
     canMoveDown?: (step: Pick<IWorkflowStep, "id">) => boolean;
     open?: boolean;
-    notifications: IWorkflowNotification[];
+    notifications: IWorkflowNotificationType[];
 }
 
 const useEditing = (defaultValue = false) => {

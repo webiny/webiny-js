@@ -1,14 +1,14 @@
-import type { IWorkflowNotificationsRepository } from "./abstractions/WorkflowNotificationsRepository.js";
+import type { IWorkflowNotificationTypesRepository } from "./abstractions/WorkflowNotificationTypesRepository.js";
 import { makeAutoObservable, runInAction } from "mobx";
-import type { IWorkflowNotification } from "~/types.js";
-import type { IWorkflowNotificationsGateway } from "~/Gateways/abstraction/WorkflowNotificationsGateway.js";
+import type { IWorkflowNotificationType } from "~/types.js";
+import type { IWorkflowNotificationTypesGateway } from "~/Gateways/abstraction/WorkflowNotificationTypesGateway.js";
 import type { IWorkflowError } from "~/Gateways/index.js";
 
-export interface IWorkflowNotificationsRepositoryParams {
-    gateway: IWorkflowNotificationsGateway;
+export interface IWorkflowNotificationTypesRepositoryParams {
+    gateway: IWorkflowNotificationTypesGateway;
 }
 
-export class WorkflowNotificationsRepository implements IWorkflowNotificationsRepository {
+export class WorkflowNotificationTypesRepository implements IWorkflowNotificationTypesRepository {
     private readonly gateway;
     private _loading: boolean = true;
     private _error: IWorkflowError | null = null;
@@ -21,13 +21,13 @@ export class WorkflowNotificationsRepository implements IWorkflowNotificationsRe
         return this._loading;
     }
 
-    public constructor(params: IWorkflowNotificationsRepositoryParams) {
+    public constructor(params: IWorkflowNotificationTypesRepositoryParams) {
         this.gateway = params.gateway;
 
         makeAutoObservable(this);
     }
 
-    public async list(): Promise<IWorkflowNotification[]> {
+    public async list(): Promise<IWorkflowNotificationType[]> {
         runInAction(() => {
             this._loading = true;
             this._error = null;

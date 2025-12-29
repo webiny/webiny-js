@@ -1,5 +1,5 @@
-export type { IWorkflowNotificationsGatewayParams } from "./WorkflowNotificationsGateway.js";
-export { WorkflowNotificationsGateway } from "./WorkflowNotificationsGateway.js";
+export type { IWorkflowNotificationTypesGatewayParams } from "./WorkflowNotificationTypesGateway.js";
+export { WorkflowNotificationTypesGateway } from "./WorkflowNotificationTypesGateway.js";
 
 export type {
     IWorkflowsGateway,

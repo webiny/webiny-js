@@ -35,7 +35,7 @@ import { ApproveWorkflowStateStepFeature } from "~/features/workflowState/Approv
 import { RejectWorkflowStateStepFeature } from "~/features/workflowState/RejectWorkflowStateStep/feature.js";
 import { TakeOverWorkflowStateStepFeature } from "~/features/workflowState/TakeOverWorkflowStateStep/feature.js";
 import { GetUserTeamsFeature } from "~/features/internal/GetUserTeams/feature.js";
-import { ListNotificationsFeature } from "~/features/notifications/ListNotifications/index.js";
+import { ListNotificationTypesFeature } from "~/features/notifications/ListNotificationTypes/index.js";
 import { createNotificationsGraphQL } from "~/graphql/notifications.js";
 
 export const createWorkflows = () => {
@@ -75,7 +75,7 @@ export const createWorkflows = () => {
         context.container.register(WorkflowStateMapper);
 
         // Register notification features
-        ListNotificationsFeature.register(context.container);
+        ListNotificationTypesFeature.register(context.container);
 
         // Register workflow features
         GetWorkflowFeature.register(context.container);

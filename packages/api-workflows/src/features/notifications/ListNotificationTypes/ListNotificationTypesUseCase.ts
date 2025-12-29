@@ -1,24 +1,22 @@
 import { Result } from "@webiny/feature/api";
 import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
 import {
-    ListNotificationsRepository,
-    ListNotificationsUseCase as UseCase
+    ListNotificationTypesRepository,
+    ListNotificationTypesUseCase as UseCase
 } from "./abstractions.js";
 import { WORKFLOWS_PERMISSION } from "~/constants.js";
-import type {
-    IWorkflowsSecurityPermission,
-    WorkflowsSecurityPermissionAccessLevel
-} from "~/types.js";
-import { NotificationAuthorizedError } from "~/domain/notification/errors.js";
+import type { IWorkflowsSecurityPermission } from "~/types.js";
+import { WorkflowsSecurityPermissionAccessLevel } from "~/types.js";
+import { NotificationAuthorizedError } from "~/domain/notifications/errors.js";
 
-class ListNotificationsUseCaseImpl implements UseCase.Interface {
+class ListNotificationTypesUseCaseImpl implements UseCase.Interface {
     public constructor(
         private identityContext: IdentityContext.Interface,
-        private repository: ListNotificationsRepository.Interface
+        private repository: ListNotificationTypesRepository.Interface
     ) {}
 
     public async execute(): UseCase.Return {
-        const hasAccess = await this.ensureManageAccess();
+        const hasAccess = await this.ensureAccess();
         if (hasAccess.isFail()) {
             return Result.fail(hasAccess.error);
         }
@@ -31,7 +29,7 @@ class ListNotificationsUseCaseImpl implements UseCase.Interface {
         return Result.ok(result.value);
     }
 
-    private async ensureManageAccess(): Promise<Result<void, NotificationAuthorizedError>> {
+    private async ensureAccess(): Promise<Result<void, NotificationAuthorizedError>> {
         const permissions =
             await this.identityContext.getPermissions<IWorkflowsSecurityPermission>(
                 WORKFLOWS_PERMISSION
@@ -40,7 +38,7 @@ class ListNotificationsUseCaseImpl implements UseCase.Interface {
         for (const permission of permissions) {
             if (permission.name === "*") {
                 return Result.ok();
-            } else if (permission.editor === ("yes" as WorkflowsSecurityPermissionAccessLevel)) {
+            } else if (permission.editor === WorkflowsSecurityPermissionAccessLevel.YES) {
                 return Result.ok();
             }
         }
@@ -49,7 +47,7 @@ class ListNotificationsUseCaseImpl implements UseCase.Interface {
     }
 }
 
-export const ListNotificationsUseCase = UseCase.createImplementation({
-    implementation: ListNotificationsUseCaseImpl,
-    dependencies: [IdentityContext, ListNotificationsRepository]
+export const ListNotificationTypesUseCase = UseCase.createImplementation({
+    implementation: ListNotificationTypesUseCaseImpl,
+    dependencies: [IdentityContext, ListNotificationTypesRepository]
 });

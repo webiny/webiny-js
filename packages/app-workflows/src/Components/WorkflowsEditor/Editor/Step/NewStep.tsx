@@ -2,13 +2,13 @@ import React, { useCallback, useState } from "react";
 import { ReactComponent as Add } from "@webiny/icons/add.svg";
 import { Step } from "./Step.js";
 import { generateAlphaNumericId } from "@webiny/utils/generateId.js";
-import type { IWorkflowNotification, IWorkflowStep, IWorkflowStepTeam } from "~/types.js";
+import type { IWorkflowNotificationType, IWorkflowStep, IWorkflowStepTeam } from "~/types.js";
 import { Button, Grid, Icon } from "@webiny/admin-ui";
 import { NonEmptyArray } from "@webiny/app/types.js";
 
 export interface IAddNewStepProps {
     onAdd: (step: IWorkflowStep) => void;
-    notifications: IWorkflowNotification[];
+    notifications: IWorkflowNotificationType[];
 }
 
 const createWorkflowStep = (): IWorkflowStep => {

@@ -3,14 +3,14 @@ import type {
     IWorkflowsViewModel
 } from "./abstractions/WorkflowsPresenter.js";
 import type {
-    IWorkflowNotificationsRepository,
+    IWorkflowNotificationTypesRepository,
     IWorkflowsRepository
 } from "../Repositories/index.js";
 import { makeAutoObservable, observable, runInAction, toJS } from "mobx";
 import type {
     IWorkflow,
     IWorkflowApplication,
-    IWorkflowNotification,
+    IWorkflowNotificationType,
     IWorkflowStep
 } from "~/types.js";
 import { type IWorkflowModel, WorkflowModel } from "~/Models/index.js";
@@ -18,14 +18,14 @@ import { type IWorkflowModel, WorkflowModel } from "~/Models/index.js";
 export interface IWorkflowsPresenterParams {
     app: IWorkflowApplication;
     workflowsRepository: IWorkflowsRepository;
-    notificationsRepository: IWorkflowNotificationsRepository;
+    notificationTypesRepository: IWorkflowNotificationTypesRepository;
     defaultWorkflow: IWorkflow;
 }
 
 export class WorkflowsPresenter implements IWorkflowsPresenter {
     private readonly app;
     private readonly workflowsRepository;
-    private readonly notificationsRepository;
+    private readonly notificationTypesRepository;
     private readonly workflows;
     private readonly notifications;
     private readonly defaultWorkflow;
@@ -37,8 +37,8 @@ export class WorkflowsPresenter implements IWorkflowsPresenter {
             dirty: workflow ? workflow.dirty : false,
             workflow: workflow ? workflow.toJS() : null,
             notifications: this.notifications,
-            loading: this.workflowsRepository.loading || this.notificationsRepository.loading,
-            error: toJS(this.workflowsRepository.error || this.notificationsRepository.error),
+            loading: this.workflowsRepository.loading || this.notificationTypesRepository.loading,
+            error: toJS(this.workflowsRepository.error || this.notificationTypesRepository.error),
             app: this.app
         };
     }
@@ -46,11 +46,11 @@ export class WorkflowsPresenter implements IWorkflowsPresenter {
     public constructor(params: IWorkflowsPresenterParams) {
         this.app = params.app;
         this.workflowsRepository = params.workflowsRepository;
-        this.notificationsRepository = params.notificationsRepository;
+        this.notificationTypesRepository = params.notificationTypesRepository;
         this.defaultWorkflow = params.defaultWorkflow;
 
         this.workflows = observable.array<IWorkflowModel>([]);
-        this.notifications = observable.array<IWorkflowNotification>([]);
+        this.notifications = observable.array<IWorkflowNotificationType>([]);
 
         makeAutoObservable(this);
 
@@ -59,7 +59,7 @@ export class WorkflowsPresenter implements IWorkflowsPresenter {
 
     private async init(): Promise<void> {
         const [notifications, workflows] = await Promise.all([
-            this.notificationsRepository.list(),
+            this.notificationTypesRepository.list(),
             this.workflowsRepository.listWorkflows({
                 where: {
                     app: this.app.id

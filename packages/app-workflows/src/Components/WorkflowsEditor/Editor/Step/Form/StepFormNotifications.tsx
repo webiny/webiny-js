@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { Bind } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { CheckboxGroup } from "@webiny/admin-ui";
-import type { IWorkflowNotification, IWorkflowStepNotification } from "~/types.js";
+import type { IWorkflowNotificationType, IWorkflowStepNotification } from "~/types.js";
 
 const convertInputValue = (value?: IWorkflowStepNotification[]): string[] => {
     if (!value?.length) {
@@ -12,7 +12,7 @@ const convertInputValue = (value?: IWorkflowStepNotification[]): string[] => {
 };
 
 interface IStepFormNotificationsProps {
-    items: IWorkflowNotification[];
+    items: IWorkflowNotificationType[];
 }
 
 export const StepFormNotifications = (props: IStepFormNotificationsProps) => {

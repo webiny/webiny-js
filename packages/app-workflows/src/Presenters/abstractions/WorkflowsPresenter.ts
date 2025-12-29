@@ -1,7 +1,7 @@
 import type {
     IWorkflow,
     IWorkflowApplication,
-    IWorkflowNotification,
+    IWorkflowNotificationType,
     IWorkflowStep
 } from "~/types.js";
 import type { IWorkflowError } from "~/Gateways/index.js";
@@ -10,7 +10,7 @@ import type { IWorkflowModel } from "~/Models/index.js";
 export interface IWorkflowsViewModel {
     dirty: boolean;
     workflows: IWorkflow[];
-    notifications: IWorkflowNotification[];
+    notifications: IWorkflowNotificationType[];
     workflow: IWorkflow | null;
     loading: boolean;
     error: IWorkflowError | null;

@@ -9,11 +9,11 @@ export interface IWorkflowNotificationError {
     stack?: string;
 }
 
-export interface IWorkflowNotificationsGatewayListResponse {
+export interface IWorkflowNotificationTypesGatewayListResponse {
     data: IWorkflowNotification[] | null;
     error: IWorkflowNotificationError | null;
 }
 
-export interface IWorkflowNotificationsGateway {
-    list(): Promise<IWorkflowNotificationsGatewayListResponse>;
+export interface IWorkflowNotificationTypesGateway {
+    list(): Promise<IWorkflowNotificationTypesGatewayListResponse>;
 }

@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import type { IWorkflowNotification } from "~/types.js";
+import type { IWorkflowNotificationType } from "~/types.js";
 import type { IWorkflowError } from "~/Gateways/index.js";
 
 const ERROR_FIELD = /* GraphQL */ `
@@ -10,27 +10,27 @@ const ERROR_FIELD = /* GraphQL */ `
     }
 `;
 
-const WORKFLOW_NOTIFICATION = /* GraphQL */ `
+const WORKFLOW_NOTIFICATION_TYPE = /* GraphQL */ `
     {
         id
         title
     }
 `;
 
-export interface IListWorkflowNotificationsResponse {
+export interface IListWorkflowNotificationTypesResponse {
     workflows: {
-        listWorkflowNotifications: {
-            data: IWorkflowNotification[] | null;
+        listWorkflowNotificationTypes: {
+            data: IWorkflowNotificationType[] | null;
             error: IWorkflowError | null;
         };
     };
 }
 
-export const LIST_WORKFLOW_NOTIFICATIONS_QUERY = gql`
-    query ListWorkflows {
+export const LIST_WORKFLOW_NOTIFICATION_TYPES_QUERY = gql`
+    query ListWorkflowNotificationTypes {
         workflows {
-            listWorkflowNotifications {
-                data ${WORKFLOW_NOTIFICATION}
+            listWorkflowNotificationTypes {
+                data ${WORKFLOW_NOTIFICATION_TYPE}
                 ${ERROR_FIELD}
             }
         }

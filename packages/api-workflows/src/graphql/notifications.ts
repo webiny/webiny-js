@@ -1,35 +1,35 @@
 import { GraphQLSchemaPlugin, resolveList } from "@webiny/handler-graphql";
-import { ListNotificationsUseCase } from "~/features/notifications/ListNotifications/index.js";
+import { ListNotificationTypesUseCase } from "~/features/notifications/ListNotificationTypes/index.js";
 
 export const createNotificationsGraphQL = () => {
     return new GraphQLSchemaPlugin({
         typeDefs: `
-            type WorkflowNotificationError {
+            type WorkflowNotificationTypeError {
                 message: String!
                 code: String
                 data: JSON
                 stack: String
             }
             
-            type WorkflowNotificationItem {
+            type WorkflowNotificationType {
                 id: String!
                 title: String!
             }
             
-            type ListWorkflowNotificationsResponse {
-                data: [WorkflowNotificationItem!]
-                error: WorkflowNotificationError
+            type ListWorkflowNotificationTypesResponse {
+                data: [WorkflowNotificationType!]
+                error: WorkflowNotificationTypeError
             }
             
             extend type WorkflowsQuery {
-                listWorkflowNotifications: ListWorkflowNotificationsResponse!
+                listWorkflowNotificationTypes: ListWorkflowNotificationTypesResponse!
             }
         `,
         resolvers: {
             WorkflowsQuery: {
-                async listWorkflowNotifications(_, __, context) {
+                async listWorkflowNotificationTypes(_, __, context) {
                     return resolveList(async () => {
-                        const useCase = context.container.resolve(ListNotificationsUseCase);
+                        const useCase = context.container.resolve(ListNotificationTypesUseCase);
 
                         const results = await useCase.execute();
 

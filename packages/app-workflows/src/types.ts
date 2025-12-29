@@ -38,7 +38,7 @@ export interface IWorkflowStep {
     notifications?: IWorkflowStepNotification[];
 }
 
-export interface IWorkflowNotification {
+export interface IWorkflowNotificationType {
     id: string;
     title: string;
 }
