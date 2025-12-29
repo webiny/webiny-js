@@ -17,15 +17,21 @@ export const Webiny = () => {
     return (
         <>
             <Project />
-            <ProjectDecorator src={p("Webiny/BuildAppWorkspace.js")} />
-            <AdminAfterDeploy src={p("Webiny/UploadAdminAppToS3.js")} />
-            <ApiAfterDeploy src={p("Webiny/ExecuteDataMigrations.js")} />
-            <ExtensionDefinitions src={p("Webiny/definitions.js")} />
+            <ProjectDecorator.ReactComponent src={p("Webiny/BuildAppWorkspace.js")} />
+            <AdminAfterDeploy.ReactComponent src={p("Webiny/UploadAdminAppToS3.js")} />
+            <ApiAfterDeploy.ReactComponent src={p("Webiny/ExecuteDataMigrations.js")} />
+            <ExtensionDefinitions.ReactComponent src={p("Webiny/definitions.js")} />
 
             {/* Blue-green */}
-            <CliCommand src={p("Webiny/BlueGreenDeployments/SetPrimaryVariantCliCommand.js")} />
-            <BeforeDeploy src={p("Webiny/BlueGreenDeployments/EnsureVariantBeforeDeploy.js")} />
-            <AfterDeploy src={p("Webiny/BlueGreenDeployments/PrintDeploymentInfoAfterDeploy.js")} />
+            <CliCommand.ReactComponent
+                src={p("Webiny/BlueGreenDeployments/SetPrimaryVariantCliCommand.js")}
+            />
+            <BeforeDeploy.ReactComponent
+                src={p("Webiny/BlueGreenDeployments/EnsureVariantBeforeDeploy.js")}
+            />
+            <AfterDeploy.ReactComponent
+                src={p("Webiny/BlueGreenDeployments/PrintDeploymentInfoAfterDeploy.js")}
+            />
         </>
     );
 };

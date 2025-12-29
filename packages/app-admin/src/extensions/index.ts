@@ -1,5 +1,5 @@
-import { adminExtension } from "./AdminExtension.js";
+import { adminExtension as AdminExtension } from "./AdminExtension.js";
 
-export const AdminExtension = adminExtension.ReactComponent;
+export { AdminExtension };
 
-export const definitions = [adminExtension.definition];
+export const definitions = [AdminExtension.definition];

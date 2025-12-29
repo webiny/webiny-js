@@ -1,135 +1,135 @@
 // Event handlers.
 import {
-    ApiKeyBeforeCreate as ApiKeyBeforeCreateExt,
-    ApiKeyAfterCreate as ApiKeyAfterCreateExt,
-    ApiKeyBeforeUpdate as ApiKeyBeforeUpdateExt,
-    ApiKeyAfterUpdate as ApiKeyAfterUpdateExt,
-    ApiKeyBeforeDelete as ApiKeyBeforeDeleteExt,
-    ApiKeyAfterDelete as ApiKeyAfterDeleteExt,
-    GroupBeforeCreate as GroupBeforeCreateExt,
-    GroupAfterCreate as GroupAfterCreateExt,
-    GroupBeforeUpdate as GroupBeforeUpdateExt,
-    GroupAfterUpdate as GroupAfterUpdateExt,
-    GroupBeforeDelete as GroupBeforeDeleteExt,
-    GroupAfterDelete as GroupAfterDeleteExt,
-    TeamBeforeCreate as TeamBeforeCreateExt,
-    TeamAfterCreate as TeamAfterCreateExt,
-    TeamBeforeUpdate as TeamBeforeUpdateExt,
-    TeamAfterUpdate as TeamAfterUpdateExt,
-    TeamBeforeDelete as TeamBeforeDeleteExt,
-    TeamAfterDelete as TeamAfterDeleteExt,
-    BeforeAuthentication as BeforeAuthenticationExt,
-    AfterAuthentication as AfterAuthenticationExt,
-    UserBeforeCreate as UserBeforeCreateExt,
-    UserAfterCreate as UserAfterCreateExt,
-    UserBeforeUpdate as UserBeforeUpdateExt,
-    UserAfterUpdate as UserAfterUpdateExt,
-    UserBeforeDelete as UserBeforeDeleteExt,
-    UserAfterDelete as UserAfterDeleteExt,
-    TenantBeforeCreate as TenantBeforeCreateExt,
-    TenantAfterCreate as TenantAfterCreateExt,
-    TenantBeforeUpdate as TenantBeforeUpdateExt,
-    TenantAfterUpdate as TenantAfterUpdateExt,
-    TenantBeforeDelete as TenantBeforeDeleteExt,
-    TenantAfterDelete as TenantAfterDeleteExt,
-    TenantInstalled as TenantInstalledExt,
-    SystemInstalled as SystemInstalledExt,
-    SettingsBeforeUpdate as SettingsBeforeUpdateExt,
-    SettingsAfterUpdate as SettingsAfterUpdateExt,
-    SettingsBeforeDelete as SettingsBeforeDeleteExt,
-    SettingsAfterDelete as SettingsAfterDeleteExt
+    ApiKeyBeforeCreate,
+    ApiKeyAfterCreate,
+    ApiKeyBeforeUpdate,
+    ApiKeyAfterUpdate,
+    ApiKeyBeforeDelete,
+    ApiKeyAfterDelete,
+    GroupBeforeCreate,
+    GroupAfterCreate,
+    GroupBeforeUpdate,
+    GroupAfterUpdate,
+    GroupBeforeDelete,
+    GroupAfterDelete,
+    TeamBeforeCreate,
+    TeamAfterCreate,
+    TeamBeforeUpdate,
+    TeamAfterUpdate,
+    TeamBeforeDelete,
+    TeamAfterDelete,
+    BeforeAuthentication,
+    AfterAuthentication,
+    UserBeforeCreate,
+    UserAfterCreate,
+    UserBeforeUpdate,
+    UserAfterUpdate,
+    UserBeforeDelete,
+    UserAfterDelete,
+    TenantBeforeCreate,
+    TenantAfterCreate,
+    TenantBeforeUpdate,
+    TenantAfterUpdate,
+    TenantBeforeDelete,
+    TenantAfterDelete,
+    TenantInstalled,
+    SystemInstalled,
+    SettingsBeforeUpdate,
+    SettingsAfterUpdate,
+    SettingsBeforeDelete,
+    SettingsAfterDelete
 } from "./eventHandlers/index.js";
 
 // Generic extension that supports any API abstraction.
-import { GenericExtension as AnyExtension } from "./GenericExtension.js";
+import { GenericExtension } from "./GenericExtension.js";
 
 // Exports.
-export const GenericExtension = AnyExtension.ReactComponent;
-export const ApiKeyBeforeCreate = ApiKeyBeforeCreateExt.ReactComponent;
-export const ApiKeyAfterCreate = ApiKeyAfterCreateExt.ReactComponent;
-export const ApiKeyBeforeUpdate = ApiKeyBeforeUpdateExt.ReactComponent;
-export const ApiKeyAfterUpdate = ApiKeyAfterUpdateExt.ReactComponent;
-export const ApiKeyBeforeDelete = ApiKeyBeforeDeleteExt.ReactComponent;
-export const ApiKeyAfterDelete = ApiKeyAfterDeleteExt.ReactComponent;
+export { GenericExtension };
+export { ApiKeyBeforeCreate };
+export { ApiKeyAfterCreate };
+export { ApiKeyBeforeUpdate };
+export { ApiKeyAfterUpdate };
+export { ApiKeyBeforeDelete };
+export { ApiKeyAfterDelete };
 
-export const GroupBeforeCreate = GroupBeforeCreateExt.ReactComponent;
-export const GroupAfterCreate = GroupAfterCreateExt.ReactComponent;
-export const GroupBeforeUpdate = GroupBeforeUpdateExt.ReactComponent;
-export const GroupAfterUpdate = GroupAfterUpdateExt.ReactComponent;
-export const GroupBeforeDelete = GroupBeforeDeleteExt.ReactComponent;
-export const GroupAfterDelete = GroupAfterDeleteExt.ReactComponent;
+export { GroupBeforeCreate };
+export { GroupAfterCreate };
+export { GroupBeforeUpdate };
+export { GroupAfterUpdate };
+export { GroupBeforeDelete };
+export { GroupAfterDelete };
 
-export const TeamBeforeCreate = TeamBeforeCreateExt.ReactComponent;
-export const TeamAfterCreate = TeamAfterCreateExt.ReactComponent;
-export const TeamBeforeUpdate = TeamBeforeUpdateExt.ReactComponent;
-export const TeamAfterUpdate = TeamAfterUpdateExt.ReactComponent;
-export const TeamBeforeDelete = TeamBeforeDeleteExt.ReactComponent;
-export const TeamAfterDelete = TeamAfterDeleteExt.ReactComponent;
+export { TeamBeforeCreate };
+export { TeamAfterCreate };
+export { TeamBeforeUpdate };
+export { TeamAfterUpdate };
+export { TeamBeforeDelete };
+export { TeamAfterDelete };
 
-export const BeforeAuthentication = BeforeAuthenticationExt.ReactComponent;
-export const AfterAuthentication = AfterAuthenticationExt.ReactComponent;
+export { BeforeAuthentication };
+export { AfterAuthentication };
 
-export const UserBeforeCreate = UserBeforeCreateExt.ReactComponent;
-export const UserAfterCreate = UserAfterCreateExt.ReactComponent;
-export const UserBeforeUpdate = UserBeforeUpdateExt.ReactComponent;
-export const UserAfterUpdate = UserAfterUpdateExt.ReactComponent;
-export const UserBeforeDelete = UserBeforeDeleteExt.ReactComponent;
-export const UserAfterDelete = UserAfterDeleteExt.ReactComponent;
+export { UserBeforeCreate };
+export { UserAfterCreate };
+export { UserBeforeUpdate };
+export { UserAfterUpdate };
+export { UserBeforeDelete };
+export { UserAfterDelete };
 
-export const TenantBeforeCreate = TenantBeforeCreateExt.ReactComponent;
-export const TenantAfterCreate = TenantAfterCreateExt.ReactComponent;
-export const TenantBeforeUpdate = TenantBeforeUpdateExt.ReactComponent;
-export const TenantAfterUpdate = TenantAfterUpdateExt.ReactComponent;
-export const TenantBeforeDelete = TenantBeforeDeleteExt.ReactComponent;
-export const TenantAfterDelete = TenantAfterDeleteExt.ReactComponent;
-export const TenantInstalled = TenantInstalledExt.ReactComponent;
+export { TenantBeforeCreate };
+export { TenantAfterCreate };
+export { TenantBeforeUpdate };
+export { TenantAfterUpdate };
+export { TenantBeforeDelete };
+export { TenantAfterDelete };
+export { TenantInstalled };
 
-export const SystemInstalled = SystemInstalledExt.ReactComponent;
+export { SystemInstalled };
 
-export const SettingsBeforeUpdate = SettingsBeforeUpdateExt.ReactComponent;
-export const SettingsAfterUpdate = SettingsAfterUpdateExt.ReactComponent;
-export const SettingsBeforeDelete = SettingsBeforeDeleteExt.ReactComponent;
-export const SettingsAfterDelete = SettingsAfterDeleteExt.ReactComponent;
+export { SettingsBeforeUpdate };
+export { SettingsAfterUpdate };
+export { SettingsBeforeDelete };
+export { SettingsAfterDelete };
 
 // Definitions (used internally). 👇
 export const definitions = [
-    AnyExtension.definition,
-    ApiKeyBeforeCreateExt.definition,
-    ApiKeyAfterCreateExt.definition,
-    ApiKeyBeforeUpdateExt.definition,
-    ApiKeyAfterUpdateExt.definition,
-    ApiKeyBeforeDeleteExt.definition,
-    ApiKeyAfterDeleteExt.definition,
-    GroupBeforeCreateExt.definition,
-    GroupAfterCreateExt.definition,
-    GroupBeforeUpdateExt.definition,
-    GroupAfterUpdateExt.definition,
-    GroupBeforeDeleteExt.definition,
-    GroupAfterDeleteExt.definition,
-    TeamBeforeCreateExt.definition,
-    TeamAfterCreateExt.definition,
-    TeamBeforeUpdateExt.definition,
-    TeamAfterUpdateExt.definition,
-    TeamBeforeDeleteExt.definition,
-    TeamAfterDeleteExt.definition,
-    BeforeAuthenticationExt.definition,
-    AfterAuthenticationExt.definition,
-    UserBeforeCreateExt.definition,
-    UserAfterCreateExt.definition,
-    UserBeforeUpdateExt.definition,
-    UserAfterUpdateExt.definition,
-    UserBeforeDeleteExt.definition,
-    UserAfterDeleteExt.definition,
-    TenantBeforeCreateExt.definition,
-    TenantAfterCreateExt.definition,
-    TenantBeforeUpdateExt.definition,
-    TenantAfterUpdateExt.definition,
-    TenantBeforeDeleteExt.definition,
-    TenantAfterDeleteExt.definition,
-    TenantInstalledExt.definition,
-    SystemInstalledExt.definition,
-    SettingsBeforeUpdateExt.definition,
-    SettingsAfterUpdateExt.definition,
-    SettingsBeforeDeleteExt.definition,
-    SettingsAfterDeleteExt.definition
+    GenericExtension.definition,
+    ApiKeyBeforeCreate.definition,
+    ApiKeyAfterCreate.definition,
+    ApiKeyBeforeUpdate.definition,
+    ApiKeyAfterUpdate.definition,
+    ApiKeyBeforeDelete.definition,
+    ApiKeyAfterDelete.definition,
+    GroupBeforeCreate.definition,
+    GroupAfterCreate.definition,
+    GroupBeforeUpdate.definition,
+    GroupAfterUpdate.definition,
+    GroupBeforeDelete.definition,
+    GroupAfterDelete.definition,
+    TeamBeforeCreate.definition,
+    TeamAfterCreate.definition,
+    TeamBeforeUpdate.definition,
+    TeamAfterUpdate.definition,
+    TeamBeforeDelete.definition,
+    TeamAfterDelete.definition,
+    BeforeAuthentication.definition,
+    AfterAuthentication.definition,
+    UserBeforeCreate.definition,
+    UserAfterCreate.definition,
+    UserBeforeUpdate.definition,
+    UserAfterUpdate.definition,
+    UserBeforeDelete.definition,
+    UserAfterDelete.definition,
+    TenantBeforeCreate.definition,
+    TenantAfterCreate.definition,
+    TenantBeforeUpdate.definition,
+    TenantAfterUpdate.definition,
+    TenantBeforeDelete.definition,
+    TenantAfterDelete.definition,
+    TenantInstalled.definition,
+    SystemInstalled.definition,
+    SettingsBeforeUpdate.definition,
+    SettingsAfterUpdate.definition,
+    SettingsBeforeDelete.definition,
+    SettingsAfterDelete.definition
 ];

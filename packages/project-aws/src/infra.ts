@@ -31,39 +31,39 @@ import {
 import { OpenSearch, ElasticSearch, AwsDefaultRegion } from "./extensions/index.js";
 
 export const Infra = {
-    Vpc,
-    BlueGreenDeployments,
+    Vpc: Vpc.ReactComponent,
+    BlueGreenDeployments: BlueGreenDeployments.ReactComponent,
     ElasticSearch,
     OpenSearch,
-    PulumiResourceNamePrefix,
-    ProductionEnvironments,
+    PulumiResourceNamePrefix: PulumiResourceNamePrefix.ReactComponent,
+    ProductionEnvironments: ProductionEnvironments.ReactComponent,
     Aws: {
         DefaultRegion: AwsDefaultRegion,
-        Tags: AwsTags
+        Tags: AwsTags.ReactComponent
     },
     Admin: {
-        BeforeBuild: AdminBeforeBuild,
-        BeforeDeploy: AdminBeforeDeploy,
-        BeforeWatch: AdminBeforeWatch,
-        AfterBuild: AdminAfterBuild,
-        AfterDeploy: AdminAfterDeploy,
-        Pulumi: AdminPulumi,
-        CustomDomains: AdminCustomDomains
+        BeforeBuild: AdminBeforeBuild.ReactComponent,
+        BeforeDeploy: AdminBeforeDeploy.ReactComponent,
+        BeforeWatch: AdminBeforeWatch.ReactComponent,
+        AfterBuild: AdminAfterBuild.ReactComponent,
+        AfterDeploy: AdminAfterDeploy.ReactComponent,
+        Pulumi: AdminPulumi.ReactComponent,
+        CustomDomains: AdminCustomDomains.ReactComponent
     },
     Api: {
-        BeforeBuild: ApiBeforeBuild,
-        BeforeDeploy: ApiBeforeDeploy,
-        BeforeWatch: ApiBeforeWatch,
-        AfterBuild: ApiAfterBuild,
-        AfterDeploy: ApiAfterDeploy,
-        Pulumi: ApiPulumi
+        BeforeBuild: ApiBeforeBuild.ReactComponent,
+        BeforeDeploy: ApiBeforeDeploy.ReactComponent,
+        BeforeWatch: ApiBeforeWatch.ReactComponent,
+        AfterBuild: ApiAfterBuild.ReactComponent,
+        AfterDeploy: ApiAfterDeploy.ReactComponent,
+        Pulumi: ApiPulumi.ReactComponent
     },
     Core: {
-        BeforeBuild: CoreBeforeBuild,
-        BeforeDeploy: CoreBeforeDeploy,
-        BeforeWatch: CoreBeforeWatch,
-        AfterBuild: CoreAfterBuild,
-        AfterDeploy: CoreAfterDeploy,
-        Pulumi: CorePulumi
+        BeforeBuild: CoreBeforeBuild.ReactComponent,
+        BeforeDeploy: CoreBeforeDeploy.ReactComponent,
+        BeforeWatch: CoreBeforeWatch.ReactComponent,
+        AfterBuild: CoreAfterBuild.ReactComponent,
+        AfterDeploy: CoreAfterDeploy.ReactComponent,
+        Pulumi: CorePulumi.ReactComponent
     }
 };

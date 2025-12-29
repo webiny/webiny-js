@@ -6,14 +6,14 @@ import { ProjectDecorator } from "@webiny/project/extensions/index.js";
 
 const p = createPathResolver(import.meta.dirname, "OpenSearch");
 
-export const OpenSearch = (props: React.ComponentProps<typeof PulumiOpenSearch>) => {
+export const OpenSearch = (props: React.ComponentProps<typeof PulumiOpenSearch.ReactComponent>) => {
     return (
         <>
-            <PulumiOpenSearch {...props} />
+            <PulumiOpenSearch.ReactComponent {...props} />
             {props.enabled && (
                 <>
-                    <ProjectDecorator src={p("InjectDdbEsLambdaFnHandler.js")} />
-                    <ProjectDecorator src={p("ReplaceApiLambdaFnHandlers.js")} />
+                    <ProjectDecorator.ReactComponent src={p("InjectDdbEsLambdaFnHandler.js")} />
+                    <ProjectDecorator.ReactComponent src={p("ReplaceApiLambdaFnHandlers.js")} />
                     <Infra.Core.BeforeDeploy src={p("EnsureOsServiceRoleBeforeCoreDeploy.js")} />
                     <Infra.Core.BeforeDeploy src={p("EnsureOsWasDeployed.js")} />
                 </>
