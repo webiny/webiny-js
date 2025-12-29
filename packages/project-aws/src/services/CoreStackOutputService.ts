@@ -1,19 +1,20 @@
-import { createImplementation } from "@webiny/di";
 import { GetAppStackOutput } from "@webiny/project/abstractions/index.js";
-import { CoreStackOutputService as CoreStackOutputServiceExt } from "../abstractions/index.js";
+import { CoreStackOutputService as CoreStackOutputServiceAbstraction } from "../abstractions/index.js";
 
-export class DefaultCoreStackOutputServiceExt implements CoreStackOutputServiceExt.Interface {
+export class DefaultCoreStackOutputServiceAbstraction
+    implements CoreStackOutputServiceAbstraction.Interface
+{
     constructor(private readonly getAppStackOutput: GetAppStackOutput.Interface) {}
 
     async execute<
-        TOutput extends CoreStackOutputServiceExt.Output = CoreStackOutputServiceExt.Output
+        TOutput extends
+            CoreStackOutputServiceAbstraction.Output = CoreStackOutputServiceAbstraction.Output
     >(): Promise<TOutput | null> {
         return this.getAppStackOutput.execute<TOutput>("core");
     }
 }
 
-export const CoreStackOutputService = createImplementation({
-    abstraction: CoreStackOutputServiceExt,
-    implementation: DefaultCoreStackOutputServiceExt,
+export const CoreStackOutputService = CoreStackOutputServiceAbstraction.createImplementation({
+    implementation: DefaultCoreStackOutputServiceAbstraction,
     dependencies: [GetAppStackOutput]
 });

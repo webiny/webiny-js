@@ -1,19 +1,17 @@
-import { createImplementation } from "@webiny/di";
 import { GetAppStackOutput } from "@webiny/project/abstractions/index.js";
-import { AdminStackOutputService as AdminStackOutputServiceExt } from "../abstractions/index.js";
+import { AdminStackOutputService as AdminStackOutputServiceAbstraction } from "../abstractions/index.js";
 
-export class DefaultAdminStackOutputServiceExt implements AdminStackOutputServiceExt.Interface {
+export class DefaultAdminStackOutputServiceAbstraction implements AdminStackOutputServiceAbstraction.Interface {
     constructor(private readonly getAppStackOutput: GetAppStackOutput.Interface) {}
 
     async execute<
-        TOutput extends AdminStackOutputServiceExt.Output = AdminStackOutputServiceExt.Output
+        TOutput extends AdminStackOutputServiceAbstraction.Output = AdminStackOutputServiceAbstraction.Output
     >(): Promise<TOutput | null> {
         return this.getAppStackOutput.execute<TOutput>("admin");
     }
 }
 
-export const AdminStackOutputService = createImplementation({
-    abstraction: AdminStackOutputServiceExt,
-    implementation: DefaultAdminStackOutputServiceExt,
+export const AdminStackOutputService = AdminStackOutputServiceAbstraction.createImplementation({
+    implementation: DefaultAdminStackOutputServiceAbstraction,
     dependencies: [GetAppStackOutput]
 });
