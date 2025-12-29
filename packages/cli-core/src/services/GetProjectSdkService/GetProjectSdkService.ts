@@ -8,20 +8,19 @@ export class DefaultGetProjectSdkService implements GetProjectSdkService.Interfa
         private readonly getArgvService: GetArgvService.Interface
     ) {}
 
-    async execute(params?: GetProjectSdkService.Params) {
+    async execute() {
         const cliParams = this.cliParamsService.get();
         const argv = this.getArgvService.execute();
 
-        // ProjectSdk.init() handles caching internally based on env/variant/region
+        // Extract env/variant/region from argv and pass to ProjectSdk.init()
+        // ProjectSdk.init() handles caching internally based on these parameters
         return ProjectSdk.init({
+            ...argv,
             cwd: cliParams.cwd,
             logging: {
                 streamToStdout: argv.showLogs,
                 level: argv.logLevel
             },
-            env: params?.env,
-            variant: params?.variant,
-            region: params?.region
         });
     }
 }
