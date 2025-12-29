@@ -11,7 +11,7 @@ class EnsureCoreDeployedBeforeApiDeployImpl implements ApiBeforeDeploy.Interface
         private projectSdkParamsService: ProjectSdkParamsService.Interface
     ) {}
 
-    async execute(params: ApiBeforeDeploy.Params) {
+    async execute() {
         const output = await this.getAppStackOutput.execute("core");
 
         const coreDeployed = output && Object.keys(output).length > 0;
