@@ -1,6 +1,6 @@
 import React from "react";
 import { AdminConfig, useContainer } from "@webiny/app-admin";
-import { HasPermission } from "@webiny/app-security";
+import { HasPermission } from "@webiny/app-admin";
 import { ReactComponent as PagesIcon } from "@webiny/icons/table_chart.svg";
 import { PageEditor } from "~/modules/pages/PageEditor.js";
 import { PageList } from "~/modules/pages/PageList.js";

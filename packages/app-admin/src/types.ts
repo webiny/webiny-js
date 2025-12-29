@@ -1,23 +1,8 @@
 import type { ReactElement } from "react";
-import type React from "react";
 import type { Plugin } from "@webiny/plugins/types.js";
-import type { ApolloClient } from "apollo-client";
-import type { SecurityPermission } from "@webiny/app-security/types.js";
+import { Identity } from "~/domain/Identity.js";
 
 export type { Icon } from "~/components/IconPicker/types.js";
-
-export interface AdminInstallationPluginRenderParams {
-    onInstalled: () => Promise<void>;
-}
-
-export type AdminInstallationPlugin = Plugin & {
-    type: "admin-installation";
-    getInstalledVersion(params: { client: ApolloClient<object> }): Promise<string | null>;
-    title: string;
-    dependencies?: string[];
-    secure: boolean;
-    render(params: AdminInstallationPluginRenderParams): React.ReactNode;
-};
 
 export type AdminAppPermissionRendererPlugin = Plugin & {
     type: "admin-app-permissions-renderer";
@@ -65,7 +50,7 @@ export interface FileItem {
     extensions?: Record<string, any>;
 }
 
-export interface FileManagerSecurityPermission extends SecurityPermission {
+export interface FileManagerSecurityPermission extends Identity.Permission {
     rwd?: string;
     own?: boolean;
 }

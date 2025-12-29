@@ -46,10 +46,7 @@ class ListFoldersGqlGatewayImpl implements GatewayAbstraction.Interface {
     async execute(type: string) {
         const fields = await this.folderModelProvider.getGraphQLSelection();
 
-        const response = await this.client.execute<
-            ListFoldersResponse,
-            ListFoldersQueryVariables
-        >({
+        const response = await this.client.execute<ListFoldersResponse, ListFoldersQueryVariables>({
             query: LIST_FOLDERS(fields),
             variables: {
                 type,

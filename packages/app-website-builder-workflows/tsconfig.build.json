@@ -5,7 +5,6 @@
     { "path": "../admin-ui/tsconfig.build.json" },
     { "path": "../app/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
-    { "path": "../app-security/tsconfig.build.json" },
     { "path": "../app-website-builder/tsconfig.build.json" },
     { "path": "../app-workflows/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" }
@@ -29,8 +28,6 @@
       "@webiny/app-admin/features/tenancy": ["../app-admin/src/features/tenancy/index.js"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
-      "@webiny/app-security/*": ["../app-security/src/*"],
-      "@webiny/app-security": ["../app-security/src"],
       "@webiny/app-website-builder/*": ["../app-website-builder/src/*"],
       "@webiny/app-website-builder": ["../app-website-builder/src"],
       "@webiny/app-workflows/*": ["../app-workflows/src/*"],

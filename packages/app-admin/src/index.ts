@@ -27,6 +27,8 @@ export * from "./plugins/PermissionRendererPlugin.js";
 
 // Components
 export * from "./components/index.js";
+export { HasPermission } from "./presentation/security/components/HasPermission.js";
+export { SecureRoute } from "./presentation/security/components/SecureRoute.js";
 
 export { FileManager, FileManagerRenderer } from "./base/ui/FileManager.js";
 export type {
@@ -46,7 +48,10 @@ export type { Tenant } from "./features/tenancy/types.js";
 export * from "./hooks/index.js";
 export { useWcp } from "./presentation/wcp/useWcp.js";
 export { useTenancy } from "./presentation/tenancy/useTenancy.js";
-export { withTenant } from "./presentation/tenancy/withTenant.js";
+export { useIdentity } from "./presentation/security/hooks/useIdentity.js";
+export { useAuthentication } from "./presentation/security/hooks/useAuthentication.js";
+// Legacy hook for easier migration
+export { useSecurity } from "./presentation/security/hooks/useSecurity.js";
 
 export * from "@webiny/app/renderApp.js";
 

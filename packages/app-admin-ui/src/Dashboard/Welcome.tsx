@@ -1,6 +1,6 @@
 import React from "react";
 import { Grid, Heading } from "@webiny/admin-ui";
-import { useSecurity } from "@webiny/app-security/hooks/useSecurity.js";
+import { useSecurity } from "@webiny/app-admin";
 import { useAdminConfig } from "@webiny/app-admin";
 
 const Welcome = () => {

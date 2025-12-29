@@ -4,9 +4,9 @@ import { Select } from "@webiny/ui/Select/index.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { CannotUseAaclAlert, gridWithPaddingClass, PermissionInfo } from "@webiny/app-admin";
 import { Form } from "@webiny/form";
-import { useSecurity } from "@webiny/app-security";
-import type { SecurityPermission } from "@webiny/app-security/types.js";
+import { useSecurity } from "@webiny/app-admin";
 import type { AaclPermission } from "@webiny/app-admin";
+import { Identity } from "@webiny/app-admin/domain/Identity.js";
 
 const t = i18n.ns("app-audit-logs/plugins/permissionRenderer");
 
@@ -17,8 +17,8 @@ const NO_ACCESS = "no";
 const CUSTOM_ACCESS = "custom";
 
 interface PageBuilderPermissionsProps {
-    value: SecurityPermission;
-    onChange: (value: SecurityPermission[]) => void;
+    value: Identity.Permission;
+    onChange: (value: Identity.Permission[]) => void;
 }
 export const AuditLogsPermissions = ({ value, onChange }: PageBuilderPermissionsProps) => {
     const { getPermission } = useSecurity();
@@ -29,8 +29,8 @@ export const AuditLogsPermissions = ({ value, onChange }: PageBuilderPermissions
     }, []);
 
     const onFormChange = useCallback(
-        (formData: SecurityPermission) => {
-            let newValue: SecurityPermission[] = [];
+        (formData: Identity.Permission) => {
+            let newValue: Identity.Permission[] = [];
             if (Array.isArray(value)) {
                 // Let's just filter out the `al*` permission objects, it's easier to build new ones from scratch.
                 newValue = value.filter(item => !item.name.startsWith(AUDIT_LOGS));

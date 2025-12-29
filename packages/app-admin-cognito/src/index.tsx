@@ -1,15 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Auth } from "@aws-amplify/auth";
 import type { AuthOptions } from "@aws-amplify/auth/lib-esm/types/index.js";
-import type ApolloClient from "apollo-client";
-import { useApolloClient } from "@apollo/react-hooks";
 import { setContext } from "apollo-link-context";
 import { plugins } from "@webiny/plugins";
 import { ApolloLinkPlugin } from "@webiny/app/plugins/ApolloLinkPlugin.js";
-import type { SecurityPermission } from "@webiny/app-security/types.js";
 import type { CognitoIdToken } from "@webiny/app-cognito-authenticator/types.js";
 import { Authenticator } from "@webiny/app-cognito-authenticator/Authenticator.js";
-import { useSecurity } from "@webiny/app-security";
+import { useAuthentication } from "@webiny/app-admin";
 import { config as appConfig } from "@webiny/app/config.js";
 import { SignIn } from "~/views/SignIn.js";
 import { RequireNewPassword } from "~/views/RequireNewPassword.js";
@@ -20,7 +17,6 @@ import { LoggingIn } from "~/views/LoggingIn.js";
 import type { FederatedIdentityProvider } from "~/federatedIdentityProviders.js";
 import { FederatedProviders } from "~/components/FederatedProviders.js";
 import { View } from "~/components/View.js";
-import { useAuthenticationContext } from "@webiny/app-admin/presentation/security/useAuthenticationContext.js";
 
 export const Components = {
     View,
@@ -53,13 +49,6 @@ const createApolloLinkPlugin = (): ApolloLinkPlugin => {
     });
 };
 
-const validatePermissions = (permissions: SecurityPermission[]) => {
-    const appPermissions = permissions.filter(p => p.name !== "aacl");
-    if (appPermissions.length === 0) {
-        throw new Error("You have no permissions on this tenant!");
-    }
-};
-
 const defaultOptions = {
     region: appConfig.getKey("USER_POOL_REGION", process.env.REACT_APP_USER_POOL_REGION),
     userPoolId: appConfig.getKey("USER_POOL_ID", process.env.REACT_APP_USER_POOL_ID),
@@ -77,10 +66,6 @@ export interface AuthenticationFactoryConfig extends AuthOptions {
     allowSignInWithCredentials?: boolean;
     federatedProviders?: FederatedIdentityProvider[];
     onError?: (error: Error) => void;
-    getIdentityData: (params: {
-        client: ApolloClient<any>;
-        payload: { [key: string]: any };
-    }) => Promise<{ [key: string]: any }>;
 }
 
 interface AuthenticationFactory {
@@ -89,7 +74,6 @@ interface AuthenticationFactory {
 
 export const createAuthentication: AuthenticationFactory = ({
     allowSignInWithCredentials = true,
-    getIdentityData,
     onError,
     ...config
 }) => {
@@ -101,39 +85,26 @@ export const createAuthentication: AuthenticationFactory = ({
     Auth.configure({ ...defaultOptions, ...config });
 
     const Authentication = (props: AuthenticationProps) => {
+        const authContext = useAuthentication();
         const { children } = props;
         const [loadingIdentity, setLoadingIdentity] = useState(false);
-        const { setIdentity, setIdTokenProvider } = useSecurity();
-        const authContext = useAuthenticationContext();
-        const client = useApolloClient();
 
         const onToken = useCallback(async (token: CognitoIdToken) => {
-            const { payload, logout } = token;
+            const { logout } = token;
 
             setLoadingIdentity(true);
 
-            authContext.setLogoutCallback(logout);
-
             try {
-                const { id, displayName, type, permissions, ...data } = await getIdentityData({
-                    client,
-                    payload
-                });
+                await authContext.login({
+                    identityType: "AdminUserIdentity",
+                    idTokenProvider: async () => {
+                        const user = await Auth.currentSession();
+                        const idToken = user.getIdToken();
 
-                setIdentity({
-                    id,
-                    displayName,
-                    type,
-                    permissions,
-                    ...data,
-                    logout:
-                        logout ||
-                        (() => {
-                            return void 0;
-                        })
+                        return idToken ? idToken.getJwtToken() : undefined;
+                    },
+                    logoutCallback: logout ?? (() => void 0)
                 });
-
-                validatePermissions(permissions);
             } catch (err) {
                 console.log("ERROR", err);
                 if (typeof onError === "function") {
@@ -147,24 +118,6 @@ export const createAuthentication: AuthenticationFactory = ({
         }, []);
 
         useEffect(() => {
-            /**
-             * We need to give the security layer a way to fetch the `idToken`, so other network clients can use
-             * it when sending requests to external services (APIs, websockets,...).
-             */
-            setIdTokenProvider(async () => {
-                const user = await Auth.currentSession();
-                const idToken = user.getIdToken();
-
-                return idToken ? idToken.getJwtToken() : undefined;
-            });
-
-            authContext.setIdTokenProvider(async () => {
-                const user = await Auth.currentSession();
-                const idToken = user.getIdToken();
-
-                return idToken ? idToken.getJwtToken() : undefined;
-            });
-
             plugins.register(createApolloLinkPlugin());
         }, []);
 

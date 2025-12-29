@@ -1,6 +1,6 @@
 import type { GenericRecord, NonEmptyArray } from "@webiny/app/types.js";
 import type { ReactElement } from "react";
-import type { SecurityPermission } from "@webiny/app-security/types.js";
+import { Identity } from "@webiny/app-admin/domain/Identity.js";
 
 export interface IGenericMeta {
     totalCount: number;
@@ -94,6 +94,6 @@ export enum WorkflowsSecurityPermissionAccessLevel {
     YES = "yes"
 }
 
-export interface IWorkflowsSecurityPermission extends SecurityPermission {
+export interface IWorkflowsSecurityPermission extends Identity.Permission {
     editor: WorkflowsSecurityPermissionAccessLevel;
 }

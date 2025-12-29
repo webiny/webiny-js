@@ -32,7 +32,7 @@ const AppClientIdLoader = ({
     children
 }: AppClientIdLoaderProps) => {
     const [loaded, setState] = useState<boolean>(false);
-    const authRef = useRef<React.ComponentType | null>(null);
+    const authRef = useRef<React.ComponentType<any> | null>(null);
     const client = useApolloClient();
     const { tenant, setTenant } = useTenancy();
 

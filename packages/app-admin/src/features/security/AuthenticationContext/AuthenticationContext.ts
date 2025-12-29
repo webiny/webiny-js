@@ -1,29 +1,41 @@
-import { AuthenticationContext as Abstraction } from "./abstractions.js";
+import type { Identity } from "~/domain/Identity.js";
+import { AuthenticationContext as Abstraction, InternalIdTokenProvider } from "./abstractions.js";
+import { AuthenticationRepository } from "./abstractions.js";
 
-const defaultIdTokenProvider: Abstraction.IdTokenProvider = () => undefined;
+const noop = () => undefined;
 
 class AuthenticationContextImpl implements Abstraction.Interface {
-    private idTokenProvider: Abstraction.IdTokenProvider = defaultIdTokenProvider;
-    private logoutCallback: Abstraction.LogoutCallback | undefined;
+    private logoutCallback: Abstraction.LogoutCallback = noop;
+
+    constructor(
+        private idTokenProvider: InternalIdTokenProvider.Interface,
+        private repository: AuthenticationRepository.Interface
+    ) {}
+
+    async login(identityType: string): Promise<Identity> {
+        return await this.repository.login(identityType);
+    }
+
+    async logout(): Promise<void> {
+        await this.logoutCallback();
+        this.idTokenProvider.setTokenProvider(noop);
+        this.logoutCallback = noop;
+    }
 
     getIdToken: Abstraction.IdTokenProvider = () => {
-        return this.idTokenProvider();
+        return this.idTokenProvider.getTokenProvider()();
     };
 
     setIdTokenProvider(provider: Abstraction.IdTokenProvider): void {
-        this.idTokenProvider = provider;
+        this.idTokenProvider.setTokenProvider(provider);
     }
 
-    getLogoutCallback(): Abstraction.LogoutCallback {
-        return this.logoutCallback ?? (() => void 0);
-    }
-
-    setLogoutCallback(callback: Abstraction.LogoutCallback | undefined): void {
+    setLogoutCallback(callback: Abstraction.LogoutCallback): void {
         this.logoutCallback = callback;
     }
 }
 
 export const AuthenticationContext = Abstraction.createImplementation({
     implementation: AuthenticationContextImpl,
-    dependencies: []
+    dependencies: [InternalIdTokenProvider, AuthenticationRepository]
 });

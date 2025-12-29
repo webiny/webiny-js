@@ -1,6 +1,6 @@
 import React from "react";
 import { makeDecoratable } from "@webiny/app-serverless-cms";
-import { useSecurity } from "@webiny/app-security";
+import { useSecurity } from "@webiny/app-admin";
 import { useTenancy } from "@webiny/app-admin";
 import { AdminConfig } from "@webiny/app-admin";
 import { ReactComponent as SignOutIcon } from "@webiny/icons/logout.svg";

@@ -8,14 +8,14 @@ import { setContext } from "apollo-link-context";
 import loadScript from "load-script";
 import { Global } from "@emotion/react";
 import { plugins } from "@webiny/plugins";
-import { useSecurity } from "@webiny/app-security";
+import { useIdentity } from "@webiny/app-admin";
+import type { Identity } from "@webiny/app-admin/domain/Identity.js";
 import { CircularProgress } from "@webiny/ui/Progress/index.js";
 import { playgroundDialog, PlaygroundContainer } from "./Playground.styles.js";
 import { settings } from "./settings.js";
 import { config as appConfig } from "@webiny/app/config.js";
 import type ApolloClient from "apollo-client";
 import type { GraphQLPlaygroundTabPlugin } from "~/types.js";
-import type { SecurityIdentity } from "@webiny/app-security/types.js";
 import { ORIGINAL_GQL_PLAYGROUND_URL, PATCHED_GQL_PLAYGROUND_URL } from "./constants.js";
 
 const withHeaders = (link: ApolloLink, headers: Record<string, string>): ApolloLink => {
@@ -72,14 +72,14 @@ interface CreateApolloLinkCallable {
 
 const Playground = ({ createApolloClient }: PlaygroundProps) => {
     const [loading, setLoading] = useState(true);
-    const { identity } = useSecurity();
+    const { identity } = useIdentity();
     const links = useRef<Record<string, ApolloLink>>({});
 
     const tabs = plugins
         .byType<GraphQLPlaygroundTabPlugin>("graphql-playground-tab")
         .map(pl =>
             pl.tab({
-                identity: identity as SecurityIdentity
+                identity: identity as Identity
             })
         )
         .filter(Boolean);

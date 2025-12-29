@@ -2,7 +2,7 @@ import React from "react";
 import { useRouter } from "@webiny/app-admin";
 import { ReactComponent as Icon } from "@webiny/icons/manage_search.svg";
 import { AdminConfig, AdminLayout, useWcp } from "@webiny/app-admin";
-import { HasPermission } from "@webiny/app-security";
+import { HasPermission } from "@webiny/app-admin";
 import { LogsModule } from "~/views/Logs/LogsModule.js";
 import { AuditLogsPermissions } from "~/plugins/permissionRenderer/index.js";
 import { LogsView } from "~/views/Logs/LogsView.js";

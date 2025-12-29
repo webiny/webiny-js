@@ -1,8 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { setContext } from "apollo-link-context";
-import type ApolloClient from "apollo-client";
-import type { DocumentNode } from "graphql";
-import { useApolloClient } from "@apollo/react-hooks";
 import type {
     Auth0ProviderOptions,
     LogoutOptions,
@@ -13,11 +10,7 @@ import type {
 import { useAuth0, Auth0Provider } from "@auth0/auth0-react";
 import { plugins } from "@webiny/plugins";
 import { ApolloLinkPlugin } from "@webiny/app/plugins/ApolloLinkPlugin.js";
-import { useSecurity } from "@webiny/app-serverless-cms";
-import { withTenant } from "@webiny/app-admin";
-import type { SecurityPermission } from "@webiny/app-security/types.js";
-import type { GetIdentityDataCallable } from "./createGetIdentityData/index.js";
-import { createGetIdentityData, LOGIN } from "./createGetIdentityData/index.js";
+import { useAuthentication, useIdentity } from "@webiny/app-admin";
 import { LoginContent, LoginLayout } from "~/components/index.js";
 
 export type Auth0Options = Auth0ProviderOptions;
@@ -34,8 +27,6 @@ export type OnLogin = (auth0: Auth0ContextInterface) => void;
 
 export interface CreateAuthenticationConfig {
     auth0: Auth0Options;
-    getIdentityData?: GetIdentityDataCallable;
-    loginMutation?: DocumentNode;
     onLogin?: OnLogin;
     onLogout?: OnLogout;
     onRedirect?: OnRedirect;
@@ -44,25 +35,12 @@ export interface CreateAuthenticationConfig {
 }
 
 export interface AuthenticationProps {
-    getIdentityData(params: { client: ApolloClient<any> }): Promise<{ [key: string]: any }>;
-    children: React.ReactNode;
-}
-
-interface WithGetIdentityDataProps {
-    getIdentityData: GetIdentityDataCallable;
     children: React.ReactNode;
 }
 
 interface PropsWithChildren {
     children?: React.ReactNode;
 }
-
-const validatePermissions = (permissions: SecurityPermission[]) => {
-    const appPermissions = permissions.filter(p => p.name !== "aacl");
-    if (appPermissions.length === 0) {
-        throw new Error("You have no permissions on this tenant!");
-    }
-};
 
 const defaultLogout: OnLogout = logout => logout();
 
@@ -84,21 +62,9 @@ export const createAuthentication = ({
     autoLogin = false,
     onLogin = defaultLogin,
     onLogout = defaultLogout,
-    onRedirect = defaultRedirect,
-    ...config
+    onRedirect = defaultRedirect
 }: CreateAuthenticationConfig) => {
-    const withGetIdentityData = (
-        Component: React.ComponentType<WithGetIdentityDataProps>
-    ): React.ComponentType<PropsWithChildren> => {
-        return function WithGetIdentityData({ children }) {
-            const loginMutation = config.loginMutation || LOGIN;
-            const getIdentityData = config.getIdentityData || createGetIdentityData(loginMutation);
-
-            return <Component getIdentityData={getIdentityData}>{children}</Component>;
-        };
-    };
-
-    const Authentication = ({ getIdentityData, children }: AuthenticationProps) => {
+    const Authentication = ({ children }: AuthenticationProps) => {
         const auth0Context = useAuth0();
         const [loggingIn, setLoggingIn] = useState(false);
         const {
@@ -109,10 +75,10 @@ export const createAuthentication = ({
             logout
         } = auth0Context;
 
-        const isLoading = auth0Loading || loggingIn;
+        const identityContext = useIdentity();
+        const authContext = useAuthentication();
 
-        const apolloClient = useApolloClient();
-        const { setIdentity, identity, setIdTokenProvider } = useSecurity();
+        const isLoading = auth0Loading || loggingIn;
 
         const getIdToken = useCallback(async () => {
             const claims = await getIdTokenClaims();
@@ -124,15 +90,6 @@ export const createAuthentication = ({
         }, []);
 
         useEffect(() => {
-            /**
-             * We need to give the security layer a way to fetch the `idToken`, so other network clients can use
-             * it when sending requests to external services (APIs, websockets,...).
-             */
-            setIdTokenProvider(async () => {
-                const claims = await getIdTokenClaims();
-                return claims ? claims["__raw"] : undefined;
-            });
-
             plugins.register(
                 new ApolloLinkPlugin(() => {
                     return setContext(async (_, { headers }) => {
@@ -172,29 +129,21 @@ export const createAuthentication = ({
 
             // Make sure current app client ID matches token's clientId, if not, log the user out.
             if (claims?.aud !== auth0.clientId) {
-                setIdentity(null);
                 onLogout(logout);
                 return;
             }
 
             try {
-                const { id, displayName, type, permissions, ...other } = await getIdentityData({
-                    client: apolloClient
-                });
-
-                setIdentity({
-                    id,
-                    displayName,
-                    type,
-                    permissions,
-                    ...other,
-                    logout() {
-                        setIdentity(null);
+                await authContext.login({
+                    identityType: "Auth0Identity",
+                    idTokenProvider: async () => {
+                        const claims = await getIdTokenClaims();
+                        return claims ? claims["__raw"] : undefined;
+                    },
+                    logoutCallback: () => {
                         onLogout(logout);
                     }
                 });
-
-                validatePermissions(permissions);
             } catch (err) {
                 if (typeof onError === "function") {
                     onError(err);
@@ -239,7 +188,7 @@ export const createAuthentication = ({
             }
         }, [isAuthenticated, isLoading]);
 
-        if (identity) {
+        if (identityContext.isAuthenticated) {
             return <>{children}</>;
         }
 
@@ -250,8 +199,7 @@ export const createAuthentication = ({
         );
     };
 
-    // Compose Login widget with GQL queries and multi-tenancy features.
-    const LoginWidget = withGetIdentityData(withTenant(Authentication));
+    const LoginWidget = Authentication;
 
     return function Authentication({ children }: PropsWithChildren) {
         return (
