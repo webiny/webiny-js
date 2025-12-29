@@ -1,5 +1,8 @@
-import { createAbstraction } from "@webiny/feature/createAbstraction.js";
-import type { INotificationTypeMessage } from "~/domain/notifications/abstractions.js";
+import { createAbstraction } from "@webiny/feature/api";
+import type {
+    INotificationType,
+    INotificationTypeMessage
+} from "~/domain/notifications/abstractions.js";
 import type { NonEmptyArray } from "@webiny/api/types.js";
 
 export interface INotificationTransportUser {
@@ -13,7 +16,7 @@ export interface INotificationTransportSendParams {
     message: INotificationTypeMessage;
 }
 
-export interface INotificationTransport {
+export interface INotificationTransport extends INotificationType {
     send(params: INotificationTransportSendParams): Promise<void>;
 }
 

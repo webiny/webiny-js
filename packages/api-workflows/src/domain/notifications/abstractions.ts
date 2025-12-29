@@ -1,4 +1,4 @@
-import { createAbstraction } from "@webiny/feature/createAbstraction.js";
+import { createAbstraction } from "@webiny/feature/api";
 
 export interface INotificationTypeMessage {
     title: string;
@@ -94,7 +94,6 @@ export interface INotificationTypeMessages {
 export interface INotificationType {
     id: string;
     title: string;
-    messages: INotificationTypeMessages;
 }
 
 export const NotificationType = createAbstraction<INotificationType>("WorkflowNotificationType");
