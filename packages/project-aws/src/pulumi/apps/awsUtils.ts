@@ -5,7 +5,7 @@ import { getEnvVariableWebinyProjectName } from "~/pulumi/env/projectName.js";
 import { getEnvVariableWebinyEnv } from "~/pulumi/env/env.js";
 import { getEnvVariableWebinyVariant } from "~/pulumi/env/variant.js";
 import { type AppName, getProjectSdk } from "@webiny/project";
-import { awsTags as awsTagsExt } from "~/pulumi/extensions/awsTags.js";
+import { AwsTags as awsTagsExt } from "~/pulumi/extensions/AwsTags.js";
 
 export function getAwsAccountId(app: PulumiApp) {
     return app.addHandler(() => {

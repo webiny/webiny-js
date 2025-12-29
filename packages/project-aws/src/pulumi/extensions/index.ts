@@ -1,9 +1,9 @@
-import { AwsTags } from "./awsTags.js";
-import { ElasticSearch } from "./elasticSearch.js";
-import { OpenSearch } from "./openSearch.js";
-import { Vpc } from "./vpc.js";
-import { AdminCustomDomains } from "./adminCustomDomains.js";
-import { BlueGreenDeployments } from "~/pulumi/extensions/blueGreenDeployments.js";
+import { AwsTags } from "./AwsTags.js";
+import { ElasticSearch } from "./ElasticSearch.js";
+import { OpenSearch } from "./OpenSearch.js";
+import { Vpc } from "./Vpc.js";
+import { AdminCustomDomains } from "./AdminCustomDomains.js";
+import { BlueGreenDeployments } from "~/pulumi/extensions/BlueGreenDeployments.js";
 
 export { AwsTags };
 export { Vpc };
