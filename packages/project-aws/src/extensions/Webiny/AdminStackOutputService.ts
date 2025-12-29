@@ -1,1 +1,1 @@
-export { adminStackOutputService } from "../../services/index.js";
+export { AdminStackOutputService } from "../../services/index.js";

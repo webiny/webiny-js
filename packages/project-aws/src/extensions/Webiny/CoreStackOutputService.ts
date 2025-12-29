@@ -1,1 +1,1 @@
-export { coreStackOutputService } from "../../services/index.js";
+export { CoreStackOutputService } from "../../services/index.js";

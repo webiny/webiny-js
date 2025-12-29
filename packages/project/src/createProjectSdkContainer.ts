@@ -311,7 +311,7 @@ export const createProjectSdkContainer = async (
         const binding = container.register(projectImplementationImpl);
 
         // Apply singleton scope if specified (defaults to true)
-        if (projectImplementation.params.singleton !== false) {
+        if (projectImplementation.params.singleton) {
             binding.inSingletonScope();
         }
     }

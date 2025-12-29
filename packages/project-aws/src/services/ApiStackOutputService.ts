@@ -1,12 +1,12 @@
 import { createImplementation } from "@webiny/di";
 import { GetAppStackOutput } from "@webiny/project/abstractions/index.js";
-import { ApiStackOutputService } from "../abstractions/index.js";
+import { ApiStackOutputService as ApiStackOutputServiceExt } from "../abstractions/index.js";
 
-export class DefaultApiStackOutputService implements ApiStackOutputService.Interface {
+export class DefaultApiStackOutputServiceExt implements ApiStackOutputServiceExt.Interface {
     constructor(private readonly getAppStackOutput: GetAppStackOutput.Interface) {}
 
     async execute<
-        TOutput extends ApiStackOutputService.Output = ApiStackOutputService.Output
+        TOutput extends ApiStackOutputServiceExt.Output = ApiStackOutputServiceExt.Output
     >(): Promise<TOutput | null> {
         return this.getAppStackOutput.execute<TOutput>({
             app: "api"
@@ -14,8 +14,8 @@ export class DefaultApiStackOutputService implements ApiStackOutputService.Inter
     }
 }
 
-export const apiStackOutputService = createImplementation({
-    abstraction: ApiStackOutputService,
-    implementation: DefaultApiStackOutputService,
+export const ApiStackOutputService = createImplementation({
+    abstraction: ApiStackOutputServiceExt,
+    implementation: DefaultApiStackOutputServiceExt,
     dependencies: [GetAppStackOutput]
 });
