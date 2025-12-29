@@ -16,7 +16,9 @@ export interface INotificationTransportSendParams {
     message: INotificationTypeMessage;
 }
 
-export interface INotificationTransport extends INotificationType {
+export interface INotificationTransport {
+    id: INotificationType["id"];
+    title: INotificationType["title"];
     send(params: INotificationTransportSendParams): Promise<void>;
 }
 
