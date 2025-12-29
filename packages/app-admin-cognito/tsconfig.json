@@ -7,7 +7,6 @@
     { "path": "../app-admin" },
     { "path": "../app-cognito-authenticator" },
     { "path": "../form" },
-    { "path": "../plugins" },
     { "path": "../react-composition" },
     { "path": "../validation" }
   ],
@@ -34,8 +33,6 @@
       "@webiny/app-cognito-authenticator": ["../app-cognito-authenticator/src"],
       "@webiny/form/*": ["../form/src/*"],
       "@webiny/form": ["../form/src"],
-      "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"],
       "@webiny/react-composition/*": ["../react-composition/src/*"],
       "@webiny/react-composition": ["../react-composition/src"],
       "@webiny/validation/*": ["../validation/src/*"],

@@ -7,7 +7,6 @@
     { "path": "../app-admin/tsconfig.build.json" },
     { "path": "../app-cognito-authenticator/tsconfig.build.json" },
     { "path": "../form/tsconfig.build.json" },
-    { "path": "../plugins/tsconfig.build.json" },
     { "path": "../react-composition/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" }
   ],
@@ -34,8 +33,6 @@
       "@webiny/app-cognito-authenticator": ["../app-cognito-authenticator/src"],
       "@webiny/form/*": ["../form/src/*"],
       "@webiny/form": ["../form/src"],
-      "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"],
       "@webiny/react-composition/*": ["../react-composition/src/*"],
       "@webiny/react-composition": ["../react-composition/src"],
       "@webiny/validation/*": ["../validation/src/*"],
