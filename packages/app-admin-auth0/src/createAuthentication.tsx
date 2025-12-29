@@ -7,7 +7,7 @@ import type {
     User
 } from "@auth0/auth0-react";
 import { useAuth0, Auth0Provider } from "@auth0/auth0-react";
-import { useAuthentication, useIdentity } from "@webiny/app-admin";
+import { useAuthentication } from "@webiny/app-admin";
 import { LoginContent, LoginLayout } from "~/components/index.js";
 
 export type Auth0Options = Auth0ProviderOptions;
@@ -72,8 +72,7 @@ export const createAuthentication = ({
             logout
         } = auth0Context;
 
-        const identityContext = useIdentity();
-        const authContext = useAuthentication();
+        const authentication = useAuthentication();
 
         const isLoading = auth0Loading || loggingIn;
 
@@ -105,7 +104,7 @@ export const createAuthentication = ({
             }
 
             try {
-                await authContext.login({
+                await authentication.login({
                     identityType: "Auth0Identity",
                     idTokenProvider: async () => {
                         const claims = await getIdTokenClaims();
@@ -159,7 +158,7 @@ export const createAuthentication = ({
             }
         }, [isAuthenticated, isLoading]);
 
-        if (identityContext.isAuthenticated) {
+        if (authentication.isAuthenticated) {
             return <>{children}</>;
         }
 

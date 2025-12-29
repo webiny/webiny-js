@@ -3,7 +3,7 @@ import { Security, LoginCallback } from "@okta/okta-react";
 import type { OktaAuth, AuthStateManager } from "@okta/okta-auth-js";
 import type OktaSignIn from "@okta/okta-signin-widget";
 import { CircularProgress } from "@webiny/ui/Progress/index.js";
-import { useAuthentication, useIdentity } from "@webiny/app-admin";
+import { useAuthentication } from "@webiny/app-admin";
 import OktaSignInWidget from "./OktaSignInWidget.js";
 
 const noop = () => {
@@ -30,8 +30,7 @@ interface AuthState {
 
 export const createAuthentication = ({ oktaAuth, oktaSignIn, clientId, onError }: Config) => {
     const Authentication = ({ children }: AuthenticationProps) => {
-        const auth = useAuthentication();
-        const identity = useIdentity();
+        const authentication = useAuthentication();
         const [isAuthenticated, setIsAuthenticated] = useState(false);
 
         const logout = () => {
@@ -42,7 +41,7 @@ export const createAuthentication = ({ oktaAuth, oktaSignIn, clientId, onError }
         const authStateChanged = useCallback(async (authState: AuthState) => {
             setIsAuthenticated(!!authState.isAuthenticated);
             if (!authState.isAuthenticated) {
-                await auth.logout();
+                await authentication.logout();
                 return;
             }
 
@@ -53,7 +52,7 @@ export const createAuthentication = ({ oktaAuth, oktaSignIn, clientId, onError }
                     await oktaAuth.token.renewTokens();
                 } catch (err) {
                     if (err.message.includes("User is not assigned to the client application")) {
-                        await auth.logout();
+                        await authentication.logout();
                         setIsAuthenticated(false);
                         return;
                     }
@@ -61,7 +60,7 @@ export const createAuthentication = ({ oktaAuth, oktaSignIn, clientId, onError }
             }
 
             try {
-                await auth.login({
+                await authentication.login({
                     identityType: "OktaIdentity",
                     idTokenProvider: () => oktaAuth.getIdToken(),
                     logoutCallback: logout
@@ -86,7 +85,7 @@ export const createAuthentication = ({ oktaAuth, oktaSignIn, clientId, onError }
         return (
             <Security oktaAuth={oktaAuth} restoreOriginalUri={noop}>
                 <LoginCallback />
-                {identity ? (
+                {authentication.isAuthenticated ? (
                     children
                 ) : isAuthenticated ? (
                     <CircularProgress label={"Logging in..."} />

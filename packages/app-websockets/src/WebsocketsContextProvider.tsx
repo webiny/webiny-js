@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useTenancy } from "@webiny/app-admin";
-import { useSecurity } from "@webiny/app-admin";
+import { useFeature, useTenancy } from "@webiny/app-admin";
+import { AuthenticationContextFeature } from "@webiny/app-admin/features/security/AuthenticationContext/feature.js";
 import type {
     IncomingGenericData,
     IWebsocketsContext,
@@ -35,15 +35,15 @@ interface ICurrentData {
 
 export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps) => {
     const { tenant } = useTenancy();
-    const { getIdToken } = useSecurity();
+    const { authenticationContext } = useFeature(AuthenticationContextFeature);
 
     const socketsRef = useRef<IWebsocketsManager>();
 
     const [current, setCurrent] = useState<ICurrentData>({});
 
     const getToken = useCallback(async () => {
-        return await getIdToken();
-    }, [getIdToken]);
+        return await authenticationContext.getIdToken();
+    }, [authenticationContext]);
 
     const subscriptionManager = useMemo(() => {
         const manager = createWebsocketsSubscriptionManager();
