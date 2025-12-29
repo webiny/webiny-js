@@ -41,4 +41,4 @@ accounts:
 resource-types:
   excludes:
     - Budget
-    - OpenSearchDomain
+    - OSDomain  # OpenSearch Domain
