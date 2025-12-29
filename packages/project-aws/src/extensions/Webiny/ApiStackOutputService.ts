@@ -1,1 +1,1 @@
-export { ApiStackOutputService } from "../../services/index.js";
+export { ApiStackOutputService } from "../../services/ApiStackOutputService.js";

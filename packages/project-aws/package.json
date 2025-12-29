@@ -82,7 +82,10 @@
   },
   "webiny": {
     "exports": {
-      ".": "./extensions"
+      ".": "./extensions",
+      "./abstractions/services/AdminStackOutputService.ts": "./infra/features/AdminStackOutputService",
+      "./abstractions/services/CoreStackOutputService.ts": "./infra/features/CoreStackOutputService",
+      "./abstractions/services/ApiStackOutputService.ts": "./infra/features/ApiStackOutputService"
     }
   },
   "adio": {
