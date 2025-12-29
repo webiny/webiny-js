@@ -1,6 +1,8 @@
 import React from "react";
 import {
     AdminAfterDeploy,
+    AdminBeforeBuild,
+    AdminBeforeWatch,
     AfterDeploy,
     ApiAfterDeploy,
     BeforeDeploy,
@@ -21,6 +23,10 @@ export const Webiny = () => {
             <AdminAfterDeploy src={p("Webiny/UploadAdminAppToS3.js")} />
             <ApiAfterDeploy src={p("Webiny/ExecuteDataMigrations.js")} />
             <ExtensionDefinitions src={p("Webiny/definitions.js")} />
+
+            {/* Admin env vars */}
+            <AdminBeforeBuild src={p("Webiny/SetAdminEnvVars/SetAdminEnvVarsBeforeBuild.js")} />
+            <AdminBeforeWatch src={p("Webiny/SetAdminEnvVars/SetAdminEnvVarsBeforeWatch.js")} />
 
             {/* Blue-green */}
             <CliCommand src={p("Webiny/BlueGreenDeployments/SetPrimaryVariantCliCommand.js")} />

@@ -1,4 +1,9 @@
-import { AfterDeploy, GetAppStackOutput, UiService } from "@webiny/project/abstractions/index.js";
+import {
+    AfterDeploy,
+    GetAppStackOutput,
+    ProjectSdkParamsService,
+    UiService
+} from "@webiny/project/abstractions/index.js";
 import { IBlueGreenStackOutput } from "~/pulumi/apps/blueGreen/types.js";
 import chalk from "chalk";
 
@@ -14,7 +19,8 @@ export interface IEnvironment {
 class PrintDeploymentInfoAfterDeployImpl implements AfterDeploy.Interface {
     constructor(
         private ui: UiService.Interface,
-        private getAppStackOutput: GetAppStackOutput.Interface
+        private getAppStackOutput: GetAppStackOutput.Interface,
+        private projectSdkParamsService: ProjectSdkParamsService.Interface
     ) {}
 
     async execute(params: AfterDeploy.Params) {
@@ -25,12 +31,7 @@ class PrintDeploymentInfoAfterDeployImpl implements AfterDeploy.Interface {
         const { blue, green } = chalk;
 
         const bg = await this.getAppStackOutput.execute<IBlueGreenStackOutput>({
-            app: "blueGreen",
-            env: params.env,
-            /**
-             * Blue / Green system cannot have any variants.
-             */
-            variant: undefined
+            app: "blueGreen"
         });
 
         if (!bg) {
@@ -39,6 +40,8 @@ class PrintDeploymentInfoAfterDeployImpl implements AfterDeploy.Interface {
             );
             return;
         }
+
+        const sdkParams = this.projectSdkParamsService.get();
 
         const domains = Array.isArray(bg.domains) ? bg.domains : [];
 
@@ -65,7 +68,7 @@ class PrintDeploymentInfoAfterDeployImpl implements AfterDeploy.Interface {
         const output = [
             "",
             green(`Blue / Green Router`),
-            `‣ Environment name: ${blue(params.env)}`,
+            `‣ Environment name: ${blue(sdkParams.env)}`,
             `‣ CloudFront domain: ${bg.distributionDomain}`,
             `‣ CloudFront URL: ${bg.distributionUrl}`,
             "",
@@ -92,5 +95,5 @@ class PrintDeploymentInfoAfterDeployImpl implements AfterDeploy.Interface {
 
 export const PrintDeploymentInfoAfterDeploy = AfterDeploy.createImplementation({
     implementation: PrintDeploymentInfoAfterDeployImpl,
-    dependencies: [UiService, GetAppStackOutput]
+    dependencies: [UiService, GetAppStackOutput, ProjectSdkParamsService]
 });

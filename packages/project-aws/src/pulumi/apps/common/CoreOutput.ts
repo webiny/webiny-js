@@ -44,9 +44,7 @@ export const CoreOutput = createAppModule({
     config(app) {
         return app.addHandler(async () => {
             const output = await getStackOutput({
-                app: "core",
-                env: app.params.run.env,
-                variant: app.params.run.variant
+                app: "core"
             });
 
             if (!output) {

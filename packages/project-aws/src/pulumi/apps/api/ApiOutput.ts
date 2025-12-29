@@ -10,9 +10,7 @@ export const ApiOutput = createAppModule({
     config(app) {
         return app.addHandler(async () => {
             const output = await getStackOutput<IDefaultStackOutput>({
-                app: "api",
-                env: app.params.run.env,
-                variant: app.params.run.variant
+                app: "api"
             });
 
             if (!output) {
