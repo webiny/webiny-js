@@ -2,11 +2,13 @@ import { Result } from "@webiny/feature/api";
 import { GetWorkflowStateUseCase } from "../GetWorkflowState/index.js";
 import { UpdateWorkflowStateRepository } from "../UpdateWorkflowState/index.js";
 import { ApproveWorkflowStateStepUseCase as UseCase } from "./abstractions.js";
+import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 
 class ApproveWorkflowStateStepUseCaseImpl implements UseCase.Interface {
     constructor(
         private getWorkflowState: GetWorkflowStateUseCase.Interface,
-        private repository: UpdateWorkflowStateRepository.Interface
+        private repository: UpdateWorkflowStateRepository.Interface,
+        private eventPublisher: EventPublisher.Interface
     ) {}
 
     async execute(id: string, comment?: string): UseCase.Return {
@@ -35,5 +37,5 @@ class ApproveWorkflowStateStepUseCaseImpl implements UseCase.Interface {
 
 export const ApproveWorkflowStateStepUseCase = UseCase.createImplementation({
     implementation: ApproveWorkflowStateStepUseCaseImpl,
-    dependencies: [GetWorkflowStateUseCase, UpdateWorkflowStateRepository]
+    dependencies: [GetWorkflowStateUseCase, UpdateWorkflowStateRepository, EventPublisher]
 });

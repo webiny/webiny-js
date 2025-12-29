@@ -9,6 +9,10 @@ import {
 import type { WorkflowNotFoundError } from "~/domain/workflow/errors.js";
 import { WorkflowState } from "~/domain/workflowState/WorkflowState.js";
 
+export interface WorkflowStateTakeOverStepPayload {
+    state: WorkflowState;
+}
+
 export interface ITakeOverWorkflowStateStepUseCase {
     execute(id: string): Promise<Result<WorkflowState, UseCaseError>>;
 }

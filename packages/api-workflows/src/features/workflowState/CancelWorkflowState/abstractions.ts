@@ -7,6 +7,10 @@ import {
 import type { WorkflowNotFoundError } from "~/domain/workflow/errors.js";
 import { WorkflowState } from "~/domain/workflowState/WorkflowState.js";
 
+export interface WorkflowStateCancelPayload {
+    state: WorkflowState;
+}
+
 /**
  * CancelWorkflowState use case interface - marks workflow state as inactive
  */
