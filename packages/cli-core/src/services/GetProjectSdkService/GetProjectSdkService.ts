@@ -20,7 +20,7 @@ export class DefaultGetProjectSdkService implements GetProjectSdkService.Interfa
             logging: {
                 streamToStdout: argv.showLogs,
                 level: argv.logLevel
-            },
+            }
         });
     }
 }

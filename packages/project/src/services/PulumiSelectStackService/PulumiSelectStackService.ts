@@ -114,11 +114,7 @@ export class DefaultPulumiSelectStackService implements PulumiSelectStackService
 
             return stackOutputJson;
         } catch {
-            logger.error(
-                "Could not parse stack output as JSON.",
-                stackOutputString.stdout,
-                app,
-            );
+            logger.error("Could not parse stack output as JSON.", stackOutputString.stdout, app);
             return null;
         }
     }

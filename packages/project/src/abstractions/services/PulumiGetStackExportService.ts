@@ -3,7 +3,7 @@ import { type IAppModel } from "~/abstractions/models/IAppModel.js";
 
 export interface IPulumiGetStackExportService {
     execute<TOutput extends Record<string, any> = Record<string, any>>(
-        app: IAppModel,
+        app: IAppModel
     ): Promise<TOutput | null>;
 }
 

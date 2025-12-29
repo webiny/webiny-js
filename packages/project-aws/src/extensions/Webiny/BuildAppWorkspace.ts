@@ -14,10 +14,7 @@ class BuildAppWorkspaceImpl implements BuildAppWorkspaceService.Interface {
         private decoratee: BuildAppWorkspaceService.Interface
     ) {}
 
-    async execute(
-        appName: GetApp.AppName,
-        options: BuildAppWorkspaceService.Options = {}
-    ) {
+    async execute(appName: GetApp.AppName, options: BuildAppWorkspaceService.Options = {}) {
         await this.decoratee.execute(appName, options);
 
         const app = this.getApp.execute(appName);

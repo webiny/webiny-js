@@ -20,10 +20,7 @@ export class DefaultBuildAppWorkspaceService implements BuildAppWorkspaceService
         private projectSdkParamsService: ProjectSdkParamsService.Interface
     ) {}
 
-    async execute(
-        appName: GetApp.AppName,
-        options: BuildAppWorkspaceService.Options = {}
-    ) {
+    async execute(appName: GetApp.AppName, options: BuildAppWorkspaceService.Options = {}) {
         const sdkParams = this.projectSdkParamsService.get();
         this.loggerService.debug({ appName, options }, "Building app workspace...");
 
