@@ -1,11 +1,8 @@
-import React, { useCallback, useState, useEffect, useRef } from "react";
-import { setContext } from "apollo-link-context";
+import React, { useCallback, useState, useEffect } from "react";
 import { Security, LoginCallback } from "@okta/okta-react";
 import type { OktaAuth, AuthStateManager } from "@okta/okta-auth-js";
 import type OktaSignIn from "@okta/okta-signin-widget";
-import { plugins } from "@webiny/plugins";
 import { CircularProgress } from "@webiny/ui/Progress/index.js";
-import { ApolloLinkPlugin } from "@webiny/app/plugins/ApolloLinkPlugin.js";
 import { useAuthentication, useIdentity } from "@webiny/app-admin";
 import OktaSignInWidget from "./OktaSignInWidget.js";
 
@@ -33,55 +30,11 @@ interface AuthState {
 
 export const createAuthentication = ({ oktaAuth, oktaSignIn, clientId, onError }: Config) => {
     const Authentication = ({ children }: AuthenticationProps) => {
-        const timerRef = useRef<number | undefined>(undefined);
         const auth = useAuthentication();
         const identity = useIdentity();
         const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-        useEffect(() => {
-            plugins.register(
-                new ApolloLinkPlugin(() => {
-                    return setContext(async (_, payload) => {
-                        clearTimeout(timerRef.current);
-
-                        timerRef.current = setTimeout(() => {
-                            // Reload browser after 1 hour of inactivity
-                            window.location.reload();
-                        }, 3600000) as unknown as number;
-
-                        return payload;
-                    });
-                }),
-                new ApolloLinkPlugin(() => {
-                    return setContext(async (_, { headers }) => {
-                        // If "Authorization" header is already set, don't overwrite it.
-                        if (headers && headers.Authorization) {
-                            return { headers };
-                        }
-
-                        if (!(await oktaAuth.isAuthenticated())) {
-                            return { headers };
-                        }
-
-                        const idToken = oktaAuth.getIdToken();
-
-                        if (!idToken) {
-                            return { headers };
-                        }
-
-                        return {
-                            headers: {
-                                ...headers,
-                                Authorization: `Bearer ${idToken}`
-                            }
-                        };
-                    });
-                })
-            );
-        }, []);
-
         const logout = () => {
-            clearTimeout(timerRef.current);
             oktaAuth.signOut();
             setIsAuthenticated(false);
         };
@@ -143,6 +96,5 @@ export const createAuthentication = ({ oktaAuth, oktaSignIn, clientId, onError }
             </Security>
         );
     };
-
     return Authentication;
 };

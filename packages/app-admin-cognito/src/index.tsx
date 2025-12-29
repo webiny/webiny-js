@@ -1,9 +1,6 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Auth } from "@aws-amplify/auth";
 import type { AuthOptions } from "@aws-amplify/auth/lib-esm/types/index.js";
-import { setContext } from "apollo-link-context";
-import { plugins } from "@webiny/plugins";
-import { ApolloLinkPlugin } from "@webiny/app/plugins/ApolloLinkPlugin.js";
 import type { CognitoIdToken } from "@webiny/app-cognito-authenticator/types.js";
 import { Authenticator } from "@webiny/app-cognito-authenticator/Authenticator.js";
 import { useAuthentication } from "@webiny/app-admin";
@@ -22,31 +19,6 @@ export const Components = {
     View,
     FederatedProviders,
     SignIn
-};
-
-const createApolloLinkPlugin = (): ApolloLinkPlugin => {
-    return new ApolloLinkPlugin(() => {
-        return setContext(async (_, { headers }) => {
-            const user = await Auth.currentSession();
-            const idToken = user.getIdToken();
-
-            if (!idToken) {
-                return { headers };
-            }
-
-            // If "Authorization" header is already set, don't overwrite it.
-            if (headers && headers.Authorization) {
-                return { headers };
-            }
-
-            return {
-                headers: {
-                    ...headers,
-                    Authorization: `Bearer ${idToken.getJwtToken()}`
-                }
-            };
-        });
-    });
 };
 
 const defaultOptions = {
@@ -117,10 +89,6 @@ export const createAuthentication: AuthenticationFactory = ({
             } finally {
                 setLoadingIdentity(false);
             }
-        }, []);
-
-        useEffect(() => {
-            plugins.register(createApolloLinkPlugin());
         }, []);
 
         return (

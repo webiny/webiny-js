@@ -14,7 +14,6 @@ export interface IProfile {
     avatar?: {
         src?: string;
     };
-    gravatar?: string;
 }
 
 export interface IdentityData {

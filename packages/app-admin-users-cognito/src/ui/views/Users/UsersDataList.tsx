@@ -184,7 +184,7 @@ const UsersDataList = () => {
                                 <Avatar
                                     image={
                                         <Avatar.Image
-                                            src={item.avatar ? item.avatar.src : item.gravatar}
+                                            src={item.avatar ? item.avatar.src : undefined}
                                             alt={item.firstName}
                                         />
                                     }

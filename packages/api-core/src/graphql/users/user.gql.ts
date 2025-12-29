@@ -89,7 +89,6 @@ export const createUsersGraphQL = (params: CreateUserGraphQlPluginsParams) => {
                     firstName: String
                     lastName: String
                     avatar: JSON
-                    gravatar: String
                     external: Boolean
                     createdOn: DateTime
                 }
@@ -165,9 +164,6 @@ export const createUsersGraphQL = (params: CreateUserGraphQlPluginsParams) => {
                     }
                 },
                 AdminUser: {
-                    gravatar(user: AdminUser) {
-                        return "https://www.gravatar.com/avatar/" + md5(user.email);
-                    },
                     groups(user: AdminUser, _, context) {
                         if (!user.groups) {
                             return null;

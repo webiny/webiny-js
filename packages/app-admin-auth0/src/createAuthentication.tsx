@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { setContext } from "apollo-link-context";
 import type {
     Auth0ProviderOptions,
     LogoutOptions,
@@ -8,8 +7,6 @@ import type {
     User
 } from "@auth0/auth0-react";
 import { useAuth0, Auth0Provider } from "@auth0/auth0-react";
-import { plugins } from "@webiny/plugins";
-import { ApolloLinkPlugin } from "@webiny/app/plugins/ApolloLinkPlugin.js";
 import { useAuthentication, useIdentity } from "@webiny/app-admin";
 import { LoginContent, LoginLayout } from "~/components/index.js";
 
@@ -87,32 +84,6 @@ export const createAuthentication = ({
                 idToken: claims ? claims["__raw"] : undefined,
                 claims
             };
-        }, []);
-
-        useEffect(() => {
-            plugins.register(
-                new ApolloLinkPlugin(() => {
-                    return setContext(async (_, { headers }) => {
-                        // If "Authorization" header is already set, don't overwrite it.
-                        if (headers && headers.Authorization) {
-                            return { headers };
-                        }
-
-                        const { idToken } = await getIdToken();
-
-                        if (!idToken) {
-                            return { headers };
-                        }
-
-                        return {
-                            headers: {
-                                ...headers,
-                                Authorization: `Bearer ${idToken}`
-                            }
-                        };
-                    });
-                })
-            );
         }, []);
 
         const loginSilently = async () => {

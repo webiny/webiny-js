@@ -9,6 +9,7 @@ import type { Config } from "./createAuthentication.js";
 import { createAuthentication } from "./createAuthentication.js";
 import { UserMenuModule } from "~/modules/userMenu/index.js";
 import { NotAuthorizedError } from "./components/index.js";
+import ReloadIfInactive from "~/components/ReloadIfInactive.js";
 
 interface AppClientIdLoaderProps {
     oktaFactory: OktaFactory;
@@ -130,6 +131,7 @@ export interface OktaProps {
 export const Okta = (props: OktaProps) => {
     return (
         <Fragment>
+            <ReloadIfInactive timeoutMinutes={60} />
             <Compose component={LoginScreenRenderer} with={createLoginScreen(props)} />
             <UserMenuModule />
         </Fragment>

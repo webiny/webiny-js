@@ -7,7 +7,6 @@ const listUserFields = /* GraphQL */ `
         firstName
         lastName
         avatar
-        gravatar
         createdOn
         external
     }

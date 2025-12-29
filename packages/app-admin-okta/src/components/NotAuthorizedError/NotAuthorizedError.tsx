@@ -18,7 +18,8 @@ const ContentWrapper = styled("div")({
 const styles = {
     authErrorImgStyle: css({
         width: "192px",
-        paddingBottom: "24px"
+        paddingBottom: "24px",
+        margin: "0 auto"
     }),
     bodyStyle: css({
         color: "var(--mdc-theme-text-primary-on-background)",

@@ -10,6 +10,10 @@ class GraphQLClientWithIdToken implements GraphQLClient.Interface {
     async execute<TVariables = any, TResult = any>(
         params: GraphQLClient.Request<TVariables>
     ): Promise<TResult> {
+        if (params.headers?.Authorization) {
+            return this.decoratee.execute(params);
+        }
+
         const idToken = await this.idTokenProvider.getTokenProvider()();
 
         const authHeaders = idToken ? { Authorization: `Bearer ${idToken}` } : {};

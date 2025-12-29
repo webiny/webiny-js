@@ -61,7 +61,6 @@ const AddLoginFieldSelection = () => {
                             firstName
                             lastName
                             avatar
-                            gravatar
                         }
                     `
                 ];

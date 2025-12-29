@@ -3,7 +3,6 @@ export interface UserItem {
     avatar: {
         src: string;
     };
-    gravatar: string;
     firstName: string;
     lastName: string;
     email: string;
