@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
       - uses: actions/checkout@v4
       - name: Create global cache key
         id: global-cache-key
@@ -43,7 +43,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
       - uses: actions/checkout@v4
         with:
           path: next
@@ -83,7 +83,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0

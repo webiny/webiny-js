@@ -1,12 +1,12 @@
-import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
+import { createAbstraction } from "@webiny/feature/api";
 import type { IWorkflowStateRecord } from "~/domain/workflowState/abstractions.js";
 import {
+    type ActiveStateExistsError,
+    MultipleWorkflowsFoundError,
     type WorkflowStateNotFoundError,
     type WorkflowStatePersistenceError,
-    type WorkflowStateValidationError,
-    type ActiveStateExistsError,
-    MultipleWorkflowsFoundError
+    type WorkflowStateValidationError
 } from "~/domain/workflowState/errors.js";
 import type { WorkflowNotFoundError } from "~/domain/workflow/errors.js";
 import type { WorkflowState } from "~/domain/workflowState/WorkflowState.js";

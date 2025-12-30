@@ -55,7 +55,7 @@ const useWorker = () => {
     const { current: worker } = useRef(new Worker<TrashBinItemDTO>());
 
     useEffect(() => {
-        worker.items = vm.selectedItems.map(item => item.data);
+        worker.items = vm.selectedItems;
     }, [vm.selectedItems.length]);
 
     // Reset selected items in both repository and Worker

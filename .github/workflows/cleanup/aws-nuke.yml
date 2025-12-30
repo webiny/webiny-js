@@ -45,7 +45,17 @@ accounts:
       OSDomain:
         - property: DomainName
           value: "webiny-e2e-os-3"
+        # Try simple string match as fallback
+        - "webiny-e2e-os-3"
+      ESDomain:
+        # Also try ESDomain in case the resource type name is different
+        - property: DomainName
+          value: "webiny-e2e-os-3"
+        - "webiny-e2e-os-3"
 
 resource-types:
   excludes:
     - Budget
+    # Temporarily add back global exclusion as safety net
+    - OSDomain
+    - ESDomain

@@ -39,6 +39,7 @@ export const WorkflowEditorSteps = observer((props: IWorkflowEditorStepsProps) =
                     <Step
                         key={`step-${step.id}`}
                         step={step}
+                        notifications={presenter.vm.notifications}
                         onSave={presenter.updateStep}
                         onRemove={presenter.removeStep}
                         onMoveUp={presenter.moveStepUp}
@@ -48,7 +49,7 @@ export const WorkflowEditorSteps = observer((props: IWorkflowEditorStepsProps) =
                     />
                 );
             })}
-            <NewStep onAdd={presenter.addStep} />
+            <NewStep onAdd={presenter.addStep} notifications={presenter.vm.notifications} />
             <InactiveStep step={publishedStep} />
         </div>
     );

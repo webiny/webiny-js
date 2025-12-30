@@ -2,13 +2,11 @@ import { Result } from "@webiny/feature/api";
 import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
 import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
 import { CreateWorkflowRepository, CreateWorkflowUseCase as UseCase } from "./abstractions.js";
-import { WorkflowBeforeCreateEvent, WorkflowAfterCreateEvent } from "./events.js";
+import { WorkflowAfterCreateEvent, WorkflowBeforeCreateEvent } from "./events.js";
 import { WorkflowNotAuthorizedError } from "~/domain/workflow/errors.js";
 import { WORKFLOWS_PERMISSION } from "~/constants.js";
-import type {
-    IWorkflowsSecurityPermission,
-    WorkflowsSecurityPermissionAccessLevel
-} from "~/types.js";
+import type { IWorkflowsSecurityPermission } from "~/types.js";
+import { WorkflowsSecurityPermissionAccessLevel } from "~/types.js";
 
 class CreateWorkflowUseCaseImpl implements UseCase.Interface {
     constructor(
@@ -61,7 +59,7 @@ class CreateWorkflowUseCaseImpl implements UseCase.Interface {
         for (const permission of permissions) {
             if (permission.name === "*") {
                 return Result.ok();
-            } else if (permission.editor === ("yes" as WorkflowsSecurityPermissionAccessLevel)) {
+            } else if (permission.editor === WorkflowsSecurityPermissionAccessLevel.YES) {
                 return Result.ok();
             }
         }

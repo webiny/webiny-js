@@ -1,7 +1,11 @@
-import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
+import { createAbstraction } from "@webiny/feature/api";
 import type { IWorkflow } from "~/domain/workflow/abstractions.js";
-import { type WorkflowNotFoundError, WorkflowPersistenceError } from "~/domain/workflow/errors.js";
+import type {
+    WorkflowNotAuthorizedError,
+    WorkflowNotFoundError,
+    WorkflowPersistenceError
+} from "~/domain/workflow/errors.js";
 
 export interface IGetWorkflowParams {
     app: string;
@@ -18,6 +22,7 @@ export interface IGetWorkflowUseCase {
 export interface IGetWorkflowUseCaseErrors {
     notFound: WorkflowNotFoundError;
     persistence: WorkflowPersistenceError;
+    noAccess: WorkflowNotAuthorizedError;
 }
 
 type UseCaseError = IGetWorkflowUseCaseErrors[keyof IGetWorkflowUseCaseErrors];
