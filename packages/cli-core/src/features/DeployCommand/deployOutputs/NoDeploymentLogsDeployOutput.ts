@@ -65,12 +65,12 @@ export class NoDeploymentLogsDeployOutput extends BaseDeployOutput {
         } catch (e) {
             if (isPreview) {
                 spinner.fail("Preview failed.");
-                ui.newLine();
+                ui.emptyLine();
                 ui.text(e.message);
                 ui.error("Preview failed, please check the details above.");
             } else {
                 spinner.fail("Deployment failed.");
-                ui.newLine();
+                ui.emptyLine();
                 ui.text(e.message);
                 ui.error("Deployment failed, please check the details above.");
             }

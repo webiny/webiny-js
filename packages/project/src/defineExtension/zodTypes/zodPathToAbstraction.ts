@@ -3,14 +3,22 @@ import { z } from "zod";
 import path from "path";
 import fs from "fs";
 import { type IProjectModel } from "~/abstractions/models/index.js";
+import { ProjectError } from "~/ProjectError.js";
 
 export const zodPathToAbstraction = (
     expectedAbstraction: Abstraction<any>,
     project: IProjectModel
 ) => {
+    const getTokenName = (token: symbol) => {
+        const str = token.toString();
+        return str.replace(/^Symbol\(/, "").replace(/\)$/, "");
+    };
+
+    const tokenName = getTokenName(expectedAbstraction.token);
+
     return z
         .string()
-        .describe(`Path to a file exporting ${expectedAbstraction.token.toString()}`)
+        .describe(`Path to a file exporting ${tokenName}`)
         .superRefine(async (src, ctx) => {
             let absoluteSrcPath = src;
             if (!path.isAbsolute(src)) {
@@ -20,7 +28,10 @@ export const zodPathToAbstraction = (
             if (!fs.existsSync(absoluteSrcPath)) {
                 ctx.addIssue({
                     code: z.ZodIssueCode.custom,
-                    message: `Source file does not exist: ${absoluteSrcPath}. Please provide a valid path.`
+                    message: ProjectError.formatMessage(
+                        `File not found: %s. Please check the path and try again.`,
+                        src
+                    )
                 });
                 return;
             }
@@ -34,7 +45,11 @@ export const zodPathToAbstraction = (
             if (!exportedImplementation) {
                 ctx.addIssue({
                     code: z.ZodIssueCode.custom,
-                    message: `Source file for extension "${src}" (type: ${expectedAbstraction.token.toString()}) must export a class named "${exportName}".`
+                    message: ProjectError.formatMessage(
+                        `The file %s must export a class named %s.`,
+                        src,
+                        exportName
+                    )
                 });
                 return;
             }
@@ -47,7 +62,12 @@ export const zodPathToAbstraction = (
             if (!isCorrectAbstraction) {
                 ctx.addIssue({
                     code: z.ZodIssueCode.custom,
-                    message: `Source file for extension "${src}" (type: ${expectedAbstraction.token.toString()}) must export a class that implements the "${expectedAbstraction.token.toString()}" abstraction.`
+                    message: ProjectError.formatMessage(
+                        `The class %s in %s must implement the %s interface.`,
+                        exportName,
+                        src,
+                        tokenName
+                    )
                 });
             }
 

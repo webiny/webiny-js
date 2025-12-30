@@ -154,13 +154,13 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
 
         const argv = container.resolve(GetArgvService).execute();
         if (argv.showStackTrace && realError.stack) {
-            ui.newLine();
+            ui.emptyLine();
             ui.debug("Stack trace:");
             ui.text(realError.stack);
         }
 
         if (error && error instanceof GracefulError) {
-            ui.newLine();
+            ui.emptyLine();
             ui.text(bgYellow(bold("💡 How can I resolve this?")));
             ui.text(error.message);
         }

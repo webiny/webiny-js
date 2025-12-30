@@ -197,7 +197,7 @@ export class DefaultWatch implements Watch.Interface {
             functionsList.list.map(fn => fn.name)
         );
 
-        ui.newLine();
+        ui.emptyLine();
         const { default: exitHook } = await import(/* webpackChunkName: "exit-hook" */ "exit-hook");
 
         exitHook(() => {
@@ -261,7 +261,7 @@ export class DefaultWatch implements Watch.Interface {
         if (params.inspect) {
             inspector = await import("inspector");
             inspector!.open(9229, "127.0.0.1");
-            ui.newLine();
+            ui.emptyLine();
 
             exitHook(() => {
                 inspector!.close();

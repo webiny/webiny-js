@@ -15,12 +15,12 @@ export class MultipleBuildsRunner extends BaseBuildRunner {
         });
 
         ui.info(`Building %s packages... `, buildProcesses.length);
-        ui.newLine();
+        ui.emptyLine();
 
         await buildProcesses.run({
             beforeBuild: buildProcess => {
                 ui.info(`Building package: %s`, buildProcess.getPackage().name);
-                ui.newLine();
+                ui.emptyLine();
             }
         });
 

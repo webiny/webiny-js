@@ -65,12 +65,12 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
         yargsRunner.fail((invalidParamsMessage, error) => {
             if (invalidParamsMessage) {
                 if (invalidParamsMessage.includes("Not enough non-option arguments")) {
-                    ui.newLine();
+                    ui.emptyLine();
                     ui.error("Command was not invoked as expected.");
                     ui.info(
                         `Some non-optional arguments are missing. See the usage examples printed below.`
                     );
-                    ui.newLine();
+                    ui.emptyLine();
                     yargsRunner.showHelp();
                     process.exit(1);
                 }
@@ -81,19 +81,19 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
                         .split(",")
                         .map(v => v.trim());
 
-                    ui.newLine();
+                    ui.emptyLine();
                     ui.error("Command was not invoked as expected.");
                     ui.info(
                         `Missing required argument(s): ${args.join(
                             ", "
                         )}. See the usage examples printed below.`
                     );
-                    ui.newLine();
+                    ui.emptyLine();
                     yargsRunner.showHelp();
                     process.exit(1);
                 }
 
-                ui.newLine();
+                ui.emptyLine();
                 ui.error(invalidParamsMessage);
 
                 process.exit(1);
@@ -113,13 +113,13 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
 
             const argv = this.getArgvService.execute();
             if (argv.showStackTrace && realError.stack) {
-                ui.newLine();
+                ui.emptyLine();
                 ui.debug("Stack trace:");
                 ui.text(realError.stack);
             }
 
             if (error instanceof GracefulError) {
-                ui.newLine();
+                ui.emptyLine();
                 ui.text(bgYellow(bold("💡 How can I resolve this?")));
                 ui.text(error.message);
             }
