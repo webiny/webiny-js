@@ -96,7 +96,7 @@ export class DeployCommand implements CliCommand.Interface<IDeployCommandParams>
                         const app = await projectSdk.getApp(appName);
                         ui.info("Deploying %s app...", app.getDisplayName());
                         await this.deployApp(appParams);
-                        ui.newLine();
+                        ui.emptyLine();
                     }
                 } else {
                     const isCi = projectSdk.isCi();
@@ -113,16 +113,16 @@ export class DeployCommand implements CliCommand.Interface<IDeployCommandParams>
                     }
 
                     // 3. Start deploying apps one-by-one.
-                    isFirstDeployment && ui.newLine();
+                    isFirstDeployment && ui.emptyLine();
 
                     // Deploy all apps in the project.
                     ui.info("Deploying %s app...", "Core");
                     await this.deployApp({ ...params, app: "core" });
-                    ui.newLine();
+                    ui.emptyLine();
 
                     ui.info("Deploying %s app...", "API");
                     await this.deployApp({ ...params, app: "api" });
-                    ui.newLine();
+                    ui.emptyLine();
                     ui.info("Deploying %s app...", "Admin");
                     await this.deployApp({ ...params, app: "admin" });
 
@@ -137,14 +137,14 @@ export class DeployCommand implements CliCommand.Interface<IDeployCommandParams>
                         uiService: this.uiService
                     });
 
-                    ui.newLine();
+                    ui.emptyLine();
                     ui.textBold("Project Details");
                     await printInfoForEnv.execute(params);
 
                     const adminAppOutput = await projectSdk.getAppStackOutput("admin");
 
                     if (isFirstDeployment && adminAppOutput) {
-                        ui.newLine();
+                        ui.emptyLine();
                         ui.info(
                             "The final step is to open the %s app in your browser and complete the installation wizard.",
                             "Admin"
@@ -160,7 +160,7 @@ export class DeployCommand implements CliCommand.Interface<IDeployCommandParams>
                             spinner.fail(`Failed to open Admin in your browser.`);
 
                             await sleep(1000);
-                            ui.newLine();
+                            ui.emptyLine();
                             ui.warning(
                                 `Failed to open %s app in your browser. To finish the setup and start using the project, please visit %s and complete the installation wizard.`,
                                 "Admin",
@@ -190,7 +190,7 @@ export class DeployCommand implements CliCommand.Interface<IDeployCommandParams>
 
             if (!buildRunner.isEmpty()) {
                 await buildRunner.run();
-                ui.newLine();
+                ui.emptyLine();
             }
         }
 

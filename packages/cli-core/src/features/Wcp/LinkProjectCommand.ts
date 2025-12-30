@@ -48,7 +48,7 @@ export class LinkProjectCommand implements CliCommand.Interface<void> {
                             return;
                         }
 
-                        ui.newLine();
+                        ui.emptyLine();
                     }
                 }
 
@@ -140,7 +140,7 @@ export class LinkProjectCommand implements CliCommand.Interface<void> {
                 }
 
                 await sleep();
-                ui.newLine();
+                ui.emptyLine();
 
                 ui.info("Linking %s project...", selectedProject.name);
 
@@ -153,7 +153,7 @@ export class LinkProjectCommand implements CliCommand.Interface<void> {
 
                 await sleep();
 
-                ui.newLine();
+                ui.emptyLine();
                 ui.textBold("Next Steps");
 
                 ui.text(`‣ deploy your project via the yarn webiny deploy command`);

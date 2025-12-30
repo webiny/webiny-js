@@ -32,7 +32,7 @@ export class DefaultUiService implements UiService.Interface {
         this.text(chalk.bold(text));
     }
 
-    newLine() {
+    emptyLine() {
         this.stdio.getStdout().write(chalk.gray("∙") + NEW_LINE);
     }
 

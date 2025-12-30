@@ -71,7 +71,7 @@ export class DestroyCommand implements CliCommand.Interface<IDestroyCommandParam
         try {
             ui.info(`Destroying %s app...`, params.app);
 
-            ui.newLine();
+            ui.emptyLine();
 
             pulumiProcess.stdout!.pipe(stdio.getStdout());
             pulumiProcess.stderr!.pipe(stdio.getStderr());

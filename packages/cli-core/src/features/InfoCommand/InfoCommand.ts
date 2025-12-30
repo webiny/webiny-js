@@ -29,7 +29,7 @@ export class InfoCommand implements CliCommand.Interface<IInfoCommandParams> {
 
                 if (params.env) {
                     await printInfoForEnv.execute({ env: params.env, variant: params.variant });
-                    ui.newLine();
+                    ui.emptyLine();
                 } else {
                     const existingEnvs = await projectSdk.listDeployedEnvironments();
 
@@ -54,7 +54,7 @@ export class InfoCommand implements CliCommand.Interface<IInfoCommandParams> {
 
                     for (const { env, variant } of existingEnvs) {
                         await printInfoForEnv.execute({ env, variant });
-                        ui.newLine();
+                        ui.emptyLine();
                     }
                 }
 

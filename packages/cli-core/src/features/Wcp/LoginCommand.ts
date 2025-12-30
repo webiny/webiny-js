@@ -130,7 +130,7 @@ export class LoginCommand implements CliCommand.Interface<ILoginCommandParams> {
                 // If we have `orgId` and `projectId` in PAT's metadata, let's immediately link the project.
                 if (pat.meta && pat.meta.orgId && pat.meta.projectId) {
                     await sleep();
-                    ui.newLine();
+                    ui.emptyLine();
 
                     const { orgId, projectId } = pat.meta;
 
@@ -145,7 +145,7 @@ export class LoginCommand implements CliCommand.Interface<ILoginCommandParams> {
 
                 await sleep();
 
-                ui.newLine();
+                ui.emptyLine();
                 ui.textBold("Next Steps");
 
                 if (!projectLinked) {
