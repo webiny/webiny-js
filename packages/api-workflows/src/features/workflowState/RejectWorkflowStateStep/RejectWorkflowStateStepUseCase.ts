@@ -2,11 +2,14 @@ import { Result } from "@webiny/feature/api";
 import { GetWorkflowStateUseCase } from "../GetWorkflowState/index.js";
 import { UpdateWorkflowStateRepository } from "../UpdateWorkflowState/index.js";
 import { RejectWorkflowStateStepUseCase as UseCase } from "./abstractions.js";
+import { WorkflowStateRejectEvent } from "./events.js";
+import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 
 class RejectWorkflowStateStepUseCaseImpl implements UseCase.Interface {
     constructor(
         private getWorkflowState: GetWorkflowStateUseCase.Interface,
-        private repository: UpdateWorkflowStateRepository.Interface
+        private repository: UpdateWorkflowStateRepository.Interface,
+        private eventPublisher: EventPublisher.Interface
     ) {}
 
     async execute(id: string, comment: string): UseCase.Return {
@@ -29,11 +32,17 @@ class RejectWorkflowStateStepUseCaseImpl implements UseCase.Interface {
             return Result.fail(updateResult.error);
         }
 
+        await this.eventPublisher.publish(
+            new WorkflowStateRejectEvent({
+                state
+            })
+        );
+
         return Result.ok(state);
     }
 }
 
 export const RejectWorkflowStateStepUseCase = UseCase.createImplementation({
     implementation: RejectWorkflowStateStepUseCaseImpl,
-    dependencies: [GetWorkflowStateUseCase, UpdateWorkflowStateRepository]
+    dependencies: [GetWorkflowStateUseCase, UpdateWorkflowStateRepository, EventPublisher]
 });

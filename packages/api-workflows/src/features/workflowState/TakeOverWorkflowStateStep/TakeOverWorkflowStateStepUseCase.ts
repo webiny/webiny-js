@@ -2,11 +2,14 @@ import { Result } from "@webiny/feature/api";
 import { GetWorkflowStateUseCase } from "../GetWorkflowState/index.js";
 import { UpdateWorkflowStateRepository } from "../UpdateWorkflowState/index.js";
 import { TakeOverWorkflowStateStepUseCase as UseCase } from "./abstractions.js";
+import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
+import { WorkflowStateTakeOverStepEvent } from "./events.js";
 
 class TakeOverWorkflowStateStepUseCaseImpl implements UseCase.Interface {
     constructor(
         private getWorkflowState: GetWorkflowStateUseCase.Interface,
-        private repository: UpdateWorkflowStateRepository.Interface
+        private repository: UpdateWorkflowStateRepository.Interface,
+        private eventPublisher: EventPublisher.Interface
     ) {}
 
     async execute(id: string): UseCase.Return {
@@ -29,11 +32,17 @@ class TakeOverWorkflowStateStepUseCaseImpl implements UseCase.Interface {
             return Result.fail(updateResult.error);
         }
 
+        await this.eventPublisher.publish(
+            new WorkflowStateTakeOverStepEvent({
+                state
+            })
+        );
+
         return Result.ok(state);
     }
 }
 
 export const TakeOverWorkflowStateStepUseCase = UseCase.createImplementation({
     implementation: TakeOverWorkflowStateStepUseCaseImpl,
-    dependencies: [GetWorkflowStateUseCase, UpdateWorkflowStateRepository]
+    dependencies: [GetWorkflowStateUseCase, UpdateWorkflowStateRepository, EventPublisher]
 });

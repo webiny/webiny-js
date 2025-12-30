@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
-import type { IWorkflowStateRecord } from "~/domain/workflowState/abstractions.js";
+import type { IWorkflowState, IWorkflowStateRecord } from "~/domain/workflowState/abstractions.js";
 import {
     type WorkflowStateNotFoundError,
     type WorkflowStatePersistenceError,
@@ -18,7 +18,7 @@ export interface ICreateWorkflowStateUseCaseInput {
 }
 
 export interface WorkflowStateAfterCreatePayload {
-    state: WorkflowState;
+    state: IWorkflowState;
 }
 
 /**

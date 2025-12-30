@@ -3,6 +3,7 @@ import { GetWorkflowStateUseCase } from "../GetWorkflowState/index.js";
 import { UpdateWorkflowStateRepository } from "../UpdateWorkflowState/index.js";
 import { ApproveWorkflowStateStepUseCase as UseCase } from "./abstractions.js";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
+import { WorkflowStateApproveStepEvent } from "./events.js";
 
 class ApproveWorkflowStateStepUseCaseImpl implements UseCase.Interface {
     constructor(
@@ -30,6 +31,12 @@ class ApproveWorkflowStateStepUseCaseImpl implements UseCase.Interface {
         if (updateResult.isFail()) {
             return Result.fail(updateResult.error);
         }
+        
+        await this.eventPublisher.publish(
+            new WorkflowStateApproveStepEvent({
+                state
+            })
+        );
 
         return Result.ok(state);
     }
