@@ -14500,10 +14500,9 @@ __metadata:
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
-    crypto-js: "npm:^4.2.0"
     graphql: "npm:^16.12.0"
     jest-dynalite: "npm:^3.6.1"
-    nodemailer: "npm:^7.0.11"
+    nodemailer: "npm:^7.0.12"
     rimraf: "npm:^6.0.1"
     typescript: "npm:5.9.3"
     vitest: "npm:^3.2.4"
@@ -19864,7 +19863,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"crypto-js@npm:^4.0.0, crypto-js@npm:^4.2.0":
+"crypto-js@npm:^4.0.0":
   version: 4.2.0
   resolution: "crypto-js@npm:4.2.0"
   checksum: 10/c7bcc56a6e01c3c397e95aa4a74e4241321f04677f9a618a8f48a63b5781617248afb9adb0629824792e7ec20ca0d4241a49b6b2938ae6f973ec4efc5c53c924
@@ -27887,10 +27886,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nodemailer@npm:^7.0.11":
-  version: 7.0.11
-  resolution: "nodemailer@npm:7.0.11"
-  checksum: 10/2ad4dd56a4caf84a83aa6f4378ded26d5ef8a644ca3be09c3b4fb2255d861369e620f29be6c3c97148ac4a50aa5fdff6240b9d60805362bd99ca15f2ea62e8a2
+"nodemailer@npm:^7.0.12":
+  version: 7.0.12
+  resolution: "nodemailer@npm:7.0.12"
+  checksum: 10/31a2713be588fb6849d05698cb355a88902a64e17e63b1a5c8a10db3acc4349c329c3bbd83bc5bdefda92f8df5e0297364502f93042c0bae87c48e5652b663b7
   languageName: node
   linkType: hard
 

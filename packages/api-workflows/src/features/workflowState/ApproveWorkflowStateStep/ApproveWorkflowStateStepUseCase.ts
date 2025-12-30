@@ -31,7 +31,7 @@ class ApproveWorkflowStateStepUseCaseImpl implements UseCase.Interface {
         if (updateResult.isFail()) {
             return Result.fail(updateResult.error);
         }
-        
+
         await this.eventPublisher.publish(
             new WorkflowStateApproveStepEvent({
                 state

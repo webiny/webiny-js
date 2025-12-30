@@ -1,15 +1,14 @@
-import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
+import { createAbstraction } from "@webiny/feature/api";
 import {
     type WorkflowStateNotFoundError,
     WorkflowStatePersistenceError
 } from "~/domain/workflowState/errors.js";
 import type { WorkflowNotFoundError } from "~/domain/workflow/errors.js";
 import type { WorkflowState } from "~/domain/workflowState/WorkflowState.js";
-import type { IWorkflowState } from "~/domain/workflowState/abstractions.js";
 
 export interface WorkflowStateAfterDeletePayload {
-    state: IWorkflowState;
+    state: WorkflowState;
 }
 
 export interface IDeleteTargetWorkflowStateUseCase {

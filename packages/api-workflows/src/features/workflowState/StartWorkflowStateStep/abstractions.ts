@@ -7,10 +7,9 @@ import {
 } from "~/domain/workflowState/errors.js";
 import type { WorkflowNotFoundError } from "~/domain/workflow/errors.js";
 import { WorkflowState } from "~/domain/workflowState/WorkflowState.js";
-import type { IWorkflowState } from "~/domain/workflowState/abstractions.js";
 
 export interface WorkflowStateStartStepPayload {
-    state: IWorkflowState;
+    state: WorkflowState;
 }
 
 export interface IStartWorkflowStateStepUseCase {
