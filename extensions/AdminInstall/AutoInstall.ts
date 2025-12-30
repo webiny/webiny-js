@@ -1,17 +1,17 @@
 import { ApiAfterDeploy } from "webiny/infra/features/ApiAfterDeploy";
 import { UiService } from "webiny/infra/features/UiService";
-import { GetApiGqlClient } from "webiny/infra/features/GetApiGqlClient";
+import { ApiGqlClient } from "webiny/infra/features/ApiGqlClient";
 
 import {
     IS_INSTALLED_QUERY,
     INSTALL_MUTATION,
     type IsInstalledResponse,
-    type InstallResponse,
+    type InstallResponse
 } from "./graphql";
 
-class AutoInstallSystemAfterFirstDeploy implements ApiAfterDeploy.Interface {
+class AutoInstallAfterFirstDeploy implements ApiAfterDeploy.Interface {
     constructor(
-        private getApiGqlClient: GetApiGqlClient.Interface,
+        private apiGqlClient: ApiGqlClient.Interface,
         private ui: UiService.Interface
     ) {}
 
@@ -21,17 +21,11 @@ class AutoInstallSystemAfterFirstDeploy implements ApiAfterDeploy.Interface {
             return;
         }
 
-        // Get a configured client instance
-        const gqlClient = await this.getApiGqlClient.execute({
-            env: params.env,
-            variant: params.variant
-        });
-
         // Check if system is already installed
         this.ui.info("Checking if system is already installed...");
 
         try {
-            const isInstalledResponse = await gqlClient.query<IsInstalledResponse>({
+            const isInstalledResponse = await this.apiGqlClient.query<IsInstalledResponse>({
                 query: IS_INSTALLED_QUERY
             });
 
@@ -60,7 +54,7 @@ class AutoInstallSystemAfterFirstDeploy implements ApiAfterDeploy.Interface {
             ]
         };
 
-        const installResponse = await gqlClient.mutation<InstallResponse>({
+        const installResponse = await this.apiGqlClient.mutation<InstallResponse>({
             mutation: INSTALL_MUTATION,
             variables
         });
@@ -78,7 +72,7 @@ class AutoInstallSystemAfterFirstDeploy implements ApiAfterDeploy.Interface {
     }
 }
 
-export const AutoInstallSystem = ApiAfterDeploy.createImplementation({
-    implementation: AutoInstallSystemAfterFirstDeploy,
-    dependencies: [GetApiGqlClient, UiService]
+export const AutoInstall = ApiAfterDeploy.createImplementation({
+    implementation: AutoInstallAfterFirstDeploy,
+    dependencies: [ApiGqlClient, UiService]
 });
