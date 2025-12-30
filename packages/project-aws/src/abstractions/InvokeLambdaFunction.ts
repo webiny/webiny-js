@@ -12,16 +12,14 @@ export interface IInvokeLambdaFunctionResult<T = any> {
 }
 
 export interface IInvokeLambdaFunction {
-    execute<T = any>(
-        params: IInvokeLambdaFunctionParams
-    ): Promise<IInvokeLambdaFunctionResult<T>>;
+    execute<T = any>(params: IInvokeLambdaFunctionParams): Promise<IInvokeLambdaFunctionResult<T>>;
 }
 
-export const InvokeLambdaFunction = createAbstraction<IInvokeLambdaFunction>("InvokeLambdaFunction");
+export const InvokeLambdaFunction =
+    createAbstraction<IInvokeLambdaFunction>("InvokeLambdaFunction");
 
 export namespace InvokeLambdaFunction {
     export type Interface = IInvokeLambdaFunction;
     export type Params = IInvokeLambdaFunctionParams;
     export type Result<T = any> = IInvokeLambdaFunctionResult<T>;
 }
-

@@ -10,8 +10,14 @@ export interface IGetApiGqlClientResponse<T = any> {
 }
 
 export interface IApiGqlClientInstance {
-    query<T = any>(params: { query: string; variables?: Record<string, any> }): Promise<IGetApiGqlClientResponse<T>>;
-    mutation<T = any>(params: { mutation: string; variables?: Record<string, any> }): Promise<IGetApiGqlClientResponse<T>>;
+    query<T = any>(params: {
+        query: string;
+        variables?: Record<string, any>;
+    }): Promise<IGetApiGqlClientResponse<T>>;
+    mutation<T = any>(params: {
+        mutation: string;
+        variables?: Record<string, any>;
+    }): Promise<IGetApiGqlClientResponse<T>>;
 }
 
 export interface IGetApiGqlClient {
