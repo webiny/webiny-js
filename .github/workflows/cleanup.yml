@@ -5,8 +5,8 @@ on:
   workflow_dispatch:
   repository_dispatch:
     types: [cleanup-infrastructure]
-#  schedule:
-#    - cron: "0 2 * * *" # Every day at 2AM.
+  schedule:
+    - cron: "0 2 * * *" # Every day at 2AM.
 
 jobs:
   aws-nuke:
