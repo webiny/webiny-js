@@ -42,8 +42,10 @@ accounts:
         - property: Arn
           type: exact
           value: "arn:aws:iam::726952677045:oidc-provider/token.actions.githubusercontent.com"
+      OSDomain:
+        - property: DomainName
+          value: "webiny-e2e-os-3"
 
 resource-types:
   excludes:
     - Budget
-    - ESDomain  # OpenSearch Domain
