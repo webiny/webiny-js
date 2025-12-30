@@ -17,17 +17,17 @@ const isUndefined = (value: any) => [undefined, "undefined"].includes(value);
 export function createRootContainer() {
     const container = new Container();
 
-    const trashBinEnv = process.env.WEBINY_ADMIN_TRASH_BIN_RETENTION_PERIOD_DAYS;
+    const trashBinEnv = process.env.WBY_ADMIN_TRASH_BIN_RETENTION_PERIOD_DAYS;
     const trashBinRetention = isUndefined(trashBinEnv) ? 60 : parseInt(trashBinEnv as string);
-    const deploymentId = String(process.env.WEBINY_ADMIN_DEPLOYMENT_ID);
+    const deploymentId = String(process.env.WBY_ADMIN_DEPLOYMENT_ID);
 
     EnvConfigFeature.register(container, {
         deploymentId,
         apiUrl: String(process.env.REACT_APP_API_URL),
         debug: process.env.REACT_APP_DEBUG === "true",
         graphqlApiUrl: String(process.env.REACT_APP_GRAPHQL_API_URL),
-        telemetryEnabled: process.env.REACT_APP_WEBINY_TELEMETRY === "true",
-        telemetryUserId: process.env.REACT_APP_WEBINY_TELEMETRY_USER_ID,
+        telemetryEnabled: process.env.REACT_APP_WBY_TELEMETRY === "true",
+        telemetryUserId: process.env.REACT_APP_WBY_TELEMETRY_USER_ID,
         trashBinRetentionPeriodDays: trashBinRetention,
         wcpProjectId: process.env.REACT_APP_WCP_PROJECT_ID,
         websocketUrl: String(process.env.REACT_APP_WEBSOCKET_URL)

@@ -39,7 +39,7 @@ export const createDdbProjectMigration = ({
 }: CreateDdbDataMigrationConfig) => {
     return createRawEventHandler<MigrationEventPayload, any, MigrationEventHandlerResponse>(
         async ({ payload, lambdaContext }) => {
-            const projectVersion = String(payload?.version || process.env.WEBINY_VERSION);
+            const projectVersion = String(payload?.version || process.env.WBY_VERSION);
             const forceExecute = payload.force === true;
 
             const version = semverCoerce(projectVersion);

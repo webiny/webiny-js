@@ -10,7 +10,7 @@ import type {
 } from "~/tasks/domain/abstractions/ExportContentEntries.js";
 import { createCmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher/createCmsEntryFetcher.js";
 import type { IContentEntryTraverser } from "@webiny/api-headless-cms";
-import { WEBINY_EXPORT_ENTRIES_EXTENSION } from "~/tasks/constants.js";
+import { WBY_EXPORT_ENTRIES_EXTENSION } from "~/tasks/constants.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 export interface IExportContentEntriesConfig {
@@ -73,7 +73,7 @@ export class ExportContentEntries<
 
         const filenamePrefix = [prefix, input.after].filter(Boolean).join("-");
 
-        const filename = `${filenamePrefix}.${WEBINY_EXPORT_ENTRIES_EXTENSION}`;
+        const filename = `${filenamePrefix}.${WBY_EXPORT_ENTRIES_EXTENSION}`;
 
         const traverser = await this.context.cms.getEntryTraverser(model.modelId);
 

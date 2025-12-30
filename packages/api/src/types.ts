@@ -61,7 +61,7 @@ export interface Context {
      * @internal
      */
     container: Container;
-    readonly WEBINY_VERSION: string;
+    readonly WBY_VERSION: string;
     /**
      * Not to be used outside of Webiny internal code.
      * @internal

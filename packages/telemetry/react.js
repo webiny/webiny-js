@@ -2,7 +2,7 @@ import baseSendEvent from "./sendEvent.js";
 import { WTS } from "wts-client/admin.js";
 
 export const sendEvent = async (event, properties = {}) => {
-    const shouldSend = process.env.REACT_APP_WEBINY_TELEMETRY !== "false";
+    const shouldSend = process.env.REACT_APP_WBY_TELEMETRY !== "false";
     if (!shouldSend) {
         return;
     }
@@ -18,13 +18,13 @@ export const sendEvent = async (event, properties = {}) => {
 
     return baseSendEvent({
         event,
-        user: process.env.REACT_APP_WEBINY_TELEMETRY_USER_ID,
+        user: process.env.REACT_APP_WBY_TELEMETRY_USER_ID,
         properties: {
             ...properties,
             ...wcpProperties,
-            version: process.env.REACT_APP_WEBINY_VERSION,
+            version: process.env.REACT_APP_WBY_VERSION,
             ci: process.env.REACT_APP_IS_CI === "true",
-            newUser: process.env.REACT_APP_WEBINY_TELEMETRY_NEW_USER === "true"
+            newUser: process.env.REACT_APP_WBY_TELEMETRY_NEW_USER === "true"
         },
         wts
     });

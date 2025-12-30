@@ -16,7 +16,7 @@ export const handleGuardDutyEvents = (app: ApiPulumiApp) => {
             environment: {
                 variables: graphql.output.environment.apply(env => {
                     return {
-                        WEBINY_FUNCTION_TYPE: "threat-detection-event-handler",
+                        WBY_FUNCTION_TYPE: "threat-detection-event-handler",
                         ...env?.variables
                     };
                 })

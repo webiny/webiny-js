@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useGetWebsiteBuilderSettings } from "~/features/index.js";
 import { useSubscribeToLocalStorage } from "./useSubscribeToLocalStorage.js";
 
-const CUSTOM_PREVIEW_DOMAIN = "webiny_wb_custom_preview_domain";
+const CUSTOM_PREVIEW_DOMAIN = "WBY_wb_custom_preview_domain";
 
 /**
  * This hook loads preview domain from settings, and also takes into account the override

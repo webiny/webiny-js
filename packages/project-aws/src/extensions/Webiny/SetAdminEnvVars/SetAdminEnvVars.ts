@@ -20,9 +20,9 @@ export class SetAdminEnvVars {
 
         // Set basic admin env vars
         process.env.PORT = process.env.PORT || "3001";
-        process.env.WEBINY_ADMIN_ENV = sdkParams.env;
-        process.env.WEBINY_ADMIN_TRASH_BIN_RETENTION_PERIOD_DAYS =
-            process.env.WEBINY_TRASH_BIN_RETENTION_PERIOD_DAYS || "";
+        process.env.WBY_ADMIN_ENV = sdkParams.env;
+        process.env.WBY_ADMIN_TRASH_BIN_RETENTION_PERIOD_DAYS =
+            process.env.WBY_TRASH_BIN_RETENTION_PERIOD_DAYS || "";
 
         // Load Core app stack output (automatically uses env/variant/region from ProjectSdkParamsService)
         const coreOutput = await coreStackOutputService.execute<{
@@ -31,7 +31,7 @@ export class SetAdminEnvVars {
         }>();
 
         if (coreOutput) {
-            process.env.WEBINY_ADMIN_DEPLOYMENT_ID = coreOutput.deploymentId;
+            process.env.WBY_ADMIN_DEPLOYMENT_ID = coreOutput.deploymentId;
 
             // Set Cognito user pool domain if available
             if (coreOutput.cognitoUserPoolDomain) {

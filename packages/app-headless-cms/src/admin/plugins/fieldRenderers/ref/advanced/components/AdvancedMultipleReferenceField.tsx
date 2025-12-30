@@ -225,7 +225,7 @@ export const AdvancedMultipleReferenceField = (props: AdvancedMultipleReferenceF
                 <FormComponentLabel text={field.label} invalid={invalid} />
                 <Text size={"sm"}>({message})</Text>
             </div>
-            <Container className={"webiny_ref-field-container"}>
+            <Container className={"WBY_ref-field-container"}>
                 {loading && <OverlayLoader size={"md"} />}
                 <Entries entries={entries} loadMore={loadMore}>
                     {(entry, index) => {

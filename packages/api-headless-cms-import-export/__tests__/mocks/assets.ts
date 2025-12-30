@@ -1189,8 +1189,8 @@ export const assets: IMockAsset[] = [
         url: "https://d1zqvydzhnfn89.cloudfront.net/files/668ba4e7f599020008a75819/zip-of-zips.zip"
     },
     {
-        key: "668b9ce7f599020008a752b8/8lycoyxp1-WEBINY_PAGE_EXPORT.zip",
-        url: "https://d1zqvydzhnfn89.cloudfront.net/files/668b9ce7f599020008a752b8/8lycoyxp1-WEBINY_PAGE_EXPORT.zip"
+        key: "668b9ce7f599020008a752b8/8lycoyxp1-WBY_PAGE_EXPORT.zip",
+        url: "https://d1zqvydzhnfn89.cloudfront.net/files/668b9ce7f599020008a752b8/8lycoyxp1-WBY_PAGE_EXPORT.zip"
     },
     {
         key: "668b9be609c3440008356b17/Archive.zip",
@@ -1249,8 +1249,8 @@ export const assets: IMockAsset[] = [
         url: "https://d1zqvydzhnfn89.cloudfront.net/files/668b9978bdc3320008e9c0ee/zip-of-zips.zip"
     },
     {
-        key: "666a9347a4fc6d0008a7b5ae/8lxcni93y-WEBINY_PAGE_EXPORT.zip",
-        url: "https://d1zqvydzhnfn89.cloudfront.net/files/666a9347a4fc6d0008a7b5ae/8lxcni93y-WEBINY_PAGE_EXPORT.zip"
+        key: "666a9347a4fc6d0008a7b5ae/8lxcni93y-WBY_PAGE_EXPORT.zip",
+        url: "https://d1zqvydzhnfn89.cloudfront.net/files/666a9347a4fc6d0008a7b5ae/8lxcni93y-WBY_PAGE_EXPORT.zip"
     },
     {
         key: "668bc9c1858df900083c6fc1/kevin-bhagat-ms-QnzmKGVM-unsplash.jpg",

@@ -46,7 +46,7 @@ export class AboutCommand implements CliCommand.Interface<IAboutCommandParams> {
                             Version: data.webiny.version,
                             // "Database Setup": getDatabaseSetupLabel(),
                             "Debug Enabled": webiny.debugEnabled ? "Yes" : "No"
-                            // "Feature Flags": process.env.WEBINY_FEATURE_FLAGS
+                            // "Feature Flags": process.env.WBY_FEATURE_FLAGS
                         }
                     },
                     {

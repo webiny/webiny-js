@@ -8,8 +8,8 @@ export const IMPORT_FROM_URL_DOWNLOAD_TASK = "importFromUrlDownload";
 export const IMPORT_FROM_URL_PROCESS_ENTRIES_TASK = "importFromUrlProcessEntries";
 export const IMPORT_FROM_URL_PROCESS_ASSETS_TASK = "importFromUrlProcessAssets";
 
-export const WEBINY_EXPORT_ENTRIES_EXTENSION = "we.zip";
-export const WEBINY_EXPORT_ASSETS_EXTENSION = "wa.zip";
+export const WBY_EXPORT_ENTRIES_EXTENSION = "we.zip";
+export const WBY_EXPORT_ASSETS_EXTENSION = "wa.zip";
 
 export const EXPORT_BASE_PATH = "cms-export";
 export const IMPORT_BASE_PATH = "cms-import";

@@ -18,6 +18,6 @@ export const createMockSystem = (params?: ICreateMockSystemParams): ISystem => {
         env,
         variant,
         region,
-        version: version || (process.env.WEBINY_VERSION as string)
+        version: version || (process.env.WBY_VERSION as string)
     };
 };

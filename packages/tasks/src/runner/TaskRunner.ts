@@ -83,7 +83,7 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
     }
 
     private getIsCloseToTimeoutMilliseconds() {
-        const value = parseInt(process.env["WEBINY_TASKS_TIMEOUT_CLOSE_MINUTES"] || "");
+        const value = parseInt(process.env["WBY_TASKS_TIMEOUT_CLOSE_MINUTES"] || "");
         const result = value > 0 ? value : DEFAULT_TASKS_TIMEOUT_CLOSE_MINUTES;
         return transformMinutesIntoMilliseconds(result);
     }

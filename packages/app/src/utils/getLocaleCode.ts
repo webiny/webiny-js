@@ -19,8 +19,8 @@ export const getLocaleCode = (): string | null => {
         return locale;
     }
 
-    // 3. Get locale via `window.localStorage.webiny_i18n_locale`. Used within the Admin app.
-    const localesByContext = window.localStorage.webiny_i18n_locale;
+    // 3. Get locale via `window.localStorage.WBY_i18n_locale`. Used within the Admin app.
+    const localesByContext = window.localStorage.WBY_i18n_locale;
     if (localesByContext) {
         // The `localesByContext` is a string that contains locales for all available
         // "locale contexts", for example: `default:en-US;content:en-US;`. Here, we
@@ -29,11 +29,11 @@ export const getLocaleCode = (): string | null => {
         return matchedLocale;
     }
 
-    // 4. Finally, for development purposes, we take the `WEBINY_WEBSITE_LOCALE_CODE`
-    // and `WEBINY_ADMIN_LOCALE_CODE` environment variables into consideration.
+    // 4. Finally, for development purposes, we take the `WBY_WEBSITE_LOCALE_CODE`
+    // and `WBY_ADMIN_LOCALE_CODE` environment variables into consideration.
     if (isLocalhost()) {
         return (
-            process.env.WEBINY_WEBSITE_LOCALE_CODE || process.env.WEBINY_ADMIN_LOCALE_CODE || null
+            process.env.WBY_WEBSITE_LOCALE_CODE || process.env.WBY_ADMIN_LOCALE_CODE || null
         );
     }
 

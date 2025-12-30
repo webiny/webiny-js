@@ -125,7 +125,7 @@ describe("entry assets", () => {
         const cloudfrontUrl = "https://odisadosadnsakl.cloudfront.aws";
         const filePath = "files";
         const fileKey =
-            "demo-pages/6022814891bd1300087bd24c/welcome-to-webiny__webiny-infrastructure-overview!.svg";
+            "demo-pages/6022814891bd1300087bd24c/welcome-to-WBY__webiny-infrastructure-overview!.svg";
         const image = `${cloudfrontUrl}/${filePath}/${fileKey}`;
 
         const entry: Pick<CmsEntry, "values"> = {
@@ -149,7 +149,7 @@ describe("entry assets", () => {
 
     it("should properly extract asset alias from a path", async () => {
         const cloudfrontUrl = "https://odisadosadnsakl.cloudfront.aws";
-        const fileKey = "/demo-pages/welcome-to-webiny__webiny-infrastructure-overview!.svg";
+        const fileKey = "/demo-pages/welcome-to-WBY__webiny-infrastructure-overview!.svg";
         const image = `${cloudfrontUrl}${fileKey}`;
 
         const entry: Pick<CmsEntry, "values"> = {

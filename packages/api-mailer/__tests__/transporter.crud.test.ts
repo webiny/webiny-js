@@ -37,12 +37,12 @@ describe("Mailer Transporter CRUD", () => {
     const { handle } = createContextHandler();
 
     beforeEach(() => {
-        process.env.WEBINY_MAILER_PASSWORD_SECRET = "really secret secret";
-        process.env.WEBINY_MAILER_HOST = "dummy-host.webiny";
-        process.env.WEBINY_MAILER_USER = "user";
-        process.env.WEBINY_MAILER_PASSWORD = "password";
-        process.env.WEBINY_MAILER_REPLY_TO = "replyTo@dummy-host.webiny";
-        process.env.WEBINY_MAILER_FROM = "from@dummy-host.webiny";
+        process.env.WBY_MAILER_PASSWORD_SECRET = "really secret secret";
+        process.env.WBY_MAILER_HOST = "dummy-host.webiny";
+        process.env.WBY_MAILER_USER = "user";
+        process.env.WBY_MAILER_PASSWORD = "password";
+        process.env.WBY_MAILER_REPLY_TO = "replyTo@dummy-host.webiny";
+        process.env.WBY_MAILER_FROM = "from@dummy-host.webiny";
     });
 
     it(`should throw error before sending because of missing "to"`, async () => {

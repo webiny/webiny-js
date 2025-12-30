@@ -4,7 +4,7 @@ import { useWcp } from "~/index.js";
 import { Tag } from "@webiny/admin-ui";
 
 export const WebinyVersion = () => {
-    const wbyVersion = appConfig.getKey("WEBINY_VERSION", process.env.REACT_APP_WEBINY_VERSION);
+    const wbyVersion = appConfig.getKey("WBY_VERSION", process.env.REACT_APP_WBY_VERSION);
     const wcp = useWcp();
 
     const wcpBadge = useMemo(() => {

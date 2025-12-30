@@ -29,7 +29,7 @@ export const createMockContext = () => {
     const { reply, sent, send } = createMockReply();
     const context = new Context({
         plugins: [],
-        WEBINY_VERSION: process.env.WEBINY_VERSION as string
+        WBY_VERSION: process.env.WBY_VERSION as string
     }) as unknown as ContextType;
 
     return {

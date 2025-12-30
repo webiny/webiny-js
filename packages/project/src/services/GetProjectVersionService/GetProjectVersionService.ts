@@ -13,7 +13,7 @@ class DefaultGetProjectVersionService implements GetProjectVersionService.Interf
             return this.cachedProjectVersion;
         }
 
-        const envProjectVersion = process.env.WEBINY_VERSION;
+        const envProjectVersion = process.env.WBY_VERSION;
         if (envProjectVersion) {
             this.cachedProjectVersion = envProjectVersion;
             return this.cachedProjectVersion;

@@ -7,7 +7,7 @@ import { ContextPlugin } from "@webiny/handler";
  * Use the required environment variable to turn on the logs.
  */
 export const createOutputBenchmarkLogs = () => {
-    if (process.env.WEBINY_API_TEST_OUTPUT_CMS_BENCHMARK_LOGS !== "true") {
+    if (process.env.WBY_API_TEST_OUTPUT_CMS_BENCHMARK_LOGS !== "true") {
         return [];
     }
     return [

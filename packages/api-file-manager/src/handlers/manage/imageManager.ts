@@ -48,8 +48,8 @@ export const imageManager = {
          * Search for all transformed images and delete those too.
          *
          * For new keys, we take the entire path, up to, but not including, the file name:
-         *  - demo-pages/60228148f98841000981c724/welcome-to-webiny__idp.svg
-         *  - 60228148f98841000981c724/welcome-to-webiny__idp.svg
+         *  - demo-pages/60228148f98841000981c724/welcome-to-WBY__idp.svg
+         *  - 60228148f98841000981c724/welcome-to-WBY__idp.svg
          *
          * Legacy keys don't have sub-folders:
          *  - 8ldc5n3w2-custom-field-renderers.mp4

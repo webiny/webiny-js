@@ -7,7 +7,7 @@ import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandle
  * In case version header is enabled via the env vars, add it to expectancy.
  */
 const versionHeaders: Record<string, any> = {};
-if (process.env.WEBINY_ENABLE_VERSION_HEADER === "true") {
+if (process.env.WBY_ENABLE_VERSION_HEADER === "true") {
     versionHeaders["x-webiny-version"] = expect.any(String);
 }
 

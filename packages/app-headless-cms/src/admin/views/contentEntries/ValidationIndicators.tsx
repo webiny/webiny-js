@@ -46,17 +46,17 @@ const errorBorderStyles = css`
 const validationStyles = css`
     .wby-content-entry-invalid-field {
         // Default fields
-        .webiny_label-invalid {
+        .WBY_label-invalid {
             left: var(--spacing-sm-extra);
 
-            .webiny_label-text::before {
+            .WBY_label-text::before {
                 display: none;
             }
         }
 
         // Accordion
-        .webiny_accordion-item-title::before,
-        .webiny_accordion-title-text::before {
+        .WBY_accordion-item-title::before,
+        .WBY_accordion-title-text::before {
             ${errorIconStyles}
             position: absolute;
             left: -10px;
@@ -64,20 +64,20 @@ const validationStyles = css`
         }
 
         // Multiple entries
-        > hcms-parent-field-provider .webiny_group-label-text::before {
+        > hcms-parent-field-provider .WBY_group-label-text::before {
             ${errorIconStyles}
         }
 
         // Radio buttons - hide error icon on individual options
         &[data-field-renderer="radio-buttons"] {
-            [role="radiogroup"] .webiny_label-text::before {
+            [role="radiogroup"] .WBY_label-text::before {
                 ${noErrorIconStyles}
             }
         }
 
         // Checkboxes - hide error icon on individual options
         &[data-field-renderer="checkboxes"] {
-            [role="checkbox"] + label .webiny_label-text::before {
+            [role="checkbox"] + label .WBY_label-text::before {
                 ${noErrorIconStyles}
             }
         }
@@ -85,17 +85,17 @@ const validationStyles = css`
 
     // Reference field
     .wby-content-entry-invalid-field[data-field-type="ref"] {
-        .webiny_group-label-text::before {
+        .WBY_group-label-text::before {
             ${errorIconStyles}
         }
 
-        .webiny_ref-field-container {
+        .WBY_ref-field-container {
             ${errorBorderStyles}
         }
 
         &[data-field-renderer="ref-simple-single"] {
-            [role="radiogroup"] .webiny_label-text::before,
-            [role="checkbox"] + label .webiny_label-text::before {
+            [role="radiogroup"] .WBY_label-text::before,
+            [role="checkbox"] + label .WBY_label-text::before {
                 ${noErrorIconStyles}
             }
         }
@@ -110,14 +110,14 @@ const validationStyles = css`
 
         &[data-field-renderer="object"],
         &[data-field-renderer="objects"] {
-            .webiny_group-label-text::before {
+            .WBY_group-label-text::before {
                 display: none;
             }
 
             label {
                 left: 0;
 
-                .webiny_label-text::before {
+                .WBY_label-text::before {
                     ${noErrorIconStyles}
                 }
             }

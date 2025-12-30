@@ -35,17 +35,17 @@ class SetAdminAppEnvVarsBeforeWatchImpl implements AdminBeforeWatch.Interface {
             process.env.REACT_APP_WCP_PROJECT_ID = projectId;
         }
 
-        if (!("REACT_APP_WEBINY_TELEMETRY" in process.env)) {
-            process.env.REACT_APP_WEBINY_TELEMETRY = String(telemetry);
+        if (!("REACT_APP_WBY_TELEMETRY" in process.env)) {
+            process.env.REACT_APP_WBY_TELEMETRY = String(telemetry);
         }
 
-        if (!("REACT_APP_WEBINY_TELEMETRY_USER_ID" in process.env)) {
-            process.env.REACT_APP_WEBINY_TELEMETRY_USER_ID = globalConfig.get("id");
+        if (!("REACT_APP_WBY_TELEMETRY_USER_ID" in process.env)) {
+            process.env.REACT_APP_WBY_TELEMETRY_USER_ID = globalConfig.get("id");
         }
 
-        if (!("REACT_APP_WEBINY_TELEMETRY_NEW_USER" in process.env)) {
+        if (!("REACT_APP_WBY_TELEMETRY_NEW_USER" in process.env)) {
             const newUser = Boolean(globalConfig.get("newUser")).toString();
-            process.env.REACT_APP_WEBINY_TELEMETRY_NEW_USER = newUser;
+            process.env.REACT_APP_WBY_TELEMETRY_NEW_USER = newUser;
         }
 
         if (!("INLINE_RUNTIME_CHUNK" in process.env)) {
@@ -56,8 +56,8 @@ class SetAdminAppEnvVarsBeforeWatchImpl implements AdminBeforeWatch.Interface {
             process.env.REACT_APP_IS_CI = Boolean(isCI).toString();
         }
 
-        if (!("REACT_APP_WEBINY_VERSION" in process.env)) {
-            process.env.REACT_APP_WEBINY_VERSION = projectVersion;
+        if (!("REACT_APP_WBY_VERSION" in process.env)) {
+            process.env.REACT_APP_WBY_VERSION = projectVersion;
         }
     }
 }

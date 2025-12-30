@@ -27,6 +27,6 @@ export const decompress = async (data: string): Promise<unknown> => {
 export const getContextWithCompressor = () => {
     return new Context({
         plugins: new PluginsContainer(),
-        WEBINY_VERSION: "0.0.0"
+        WBY_VERSION: "0.0.0"
     });
 };

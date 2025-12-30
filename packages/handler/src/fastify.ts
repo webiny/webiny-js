@@ -241,7 +241,7 @@ export const createHandler = (params: CreateHandlerParams) => {
             /**
              * Inserted via webpack at build time.
              */
-            WEBINY_VERSION: process.env.WEBINY_VERSION as string,
+            WBY_VERSION: process.env.WBY_VERSION as string,
             routes
         });
     } catch (ex) {

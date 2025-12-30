@@ -94,7 +94,7 @@ export class DefaultLoggerService implements LoggerService.Interface {
 
     private getLogLevel() {
         const { logging } = this.projectSdkParamsService.get();
-        return process.env.WEBINY_LOG_LEVEL || logging?.level || DEFAULT_LOG_LEVEL;
+        return process.env.WBY_LOG_LEVEL || logging?.level || DEFAULT_LOG_LEVEL;
     }
 }
 

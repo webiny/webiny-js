@@ -54,6 +54,6 @@ export interface Context extends ClientContext {
 declare module "fastify" {
     interface FastifyInstance {
         webiny: Context;
-        __webiny_raw_result: any;
+        __WBY_raw_result: any;
     }
 }

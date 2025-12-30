@@ -30,7 +30,7 @@ const getPackages = pattern => {
         .filter(Boolean);
 };
 
-const WEBINY_PACKAGES = getPackages("/packages/");
+const WBY_PACKAGES = getPackages("/packages/");
 const SAMPLE_PACKAGES = getPackages("/apps/");
 
 const PREVIEW = argv.preview;
@@ -88,7 +88,7 @@ function mustProcessPackage(json) {
         let type = depsTypes[i];
         if (json[type]) {
             for (let name in json[type]) {
-                if (WEBINY_PACKAGES.find(item => item.packageJson.name === name)) {
+                if (WBY_PACKAGES.find(item => item.packageJson.name === name)) {
                     return true;
                 }
             }
@@ -100,7 +100,7 @@ function processDeps({ deps, nextFixedVersion }) {
     let processedCount = 0;
 
     for (let key in deps) {
-        if (!WEBINY_PACKAGES.find(item => item.packageJson.name === key)) {
+        if (!WBY_PACKAGES.find(item => item.packageJson.name === key)) {
             continue;
         }
 

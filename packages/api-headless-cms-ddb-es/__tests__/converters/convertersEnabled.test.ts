@@ -36,7 +36,7 @@ describe("storage field path converters enabled", () => {
     });
 
     it("should have fieldId converted to storageId in elasticsearch and dynamodb records", async () => {
-        process.env.WEBINY_VERSION = "0.0.0";
+        process.env.WBY_VERSION = "0.0.0";
         const { createContext } = useHandler({
             plugins: [...createMockPlugins()]
         });

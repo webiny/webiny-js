@@ -26,5 +26,5 @@ export const loadingActions = {
 
 export const WB_PAGE_APP = "wb:page";
 export const WB_REDIRECTS_APP = "wb:redirect";
-export const WB_PAGE_LATEST_VISITED_FOLDER = "webiny_wb_page_latest_visited_folder";
-export const WB_REDIRECT_LATEST_VISITED_FOLDER = "webiny_wb_redirect_latest_visited_folder";
+export const WB_PAGE_LATEST_VISITED_FOLDER = "WBY_wb_page_latest_visited_folder";
+export const WB_REDIRECT_LATEST_VISITED_FOLDER = "WBY_wb_redirect_latest_visited_folder";

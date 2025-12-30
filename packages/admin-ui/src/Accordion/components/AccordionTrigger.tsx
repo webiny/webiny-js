@@ -92,7 +92,7 @@ const AccordionTrigger = () => {
                     {/* Center: title, subtitle, description */}
                     <div className={"flex flex-col gap-xxs flex-grow text-left"}>
                         <div className={"flex gap-xs"}>
-                            <div className={"text-md font-semibold webiny_accordion-item-title"}>
+                            <div className={"text-md font-semibold WBY_accordion-item-title"}>
                                 {title}
                             </div>
                             {subtitle && (

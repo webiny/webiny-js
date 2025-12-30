@@ -8,7 +8,7 @@ import { createArchiver } from "~/tasks/utils/archiver/index.js";
 import { Zipper } from "~/tasks/utils/zipper/index.js";
 import { EntryAssets } from "~/tasks/utils/entryAssets/index.js";
 import { UniqueResolver } from "~/tasks/utils/uniqueResolver/UniqueResolver.js";
-import { WEBINY_EXPORT_ENTRIES_EXTENSION } from "~/tasks/constants.js";
+import { WBY_EXPORT_ENTRIES_EXTENSION } from "~/tasks/constants.js";
 import type { Context } from "~/types.js";
 
 export const createExportContentEntries = (context: Context) => {
@@ -29,7 +29,7 @@ export const createExportContentEntries = (context: Context) => {
                 gzipOptions: {
                     level: 9
                 },
-                comment: WEBINY_EXPORT_ENTRIES_EXTENSION
+                comment: WBY_EXPORT_ENTRIES_EXTENSION
             }
         });
 

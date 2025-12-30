@@ -19,7 +19,7 @@ const labelVariants = cva(
                 true: "text-neutral-disabled cursor-not-allowed"
             },
             invalid: {
-                true: "webiny_label-invalid"
+                true: "WBY_label-invalid"
             }
         },
         defaultVariants: {
@@ -62,7 +62,7 @@ const LabelBase = ({
         >
             <span>
                 <span className={"flex items-center gap-xxs"}>
-                    <span className={"webiny_label-text"}>{text}</span>
+                    <span className={"WBY_label-text"}>{text}</span>
                     {description && <LabelDescription content={description} disabled={disabled} />}
                     {hint && <LabelHint content={hint} />}
                     {required && <LabelRequired disabled={disabled} />}

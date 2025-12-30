@@ -1,7 +1,7 @@
 import WebinyError from "@webiny/error";
 
 export const getSecret = (): string => {
-    const envValue = process.env.WEBINY_MAILER_PASSWORD_SECRET;
+    const envValue = process.env.WBY_MAILER_PASSWORD_SECRET;
 
     const value = String(envValue).trim();
     if (!envValue || !value) {

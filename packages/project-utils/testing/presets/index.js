@@ -15,7 +15,7 @@ const getStorage = argv => {
     /**
      * Storage is available in process.env?
      */
-    const envValue = process.env.WEBINY_STORAGE;
+    const envValue = process.env.WBY_STORAGE;
     if (typeof envValue === "string" && envValue.length > 2) {
         return envValue;
     }
@@ -65,7 +65,7 @@ const getAllPackages = targetKeywords => {
     }
 
     // Set the storage type as an environment variable.
-    process.env.WEBINY_STORAGE_OPS = storage;
+    process.env.WBY_STORAGE_OPS = storage;
 
     const storagePriority = storage.split(",");
 

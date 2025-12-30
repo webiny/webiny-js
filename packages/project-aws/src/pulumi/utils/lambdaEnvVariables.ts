@@ -7,12 +7,12 @@ const variablesRegistry: EnvVariables = {};
 
 export let sealEnvVariables: () => void;
 
-const magicPrefixes = ["WEBINY_", "WEBINY_API_", "WCP_", "OKTA_", "AUTH0_"];
+const magicPrefixes = ["WBY_", "WBY_API_", "WCP_", "OKTA_", "AUTH0_"];
 
 const variablesPromise = new Promise<EnvVariables>(resolve => {
     sealEnvVariables = () => {
         // Apart from a couple of basic environment variables like DEBUG,
-        // we also take into consideration variables that have `WEBINY_` and `WCP_` prefix in their names.
+        // we also take into consideration variables that have `WBY_` and `WCP_` prefix in their names.
         const baseVariables = Object.keys(process.env).reduce<EnvVariables>(
             (current, environmentVariableName) => {
                 const hasMagicPrefix = magicPrefixes.some(prefix =>

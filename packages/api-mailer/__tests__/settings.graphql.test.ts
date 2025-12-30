@@ -13,7 +13,7 @@ describe("Mailer Settings GraphQL", () => {
     const handler = createGraphQLHandler();
 
     beforeEach(() => {
-        process.env.WEBINY_MAILER_PASSWORD_SECRET = "really secret secret";
+        process.env.WBY_MAILER_PASSWORD_SECRET = "really secret secret";
     });
 
     it("should fetch settings and there should be nothing in it", async () => {
@@ -132,7 +132,7 @@ describe("Mailer Settings GraphQL", () => {
     });
 
     it("should not be possibly to get or save settings when no secret is available", async () => {
-        delete process.env.WEBINY_MAILER_PASSWORD_SECRET;
+        delete process.env.WBY_MAILER_PASSWORD_SECRET;
 
         const [getResponse] = await handler.getSettings();
 

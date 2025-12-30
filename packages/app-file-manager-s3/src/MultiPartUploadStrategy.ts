@@ -19,7 +19,7 @@ export class MultiPartUploadStrategy implements FileUploadStrategy {
     }
 
     private detectChunkSize(): number {
-        const envSize = parseInt(process.env.WEBINY_FILE_UPLOAD_CHUNK_SIZE || "0");
+        const envSize = parseInt(process.env.WBY_FILE_UPLOAD_CHUNK_SIZE || "0");
 
         // For dev purposes, we take this global var into consideration.
         if (process.env.NODE_ENV === "development") {
@@ -35,7 +35,7 @@ export class MultiPartUploadStrategy implements FileUploadStrategy {
     }
 
     private detectParallelChunks(): number {
-        const envChunks = parseInt(process.env.WEBINY_FILE_UPLOAD_PARALLEL_CHUNKS || "0");
+        const envChunks = parseInt(process.env.WBY_FILE_UPLOAD_PARALLEL_CHUNKS || "0");
 
         // For dev purposes, we take this global var into consideration.
         if (process.env.NODE_ENV === "development") {

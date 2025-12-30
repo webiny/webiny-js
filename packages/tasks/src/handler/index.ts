@@ -39,7 +39,7 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
         });
 
         app.setErrorHandler<WebinyError>(async (error, _, reply) => {
-            app.__webiny_raw_result = {
+            app.__WBY_raw_result = {
                 error: {
                     message: error.message,
                     code: error.code,
@@ -60,7 +60,7 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
                 new TaskEventValidation()
             );
 
-            app.__webiny_raw_result = await handler.run(event);
+            app.__WBY_raw_result = await handler.run(event);
             return reply.send({});
         });
         return execute({

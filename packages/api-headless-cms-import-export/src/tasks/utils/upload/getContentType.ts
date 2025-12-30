@@ -1,11 +1,11 @@
 import type { GenericRecord, NonEmptyArray } from "@webiny/api/types.js";
 import {
-    WEBINY_EXPORT_ASSETS_EXTENSION,
-    WEBINY_EXPORT_ENTRIES_EXTENSION
+    WBY_EXPORT_ASSETS_EXTENSION,
+    WBY_EXPORT_ENTRIES_EXTENSION
 } from "~/tasks/constants.js";
 
 const allowedContentTypes: GenericRecord<string, NonEmptyArray<string>> = {
-    "application/zip": ["zip", WEBINY_EXPORT_ENTRIES_EXTENSION, WEBINY_EXPORT_ASSETS_EXTENSION],
+    "application/zip": ["zip", WBY_EXPORT_ENTRIES_EXTENSION, WBY_EXPORT_ASSETS_EXTENSION],
     "application/json": ["json"],
     "text/plain": ["txt"]
 };

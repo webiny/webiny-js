@@ -172,7 +172,7 @@ export const AdvancedSingleReferenceField = (props: AdvancedSingleReferenceField
     return (
         <>
             <FormComponentLabel text={field.label} invalid={invalid} />
-            <Container className={"webiny_ref-field-container"}>
+            <Container className={"WBY_ref-field-container"}>
                 {loading && <OverlayLoader size={"md"} />}
                 {initialValue ? (
                     <Entry

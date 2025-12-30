@@ -7,9 +7,9 @@ export const createAdminAppConfig = (modifier?: ReactAppConfigModifier) => {
         config.customEnv(env => ({
             ...env,
             PORT: process.env.PORT || 3001,
-            WEBINY_ADMIN_ENV: options.env,
-            WEBINY_ADMIN_TRASH_BIN_RETENTION_PERIOD_DAYS: process.env
-                .WEBINY_TRASH_BIN_RETENTION_PERIOD_DAYS as string
+            WBY_ADMIN_ENV: options.env,
+            WBY_ADMIN_TRASH_BIN_RETENTION_PERIOD_DAYS: process.env
+                .WBY_TRASH_BIN_RETENTION_PERIOD_DAYS as string
         }));
 
         if (modifier) {

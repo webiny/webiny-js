@@ -11,7 +11,7 @@ describe("benchmark", () => {
 
     beforeEach(async () => {
         context = new Context({
-            WEBINY_VERSION: "test"
+            WBY_VERSION: "test"
         });
     });
 
@@ -185,7 +185,7 @@ describe("benchmark", () => {
     it("should enable benchmark when certain conditions are met - via plugin", async () => {
         process.env.BENCHMARK_ENABLE = "true";
         const context = new Context({
-            WEBINY_VERSION: "test",
+            WBY_VERSION: "test",
             plugins: [
                 new ContextPlugin(async ctx => {
                     ctx.benchmark.enableOn(async () => {

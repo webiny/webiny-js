@@ -4,8 +4,8 @@ const logger = require("./log");
 const DEBUG_FLAG = "--debug";
 const usingDebugFlag = process.argv.includes(DEBUG_FLAG);
 
-const SKIP_WEBINY_VERSIONS_CHECK_FLAG = "--no-package-versions-check";
-const skippingWebinyVersionsCheck = process.argv.includes(SKIP_WEBINY_VERSIONS_CHECK_FLAG);
+const SKIP_WBY_VERSIONS_CHECK_FLAG = "--no-package-versions-check";
+const skippingWebinyVersionsCheck = process.argv.includes(SKIP_WBY_VERSIONS_CHECK_FLAG);
 
 function listWebinyPackageVersions() {
     const { stdout } = execa.sync("yarn", ["info", "@webiny/*", "--name-only", "--all", "--json"], {
@@ -85,7 +85,7 @@ function ensureSameWebinyPackageVersions() {
             }),
             "",
             `Please ensure all Webiny packages are using the same version. If you think this is a mistake, you can also skip this check by appending the ${logger.error.hl(
-                SKIP_WEBINY_VERSIONS_CHECK_FLAG
+                SKIP_WBY_VERSIONS_CHECK_FLAG
             )} flag. Learn more: https://webiny.link/webiny-package-versions-check`
         ];
 

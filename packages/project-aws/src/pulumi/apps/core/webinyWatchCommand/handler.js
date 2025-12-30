@@ -1,8 +1,8 @@
 exports.handler = async event => {
     const urlParams = new URLSearchParams(event.protocolData.http.queryString);
 
-    const WEBINY_WATCH_COMMAND_TOPIC = process.env.WEBINY_WATCH_COMMAND_TOPIC;
-    if (urlParams.get("x-webiny-watch-command-topic") !== WEBINY_WATCH_COMMAND_TOPIC) {
+    const WBY_WATCH_COMMAND_TOPIC = process.env.WBY_WATCH_COMMAND_TOPIC;
+    if (urlParams.get("x-webiny-watch-command-topic") !== WBY_WATCH_COMMAND_TOPIC) {
         return {
             isAuthenticated: false
         };
@@ -23,17 +23,17 @@ exports.handler = async event => {
                     {
                         Effect: "Allow",
                         Action: "iot:Subscribe",
-                        Resource: [`arn:aws:iot:*:*:topicfilter/${WEBINY_WATCH_COMMAND_TOPIC}`]
+                        Resource: [`arn:aws:iot:*:*:topicfilter/${WBY_WATCH_COMMAND_TOPIC}`]
                     },
                     {
                         Effect: "Allow",
                         Action: "iot:Publish",
-                        Resource: [`arn:aws:iot:*:*:topic/${WEBINY_WATCH_COMMAND_TOPIC}`]
+                        Resource: [`arn:aws:iot:*:*:topic/${WBY_WATCH_COMMAND_TOPIC}`]
                     },
                     {
                         Effect: "Allow",
                         Action: ["iot:Receive"],
-                        Resource: [`arn:aws:iot:*:*:topic/${WEBINY_WATCH_COMMAND_TOPIC}`]
+                        Resource: [`arn:aws:iot:*:*:topic/${WBY_WATCH_COMMAND_TOPIC}`]
                     }
                 ]
             }

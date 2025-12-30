@@ -6,7 +6,7 @@ import { CmsAssetsZipper } from "~/tasks/utils/cmsAssetsZipper/index.js";
 import { createUploadFactory } from "~/tasks/utils/upload/index.js";
 import { createArchiver } from "~/tasks/utils/archiver/index.js";
 import { Zipper } from "~/tasks/utils/zipper/index.js";
-import { WEBINY_EXPORT_ASSETS_EXTENSION } from "~/tasks/constants.js";
+import { WBY_EXPORT_ASSETS_EXTENSION } from "~/tasks/constants.js";
 import type { Context } from "~/types.js";
 
 export const createExportContentAssets = (context: Context) => {
@@ -30,7 +30,7 @@ export const createExportContentAssets = (context: Context) => {
                 gzipOptions: {
                     level: 0
                 },
-                comment: WEBINY_EXPORT_ASSETS_EXTENSION
+                comment: WBY_EXPORT_ASSETS_EXTENSION
             }
         });
 

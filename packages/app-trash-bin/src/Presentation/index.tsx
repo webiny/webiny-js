@@ -67,7 +67,7 @@ export const TrashBin = ({ render, ...rest }: TrashBinProps) => {
         const defaultRetentionPeriod = 90;
 
         // Retrieve the retention period from the environment variable
-        const retentionPeriodFromEnv = process.env["WEBINY_ADMIN_TRASH_BIN_RETENTION_PERIOD_DAYS"];
+        const retentionPeriodFromEnv = process.env["WBY_ADMIN_TRASH_BIN_RETENTION_PERIOD_DAYS"];
 
         // Parse the environment variable value to an integer (or use default if not valid or not set)
         const parsedRetentionPeriod = retentionPeriodFromEnv

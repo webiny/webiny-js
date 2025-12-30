@@ -430,7 +430,7 @@ describe("Migration Lambda Handler", { retry: 0 }, () => {
         expect(data2.executed[1].id).toBe("2.1.0-002");
     });
 
-    it("should skip migrations defined by WEBINY_MIGRATION_SKIP env var", async () => {
+    it("should skip migrations defined by WBY_MIGRATION_SKIP env var", async () => {
         const allMigrations = [
             createDdbMigration("1.0.0-001"),
             createDdbMigration("1.1.0-001"),
@@ -439,8 +439,8 @@ describe("Migration Lambda Handler", { retry: 0 }, () => {
             createDdbMigration("2.1.0-002")
         ];
 
-        process.env["WEBINY_MIGRATION_SKIP_2_0_0_001"] = "true";
-        process.env["WEBINY_MIGRATION_SKIP_2_1_0_002"] = "true";
+        process.env["WBY_MIGRATION_SKIP_2_0_0_001"] = "true";
+        process.env["WBY_MIGRATION_SKIP_2_1_0_002"] = "true";
 
         const handler = useHandler(
             createDdbProjectMigration({

@@ -14,7 +14,7 @@ interface DummyContextInterface extends ContextInterface {
 describe("Context", () => {
     it("should construct a base context", () => {
         const context = new Context({
-            WEBINY_VERSION: "test"
+            WBY_VERSION: "test"
         });
 
         const compressor = context.compressor;
@@ -26,7 +26,7 @@ describe("Context", () => {
                 _byTypeCache: {},
                 plugins: {}
             },
-            WEBINY_VERSION: "test",
+            WBY_VERSION: "test",
             waiters: []
         });
 
@@ -45,12 +45,12 @@ describe("Context", () => {
 
         expect(context.plugins.all()).toHaveLength(4);
 
-        expect(context.WEBINY_VERSION).toEqual("test");
+        expect(context.WBY_VERSION).toEqual("test");
     });
 
     it("should wait for a variable to be defined on context and then trigger the callable", async () => {
         const context = new Context({
-            WEBINY_VERSION: "test"
+            WBY_VERSION: "test"
         }) as unknown as DummyContextInterface;
 
         const tester = {

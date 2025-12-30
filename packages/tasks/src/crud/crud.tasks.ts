@@ -11,7 +11,7 @@ import type {
     ITaskUpdateData
 } from "~/types.js";
 import { TaskDataStatus } from "~/types.js";
-import { WEBINY_TASK_LOG_MODEL_ID, WEBINY_TASK_MODEL_ID } from "./model.js";
+import { WBY_TASK_LOG_MODEL_ID, WBY_TASK_MODEL_ID } from "./model.js";
 import type { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { remapWhere } from "./where.js";
@@ -126,9 +126,9 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
         const identityContext = context.container.resolve(IdentityContext);
         return await identityContext.withoutAuthorization(async () => {
             const getModel = context.container.resolve(GetModelUseCase);
-            const result = await getModel.execute(WEBINY_TASK_MODEL_ID);
+            const result = await getModel.execute(WBY_TASK_MODEL_ID);
             if (result.isFail()) {
-                throw new WebinyError(`There is no model "${WEBINY_TASK_MODEL_ID}".`);
+                throw new WebinyError(`There is no model "${WBY_TASK_MODEL_ID}".`);
             }
             return result.value;
         });
@@ -138,9 +138,9 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
         const identityContext = context.container.resolve(IdentityContext);
         return await identityContext.withoutAuthorization(async () => {
             const getModel = context.container.resolve(GetModelUseCase);
-            const result = await getModel.execute(WEBINY_TASK_LOG_MODEL_ID);
+            const result = await getModel.execute(WBY_TASK_LOG_MODEL_ID);
             if (result.isFail()) {
-                throw new WebinyError(`There is no model "${WEBINY_TASK_LOG_MODEL_ID}".`);
+                throw new WebinyError(`There is no model "${WBY_TASK_LOG_MODEL_ID}".`);
             }
             return result.value;
         });

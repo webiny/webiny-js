@@ -15,8 +15,8 @@ const createHandleResponse = (app: FastifyInstance, resolve: Resolve): LightMyRe
                 headers: {}
             });
         }
-        if (app.__webiny_raw_result) {
-            return resolve(app.__webiny_raw_result);
+        if (app.__WBY_raw_result) {
+            return resolve(app.__WBY_raw_result);
         } else if (!result) {
             const response: APIGatewayProxyResult = {
                 statusCode: 200,

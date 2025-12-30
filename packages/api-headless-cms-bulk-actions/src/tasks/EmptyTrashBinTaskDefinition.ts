@@ -7,9 +7,9 @@ import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEnt
 import { ListDeletedEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
 
 const calculateDateTimeString = () => {
-    // Retrieve the retention period from the environment variable WEBINY_TRASH_BIN_RETENTION_PERIOD_DAYS,
+    // Retrieve the retention period from the environment variable WBY_TRASH_BIN_RETENTION_PERIOD_DAYS,
     // or default to 90 days if not set or set to 0.
-    const retentionPeriodFromEnv = process.env["WEBINY_TRASH_BIN_RETENTION_PERIOD_DAYS"];
+    const retentionPeriodFromEnv = process.env["WBY_TRASH_BIN_RETENTION_PERIOD_DAYS"];
     const retentionPeriod =
         retentionPeriodFromEnv && Number(retentionPeriodFromEnv) !== 0
             ? Number(retentionPeriodFromEnv)

@@ -40,7 +40,7 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
         registerDefaultPlugins(app.webiny);
 
         app.setErrorHandler<WebinyError>(async (error, _, reply) => {
-            app.__webiny_raw_result = {
+            app.__WBY_raw_result = {
                 error: {
                     message: error.message,
                     code: error.code,
@@ -63,7 +63,7 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
 
             const result = await handler.run(event);
 
-            app.__webiny_raw_result = {
+            app.__WBY_raw_result = {
                 statusCode: result.statusCode,
                 headers: {
                     "sec-websocket-protocol": "webiny-ws-v1"

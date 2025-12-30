@@ -105,7 +105,7 @@ const getEnvVars = () => {
                 return true;
             }
 
-            return new RegExp(/^WEBINY_ADMIN_/i).test(key);
+            return new RegExp(/^WBY_ADMIN_/i).test(key);
         })
         .reduce(
             (env, key) => {

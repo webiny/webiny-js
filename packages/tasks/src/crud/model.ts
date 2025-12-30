@@ -1,13 +1,13 @@
 import { createCmsModel, createPrivateModel } from "@webiny/api-headless-cms";
 import { TaskLogItemType, TaskDataStatus } from "~/types.js";
 
-export const WEBINY_TASK_MODEL_ID = "webinyTask";
-export const WEBINY_TASK_LOG_MODEL_ID = "webinyTaskLog";
+export const WBY_TASK_MODEL_ID = "webinyTask";
+export const WBY_TASK_LOG_MODEL_ID = "webinyTaskLog";
 
 const taskLogModelPlugin = createCmsModel(
     createPrivateModel({
         name: "Webiny Task Log",
-        modelId: WEBINY_TASK_LOG_MODEL_ID,
+        modelId: WBY_TASK_LOG_MODEL_ID,
         fields: [
             {
                 id: "executionName",
@@ -133,7 +133,7 @@ const taskLogModelPlugin = createCmsModel(
 const taskModelPlugin = createCmsModel(
     createPrivateModel({
         name: "Webiny Task",
-        modelId: WEBINY_TASK_MODEL_ID,
+        modelId: WBY_TASK_MODEL_ID,
         fields: [
             {
                 id: "name",

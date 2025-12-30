@@ -15,7 +15,7 @@ interface Waiter {
 
 export interface ContextParams {
     plugins?: PluginCollection | PluginsContainer;
-    WEBINY_VERSION: string;
+    WBY_VERSION: string;
 }
 
 const getPluginsContainer = (plugins?: PluginCollection | PluginsContainer): PluginsContainer => {
@@ -32,7 +32,7 @@ export class Context implements ContextInterface {
     public _result: any;
     public args: any;
     public readonly plugins: PluginsContainer;
-    public readonly WEBINY_VERSION: string;
+    public readonly WBY_VERSION: string;
     public readonly benchmark: Benchmark;
     public readonly compressor: ICompressor;
     public readonly container: Container;
@@ -40,9 +40,9 @@ export class Context implements ContextInterface {
     private readonly waiters: Waiter[] = [];
 
     public constructor(params: ContextParams) {
-        const { plugins, WEBINY_VERSION } = params;
+        const { plugins, WBY_VERSION } = params;
         this.plugins = getPluginsContainer(plugins);
-        this.WEBINY_VERSION = WEBINY_VERSION;
+        this.WBY_VERSION = WBY_VERSION;
         this.container = new Container();
         /**
          * At the moment, let's have benchmark as part of the context.

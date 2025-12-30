@@ -39,7 +39,7 @@ class ExecuteDataMigrationsImpl implements ApiAfterDeploy.Interface {
         const ui = this.ui;
         ui.info("Executing data migrations AWS Lambda function...");
 
-        const logStreamingEnabled = process.env.WEBINY_MIGRATION_LOG_STREAMING !== "false";
+        const logStreamingEnabled = process.env.WBY_MIGRATION_LOG_STREAMING !== "false";
         if (!logStreamingEnabled) {
             ui.warning(
                 [
@@ -76,7 +76,7 @@ class ExecuteDataMigrationsImpl implements ApiAfterDeploy.Interface {
             const project = this.getProject.execute();
 
             const result = await runner.runMigration({
-                version: process.env.WEBINY_VERSION || project.version
+                version: process.env.WBY_VERSION || project.version
             });
 
             if (result) {

@@ -38,7 +38,7 @@ describe("get extra attributes", () => {
 
     beforeEach(() => {
         context = new Context({
-            WEBINY_VERSION: process.env.WEBINY_VERSION || "w.w.w"
+            WBY_VERSION: process.env.WBY_VERSION || "w.w.w"
         });
         context.plugins.register([stringAttribute, numberAttribute, booleanAttribute]);
     });

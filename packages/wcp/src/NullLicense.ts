@@ -19,9 +19,9 @@ export class NullLicense implements ILicense {
     }
 
     canUseFeature(featureId: keyof typeof WCP_FEATURE_LABEL): boolean {
-        // For backwards compatibility, we need to check the legacy ENV variable `WEBINY_MULTI_TENANCY`.
+        // For backwards compatibility, we need to check the legacy ENV variable `WBY_MULTI_TENANCY`.
         if (featureId === "multiTenancy") {
-            return process.env.WEBINY_MULTI_TENANCY === "true";
+            return process.env.WBY_MULTI_TENANCY === "true";
         }
 
         return false;

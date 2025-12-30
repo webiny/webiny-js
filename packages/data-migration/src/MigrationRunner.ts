@@ -35,20 +35,20 @@ const getRunItemDuration = (runItem: MigrationRunItem) => {
 
 /**
  * This allows us to force-execute a migration, even if it's not in the list of the applicable migrations.
- * Example: WEBINY_MIGRATION_FORCE_EXECUTE_5_35_0_006=true
+ * Example: WBY_MIGRATION_FORCE_EXECUTE_5_35_0_006=true
  */
 const shouldForceExecute = (mig: DataMigration) => {
-    const key = `WEBINY_MIGRATION_FORCE_EXECUTE_${mig.getId().replace(/[\.\-]/g, "_")}`;
+    const key = `WBY_MIGRATION_FORCE_EXECUTE_${mig.getId().replace(/[\.\-]/g, "_")}`;
 
     return process.env[key] === "true";
 };
 
 /**
  * This allows us to always skip a migration.
- * Example: WEBINY_MIGRATION_SKIP_5_35_0_006=true
+ * Example: WBY_MIGRATION_SKIP_5_35_0_006=true
  */
 const shouldSkip = (mig: DataMigration) => {
-    const key = `WEBINY_MIGRATION_SKIP_${mig.getId().replace(/[\.\-]/g, "_")}`;
+    const key = `WBY_MIGRATION_SKIP_${mig.getId().replace(/[\.\-]/g, "_")}`;
 
     return process.env[key] === "true";
 };
@@ -411,12 +411,12 @@ export class MigrationRunner {
 
     private printForceExecuteEnvVars() {
         const forceKeys = Object.keys(process.env).filter(key =>
-            key.startsWith("WEBINY_MIGRATION_FORCE_EXECUTE_")
+            key.startsWith("WBY_MIGRATION_FORCE_EXECUTE_")
         );
 
         if (!forceKeys.length) {
             this.logger.info(
-                `No migrations are enforced via WEBINY_MIGRATION_FORCE_EXECUTE environment variable.`
+                `No migrations are enforced via WBY_MIGRATION_FORCE_EXECUTE environment variable.`
             );
 
             return;
@@ -430,12 +430,12 @@ export class MigrationRunner {
 
     private printSkipExecuteEnvVars() {
         const skipKeys = Object.keys(process.env).filter(key =>
-            key.startsWith("WEBINY_MIGRATION_SKIP_")
+            key.startsWith("WBY_MIGRATION_SKIP_")
         );
 
         if (!skipKeys.length) {
             this.logger.info(
-                `No migrations are skipped via WEBINY_MIGRATION_SKIP environment variable.`
+                `No migrations are skipped via WBY_MIGRATION_SKIP environment variable.`
             );
 
             return;

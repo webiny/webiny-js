@@ -11,8 +11,8 @@ export const getTimeout = (input: number | undefined) => {
         }
         return input * 1000;
     }
-    const userDefined = process.env.WEBINY_RECORD_LOCK_TIMEOUT
-        ? parseInt(process.env.WEBINY_RECORD_LOCK_TIMEOUT)
+    const userDefined = process.env.WBY_RECORD_LOCK_TIMEOUT
+        ? parseInt(process.env.WBY_RECORD_LOCK_TIMEOUT)
         : undefined;
     if (!userDefined || isNaN(userDefined) || userDefined <= 0) {
         return defaultTimeoutInSeconds * 1000;

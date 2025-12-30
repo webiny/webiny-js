@@ -10,7 +10,7 @@ const getIsRequired = (validations?: CmsModelFieldValidation[]): boolean => {
 
 const envVars: string[] = [
     "HEADLESS_CMS_GRAPHQL_INPUT_REQUIRE_ARRAY_ITEM",
-    "WEBINY_HEADLESS_CMS_GRAPHQL_INPUT_REQUIRE_ARRAY_ITEM"
+    "WBY_HEADLESS_CMS_GRAPHQL_INPUT_REQUIRE_ARRAY_ITEM"
 ];
 /**
  * Method creates single and multiple values fields.

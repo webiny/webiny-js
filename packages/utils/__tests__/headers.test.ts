@@ -1,6 +1,6 @@
 import { describe, test, it, expect } from "vitest";
 import { getWebinyVersionHeaders } from "~/index";
-import { WEBINY_VERSION_HEADER } from "~/headers";
+import { WBY_VERSION_HEADER } from "~/headers";
 
 describe("webiny headers", () => {
     const notEnabledValues = [
@@ -19,7 +19,7 @@ describe("webiny headers", () => {
     test.each(notEnabledValues)(
         "should not output headers if they are not enabled",
         (value: any) => {
-            process.env.WEBINY_ENABLE_VERSION_HEADER = value;
+            process.env.WBY_ENABLE_VERSION_HEADER = value;
             const headers = getWebinyVersionHeaders();
 
             expect(headers).toEqual({});
@@ -27,11 +27,11 @@ describe("webiny headers", () => {
     );
 
     it("should output headers", () => {
-        process.env.WEBINY_ENABLE_VERSION_HEADER = "true";
+        process.env.WBY_ENABLE_VERSION_HEADER = "true";
         const headers = getWebinyVersionHeaders();
 
         expect(headers).toEqual({
-            [WEBINY_VERSION_HEADER]: process.env.WEBINY_VERSION
+            [WBY_VERSION_HEADER]: process.env.WBY_VERSION
         });
     });
 });

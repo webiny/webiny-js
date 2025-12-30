@@ -12,7 +12,7 @@ if (!args.source) {
 
 (async () => {
     const s3 = new S3({ region: process.env["AWS_REGION"] ?? "us-east-1" });
-    const templateKey = "cloudformation/DEPLOY_WEBINY_PROJECT_CF_TEMPLATE.yaml";
+    const templateKey = "cloudformation/DEPLOY_WBY_PROJECT_CF_TEMPLATE.yaml";
 
     const fileSource = path.resolve(args.source);
 

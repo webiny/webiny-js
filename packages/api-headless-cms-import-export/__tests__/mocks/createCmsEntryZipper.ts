@@ -15,7 +15,7 @@ import { createArchiver } from "~/tasks/utils/archiver";
 import type { ICmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher";
 import type { IAsset, IEntryAssets } from "~/tasks/utils/entryAssets";
 import type { IUniqueResolver } from "~/tasks/utils/uniqueResolver/abstractions/UniqueResolver";
-import { WEBINY_EXPORT_ENTRIES_EXTENSION } from "~/tasks/constants";
+import { WBY_EXPORT_ENTRIES_EXTENSION } from "~/tasks/constants";
 
 interface ICreateCmsEntryZipperParams {
     fetcher: ICmsEntryFetcher;
@@ -37,7 +37,7 @@ export const createCmsEntryZipper = (params: ICreateCmsEntryZipperParams) => {
 
     const region = params.region || "eu-central-1";
     const bucket = params.bucket || "my-test-bucket";
-    const filename = params.filename || `test.${WEBINY_EXPORT_ENTRIES_EXTENSION}`;
+    const filename = params.filename || `test.${WBY_EXPORT_ENTRIES_EXTENSION}`;
 
     const client = createS3Client({
         region

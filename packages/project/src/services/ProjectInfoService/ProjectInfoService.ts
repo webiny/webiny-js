@@ -36,7 +36,7 @@ export class DefaultProjectInfoService implements ProjectInfoService.Interface {
             webiny: {
                 version: this.getProjectVersion.execute(),
                 debugEnabled: process.env.DEBUG === "true",
-                featureFlags: process.env.WEBINY_FEATURE_FLAGS || {}
+                featureFlags: process.env.WBY_FEATURE_FLAGS || {}
             },
             wcp: {
                 projectId: wcpProjectId,

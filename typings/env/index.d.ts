@@ -6,14 +6,14 @@ declare namespace NodeJS {
         DB_TABLE_LOG?: string;
         DB_TABLE_AUDIT_LOGS?: string;
         ELASTICSEARCH_SHARED_INDEXES?: "true" | "false" | string;
-        WEBINY_VERSION?: string;
-        WEBINY_IS_PRE_529?: "true" | "false";
-        WEBINY_ENABLE_VERSION_HEADER?: "true" | "false" | string;
-        WEBINY_LOGS_FORWARD_URL?: string;
-        WEBINY_FILE_UPLOAD_CHUNK_SIZE?: string;
-        WEBINY_FILE_UPLOAD_PARALLEL_CHUNKS?: string;
-        WEBINY_TRASH_BIN_RETENTION_PERIOD_DAYS?: string;
-        WEBINY_ADMIN_TRASH_BIN_RETENTION_PERIOD_DAYS?: string;
+        WBY_VERSION?: string;
+        WBY_IS_PRE_529?: "true" | "false";
+        WBY_ENABLE_VERSION_HEADER?: "true" | "false" | string;
+        WBY_LOGS_FORWARD_URL?: string;
+        WBY_FILE_UPLOAD_CHUNK_SIZE?: string;
+        WBY_FILE_UPLOAD_PARALLEL_CHUNKS?: string;
+        WBY_TRASH_BIN_RETENTION_PERIOD_DAYS?: string;
+        WBY_ADMIN_TRASH_BIN_RETENTION_PERIOD_DAYS?: string;
         AWS_LAMBDA_FUNCTION_NAME?: string;
         PATH?: string;
         DEBUG?: "true" | "false" | string;
@@ -21,13 +21,13 @@ declare namespace NodeJS {
         PULUMI_SKIP_UPDATE_CHECK?: "true" | "false" | string;
         MOCK_DYNAMODB_ENDPOINT?: string;
         ELASTICSEARCH_PORT?: string;
-        WEBINY_ENV?: string;
-        WEBINY_ENV_VARIANT?: string;
-        WEBINY_ADMIN_ENV?: string;
-        WEBINY_WEBSITE_ENV?: string;
+        WBY_ENV?: string;
+        WBY_ENV_VARIANT?: string;
+        WBY_ADMIN_ENV?: string;
+        WBY_WEBSITE_ENV?: string;
         REACT_APP_DEBUG?: "true" | "false" | string;
         AWS_REGION?: string;
-        REACT_APP_WEBINY_VERSION?: string;
+        REACT_APP_WBY_VERSION?: string;
         REACT_APP_GRAPHQL_API_URL?: string;
         REACT_APP_API_URL?: string;
         REACT_APP_USER_POOL_REGION?: string;
@@ -43,13 +43,13 @@ declare namespace NodeJS {
         EXPORT_PROCESS_HANDLER?: string;
         IMPORT_CREATE_HANDLER?: string;
         PUBLIC_URL?: string;
-        WEBINY_HEADLESS_CMS_GRAPHQL_INPUT_REQUIRE_ARRAY_ITEM?: "false" | string;
-        WEBINY_ELASTICSEARCH_INDEX_LOCALE?: "true" | string;
+        WBY_HEADLESS_CMS_GRAPHQL_INPUT_REQUIRE_ARRAY_ITEM?: "false" | string;
+        WBY_ELASTICSEARCH_INDEX_LOCALE?: "true" | string;
         APW_SCHEDULER_SCHEDULE_ACTION_HANDLER?: string;
         ELASTIC_SEARCH_ENDPOINT?: string;
         EVENT_BUS?: string;
-        WEBINY_FUNCTION_TYPE?: string;
-        WEBINY_DEV_DEBUG?: "true" | string;
+        WBY_FUNCTION_TYPE?: string;
+        WBY_DEV_DEBUG?: "true" | string;
         /**
          * Okta
          */
@@ -65,11 +65,11 @@ declare namespace NodeJS {
         /**
          * api-mailer
          */
-        WEBINY_MAILER_HOST?: string;
-        WEBINY_MAILER_USER?: string;
-        WEBINY_MAILER_PASSWORD?: string;
-        WEBINY_MAILER_REPLY_TO?: string;
-        WEBINY_MAILER_FROM?: string;
-        WEBINY_MAILER_PASSWORD_SECRET?: string;
+        WBY_MAILER_HOST?: string;
+        WBY_MAILER_USER?: string;
+        WBY_MAILER_PASSWORD?: string;
+        WBY_MAILER_REPLY_TO?: string;
+        WBY_MAILER_FROM?: string;
+        WBY_MAILER_PASSWORD_SECRET?: string;
     }
 }

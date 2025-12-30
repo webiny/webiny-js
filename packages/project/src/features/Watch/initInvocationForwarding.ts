@@ -4,9 +4,9 @@ import { compress, decompress } from "@webiny/utils/compression/gzip.js";
 import mqtt from "mqtt";
 import { type ListAppLambdaFunctionsService } from "~/abstractions/index.js";
 
-const WEBINY_WATCH_FN_INVOCATION_EVENT = "webiny.watch.functionInvocation";
-const WEBINY_WATCH_FN_INVOCATION_RESULT_EVENT = "webiny.watch.functionInvocationResult";
-const WEBINY_WATCH_FN_INVOCATION_HANDSHAKE_EVENT = "webiny.watch.functionInvocationHandshake";
+const WBY_WATCH_FN_INVOCATION_EVENT = "webiny.watch.functionInvocation";
+const WBY_WATCH_FN_INVOCATION_RESULT_EVENT = "webiny.watch.functionInvocationResult";
+const WBY_WATCH_FN_INVOCATION_HANDSHAKE_EVENT = "webiny.watch.functionInvocationHandshake";
 
 const WATCH_WORKER_PATH = path.join(import.meta.dirname, "localInvocationWorker.js");
 
@@ -46,7 +46,7 @@ export const initInvocationForwarding = async ({
     client.on("message", async (_, message) => {
         const payload = JSON.parse(message.toString());
 
-        if (payload.eventType !== WEBINY_WATCH_FN_INVOCATION_EVENT) {
+        if (payload.eventType !== WBY_WATCH_FN_INVOCATION_EVENT) {
             return;
         }
 
@@ -57,7 +57,7 @@ export const initInvocationForwarding = async ({
         await client.publish(
             iotEndpointTopic,
             JSON.stringify({
-                eventType: WEBINY_WATCH_FN_INVOCATION_HANDSHAKE_EVENT,
+                eventType: WBY_WATCH_FN_INVOCATION_HANDSHAKE_EVENT,
                 eventId: new Date().getTime(),
                 data: {
                     originalEventId: payload.eventId,
@@ -77,7 +77,7 @@ export const initInvocationForwarding = async ({
         try {
             const result = await new Promise<Record<string, any>>(async (resolve, reject) => {
                 const worker = new Worker(WATCH_WORKER_PATH, {
-                    env: { ...payload.data.env, WEBINY_WATCH_LOCAL_INVOCATION: "1" },
+                    env: { ...payload.data.env, WBY_WATCH_LOCAL_INVOCATION: "1" },
                     workerData: {
                         handler: {
                             path: invokedLambdaFunction.path,
@@ -109,7 +109,7 @@ export const initInvocationForwarding = async ({
             await client.publish(
                 iotEndpointTopic,
                 JSON.stringify({
-                    eventType: WEBINY_WATCH_FN_INVOCATION_RESULT_EVENT,
+                    eventType: WBY_WATCH_FN_INVOCATION_RESULT_EVENT,
                     eventId: new Date().getTime(),
                     data: {
                         originalEventId: payload.eventId,
@@ -123,7 +123,7 @@ export const initInvocationForwarding = async ({
             await client.publish(
                 iotEndpointTopic,
                 JSON.stringify({
-                    eventType: WEBINY_WATCH_FN_INVOCATION_RESULT_EVENT,
+                    eventType: WBY_WATCH_FN_INVOCATION_RESULT_EVENT,
                     eventId: new Date().getTime(),
                     data: {
                         originalEventId: payload.eventId,

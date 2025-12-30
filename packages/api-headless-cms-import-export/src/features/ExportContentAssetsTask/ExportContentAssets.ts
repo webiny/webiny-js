@@ -25,7 +25,7 @@ import { getErrorProperties } from "@webiny/tasks/utils/index.js";
 import { getBucket } from "~/tasks/utils/helpers/getBucket.js";
 import { createS3Client } from "~/tasks/utils/helpers/s3Client.js";
 import { UniqueResolver } from "~/tasks/utils/uniqueResolver/UniqueResolver.js";
-import { WEBINY_EXPORT_ASSETS_EXTENSION } from "~/tasks/constants.js";
+import { WBY_EXPORT_ASSETS_EXTENSION } from "~/tasks/constants.js";
 import { ListFilesUseCase } from "@webiny/api-file-manager/features/file/ListFiles/index.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
@@ -48,7 +48,7 @@ const getFilename = (input: IExportContentAssetsInput): string => {
 
     return `${input.prefix}/assets${
         current ? `-${current}` : ""
-    }.${WEBINY_EXPORT_ASSETS_EXTENSION}`;
+    }.${WBY_EXPORT_ASSETS_EXTENSION}`;
 };
 
 export interface IExportContentAssetsParams {

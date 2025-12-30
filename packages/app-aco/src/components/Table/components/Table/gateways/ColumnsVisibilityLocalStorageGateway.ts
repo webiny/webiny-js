@@ -6,7 +6,7 @@ export class ColumnsVisibilityLocalStorageGateway implements IColumnsVisibilityG
 
     constructor(namespace: string) {
         this.localStorage = new LocalStorage<Record<string, boolean>>(
-            `webiny_column_visibility_${namespace}`
+            `WBY_column_visibility_${namespace}`
         );
     }
 

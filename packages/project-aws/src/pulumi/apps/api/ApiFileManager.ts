@@ -65,7 +65,7 @@ export const ApiFileManager = createAppModule({
                 environment: {
                     variables: graphql.functions.graphql.output.environment.apply(env => {
                         return {
-                            WEBINY_FUNCTION_TYPE: "asset-delivery",
+                            WBY_FUNCTION_TYPE: "asset-delivery",
                             ...env?.variables,
                             ...config.env
                         };

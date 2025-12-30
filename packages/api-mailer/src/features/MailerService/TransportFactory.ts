@@ -10,12 +10,12 @@ const getPort = (value: any): number => {
 
 export const getDefaultSettingsFromEnv = (): TransportSettings | null => {
     const input: Partial<TransportSettings> = {
-        host: process.env.WEBINY_MAILER_HOST,
-        port: getPort(process.env.WEBINY_MAILER_PORT),
-        user: process.env.WEBINY_MAILER_USER,
-        password: process.env.WEBINY_MAILER_PASSWORD,
-        replyTo: process.env.WEBINY_MAILER_REPLY_TO,
-        from: process.env.WEBINY_MAILER_FROM
+        host: process.env.WBY_MAILER_HOST,
+        port: getPort(process.env.WBY_MAILER_PORT),
+        user: process.env.WBY_MAILER_USER,
+        password: process.env.WBY_MAILER_PASSWORD,
+        replyTo: process.env.WBY_MAILER_REPLY_TO,
+        from: process.env.WBY_MAILER_FROM
     };
 
     // No need to do the validation if there is not at least one variable defined

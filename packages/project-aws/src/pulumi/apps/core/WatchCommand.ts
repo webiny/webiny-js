@@ -70,7 +70,7 @@ export const WatchCommand = createAppModule({
                 }),
                 environment: {
                     variables: {
-                        WEBINY_WATCH_COMMAND_TOPIC: params.deploymentId.apply(deploymentId => {
+                        WBY_WATCH_COMMAND_TOPIC: params.deploymentId.apply(deploymentId => {
                             return `webiny-watch-${deploymentId}`;
                         })
                     }

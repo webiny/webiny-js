@@ -15,7 +15,7 @@ export const createMockContext = (
 ): ElasticsearchContext & Context => {
     const context = new BaseContext({
         plugins: params.plugins || new PluginsContainer(),
-        WEBINY_VERSION: "0.0.0"
+        WBY_VERSION: "0.0.0"
     });
 
     // @ts-expect-error

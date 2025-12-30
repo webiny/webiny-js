@@ -82,7 +82,7 @@ export const replaceLambdaFunctions = async ({
                     Environment: {
                         Variables: {
                             ...lambdaFnConfiguration.Environment?.Variables,
-                            WEBINY_WATCH: JSON.stringify({
+                            WBY_WATCH: JSON.stringify({
                                 enabled: true,
                                 localExecutionHandshakeTimeout,
                                 sessionId,

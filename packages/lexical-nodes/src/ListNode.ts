@@ -56,7 +56,7 @@ export class ListNode extends ElementNode implements TypographyStylesNode {
         super(key);
         this.__styleId = styleId ?? "";
         this.__className = className;
-        const _listType = TAG_TO_WEBINY_LIST_TYPE[listType] || listType;
+        const _listType = TAG_TO_WBY_LIST_TYPE[listType] || listType;
         this.__listType = _listType;
         this.__tag = _listType === "number" ? "ol" : "ul";
         this.__start = start || 1;
@@ -313,7 +313,7 @@ function convertListNode(domNode: Node): DOMConversionOutput {
     };
 }
 
-const TAG_TO_WEBINY_LIST_TYPE: Record<string, ListType> = {
+const TAG_TO_WBY_LIST_TYPE: Record<string, ListType> = {
     ol: "number",
     ul: "bullet"
 };

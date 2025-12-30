@@ -5,7 +5,7 @@ import type { ExecutableDefinitionNode, FieldNode } from "graphql/language/ast.j
 
 declare module "graphql" {
     interface DocumentNode {
-        __webiny__: Set<string>;
+        __WBY__: Set<string>;
     }
 }
 
@@ -83,18 +83,18 @@ export class AddQuerySelectionPlugin extends ApolloLinkPlugin {
     }
 
     private isProcessed(document: DocumentNode) {
-        if (!document.hasOwnProperty("__webiny__")) {
-            document.__webiny__ = new Set();
+        if (!document.hasOwnProperty("__WBY__")) {
+            document.__WBY__ = new Set();
         }
 
-        return document.__webiny__.has(this.cacheKey);
+        return document.__WBY__.has(this.cacheKey);
     }
 
     private markProcessed(document: DocumentNode) {
-        if (!document.hasOwnProperty("__webiny__")) {
-            document.__webiny__ = new Set();
+        if (!document.hasOwnProperty("__WBY__")) {
+            document.__WBY__ = new Set();
         }
 
-        document.__webiny__.add(this.cacheKey);
+        document.__WBY__.add(this.cacheKey);
     }
 }

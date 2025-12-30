@@ -101,7 +101,7 @@ export class DefaultLoggerService implements LoggerService.Interface {
 
     private getLogLevel() {
         const argv = this.getArgvService.execute();
-        return process.env.WEBINY_LOG_LEVEL || argv.logLevel || DEFAULT_LOG_LEVEL;
+        return process.env.WBY_LOG_LEVEL || argv.logLevel || DEFAULT_LOG_LEVEL;
     }
 }
 

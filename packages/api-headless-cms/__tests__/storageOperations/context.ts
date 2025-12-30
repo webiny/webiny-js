@@ -23,7 +23,7 @@ export const createStorageOperationsContext = async (
 
     const context = new Context({
         plugins,
-        WEBINY_VERSION: "0.0.0"
+        WBY_VERSION: "0.0.0"
     }) as unknown as CmsContext;
 
     for (const db of dbPluginsInitialized) {

@@ -7,7 +7,7 @@ export interface IWithEnvParams {
 export const withEnv = (params: IWithEnvParams) => {
     return createConfiguration(() => {
         return {
-            WEBINY_ENV: params.env
+            WBY_ENV: params.env
         };
     });
 };

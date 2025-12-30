@@ -11,7 +11,7 @@ export const withEnvVariant = (params: IWithEnvVariantParams) => {
             return;
         }
         return {
-            WEBINY_ENV_VARIANT: variant
+            WBY_ENV_VARIANT: variant
         };
     });
 };

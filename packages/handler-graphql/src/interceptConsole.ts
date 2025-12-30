@@ -28,12 +28,12 @@ interface InterceptConsoleCallable {
 
 export const interceptConsole = (callback: InterceptConsoleCallable) => {
     // @ts-expect-error
-    if (console["__WEBINY__"] === true) {
+    if (console["__WBY__"] === true) {
         restoreOriginalMethods();
     }
 
     // @ts-expect-error
-    console["__WEBINY__"] = true;
+    console["__WBY__"] = true;
 
     for (const method of consoleMethods) {
         // @ts-expect-error
