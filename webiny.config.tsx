@@ -20,6 +20,19 @@ export const Extensions = () => {
             <Infra.Aws.Tags tags={{ OWNER2: "me2", PROJECT2: "my-project-2" }} />
             <Infra.Aws.DefaultRegion name={"eu-central-1"} />
 
+            {/* Example: Environment-based conditional configuration */}
+            {/*<Infra.env.is env="prod">
+                <Infra.Aws.Tags tags={{ ENV: "production" }} />
+            </Infra.env.is>*/}
+
+            {/*<Infra.env.is env={["dev", "staging"]}>
+                <Infra.Aws.Tags tags={{ ENV: "non-production" }} />
+            </Infra.env.is>*/}
+
+            {/*<Infra.env.isProduction>
+                <Infra.Vpc enabled={true} />
+            </Infra.env.isProduction>*/}
+
             {/*<Infra.Admin.CustomDomains
                 domains={["my.domain.com"]}
                 sslMethod="sni-only"
