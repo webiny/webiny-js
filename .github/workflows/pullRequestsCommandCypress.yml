@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
       - name: Check for Command
         id: command
         uses: xt0rted/slash-command-action@v2
@@ -45,7 +45,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
       - uses: actions/checkout@v4
       - name: Get base branch
         id: base-branch
@@ -67,7 +67,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
       - name: Create global cache key
         id: global-cache-key
         run: >-
@@ -92,7 +92,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
       - uses: actions/checkout@v4
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
@@ -134,7 +134,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
       - uses: actions/checkout@v4
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
@@ -177,7 +177,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -297,7 +297,7 @@ jobs:
         os:
           - ubuntu-latest
         node:
-          - 22
+          - 24
         cypress-folder: >-
           ${{ fromJson(needs.e2e-wby-cms-ddb-constants.outputs.cypress-folders)
           }}
@@ -312,7 +312,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
       - uses: actions/checkout@v4
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
@@ -357,7 +357,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
       - uses: actions/checkout@v4
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
@@ -403,7 +403,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -523,7 +523,7 @@ jobs:
         os:
           - ubuntu-latest
         node:
-          - 22
+          - 24
         cypress-folder: >-
           ${{
           fromJson(needs.e2e-wby-cms-ddb-os-constants.outputs.cypress-folders)
@@ -542,7 +542,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
       - uses: actions/checkout@v4
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
