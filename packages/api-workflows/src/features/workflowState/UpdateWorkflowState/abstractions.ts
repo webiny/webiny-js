@@ -1,5 +1,5 @@
-import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
+import { createAbstraction } from "@webiny/feature/api";
 import type { IWorkflowStateRecord } from "~/domain/workflowState/abstractions.js";
 import {
     type WorkflowStateNotFoundError,

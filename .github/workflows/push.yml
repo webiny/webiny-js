@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
       - uses: actions/checkout@v4
       - name: Create global cache key
         id: global-cache-key
@@ -41,7 +41,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
       - uses: actions/checkout@v4
         with:
           path: v6
@@ -74,7 +74,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
       - uses: actions/checkout@v4
         with:
           path: v6
@@ -116,7 +116,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
       - uses: actions/checkout@v4
         with:
           path: v6
@@ -147,7 +147,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
       - uses: actions/checkout@v4
         with:
           path: v6
@@ -173,7 +173,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
       - uses: actions/checkout@v4
         with:
           path: v6
@@ -199,7 +199,7 @@ jobs:
         os:
           - ubuntu-latest
         node:
-          - 22
+          - 24
         testCommand: ${{ fromJSON(needs.vitest-constants.outputs.vitest-test-commands) }}
     runs-on: ${{ matrix.os }}
     env:
@@ -209,7 +209,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
       - uses: actions/checkout@v4
         with:
           path: v6
@@ -239,7 +239,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
       - uses: actions/checkout@v4
         with:
           path: v6
@@ -265,7 +265,7 @@ jobs:
         os:
           - ubuntu-latest
         node:
-          - 22
+          - 24
         testCommand: >-
           ${{ fromJSON(needs.vitest-ddb-constants.outputs.vitest-test-commands)
           }}
@@ -278,7 +278,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -315,7 +315,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
       - uses: actions/checkout@v4
         with:
           path: v6
@@ -341,7 +341,7 @@ jobs:
         os:
           - ubuntu-latest
         node:
-          - 22
+          - 24
         testCommand: >-
           ${{
           fromJSON(needs.vitest-ddbOs-constants.outputs.vitest-test-commands) }}
@@ -357,7 +357,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -395,7 +395,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
       - uses: actions/checkout@v4
       - name: List Cypress tests folders
         id: list-cypress-folders
@@ -431,7 +431,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -541,7 +541,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
       - uses: actions/checkout@v4
       - name: List Cypress tests folders
         id: list-cypress-folders
@@ -580,7 +580,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:

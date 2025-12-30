@@ -1,5 +1,5 @@
-import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
+import { createAbstraction } from "@webiny/feature/api";
 import {
     type WorkflowStateNotFoundError,
     WorkflowStatePersistenceError,
@@ -8,6 +8,10 @@ import {
 } from "~/domain/workflowState/errors.js";
 import type { WorkflowNotFoundError } from "~/domain/workflow/errors.js";
 import { WorkflowState } from "~/domain/workflowState/WorkflowState.js";
+
+export interface WorkflowStateApproveStepPayload {
+    state: WorkflowState;
+}
 
 export interface IApproveWorkflowStateStepUseCase {
     execute(id: string, comment?: string): Promise<Result<WorkflowState, UseCaseError>>;
