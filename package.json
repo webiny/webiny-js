@@ -155,6 +155,7 @@
     "prettier": "prettier \"**/**/*.{js,jsx,ts,tsx,json,scss,yml}\" --config .prettierrc.js",
     "prettier:check": "yarn prettier --check",
     "prettier:fix": "yarn prettier --write",
+    "format:oxfmt": "npx oxfmt@latest",
     "lint:fix": "yarn eslint:fix && yarn prettier:fix",
     "release": "tsx ./scripts/release/src/index.ts",
     "setup-project": "node scripts/setupProject",
