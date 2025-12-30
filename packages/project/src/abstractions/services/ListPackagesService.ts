@@ -2,9 +2,8 @@ import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { type GetApp } from "~/abstractions/index.js";
 
 export interface IListPackagesServiceParams {
-    app?: GetApp.AppName;
-    env?: string;
-    whitelist?: string[];
+    appName?: GetApp.AppName;
+    packageWhitelist?: string[];
 }
 
 export interface IListPackagesPackage {

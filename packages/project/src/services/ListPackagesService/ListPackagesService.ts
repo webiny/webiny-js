@@ -43,13 +43,13 @@ export class DefaultListPackagesService implements ListPackagesService.Interface
     ) {}
 
     async execute(params: ListPackagesService.Params) {
-        if (!params.app && !params.whitelist) {
-            throw new Error(`Either "whitelist" or "app" argument must be provided.`);
+        if (!params.appName && !params.packageWhitelist) {
+            throw new Error(`Either "packageWhitelist" or "appName" argument must be provided.`);
         }
 
-        const { whitelist = [], ...restParams } = params;
+        const { packageWhitelist = [], appName } = params;
         const project = this.getProjectService.execute();
-        const app = restParams.app ? this.getAppService.execute(restParams.app) : null;
+        const app = appName ? this.getAppService.execute(appName) : null;
 
         // List all packages in `packages` folder.
         let packagesFullList: ListPackagesService.Result = [];
@@ -104,8 +104,8 @@ export class DefaultListPackagesService implements ListPackagesService.Interface
 
         const packagesToWatch = [];
 
-        if (whitelist.length) {
-            const whitelistedPackages = whitelist
+        if (packageWhitelist.length) {
+            const whitelistedPackages = packageWhitelist
                 .map(whitelistedPkgName => {
                     return whitelistedPkgName.split(",");
                 })
