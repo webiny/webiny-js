@@ -124,9 +124,9 @@ import {
     AdminPulumi as AdminPulumiExt
 } from "./extensions/pulumi/index.js";
 
-import { ProjectDecorator as ProjectDecoratorExt } from "./extensions/projectDecorator.js";
+import { ProjectDecorator as ProjectDecoratorExt } from "./extensions/ProjectDecorator.js";
 import { ProjectImplementation as ProjectImplementationExt } from "./extensions/ProjectImplementation.js";
-import { EnvVar as EnvVarExt } from "./extensions/envVar.js";
+import { EnvVar as EnvVarExt } from "./extensions/EnvVar.js";
 
 export const createProjectSdkContainer = async (
     params: Partial<ProjectSdkParamsService.Params>

@@ -2,10 +2,10 @@ import { z } from "zod";
 import { defineExtension } from "../defineExtension/index.js";
 import { zodPathToFile } from "../defineExtension/zodTypes/zodPathToFile.js";
 
-export const projectImplementation = defineExtension({
+export const ProjectImplementation = defineExtension({
     type: "Project/Implementation",
     tags: { runtimeContext: "project" },
-    description: "Replace an existing implementation with a custom one.",
+    description: "Define a custom implementation or replace an existing one.",
     paramsSchema: ({ project }) => {
         return z.object({
             src: zodPathToFile(project),
