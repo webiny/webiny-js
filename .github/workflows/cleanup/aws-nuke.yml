@@ -38,7 +38,7 @@ accounts:
         - "GitHubActionsWebinyJs -> DeployWebinyProjectGroup3"
         - "GitHubActionsWebinyJs -> DeployWebinyProjectExtra"
         - "GitHubActionsWebinyJsAdminAccess -> AdministratorAccess"
-      IAMOpenIdConnectProvider:
+      IAMOpenIDConnectProvider:
         - property: Arn
           type: exact
           value: "arn:aws:iam::726952677045:oidc-provider/token.actions.githubusercontent.com"
