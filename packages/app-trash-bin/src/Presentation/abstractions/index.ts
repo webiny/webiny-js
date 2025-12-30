@@ -1,2 +1,2 @@
-export type * from "./ITrashBinControllers.js";
-export type * from "./ITrashBinPresenter.js";
+export type { ITrashBinControllers } from "./ITrashBinControllers.js";
+export type { ITrashBinPresenter, TrashBinPresenterViewModel } from "./ITrashBinPresenter.js";
