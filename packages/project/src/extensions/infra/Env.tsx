@@ -9,6 +9,17 @@ export interface EnvIsProps {
 }
 
 /**
+ * Helper function to check if a value matches any of the allowed values
+ */
+const matchesValue = (current: string | undefined, allowed: string | string[]): boolean => {
+    if (!current) {
+        return false;
+    }
+    const allowedArray = Array.isArray(allowed) ? allowed : [allowed];
+    return allowedArray.includes(current);
+};
+
+/**
  * Conditionally renders children based on the current environment, variant, or region.
  * Multiple conditions are AND-ed together.
  */
@@ -26,19 +37,13 @@ export const EnvIs: React.FC<EnvIsProps> = ({ env, variant, region, children }) 
     }
 
     // Check if variant matches
-    if (variant !== undefined) {
-        const variantArray = Array.isArray(variant) ? variant : [variant];
-        if (!currentVariant || !variantArray.includes(currentVariant)) {
-            return null;
-        }
+    if (variant !== undefined && !matchesValue(currentVariant, variant)) {
+        return null;
     }
 
     // Check if region matches
-    if (region !== undefined) {
-        const regionArray = Array.isArray(region) ? region : [region];
-        if (!currentRegion || !regionArray.includes(currentRegion)) {
-            return null;
-        }
+    if (region !== undefined && !matchesValue(currentRegion, region)) {
+        return null;
     }
 
     return <>{children}</>;
