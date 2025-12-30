@@ -1,8 +1,7 @@
 import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { type IAppModel } from "~/abstractions/models/IAppModel.js";
-import { type IBaseAppParams } from "~/abstractions/types.js";
 
-export interface IListAppLambdaFunctionsServiceParams extends Omit<IBaseAppParams, "app"> {
+export interface IListAppLambdaFunctionsServiceParams {
     whitelist?: string | string[];
 }
 
@@ -20,7 +19,7 @@ export interface IListAppLambdaFunctionsServiceResult {
 export interface IListAppLambdaFunctionsService {
     execute(
         app: IAppModel,
-        params: IListAppLambdaFunctionsServiceParams
+        params?: IListAppLambdaFunctionsServiceParams
     ): Promise<IListAppLambdaFunctionsServiceResult>;
 }
 

@@ -9,11 +9,7 @@ export const ApiOutput = createAppModule({
     name: "ApiOutput",
     config(app) {
         return app.addHandler(async () => {
-            const output = await getStackOutput<IDefaultStackOutput>({
-                app: "api",
-                env: app.params.run.env,
-                variant: app.params.run.variant
-            });
+            const output = await getStackOutput<IDefaultStackOutput>("api");
 
             if (!output) {
                 throw new Error("API application is not deployed.");

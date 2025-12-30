@@ -16,10 +16,10 @@ export class DefaultPulumiGetStackOutputService implements PulumiGetStackOutputS
         private loggerService: LoggerService.Interface
     ) {}
 
-    async execute(app: AppModel, params: PulumiGetStackOutputService.Params) {
+    async execute(app: AppModel, params?: PulumiGetStackOutputService.Params) {
         const pulumi = await this.getPulumiService.execute({ app });
 
-        await this.pulumiSelectStackService.execute(app, params);
+        await this.pulumiSelectStackService.execute(app);
 
         const stackOutputString = await pulumi.run({
             command: ["stack", "output"],
@@ -39,7 +39,7 @@ export class DefaultPulumiGetStackOutputService implements PulumiGetStackOutputS
                 return null;
             }
 
-            const map = params.map;
+            const map = params?.map;
             if (!map) {
                 return stackOutputJson;
             }

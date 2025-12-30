@@ -1,7 +1,7 @@
 import { createAbstraction } from "~/abstractions/createAbstraction.js";
 
 export interface IRunCliRunnerService {
-    execute(argv: string[]): any;
+    execute(): any;
 }
 
 export const RunCliRunnerService = createAbstraction<IRunCliRunnerService>("RunCliRunnerService");

@@ -12,7 +12,6 @@ import {
     type PulumiGetStackExportService,
     type UiService
 } from "~/abstractions/index.js";
-import { type IWatchWithAppParams } from "~/abstractions/features/Watch.js";
 import { type AppModel } from "~/models/index.js";
 
 const WATCH_MODE_NOTE_IN_DESCRIPTION = " (💡 local development mode, redeploy to remove)";
@@ -20,7 +19,6 @@ const DEFAULT_INCREASE_TIMEOUT = 120;
 
 export interface IReplaceLambdaFunctionsParams {
     app: AppModel;
-    watchParams: IWatchWithAppParams;
     iotEndpoint: string;
     iotEndpointTopic: string;
     sessionId: number;
@@ -35,7 +33,6 @@ export interface IReplaceLambdaFunctionsParams {
 }
 
 export const replaceLambdaFunctions = async ({
-    watchParams,
     app,
     iotEndpoint,
     iotEndpointTopic,
@@ -47,7 +44,7 @@ export const replaceLambdaFunctions = async ({
 }: IReplaceLambdaFunctionsParams) => {
     const { loggerService: logger, pulumiGetStackExportService: getAppStackExport } = dependencies;
 
-    const stackExport = await getAppStackExport.execute(app, watchParams);
+    const stackExport = await getAppStackExport.execute(app);
     if (!stackExport) {
         // If no stack export is found, return an empty array. This is a valid scenario.
         // For example, watching the Admin app locally, but not deploying it.

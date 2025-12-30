@@ -100,11 +100,7 @@ export class DeployCommand implements CliCommand.Interface<IDeployCommandParams>
                     }
                 } else {
                     const isCi = projectSdk.isCi();
-                    const coreStack = await projectSdk.getAppStackOutput({
-                        app: "core",
-                        env: params.env,
-                        variant: params.variant
-                    });
+                    const coreStack = await projectSdk.getAppStackOutput("core");
 
                     const isFirstDeployment = !isCi && !coreStack?.deploymentId;
                     if (isFirstDeployment) {
@@ -145,10 +141,7 @@ export class DeployCommand implements CliCommand.Interface<IDeployCommandParams>
                     ui.textBold("Project Details");
                     await printInfoForEnv.execute(params);
 
-                    const adminAppOutput = await projectSdk.getAppStackOutput({
-                        ...params,
-                        app: "admin"
-                    });
+                    const adminAppOutput = await projectSdk.getAppStackOutput("admin");
 
                     if (isFirstDeployment && adminAppOutput) {
                         ui.newLine();

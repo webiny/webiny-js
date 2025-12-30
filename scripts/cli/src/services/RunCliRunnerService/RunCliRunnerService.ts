@@ -6,9 +6,9 @@ import { Argv } from "yargs";
 export class DefaultRunCliRunnerService implements RunCliRunnerService.Interface {
     constructor(private readonly getCliRunnerService: GetCliRunnerService.Interface) {}
 
-    async execute(argv: string[]) {
+    async execute() {
         const cliRunner = (await this.getCliRunnerService.execute()) as Argv;
-        return cliRunner.parseAsync(hideBin(argv));
+        return cliRunner.parseAsync(hideBin(process.argv));
     }
 }
 

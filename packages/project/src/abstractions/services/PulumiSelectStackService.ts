@@ -1,11 +1,10 @@
 import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { type IAppModel } from "~/abstractions/models/IAppModel.js";
-import { type IBaseAppParams } from "~/abstractions/types.js";
 
-export type IDeployParams = IBaseAppParams;
+export type IDeployParams = Record<string, never>;
 
 export interface IPulumiSelectStackService {
-    execute(app: IAppModel, params: Omit<IDeployParams, "app">): Promise<void>;
+    execute(app: IAppModel, params?: IDeployParams): Promise<void>;
 }
 
 export const PulumiSelectStackService = createAbstraction<IPulumiSelectStackService>(

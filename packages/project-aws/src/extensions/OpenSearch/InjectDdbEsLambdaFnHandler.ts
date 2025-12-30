@@ -14,13 +14,10 @@ class InjectDdbEsLambdaFnHandlerDecorator implements BuildAppWorkspaceService.In
         private decoratee: BuildAppWorkspaceService.Interface
     ) {}
 
-    async execute(
-        params: BuildAppWorkspaceService.Params,
-        options: BuildAppWorkspaceService.Options
-    ) {
-        const result = await this.decoratee.execute(params, options);
+    async execute(appName: GetApp.AppName, options: BuildAppWorkspaceService.Options) {
+        const result = await this.decoratee.execute(appName, options);
 
-        if (params.app === "core") {
+        if (appName === "core") {
             const templatesFolderPath = getTemplatesFolderPath();
 
             const app = this.getApp.execute("core");

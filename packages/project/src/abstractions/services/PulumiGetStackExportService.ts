@@ -1,13 +1,9 @@
 import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { type IAppModel } from "~/abstractions/models/IAppModel.js";
-import { type IBaseAppParams } from "~/abstractions/types.js";
-
-export type IPulumiGetStackExportServiceParams = Omit<IBaseAppParams, "app">;
 
 export interface IPulumiGetStackExportService {
     execute<TOutput extends Record<string, any> = Record<string, any>>(
-        app: IAppModel,
-        params: IPulumiGetStackExportServiceParams
+        app: IAppModel
     ): Promise<TOutput | null>;
 }
 
@@ -17,5 +13,4 @@ export const PulumiGetStackExportService = createAbstraction<IPulumiGetStackExpo
 
 export namespace PulumiGetStackExportService {
     export type Interface = IPulumiGetStackExportService;
-    export type Params = IPulumiGetStackExportServiceParams;
 }
