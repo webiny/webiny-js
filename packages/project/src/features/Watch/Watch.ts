@@ -177,11 +177,8 @@ export class DefaultWatch implements Watch.Interface {
                     troubleshootingLink
                 );
             }
-            console.log("POINT 4");
-
             return { packagesWatcher, webinyConfigWatcher };
         }
-        console.log("POINT 5");
 
         ui.info(`Local AWS Lambda development session started.`);
         ui.warning(
