@@ -38,7 +38,8 @@ class AdminUsersInstallerImpl implements AppInstaller.Interface<AdminUserInstall
         const userWithDisplayName = {
             ...data,
             displayName: `${data.firstName} ${data.lastName}`,
-            groups: [group.id]
+            groups: [group.id],
+            teams: []
         };
 
         const createResult = await this.createUserUseCase.execute(userWithDisplayName);

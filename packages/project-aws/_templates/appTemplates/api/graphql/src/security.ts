@@ -3,7 +3,6 @@ import { authenticateUsingHttpHeader } from "@webiny/api-core/legacy/security/pl
 import apiKeyAuthentication from "@webiny/api-core/legacy/security/plugins/apiKeyAuthentication.js";
 import apiKeyAuthorization from "@webiny/api-core/legacy/security/plugins/apiKeyAuthorization.js";
 import tenantLinkAuthorization from "@webiny/api-core/legacy/security/plugins/tenantLinkAuthorization.js";
-import anonymousAuthorization from "@webiny/api-core/legacy/security/plugins/anonymousAuthorization.js";
 
 export default () => [
     /**
@@ -52,12 +51,5 @@ export default () => [
     /**
      * Authorization plugin to fetch permissions from the parent tenant.
      */
-    tenantLinkAuthorization({ identityType: "admin", parent: true }),
-
-    /**
-     * Authorization plugin to load permissions for anonymous requests.
-     * This allows you to control which API resources can be accessed publicly.
-     * The authorization is performed by loading permissions from the "anonymous" user group.
-     */
-    anonymousAuthorization()
+    tenantLinkAuthorization({ identityType: "admin", parent: true })
 ];

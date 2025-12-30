@@ -1,11 +1,11 @@
-import type { SecurityContext } from "~/types";
 import { ContextPlugin } from "@webiny/api";
+import type { ApiCoreContext } from "~/types/core.js";
 
 export const customGroupAuthorizer = () => {
-    return new ContextPlugin<SecurityContext>(({ security }) => {
+    return new ContextPlugin<ApiCoreContext>(({ security }) => {
         security.addAuthorizer(async () => {
             const identity = security.getIdentity();
-            if (identity && identity.groups.includes("full-access")) {
+            if (identity && identity.context.groups.includes("full-access")) {
                 return [
                     {
                         name: "*"

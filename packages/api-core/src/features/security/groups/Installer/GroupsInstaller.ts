@@ -32,17 +32,6 @@ class GroupsInstallerImpl implements AppInstaller.Interface {
 
             this.createdGroups.push(result.value);
         }
-
-        if (!groups.find(g => g.slug === "anonymous")) {
-            const result = await this.createGroupUseCase.execute({
-                name: "Anonymous",
-                description: "Permissions for anonymous users (public access).",
-                system: true,
-                slug: "anonymous",
-                permissions: []
-            });
-            this.createdGroups.push(result.value);
-        }
     }
 
     async uninstall(): Promise<void> {

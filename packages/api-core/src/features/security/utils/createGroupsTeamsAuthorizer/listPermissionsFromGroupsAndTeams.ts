@@ -46,8 +46,8 @@ export const listPermissionsFromGroupsAndTeams = async <
     const groupSlugs: GroupSlug[] = [];
     const teamSlugs: TeamSlug[] = [];
 
-    if (identity.groups) {
-        groupSlugs.push(...identity.groups);
+    if (identity.profile.groups) {
+        groupSlugs.push(...identity.profile.groups);
     }
 
     const filteredGroupSlugs = groupSlugs.filter(Boolean) as string[];
@@ -69,8 +69,8 @@ export const listPermissionsFromGroupsAndTeams = async <
     }
 
     if (wcp.canUseTeams()) {
-        if (identity.teams) {
-            teamSlugs.push(...identity.teams);
+        if (identity.profile.teams) {
+            teamSlugs.push(...identity.profile.teams);
         }
 
         const filteredTeamSlugs = teamSlugs.filter(Boolean) as string[];

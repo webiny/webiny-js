@@ -1,13 +1,13 @@
 import { ContextPlugin } from "@webiny/api";
 import type { Config as CognitoConfig, TokenData } from "@webiny/api-cognito-authenticator";
 import { createAuthenticator } from "@webiny/api-cognito-authenticator";
-import adminUsersGqlPlugins from "./graphql/user.gql.js";
-import { AdminUserInstallerFeature } from "~/features/AdminUserInstaller/feature.js";
-import { UpdateUserPermissions } from "~/features/UpdateUserPermissions/feature.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import type { SecurityIdentity, SecurityPermission } from "@webiny/api-core/types/security.js";
 import { createGroupsTeamsAuthorizerHandler } from "@webiny/api-core/features/security/utils/createGroupsTeamsAuthorizer.js";
 import { ExternalIdpUserSyncFeature } from "@webiny/api-core/features/ExternalIdpUserSync";
+import adminUsersGqlPlugins from "./graphql/user.gql.js";
+import { AdminUserInstallerFeature } from "~/features/AdminUserInstaller/feature.js";
+import { UpdateUserPermissions } from "~/features/UpdateUserPermissions/feature.js";
 
 interface GetIdentityParams<TContext, TToken, TIdentity> {
     identity: TIdentity;
@@ -72,9 +72,11 @@ export const createCognito = <
                     id: tokenObj["custom:id"] || tokenObj.sub,
                     type: config.identityType,
                     displayName: `${tokenObj.given_name} ${tokenObj.family_name}`,
-                    email: tokenObj.email,
-                    firstName: tokenObj.given_name,
-                    lastName: tokenObj.family_name
+                    profile: {
+                        email: tokenObj.email,
+                        firstName: tokenObj.given_name,
+                        lastName: tokenObj.family_name
+                    }
                 } as unknown as TIdentity;
 
                 if (getIdentity) {

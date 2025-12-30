@@ -61,7 +61,6 @@ export const createAuthentication = ({ oktaAuth, oktaSignIn, clientId, onError }
 
             try {
                 await authentication.login({
-                    identityType: "OktaIdentity",
                     idTokenProvider: () => oktaAuth.getIdToken(),
                     logoutCallback: logout
                 });

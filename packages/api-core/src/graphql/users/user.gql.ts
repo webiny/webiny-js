@@ -6,9 +6,6 @@ import {
     Response
 } from "@webiny/handler-graphql/responses.js";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin.js";
-import type { SecurityIdentity } from "~/types/security.js";
-import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
-import { GetTenantByIdUseCase } from "~/features/tenancy/GetTenantById/index.js";
 import type { ApiCoreContext } from "~/types/core.js";
 import { AdminUser } from "~/types/users.js";
 import { GetUserUseCase } from "~/features/users/GetUser/index.js";
@@ -69,16 +66,6 @@ export const createUsersGraphQL = (params: CreateUserGraphQlPluginsParams) => {
         }),
         new GraphQLSchemaPlugin<ApiCoreContext>({
             typeDefs: /* GraphQL */ `
-                type AdminUserIdentity implements SecurityIdentity {
-                    id: ID!
-                    type: String!
-                    displayName: String!
-                    permissions: [JSON!]!
-                    profile: AdminUser
-                    currentTenant: Tenant
-                    defaultTenant: Tenant
-                }
-
                 type AdminUser {
                     id: ID!
                     displayName: String!
@@ -116,52 +103,6 @@ export const createUsersGraphQL = (params: CreateUserGraphQlPluginsParams) => {
                 }
             `,
             resolvers: {
-                AdminUserIdentity: {
-                    async profile(identity, _, context) {
-                        // TODO: refactor this resolver into a proper class with dependencies.
-                        const tenantContext = context.container.resolve(TenantContext);
-                        const getTenantUseCase = context.container.resolve(GetTenantByIdUseCase);
-                        const getUserUseCase = context.container.resolve(GetUserUseCase);
-
-                        const adminUser = await context.security.withoutAuthorization(async () => {
-                            return getUserUseCase.execute({ id: identity.id });
-                        });
-
-                        if (adminUser.isOk()) {
-                            return adminUser.value;
-                        }
-
-                        // TODO: `parent` tenant resolution should be a decorator of the base resolver.
-                        // We must also consider an option where we have multi-tenancy, and current identity is
-                        // a "parent" tenant user, so naturally, his user profile lives in his original tenant.
-                        const tenant = context.tenancy.getCurrentTenant();
-
-                        const parentTenantUser = await context.security.withoutAuthorization(
-                            async () => {
-                                if (!tenant.parent) {
-                                    return null;
-                                }
-
-                                const parentTenantResult = await getTenantUseCase.execute(
-                                    tenant.parent
-                                );
-
-                                return tenantContext.withTenant(parentTenantResult.value, () => {
-                                    return getUserUseCase.execute({ id: identity.id });
-                                });
-                            }
-                        );
-
-                        if (parentTenantUser) {
-                            return parentTenantUser.value;
-                        }
-
-                        return {};
-                    },
-                    __isTypeOf(obj: SecurityIdentity) {
-                        return obj.type === "admin";
-                    }
-                },
                 AdminUser: {
                     groups(user: AdminUser, _, context) {
                         if (!user.groups) {

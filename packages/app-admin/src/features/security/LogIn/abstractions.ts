@@ -5,7 +5,6 @@ import type { Tenant } from "~/features/tenancy/abstractions.js";
 
 // Use Case
 export interface ILoginParams {
-    identityType: string;
     idTokenProvider: AuthenticationContext.IdTokenProvider;
     logoutCallback?: AuthenticationContext.LogoutCallback;
 }
@@ -32,7 +31,7 @@ export interface IIdentityDTO {
 }
 
 export interface ILogInRepository {
-    login(identityType: string): Promise<Identity>;
+    login(): Promise<Identity>;
 }
 
 export const LogInRepository = createAbstraction<ILogInRepository>("LogInRepository");
@@ -44,26 +43,13 @@ export namespace LogInRepository {
 
 // Gateway
 export interface ILogInGateway {
-    execute(identityType: string): Promise<IIdentityDTO>;
+    execute(): Promise<IIdentityDTO>;
 }
 
 export const LogInGateway = createAbstraction<ILogInGateway>("LogInGateway");
 
 export namespace LogInGateway {
     export type Interface = ILogInGateway;
-}
-
-// Login Field Selection
-export interface ILoginGraphQLFieldSelection {
-    getSelection(): string[];
-}
-
-export const LoginGraphQLFieldSelection = createAbstraction<ILoginGraphQLFieldSelection>(
-    "LoginGraphQLFieldSelection"
-);
-
-export namespace LoginGraphQLFieldSelection {
-    export type Interface = ILoginGraphQLFieldSelection;
 }
 
 // Identity Mapper

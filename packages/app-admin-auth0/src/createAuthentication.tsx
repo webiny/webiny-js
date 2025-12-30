@@ -105,7 +105,6 @@ export const createAuthentication = ({
 
             try {
                 await authentication.login({
-                    identityType: "Auth0Identity",
                     idTokenProvider: async () => {
                         const claims = await getIdTokenClaims();
                         return claims ? claims["__raw"] : undefined;

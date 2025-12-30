@@ -75,7 +75,6 @@ export const createAuthentication: AuthenticationFactory = ({
 
             try {
                 await authentication.login({
-                    identityType: "AdminUserIdentity",
                     idTokenProvider,
                     logoutCallback: logout
                 });

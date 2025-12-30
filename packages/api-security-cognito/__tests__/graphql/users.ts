@@ -26,17 +26,15 @@ export const LOGIN = /* GraphQL */ `
         security {
             login {
                 data  {
-                    ... on AdminUserIdentity {
-                        id
-                        displayName
-                        type
-                        permissions
-                        profile {
-                            email
-                            firstName
-                            lastName
-                            avatar
-                        }
+                    id
+                    displayName
+                    type
+                    permissions
+                    profile {
+                        email
+                        firstName
+                        lastName
+                        avatar
                     }
                 }
                 error ${ERROR_FIELD}

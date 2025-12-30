@@ -7,7 +7,21 @@ export interface IPermission {
     [key: string]: any;
 }
 
+export interface IRole {
+    id: string;
+    slug: string;
+    name: string;
+}
+
+export interface ITeam {
+    id: string;
+    slug: string;
+    name: string;
+}
+
 export interface IProfile {
+    roles: IRole[];
+    teams: ITeam[];
     email?: string;
     firstName?: string;
     lastName?: string;

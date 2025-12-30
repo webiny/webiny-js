@@ -1,8 +1,7 @@
-import React, { useEffect, useMemo } from "react";
-import { LoginGraphQLFieldSelection } from "@webiny/app-admin/features/security/LogIn/abstractions.js";
+import React, { useMemo } from "react";
 import type { CreateAuthenticationConfig } from "~/createAuthentication/index.js";
 import { createAuthentication } from "~/createAuthentication/index.js";
-import { AdminConfig, LoginScreenRenderer, useContainer } from "@webiny/app-admin";
+import { AdminConfig, LoginScreenRenderer } from "@webiny/app-admin";
 import { UserInfo } from "~/plugins/userMenu/UserInfo.js";
 import { SignOut } from "~/plugins/userMenu/SignOut.js";
 
@@ -32,7 +31,6 @@ export const CognitoLogin = ({ userMenuItems, config }: CognitoProps) => {
 
     return (
         <>
-            <AddLoginFieldSelection />
             <LoginScreenDecorator />
             {userMenuItems ? (
                 <AdminConfig>
@@ -46,27 +44,4 @@ export const CognitoLogin = ({ userMenuItems, config }: CognitoProps) => {
             ) : null}
         </>
     );
-};
-
-const AddLoginFieldSelection = () => {
-    const container = useContainer();
-
-    useEffect(() => {
-        container.registerInstance(LoginGraphQLFieldSelection, {
-            getSelection() {
-                return [
-                    `
-                        profile {
-                            email
-                            firstName
-                            lastName
-                            avatar
-                        }
-                    `
-                ];
-            }
-        });
-    }, []);
-
-    return null;
 };

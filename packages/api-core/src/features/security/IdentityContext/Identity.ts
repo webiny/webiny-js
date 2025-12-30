@@ -1,4 +1,5 @@
 import type { SecurityPermission } from "~/types/security.js";
+import type { GenericRecord } from "@webiny/utils";
 
 /**
  * Abstract base class for all identity types.
@@ -8,19 +9,17 @@ export abstract class Identity {
     readonly id: string;
     readonly displayName: string;
     readonly type: string;
-    readonly groups: string[];
-    readonly teams: string[];
     readonly permissions: SecurityPermission[];
-    readonly data: Record<string, any> = {};
+    readonly profile: IdentityProfile;
+    readonly context: GenericRecord<string>;
 
     constructor(identityData: IdentityData) {
         this.id = identityData.id;
         this.displayName = identityData.displayName;
         this.type = identityData.type;
-        this.groups = identityData.groups ?? [];
-        this.teams = identityData.teams ?? [];
         this.permissions = identityData.permissions ?? [];
-        this.data = identityData.data ?? {};
+        this.profile = new IdentityProfile(this.id, identityData.profile || {});
+        this.context = identityData.context ?? {};
     }
 
     /**
@@ -28,22 +27,64 @@ export abstract class Identity {
      */
     abstract isAnonymous(): boolean;
 
-    /**
-     * Get a specific property from custom data.
-     */
-    get<T = any>(key: string): T | undefined {
-        return this.data[key];
-    }
-
-    toJson(): Required<IdentityData> {
+    toJson(): Required<Omit<IdentityData, "context">> {
         return {
             id: this.id,
             displayName: this.displayName,
             type: this.type,
-            teams: this.teams,
-            groups: this.groups,
             permissions: this.permissions,
-            data: this.data
+            profile: this.profile.toJson()
+        };
+    }
+}
+
+interface IdentityProfileData {
+    groups?: string[];
+    teams?: string[];
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    external?: boolean;
+}
+
+class IdentityProfile {
+    constructor(
+        private id: string,
+        private data: Partial<IdentityProfileData>
+    ) {}
+
+    get groups(): string[] {
+        return this.data.groups ?? [];
+    }
+
+    get teams(): string[] {
+        return this.data.teams ?? [];
+    }
+
+    get firstName(): string {
+        return this.data.firstName ?? "";
+    }
+
+    get lastName(): string {
+        return this.data.lastName ?? "";
+    }
+
+    get email(): string {
+        return this.data.email ?? `id:${this.id}`;
+    }
+
+    get external(): boolean {
+        return this.data.external ?? false;
+    }
+
+    toJson() {
+        return {
+            groups: this.groups,
+            teams: this.teams,
+            firstName: this.firstName,
+            lastName: this.lastName,
+            email: this.email,
+            external: this.external
         };
     }
 }
@@ -52,8 +93,7 @@ export type IdentityData = {
     id: string;
     displayName: string;
     type: string;
-    groups?: string[];
-    teams?: string[];
     permissions?: SecurityPermission[];
-    data?: Record<string, any>;
+    profile?: IdentityProfileData;
+    context?: GenericRecord<string>;
 };

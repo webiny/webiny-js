@@ -26,41 +26,19 @@ class ExternalIdpUserSyncHandlerImpl implements AfterLoginHandler.Interface {
 
             // Prepare user data
             const id = identity.id;
-            const identityData = identity as any;
-            const email = identityData.email || `id:${id}`;
-            const displayName = identity.displayName || "Missing display name";
 
             const data = {
-                displayName,
-                email,
-                firstName: identityData.firstName || "",
-                lastName: identityData.lastName || "",
+                displayName: identity.displayName,
+                email: identity.profile.email,
+                firstName: identity.profile.firstName || "",
+                lastName: identity.profile.lastName || "",
                 groups: [] as string[],
                 teams: [] as string[],
                 external: true
             };
 
-            // Collect group slugs
-            let groupSlugs: string[] = [];
-            if (identityData.group) {
-                groupSlugs = [identityData.group];
-            }
-
-            if (Array.isArray(identityData.groups)) {
-                groupSlugs = groupSlugs.concat(identityData.groups);
-            }
-
-            // Collect team slugs
-            let teamSlugs: string[] = [];
-            if (identityData.team) {
-                teamSlugs = [identityData.team];
-            }
-
-            if (Array.isArray(identityData.teams)) {
-                teamSlugs = teamSlugs.concat(identityData.teams);
-            }
-
             // Resolve groups
+            const groupSlugs = identity.profile.groups;
             if (groupSlugs.length > 0) {
                 const listGroupsResult = await this.listGroupsUseCase.execute({
                     where: { slug_in: groupSlugs }
@@ -71,6 +49,7 @@ class ExternalIdpUserSyncHandlerImpl implements AfterLoginHandler.Interface {
             }
 
             // Resolve teams
+            const teamSlugs = identity.profile.teams;
             if (teamSlugs.length > 0) {
                 const listTeamsResult = await this.listTeamsUseCase.execute({
                     where: { slug_in: teamSlugs }
@@ -82,6 +61,7 @@ class ExternalIdpUserSyncHandlerImpl implements AfterLoginHandler.Interface {
 
             // Update or create user
             if (getUserResult.isOk()) {
+                console.log("update.data", data);
                 await this.updateUserUseCase.execute(identity.id, data);
                 return;
             }
