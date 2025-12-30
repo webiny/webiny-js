@@ -20,25 +20,44 @@ export const Webiny = () => {
     return (
         <>
             <Project />
-            <ProjectDecorator src={p("Webiny/BuildAppWorkspace.js")} />
+            <ProjectDecorator.ReactComponent src={p("Webiny/BuildAppWorkspace.js")} />
 
             {/* Stack Output Services */}
-            <ProjectImplementation src={p("Webiny/CoreStackOutputService.js")} singleton />
-            <ProjectImplementation src={p("Webiny/ApiStackOutputService.js")} singleton />
-            <ProjectImplementation src={p("Webiny/AdminStackOutputService.js")} singleton />
+            <ProjectImplementation.ReactComponent
+                src={p("Webiny/CoreStackOutputService.js")}
+                singleton
+            />
+            <ProjectImplementation.ReactComponent
+                src={p("Webiny/ApiStackOutputService.js")}
+                singleton
+            />
+            <ProjectImplementation.ReactComponent
+                src={p("Webiny/AdminStackOutputService.js")}
+                singleton
+            />
 
-            <AdminAfterDeploy src={p("Webiny/UploadAdminAppToS3.js")} />
-            <ApiAfterDeploy src={p("Webiny/ExecuteDataMigrations.js")} />
-            <ExtensionDefinitions src={p("Webiny/definitions.js")} />
+            <AdminAfterDeploy.ReactComponent src={p("Webiny/UploadAdminAppToS3.js")} />
+            <ApiAfterDeploy.ReactComponent src={p("Webiny/ExecuteDataMigrations.js")} />
+            <ExtensionDefinitions.ReactComponent src={p("Webiny/definitions.js")} />
 
             {/* Admin env vars */}
-            <AdminBeforeBuild src={p("Webiny/SetAdminEnvVars/SetAdminEnvVarsBeforeBuild.js")} />
-            <AdminBeforeWatch src={p("Webiny/SetAdminEnvVars/SetAdminEnvVarsBeforeWatch.js")} />
+            <AdminBeforeBuild.ReactComponent
+                src={p("Webiny/SetAdminEnvVars/SetAdminEnvVarsBeforeBuild.js")}
+            />
+            <AdminBeforeWatch.ReactComponent
+                src={p("Webiny/SetAdminEnvVars/SetAdminEnvVarsBeforeWatch.js")}
+            />
 
             {/* Blue-green */}
-            <CliCommand src={p("Webiny/BlueGreenDeployments/SetPrimaryVariantCliCommand.js")} />
-            <BeforeDeploy src={p("Webiny/BlueGreenDeployments/EnsureVariantBeforeDeploy.js")} />
-            <AfterDeploy src={p("Webiny/BlueGreenDeployments/PrintDeploymentInfoAfterDeploy.js")} />
+            <CliCommand.ReactComponent
+                src={p("Webiny/BlueGreenDeployments/SetPrimaryVariantCliCommand.js")}
+            />
+            <BeforeDeploy.ReactComponent
+                src={p("Webiny/BlueGreenDeployments/EnsureVariantBeforeDeploy.js")}
+            />
+            <AfterDeploy.ReactComponent
+                src={p("Webiny/BlueGreenDeployments/PrintDeploymentInfoAfterDeploy.js")}
+            />
         </>
     );
 };

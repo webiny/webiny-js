@@ -2,13 +2,14 @@ import { z } from "zod";
 import { defineExtension } from "../defineExtension/index.js";
 import { zodPathToFile } from "../defineExtension/zodTypes/zodPathToFile.js";
 
-export const projectDecorator = defineExtension({
-    type: "Project/Decorator",
+export const ProjectImplementation = defineExtension({
+    type: "Project/Implementation",
     tags: { runtimeContext: "project" },
-    description: "Decorate an existing implementation with additional functionality.",
+    description: "Define a custom implementation or replace an existing one.",
     paramsSchema: ({ project }) => {
         return z.object({
-            src: zodPathToFile(project)
+            src: zodPathToFile(project),
+            singleton: z.boolean().optional().default(true)
         });
     }
 });

@@ -1,22 +1,22 @@
-import { awsTags } from "./awsTags.js";
-import { elasticSearch } from "./elasticSearch.js";
-import { openSearch } from "./openSearch.js";
-import { vpc } from "./vpc.js";
-import { adminCustomDomains } from "./adminCustomDomains.js";
-import { blueGreenDeployments } from "~/pulumi/extensions/blueGreenDeployments.js";
+import { AwsTags } from "./AwsTags.js";
+import { ElasticSearch } from "./ElasticSearch.js";
+import { OpenSearch } from "./OpenSearch.js";
+import { Vpc } from "./Vpc.js";
+import { AdminCustomDomains } from "./AdminCustomDomains.js";
+import { BlueGreenDeployments } from "~/pulumi/extensions/BlueGreenDeployments.js";
 
-export const AwsTags = awsTags.ReactComponent;
-export const Vpc = vpc.ReactComponent;
-export const ElasticSearch = elasticSearch.ReactComponent;
-export const OpenSearch = openSearch.ReactComponent;
-export const AdminCustomDomains = adminCustomDomains.ReactComponent;
-export const BlueGreenDeployments = blueGreenDeployments.ReactComponent;
+export { AwsTags };
+export { Vpc };
+export { ElasticSearch };
+export { OpenSearch };
+export { AdminCustomDomains };
+export { BlueGreenDeployments };
 
 export const definitions = [
-    awsTags.definition,
-    vpc.definition,
-    elasticSearch.definition,
-    openSearch.definition,
-    adminCustomDomains.definition,
-    blueGreenDeployments.definition
+    AwsTags.definition,
+    Vpc.definition,
+    ElasticSearch.definition,
+    OpenSearch.definition,
+    AdminCustomDomains.definition,
+    BlueGreenDeployments.definition
 ];

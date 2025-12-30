@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { defineExtension } from "~/defineExtension/index.js";
 
-export const envVar = defineExtension({
+export const EnvVar = defineExtension({
     type: "Project/EnvVar",
     tags: { runtimeContext: "project" },
     description: "Set an environment variable in the project context.",

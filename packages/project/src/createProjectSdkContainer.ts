@@ -96,37 +96,37 @@ import {
 } from "~/abstractions/index.js";
 
 import {
-    adminAfterBuild as adminAfterBuildExt,
-    adminAfterDeploy as adminAfterDeployExt,
-    adminBeforeBuild as adminBeforeBuildExt,
-    adminBeforeDeploy as adminBeforeDeployExt,
-    adminBeforeWatch as adminBeforeWatchExt,
-    afterBuild as afterBuildExt,
-    beforeWatch as beforeWatchExt,
-    apiAfterBuild as apiAfterBuildExt,
-    apiAfterDeploy as apiAfterDeployExt,
-    apiBeforeBuild as apiBeforeBuildExt,
-    apiBeforeDeploy as apiBeforeDeployExt,
-    apiBeforeWatch as apiBeforeWatchExt,
-    beforeBuild as beforeBuildExt,
-    beforeDeploy as beforeDeployExt,
-    afterDeploy as afterDeployExt,
-    coreAfterBuild as coreAfterBuildExt,
-    coreAfterDeploy as coreAfterDeployExt,
-    coreBeforeBuild as coreBeforeBuildExt,
-    coreBeforeDeploy as coreBeforeDeployExt,
-    coreBeforeWatch as coreBeforeWatchExt
+    AdminAfterBuild as AdminAfterBuildExt,
+    AdminAfterDeploy as AdminAfterDeployExt,
+    AdminBeforeBuild as AdminBeforeBuildExt,
+    AdminBeforeDeploy as AdminBeforeDeployExt,
+    AdminBeforeWatch as AdminBeforeWatchExt,
+    AfterBuild as AfterBuildExt,
+    BeforeWatch as BeforeWatchExt,
+    ApiAfterBuild as ApiAfterBuildExt,
+    ApiAfterDeploy as ApiAfterDeployExt,
+    ApiBeforeBuild as ApiBeforeBuildExt,
+    ApiBeforeDeploy as ApiBeforeDeployExt,
+    ApiBeforeWatch as ApiBeforeWatchExt,
+    BeforeBuild as BeforeBuildExt,
+    BeforeDeploy as BeforeDeployExt,
+    AfterDeploy as AfterDeployExt,
+    CoreAfterBuild as CoreAfterBuildExt,
+    CoreAfterDeploy as CoreAfterDeployExt,
+    CoreBeforeBuild as CoreBeforeBuildExt,
+    CoreBeforeDeploy as CoreBeforeDeployExt,
+    CoreBeforeWatch as CoreBeforeWatchExt
 } from "./extensions/hooks/index.js";
 
 import {
-    corePulumi as corePulumiExt,
-    apiPulumi as apiPulumiExt,
-    adminPulumi as adminPulumiExt
+    CorePulumi as CorePulumiExt,
+    ApiPulumi as ApiPulumiExt,
+    AdminPulumi as AdminPulumiExt
 } from "./extensions/pulumi/index.js";
 
-import { projectDecorator as projectDecoratorExt } from "./extensions/projectDecorator.js";
-import { projectImplementation as projectImplementationExt } from "./extensions/projectImplementation.js";
-import { envVar as envVarExt } from "./extensions/envVar.js";
+import { ProjectDecorator as ProjectDecoratorExt } from "./extensions/ProjectDecorator.js";
+import { ProjectImplementation as ProjectImplementationExt } from "./extensions/ProjectImplementation.js";
+import { EnvVar as EnvVarExt } from "./extensions/EnvVar.js";
 
 export const createProjectSdkContainer = async (
     params: Partial<ProjectSdkParamsService.Params>
@@ -228,7 +228,7 @@ export const createProjectSdkContainer = async (
     await container.resolve(ValidateProjectConfig).execute(projectExtensions);
 
     // Apply environment variables from extensions.
-    const envVarExtensions = projectExtensions.extensionsByType(envVarExt);
+    const envVarExtensions = projectExtensions.extensionsByType(EnvVarExt);
     for (const envVarExtension of envVarExtensions) {
         if (!process.env[envVarExtension.params.varName]) {
             process.env[envVarExtension.params.varName] = envVarExtension.params.value;
@@ -252,27 +252,27 @@ export const createProjectSdkContainer = async (
 
     // Hooks.
     const hooksExtensions = [
-        ...projectExtensions.extensionsByType(adminAfterBuildExt),
-        ...projectExtensions.extensionsByType(beforeBuildExt),
-        ...projectExtensions.extensionsByType(beforeWatchExt),
-        ...projectExtensions.extensionsByType(afterBuildExt),
-        ...projectExtensions.extensionsByType(beforeDeployExt),
-        ...projectExtensions.extensionsByType(afterDeployExt),
-        ...projectExtensions.extensionsByType(adminBeforeBuildExt),
-        ...projectExtensions.extensionsByType(adminBeforeDeployExt),
-        ...projectExtensions.extensionsByType(adminBeforeWatchExt),
-        ...projectExtensions.extensionsByType(adminAfterBuildExt),
-        ...projectExtensions.extensionsByType(adminAfterDeployExt),
-        ...projectExtensions.extensionsByType(apiBeforeBuildExt),
-        ...projectExtensions.extensionsByType(apiBeforeDeployExt),
-        ...projectExtensions.extensionsByType(apiBeforeWatchExt),
-        ...projectExtensions.extensionsByType(apiAfterBuildExt),
-        ...projectExtensions.extensionsByType(apiAfterDeployExt),
-        ...projectExtensions.extensionsByType(coreBeforeBuildExt),
-        ...projectExtensions.extensionsByType(coreBeforeDeployExt),
-        ...projectExtensions.extensionsByType(coreBeforeWatchExt),
-        ...projectExtensions.extensionsByType(coreAfterBuildExt),
-        ...projectExtensions.extensionsByType(coreAfterDeployExt)
+        ...projectExtensions.extensionsByType(AdminAfterBuildExt),
+        ...projectExtensions.extensionsByType(BeforeBuildExt),
+        ...projectExtensions.extensionsByType(BeforeWatchExt),
+        ...projectExtensions.extensionsByType(AfterBuildExt),
+        ...projectExtensions.extensionsByType(BeforeDeployExt),
+        ...projectExtensions.extensionsByType(AfterDeployExt),
+        ...projectExtensions.extensionsByType(AdminBeforeBuildExt),
+        ...projectExtensions.extensionsByType(AdminBeforeDeployExt),
+        ...projectExtensions.extensionsByType(AdminBeforeWatchExt),
+        ...projectExtensions.extensionsByType(AdminAfterBuildExt),
+        ...projectExtensions.extensionsByType(AdminAfterDeployExt),
+        ...projectExtensions.extensionsByType(ApiBeforeBuildExt),
+        ...projectExtensions.extensionsByType(ApiBeforeDeployExt),
+        ...projectExtensions.extensionsByType(ApiBeforeWatchExt),
+        ...projectExtensions.extensionsByType(ApiAfterBuildExt),
+        ...projectExtensions.extensionsByType(ApiAfterDeployExt),
+        ...projectExtensions.extensionsByType(CoreBeforeBuildExt),
+        ...projectExtensions.extensionsByType(CoreBeforeDeployExt),
+        ...projectExtensions.extensionsByType(CoreBeforeWatchExt),
+        ...projectExtensions.extensionsByType(CoreAfterBuildExt),
+        ...projectExtensions.extensionsByType(CoreAfterDeployExt)
     ];
 
     for (const hookExtension of hooksExtensions) {
@@ -281,9 +281,9 @@ export const createProjectSdkContainer = async (
     }
 
     const pulumiExtensions = [
-        ...projectExtensions.extensionsByType(corePulumiExt),
-        ...projectExtensions.extensionsByType(apiPulumiExt),
-        ...projectExtensions.extensionsByType(adminPulumiExt)
+        ...projectExtensions.extensionsByType(CorePulumiExt),
+        ...projectExtensions.extensionsByType(ApiPulumiExt),
+        ...projectExtensions.extensionsByType(AdminPulumiExt)
     ];
 
     for (const pulumiExtension of pulumiExtensions) {
@@ -303,7 +303,7 @@ export const createProjectSdkContainer = async (
 
     // Register custom implementations first (they replace existing implementations)
     const projectImplementations = [
-        ...projectExtensions.extensionsByType(projectImplementationExt)
+        ...projectExtensions.extensionsByType(ProjectImplementationExt)
     ];
 
     for (const projectImplementation of projectImplementations) {
@@ -317,7 +317,7 @@ export const createProjectSdkContainer = async (
     }
 
     // Register decorators after implementations (they enhance existing implementations)
-    const projectDecorators = [...projectExtensions.extensionsByType(projectDecoratorExt)];
+    const projectDecorators = [...projectExtensions.extensionsByType(ProjectDecoratorExt)];
 
     for (const projectDecorator of projectDecorators) {
         const projectDecoratorImpl = await importFromPath(projectDecorator.params.src);

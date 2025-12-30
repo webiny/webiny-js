@@ -21,7 +21,7 @@ const deploymentSchema = z.object({
 // Tuple: exactly 2 items, both must match DeploymentSchema
 export const deploymentsSchema = z.tuple([deploymentSchema, deploymentSchema]);
 
-export const blueGreenDeployments = defineExtension({
+export const BlueGreenDeployments = defineExtension({
     type: "Infra/BlueGreenDeployments",
     tags: { runtimeContext: "project" },
     description: "Enable blue/green deployments for your Webiny project.",

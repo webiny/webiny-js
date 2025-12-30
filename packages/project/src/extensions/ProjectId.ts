@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { defineExtension } from "../defineExtension/index.js";
 
-export const projectId = defineExtension({
+export const ProjectId = defineExtension({
     type: "Project/ProjectId",
     tags: { runtimeContext: "project" },
     description: "An extension for defining the project ID.",
