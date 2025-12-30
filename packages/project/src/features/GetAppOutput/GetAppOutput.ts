@@ -17,11 +17,11 @@ export class DefaultGetAppOutput implements GetAppOutput.Interface {
     ) {}
 
     async execute(params: GetAppOutput.Params) {
-        await this.buildAppWorkspaceService.execute(params);
+        await this.buildAppWorkspaceService.execute(params.app);
 
         const app = this.getApp.execute(params.app);
 
-        await this.pulumiSelectStackService.execute(app, params);
+        await this.pulumiSelectStackService.execute(app);
 
         const pulumi = await this.getPulumiService.execute({ app });
 

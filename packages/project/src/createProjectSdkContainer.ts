@@ -124,8 +124,9 @@ import {
     AdminPulumi as AdminPulumiExt
 } from "./extensions/pulumi/index.js";
 
-import { ProjectDecorator as ProjectDecoratorExt } from "./extensions/ProjectDecorator.js";
-import { EnvVar as EnvVarExt } from "./extensions/EnvVar.js";
+import { ProjectDecorator as ProjectDecoratorExt } from "./extensions/projectDecorator.js";
+import { ProjectImplementation as ProjectImplementationExt } from "./extensions/ProjectImplementation.js";
+import { EnvVar as EnvVarExt } from "./extensions/envVar.js";
 
 export const createProjectSdkContainer = async (
     params: Partial<ProjectSdkParamsService.Params>
@@ -300,6 +301,22 @@ export const createProjectSdkContainer = async (
     container.registerDecorator(deployAppWithHooks);
     container.registerDecorator(watchWithHooks);
 
+    // Register custom implementations first (they replace existing implementations)
+    const projectImplementations = [
+        ...projectExtensions.extensionsByType(ProjectImplementationExt)
+    ];
+
+    for (const projectImplementation of projectImplementations) {
+        const projectImplementationImpl = await importFromPath(projectImplementation.params.src);
+        const binding = container.register(projectImplementationImpl);
+
+        // Apply singleton scope if specified (defaults to true)
+        if (projectImplementation.params.singleton) {
+            binding.inSingletonScope();
+        }
+    }
+
+    // Register decorators after implementations (they enhance existing implementations)
     const projectDecorators = [...projectExtensions.extensionsByType(ProjectDecoratorExt)];
 
     for (const projectDecorator of projectDecorators) {

@@ -11,7 +11,10 @@ export class DefaultProjectSdkParamsService implements ProjectSdkParamsService.I
             logging: {
                 streamToStdout: false,
                 level: "info"
-            }
+            },
+            env: "dev",
+            variant: undefined,
+            region: undefined
         };
     }
 
@@ -26,7 +29,10 @@ export class DefaultProjectSdkParamsService implements ProjectSdkParamsService.I
             logging: {
                 ...this.params.logging,
                 ...params.logging
-            }
+            },
+            env: params.env || "dev",
+            variant: params.variant,
+            region: params.region
         };
     }
 }

@@ -22,6 +22,11 @@ accounts:
         - "GitHubActionsWebinyJsAdminAccess"
       IAMUser:
         - "webiny-ci"
+      IAMUserPolicyAttachment:
+        - "webiny-ci -> AdministratorAccess"
+      IAMUserAccessKey:
+        - property: UserName
+          value: "webiny-ci"
       IAMPolicy:
         - "DeployWebinyProjectGroup1"
         - "DeployWebinyProjectGroup2"
@@ -33,10 +38,12 @@ accounts:
         - "GitHubActionsWebinyJs -> DeployWebinyProjectGroup3"
         - "GitHubActionsWebinyJs -> DeployWebinyProjectExtra"
         - "GitHubActionsWebinyJsAdminAccess -> AdministratorAccess"
-      IAMOpenIdConnectProvider:
-        - "arn:aws:iam::726952677045:oidc-provider/token.actions.githubusercontent.com"
+      IAMOpenIDConnectProvider:
+        - property: Arn
+          type: exact
+          value: "arn:aws:iam::726952677045:oidc-provider/token.actions.githubusercontent.com"
 
 resource-types:
   excludes:
     - Budget
-    - OpenSearchDomain
+    - ESDomain  # OpenSearch Domain

@@ -8,13 +8,9 @@ import {
     NonInteractiveCliStatusReporter,
     VoidStatusReporter
 } from "@webiny/data-migration/cli/index.js";
-import {
-    ApiAfterDeploy,
-    GetAppStackOutput,
-    GetProject,
-    UiService
-} from "@webiny/project/abstractions/index.js";
+import { ApiAfterDeploy, GetProject, UiService } from "@webiny/project/abstractions/index.js";
 import { IDefaultStackOutput } from "~/pulumi/types.js";
+import { ApiStackOutputService } from "~/abstractions/index.js";
 
 /**
  * On every deployment of the API project application, this plugin invokes the data migrations Lambda.
@@ -22,7 +18,7 @@ import { IDefaultStackOutput } from "~/pulumi/types.js";
 class ExecuteDataMigrationsImpl implements ApiAfterDeploy.Interface {
     constructor(
         private ui: UiService.Interface,
-        private getAppStackOutput: GetAppStackOutput.Interface,
+        private apiStackOutputService: ApiStackOutputService.Interface,
         private getProject: GetProject.Interface
     ) {}
 
@@ -32,7 +28,7 @@ class ExecuteDataMigrationsImpl implements ApiAfterDeploy.Interface {
             return;
         }
 
-        const apiOutput = await this.getAppStackOutput.execute<IDefaultStackOutput>(params);
+        const apiOutput = await this.apiStackOutputService.execute<IDefaultStackOutput>();
         if (!apiOutput) {
             // This should never happen, but just in case...
             throw new Error(
@@ -99,5 +95,5 @@ class ExecuteDataMigrationsImpl implements ApiAfterDeploy.Interface {
 
 export const ExecuteDataMigrations = ApiAfterDeploy.createImplementation({
     implementation: ExecuteDataMigrationsImpl,
-    dependencies: [UiService, GetAppStackOutput, GetProject]
+    dependencies: [UiService, ApiStackOutputService, GetProject]
 });

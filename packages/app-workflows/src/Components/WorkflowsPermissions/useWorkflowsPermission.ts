@@ -2,7 +2,7 @@ import {
     type IWorkflowsSecurityPermission,
     WorkflowsSecurityPermissionAccessLevel
 } from "~/types.js";
-import { useSecurity } from "@webiny/app-security";
+import { useSecurity } from "@webiny/app-admin";
 import { WORKFLOWS_PERMISSION } from "~/Components/WorkflowsPermissions/constants.js";
 import type { GenericRecord } from "@webiny/app/types.js";
 

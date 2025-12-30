@@ -9,6 +9,7 @@ import type { Config } from "./createAuthentication.js";
 import { createAuthentication } from "./createAuthentication.js";
 import { UserMenuModule } from "~/modules/userMenu/index.js";
 import { NotAuthorizedError } from "./components/index.js";
+import ReloadIfInactive from "~/components/ReloadIfInactive.js";
 
 interface AppClientIdLoaderProps {
     oktaFactory: OktaFactory;
@@ -32,7 +33,7 @@ const AppClientIdLoader = ({
     children
 }: AppClientIdLoaderProps) => {
     const [loaded, setState] = useState<boolean>(false);
-    const authRef = useRef<React.ComponentType | null>(null);
+    const authRef = useRef<React.ComponentType<any> | null>(null);
     const client = useApolloClient();
     const { tenant, setTenant } = useTenancy();
 
@@ -130,6 +131,7 @@ export interface OktaProps {
 export const Okta = (props: OktaProps) => {
     return (
         <Fragment>
+            <ReloadIfInactive timeoutMinutes={60} />
             <Compose component={LoginScreenRenderer} with={createLoginScreen(props)} />
             <UserMenuModule />
         </Fragment>

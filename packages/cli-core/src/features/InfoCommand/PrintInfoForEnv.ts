@@ -26,17 +26,9 @@ export class PrintInfoForEnv {
 
         const { env, variant } = params;
 
-        const api = await projectSdk.getAppStackOutput({
-            app: "api",
-            env,
-            variant
-        });
+        const api = await projectSdk.getAppStackOutput("api");
 
-        const admin = await projectSdk.getAppStackOutput({
-            app: "admin",
-            env,
-            variant
-        });
+        const admin = await projectSdk.getAppStackOutput("admin");
 
         const outputs = [api, admin];
 

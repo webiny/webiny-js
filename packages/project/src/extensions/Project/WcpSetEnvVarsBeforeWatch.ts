@@ -2,7 +2,8 @@ import {
     BeforeWatch,
     GetProjectIdService,
     WcpService,
-    LoggerService
+    LoggerService,
+    ProjectSdkParamsService
 } from "~/abstractions/index.js";
 import { WcpSetEnvVars } from "./WcpSetEnvVars.js";
 
@@ -10,7 +11,8 @@ class WcpSetEnvVarsBeforeWatchImpl implements BeforeWatch.Interface {
     constructor(
         private getProjectIdService: GetProjectIdService.Interface,
         private wcpService: WcpService.Interface,
-        private loggerService: LoggerService.Interface
+        private loggerService: LoggerService.Interface,
+        private projectSdkParamsService: ProjectSdkParamsService.Interface
     ) {}
 
     async execute(params: BeforeWatch.Params) {
@@ -18,15 +20,16 @@ class WcpSetEnvVarsBeforeWatchImpl implements BeforeWatch.Interface {
             const wcpSetEnvVars = new WcpSetEnvVars({
                 getProjectIdService: this.getProjectIdService,
                 wcpService: this.wcpService,
-                loggerService: this.loggerService
+                loggerService: this.loggerService,
+                projectSdkParamsService: this.projectSdkParamsService
             });
 
-            await wcpSetEnvVars.execute(params);
+            await wcpSetEnvVars.execute();
         }
     }
 }
 
 export const WcpSetEnvVarsBeforeWatch = BeforeWatch.createImplementation({
     implementation: WcpSetEnvVarsBeforeWatchImpl,
-    dependencies: [GetProjectIdService, WcpService, LoggerService]
+    dependencies: [GetProjectIdService, WcpService, LoggerService, ProjectSdkParamsService]
 });

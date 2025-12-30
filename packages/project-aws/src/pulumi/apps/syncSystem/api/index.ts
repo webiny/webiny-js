@@ -10,22 +10,19 @@ import { attachCognitoPermissions } from "~/pulumi/apps/syncSystem/api/attachCog
 
 export interface IAttachSyncSystemParams {
     app: PulumiApp & WithServiceManifest;
-    env: string;
     core: CoreOutput;
 }
 
 export const attachSyncSystem = async (params: IAttachSyncSystemParams) => {
-    const { app, core, env } = params;
+    const { app, core } = params;
 
-    const syncSystem = await getSyncSystemOutput({
-        env
-    });
+    const syncSystem = await getSyncSystemOutput();
     /**
      * Possibly no sync system deployed - no need to do anything at that point.
      * At this point, if sync system was deployed, and it is not anymore, all resources after this check will disappear.
      */
     if (!syncSystem) {
-        console.log(`No Sync System deployed in env "${env}". Skipping...`);
+        console.log(`No Sync System deployed. Skipping...`);
         return;
     }
     /**

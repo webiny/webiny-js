@@ -30,11 +30,9 @@ export class DefaultListAppLambdaFunctionsService
         private loggerService: LoggerService.Interface
     ) {}
 
-    async execute(app: AppModel, params: ListAppLambdaFunctionsService.Params) {
-        const stackExport = await this.pulumiGetStackExportService.execute<ExpectedStackExport>(
-            app,
-            params
-        );
+    async execute(app: AppModel, params?: ListAppLambdaFunctionsService.Params) {
+        const stackExport =
+            await this.pulumiGetStackExportService.execute<ExpectedStackExport>(app);
 
         if (!stackExport) {
             // If no stack export is found, return an empty array. This is a valid scenario.
@@ -82,7 +80,7 @@ export class DefaultListAppLambdaFunctionsService
                 };
             });
 
-        if (params.whitelist?.length) {
+        if (params?.whitelist?.length) {
             const functionNamesToMatch = Array.isArray(params.whitelist)
                 ? params.whitelist
                 : [params.whitelist];

@@ -10,8 +10,8 @@ import {
     type AaclPermission
 } from "@webiny/app-admin";
 import { Form } from "@webiny/form";
-import type { SecurityPermission } from "@webiny/app-security/types.js";
-import { useSecurity } from "@webiny/app-security";
+import { useSecurity } from "@webiny/app-admin";
+import type { Identity } from "@webiny/app-admin/domain/Identity.js";
 
 const t = i18n.ns("app-security-admin-users/plugins/permissionRenderer");
 
@@ -23,12 +23,12 @@ const NO_ACCESS = "no";
 const CUSTOM_ACCESS = "custom";
 
 export interface AdminUsersPermissionsProps {
-    value: SecurityPermission[];
-    onChange: (value: SecurityPermission[]) => void;
+    value: Identity.Permission[];
+    onChange: (value: Identity.Permission[]) => void;
 }
 
 interface OnFormChangeCallable {
-    (data: SecurityPermission): void;
+    (data: Identity.Permission): void;
 }
 
 export const AdminUsersPermissions = ({ value, onChange }: AdminUsersPermissionsProps) => {
@@ -41,7 +41,7 @@ export const AdminUsersPermissions = ({ value, onChange }: AdminUsersPermissions
 
     const onFormChange = useCallback<OnFormChangeCallable>(
         data => {
-            let newValue: SecurityPermission[] = [];
+            let newValue: Identity.Permission[] = [];
             if (Array.isArray(value)) {
                 // Let's just filter out the `security*` permission objects, it's easier to build new ones from scratch.
                 newValue = value.filter(item => !item.name.startsWith(ADMIN_USERS));

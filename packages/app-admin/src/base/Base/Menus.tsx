@@ -1,5 +1,5 @@
 import React from "react";
-import { HasPermission } from "@webiny/app-security";
+import { HasPermission } from "@webiny/app-admin";
 import { WebinyVersion } from "./Menus/WebinyVersion.js";
 import { SupportMenuItems } from "./Menus/SupportMenuItems.js";
 import { AdminConfig } from "~/config/AdminConfig.js";

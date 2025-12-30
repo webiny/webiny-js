@@ -1,14 +1,16 @@
 import { decrypt, encrypt } from "@webiny/wcp";
-import { GetProjectIdService, LoggerService, WcpService } from "~/abstractions/index.js";
+import {
+    GetProjectIdService,
+    LoggerService,
+    ProjectSdkParamsService,
+    WcpService
+} from "~/abstractions/index.js";
 
 interface IWcpSetEnvVarsDi {
     getProjectIdService: GetProjectIdService.Interface;
     wcpService: WcpService.Interface;
     loggerService: LoggerService.Interface;
-}
-
-interface IWcpSetEnvVarsParams {
-    env: string;
+    projectSdkParamsService: ProjectSdkParamsService.Interface;
 }
 
 export class WcpSetEnvVars {
@@ -18,7 +20,7 @@ export class WcpSetEnvVars {
         this.di = di;
     }
 
-    async execute(params: IWcpSetEnvVarsParams) {
+    async execute() {
         /**
          * The two environment variables we set via these hooks are the following:
          * - WCP_PROJECT_ENVIRONMENT - contains encrypted data about the deployed project environment
@@ -37,7 +39,7 @@ export class WcpSetEnvVars {
          *    As in 2), we also assign the `WCP_PROJECT_ENVIRONMENT` metadata env var.
          */
 
-        const { getProjectIdService, wcpService, loggerService } = this.di;
+        const { getProjectIdService, wcpService, loggerService, projectSdkParamsService } = this.di;
 
         const wcpProjectId = await getProjectIdService.execute();
 
@@ -64,6 +66,9 @@ export class WcpSetEnvVars {
         const [orgId, projectId] = wcpProjectId.split("/");
 
         const apiKey = process.env.WCP_PROJECT_ENVIRONMENT_API_KEY;
+
+        const sdkParams = projectSdkParamsService.get();
+        const env = sdkParams.env;
 
         let projectEnvironment;
         if (apiKey) {
@@ -101,14 +106,14 @@ export class WcpSetEnvVars {
             }
 
             loggerService.debug(
-                `Retrieving the "${params.env}" project environment for the "${project.name}" project.`
+                `Retrieving the "${env}" project environment for the "${project.name}" project.`
             );
 
             projectEnvironment = await wcpService.getProjectEnvironment({
                 orgId,
                 projectId,
                 userId: user.id,
-                environmentId: params.env
+                environmentId: env
             });
         }
 

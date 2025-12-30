@@ -1,5 +1,5 @@
 import React from "react";
-import { useSecurity } from "@webiny/app-security";
+import { useIdentity } from "@webiny/app-admin";
 import { useTenancy } from "@webiny/app-admin";
 import { useIsDefaultTenant } from "./useIsDefaultTenant.js";
 import { ReactComponent as AccountIcon } from "@webiny/icons/account_circle.svg";
@@ -12,16 +12,12 @@ interface AccountDetailsProps {
 }
 
 export const AccountDetails = (props: AccountDetailsProps) => {
-    const security = useSecurity();
+    const { identity } = useIdentity();
     const tenancy = useTenancy();
     const isDefaultTenant = useIsDefaultTenant();
 
-    if (!security || !security.identity) {
-        return null;
-    }
-
     // This is only applicable in multi-tenant environments
-    const { defaultTenant } = security.identity;
+    const { defaultTenant } = identity;
 
     if (tenancy && !isDefaultTenant) {
         return (
@@ -33,7 +29,7 @@ export const AccountDetails = (props: AccountDetailsProps) => {
         );
     }
 
-    if (!security.identity.profile) {
+    if (!identity.profile) {
         return null;
     }
 

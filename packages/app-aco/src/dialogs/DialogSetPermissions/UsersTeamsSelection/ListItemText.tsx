@@ -1,6 +1,6 @@
 import React from "react";
 import { Text } from "@webiny/admin-ui";
-import { useSecurity } from "@webiny/app-security";
+import { useSecurity } from "@webiny/app-admin";
 import type { FolderLevelPermissionsTarget } from "~/types.js";
 
 interface ListItemTextProps {

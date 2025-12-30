@@ -7,7 +7,6 @@
     { "path": "../app-admin" },
     { "path": "../app-headless-cms" },
     { "path": "../app-headless-cms-common" },
-    { "path": "../app-security" },
     { "path": "../app-workflows" }
   ],
   "compilerOptions": {
@@ -33,8 +32,6 @@
       "@webiny/app-headless-cms": ["../app-headless-cms/src"],
       "@webiny/app-headless-cms-common/*": ["../app-headless-cms-common/src/*"],
       "@webiny/app-headless-cms-common": ["../app-headless-cms-common/src"],
-      "@webiny/app-security/*": ["../app-security/src/*"],
-      "@webiny/app-security": ["../app-security/src"],
       "@webiny/app-workflows/*": ["../app-workflows/src/*"],
       "@webiny/app-workflows": ["../app-workflows/src"]
     },

@@ -4,7 +4,7 @@ import orderBy from "lodash/orderBy.js";
 import { Avatar, Button, Grid, Select, Tooltip } from "@webiny/admin-ui";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { useSecurity } from "@webiny/app-security";
+import { useSecurity } from "@webiny/app-admin";
 import {
     DataList,
     ScrollList,
@@ -184,7 +184,7 @@ const UsersDataList = () => {
                                 <Avatar
                                     image={
                                         <Avatar.Image
-                                            src={item.avatar ? item.avatar.src : item.gravatar}
+                                            src={item.avatar ? item.avatar.src : undefined}
                                             alt={item.firstName}
                                         />
                                     }

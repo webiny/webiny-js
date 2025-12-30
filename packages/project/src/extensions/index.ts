@@ -1,5 +1,6 @@
 import { ExtensionDefinitions } from "./ExtensionDefinitions.js";
 import { ProjectDecorator } from "./ProjectDecorator.js";
+import { ProjectImplementation } from "./ProjectImplementation.js";
 import { ProjectId } from "./ProjectId.js";
 import { Telemetry } from "./Telemetry.js";
 import { EnvVar } from "./EnvVar.js";
@@ -37,10 +38,11 @@ import {
     PulumiResourceNamePrefix
 } from "./pulumi/index.js";
 
-// Exports (Definition/Component pairs).
+// Exports.
 export { Telemetry };
 export { ProjectId };
 export { ProjectDecorator };
+export { ProjectImplementation };
 export { ExtensionDefinitions };
 export { EnvVar };
 
@@ -78,6 +80,7 @@ export const definitions = [
     Telemetry.definition,
     ProjectId.definition,
     ProjectDecorator.definition,
+    ProjectImplementation.definition,
     ExtensionDefinitions.definition,
     EnvVar.definition,
 

@@ -111,7 +111,6 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
     // Extensions.
     const ui = container.resolve(UiService);
 
-    // TODO: not sure how I feel about this. We should probably revisit this.
     try {
         // Immediately set CLI instance params via the `CliParamsService`.
         container.resolve(CliParamsService).set(params);

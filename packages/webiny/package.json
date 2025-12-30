@@ -28,7 +28,6 @@
   },
   "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f",
   "exports": {
-    "./configs/tsconfig.json": "./configs/tsconfig.json",
     "./api/features/eventPublisher": "./api/features/eventPublisher.js",
     "./api/security/features/IdentityContext": "./api/security/features/IdentityContext.js",
     "./api/wcp/WcpContext": "./api/wcp/WcpContext.js",
@@ -99,6 +98,9 @@
     "./infra/features/AdminPulumi": "./infra/features/AdminPulumi.js",
     "./infra/features/ApiPulumi": "./infra/features/ApiPulumi.js",
     "./infra/features/CorePulumi": "./infra/features/CorePulumi.js",
-    "./extensions": "./extensions.js"
+    "./extensions": "./extensions.js",
+    "./infra/features/AdminStackOutputService": "./infra/features/AdminStackOutputService.js",
+    "./infra/features/CoreStackOutputService": "./infra/features/CoreStackOutputService.js",
+    "./infra/features/ApiStackOutputService": "./infra/features/ApiStackOutputService.js"
   }
 }

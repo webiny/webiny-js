@@ -1,12 +1,15 @@
 import React from "react";
 import {
     AdminAfterDeploy,
+    AdminBeforeBuild,
+    AdminBeforeWatch,
     AfterDeploy,
     ApiAfterDeploy,
     BeforeDeploy,
     ExtensionDefinitions,
     Project,
-    ProjectDecorator
+    ProjectDecorator,
+    ProjectImplementation
 } from "@webiny/project/extensions/index.js";
 import { createPathResolver } from "@webiny/project";
 import { CliCommand } from "@webiny/cli-core/extensions/index.js";
@@ -18,9 +21,32 @@ export const Webiny = () => {
         <>
             <Project />
             <ProjectDecorator.ReactComponent src={p("Webiny/BuildAppWorkspace.js")} />
+
+            {/* Stack Output Services */}
+            <ProjectImplementation.ReactComponent
+                src={p("Webiny/CoreStackOutputService.js")}
+                singleton
+            />
+            <ProjectImplementation.ReactComponent
+                src={p("Webiny/ApiStackOutputService.js")}
+                singleton
+            />
+            <ProjectImplementation.ReactComponent
+                src={p("Webiny/AdminStackOutputService.js")}
+                singleton
+            />
+
             <AdminAfterDeploy.ReactComponent src={p("Webiny/UploadAdminAppToS3.js")} />
             <ApiAfterDeploy.ReactComponent src={p("Webiny/ExecuteDataMigrations.js")} />
             <ExtensionDefinitions.ReactComponent src={p("Webiny/definitions.js")} />
+
+            {/* Admin env vars */}
+            <AdminBeforeBuild.ReactComponent
+                src={p("Webiny/SetAdminEnvVars/SetAdminEnvVarsBeforeBuild.js")}
+            />
+            <AdminBeforeWatch.ReactComponent
+                src={p("Webiny/SetAdminEnvVars/SetAdminEnvVarsBeforeWatch.js")}
+            />
 
             {/* Blue-green */}
             <CliCommand.ReactComponent

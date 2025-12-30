@@ -5,7 +5,6 @@ const DATA_FIELD = /* GraphQL */ `
         firstName
         lastName
         avatar
-        gravatar
         groups {
             id
             slug
@@ -37,7 +36,6 @@ export const LOGIN = /* GraphQL */ `
                             firstName
                             lastName
                             avatar
-                            gravatar
                         }
                     }
                 }

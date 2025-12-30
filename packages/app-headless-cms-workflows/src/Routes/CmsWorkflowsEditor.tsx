@@ -6,7 +6,7 @@ import {
     CmsWorkflowsEditorMenu
 } from "~/Components/CmsWorkflows/CmsWorkflowsEditorView.js";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { SecureRoute } from "@webiny/app-security/components/index.js";
+import { SecureRoute } from "@webiny/app-admin";
 import { OverlayLoader } from "@webiny/admin-ui";
 import { AdminConfig, AdminLayout } from "@webiny/app-admin";
 import { useCanUseWorkflows } from "@webiny/app-workflows";

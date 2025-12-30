@@ -1,7 +1,5 @@
 import { createAbstraction } from "~/abstractions/createAbstraction.js";
-import { type IBaseAppParams } from "~/abstractions/types.js";
-
-export type IGetAppStackOutputParams = IBaseAppParams;
+import { type AppName } from "~/abstractions/types.js";
 
 export interface IStackOutput {
     /**
@@ -22,7 +20,7 @@ export type IGetAppStackOutputResult<TOutput extends IStackOutput = IStackOutput
 
 export interface IGetAppStackOutput {
     execute<TOutput extends IStackOutput = IStackOutput>(
-        params: IGetAppStackOutputParams
+        appName: AppName
     ): Promise<IGetAppStackOutputResult<TOutput>>;
 }
 
@@ -30,8 +28,6 @@ export const GetAppStackOutput = createAbstraction<IGetAppStackOutput>("GetAppSt
 
 export namespace GetAppStackOutput {
     export type Interface = IGetAppStackOutput;
-
-    export type Params = IGetAppStackOutputParams;
     export type Result = IGetAppStackOutputResult;
     export type StackOutput = IStackOutput;
 }

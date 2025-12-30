@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import { CloneContentModelDialog } from "./CloneContentModelDialog.js";
 import NewContentModelDialog from "./NewContentModelDialog.js";
 import ContentModelsDataList from "./ContentModelsDataList.js";
-import { useSecurity } from "@webiny/app-security";
+import { useSecurity } from "@webiny/app-admin";
 import type { CmsModel, CmsSecurityPermission } from "~/types.js";
 import { ImportContentModelsDialog } from "./importing/ImportContentModelsDialog.js";
 import { Grid } from "@webiny/admin-ui";

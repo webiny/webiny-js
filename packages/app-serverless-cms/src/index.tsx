@@ -45,8 +45,6 @@ export type {
     LoginScreenProps
 } from "@webiny/app-admin";
 
-export { HasPermission, useSecurity, usePermission } from "@webiny/app-security";
-
 export { useTenancy } from "@webiny/app-admin";
 export type { Tenant } from "@webiny/app-admin";
 

@@ -1,18 +1,14 @@
-import {
-    AdminAfterDeploy,
-    GetApp,
-    GetAppStackOutput,
-    UiService
-} from "@webiny/project/abstractions/index.js";
+import { AdminAfterDeploy, GetApp, UiService } from "@webiny/project/abstractions/index.js";
 import fs from "fs";
 import { uploadFolderToS3 } from "~/pulumi/index.js";
 import { type IDefaultStackOutput } from "~/pulumi/types.js";
+import { AdminStackOutputService } from "~/abstractions/index.js";
 
 class UploadAdminAppToS3Impl implements AdminAfterDeploy.Interface {
     constructor(
         private ui: UiService.Interface,
         private getApp: GetApp.Interface,
-        private getAppStackOutput: GetAppStackOutput.Interface
+        private adminStackOutputService: AdminStackOutputService.Interface
     ) {}
 
     async execute(params: AdminAfterDeploy.Params) {
@@ -32,7 +28,7 @@ class UploadAdminAppToS3Impl implements AdminAfterDeploy.Interface {
         }
 
         const start = new Date().getTime();
-        const appOutput = await this.getAppStackOutput.execute<IDefaultStackOutput>(params);
+        const appOutput = await this.adminStackOutputService.execute<IDefaultStackOutput>();
         if (!appOutput) {
             throw new Error("Missing app stack output.");
         }
@@ -75,5 +71,5 @@ class UploadAdminAppToS3Impl implements AdminAfterDeploy.Interface {
 
 export const UploadAdminAppToS3 = AdminAfterDeploy.createImplementation({
     implementation: UploadAdminAppToS3Impl,
-    dependencies: [UiService, GetApp, GetAppStackOutput]
+    dependencies: [UiService, GetApp, AdminStackOutputService]
 });

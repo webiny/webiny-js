@@ -4,6 +4,7 @@ import {
     GetApp,
     GetProject,
     GetPulumiService,
+    ProjectSdkParamsService,
     PulumiSelectStackService
 } from "~/abstractions/index.js";
 import {
@@ -20,26 +21,28 @@ export class DefaultRunPulumiCommand implements RunPulumiCommand.Interface {
         private getApp: GetApp.Interface,
         private getProject: GetProject.Interface,
         private pulumiSelectStackService: PulumiSelectStackService.Interface,
-        private getPulumiService: GetPulumiService.Interface
+        private getPulumiService: GetPulumiService.Interface,
+        private projectSdkParamsService: ProjectSdkParamsService.Interface
     ) {}
 
     async execute(params: RunPulumiCommand.Params) {
         const app = this.getApp.execute(params.app);
+        const sdkParams = this.projectSdkParamsService.get();
 
-        if (!params.env) {
+        if (!sdkParams.env) {
             throw new Error(`Please specify environment, for example "dev".`);
         }
 
-        await this.pulumiSelectStackService.execute(app, params);
+        await this.pulumiSelectStackService.execute(app);
 
         const pulumi = await this.getPulumiService.execute({ app });
         const project = this.getProject.execute();
 
         const env = createEnvConfiguration({
             configurations: [
-                withRegion(params),
-                withEnv(params),
-                withEnvVariant(params),
+                withRegion({ region: sdkParams.region }),
+                withEnv({ env: sdkParams.env }),
+                withEnvVariant({ variant: sdkParams.variant }),
                 withPulumiConfigPassphrase(),
                 withProjectName({ project })
             ]
@@ -57,5 +60,11 @@ export class DefaultRunPulumiCommand implements RunPulumiCommand.Interface {
 export const runPulumiCommand = createImplementation({
     abstraction: RunPulumiCommand,
     implementation: DefaultRunPulumiCommand,
-    dependencies: [GetApp, GetProject, PulumiSelectStackService, GetPulumiService]
+    dependencies: [
+        GetApp,
+        GetProject,
+        PulumiSelectStackService,
+        GetPulumiService,
+        ProjectSdkParamsService
+    ]
 });
