@@ -1,6 +1,7 @@
 .nx/
 .webiny/
 .verdaccio/
+docs/
 **/build/
 **/dist/
 **/.out/
