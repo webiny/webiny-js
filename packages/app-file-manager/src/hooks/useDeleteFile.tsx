@@ -28,7 +28,6 @@ export const useDeleteFile = ({ onDelete, file }: UseDeleteFileParams) => {
                 </Text>
             </>
         ),
-        style: { zIndex: 100 },
         dataTestId: "fm-delete-file-confirmation-dialog"
     });
 
