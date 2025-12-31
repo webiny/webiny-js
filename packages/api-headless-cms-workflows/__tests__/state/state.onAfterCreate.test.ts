@@ -35,7 +35,7 @@ describe("state onAfterCreate", () => {
         // List entries before creating workflow state
         const listResult = await listLatestEntries.execute(model);
         expect(listResult.isOk()).toBe(true);
-        const [items] = listResult.value!;
+        const { entries: items } = listResult.value!;
 
         expect(items).toMatchObject([
             {
@@ -61,7 +61,7 @@ describe("state onAfterCreate", () => {
         // List entries after creating workflow state
         const listAfterStateResult = await listLatestEntries.execute(model);
         expect(listAfterStateResult.isOk()).toBe(true);
-        const [itemsAfterState] = listAfterStateResult.value!;
+        const { entries: itemsAfterState } = listAfterStateResult.value!;
 
         expect(itemsAfterState).toMatchObject([
             {
