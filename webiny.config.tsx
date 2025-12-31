@@ -21,17 +21,17 @@ export const Extensions = () => {
             <Infra.Aws.DefaultRegion name={"eu-central-1"} />
 
             {/* Example: Environment-based conditional configuration */}
-            {/*<Infra.env.is env="prod">
+            {/*<Infra.Env.Is env="prod">
                 <Infra.Aws.Tags tags={{ ENV: "production" }} />
-            </Infra.env.is>*/}
+            </Infra.Env.Is>*/}
 
-            {/*<Infra.env.is env={["dev", "staging"]}>
+            {/*<Infra.Env.Is env={["dev", "staging"]}>
                 <Infra.Aws.Tags tags={{ ENV: "non-production" }} />
-            </Infra.env.is>*/}
+            </Infra.Env.Is>*/}
 
-            {/*<Infra.env.isProduction>
+            {/*<Infra.Env.IsProduction>
                 <Infra.Vpc enabled={true} />
-            </Infra.env.isProduction>*/}
+            </Infra.Env.IsProduction>*/}
 
             {/*<Infra.Admin.CustomDomains
                 domains={["my.domain.com"]}

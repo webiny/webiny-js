@@ -50,9 +50,9 @@ export const Infra = {
         DefaultRegion: AwsDefaultRegion,
         Tags: AwsTags.ReactComponent
     },
-    env: {
-        is: EnvIs,
-        isProduction: EnvIsProduction,
+    Env: {
+        Is: EnvIs,
+        IsProduction: EnvIsProduction,
         useEnv,
         useVariant,
         useRegion,
