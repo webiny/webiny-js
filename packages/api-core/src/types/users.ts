@@ -28,8 +28,8 @@ export interface BaseUserAttributes {
     firstName?: string;
     lastName?: string;
     avatar?: {
-        id: string,
-        src: string
+        id: string;
+        src: string;
     } | null;
 
     // Tells us if the entry has been created based on an identity coming from an external IdP.

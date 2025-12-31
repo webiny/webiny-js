@@ -89,11 +89,17 @@ class IdentityProfile {
     }
 }
 
+interface IdentityProfileContext {
+    canAccessTenant?: boolean;
+    defaultTenantId?: string;
+    [key: string]: any;
+}
+
 export type IdentityData = {
     id: string;
     displayName: string;
     type: string;
     permissions?: SecurityPermission[];
     profile?: IdentityProfileData;
-    context?: GenericRecord<string>;
+    context?: IdentityProfileContext;
 };
