@@ -14,7 +14,8 @@ export const CoreVpc = createAppModule({
             }
         });
 
-        // Create one public and three private subnets (if 3 AZs are available).
+        // Create one public and three private subnets.
+        // The third subnet will use the third AZ if available, otherwise reuses the first AZ.
         const publicSubnet = app.addResource(aws.ec2.Subnet, {
             name: "public",
             config: {
@@ -45,7 +46,7 @@ export const CoreVpc = createAppModule({
             config: {
                 vpcId: vpc.output.id,
                 cidrBlock: "10.0.2.0/24",
-                availabilityZone: availabilityZones.apply(zone => zone.names[1]),
+                availabilityZone: availabilityZones.apply(zone => zone.names[1] || zone.names[0]),
                 tags: { Name: "private-subnet-2" }
             }
         });
@@ -55,7 +56,7 @@ export const CoreVpc = createAppModule({
             config: {
                 vpcId: vpc.output.id,
                 cidrBlock: "10.0.3.0/24",
-                availabilityZone: availabilityZones.apply(zone => zone.names[2]),
+                availabilityZone: availabilityZones.apply(zone => zone.names[2] || zone.names[0]),
                 tags: { Name: "private-subnet-3" }
             }
         });
