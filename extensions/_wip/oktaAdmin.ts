@@ -5,23 +5,17 @@ import type Okta from "@webiny/okta";
 class MyOktaIdentityProvider implements Okta.Admin.Interface {
     constructor(private ui: UiService.Interface) {}
 
-    // isAutoLogin (() => {
-    //     const query = new URLSearchParams(window.location.search);
-    //     return query.get("action") !== "logout";
-    // })(), // evaluated once, value is true/false
-
-    getDomain() {
-        return String(process.env.REACT_APP_OKTA_DOMAIN);
+    getAuth() {
+        return new OktaAuth({
+            issuer: process.env.OKTA_ISSUER,
+            clientId: process.env.OKTA_CLIENT_ID,
+            redirectUri: window.location.origin + "/",
+            scopes: ["openid", "email", "profile"],
+            pkce: true,
+            restoreOriginalUri: undefined,
+            devMode: false
+        });
     }
-    getClientId() {
-        return String(process.env.REACT_APP_OKTA_CLIENT_ID);
-    }
-
-    // getRootAppClientId: String(process.env.REACT_APP_OKTA_CLIENT_ID),
-    //
-    // getLogoutParams: {
-    //     returnTo: window.location.origin + "?action=logout"
-    // },
 }
 
 export default createImplementation({

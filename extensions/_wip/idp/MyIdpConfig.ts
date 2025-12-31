@@ -12,7 +12,7 @@ interface IIdpConfig {
 }
 
 class MyOktaConfig implements Okta.Api.Interface {
-    getIdentity(token: jwt.JwtPayload, tenant:Tenant) {
+    getIdentity(token: jwt.JwtPayload) {
         return {
             id: token["sub"],
             type: "admin",
@@ -25,12 +25,22 @@ class MyOktaConfig implements Okta.Api.Interface {
                 lastName: token["family_name"],
                 email: token["email"]
             },
-            // For all other runtime data. This is not stored in the database.
+            // For all other custom runtime data. This is not stored in the database.
             context: {
-                canAccessTenant: token["tenantId"] === tenant.id,
+                clientId: token["iss"],
                 defaultTenant: token["tenantId"]
             }
         };
+    }
+
+    getDefaultTenantId(identity) {
+        // Return the default tenant ID for this identity.
+        return identity.context.defaultTenant;
+    }
+
+    canAccessTenant(identity, tenant) {
+        // Implement logic that determines if the user can access the tenant.
+        return identity.context.tenantId === tenant.id;
     }
 
     /**
