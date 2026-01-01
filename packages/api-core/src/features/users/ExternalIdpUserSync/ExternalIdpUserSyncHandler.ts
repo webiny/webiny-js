@@ -61,7 +61,6 @@ class ExternalIdpUserSyncHandlerImpl implements AfterLoginHandler.Interface {
 
             // Update or create user
             if (getUserResult.isOk()) {
-                console.log("update.data", data);
                 await this.updateUserUseCase.execute(identity.id, data);
                 return;
             }

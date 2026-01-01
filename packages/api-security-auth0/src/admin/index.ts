@@ -4,7 +4,7 @@ import { UserInfo } from "./modules/userMenu/UserInfo.js";
 import { UserImage } from "./modules/userMenu/UserImage.js";
 import { ExitTenant } from "./modules/userMenu/ExitTenant.js";
 import { SignOut } from "./modules/userMenu/SignOut.js";
-import { NotAuthorizedError, LoginContent, LoginLayout } from "./components/index.js";
+import { NotAuthorizedError, LoginContent, View } from "./components/index.js";
 
 export const Components = {
     UserInfo,
@@ -13,5 +13,5 @@ export const Components = {
     SignOut,
     NotAuthorizedError,
     LoginContent,
-    LoginLayout
+    View
 };

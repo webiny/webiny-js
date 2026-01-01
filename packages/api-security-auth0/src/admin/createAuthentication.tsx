@@ -8,7 +8,7 @@ import type {
 } from "@auth0/auth0-react";
 import { useAuth0, Auth0Provider } from "@auth0/auth0-react";
 import { useAuthentication } from "@webiny/app-admin";
-import { LoginContent, LoginLayout } from "./components/index.js";
+import { LoginContent } from "./components/index.js";
 
 export type Auth0Options = Auth0ProviderOptions;
 
@@ -113,6 +113,11 @@ export const createAuthentication = ({
                         onLogout(logout);
                     }
                 });
+
+                // Remove the "action" query param.
+                const url = new URL(window.location);
+                url.searchParams.delete("action");
+                window.history.replaceState({}, "", url);
             } catch (err) {
                 if (typeof onError === "function") {
                     onError(err);
@@ -161,11 +166,7 @@ export const createAuthentication = ({
             return <>{children}</>;
         }
 
-        return (
-            <LoginLayout>
-                <LoginContent onLogin={login} isLoading={isLoading} />
-            </LoginLayout>
-        );
+        return <LoginContent onLogin={login} isLoading={isLoading} />;
     };
 
     const LoginWidget = Authentication;
@@ -174,7 +175,7 @@ export const createAuthentication = ({
         return (
             <Auth0Provider
                 useRefreshTokens={true}
-                cacheLocation="memory"
+                cacheLocation="localstorage"
                 onRedirectCallback={(appState, user) => {
                     onRedirect({ appState, user });
                 }}

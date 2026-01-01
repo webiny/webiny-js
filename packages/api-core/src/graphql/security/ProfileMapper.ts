@@ -22,7 +22,6 @@ export class ProfileMapper {
     ) {}
 
     async toDTO(user: AdminUser): Promise<IdentityProfile> {
-        console.log("map user to profile", user);
         const profile: IdentityProfile = {
             firstName: user.firstName ?? "",
             lastName: user.lastName ?? "",
@@ -39,7 +38,6 @@ export class ProfileMapper {
                 where: { id_in: groupIds }
             });
             if (listGroupsResult.isOk()) {
-                console.log("listGroups", listGroupsResult.value);
                 profile.groups = listGroupsResult.value.map(group => ({
                     id: group.id,
                     slug: group.slug,
@@ -62,8 +60,6 @@ export class ProfileMapper {
                 }));
             }
         }
-
-        console.log("profile", profile);
 
         return profile;
     }

@@ -13,11 +13,11 @@ export const Extension = () => {
                 clientId: String(process.env.REACT_APP_AUTH0_CLIENT_ID)
             }}
             onLogout={logout => {
-                logout({
-                    logoutParams: {
-                        returnTo: window.location.origin + "?action=logout"
-                    }
-                });
+                logout({ openUrl: false });
+
+                const url = new URL(window.location);
+                url.searchParams.set("action", "logout");
+                window.history.replaceState({}, "", url);
             }}
         />
     );

@@ -61,10 +61,5 @@ class GroupsTeamsAuthorizerImpl implements Authorizer.Interface {
 
 export const GroupsTeamsAuthorizer = Authorizer.createImplementation({
     implementation: GroupsTeamsAuthorizerImpl,
-    dependencies: [
-        TenantContext,
-        IdentityContext,
-        GetTenantByIdUseCase,
-        PermissionsProcessor
-    ]
+    dependencies: [TenantContext, IdentityContext, GetTenantByIdUseCase, PermissionsProcessor]
 });

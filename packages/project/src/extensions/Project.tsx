@@ -18,7 +18,8 @@ export const Project = () => {
         <>
             <AdminBeforeBuild.ReactComponent src={p("SetAdminAppEnvVarsBeforeBuild.js")} />
             <AdminBeforeWatch.ReactComponent src={p("SetAdminAppEnvVarsBeforeWatch.js")} />
-            <ApiAfterBuild.ReactComponent src={p("WcpInjectTelemetryClientAfterBuild.js")} />
+            {/* TODO: update telemetry code to ESM, then update this plugin. */}
+            {/*<ApiAfterBuild.ReactComponent src={p("WcpInjectTelemetryClientAfterBuild.js")} />*/}
             <ApiBeforeDeploy.ReactComponent src={p("EnsureCoreDeployedBeforeApiDeploy.js")} />
             <ApiBeforeWatch.ReactComponent src={p("EnsureApiDeployedBeforeWatch.js")} />
             <AdminBeforeBuild.ReactComponent src={p("EnsureApiDeployedBeforeAdminBuild.js")} />

@@ -14,9 +14,9 @@ export const createRsbuildConfig = ({ cwd }) => {
             filename: {
                 js: pathData => {
                     if (pathData.chunk?.name === "index") {
-                        return "handler.js";
+                        return "handler.mjs";
                     }
-                    return "[name].js";
+                    return "[name].mjs";
                 }
             },
             distPath: { root: paths.fn.outputFolder }

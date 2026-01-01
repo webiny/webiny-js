@@ -54,13 +54,8 @@ interface IIdpProvider {
 
 interface IOidcIdpConfig {
   getIdentity(token: jwt.JwtPayload): Promise<Identity.Data> | Identity.Data;
-  canAccessTenant(
-    identity: Identity,
-    tenant: Tenant
-  ): Promise<boolean> | boolean;
-  verifyTokenClaims?(
-    jwt: jwt.JwtPayload
-  ): Promise<jwt.JwtPayload> | jwt.JwtPayload;
+  canAccessTenant(identity: Identity, tenant: Tenant): Promise<boolean> | boolean;
+  verifyTokenClaims?(jwt: jwt.JwtPayload): Promise<jwt.JwtPayload> | jwt.JwtPayload;
   // If not using JWKeys, implement this method to verify the token signature.
   verifyToken?(jwt: string): Promise<jwt.JwtPayload> | jwt.JwtPayload;
 }
@@ -84,9 +79,7 @@ class OktaIdpConfigProviderFactory {
       isApplicable(token: jwt.JwtPayload) {
         const issuer = token.iss as string;
 
-        return (
-          issuer.includes("okta.com") || issuer.includes("oktapreview.com")
-        );
+        return issuer.includes("okta.com") || issuer.includes("oktapreview.com");
       }
     });
   }
