@@ -1,5 +1,5 @@
 import React from "react";
-import { useEnv, useVariant, useRegion, useEnvContext } from "~/services/GetProjectConfigService/EnvContext.js";
+import { useEnv, useVariant, useRegion, useEnvContext, useProductionEnvironments } from "~/services/GetProjectConfigService/EnvContext.js";
 
 export interface EnvIsProps {
     env?: string | string[];
@@ -18,14 +18,6 @@ const matchesValue = (current: string | undefined, allowed: string | string[]): 
     const allowedArray = Array.isArray(allowed) ? allowed : [allowed];
     return allowedArray.includes(current);
 };
-
-/**
- * Default production environments.
- * Note: This cannot be customized via ProductionEnvironments extension during config rendering
- * because the extension config is not yet available (chicken-and-egg problem).
- * Users can use <Infra.env.is env={["prod", "staging"]}> for custom production checks.
- */
-const DEFAULT_PRODUCTION_ENVIRONMENTS = ["prod", "production"];
 
 /**
  * Conditionally renders children based on the current environment, variant, or region.
@@ -56,12 +48,13 @@ export const EnvIs: React.FC<EnvIsProps> = ({ env, variant, region, children }) 
 
 /**
  * Hook to check if the current environment is a production environment.
- * By default, "prod" and "production" are considered production environments.
- * Note: This cannot be customized via ProductionEnvironments extension during config rendering.
+ * Uses production environments from the ProductionEnvironments extension if configured,
+ * otherwise defaults to ["prod", "production"].
  */
 export const useIsProduction = () => {
     const currentEnv = useEnv();
-    return DEFAULT_PRODUCTION_ENVIRONMENTS.includes(currentEnv);
+    const productionEnvironments = useProductionEnvironments();
+    return productionEnvironments.includes(currentEnv);
 };
 
 /**
@@ -73,4 +66,4 @@ export const EnvIsProduction: React.FC<{ children: React.ReactNode }> = ({ child
 };
 
 // Export hooks for direct use
-export { useEnv, useVariant, useRegion, useEnvContext };
+export { useEnv, useVariant, useRegion, useEnvContext, useProductionEnvironments };

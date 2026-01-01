@@ -16,9 +16,11 @@ import { ExtensionDefinitions as ExtensionDefinitionsExtension } from "~/extensi
 import { ExtensionInstanceModel } from "~/defineExtension/index.js";
 import { ProjectConfigModel } from "~/models/ProjectConfigModel.js";
 import { renderConfig } from "./renderConfig.js";
+import { extractProductionEnvironmentsFromConfig } from "~/utils/index.js";
 
 export class DefaultGetProjectConfigService implements GetProjectConfigService.Interface {
     cachedRenderedConfigs: Record<string, IProjectConfigDto> = {};
+    cachedProductionEnvironments: string[] | null = null;
 
     constructor(
         private readonly getProjectService: GetProjectService.Interface,
@@ -44,7 +46,8 @@ export class DefaultGetProjectConfigService implements GetProjectConfigService.I
                 this.cachedRenderedConfigs[cacheKey] = await renderConfig({
                     project,
                     args: params.renderArgs,
-                    sdkParams: projectSdkParams
+                    sdkParams: projectSdkParams,
+                    productionEnvironments: this.cachedProductionEnvironments || undefined
                 });
             } catch (err) {
                 this.loggerService.error(
@@ -65,6 +68,16 @@ export class DefaultGetProjectConfigService implements GetProjectConfigService.I
 
         const renderedConfig = this.cachedRenderedConfigs[cacheKey];
         this.loggerService.debug({ config: renderedConfig }, `Project config rendering complete.`);
+
+        // Extract and cache production environments from the rendered config
+        // This will be used in subsequent renders
+        if (!this.cachedProductionEnvironments) {
+            this.cachedProductionEnvironments = extractProductionEnvironmentsFromConfig(renderedConfig);
+            this.loggerService.debug(
+                { productionEnvironments: this.cachedProductionEnvironments },
+                `Extracted production environments from config.`
+            );
+        }
 
         const hydratedConfig = await this.hydrateConfig(renderedConfig, params);
         this.loggerService.debug({ config: hydratedConfig }, `Project config hydration complete.`);

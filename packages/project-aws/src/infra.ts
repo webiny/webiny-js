@@ -36,7 +36,8 @@ import {
     useVariant,
     useRegion,
     useIsProduction,
-    useEnvContext
+    useEnvContext,
+    useProductionEnvironments
 } from "@webiny/project/extensions/infra/index.js";
 
 export const Infra = {
@@ -57,7 +58,8 @@ export const Infra = {
         useVariant,
         useRegion,
         useIsProduction,
-        useEnvContext
+        useEnvContext,
+        useProductionEnvironments
     },
     Admin: {
         BeforeBuild: AdminBeforeBuild.ReactComponent,
