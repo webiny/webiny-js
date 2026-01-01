@@ -62,6 +62,8 @@ const UserAccountForm = () => {
             displayName: `${formData.firstName} ${formData.lastName}`,
             profile: {
                 ...(identity.profile || {}),
+                roles: identity.profile?.roles ?? [],
+                teams: identity.profile?.teams ?? [],
                 firstName: formData.firstName,
                 lastName: formData.lastName,
                 avatar: formData.avatar

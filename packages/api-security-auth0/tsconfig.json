@@ -5,7 +5,8 @@
     { "path": "../api-core" },
     { "path": "../error" },
     { "path": "../handler" },
-    { "path": "../handler-graphql" }
+    { "path": "../handler-graphql" },
+    { "path": "../project" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -148,7 +149,9 @@
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"]
+      "@webiny/handler-graphql": ["../handler-graphql/src"],
+      "@webiny/project/*": ["../project/src/*"],
+      "@webiny/project": ["../project/src"]
     },
     "baseUrl": "."
   }

@@ -5,7 +5,8 @@
     { "path": "../api-core/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
-    { "path": "../handler-graphql/tsconfig.build.json" }
+    { "path": "../handler-graphql/tsconfig.build.json" },
+    { "path": "../project/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -148,7 +149,9 @@
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"]
+      "@webiny/handler-graphql": ["../handler-graphql/src"],
+      "@webiny/project/*": ["../project/src/*"],
+      "@webiny/project": ["../project/src"]
     },
     "baseUrl": "."
   }

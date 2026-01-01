@@ -10,17 +10,17 @@ const KeyValues = (props: Record<string, any>) => {
     });
 };
 
+type ExtensionReactComponentProps<TParamsSchema extends z.ZodTypeAny> = z.infer<TParamsSchema> & {
+    remove?: boolean;
+    before?: string;
+    after?: string;
+    name?: string;
+};
+
 export function createExtensionReactComponent<TParamsSchema extends z.ZodTypeAny>(
     extensionParams: DefineExtensionParams<TParamsSchema>
 ) {
-    type ExtensionReactComponentProps = z.infer<TParamsSchema> & {
-        remove?: boolean;
-        before?: string;
-        after?: string;
-        name?: string;
-    };
-
-    const ExtensionReactComponent: React.FC<ExtensionReactComponentProps> = props => {
+    const ExtensionReactComponent: React.FC<ExtensionReactComponentProps<TParamsSchema>> = props => {
         const { name, remove, before, after, ...keyValues } = props;
 
         const getId = useIdGenerator(extensionParams.type);

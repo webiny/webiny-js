@@ -1,7 +1,7 @@
 import React from "react";
 import { Cli, Infra, Project, Security } from "webiny/extensions";
 import { MySchemaExtension } from "./extensions/graphql/MySchemaExtension.js";
-
+import { MyIdpExtension } from "./extensions/idp/MyIdpExtension.js";
 // import { Okta } from "@webiny/okta";
 
 export const Extensions = () => {
@@ -60,6 +60,7 @@ export const Extensions = () => {
             <Project.Telemetry enabled={false} />
 
             {/* API */}
+            <MyIdpExtension/>
             <MySchemaExtension />
 
             {/* Security 👇 */}
