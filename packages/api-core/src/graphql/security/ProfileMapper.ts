@@ -22,6 +22,7 @@ export class ProfileMapper {
     ) {}
 
     async toDTO(user: AdminUser): Promise<IdentityProfile> {
+        console.log("map user to profile", user);
         const profile: IdentityProfile = {
             firstName: user.firstName ?? "",
             lastName: user.lastName ?? "",
@@ -32,12 +33,13 @@ export class ProfileMapper {
             createdOn: user.createdOn
         };
 
-        const groupSlugs = user.groups ?? [];
-        if (groupSlugs.length > 0) {
+        const groupIds = user.groups ?? [];
+        if (groupIds.length > 0) {
             const listGroupsResult = await this.listGroups.execute({
-                where: { id_in: groupSlugs }
+                where: { id_in: groupIds }
             });
             if (listGroupsResult.isOk()) {
+                console.log("listGroups", listGroupsResult.value);
                 profile.groups = listGroupsResult.value.map(group => ({
                     id: group.id,
                     slug: group.slug,
@@ -47,10 +49,10 @@ export class ProfileMapper {
         }
 
         // Resolve teams
-        const teamSlugs = user.teams ?? [];
-        if (teamSlugs.length > 0) {
+        const teamIds = user.teams ?? [];
+        if (teamIds.length > 0) {
             const listTeamsResult = await this.listTeams.execute({
-                where: { id_in: teamSlugs }
+                where: { id_in: teamIds }
             });
             if (listTeamsResult.isOk()) {
                 profile.teams = listTeamsResult.value.map(team => ({
@@ -60,6 +62,8 @@ export class ProfileMapper {
                 }));
             }
         }
+
+        console.log("profile", profile);
 
         return profile;
     }

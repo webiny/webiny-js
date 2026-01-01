@@ -58,9 +58,9 @@ declare namespace NodeJS {
         /**
          * Auth0
          */
-        AUTH0_DOMAIN?: string;
+        AUTH0_ISSUER?: string;
         AUTH0_CLIENT_ID?: string;
-        REACT_APP_AUTH0_DOMAIN?: string;
+        REACT_APP_AUTH0_ISSUER?: string;
         REACT_APP_AUTH0_CLIENT_ID?: string;
         /**
          * api-mailer

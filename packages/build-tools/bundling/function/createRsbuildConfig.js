@@ -9,13 +9,14 @@ export const createRsbuildConfig = ({ cwd }) => {
     return /** @type {import("@rsbuild/core").RsbuildConfig} */ ({
         source: { entry: { index: paths.fn.entryFile } },
         output: {
+            module: true,
             target: "node",
             filename: {
                 js: pathData => {
                     if (pathData.chunk?.name === "index") {
-                        return "handler.cjs";
+                        return "handler.js";
                     }
-                    return "[name].cjs";
+                    return "[name].js";
                 }
             },
             distPath: { root: paths.fn.outputFolder }

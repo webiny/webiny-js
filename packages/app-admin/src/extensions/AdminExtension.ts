@@ -19,20 +19,20 @@ export const AdminExtension = defineExtension({
             .join("apps", "admin", "src", "Extensions.tsx")
             .toString();
 
-        const componentName = Case.pascal("Something" + Date.now()) + "Extension";
+        const componentName = Case.pascal("AdminExtension" + Date.now());
 
         const importName = "{ Extension as " + componentName + " }";
         const srcWithoutExt = params.src.replace(/\.[^/.]+$/, "");
 
         const project = new Project();
 
-        const importPath = path.join(
-            path.relative(
-                path.dirname(extensionsTsxFilePath),
-                ctx.project.paths.rootFolder.toString()
-            ),
-            srcWithoutExt
-        );
+        const extensionFileName = path.basename(params.src);
+
+        const importPath = [
+            path.relative(path.dirname(extensionsTsxFilePath), path.dirname(srcWithoutExt)),
+            extensionFileName.replace(".tsx", "")
+        ].join("/");
+
         project.addSourceFileAtPath(extensionsTsxFilePath);
 
         const source = project.getSourceFileOrThrow(extensionsTsxFilePath);

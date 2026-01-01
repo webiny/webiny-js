@@ -1,17 +1,15 @@
-import cognitoAuthentication, { syncWithCognito } from "@webiny/api-security-cognito";
 import { authenticateUsingHttpHeader } from "@webiny/api-core/legacy/security/plugins/authenticateUsingHttpHeader.js";
 import apiKeyAuthentication from "@webiny/api-core/legacy/security/plugins/apiKeyAuthentication.js";
 import apiKeyAuthorization from "@webiny/api-core/legacy/security/plugins/apiKeyAuthorization.js";
-import tenantLinkAuthorization from "@webiny/api-core/legacy/security/plugins/tenantLinkAuthorization.js";
 
 export default () => [
-    /**
-     * Sync Admin Users with Cognito User Pool.
-     */
-    syncWithCognito({
-        region: String(process.env.COGNITO_REGION),
-        userPoolId: String(process.env.COGNITO_USER_POOL_ID)
-    }),
+    // /**
+    //  * Sync Admin Users with Cognito User Pool.
+    //  */
+    // syncWithCognito({
+    //     region: String(process.env.COGNITO_REGION),
+    //     userPoolId: String(process.env.COGNITO_USER_POOL_ID)
+    // }),
 
     /**
      * Perform authentication using the common "Authorization" HTTP header.
@@ -27,29 +25,19 @@ export default () => [
      */
     apiKeyAuthentication({ identityType: "api-key" }),
 
-    /**
-     * Cognito authentication plugin.
-     * This plugin will verify the JWT token against the provided User Pool.
-     */
-    cognitoAuthentication({
-        region: String(process.env.COGNITO_REGION),
-        userPoolId: String(process.env.COGNITO_USER_POOL_ID),
-        identityType: "admin"
-    }),
+    // /**
+    //  * Cognito authentication plugin.
+    //  * This plugin will verify the JWT token against the provided User Pool.
+    //  */
+    // cognitoAuthentication({
+    //     region: String(process.env.COGNITO_REGION),
+    //     userPoolId: String(process.env.COGNITO_USER_POOL_ID),
+    //     identityType: "admin"
+    // }),
 
     /**
      * Authorization plugin to fetch permissions for a verified API key.
      * The "identityType" must match the authentication plugin used to load the identity.
      */
-    apiKeyAuthorization({ identityType: "api-key" }),
-
-    /**
-     * Authorization plugin to fetch permissions from a security role or team associated with the identity.
-     */
-    tenantLinkAuthorization({ identityType: "admin" }),
-
-    /**
-     * Authorization plugin to fetch permissions from the parent tenant.
-     */
-    tenantLinkAuthorization({ identityType: "admin", parent: true })
+    apiKeyAuthorization({ identityType: "api-key" })
 ];

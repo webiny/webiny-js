@@ -8,6 +8,7 @@ import { TenancyFeature } from "./features/tenancy/TenancyFeature.js";
 import { AdminUsersFeature } from "~/features/users/AdminUsersFeature.js";
 import { SettingsFeature } from "~/features/settings/index.js";
 import type { ApiCoreStorageOperations } from "~/types/core.js";
+import { IdpAuthenticatorFeature } from "~/idp/feature.js";
 
 export const ApiCoreFeature = createFeature({
     name: "ApiCore",
@@ -22,5 +23,6 @@ export const ApiCoreFeature = createFeature({
         AdminUsersFeature.register(container, config.usersStorageOperations);
         SettingsFeature.register(container, config.settingsStorageOperations);
         SystemFeature.register(container);
+        IdpAuthenticatorFeature.register(container);
     }
 });

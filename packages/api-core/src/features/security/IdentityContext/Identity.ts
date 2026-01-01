@@ -1,6 +1,10 @@
 import type { SecurityPermission } from "~/types/security.js";
 import type { GenericRecord } from "@webiny/utils";
 
+export namespace Identity {
+    export type Profile = IdentityProfile;
+}
+
 /**
  * Abstract base class for all identity types.
  * Provides a common interface for identity checks across the codebase.

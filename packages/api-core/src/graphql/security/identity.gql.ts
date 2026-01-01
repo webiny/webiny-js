@@ -33,7 +33,7 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
                         return new ErrorResponse(err);
                     }
                 }
-                return new Response(identity);
+                return new Response(identity.toJson());
             }
         }
     }

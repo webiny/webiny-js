@@ -43,7 +43,7 @@ export class OidcIdpProvider {
 
         // Verify issuer from payload
         const issuer = payload.iss;
-        if (issuer !== this.providerConfig.issuer) {
+        if (!issuer || !issuer.startsWith(this.providerConfig.issuer)) {
             return null;
         }
 
@@ -71,6 +71,8 @@ export class OidcIdpProvider {
 
         // Call config.getIdentity to get IdentityData
         const identity = await this.providerConfig.config.getIdentity(verifiedPayload);
+
+        console.log("identity", identity);
 
         return identity;
     }

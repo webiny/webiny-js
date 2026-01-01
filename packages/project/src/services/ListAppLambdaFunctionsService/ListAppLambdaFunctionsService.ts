@@ -71,9 +71,9 @@ export class DefaultListAppLambdaFunctionsService
                 const fnName = resource.inputs.name;
                 const handlerBuildFolderPath = resource.inputs.code.assets["."].path;
 
-                // Atm, functions are always built into a `handler.cjs` file.
+                // Atm, functions are always built into a `handler.js` file.
                 // At some point, this should become `handler.js` and be fully ESM.
-                const handlerPath = path.join(handlerBuildFolderPath, "handler.cjs");
+                const handlerPath = path.join(handlerBuildFolderPath, "handler.js");
                 return {
                     name: fnName,
                     path: handlerPath

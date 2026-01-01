@@ -8,7 +8,7 @@ import type {
 } from "@auth0/auth0-react";
 import { useAuth0, Auth0Provider } from "@auth0/auth0-react";
 import { useAuthentication } from "@webiny/app-admin";
-import { LoginContent, LoginLayout } from "~/components/index.js";
+import { LoginContent, LoginLayout } from "./components/index.js";
 
 export type Auth0Options = Auth0ProviderOptions;
 

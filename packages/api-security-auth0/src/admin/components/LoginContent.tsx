@@ -1,11 +1,11 @@
 import React from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 import { makeDecoratable } from "@webiny/app-serverless-cms";
 import { CircularProgress } from "@webiny/ui/Progress/index.js";
-import { alignCenter, Title } from "~/components/StyledComponents.js";
 import { Typography } from "@webiny/ui/Typography/index.js";
 import { ButtonIcon, ButtonPrimary } from "@webiny/ui/Button/index.js";
-import { ReactComponent as Auth0Icon } from "~/assets/icons/auth0-icon.svg";
-import { useAuth0 } from "@auth0/auth0-react";
+import { ReactComponent as Auth0Icon } from "../assets/icons/auth0-icon.svg";
+import { alignCenter, Title } from "./StyledComponents.js";
 
 export interface LoginContentProps {
     isLoading: boolean;

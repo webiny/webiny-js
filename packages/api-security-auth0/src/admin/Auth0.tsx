@@ -1,38 +1,21 @@
 import React, { Fragment, useCallback, useEffect, useRef, useState } from "react";
-import gql from "graphql-tag";
-import { useApolloClient } from "@apollo/react-hooks";
-import get from "lodash/get.js";
 import { LoginScreenRenderer, useTenancy, useTags } from "@webiny/app-serverless-cms";
 import type { CreateAuthenticationConfig } from "./createAuthentication.js";
 import { createAuthentication } from "./createAuthentication.js";
-import { UserMenuModule } from "~/modules/userMenu/index.js";
+import { UserMenuModule } from "./modules/userMenu/index.js";
 import { NotAuthorizedError } from "./components/index.js";
 
 interface AppClientIdLoaderProps extends Auth0Props {
     children: React.ReactNode;
 }
 
-const GET_CLIENT_ID = gql`
-    query GetAuth0ClientId {
-        tenancy {
-            appClientId
-        }
-    }
-`;
-
-const AppClientIdLoader = ({
-    auth0,
-    rootAppClientId,
-    children,
-    ...rest
-}: AppClientIdLoaderProps) => {
+const AppClientIdLoader = ({ auth0, children, ...rest }: AppClientIdLoaderProps) => {
     const [loaded, setState] = useState<boolean>(false);
     const authRef = useRef<React.ComponentType | null>(null);
-    const client = useApolloClient();
     const { tenant, setTenant } = useTenancy();
 
     const setupAuthForClientId = (clientId: string) => {
-        console.info(`Configuring Auth0 with App Client Id "${rootAppClientId}"`);
+        console.info(`Configuring Auth0 with App Client Id "${clientId}"`);
         return createAuthentication({
             ...rest,
             auth0: {
@@ -51,21 +34,8 @@ const AppClientIdLoader = ({
             setTenant(tenantId);
         }
 
-        if (tenantId === "root") {
-            authRef.current = setupAuthForClientId(rootAppClientId);
-            setState(true);
-            return;
-        }
-
-        client.query({ query: GET_CLIENT_ID }).then(({ data }) => {
-            const clientId = get(data, "tenancy.appClientId");
-            if (clientId) {
-                authRef.current = setupAuthForClientId(clientId);
-                setState(true);
-            } else {
-                console.warn(`Couldn't load appClientId for tenant "${tenantId}"`);
-            }
-        });
+        authRef.current = setupAuthForClientId(auth0.clientId);
+        setState(true);
     }, []);
 
     return loaded
@@ -102,7 +72,6 @@ export type Auth0Props = Pick<
     CreateAuthenticationConfig,
     "auth0" | "autoLogin" | "onLogin" | "onLogout" | "onRedirect" | "onError"
 > & {
-    rootAppClientId: string;
     children?: React.ReactNode;
 };
 

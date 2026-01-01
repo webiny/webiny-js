@@ -37,6 +37,8 @@ class IdentityContextImpl implements Abstraction.Interface {
         // If undefined, set to anonymous identity
         this.identity = identity ?? new AnonymousIdentity();
 
+        console.log("Set Identity", identity?.toJson());
+
         // Clear permissions cache when identity changes
         this.authorizationContext.clearPermissionsCache();
     }

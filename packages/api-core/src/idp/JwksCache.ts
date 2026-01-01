@@ -21,8 +21,11 @@ export class JwksCache {
         }
 
         // Fetch OIDC configuration
-        const oidcConfigUrl = `${issuer}/.well-known/openid-configuration`;
-        const oidcConfig = await fetch(oidcConfigUrl).then(
+        const openidUrl = new URL(issuer);
+        const pathname = openidUrl.pathname + "/.well-known/openid-configuration";
+        openidUrl.pathname = pathname.replace(/\/+/g, "/");
+
+        const oidcConfig = await fetch(openidUrl.toString()).then(
             res => res.json() as Promise<OidcConfiguration>
         );
 

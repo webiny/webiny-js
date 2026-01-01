@@ -8,8 +8,8 @@ class MyIdpConfig implements Auth0IdpConfig.Interface {
             displayName: token["name"],
             // User profile on this tenant
             profile: {
-                roles: [token["role"]],
-                teams: [token["team"]],
+                groups: ["full-access"],
+                teams: [token["team"]].filter(Boolean),
                 firstName: token["given_name"],
                 lastName: token["family_name"],
                 email: token["email"]
