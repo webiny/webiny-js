@@ -2,16 +2,16 @@ import { Authorizer } from "~/features/security/authorization/Authorizer/index.j
 import type { PermissionsTenantLink, SecurityPermission } from "~/types/security.js";
 import { getPermissionsFromSecurityGroups } from "~/features/security/utils/getPermissionsFromSecurityGroups.js";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
-import { Identity, IdentityContext } from "~/features/security/IdentityContext/index.js";
-import { GetTenantLinkByIdentity } from "~/features/security/tenantLinks/GetTenantLinkByIdentity/index.js";
+import { IdentityContext } from "~/features/security/IdentityContext/index.js";
 import { WcpContext } from "~/features/wcp/WcpContext/index.js";
+import { ListTenantLinksByIdentity } from "~/features/security/tenantLinks/ListTenantLinksByIdentity/index.js";
 
 class TenantLinkAuthorizerImpl implements Authorizer.Interface {
     constructor(
         private readonly wcpContext: WcpContext.Interface,
         private readonly tenantContext: TenantContext.Interface,
         private readonly identityContext: IdentityContext.Interface,
-        private readonly getTenantLinkByIdentity: GetTenantLinkByIdentity.Interface
+        private readonly listTenantLinks: ListTenantLinksByIdentity.Interface
     ) {}
 
     async authorize(): Promise<SecurityPermission[] | null> {
@@ -22,30 +22,29 @@ class TenantLinkAuthorizerImpl implements Authorizer.Interface {
             return null;
         }
 
-        // TODO: this should be done via an optional decorator, so the logic of
-        // TODO: loading parent tenant permissions can be configurable.
+        // Exit early if no tenant links exist for identity
+        const result = await this.listTenantLinks.execute({ identity: identity.id });
+        if (result.isFail()) {
+            return null;
+        }
 
-        let permissions = await this.getPermissionsFromTenant(tenant.id, identity);
+        const tenantLinks = result.value;
+        if (tenantLinks.length === 0) {
+            return null;
+        }
+
+        let permissions = await this.getPermissionsFromTenant(tenant.id, tenantLinks);
 
         // If no permissions were found on the current tenant, try loading them from the parent tenant.
         if (!permissions && tenant.parent) {
-            permissions = await this.getPermissionsFromTenant(tenant.parent, identity);
+            permissions = await this.getPermissionsFromTenant(tenant.parent, tenantLinks);
         }
 
         return permissions;
     }
 
-    private async getPermissionsFromTenant(tenantId: string, identity: Identity) {
-        const tenantLinkResult = await this.getTenantLinkByIdentity.execute<PermissionsTenantLink>({
-            identity: identity.id,
-            tenant: tenantId
-        });
-
-        if (tenantLinkResult.isFail()) {
-            return null;
-        }
-
-        const tenantLink = tenantLinkResult.value;
+    private async getPermissionsFromTenant(tenantId: string, tenantLinks: PermissionsTenantLink[]) {
+        const tenantLink = tenantLinks.find(link => link.tenant === tenantId);
 
         if (!tenantLink) {
             return null;
@@ -53,29 +52,23 @@ class TenantLinkAuthorizerImpl implements Authorizer.Interface {
 
         const allGroups = [];
 
-        const groups = tenantLink.data?.groups;
-        if (Array.isArray(groups)) {
-            allGroups.push(...groups);
-        }
+        const groups = tenantLink.data?.groups ?? [];
+        allGroups.push(...groups);
 
         const teamsEnabled = this.wcpContext.canUseTeams();
 
         if (teamsEnabled) {
             // Pick all groups and teams groups and get permissions from them.
-            // Note that we return only permissions that are relevant for current locale.
-            const teamsGroups = tenantLink.data?.teams.map(team => team.groups).flat();
-            if (Array.isArray(teamsGroups)) {
-                allGroups.push(...teamsGroups);
-            }
+            const teamsGroups = tenantLink.data?.teams.flatMap(team => team.groups) ?? [];
+            allGroups.push(...teamsGroups);
         }
 
         // Although only one group is allowed, we still pretend multiples are possible.
-        // This way, in the near future, we can support multiple groups per tenant.
         return getPermissionsFromSecurityGroups(allGroups);
     }
 }
 
 export const TenantLinkAuthorizer = Authorizer.createImplementation({
     implementation: TenantLinkAuthorizerImpl,
-    dependencies: [WcpContext, TenantContext, IdentityContext, GetTenantLinkByIdentity]
+    dependencies: [WcpContext, TenantContext, IdentityContext, ListTenantLinksByIdentity]
 });

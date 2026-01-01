@@ -5,15 +5,12 @@ import type { SecurityPermission } from "~/types/security.js";
 export const getPermissionsFromSecurityGroups = (
     securityGroups: Array<{ permissions: SecurityPermission[]; id: string }>
 ) => {
-    return securityGroups
-        .map(securityGroup =>
-            securityGroup.permissions.map(permission => {
-                return {
-                    ...permission,
-                    _src: "role:" + securityGroup.id
-                };
-            })
-        )
-
-        .flat();
+    return securityGroups.flatMap(securityGroup =>
+        securityGroup.permissions.map(permission => {
+            return {
+                ...permission,
+                _src: "role:" + securityGroup.id
+            };
+        })
+    );
 };

@@ -3,7 +3,6 @@ import type { Config as CognitoConfig, TokenData } from "@webiny/api-cognito-aut
 import { createAuthenticator } from "@webiny/api-cognito-authenticator";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import type { SecurityIdentity, SecurityPermission } from "@webiny/api-core/types/security.js";
-import { createGroupsTeamsAuthorizerHandler } from "@webiny/api-core/features/security/utils/createGroupsTeamsAuthorizer.js";
 import { ExternalIdpUserSyncFeature } from "@webiny/api-core/features/ExternalIdpUserSync";
 import adminUsersGqlPlugins from "./graphql/user.gql.js";
 import { AdminUserInstallerFeature } from "~/features/AdminUserInstaller/feature.js";
@@ -92,11 +91,6 @@ export const createCognito = <
                 if (!federatedIdentity) {
                     return identity;
                 }
-
-                // With federated identities, teams and roles are loaded
-                // from identity objects and not from tenant links.
-                const authorizer = createGroupsTeamsAuthorizerHandler(config, context);
-                context.security.addAuthorizer(authorizer);
 
                 // With federated identities, we also want an Admin user entry to be created
                 // on Webiny's end. This is how other external IdP integrations work too, for

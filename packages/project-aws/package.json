@@ -40,7 +40,6 @@
     "@webiny/api-mailer": "0.0.0",
     "@webiny/api-record-locking": "0.0.0",
     "@webiny/api-scheduler": "0.0.0",
-    "@webiny/api-security-cognito": "0.0.0",
     "@webiny/api-website-builder": "0.0.0",
     "@webiny/api-website-builder-workflows": "0.0.0",
     "@webiny/api-websockets": "0.0.0",

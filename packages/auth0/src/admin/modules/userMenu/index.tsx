@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import { AdminConfig } from "@webiny/app-serverless-cms";
+import { AdminConfig } from "@webiny/app-admin";
 import { UserInfo } from "./UserInfo.js";
 import { SignOut } from "./SignOut.js";
 import { UserMenuHandle } from "./UserMenuHandle.js";

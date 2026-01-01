@@ -1,7 +1,7 @@
 import React from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import { makeDecoratable } from "@webiny/app-serverless-cms";
-import { Button, Icon, Text, OverlayLoader } from "@webiny/admin-ui";
+import { makeDecoratable } from "@webiny/app-admin";
+import { Button, Icon, OverlayLoader } from "@webiny/admin-ui";
 import { ReactComponent as Auth0Icon } from "../assets/icons/auth0-icon.svg";
 import { View } from "./View.js";
 

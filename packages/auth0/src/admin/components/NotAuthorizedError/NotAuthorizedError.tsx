@@ -2,9 +2,8 @@ import * as React from "react";
 import Helmet from "react-helmet";
 import { css } from "emotion";
 import styled from "@emotion/styled";
-import { Typography } from "@webiny/ui/Typography/index.js";
-import { useTenancy } from "@webiny/app-admin";
-import { useSecurity } from "@webiny/app-admin";
+import { Text } from "@webiny/admin-ui";
+import { useAuthentication, useTenancy } from "@webiny/app-admin";
 import { makeDecoratable } from "@webiny/app-admin";
 import authErrorImg from "./SecureRouteError.svg";
 
@@ -45,7 +44,7 @@ const Image = ({ className = styles.authErrorImgStyle, alt = "Not Authorized" }:
 
 const NotAuthorizedComponent = makeDecoratable("NotAuthorizedError", () => {
     const { setTenant } = useTenancy();
-    const { identity } = useSecurity();
+    const { identity } = useAuthentication();
 
     const defaultTenant = identity && identity.defaultTenant ? identity.defaultTenant.id : null;
 
@@ -57,15 +56,10 @@ const NotAuthorizedComponent = makeDecoratable("NotAuthorizedError", () => {
         <ContentWrapper>
             <Helmet title={"Not authorized!"} />
             <Image />
-
-            <Typography use={"body1"} className={styles.bodyStyle}>
-                You are not authorized to access this tenant!
-            </Typography>
-
-            <Typography use={"body1"} className={styles.bodyStyle}>
+            <Text className={styles.bodyStyle}>You are not authorized to access this tenant!</Text>
+            <Text className={styles.bodyStyle}>
                 Please contact your administrator to request access.
-            </Typography>
-
+            </Text>
             <a onClick={resetTenant} className={styles.linkStyle}>
                 Take me home!
             </a>

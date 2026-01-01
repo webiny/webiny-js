@@ -1,5 +1,5 @@
 import React from "react";
-import { Auth0 } from "@webiny/api-security-auth0";
+import { Auth0 } from "@webiny/auth0";
 
 export const MyIdpExtension = () => {
     return (

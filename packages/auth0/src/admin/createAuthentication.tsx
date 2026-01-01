@@ -85,15 +85,6 @@ export const createAuthentication = ({
             };
         }, []);
 
-        const loginSilently = async () => {
-            try {
-                setLoggingIn(true);
-                await getAccessTokenSilently();
-            } finally {
-                setLoggingIn(false);
-            }
-        };
-
         const getIdentity = async () => {
             const { claims } = await getIdToken();
 
@@ -115,7 +106,7 @@ export const createAuthentication = ({
                 });
 
                 // Remove the "action" query param.
-                const url = new URL(window.location);
+                const url = new URL(`${window.location}`);
                 url.searchParams.delete("action");
                 window.history.replaceState({}, "", url);
             } catch (err) {
@@ -133,10 +124,6 @@ export const createAuthentication = ({
             onLogin(auth0Context);
         };
 
-        const restoreSessionOrLogin = async () => {
-            await loginSilently();
-        };
-
         const shouldLogin = () => {
             if (typeof autoLogin === "function") {
                 return autoLogin();
@@ -145,22 +132,36 @@ export const createAuthentication = ({
             return autoLogin;
         };
 
+        const [authReady, setAuthReady] = useState(false);
+
         useEffect(() => {
-            // Call Webiny to fetch the identity information.
-            if (isAuthenticated) {
-                getIdentity();
+            const initialize = async () => {
+                if (isLoading) {
+                    return;
+                }
 
-                return;
-            }
+                // On first load, force cache read
+                if (!authReady) {
+                    try {
+                        await getAccessTokenSilently({ cacheMode: "cache-only" });
+                    } catch (err) {
+                        // Not in cache, will need to login
+                    }
+                    setAuthReady(true);
+                    return;
+                }
 
-            if (!isAuthenticated && !isLoading) {
-                if (auth0.cacheLocation === "localstorage") {
-                    restoreSessionOrLogin();
+                // Auth is ready, handle login state
+                if (isAuthenticated) {
+                    await getAccessTokenSilently(); // Refresh if needed
+                    await getIdentity();
                 } else if (shouldLogin()) {
                     login();
                 }
-            }
-        }, [isAuthenticated, isLoading]);
+            };
+
+            initialize();
+        }, [isLoading, isAuthenticated, authReady]);
 
         if (authentication.isAuthenticated) {
             return <>{children}</>;

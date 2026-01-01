@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/api-security-auth0",
+  "name": "@webiny/auth0",
   "version": "0.0.0",
   "type": "module",
   "sideEffects": false,
@@ -12,12 +12,20 @@
   "author": "Webiny Ltd.",
   "license": "Webiny Enterprise",
   "dependencies": {
+    "@auth0/auth0-react": "^2.2.4",
+    "@emotion/styled": "^11.10.6",
+    "@webiny/admin-ui": "0.0.0",
     "@webiny/api-core": "0.0.0",
+    "@webiny/app-admin": "0.0.0",
     "@webiny/feature": "0.0.0",
+    "@webiny/icons": "0.0.0",
     "@webiny/project": "0.0.0",
     "@webiny/project-aws": "0.0.0",
+    "emotion": "10.0.27",
     "jsonwebtoken": "^9.0.3",
-    "react": "18.2.0"
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-helmet": "^6.1.0"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.10",

@@ -15,7 +15,7 @@ export const Extension = () => {
             onLogout={logout => {
                 logout({ openUrl: false });
 
-                const url = new URL(window.location);
+                const url = new URL(`${window.location}`);
                 url.searchParams.set("action", "logout");
                 window.history.replaceState({}, "", url);
             }}

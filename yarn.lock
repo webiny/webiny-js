@@ -107,26 +107,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@auth0/auth0-react@npm:^2.5.0":
-  version: 2.5.0
-  resolution: "@auth0/auth0-react@npm:2.5.0"
+"@auth0/auth0-react@npm:^2.2.4":
+  version: 2.11.0
+  resolution: "@auth0/auth0-react@npm:2.11.0"
   dependencies:
-    "@auth0/auth0-spa-js": "npm:^2.4.1"
+    "@auth0/auth0-spa-js": "npm:^2.11.0"
   peerDependencies:
-    react: ^16.11.0 || ^17 || ^18 || ^19
-    react-dom: ^16.11.0 || ^17 || ^18 || ^19
-  checksum: 10/39ad93eb613e84f5cc6339055f3e9b5b5fe3085cacbe60a03389bf2d74e1abafceb6f011e3f84f0a1170e3c65ac1a59fb17d401bf54bcc293052db63fbabe65d
+    react: ^16.11.0 || ^17 || ^18 || ~19.0.1 || ~19.1.2 || ^19.2.1
+    react-dom: ^16.11.0 || ^17 || ^18 || ~19.0.1 || ~19.1.2 || ^19.2.1
+  checksum: 10/fa6945cc78e0267e4e77cedd7f1552bad613c36f4d4f017bb648fc063b6addb188fb358ff432e3547a38025c0730902a5834eb525eef0307d99955521066d35a
   languageName: node
   linkType: hard
 
-"@auth0/auth0-spa-js@npm:^2.4.1":
-  version: 2.4.1
-  resolution: "@auth0/auth0-spa-js@npm:2.4.1"
+"@auth0/auth0-spa-js@npm:^2.11.0":
+  version: 2.11.0
+  resolution: "@auth0/auth0-spa-js@npm:2.11.0"
   dependencies:
     browser-tabs-lock: "npm:^1.2.15"
     dpop: "npm:^2.1.1"
     es-cookie: "npm:~1.3.2"
-  checksum: 10/b57cc52223fd0e6a7d92216cff68d363f976ff75bb75c38bd86c159cee58fc911a22ddc32b11b4eeeb6456216b80a6cce0e53e101261f7a0653f7d603489d25c
+  checksum: 10/2ee8084da37b0a79eaff74b8d03ff96df13f89dce9df9bfe155e1b219159eeeea5b3d97bf449bc6a06ee7770e54e848b3f8b2a4b359ced192e8b468177d4a4d8
   languageName: node
   linkType: hard
 
@@ -4240,7 +4240,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/is-prop-valid@npm:^1.2.0":
+"@emotion/is-prop-valid@npm:^1.2.0, @emotion/is-prop-valid@npm:^1.3.0":
   version: 1.4.0
   resolution: "@emotion/is-prop-valid@npm:1.4.0"
   dependencies:
@@ -4344,6 +4344,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@emotion/styled@npm:^11.10.6":
+  version: 11.14.1
+  resolution: "@emotion/styled@npm:11.14.1"
+  dependencies:
+    "@babel/runtime": "npm:^7.18.3"
+    "@emotion/babel-plugin": "npm:^11.13.5"
+    "@emotion/is-prop-valid": "npm:^1.3.0"
+    "@emotion/serialize": "npm:^1.3.3"
+    "@emotion/use-insertion-effect-with-fallbacks": "npm:^1.2.0"
+    "@emotion/utils": "npm:^1.4.2"
+  peerDependencies:
+    "@emotion/react": ^11.0.0-rc.0
+    react: ">=16.8.0"
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: 10/b20ffaaac76e16538051da8d417f1da75f47f0974000edf0999f39f309b23ee0a91ba7dc1d5f60c4017d29fadfed48631ae4a8f697e3662a88318c667d072117
+  languageName: node
+  linkType: hard
+
 "@emotion/stylis@npm:0.8.5":
   version: 0.8.5
   resolution: "@emotion/stylis@npm:0.8.5"
@@ -4365,7 +4385,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/use-insertion-effect-with-fallbacks@npm:^1.0.0":
+"@emotion/use-insertion-effect-with-fallbacks@npm:^1.0.0, @emotion/use-insertion-effect-with-fallbacks@npm:^1.2.0":
   version: 1.2.0
   resolution: "@emotion/use-insertion-effect-with-fallbacks@npm:1.2.0"
   peerDependencies:
@@ -13730,25 +13750,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-security-auth0@workspace:packages/api-security-auth0":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-security-auth0@workspace:packages/api-security-auth0"
-  dependencies:
-    "@types/jsonwebtoken": "npm:^9.0.10"
-    "@types/jwk-to-pem": "npm:^2.0.3"
-    "@webiny/api-core": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/feature": "npm:0.0.0"
-    "@webiny/project": "npm:0.0.0"
-    "@webiny/project-aws": "npm:0.0.0"
-    jsonwebtoken: "npm:^9.0.3"
-    react: "npm:18.2.0"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/api-security-cognito@npm:0.0.0, @webiny/api-security-cognito@workspace:packages/api-security-cognito":
+"@webiny/api-security-cognito@workspace:packages/api-security-cognito":
   version: 0.0.0-use.local
   resolution: "@webiny/api-security-cognito@workspace:packages/api-security-cognito"
   dependencies:
@@ -13969,32 +13971,6 @@ __metadata:
     vite-tsconfig-paths: "npm:^5.1.4"
     vitest: "npm:^3.2.4"
     zod: "npm:^3.25.76"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/app-admin-auth0@workspace:packages/app-admin-auth0":
-  version: 0.0.0-use.local
-  resolution: "@webiny/app-admin-auth0@workspace:packages/app-admin-auth0"
-  dependencies:
-    "@apollo/react-hooks": "npm:^3.1.5"
-    "@auth0/auth0-react": "npm:^2.5.0"
-    "@emotion/styled": "npm:11.10.6"
-    "@webiny/admin-ui": "npm:0.0.0"
-    "@webiny/app-admin": "npm:0.0.0"
-    "@webiny/app-serverless-cms": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/icons": "npm:0.0.0"
-    "@webiny/ui": "npm:0.0.0"
-    apollo-client: "npm:^2.6.10"
-    emotion: "npm:10.0.27"
-    graphql: "npm:^16.12.0"
-    graphql-tag: "npm:^2.12.6"
-    lodash: "npm:^4.17.21"
-    react: "npm:18.2.0"
-    react-dom: "npm:18.2.0"
-    react-helmet: "npm:^6.1.0"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
   languageName: unknown
   linkType: soft
 
@@ -14829,6 +14805,32 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/auth0@workspace:packages/auth0":
+  version: 0.0.0-use.local
+  resolution: "@webiny/auth0@workspace:packages/auth0"
+  dependencies:
+    "@auth0/auth0-react": "npm:^2.2.4"
+    "@emotion/styled": "npm:^11.10.6"
+    "@types/jsonwebtoken": "npm:^9.0.10"
+    "@types/jwk-to-pem": "npm:^2.0.3"
+    "@webiny/admin-ui": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/app-admin": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/icons": "npm:0.0.0"
+    "@webiny/project": "npm:0.0.0"
+    "@webiny/project-aws": "npm:0.0.0"
+    emotion: "npm:10.0.27"
+    jsonwebtoken: "npm:^9.0.3"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
+    react-helmet: "npm:^6.1.0"
+    rimraf: "npm:^6.0.1"
+    typescript: "npm:5.9.3"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/aws-helpers@workspace:packages/aws-helpers":
   version: 0.0.0-use.local
   resolution: "@webiny/aws-helpers@workspace:packages/aws-helpers"
@@ -15447,7 +15449,6 @@ __metadata:
     "@webiny/api-mailer": "npm:0.0.0"
     "@webiny/api-record-locking": "npm:0.0.0"
     "@webiny/api-scheduler": "npm:0.0.0"
-    "@webiny/api-security-cognito": "npm:0.0.0"
     "@webiny/api-website-builder": "npm:0.0.0"
     "@webiny/api-website-builder-workflows": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"

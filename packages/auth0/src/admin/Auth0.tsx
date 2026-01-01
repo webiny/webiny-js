@@ -1,5 +1,5 @@
 import React, { Fragment, useCallback, useEffect, useRef, useState } from "react";
-import { LoginScreenRenderer, useTenancy, useTags } from "@webiny/app-serverless-cms";
+import { LoginScreenRenderer, useTenancy, useTags } from "@webiny/app-admin";
 import type { CreateAuthenticationConfig } from "./createAuthentication.js";
 import { createAuthentication } from "./createAuthentication.js";
 import { UserMenuModule } from "./modules/userMenu/index.js";

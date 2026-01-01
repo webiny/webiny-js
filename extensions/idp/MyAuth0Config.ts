@@ -1,4 +1,4 @@
-import { Auth0IdpConfig } from "@webiny/api-security-auth0";
+import { Auth0IdpConfig } from "@webiny/auth0";
 
 class MyIdpConfig implements Auth0IdpConfig.Interface {
     getIdentity(token: Auth0IdpConfig.JwtPayload) {
@@ -8,7 +8,7 @@ class MyIdpConfig implements Auth0IdpConfig.Interface {
             displayName: token["name"],
             // User profile on this tenant
             profile: {
-                groups: ["full-access"],
+                groups: [token["webiny_group"]],
                 teams: [token["team"]].filter(Boolean),
                 firstName: token["given_name"],
                 lastName: token["family_name"],
