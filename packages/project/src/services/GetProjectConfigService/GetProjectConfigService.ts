@@ -16,11 +16,9 @@ import { ExtensionDefinitions as ExtensionDefinitionsExtension } from "~/extensi
 import { ExtensionInstanceModel } from "~/defineExtension/index.js";
 import { ProjectConfigModel } from "~/models/ProjectConfigModel.js";
 import { renderConfig } from "./renderConfig.js";
-import { extractProductionEnvironmentsFromConfig } from "~/utils/index.js";
 
 export class DefaultGetProjectConfigService implements GetProjectConfigService.Interface {
     cachedRenderedConfigs: Record<string, IProjectConfigDto> = {};
-    cachedProductionEnvironments: string[] | null = null;
 
     constructor(
         private readonly getProjectService: GetProjectService.Interface,
@@ -46,8 +44,7 @@ export class DefaultGetProjectConfigService implements GetProjectConfigService.I
                 this.cachedRenderedConfigs[cacheKey] = await renderConfig({
                     project,
                     args: params.renderArgs,
-                    sdkParams: projectSdkParams,
-                    productionEnvironments: this.cachedProductionEnvironments || undefined
+                    sdkParams: projectSdkParams
                 });
             } catch (err) {
                 this.loggerService.error(
