@@ -41,11 +41,6 @@ export const Webiny = () => {
                 singleton
             />
 
-            <ProjectImplementation.ReactComponent
-                src={p("../features/GetApiGqlClient.js")}
-                singleton
-            />
-
             <AdminAfterDeploy.ReactComponent src={p("Webiny/UploadAdminAppToS3.js")} />
             <ApiAfterDeploy.ReactComponent src={p("Webiny/ExecuteDataMigrations.js")} />
             <ApiAfterDeploy.ReactComponent

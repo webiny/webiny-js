@@ -1,5 +1,5 @@
 import React from "react";
-import { Admin, Cli, Infra, Project, Security } from "webiny/extensions";
+import {  Cli, Infra, Project, Security } from "webiny/extensions";
 import { MySchemaExtension } from "./extensions/graphql/MySchemaExtension.js";
 
 // import { Okta } from "@webiny/okta";
@@ -9,14 +9,6 @@ export const Extensions = () => {
         <>
             {/* Admin 👇 */}
             {/*<Admin.Extension src={"./extensions/AdminLogo/AdminLogo.tsx"} />*/}
-            <Admin.AutoInstall
-                adminUser={{
-                    firstName: "John",
-                    lastName: "Doe",
-                    email: "admin@example.com",
-                    password: "SecurePassword123"
-                }}
-            />
 
             {/* Infra 👇 */}
             <Infra.PulumiResourceNamePrefix prefix={"myproj-"} />
@@ -66,6 +58,14 @@ export const Extensions = () => {
 
             {/* Project 👇 */}
             <Project.Telemetry enabled={false} />
+            <Project.AutoInstall
+                adminUser={{
+                    firstName: "John",
+                    lastName: "Doe",
+                    email: "admin@example.com",
+                    password: "SecurePassword123"
+                }}
+            />
 
             {/* API */}
             <MySchemaExtension />
