@@ -72,6 +72,7 @@ export const BlueGreenRouterCloudFront = createAppModule({
                 protect: config.protect
             },
             config: {
+                httpVersion: "http2and3",
                 enabled: true,
                 priceClass: "PriceClass_100",
                 origins: [
