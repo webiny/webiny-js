@@ -176,7 +176,7 @@ export const createAuthentication = ({
         return (
             <Auth0Provider
                 useRefreshTokens={true}
-                cacheLocation="localstorage"
+                cacheLocation="memory"
                 onRedirectCallback={(appState, user) => {
                     onRedirect({ appState, user });
                 }}
