@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { defineExtension } from "@webiny/project/defineExtension/index.js";
 
-export const AdminAutoInstall = defineExtension({
-    type: "Admin/AutoInstall",
+export const AutoInstall = defineExtension({
+    type: "Project/AutoInstall",
     tags: { runtimeContext: "project" },
     description: "Auto-install Webiny with admin user credentials on first deploy.",
     paramsSchema: z.object({
