@@ -85,8 +85,7 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
                                 type: "admin"
                             },
                             description: "test",
-                            createdOn: new Date().toISOString(),
-                            webinyVersion: context.WEBINY_VERSION
+                            createdOn: new Date().toISOString()
                         };
                     };
                 }

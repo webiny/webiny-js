@@ -1,7 +1,7 @@
+import { TaskDataStatus } from "@webiny/tasks";
 import { describe, expect, it } from "vitest";
 import { useHandler } from "~tests/helpers/useHandler";
-import { createValidateImportFromUrlTask } from "~/tasks";
-import { TaskDataStatus } from "@webiny/tasks";
+import { VALIDATE_IMPORT_FROM_URL_INTEGRITY_TASK } from "~/tasks/constants.js";
 
 describe("import from url - graphql", () => {
     it("should fail to import from URL because of invalid ID", async () => {
@@ -29,11 +29,9 @@ describe("import from url - graphql", () => {
 
         const context = await createContext();
 
-        const definition = createValidateImportFromUrlTask();
-
         const task = await context.tasks.createTask({
             name: "Test Task",
-            definitionId: definition.id,
+            definitionId: VALIDATE_IMPORT_FROM_URL_INTEGRITY_TASK,
             input: {
                 files: [],
                 model: {
@@ -66,11 +64,9 @@ describe("import from url - graphql", () => {
 
         const context = await createContext();
 
-        const definition = createValidateImportFromUrlTask();
-
         const task = await context.tasks.createTask({
             name: "Test Task",
-            definitionId: definition.id,
+            definitionId: VALIDATE_IMPORT_FROM_URL_INTEGRITY_TASK,
             input: {
                 files: [],
                 model: {
@@ -105,11 +101,9 @@ describe("import from url - graphql", () => {
 
         const context = await createContext();
 
-        const definition = createValidateImportFromUrlTask();
-
         const task = await context.tasks.createTask({
             name: "Test Task",
-            definitionId: definition.id,
+            definitionId: VALIDATE_IMPORT_FROM_URL_INTEGRITY_TASK,
             input: {
                 files: [],
                 model: {
@@ -154,11 +148,9 @@ describe("import from url - graphql", () => {
 
         const context = await createContext();
 
-        const definition = createValidateImportFromUrlTask();
-
         const task = await context.tasks.createTask({
             name: "Test Task",
-            definitionId: definition.id,
+            definitionId: VALIDATE_IMPORT_FROM_URL_INTEGRITY_TASK,
             input: {
                 files: [],
                 model: {

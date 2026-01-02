@@ -1,9 +1,9 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { IntrospectionField, IntrospectionInterfaceType } from "graphql";
 import { useGraphQlHandler } from "~tests/context/useGraphQLHandler";
-import { createBulkAction } from "~/plugins";
 import { createMockModels, createPrivateMockModels } from "~tests/mocks";
-import { createBulkActionEntriesTasks } from "~/tasks";
+import { createContextPlugin } from "@webiny/api";
+import { EntriesBulkAction } from "~/features/EntriesBulkAction/abstractions.js";
 
 interface GraphQlType {
     kind: Uppercase<string>;
@@ -38,7 +38,7 @@ const defaultBulkActionsEnumNames = [
 describe("createBulkAction", () => {
     it("should create GraphQL schema with default bulk actions ENUMS", async () => {
         const { introspect } = useGraphQlHandler({
-            plugins: [...createMockModels(), createBulkActionEntriesTasks()]
+            plugins: [...createMockModels()]
         });
 
         const [result] = await introspect();
@@ -61,32 +61,39 @@ describe("createBulkAction", () => {
 
     it("should NOT create bulk actions ENUMS in case of a private model", async () => {
         const { introspect } = useGraphQlHandler({
-            plugins: [...createPrivateMockModels(), createBulkActionEntriesTasks()]
+            plugins: [...createPrivateMockModels()]
         });
 
         const [result] = await introspect();
         const types = getTypesFromResult(result);
 
-        const forbiddens = ["BulkActionPrivateModelName"] as const;
-        for (const forbidden of forbiddens) {
+        const forbiddenModels = ["BulkActionPrivateModelName"] as const;
+        for (const forbidden of forbiddenModels) {
             const type = types.find(t => t.name === forbidden);
             expect(type).toBeUndefined();
         }
     });
 
     it("should update the ENUMS when a new bulk action is created, only for the provided `modelIds`", async () => {
-        const dataLoader = vi.fn();
-        const dataProcessor = vi.fn();
+        class PrintBulkAction implements EntriesBulkAction.Interface {
+            name = "print";
+            modelIds = ["car"];
+
+            loadData() {
+                return Promise.resolve({
+                    entries: [],
+                    meta: { totalCount: 0, hasMoreItems: false, cursor: null }
+                });
+            }
+
+            async processData(): Promise<void> {}
+        }
 
         const { introspect } = useGraphQlHandler({
             plugins: [
                 ...createMockModels(),
-                createBulkActionEntriesTasks(),
-                createBulkAction({
-                    name: "print",
-                    dataLoader,
-                    dataProcessor,
-                    modelIds: ["car"]
+                createContextPlugin(context => {
+                    context.container.registerInstance(EntriesBulkAction, new PrintBulkAction());
                 })
             ]
         });

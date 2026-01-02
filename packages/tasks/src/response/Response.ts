@@ -1,7 +1,6 @@
 import sizeOfObject from "object-sizeof";
 
 import type { ITaskEvent } from "~/handler/types.js";
-import { TaskResponseStatus } from "~/types.js";
 import type {
     IResponse,
     IResponseAbortedResult,
@@ -12,14 +11,17 @@ import type {
     IResponseErrorParams,
     IResponseErrorResult,
     IResponseFromParams,
-    IResponseResult,
-    ITaskResponseDoneResultOutput
+    IResponseResult
 } from "./abstractions/index.js";
 import { ResponseContinueResult } from "~/response/ResponseContinueResult.js";
 import { ResponseDoneResult } from "~/response/ResponseDoneResult.js";
 import { ResponseErrorResult } from "~/response/ResponseErrorResult.js";
 import { ResponseAbortedResult } from "./ResponseAbortedResult.js";
 import { getErrorProperties } from "~/utils/getErrorProperties.js";
+import {
+    TaskDefinition,
+    TaskResultStatus
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 /**
  * Step Functions has a limit of 256KB for the output size.
@@ -31,7 +33,7 @@ interface ICreateMaxSizeOutputParams {
     size: number;
 }
 
-const createMaxSizeOutput = <O extends ITaskResponseDoneResultOutput>({
+const createMaxSizeOutput = <O extends TaskDefinition.TaskOutput>({
     size
 }: ICreateMaxSizeOutputParams): O => {
     return {
@@ -44,7 +46,7 @@ const createMaxSizeOutput = <O extends ITaskResponseDoneResultOutput>({
  * Figure out the size of the output object and remove the stack trace if the size exceeds the maximum allowed size.
  * If the size is still greater than the maximum allowed size, just return the message that the output size exceeds the maximum allowed size.
  */
-const getOutput = <O extends ITaskResponseDoneResultOutput>(output?: O): O | undefined => {
+const getOutput = <O extends TaskDefinition.TaskOutput>(output?: O): O | undefined => {
     if (!output || Object.keys(output).length === 0) {
         return undefined;
     }
@@ -86,11 +88,11 @@ export class Response implements IResponse {
 
     public from(params: IResponseFromParams): IResponseResult {
         switch (params.status) {
-            case TaskResponseStatus.DONE:
+            case TaskResultStatus.DONE:
                 return this.done(params);
-            case TaskResponseStatus.CONTINUE:
+            case TaskResultStatus.CONTINUE:
                 return this.continue(params);
-            case TaskResponseStatus.ERROR:
+            case TaskResultStatus.ERROR:
                 return this.error(params);
         }
     }
@@ -106,7 +108,7 @@ export class Response implements IResponse {
         });
     }
 
-    public done<O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput>(
+    public done<O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput>(
         params?: IResponseDoneParams<O>
     ): IResponseDoneResult<O> {
         return new ResponseDoneResult<O>({

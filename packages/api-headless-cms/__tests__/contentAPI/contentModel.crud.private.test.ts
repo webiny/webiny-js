@@ -36,7 +36,7 @@ const privateAuthorsModel = createPrivateModelPlugin({
 
 describe("Private Groups and Models", function () {
     const manageHandlerOpts = {
-        path: "manage/en-US",
+        path: "manage",
         plugins: [privateGroup, privateAuthorsModel]
     };
 

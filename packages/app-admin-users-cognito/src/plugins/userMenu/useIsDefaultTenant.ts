@@ -1,19 +1,10 @@
-import { useSecurity } from "@webiny/app-security";
+import { useIdentity } from "@webiny/app-admin";
 
 export function useIsDefaultTenant(): boolean {
-    const security = useSecurity();
-
-    if (!security || !security.identity) {
-        return false;
-    }
+    const { identity } = useIdentity();
 
     // This is only applicable in multi-tenant environments
-    const { currentTenant, defaultTenant } = security.identity;
+    const { currentTenant, defaultTenant } = identity;
 
-    if (!currentTenant || !defaultTenant) {
-        // If there's no tenant information, we assume this is a single-tenant environment.
-        return true;
-    }
-
-    return currentTenant && defaultTenant && currentTenant.id === defaultTenant.id;
+    return currentTenant.id === defaultTenant.id;
 }

@@ -30,7 +30,7 @@ export interface IExecuteParams {
     timer: ITimer;
     maxRunningTime: number;
     maxProcessorPercent: number;
-    context: Pick<Context, "elasticsearch" | "logger">;
+    context: Pick<Context, "elasticsearch">;
     operations: Pick<IOperations, "items" | "total">;
 }
 
@@ -89,7 +89,24 @@ export const execute = (params: IExecuteParams) => {
             maxWaitingTime
         });
 
-        const log = context.logger.withSource("dynamodbToElasticsearch");
+        // const log = context.logger.withSource("dynamodbToElasticsearch");
+        const log = {
+            notice: (...params: any[]) => {
+                console.log(...params);
+            },
+            debug: (...params: any[]) => {
+                console.debug(...params);
+            },
+            info: (...params: any[]) => {
+                console.info(...params);
+            },
+            warn: (...params: any[]) => {
+                console.warn(...params);
+            },
+            error: (...params: any[]) => {
+                console.error(...params);
+            }
+        };
 
         try {
             await healthCheck.wait({

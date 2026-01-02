@@ -100,7 +100,7 @@ const FloatingToolbar: FC<FloatingToolbarProps> = ({ anchorElem, editor }) => {
         const scrollerElem = anchorElem.parentElement;
 
         const update = () => {
-            editor.getEditorState().read(() => {
+            editor.read(() => {
                 updateTextFormatFloatingToolbar();
             });
         };
@@ -119,7 +119,7 @@ const FloatingToolbar: FC<FloatingToolbarProps> = ({ anchorElem, editor }) => {
     }, [editor, updateTextFormatFloatingToolbar, anchorElem]);
 
     useEffect(() => {
-        editor.getEditorState().read(() => {
+        editor.read(() => {
             updateTextFormatFloatingToolbar();
         });
         return mergeRegister(

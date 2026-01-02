@@ -8,7 +8,6 @@ import type {
     ITaskManagerStoreSetOutputOptions,
     ITaskManagerStoreUpdateTaskInputOptions,
     ITaskManagerStoreUpdateTaskOptions,
-    ITaskResponseDoneResultOutput,
     ITasksContextObject,
     TaskDataStatus
 } from "~/types.js";
@@ -25,7 +24,7 @@ import type {
 import deepEqual from "deep-equal";
 import { getObjectProperties } from "~/utils/getObjectProperties.js";
 import { ObjectUpdater } from "~/utils/ObjectUpdater.js";
-import type { GenericRecord } from "@webiny/api/types.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 const getInput = <T extends ITaskDataInput = ITaskDataInput>(
     originalInput: T,
@@ -53,7 +52,7 @@ export interface ITaskManagerStoreParams {
 
 export class TaskManagerStore<
     T extends ITaskDataInput = ITaskDataInput,
-    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput
 > implements ITaskManagerStorePrivate<T, O>
 {
     private readonly context: TaskManagerStoreContext;
@@ -80,8 +79,8 @@ export class TaskManagerStore<
     }
 
     public async listChildTasks<
-        I = GenericRecord,
-        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+        I extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
+        O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput
     >(definitionId?: string): Promise<ITask<I, O>[]> {
         const where: IListTaskParamsWhere = {
             parentId: this.task.id

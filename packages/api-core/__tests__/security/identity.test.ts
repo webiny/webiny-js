@@ -52,8 +52,7 @@ describe("identity test", () => {
 
         expect(linksByIdentity[0]).toEqual({
             ...link1,
-            createdOn: expect.any(String),
-            webinyVersion: process.env.WEBINY_VERSION
+            createdOn: expect.any(String)
         });
 
         // List by type
@@ -69,8 +68,7 @@ describe("identity test", () => {
 
         expect(linksByType[0]).toEqual({
             ...link1,
-            createdOn: expect.any(String),
-            webinyVersion: process.env.WEBINY_VERSION
+            createdOn: expect.any(String)
         });
 
         // List by tenant
@@ -84,8 +82,8 @@ describe("identity test", () => {
         const linksByTenant = linksByTenantResult.value;
 
         expect(linksByTenant).toEqual([
-            { ...link1, createdOn: expect.any(String), webinyVersion: process.env.WEBINY_VERSION },
-            { ...link2, createdOn: expect.any(String), webinyVersion: process.env.WEBINY_VERSION }
+            { ...link1, createdOn: expect.any(String) },
+            { ...link2, createdOn: expect.any(String) }
         ]);
 
         // Update tenant links

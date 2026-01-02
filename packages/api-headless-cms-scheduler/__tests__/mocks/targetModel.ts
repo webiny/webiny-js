@@ -28,9 +28,7 @@ export const createMockTargetModel = (): CmsModel => {
         layout: [["title"]],
         createdOn: new Date().toISOString(),
         savedOn: new Date().toISOString(),
-        webinyVersion: "0.0.0",
         tenant: "root",
-        locale: "en-US",
         titleFieldId: "title"
     };
 };

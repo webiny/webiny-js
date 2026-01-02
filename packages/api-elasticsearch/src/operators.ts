@@ -1,6 +1,5 @@
 import {
     ElasticsearchQueryBuilderOperatorBetweenPlugin,
-    ElasticsearchQueryBuilderJapaneseOperatorContainsPlugin,
     ElasticsearchQueryBuilderOperatorAndInPlugin,
     ElasticsearchQueryBuilderOperatorGreaterThanOrEqualToPlugin,
     ElasticsearchQueryBuilderOperatorGreaterThanPlugin,
@@ -34,11 +33,7 @@ const operators = [
     new ElasticsearchQueryBuilderOperatorAndInPlugin(),
     new ElasticsearchQueryBuilderOperatorNotInPlugin(),
     new ElasticsearchQueryBuilderOperatorStartsWithPlugin(),
-    new ElasticsearchQueryBuilderOperatorNotStartsWithPlugin(),
-    /**
-     * Japanese
-     */
-    new ElasticsearchQueryBuilderJapaneseOperatorContainsPlugin()
+    new ElasticsearchQueryBuilderOperatorNotStartsWithPlugin()
 ];
 /**
  * We export as a function because there might be something to be sent to the operators at some point.

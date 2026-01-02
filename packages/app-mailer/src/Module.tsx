@@ -1,6 +1,6 @@
 import React, { lazy, Suspense } from "react";
 import { AdminConfig, Plugins, AdminLayout, useRouter } from "@webiny/app-admin";
-import { HasPermission } from "@webiny/app-security";
+import { HasPermission } from "@webiny/app-admin";
 import { OverlayLoader } from "@webiny/admin-ui";
 import { usePermission } from "~/hooks/usePermission.js";
 import { Routes } from "~/routes.js";
@@ -54,8 +54,13 @@ const MailerSettings = () => {
                 <Menu
                     name={"mailer.settings.general"}
                     parent={"settings"}
-                    pinnable={true}
-                    element={<Menu.Link text={"Settings"} to={router.getLink(Routes.Settings)} />}
+                    element={
+                        <Menu.Link
+                            text={"Settings"}
+                            to={router.getLink(Routes.Settings)}
+                            pinnable={true}
+                        />
+                    }
                 />
             </HasPermission>
         </AdminConfig>

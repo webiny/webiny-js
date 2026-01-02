@@ -1089,7 +1089,7 @@ const createMockData = () => {
                 modelText: "COLORADO",
                 consequenceDefect: paragraphs(2),
                 descDefect: paragraphs(3),
-                recallsCampNumber: "06V307000",
+                recallsCampNumber: "A06V307000",
                 recallId: 63244,
                 compName: "WHEELS:RIM "
             },
@@ -1103,7 +1103,7 @@ const createMockData = () => {
                 modelText: "S10",
                 consequenceDefect: paragraph(),
                 descDefect: paragraphs(4),
-                recallsCampNumber: "09E025000",
+                recallsCampNumber: "B09E025000",
                 recallId: 102448,
                 compName: "EXTERIOR LIGHTING:HEADLIGHTS"
             },
@@ -1117,7 +1117,7 @@ const createMockData = () => {
                 modelText: "COLORADO",
                 consequenceDefect: paragraphs(2),
                 descDefect: paragraphs(2),
-                recallsCampNumber: "09V310000",
+                recallsCampNumber: "C09V310000",
                 recallId: 102549,
                 compName: "EXTERIOR LIGHTING:BRAKE LIGHTS:SWITCH"
             },
@@ -1131,7 +1131,7 @@ const createMockData = () => {
                 modelText: "COLORADO",
                 consequenceDefect: paragraphs(6),
                 descDefect: paragraphs(2),
-                recallsCampNumber: "10V575000",
+                recallsCampNumber: "D10V575000",
                 recallId: 121363,
                 compName: "CHILD SEAT"
             }

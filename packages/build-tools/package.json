@@ -29,6 +29,7 @@
     "@swc/plugin-emotion": "^11.1.0",
     "@tailwindcss/postcss": "^4.1.16",
     "@types/webpack-env": "^1.18.8",
+    "chalk": "^4.1.2",
     "chokidar": "^4.0.3",
     "css-loader": "^7.1.2",
     "eslint": "^9.39.1",

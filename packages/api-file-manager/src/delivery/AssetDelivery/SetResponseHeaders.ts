@@ -5,12 +5,12 @@ import type {
     AssetRequest,
     AssetOutputStrategyDecoratorParams
 } from "~/delivery/index.js";
-import type { FileManagerContext } from "~/types.js";
 import type { ResponseHeaders } from "@webiny/handler";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 
 export interface ResponseHeadersParams {
     headers: ResponseHeaders;
-    context: FileManagerContext;
+    context: ApiCoreContext;
     assetRequest: AssetRequest;
     asset: Asset;
 }

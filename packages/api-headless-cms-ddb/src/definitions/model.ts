@@ -40,10 +40,6 @@ export const createModelEntity = (params: Params): Entity<any> => {
                 type: "string",
                 required: true
             },
-            locale: {
-                type: "string",
-                required: true
-            },
             group: {
                 type: "map",
                 required: true
@@ -78,10 +74,6 @@ export const createModelEntity = (params: Params): Entity<any> => {
                 type: "list",
                 required: false,
                 default: []
-            },
-            lockedFields: {
-                type: "list",
-                required: true
             },
             titleFieldId: {
                 type: "string"

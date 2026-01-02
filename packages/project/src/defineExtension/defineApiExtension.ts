@@ -9,7 +9,7 @@ import path from "path";
 export type DefineApiExtensionParams = {
     type: string;
     description?: string;
-    abstraction: Abstraction<any>;
+    abstraction?: Abstraction<any>;
 };
 
 export const defineApiExtension = (params: DefineApiExtensionParams) =>
@@ -19,6 +19,12 @@ export const defineApiExtension = (params: DefineApiExtensionParams) =>
         description: params.description,
         multiple: true,
         paramsSchema: ({ project }) => {
+            if (!params.abstraction) {
+                return z.object({
+                    src: z.string()
+                });
+            }
+
             return z.object({
                 src: zodPathToAbstraction(params.abstraction, project)
             });

@@ -57,6 +57,7 @@ import {
     commandsWithGracefulErrorHandling,
     deployCommandWithTelemetry
 } from "./decorators/index.js";
+import { CliCommand } from "~/extensions/index.js";
 
 const { bgYellow, bold } = chalk;
 
@@ -110,7 +111,6 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
     // Extensions.
     const ui = container.resolve(UiService);
 
-    // TODO: not sure how I feel about this. We should probably revisit this.
     try {
         // Immediately set CLI instance params via the `CliParamsService`.
         container.resolve(CliParamsService).set(params);
@@ -138,7 +138,7 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
             return importedModule[exportName];
         };
 
-        const commands = projectConfig.extensionsByType<any>("Cli/Command");
+        const commands = projectConfig.extensionsByType(CliCommand);
         for (const command of commands) {
             const commandImplementation = await importFromPath(command.params.src);
 
@@ -154,13 +154,13 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
 
         const argv = container.resolve(GetArgvService).execute();
         if (argv.showStackTrace && realError.stack) {
-            ui.newLine();
+            ui.emptyLine();
             ui.debug("Stack trace:");
             ui.text(realError.stack);
         }
 
         if (error && error instanceof GracefulError) {
-            ui.newLine();
+            ui.emptyLine();
             ui.text(bgYellow(bold("💡 How can I resolve this?")));
             ui.text(error.message);
         }

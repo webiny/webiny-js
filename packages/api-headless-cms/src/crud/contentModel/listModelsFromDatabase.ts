@@ -26,11 +26,6 @@ export const listModelsFromDatabase = async (params: Params): Promise<CmsModel[]
             ...model,
             tags: ensureTypeTag(model),
             tenant: model.tenant || getTenant().id,
-            locale: model.locale || getLocale().code,
-            /**
-             * TODO: remove in v5.36.0
-             * This is for backward compatibility while migrations are not yet executed.
-             */
             singularApiName: ensureSingularApiName(model),
             pluralApiName: ensurePluralApiName(model)
         };

@@ -1,8 +1,5 @@
 import type { IManager } from "~/types.js";
-import type {
-    ITaskResponse,
-    ITaskResponseResult
-} from "@webiny/tasks/response/abstractions/index.js";
+import type { ITaskResult } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import type { IndexManager } from "~/settings/index.js";
 import type { IIndexManager } from "~/settings/types.js";
 import type { IElasticsearchEnableIndexingTaskInput } from "~/tasks/enableIndexing/types.js";
@@ -10,20 +7,20 @@ import type { IElasticsearchEnableIndexingTaskInput } from "~/tasks/enableIndexi
 export class EnableIndexingTaskRunner {
     private readonly manager: IManager<IElasticsearchEnableIndexingTaskInput>;
     private readonly indexManager: IIndexManager;
-    private readonly response: ITaskResponse;
 
     public constructor(
         manager: IManager<IElasticsearchEnableIndexingTaskInput>,
         indexManager: IndexManager
     ) {
         this.manager = manager;
-        this.response = manager.response;
         this.indexManager = indexManager;
     }
 
-    public async exec(matching?: string): Promise<ITaskResponseResult> {
-        if (this.manager.isAborted()) {
-            return this.response.aborted();
+    public async exec(
+        matching?: string
+    ): Promise<ITaskResult<IElasticsearchEnableIndexingTaskInput>> {
+        if (this.manager.controller.runtime.isAborted()) {
+            return this.manager.controller.response.aborted();
         }
 
         const isIndexAllowed = (index: string): boolean => {
@@ -45,13 +42,13 @@ export class EnableIndexingTaskRunner {
                 enabled.push(index);
             } catch (ex) {
                 failed.push(index);
-                await this.manager.store.addErrorLog({
+                await this.manager.controller.logger.error({
                     message: `Failed to enable indexing on index "${index}".`,
                     error: ex
                 });
             }
         }
-        return this.response.done("Task done.", {
+        return this.manager.controller.response.done("Task done.", {
             enabled,
             failed
         });

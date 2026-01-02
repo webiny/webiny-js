@@ -8,8 +8,8 @@ import type {
     CmsModelFieldValidatorPlugin,
     CmsModelFieldValidatorValidateParams
 } from "~/types/index.js";
-import WebinyError from "@webiny/error";
 import camelCase from "lodash/camelCase.js";
+import { EntryValidationError } from "~/domain/contentEntry/errors.js";
 
 type PluginValidationCallable = (params: CmsModelFieldValidatorValidateParams) => Promise<boolean>;
 type PluginValidationList = Record<string, PluginValidationCallable[]>;
@@ -213,7 +213,7 @@ export const validateModelEntryDataOrThrow = async (params: ValidateModelEntryDa
     if (invalidFields.length === 0) {
         return;
     }
-    throw new WebinyError("Validation failed.", "VALIDATION_FAILED", invalidFields);
+    throw new EntryValidationError("Validation failed.", invalidFields);
 };
 
 /**

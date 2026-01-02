@@ -21,18 +21,15 @@ const createContext = (type?: ApiEndpoint | null): CmsContext => {
 const correctTestCases: [ApiEndpoint][] = [["manage"], ["read"], ["preview"]];
 
 describe("Header Parameter Plugin", () => {
-    it.each(correctTestCases)(
-        "should properly extract type and locale from headers - %s, %s",
-        async type => {
-            const plugin = createHeaderParameterPlugin();
+    it.each(correctTestCases)("should properly extract type from headers - %s", async type => {
+        const plugin = createHeaderParameterPlugin();
 
-            const result = await plugin.getParameters(createContext(type));
+        const result = await plugin.getParameters(createContext(type));
 
-            expect(result).toEqual({
-                type
-            });
-        }
-    );
+        expect(result).toEqual({
+            type
+        });
+    });
 
     it("should return null on missing both headers - code will move onto the next available plugin", async () => {
         const plugin = createHeaderParameterPlugin();
@@ -52,8 +49,10 @@ describe("Header Parameter Plugin", () => {
 
         expect(isInstalledResponse).toEqual({
             data: {
-                cms: {
-                    version: null
+                system: {
+                    isSystemInstalled: {
+                        data: false
+                    }
                 }
             }
         });
@@ -88,7 +87,7 @@ describe("Header Parameter Plugin", () => {
         expect(isInstalledResponse).toMatchObject({
             errors: [
                 {
-                    message: `Cannot query field "cms" on type "Query".`
+                    message: `Cannot query field "system" on type "Query".`
                 }
             ]
         });

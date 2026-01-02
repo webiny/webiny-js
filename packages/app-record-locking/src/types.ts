@@ -1,8 +1,8 @@
 import type { CmsContentEntry } from "@webiny/app-headless-cms/types.js";
 import type { GenericRecord } from "@webiny/app/types.js";
 import type { IRecordLockingUnlockEntryResult } from "~/domain/abstractions/IRecordLockingUnlockEntry.js";
-import type { SecurityPermission } from "@webiny/app-security/types.js";
 import type { IRecordLockingUpdateEntryLockResult } from "~/domain/abstractions/IRecordLocking.js";
+import { Identity } from "@webiny/app-admin/domain/Identity.js";
 
 export interface IRecordLockingIdentity {
     id: string;
@@ -90,6 +90,6 @@ export interface IRecordLockingError<T = GenericRecord> {
     data?: T;
 }
 
-export interface RecordLockingSecurityPermission extends SecurityPermission {
+export interface RecordLockingSecurityPermission extends Identity.Permission {
     canForceUnlock?: string;
 }

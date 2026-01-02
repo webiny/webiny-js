@@ -8,16 +8,18 @@ const Sidebar = () => {
     const { browser } = usePageListConfig();
 
     return (
-        <div className={"p-xs overflow-auto relative"} style={{ height: "calc(100vh - 69px)" }}>
-            <FolderTree
-                folderActions={browser.folder.actions}
-                dropConfirmation={browser.folder.dropConfirmation}
-                focusedFolderId={currentFolderId}
-                onFolderClick={data => navigateToFolder(data.id)}
-                enableActions={true}
-                enableCreate={true}
-            />
-            <div className="absolute bottom-0 w-full">
+        <div className={"flex flex-col h-main-content"}>
+            <div className={"p-xs flex-1 overflow-y-scroll"}>
+                <FolderTree
+                    folderActions={browser.folder.actions}
+                    dropConfirmation={browser.folder.dropConfirmation}
+                    focusedFolderId={currentFolderId}
+                    onFolderClick={data => navigateToFolder(data.id)}
+                    enableActions={true}
+                    enableCreate={true}
+                />
+            </div>
+            <div className={"px-xs py-sm bg-neutral-base"}>
                 <SidebarFooter />
             </div>
         </div>

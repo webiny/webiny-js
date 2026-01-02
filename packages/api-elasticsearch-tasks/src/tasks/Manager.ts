@@ -1,66 +1,42 @@
+import { TaskController } from "@webiny/api-core/features/task/TaskController/index.js";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import type { Client } from "@webiny/api-elasticsearch";
-import { createElasticsearchClient } from "@webiny/api-elasticsearch";
 import { createTable } from "~/definitions/index.js";
-import type { Context, IManager } from "~/types.js";
+import type { IManager } from "~/types.js";
 import { createEntry } from "~/definitions/entry.js";
-import type { ITaskResponse } from "@webiny/tasks/response/abstractions/index.js";
-import type {
-    IIsCloseToTimeoutCallable,
-    ITaskManagerStore
-} from "@webiny/tasks/runner/abstractions/index.js";
 import type { BatchReadItem, IEntity } from "@webiny/db-dynamodb";
 import { batchReadAll } from "@webiny/db-dynamodb";
-import type { ITimer } from "@webiny/handler-aws/utils/index.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
-export interface ManagerParams<T> {
-    context: Context;
-    documentClient?: DynamoDBDocument;
-    elasticsearchClient?: Client;
-    isCloseToTimeout: IIsCloseToTimeoutCallable;
-    isAborted: () => boolean;
-    response: ITaskResponse;
-    store: ITaskManagerStore<T>;
-    timer: ITimer;
+export interface ManagerParams<
+    T extends TaskDefinition.TaskInput,
+    O extends TaskDefinition.TaskOutput
+> {
+    documentClient: DynamoDBDocument;
+    elasticsearchClient: Client;
+    controller: TaskController.Interface<T, O>;
 }
 
-export class Manager<T> implements IManager<T> {
+export class Manager<
+    T extends TaskDefinition.TaskInput,
+    O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput
+> implements IManager<T, O>
+{
+    public readonly controller: TaskController.Interface<T, O>;
     public readonly documentClient: DynamoDBDocument;
     public readonly elasticsearch: Client;
-    public readonly context: Context;
     public readonly table: ReturnType<typeof createTable>;
-    public readonly isCloseToTimeout: IIsCloseToTimeoutCallable;
-    public readonly isAborted: () => boolean;
-    public readonly response: ITaskResponse;
-    public readonly store: ITaskManagerStore<T>;
-    public readonly timer: ITimer;
 
     private readonly entities: Record<string, IEntity> = {};
 
-    public constructor(params: ManagerParams<T>) {
-        this.context = params.context;
-        this.documentClient = params?.documentClient || getDocumentClient();
-
-        this.elasticsearch =
-            params?.elasticsearchClient ||
-            params.context.elasticsearch ||
-            createElasticsearchClient({
-                endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}`
-            });
+    public constructor(params: ManagerParams<T, O>) {
+        this.controller = params.controller;
+        this.documentClient = params.documentClient;
+        this.elasticsearch = params.elasticsearchClient;
 
         this.table = createTable({
             documentClient: this.documentClient
         });
-        this.isCloseToTimeout = () => {
-            return params.isCloseToTimeout();
-        };
-        this.isAborted = () => {
-            return params.isAborted();
-        };
-        this.response = params.response;
-        this.store = params.store;
-        this.timer = params.timer;
     }
 
     public getEntity(name: string): IEntity {

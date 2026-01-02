@@ -7,7 +7,7 @@ export interface ICmsEntryZipperExecuteParams {
     isCloseToTimeout: IIsCloseToTimeoutCallable;
     isAborted(): boolean;
     model: CmsModel;
-    after: string | undefined;
+    after?: string | null;
     exportAssets: boolean;
 }
 

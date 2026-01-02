@@ -2,5 +2,5 @@ export const constraints = {
     npm: ">=10",
     npx: ">=10",
     yarn: ">=1.22.21 || >=3",
-    node: ">=22"
+    node: ">=24"
 };

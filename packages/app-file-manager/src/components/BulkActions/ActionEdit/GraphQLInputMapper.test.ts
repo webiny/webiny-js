@@ -29,8 +29,7 @@ const fileMock: FileItem = {
     name: "filenameA.png",
     size: 123456,
     type: "image/png",
-    tags: ["sketch", "file-a", "webiny"],
-    aliases: []
+    tags: ["sketch", "file-a", "webiny"]
 };
 
 describe("GraphQLInputMapper", () => {

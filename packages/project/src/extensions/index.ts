@@ -1,109 +1,115 @@
-import { extensionDefinitions } from "./extensionDefinitions.js";
-import { projectDecorator } from "./projectDecorator.js";
-import { projectId } from "./projectId.js";
-import { telemetry } from "./telemetry.js";
+import { ExtensionDefinitions } from "./ExtensionDefinitions.js";
+import { ProjectDecorator } from "./ProjectDecorator.js";
+import { ProjectImplementation } from "./ProjectImplementation.js";
+import { ProjectId } from "./ProjectId.js";
+import { Telemetry } from "./Telemetry.js";
+import { EnvVar } from "./EnvVar.js";
 
 // Hooks.
 import {
-    adminAfterBuild,
-    adminAfterDeploy,
-    adminBeforeBuild,
-    adminBeforeDeploy,
-    adminBeforeWatch,
-    afterBuild,
-    afterDeploy,
-    beforeDeploy,
-    beforeWatch,
-    apiAfterBuild,
-    apiAfterDeploy,
-    apiBeforeBuild,
-    apiBeforeDeploy,
-    apiBeforeWatch,
-    beforeBuild,
-    coreAfterBuild,
-    coreAfterDeploy,
-    coreBeforeBuild,
-    coreBeforeDeploy,
-    coreBeforeWatch
+    AdminAfterBuild,
+    AdminAfterDeploy,
+    AdminBeforeBuild,
+    AdminBeforeDeploy,
+    AdminBeforeWatch,
+    AfterBuild,
+    AfterDeploy,
+    BeforeDeploy,
+    BeforeWatch,
+    ApiAfterBuild,
+    ApiAfterDeploy,
+    ApiBeforeBuild,
+    ApiBeforeDeploy,
+    ApiBeforeWatch,
+    BeforeBuild,
+    CoreAfterBuild,
+    CoreAfterDeploy,
+    CoreBeforeBuild,
+    CoreBeforeDeploy,
+    CoreBeforeWatch
 } from "./hooks/index.js";
 
 // Pulumi.
 import {
-    adminPulumi,
-    apiPulumi,
-    corePulumi,
-    productionEnvironments,
-    pulumiResourceNamePrefix
+    AdminPulumi,
+    ApiPulumi,
+    CorePulumi,
+    ProductionEnvironments,
+    PulumiResourceNamePrefix
 } from "./pulumi/index.js";
 
 // Exports.
-export const Telemetry = telemetry.ReactComponent;
-export const ProjectId = projectId.ReactComponent;
-export const ProjectDecorator = projectDecorator.ReactComponent;
-export const ExtensionDefinitions = extensionDefinitions.ReactComponent;
+export { Telemetry };
+export { ProjectId };
+export { ProjectDecorator };
+export { ProjectImplementation };
+export { ExtensionDefinitions };
+export { EnvVar };
 
 // Hooks.
-export const BeforeBuild = beforeBuild.ReactComponent;
-export const BeforeDeploy = beforeDeploy.ReactComponent;
-export const BeforeWatch = beforeWatch.ReactComponent;
-export const AfterBuild = afterBuild.ReactComponent;
-export const AfterDeploy = afterDeploy.ReactComponent;
-export const AdminBeforeBuild = adminBeforeBuild.ReactComponent;
-export const AdminBeforeDeploy = adminBeforeDeploy.ReactComponent;
-export const AdminBeforeWatch = adminBeforeWatch.ReactComponent;
-export const AdminAfterBuild = adminAfterBuild.ReactComponent;
-export const AdminAfterDeploy = adminAfterDeploy.ReactComponent;
-export const ApiBeforeBuild = apiBeforeBuild.ReactComponent;
-export const ApiBeforeDeploy = apiBeforeDeploy.ReactComponent;
-export const ApiBeforeWatch = apiBeforeWatch.ReactComponent;
-export const ApiAfterBuild = apiAfterBuild.ReactComponent;
-export const ApiAfterDeploy = apiAfterDeploy.ReactComponent;
-export const CoreBeforeBuild = coreBeforeBuild.ReactComponent;
-export const CoreBeforeDeploy = coreBeforeDeploy.ReactComponent;
-export const CoreBeforeWatch = coreBeforeWatch.ReactComponent;
-export const CoreAfterBuild = coreAfterBuild.ReactComponent;
-export const CoreAfterDeploy = coreAfterDeploy.ReactComponent;
+export { BeforeBuild };
+export { BeforeDeploy };
+export { BeforeWatch };
+export { AfterBuild };
+export { AfterDeploy };
+export { AdminBeforeBuild };
+export { AdminBeforeDeploy };
+export { AdminBeforeWatch };
+export { AdminAfterBuild };
+export { AdminAfterDeploy };
+export { ApiBeforeBuild };
+export { ApiBeforeDeploy };
+export { ApiBeforeWatch };
+export { ApiAfterBuild };
+export { ApiAfterDeploy };
+export { CoreBeforeBuild };
+export { CoreBeforeDeploy };
+export { CoreBeforeWatch };
+export { CoreAfterBuild };
+export { CoreAfterDeploy };
 
 // Pulumi.
-export const CorePulumi = corePulumi.ReactComponent;
-export const AdminPulumi = adminPulumi.ReactComponent;
-export const ApiPulumi = apiPulumi.ReactComponent;
-export const PulumiResourceNamePrefix = pulumiResourceNamePrefix.ReactComponent;
-export const ProductionEnvironments = productionEnvironments.ReactComponent;
+export { CorePulumi };
+export { AdminPulumi };
+export { ApiPulumi };
+export { PulumiResourceNamePrefix };
+export { ProductionEnvironments };
 
 // Definitions (used internally). 👇
 export const definitions = [
-    telemetry.definition,
-    projectId.definition,
-    projectDecorator.definition,
-    extensionDefinitions.definition,
+    Telemetry.definition,
+    ProjectId.definition,
+    ProjectDecorator.definition,
+    ProjectImplementation.definition,
+    ExtensionDefinitions.definition,
+    EnvVar.definition,
 
     // Hooks.
-    adminAfterBuild.definition,
-    adminAfterDeploy.definition,
-    beforeBuild.definition,
-    beforeDeploy.definition,
-    beforeWatch.definition,
-    afterBuild.definition,
-    afterDeploy.definition,
-    adminBeforeBuild.definition,
-    adminBeforeDeploy.definition,
-    adminBeforeWatch.definition,
-    apiAfterBuild.definition,
-    apiAfterDeploy.definition,
-    apiBeforeBuild.definition,
-    apiBeforeDeploy.definition,
-    apiBeforeWatch.definition,
-    coreAfterBuild.definition,
-    coreAfterDeploy.definition,
-    coreBeforeBuild.definition,
-    coreBeforeDeploy.definition,
-    coreBeforeWatch.definition,
+    AdminAfterBuild.definition,
+    AdminAfterDeploy.definition,
+    BeforeBuild.definition,
+    BeforeDeploy.definition,
+    BeforeWatch.definition,
+    AfterBuild.definition,
+    AfterDeploy.definition,
+    AdminBeforeBuild.definition,
+    AdminBeforeDeploy.definition,
+    AdminBeforeWatch.definition,
+    ApiAfterBuild.definition,
+    ApiAfterDeploy.definition,
+    ApiBeforeBuild.definition,
+    ApiBeforeDeploy.definition,
+    ApiBeforeWatch.definition,
+    CoreAfterBuild.definition,
+    CoreAfterDeploy.definition,
+    CoreBeforeBuild.definition,
+    CoreBeforeDeploy.definition,
+    CoreBeforeWatch.definition,
 
     // Pulumi.
-    corePulumi.definition,
-    pulumiResourceNamePrefix.definition,
-    productionEnvironments.definition
+    CorePulumi.definition,
+    PulumiResourceNamePrefix.definition,
+    ProductionEnvironments.definition
 ];
 
 export { Project } from "./Project.js";

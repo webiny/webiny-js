@@ -2,7 +2,6 @@ import { getIntrospectionQuery } from "graphql";
 import { createHandler } from "@webiny/handler-aws";
 import { sleep, until } from "./context/helpers";
 import { ContextPlugin } from "@webiny/api";
-import type { MailerContext } from "~/types";
 import { GET_SETTINGS_QUERY, SAVE_SETTINGS_MUTATION } from "./graphql/settings";
 import type { CreateHandlerParams } from "./handlerPlugins";
 import { createHandlerPlugins } from "./handlerPlugins";
@@ -10,6 +9,7 @@ import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { ApiKey } from "@webiny/api-core/types/security.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 
 interface ContextTenantParams {
     tenant: Pick<Tenant, "id" | "name" | "parent">;
@@ -18,9 +18,9 @@ interface ContextTenantParams {
 export const contextSecurity = ({
     tenant,
     identity
-}: ContextTenantParams): ContextPlugin<MailerContext>[] => {
+}: ContextTenantParams): ContextPlugin<ApiCoreContext>[] => {
     return [
-        new ContextPlugin<MailerContext>(async context => {
+        new ContextPlugin<ApiCoreContext>(async context => {
             context.security.getApiKeyByToken = async (token: string): Promise<ApiKey | null> => {
                 if (!token || token !== "aToken") {
                     return null;
@@ -38,8 +38,7 @@ export const contextSecurity = ({
                         type: "admin"
                     },
                     description: "test",
-                    createdOn: new Date().toISOString(),
-                    webinyVersion: context.WEBINY_VERSION
+                    createdOn: new Date().toISOString()
                 };
             };
         })

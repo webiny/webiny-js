@@ -9,9 +9,7 @@ export const createModel = (): CmsModel => {
     return {
         createdOn: new Date().toISOString(),
         savedOn: new Date().toISOString(),
-        locale: "en-US",
         titleFieldId: "title",
-        lockedFields: [],
         name: "Category",
         singularApiName: "Category",
         pluralApiName: "Categories",
@@ -196,7 +194,6 @@ export const createModel = (): CmsModel => {
                 label: "Settings"
             }
         ],
-        tenant: "root",
-        webinyVersion: "x.x.x"
+        tenant: "root"
     };
 };

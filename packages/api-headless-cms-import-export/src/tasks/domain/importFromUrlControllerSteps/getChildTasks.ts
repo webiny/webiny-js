@@ -1,16 +1,16 @@
-import type { ITask, ITaskResponseDoneResultOutput } from "@webiny/tasks";
 import { TaskDataStatus } from "@webiny/tasks";
 import type { Context } from "~/types.js";
 import type { IStepFunctionServiceFetchResult } from "@webiny/tasks/service/StepFunctionServicePlugin.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 export interface IGetChildTasksParams {
     context: Context;
-    task: ITask;
+    task: TaskDefinition.Task;
     definition: string;
 }
 
 const mapServiceStatusToTaskStatus = (
-    task: ITask<any, any>,
+    task: TaskDefinition.Task<any, any>,
     serviceInfo: IStepFunctionServiceFetchResult | null
 ) => {
     if (!serviceInfo) {
@@ -34,7 +34,10 @@ const mapServiceStatusToTaskStatus = (
     return TaskDataStatus.PENDING;
 };
 
-export const getChildTasks = async <I, O extends ITaskResponseDoneResultOutput>({
+export const getChildTasks = async <
+    I extends TaskDefinition.TaskInput,
+    O extends TaskDefinition.TaskOutput
+>({
     context,
     task,
     definition
@@ -44,7 +47,7 @@ export const getChildTasks = async <I, O extends ITaskResponseDoneResultOutput>(
     const invalid: string[] = [];
     const aborted: string[] = [];
     const failed: string[] = [];
-    const collection: ITask<I, O>[] = [];
+    const collection: TaskDefinition.Task<I, O>[] = [];
 
     const { items } = await context.tasks.listTasks<I, O>({
         where: {
@@ -64,7 +67,8 @@ export const getChildTasks = async <I, O extends ITaskResponseDoneResultOutput>(
              * We also need to check the actual status of the service.
              * It can happen that the task is marked as running, but the service is not running.
              */
-            const serviceInfo = await context.tasks.fetchServiceInfo(task);
+            const serviceInfoResult = await context.tasks.fetchServiceInfo(task);
+            const serviceInfo = serviceInfoResult.isOk() ? serviceInfoResult.value : null;
             const status = mapServiceStatusToTaskStatus(task, serviceInfo);
 
             if (status === null || !serviceInfo) {

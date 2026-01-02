@@ -37,7 +37,6 @@ export interface CmsFieldFilterValueTransformPlugin extends Plugin {
 export type Attributes = Record<string, AttributeDefinition>;
 
 export enum ENTITIES {
-    SYSTEM = "CmsSystem",
     GROUPS = "CmsGroups",
     MODELS = "CmsModels",
     ENTRIES = "CmsEntries"
@@ -56,7 +55,7 @@ export interface StorageOperationsFactoryParams {
 
 export interface HeadlessCmsStorageOperations extends BaseHeadlessCmsStorageOperations {
     getTable: () => Table<string, string, string>;
-    getEntities: () => Record<"system" | "groups" | "models" | "entries", Entity<any>>;
+    getEntities: () => Record<"groups" | "models" | "entries", Entity<any>>;
 }
 
 export interface StorageOperationsFactory {
@@ -68,7 +67,7 @@ export interface CmsEntryStorageOperations extends BaseCmsEntryStorageOperations
 }
 
 export interface DataLoadersHandlerInterfaceClearAllParams {
-    model: Pick<CmsModel, "tenant" | "locale">;
+    model: Pick<CmsModel, "tenant">;
 }
 export interface DataLoadersHandlerInterface {
     clearAll: (params?: DataLoadersHandlerInterfaceClearAllParams) => void;

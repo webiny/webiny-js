@@ -33,7 +33,7 @@ export const WorkflowError = (props: IWorkflowErrorProps) => {
                 onClose={toggleOff}
                 actions={
                     <>
-                        <Dialog.ConfirmButton text="Close" onClick={toggleOff} />
+                        <Dialog.ConfirmAction text="Close" onClick={toggleOff} />
                     </>
                 }
                 showCloseButton={true}

@@ -5,15 +5,13 @@ import WebinyError from "@webiny/error";
 interface IndicesPluginsParams {
     container: PluginsContainer;
     type: string;
-    locale: string;
 }
 const listIndicesPlugins = <T extends ElasticsearchIndexPlugin>({
     container,
-    type,
-    locale
+    type
 }: IndicesPluginsParams): T[] => {
     return container.byType<T>(type).filter(plugin => {
-        return plugin.canUse(locale);
+        return plugin.canUse();
     });
 };
 
@@ -26,8 +24,7 @@ export const getLastAddedIndexPlugin = <T extends ElasticsearchIndexPlugin>(
             `Could not find a single ElasticsearchIndexPlugin of type "${params.type}".`,
             "ELASTICSEARCH_INDEX_TEMPLATE_ERROR",
             {
-                type: params.type,
-                locale: params.locale
+                type: params.type
             }
         );
     }

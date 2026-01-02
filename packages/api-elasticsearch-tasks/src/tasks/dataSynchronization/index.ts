@@ -1,79 +1,31 @@
-import { createTaskDefinition } from "@webiny/tasks";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import type { Context, IElasticsearchTaskConfig } from "~/types.js";
-import type {
-    IDataSynchronizationInput,
-    IDataSynchronizationManager,
-    IDataSynchronizationOutput
-} from "~/tasks/dataSynchronization/types.js";
+import { createContextPlugin } from "@webiny/api";
+import { DataSynchronizationTask } from "./DataSynchronizationTask.js";
+import { getClients } from "~/helpers/getClients.js";
+import { ElasticsearchSynchronize } from "~/tasks/dataSynchronization/elasticsearch/ElasticsearchSynchronize.js";
+import { TaskController } from "@webiny/api-core/features/task/TaskController/index.js";
+import { DbRegistry } from "~/abstractions/DbRegistry.js";
+import { SynchronizationContext } from "~/abstractions/SynchronizationContext.js";
 
-export const DATA_SYNCHRONIZATION_TASK = "dataSynchronization";
+export { DATA_SYNCHRONIZATION_TASK } from "./DataSynchronizationTask.js";
 
-export const createDataSynchronization = (params?: IElasticsearchTaskConfig) => {
-    return createTaskDefinition<Context, IDataSynchronizationInput, IDataSynchronizationOutput>({
-        id: DATA_SYNCHRONIZATION_TASK,
-        isPrivate: false,
-        title: "Data Synchronization",
-        description: "Synchronize data between Elasticsearch and DynamoDB",
-        maxIterations: 100,
-        disableDatabaseLogs: true,
-        async run({ context, response, isCloseToTimeout, isAborted, store, input, timer }) {
-            const { Manager } = await import(
-                /* webpackChunkName: "Manager" */
-                "../Manager.js"
-            );
+export const createDataSynchronization = (params?: Partial<IElasticsearchTaskConfig>) => {
+    return createContextPlugin<Context>(async context => {
+        const { documentClient, elasticsearchClient } = getClients(context, params);
 
-            const { IndexManager } = await import(
-                /* webpackChunkName: "IndexManager" */ "~/settings/index.js"
-            );
-
-            const manager = new Manager<IDataSynchronizationInput>({
-                elasticsearchClient: params?.elasticsearchClient,
-                documentClient: params?.documentClient,
-                response,
-                context,
-                isAborted,
-                isCloseToTimeout,
-                store,
-                timer
+        // Register the task definition with DbRegistry injected
+        context.container.registerFactory(TaskDefinition, () => {
+            const elasticsearchSynchronize = context.container.resolveWithDependencies({
+                implementation: ElasticsearchSynchronize,
+                dependencies: [TaskController, DbRegistry, SynchronizationContext]
             });
 
-            const indexManager = new IndexManager(manager.elasticsearch, {});
-
-            const { DataSynchronizationTaskRunner } = await import(
-                /* webpackChunkName: "DataSynchronizationTaskRunner" */ "./DataSynchronizationTaskRunner.js"
+            return new DataSynchronizationTask(
+                elasticsearchClient,
+                documentClient,
+                elasticsearchSynchronize
             );
-
-            const { createFactories } = await import(
-                /* webpackChunkName: "createFactories" */ "./createFactories.js"
-            );
-
-            try {
-                const dataSynchronization = new DataSynchronizationTaskRunner({
-                    manager: manager as unknown as IDataSynchronizationManager,
-                    indexManager,
-                    factories: createFactories()
-                });
-                return await dataSynchronization.run({
-                    ...input
-                });
-            } catch (ex) {
-                return response.error(ex);
-            }
-        },
-        createInputValidation({ validator }) {
-            return {
-                flow: validator.enum(["elasticsearchToDynamoDb"]),
-                elasticsearchToDynamoDb: validator
-                    .object({
-                        finished: validator.boolean().optional().default(false),
-                        index: validator.string().optional(),
-                        cursor: validator.array(validator.string()).optional()
-                    })
-                    .optional()
-                    .default({
-                        finished: false
-                    })
-            };
-        }
+        });
     });
 };

@@ -8,7 +8,6 @@ const contentModelPlugin = new CmsModelPlugin({
     modelId: "product",
     singularApiName: "Product",
     pluralApiName: "Products",
-    locale: "en-US",
     tenant: "root",
     group: {
         id: "ecommerce",
@@ -141,22 +140,20 @@ const GET_PRODUCT = (model: Pick<CmsModel, "singularApiName" | "pluralApiName">)
 
 describe("content model plugins", () => {
     const { storageOperations } = useGraphQLHandler({
-        path: "manage/en-US"
+        path: "manage"
     });
 
     beforeEach(async () => {
         await storageOperations.models.delete({
             model: {
-                ...(contentModelPlugin.contentModel as CmsModel),
-                webinyVersion: "x.x.x"
+                ...(contentModelPlugin.contentModel as CmsModel)
             }
         });
     });
     afterEach(async () => {
         await storageOperations.models.delete({
             model: {
-                ...(contentModelPlugin.contentModel as CmsModel),
-                webinyVersion: "x.x.x"
+                ...(contentModelPlugin.contentModel as CmsModel)
             }
         });
     });
@@ -168,7 +165,7 @@ describe("content model plugins", () => {
             updateContentModelMutation,
             deleteContentModelMutation
         } = useGraphQLHandler({
-            path: "manage/en-US",
+            path: "manage",
             plugins: [contentModelPlugin]
         });
 
@@ -211,12 +208,11 @@ describe("content model plugins", () => {
                 createContentModel: {
                     data: null,
                     error: {
-                        code: "CONTENT_MODEL_CREATE_ERROR",
+                        code: "Cms/Model/AlreadyExists",
                         data: {
                             modelId: "product"
                         },
-                        message:
-                            'Cannot create "product" content model because one is already registered via a plugin.'
+                        message: `Model "product" is already registered via a plugin.`
                     }
                 }
             }
@@ -236,11 +232,11 @@ describe("content model plugins", () => {
                 updateContentModel: {
                     data: null,
                     error: {
-                        code: "CONTENT_MODEL_UPDATE_ERROR",
+                        code: "Cms/Model/CannotUpdateCodeModel",
                         data: {
                             modelId: "product"
                         },
-                        message: "Content models defined via plugins cannot be updated."
+                        message: `Cannot update model "product" defined via code.`
                     }
                 }
             }
@@ -254,11 +250,11 @@ describe("content model plugins", () => {
                 deleteContentModel: {
                     data: null,
                     error: {
-                        code: "CONTENT_MODEL_DELETE_ERROR",
+                        code: "Cms/Model/CannotDeleteCodeModel",
                         data: {
                             modelId: "product"
                         },
-                        message: "Content models defined via plugins cannot be deleted."
+                        message: `Cannot delete model "product" defined via code.`
                     }
                 }
             }
@@ -267,7 +263,7 @@ describe("content model plugins", () => {
 
     it("content model must be returned in the content models list and get queries", async () => {
         const { listContentModelsQuery, getContentModelQuery } = useGraphQLHandler({
-            path: "manage/en-US",
+            path: "manage",
             plugins: [contentModelPlugin]
         });
 
@@ -461,7 +457,7 @@ describe("content model plugins", () => {
 
     it("must be able to perform basic CRUD operations with content models registered via plugin", async () => {
         const { invoke } = useGraphQLHandler({
-            path: "manage/en-US",
+            path: "manage",
             plugins: [contentModelPlugin]
         });
 
@@ -631,7 +627,7 @@ describe("content model plugins", () => {
             createContentModelGroupMutation,
             listContentModelsQuery
         } = useGraphQLHandler({
-            path: "manage/en-US",
+            path: "manage",
             plugins: [contentModelPlugin]
         });
 

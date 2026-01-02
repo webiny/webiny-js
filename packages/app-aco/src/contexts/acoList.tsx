@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useEffect, useMemo } from "react";
 import dotPropImmutable from "dot-prop-immutable";
 import pick from "lodash/pick.js";
 import { useStateIfMounted } from "@webiny/app-admin";
-import { useSecurity } from "@webiny/app-security";
+import { useSecurity } from "@webiny/app-admin";
 import type { FolderDto } from "~/domain/folder/FolderDto.js";
 import { useGetDescendantFolders } from "~/features/folders/getDescendantFolders/index.js";
 import { useListFoldersByParentIds } from "~/features/folders/listFoldersByParentIds/index.js";
@@ -266,7 +266,7 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
         }
 
         return {
-            createdBy: props.own ? identity?.id : undefined, // Set 'createdBy' based on the ownership status
+            createdBy: props.own ? identity.id : undefined, // Set 'createdBy' based on the ownership status
             ...state.filters, // Merge existing filters into the 'where' condition
             ...where // Include where condition if applicable
         };

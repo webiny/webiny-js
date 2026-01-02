@@ -2,7 +2,7 @@ export const pagesTypeDefs = /* GraphQL */ `
     type WbPage {
         id: ID!
         entryId: String!
-        wbyAco_location: WbLocation
+        location: WbLocation
         status: String!
         version: Number!
         locked: Boolean!
@@ -28,7 +28,7 @@ export const pagesTypeDefs = /* GraphQL */ `
     }
 
     input WbPageCreateInput {
-        wbyAco_location: WbLocationInput
+        location: WbLocationInput
         properties: JSON
         metadata: JSON
         bindings: JSON
@@ -45,7 +45,7 @@ export const pagesTypeDefs = /* GraphQL */ `
     }
 
     input WbPagesListWhereInput {
-        wbyAco_location: WbLocationWhereInput
+        location: WbLocationWhereInput
         latest: Boolean
         published: Boolean
         id: ID

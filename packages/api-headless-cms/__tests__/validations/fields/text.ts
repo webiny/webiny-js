@@ -37,9 +37,3 @@ export const createTextFieldWithoutFieldId = createFieldFactory({
     storageId: "text@fieldWithoutFieldId",
     fieldId: ""
 });
-export const createTextFieldWithoutStorageId = createFieldFactory({
-    id: "fieldWithoutStorageId",
-    label: "Field without storageId",
-    storageId: "",
-    fieldId: "fieldWithoutStorageId"
-});

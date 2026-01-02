@@ -3,6 +3,7 @@ import { CliCommand, GetProjectSdkService, StdioService, UiService } from "~/abs
 import { DeployOutput } from "./deployOutputs/DeployOutput.js";
 import { AppName } from "@webiny/project";
 import { BuildRunner } from "~/features/BuildCommand/buildRunners/BuildRunner.js";
+import { createBaseAppOptions } from "~/features/common/index.js";
 import { setTimeout } from "node:timers/promises";
 import ora from "ora";
 import open from "open";
@@ -63,42 +64,7 @@ export class DeployCommand implements CliCommand.Interface<IDeployCommandParams>
                 }
             ],
             options: [
-                {
-                    name: "env",
-                    description: "Environment name (dev, prod, etc.)",
-                    type: "string",
-                    default: "dev",
-                    validation: params => {
-                        if (params.apps && params.apps.length > 0 && !params.env) {
-                            throw new Error("Environment name is required when deploying an app.");
-                        }
-                        return true;
-                    }
-                },
-                {
-                    name: "variant",
-                    description: "Variant of the app to deploy",
-                    type: "string",
-                    validation: params => {
-                        const isValid = projectSdk.isValidVariantName(params.variant);
-                        if (isValid.isErr()) {
-                            throw isValid.error;
-                        }
-                        return true;
-                    }
-                },
-                {
-                    name: "region",
-                    description: "Region to target",
-                    type: "string",
-                    validation: params => {
-                        const isValid = projectSdk.isValidRegionName(params.region);
-                        if (isValid.isErr()) {
-                            throw isValid.error;
-                        }
-                        return true;
-                    }
-                },
+                ...createBaseAppOptions(projectSdk),
                 {
                     name: "build",
                     description: "Build packages before deploying",
@@ -130,15 +96,11 @@ export class DeployCommand implements CliCommand.Interface<IDeployCommandParams>
                         const app = await projectSdk.getApp(appName);
                         ui.info("Deploying %s app...", app.getDisplayName());
                         await this.deployApp(appParams);
-                        ui.newLine();
+                        ui.emptyLine();
                     }
                 } else {
                     const isCi = projectSdk.isCi();
-                    const coreStack = await projectSdk.getAppStackOutput({
-                        app: "core",
-                        env: params.env,
-                        variant: params.variant
-                    });
+                    const coreStack = await projectSdk.getAppStackOutput("core");
 
                     const isFirstDeployment = !isCi && !coreStack?.deploymentId;
                     if (isFirstDeployment) {
@@ -151,16 +113,16 @@ export class DeployCommand implements CliCommand.Interface<IDeployCommandParams>
                     }
 
                     // 3. Start deploying apps one-by-one.
-                    isFirstDeployment && ui.newLine();
+                    isFirstDeployment && ui.emptyLine();
 
                     // Deploy all apps in the project.
                     ui.info("Deploying %s app...", "Core");
                     await this.deployApp({ ...params, app: "core" });
-                    ui.newLine();
+                    ui.emptyLine();
 
                     ui.info("Deploying %s app...", "API");
                     await this.deployApp({ ...params, app: "api" });
-                    ui.newLine();
+                    ui.emptyLine();
                     ui.info("Deploying %s app...", "Admin");
                     await this.deployApp({ ...params, app: "admin" });
 
@@ -175,17 +137,14 @@ export class DeployCommand implements CliCommand.Interface<IDeployCommandParams>
                         uiService: this.uiService
                     });
 
-                    ui.newLine();
+                    ui.emptyLine();
                     ui.textBold("Project Details");
                     await printInfoForEnv.execute(params);
 
-                    const adminAppOutput = await projectSdk.getAppStackOutput({
-                        ...params,
-                        app: "admin"
-                    });
+                    const adminAppOutput = await projectSdk.getAppStackOutput("admin");
 
                     if (isFirstDeployment && adminAppOutput) {
-                        ui.newLine();
+                        ui.emptyLine();
                         ui.info(
                             "The final step is to open the %s app in your browser and complete the installation wizard.",
                             "Admin"
@@ -201,7 +160,7 @@ export class DeployCommand implements CliCommand.Interface<IDeployCommandParams>
                             spinner.fail(`Failed to open Admin in your browser.`);
 
                             await sleep(1000);
-                            ui.newLine();
+                            ui.emptyLine();
                             ui.warning(
                                 `Failed to open %s app in your browser. To finish the setup and start using the project, please visit %s and complete the installation wizard.`,
                                 "Admin",
@@ -231,7 +190,7 @@ export class DeployCommand implements CliCommand.Interface<IDeployCommandParams>
 
             if (!buildRunner.isEmpty()) {
                 await buildRunner.run();
-                ui.newLine();
+                ui.emptyLine();
             }
         }
 

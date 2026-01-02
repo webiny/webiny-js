@@ -51,7 +51,7 @@ describe("content entry validation", () => {
                 fields: [field]
             });
             const manager = useValidationManageHandler({
-                path: "manage/en-US",
+                path: "manage",
                 plugins,
                 model
             });
@@ -81,7 +81,7 @@ describe("content entry validation", () => {
                 fields: [field]
             });
             const manager = useValidationManageHandler({
-                path: "manage/en-US",
+                path: "manage",
                 plugins,
                 model
             });
@@ -105,7 +105,7 @@ describe("content entry validation", () => {
     it("should return errors for invalid entry", async () => {
         const { plugins, model } = createValidationStructure();
         const manager = useValidationManageHandler({
-            path: "manage/en-US",
+            path: "manage",
             plugins,
             model
         });
@@ -145,7 +145,7 @@ describe("content entry validation", () => {
             fields: [field]
         });
         const manager = useValidationManageHandler({
-            path: "manage/en-US",
+            path: "manage",
             plugins,
             model
         });
@@ -169,7 +169,7 @@ describe("content entry validation", () => {
         const { plugins, model } = createValidationStructure();
 
         const manager = useValidationManageHandler({
-            path: "manage/en-US",
+            path: "manage",
             plugins,
             model
         });
@@ -210,7 +210,7 @@ describe("content entry validation", () => {
             ...(pageModel as CmsModel)
         });
         const manager = useValidationManageHandler({
-            path: "manage/en-US",
+            path: "manage",
             plugins,
             model
         });
@@ -326,7 +326,7 @@ describe("content entry validation", () => {
     it("should not return errors for valid entry", async () => {
         const { plugins, model } = createValidationStructure();
         const manager = useValidationManageHandler({
-            path: "manage/en-US",
+            path: "manage",
             plugins,
             model
         });

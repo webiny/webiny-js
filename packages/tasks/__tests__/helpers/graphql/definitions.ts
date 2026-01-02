@@ -7,7 +7,6 @@ export const createListDefinitionsQuery = () => {
                         id
                         title
                         description
-                        fields
                     }
                     error {
                         message

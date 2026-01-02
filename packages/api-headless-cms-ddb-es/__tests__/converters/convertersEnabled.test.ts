@@ -8,10 +8,14 @@ import {
     createEntryRawData
 } from "./mocks/data";
 import { configurations } from "~/configurations";
-import type { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
+import type { CmsEntry } from "@webiny/api-headless-cms/types";
 import { get } from "@webiny/db-dynamodb";
 import { createPartitionKey } from "~/operations/entry/keys";
 import lodashMerge from "lodash/merge";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
+import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById/index.js";
+import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
 
 describe("storage field path converters enabled", () => {
     const { elasticsearch, entryEntity } = useHandler();
@@ -19,7 +23,6 @@ describe("storage field path converters enabled", () => {
     const { index: indexName } = configurations.es({
         model: {
             tenant: "root",
-            locale: "en-US",
             modelId: "converter"
         }
     });
@@ -39,18 +42,31 @@ describe("storage field path converters enabled", () => {
         });
         const context = await createContext();
 
-        const model = (await context.cms.getModel("converter")) as CmsModel;
-        const manager = await context.cms.getEntryManager("converter");
+        const getModel = context.container.resolve(GetModelUseCase);
+        const getEntry = context.container.resolve(GetEntryByIdUseCase);
+        const createEntry = context.container.resolve(CreateEntryUseCase);
+        const listLatest = context.container.resolve(ListLatestEntriesUseCase);
 
-        const createResult = await manager.create(createEntryRawData());
-        expect(createResult).toMatchObject({
-            id: expect.any(String)
-        });
+        const modelResult = await getModel.execute("converter");
+        if (modelResult.isFail()) {
+            throw modelResult.error;
+        }
+
+        const model = modelResult.value;
+
+        const createResult = await createEntry.execute(model, createEntryRawData());
+        if (createResult.isFail()) {
+            throw createResult.error;
+        }
+
+        const entry = createResult.value;
+        expect(entry).toMatchObject({ id: expect.any(String) });
+
         /**
          * Check that we are getting everything properly out of the DynamoDB
          */
-        const getResult = await manager.get(createResult.id);
-        expect(getResult).toMatchObject({
+        const getResult = await getEntry.execute(model, entry.id);
+        expect(getResult.value).toMatchObject({
             values: createEntryRawData()
         });
         await elasticsearch.indices.refresh({
@@ -59,12 +75,14 @@ describe("storage field path converters enabled", () => {
         /**
          * Then check that we are getting everything properly out of the Elasticsearch, via webiny API.
          */
-        const result = await manager.listLatest({
-            where: {
-                id: createResult.id
-            }
+        const result = await listLatest.execute(model, {
+            where: { id: entry.id }
         });
-        const [[listResult]] = result;
+
+        const { entries } = result.value;
+
+        const [listResult] = entries;
+
         expect(listResult).toMatchObject({
             values: createEntryExpectedTransformedDatesData()
         });
@@ -77,7 +95,7 @@ describe("storage field path converters enabled", () => {
                     filter: [
                         {
                             term: {
-                                ["id.keyword"]: createResult.id
+                                ["id.keyword"]: entry.id
                             }
                         }
                     ]
@@ -104,7 +122,7 @@ describe("storage field path converters enabled", () => {
             keys: {
                 PK: createPartitionKey({
                     ...model,
-                    id: createResult.id
+                    id: entry.id
                 }),
                 SK: "L"
             }

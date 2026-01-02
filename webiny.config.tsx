@@ -1,5 +1,6 @@
 import React from "react";
-import { Admin, Cli, Infra, Project, Security } from "webiny/extensions";
+import { Cli, Infra, Project, Security } from "webiny/extensions";
+import { MySchemaExtension } from "./extensions/graphql/MySchemaExtension.js";
 
 // import { Okta } from "@webiny/okta";
 
@@ -7,7 +8,7 @@ export const Extensions = () => {
     return (
         <>
             {/* Admin 👇 */}
-            {/*<Admin.Extension src={"./extensions/AdminLogo.tsx"} />*/}
+            {/*<Admin.Extension src={"./extensions/AdminLogo/AdminLogo.tsx"} />*/}
 
             {/* Infra 👇 */}
             <Infra.PulumiResourceNamePrefix prefix={"myproj-"} />
@@ -15,8 +16,18 @@ export const Extensions = () => {
             <Infra.Core.Pulumi src={"./extensions/MyCorePulumiHandler.ts"} />
             <Infra.Vpc enabled={false} />
             <Infra.OpenSearch enabled={false} />
-            <Infra.AwsTags tags={{ OWNER: "me", PROJECT: "my-project" }} />
-            <Infra.AwsTags tags={{ OWNER2: "me2", PROJECT2: "my-project-2" }} />
+            <Infra.Aws.Tags tags={{ OWNER: "me", PROJECT: "my-project" }} />
+            <Infra.Aws.Tags tags={{ OWNER2: "me2", PROJECT2: "my-project-2" }} />
+            <Infra.Aws.DefaultRegion name={"eu-central-1"} />
+
+            {/* Example: Environment-based conditional configuration */}
+            {/*<Infra.Env.Is env="prod">
+                <Infra.Aws.Tags tags={{ ENV: "production" }} />
+            </Infra.Env.Is>*/}
+
+            {/*<Infra.Env.Is env={["dev", "staging"]}>
+                <Infra.Aws.Tags tags={{ ENV: "non-production" }} />
+            </Infra.Env.Is>*/}
 
             {/*<Infra.Admin.CustomDomains
                 domains={["my.domain.com"]}
@@ -56,6 +67,9 @@ export const Extensions = () => {
 
             {/* Project 👇 */}
             <Project.Telemetry enabled={false} />
+
+            {/* API */}
+            <MySchemaExtension />
 
             {/* Security 👇 */}
             <Security.ApiKey.AfterUpdate src={"./extensions/MyApiKeyAfterUpdate.ts"} />

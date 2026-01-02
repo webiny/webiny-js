@@ -2,9 +2,9 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { Container, createImplementation } from "@webiny/di";
 import { SettingsDomain } from "~/domain/settings/feature.js";
 import { SettingsFeature } from "~/features/settings/feature.js";
-import { GetSettings } from "~/features/settings/GetSettings/index.js";
-import { UpdateSettings } from "~/features/settings/UpdateSettings/index.js";
-import { DeleteSettings } from "~/features/settings/DeleteSettings/index.js";
+import { GetSettingsUseCase } from "~/features/settings/GetSettings/index.js";
+import { UpdateSettingsUseCase } from "~/features/settings/UpdateSettings/index.js";
+import { DeleteSettingsUseCase } from "~/features/settings/DeleteSettings/index.js";
 import { SettingsStorageOperations } from "~/features/settings/shared/abstractions.js";
 import type {
     SettingsStorageRecord,
@@ -173,9 +173,9 @@ describe("Settings Feature", () => {
     let container: Container;
     let mockStorage: MockSettingsStorageOperations;
     let tenantContext: TenantContext.Interface;
-    let getSettings: GetSettings.Interface;
-    let updateSettings: UpdateSettings.Interface;
-    let deleteSettings: DeleteSettings.Interface;
+    let getSettings: GetSettingsUseCase.Interface;
+    let updateSettings: UpdateSettingsUseCase.Interface;
+    let deleteSettings: DeleteSettingsUseCase.Interface;
 
     beforeEach(() => {
         container = new Container();
@@ -198,9 +198,9 @@ describe("Settings Feature", () => {
 
         // Resolve services
         tenantContext = container.resolve(TenantContext);
-        getSettings = container.resolve(GetSettings);
-        updateSettings = container.resolve(UpdateSettings);
-        deleteSettings = container.resolve(DeleteSettings);
+        getSettings = container.resolve(GetSettingsUseCase);
+        updateSettings = container.resolve(UpdateSettingsUseCase);
+        deleteSettings = container.resolve(DeleteSettingsUseCase);
 
         // Set initial tenant
         tenantContext.setTenant(createTenant({ id: "root", name: "Root Tenant", parent: null }));
@@ -468,8 +468,8 @@ describe("Settings Feature", () => {
                 createTenant({ id: "root", name: "Root Tenant", parent: null })
             );
 
-            const getSettingsWithFailure = failingContainer.resolve(GetSettings);
-            const updateSettingsWithFailure = failingContainer.resolve(UpdateSettings);
+            const getSettingsWithFailure = failingContainer.resolve(GetSettingsUseCase);
+            const updateSettingsWithFailure = failingContainer.resolve(UpdateSettingsUseCase);
 
             // Test get error
             const getResult = await getSettingsWithFailure.execute("test");

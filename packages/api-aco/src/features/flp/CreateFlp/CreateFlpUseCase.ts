@@ -11,13 +11,6 @@ export class CreateFlpUseCase implements UseCaseAbstraction.Interface {
 
     async execute(folder: Folder): Promise<void> {
         try {
-            if (!folder) {
-                throw new WebinyError(
-                    "Missing `folder`, I can't create a new record into the FLP catalog.",
-                    "ERROR_CREATE_FLP_USE_CASE_FOLDER_NOT_PROVIDED"
-                );
-            }
-
             const { id, type, slug, parentId, permissions } = folder;
             let parentFlp: IFolderLevelPermission | null = null;
 

@@ -4,7 +4,7 @@ import util from "util";
 import { UiService, StdioService } from "~/abstractions/index.js";
 
 const NEW_LINE = "\n";
-const useNewOutput = () => process.env.WEBINY_CLI_NEW_OUTPUT;
+const PIPE_SYMBOL = "┃";
 
 const LOG_COLORS = {
     info: chalk.blueBright,
@@ -32,13 +32,8 @@ export class DefaultUiService implements UiService.Interface {
         this.text(chalk.bold(text));
     }
 
-    newLine() {
-        const newOutput = useNewOutput();
-        if (newOutput) {
-            this.stdio.getStdout().write(chalk.gray("∙") + NEW_LINE);
-        } else {
-            this.stdio.getStdout().write(NEW_LINE);
-        }
+    emptyLine() {
+        this.stdio.getStdout().write(chalk.gray("∙") + NEW_LINE);
     }
 
     // The following methods are used to print texts with a specific type prefix.
@@ -63,16 +58,7 @@ export class DefaultUiService implements UiService.Interface {
     }
 
     private typedColorizedText(type: keyof typeof LOG_COLORS, text: string, ...args: any[]) {
-        let prefix = `${LOG_COLORS[type](type)}: `;
-
-        const newOutput = useNewOutput();
-        if (newOutput) {
-            let pipeSymbol = "│";
-            if (newOutput === "2") {
-                pipeSymbol = "┃";
-            }
-            prefix = `${LOG_COLORS[type](pipeSymbol)} `;
-        }
+        const prefix = `${LOG_COLORS[type](PIPE_SYMBOL)} `;
 
         // Replace all placeholders (match with `/%[a-zA-Z]/g` regex) with colorized values.
         const textWithColorizedPlaceholders = text.replace(/%[a-zA-Z]/g, match => {

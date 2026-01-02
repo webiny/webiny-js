@@ -5,7 +5,7 @@ import models from "./mocks/contentModels";
 import { useFruitManageHandler } from "../testHelpers/useFruitManageHandler";
 
 describe("fieldValidations", () => {
-    const manageOpts = { path: "manage/en-US" };
+    const manageOpts = { path: "manage" };
 
     const { createContentModelMutation, createContentModelGroupMutation } =
         useGraphQLHandler(manageOpts);
@@ -103,7 +103,7 @@ describe("fieldValidations", () => {
                     data: null,
                     error: {
                         message: "Validation failed.",
-                        code: "VALIDATION_FAILED",
+                        code: "Cms/Entry/ValidationError",
                         data: [
                             {
                                 fieldId: "name",
@@ -131,7 +131,7 @@ describe("fieldValidations", () => {
                     data: null,
                     error: {
                         message: "Validation failed.",
-                        code: "VALIDATION_FAILED",
+                        code: "Cms/Entry/ValidationError",
                         data: [
                             {
                                 fieldId: "name",
@@ -171,7 +171,7 @@ describe("fieldValidations", () => {
                     data: null,
                     error: {
                         message: "Validation failed.",
-                        code: "VALIDATION_FAILED",
+                        code: "Cms/Entry/ValidationError",
                         data: [
                             {
                                 fieldId: "numbers",
@@ -199,7 +199,7 @@ describe("fieldValidations", () => {
                     data: null,
                     error: {
                         message: "Validation failed.",
-                        code: "VALIDATION_FAILED",
+                        code: "Cms/Entry/ValidationError",
                         data: [
                             {
                                 fieldId: "numbers",
@@ -227,7 +227,7 @@ describe("fieldValidations", () => {
                     data: null,
                     error: {
                         message: "Validation failed.",
-                        code: "VALIDATION_FAILED",
+                        code: "Cms/Entry/ValidationError",
                         data: [
                             {
                                 fieldId: "numbers",
@@ -255,7 +255,7 @@ describe("fieldValidations", () => {
                     data: null,
                     error: {
                         message: "Validation failed.",
-                        code: "VALIDATION_FAILED",
+                        code: "Cms/Entry/ValidationError",
                         data: [
                             {
                                 fieldId: "numbers",
@@ -310,7 +310,7 @@ describe("fieldValidations", () => {
                         data: null,
                         error: {
                             message: "Validation failed.",
-                            code: "VALIDATION_FAILED",
+                            code: "Cms/Entry/ValidationError",
                             data: [
                                 {
                                     fieldId: "email",
@@ -366,7 +366,7 @@ describe("fieldValidations", () => {
                         data: null,
                         error: {
                             message: "Validation failed.",
-                            code: "VALIDATION_FAILED",
+                            code: "Cms/Entry/ValidationError",
                             data: [
                                 {
                                     fieldId: "url",
@@ -416,7 +416,7 @@ describe("fieldValidations", () => {
                         data: null,
                         error: {
                             message: "Validation failed.",
-                            code: "VALIDATION_FAILED",
+                            code: "Cms/Entry/ValidationError",
                             data: [
                                 {
                                     fieldId: "lowerCase",
@@ -465,7 +465,7 @@ describe("fieldValidations", () => {
                         data: null,
                         error: {
                             message: "Validation failed.",
-                            code: "VALIDATION_FAILED",
+                            code: "Cms/Entry/ValidationError",
                             data: [
                                 {
                                     fieldId: "upperCase",
@@ -510,7 +510,7 @@ describe("fieldValidations", () => {
                         data: null,
                         error: {
                             message: "Validation failed.",
-                            code: "VALIDATION_FAILED",
+                            code: "Cms/Entry/ValidationError",
                             data: [
                                 {
                                     fieldId: "date",
@@ -555,7 +555,7 @@ describe("fieldValidations", () => {
                         data: null,
                         error: {
                             message: "Validation failed.",
-                            code: "VALIDATION_FAILED",
+                            code: "Cms/Entry/ValidationError",
                             data: [
                                 {
                                     fieldId: "dateTime",
@@ -603,7 +603,7 @@ describe("fieldValidations", () => {
                         data: null,
                         error: {
                             message: "Validation failed.",
-                            code: "VALIDATION_FAILED",
+                            code: "Cms/Entry/ValidationError",
                             data: [
                                 {
                                     fieldId: "dateTimeZ",
@@ -648,7 +648,7 @@ describe("fieldValidations", () => {
                         data: null,
                         error: {
                             message: "Validation failed.",
-                            code: "VALIDATION_FAILED",
+                            code: "Cms/Entry/ValidationError",
                             data: [
                                 {
                                     fieldId: "time",
@@ -701,7 +701,7 @@ describe("fieldValidations", () => {
                     data: null,
                     error: {
                         message: "Validation failed.",
-                        code: "VALIDATION_FAILED",
+                        code: "Cms/Entry/ValidationError",
                         data: [
                             {
                                 fieldId: "slug",

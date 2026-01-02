@@ -7,7 +7,7 @@ import { createCategoryFactory } from "~tests/filtering/product/category";
 
 describe("storage transform for complex entries", () => {
     const managerOptions = {
-        path: "manage/en-US"
+        path: "manage"
     };
     const productManager = useProductManageHandler(managerOptions);
 

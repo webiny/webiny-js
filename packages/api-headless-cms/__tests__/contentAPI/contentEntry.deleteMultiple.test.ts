@@ -23,10 +23,10 @@ interface Result {
 
 describe("delete multiple entries", () => {
     const manager = useCategoryManageHandler({
-        path: "manage/en-US"
+        path: "manage"
     });
     const reader = useCategoryReadHandler({
-        path: "read/en-US"
+        path: "read"
     });
 
     const createCategory = async (input: CreateCategoryParams) => {
@@ -144,7 +144,7 @@ describe("delete multiple entries", () => {
                     getCategory: {
                         data: null,
                         error: {
-                            code: "NOT_FOUND",
+                            code: "Cms/Entry/NotFound",
                             message: expect.any(String)
                         }
                     }
@@ -177,7 +177,7 @@ describe("delete multiple entries", () => {
                     getCategory: {
                         data: null,
                         error: {
-                            code: "NOT_FOUND",
+                            code: "Cms/Entry/NotFound",
                             message: expect.any(String)
                         }
                     }

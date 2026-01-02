@@ -5,7 +5,6 @@ type Setter<T> = (arg: T | undefined) => T;
 export interface AssetData {
     id: string;
     tenant: string;
-    locale: string;
     key: string;
     size: number;
     contentType: string;
@@ -36,9 +35,6 @@ export class Asset {
     }
     getTenant() {
         return this.props.tenant;
-    }
-    getLocale() {
-        return this.props.locale;
     }
     getKey() {
         return this.props.key;

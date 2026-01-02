@@ -11,8 +11,8 @@ import {
     type AaclPermission
 } from "@webiny/app-admin";
 import { Form } from "@webiny/form";
-import type { SecurityPermission } from "@webiny/app-security/types.js";
-import { useSecurity } from "@webiny/app-security";
+import { useSecurity } from "@webiny/app-admin";
+import type { Identity } from "@webiny/app-admin/domain/Identity.js";
 
 const t = i18n.ns("app-security-admin-users/plugins/permissionRenderer");
 
@@ -26,8 +26,8 @@ const NO_ACCESS = "no";
 const CUSTOM_ACCESS = "custom";
 
 interface SecurityPermissionsProps {
-    value: SecurityPermission[];
-    onChange: (value: SecurityPermission[]) => void;
+    value: Identity.Permission[];
+    onChange: (value: Identity.Permission[]) => void;
 }
 
 export const SecurityPermissions = ({ value, onChange }: SecurityPermissionsProps) => {
@@ -42,8 +42,8 @@ export const SecurityPermissions = ({ value, onChange }: SecurityPermissionsProp
     const teams = wcp.canUseTeams();
 
     const onFormChange = useCallback(
-        (formData: SecurityPermission) => {
-            let newValue: SecurityPermission[] = [];
+        (formData: Identity.Permission) => {
+            let newValue: Identity.Permission[] = [];
             if (Array.isArray(value)) {
                 // Let's just filter out the `security*` permission objects, it's easier to build new ones from scratch.
                 newValue = value.filter(item => !item.name.startsWith(SECURITY));

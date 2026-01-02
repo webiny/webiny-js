@@ -1,7 +1,6 @@
 import type { ElasticsearchIndexRequestBody } from "@webiny/api-elasticsearch/types.js";
 
 import { base } from "./base.js";
-import { japanese } from "./japanese.js";
 
 export interface ElasticsearchIndexPlugins {
     body: ElasticsearchIndexRequestBody;
@@ -9,5 +8,5 @@ export interface ElasticsearchIndexPlugins {
 }
 
 export const elasticsearchIndexPlugins = (): ElasticsearchIndexPlugins[] => {
-    return [base, japanese];
+    return [base];
 };

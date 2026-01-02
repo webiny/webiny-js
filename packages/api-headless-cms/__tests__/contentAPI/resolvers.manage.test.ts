@@ -22,12 +22,12 @@ const createPermissions = ({ groups, models }: { groups?: string[]; models?: str
     {
         name: "cms.contentModelGroup",
         rwd: "r",
-        groups: groups ? { "en-US": groups } : undefined
+        groups
     },
     {
         name: "cms.contentModel",
         rwd: "r",
-        models: models ? { "en-US": models } : undefined
+        models
     },
     {
         name: "cms.contentEntry",
@@ -35,10 +35,6 @@ const createPermissions = ({ groups, models }: { groups?: string[]; models?: str
     },
     {
         name: "cms.endpoint.manage"
-    },
-    {
-        name: "content.i18n",
-        locales: ["en-US"]
     }
 ];
 
@@ -49,8 +45,8 @@ vi.setConfig({
 describe("MANAGE - Resolvers", () => {
     let contentModelGroup: CmsGroup;
 
-    const manageOpts = { path: "manage/en-US" };
-    const readOpts = { path: "read/en-US" };
+    const manageOpts = { path: "manage" };
+    const readOpts = { path: "read" };
 
     const { createContentModelMutation, createContentModelGroupMutation } =
         useGraphQLHandler(manageOpts);
@@ -76,7 +72,7 @@ describe("MANAGE - Resolvers", () => {
         const { data, error } = createCMG.data.createContentModelGroup;
         if (data) {
             contentModelGroup = data;
-        } else if (error.code !== "SLUG_ALREADY_EXISTS") {
+        } else if (error.code !== "Cms/ModelGroup/SlugTaken") {
             throw new WebinyError(error.message, error.code);
         }
 
@@ -195,7 +191,7 @@ describe("MANAGE - Resolvers", () => {
 
         expect(response.data.getCategory.data).toEqual(null);
         expect(response.data.getCategory.error).toEqual({
-            code: "NOT_AUTHORIZED",
+            code: "Cms/Entry/NotAuthorized",
             message: 'Not allowed to access "category" entries.',
             data: null
         });
@@ -425,7 +421,7 @@ describe("MANAGE - Resolvers", () => {
                 createCategory: {
                     data: null,
                     error: {
-                        code: "VALIDATION_FAILED",
+                        code: "Cms/Entry/ValidationError",
                         data: [
                             {
                                 error: "This field is required",

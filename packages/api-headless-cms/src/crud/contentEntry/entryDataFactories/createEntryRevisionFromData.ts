@@ -15,7 +15,6 @@ import WebinyError from "@webiny/error";
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
-import type { I18NLocale } from "@webiny/api-core/types/i18n.js";
 import { STATUS_DRAFT, STATUS_PUBLISHED, STATUS_UNPUBLISHED } from "./statuses.js";
 import type { AccessControl } from "~/crud/AccessControl/AccessControl.js";
 import { getState } from "./state.js";
@@ -28,7 +27,6 @@ interface CreateEntryRevisionFromDataParams {
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
     getTenant: () => Tenant;
-    getLocale: () => I18NLocale;
     originalEntry: CmsEntry;
     latestStorageEntry: CmsEntry;
     accessControl: AccessControl;

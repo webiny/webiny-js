@@ -100,8 +100,8 @@ export const TemplateDialog = (props: TemplateDialogProps) => {
                     title={dialogTitle}
                     actions={
                         <>
-                            <Dialog.CancelButton />
-                            <Dialog.ConfirmButton onClick={submit} text={submitLabel} />
+                            <Dialog.CancelAction />
+                            <Dialog.ConfirmAction onClick={submit} text={submitLabel} />
                         </>
                     }
                 >

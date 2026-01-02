@@ -16,7 +16,7 @@ export const WorkflowStateOptionsTakeOver = (props: IWorkflowStateOptionsTakeOve
     }
     return (
         <DropdownMenu.Item
-            icon={<Icon icon={<ApproveIcon />} label={"Take Over"} />}
+            icon={<Icon icon={<ApproveIcon />} size={"sm"} label={"Take Over"} />}
             text={"Take Over"}
             onClick={onClick}
         />

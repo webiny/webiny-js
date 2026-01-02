@@ -73,12 +73,11 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
             return reply.send();
         });
 
-        const { tenant, locale, endpoint, token } = getEventValues(event);
+        const { tenant, endpoint, token } = getEventValues(event);
 
         const headers = {
             Authorization: `Bearer ${token}`,
             ["x-tenant"]: tenant,
-            ["x-webiny-cms-locale"]: locale,
             ["x-webiny-cms-endpoint"]: endpoint,
             ...event.headers
         };

@@ -7,7 +7,7 @@ import type { PluginsContainer } from "@webiny/plugins";
 
 export interface ICreateIndexParams {
     client: Client;
-    model: Pick<CmsModel, "modelId" | "tenant" | "locale">;
+    model: Pick<CmsModel, "modelId" | "tenant">;
     plugins: PluginsContainer;
 }
 
@@ -28,7 +28,6 @@ export const createIndex = async (params: ICreateIndexParams): Promise<void> => 
     await baseCreateIndex({
         index,
         client,
-        locale: model.locale,
         tenant: model.tenant,
         plugins,
         type: CmsEntryElasticsearchIndexPlugin.type

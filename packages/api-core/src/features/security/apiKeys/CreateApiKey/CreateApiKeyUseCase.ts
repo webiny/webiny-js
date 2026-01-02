@@ -1,5 +1,4 @@
 import { mdbid } from "@webiny/utils";
-import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 import { EventPublisher } from "~/features/eventPublisher/index.js";
@@ -73,8 +72,7 @@ export class CreateApiKeyUseCase {
     }
 }
 
-export const CreateApiKeyUseCaseImpl = createImplementation({
-    abstraction: CreateApiKey,
+export const CreateApiKeyUseCaseImpl = CreateApiKey.createImplementation({
     implementation: CreateApiKeyUseCase,
     dependencies: [TenantContext, IdentityContext, EventPublisher, ApiKeysRepository]
 });

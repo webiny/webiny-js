@@ -2,7 +2,7 @@ import React from "react";
 import { ContentEntryForm, useContentEntry } from "@webiny/app-headless-cms";
 import { Components } from "@webiny/app-workflows";
 import { Alert, Grid } from "@webiny/admin-ui";
-import { useSecurity } from "@webiny/app-security";
+import { useSecurity } from "@webiny/app-admin";
 import type { PersistEntry } from "@webiny/app-headless-cms/admin/components/ContentEntryForm/ContentEntryFormProvider.js";
 import type { IWorkflowState } from "@webiny/app-workflows";
 
@@ -38,7 +38,7 @@ export const ContentEntryFormWorkflow = ContentEntryForm.createDecorator(Origina
         const { entry, contentModel: model } = useContentEntry();
         const { identity } = useSecurity();
 
-        const showOriginal = !entry?.id || !model?.modelId || !identity?.id;
+        const showOriginal = !entry?.id || !model?.modelId || !identity.id;
 
         if (showOriginal) {
             return <Original {...props} />;

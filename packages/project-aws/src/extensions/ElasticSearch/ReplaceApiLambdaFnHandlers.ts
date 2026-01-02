@@ -14,12 +14,9 @@ class ReplaceApiLambdaFnHandlerDecorator implements BuildAppWorkspaceService.Int
         private decoratee: BuildAppWorkspaceService.Interface
     ) {}
 
-    async execute(
-        params: BuildAppWorkspaceService.Params,
-        options: BuildAppWorkspaceService.Options = {}
-    ) {
-        const result = await this.decoratee.execute(params, options);
-        if (params.app === "api") {
+    async execute(appName: GetApp.AppName, options: BuildAppWorkspaceService.Options = {}) {
+        const result = await this.decoratee.execute(appName, options);
+        if (appName === "api") {
             const templatesFolderPath = getTemplatesFolderPath();
 
             const app = this.getApp.execute("api");

@@ -1,14 +1,14 @@
 import type * as React from "react";
 import type { Plugin } from "@webiny/plugins/types.js";
-import type { SecurityPermission } from "@webiny/app-security/types.js";
 import type { FileItem } from "@webiny/app-admin/types.js";
 import type { FolderTableRow, RecordTableRow } from "@webiny/app-aco";
+import type { Identity } from "@webiny/app-admin/domain/Identity.js";
 
 export type { FileInput } from "./modules/FileManagerApiProvider/graphql.js";
 
 export type PermissionRendererPluginRenderFunctionType = (props: {
-    value: SecurityPermission;
-    setValue: (newValue: SecurityPermission) => void;
+    value: Identity.Permission;
+    setValue: (newValue: Identity.Permission) => void;
 }) => React.ReactElement<any>;
 
 export type PermissionRendererFileManager = Plugin & {

@@ -1,3 +1,4 @@
+import { EntryBeforeCreateHandler } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
@@ -5,9 +6,9 @@ import { ContextPlugin } from "@webiny/api";
 import {
     createStorageOperations,
     createCmsEntryElasticsearchBodyModifierPlugin
-} from "../../dist/index";
-import { configurations } from "../../dist/configurations";
-import { base as baseIndexConfigurationPlugin } from "../../dist/elasticsearch/indices/base";
+} from "../../src/index";
+import { configurations } from "../../src/configurations";
+import { base as baseIndexConfigurationPlugin } from "../../src/elasticsearch/indices/base";
 import { setStorageOps } from "@webiny/project-utils/testing/environment";
 import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch";
 import { getElasticsearchOperators } from "@webiny/api-elasticsearch/operators";
@@ -44,8 +45,9 @@ setStorageOps("cms", () => {
      * When creating, updating, creating from, publishing, unpublishing and deleting we need to refresh index.
      */
     const createOrRefreshIndexSubscription = new ContextPlugin(async context => {
-        context.waitFor(["cms"], async () => {
-            context.cms.onEntryBeforeCreate.subscribe(async ({ model }) => {
+        context.container.registerFactory(EntryBeforeCreateHandler, () => ({
+            async handle(event) {
+                const { model } = event.payload;
                 const index = createIndexName(model);
                 try {
                     const response = await elasticsearchClient.indices.exists({
@@ -61,8 +63,8 @@ setStorageOps("cms", () => {
                         }
                     });
                 } catch {}
-            });
-        });
+            }
+        }));
     });
 
     const initializedDbPlugins = dbPlugins({

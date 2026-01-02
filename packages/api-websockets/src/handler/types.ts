@@ -26,7 +26,6 @@ export enum WebsocketsEventRoute {
 export interface IWebsocketsEventData {
     token?: string;
     tenant?: string;
-    locale?: string;
     messageId?: string;
     action?: string;
     data?: GenericRecord;
@@ -64,13 +63,11 @@ export interface IWebsocketsEventHeaders {
     "X-Forwarded-Port"?: `${number}`;
     "X-Forwarded-Proto"?: "https" | "http";
     ["x-tenant"]?: string;
-    ["x-webiny-cms-locale"]?: string;
     ["x-webiny-cms-endpoint"]?: string;
 }
 
 export interface IWebsocketsEventQueryStringParameters {
     tenant?: string;
-    locale?: string;
     token?: string;
 }
 

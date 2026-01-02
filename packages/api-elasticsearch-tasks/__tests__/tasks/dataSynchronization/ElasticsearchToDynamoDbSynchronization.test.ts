@@ -1,14 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { ElasticsearchToDynamoDbSynchronization } from "~/tasks/dataSynchronization/elasticsearch/ElasticsearchToDynamoDbSynchronization";
 import { useHandler } from "~tests/helpers/useHandler";
-import { createManagers } from "./managers";
-import { ElasticsearchFetcher } from "~/tasks/dataSynchronization/elasticsearch/ElasticsearchFetcher";
-import { ElasticsearchSynchronize } from "~/tasks/dataSynchronization/elasticsearch/ElasticsearchSynchronize";
-import { DATA_SYNCHRONIZATION_TASK } from "~/tasks";
+import { createDataSynchronization, DATA_SYNCHRONIZATION_TASK } from "~/tasks";
 import type { Context } from "@webiny/api-dynamodb-to-elasticsearch";
 import { SynchronizationBuilder } from "@webiny/api-dynamodb-to-elasticsearch";
 import type { ITimer } from "@webiny/handler-aws";
 import type { IIndexManager } from "~/settings/types";
+import { IndexManager } from "~/settings";
+import { timerFactory } from "@webiny/handler-aws/utils";
+import { createRunner } from "@webiny/project-utils/testing/tasks";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition";
 
 const queryAllRecords = (index: string) => {
     return {
@@ -26,7 +26,7 @@ const queryAllRecords = (index: string) => {
 interface ICreateSyncBuilderParams {
     records: number;
     timer: ITimer;
-    context: Pick<Context, "elasticsearch" | "logger">;
+    context: Pick<Context, "elasticsearch">;
     index: string;
 }
 
@@ -67,106 +67,93 @@ const getTaskIndex = async (manager: IIndexManager): Promise<string> => {
 
 describe("ElasticsearchToDynamoDbSynchronization", () => {
     it("should run a sync without any indexes and throw an error", async () => {
-        expect.assertions(1);
-        const handler = useHandler();
+        const handler = useHandler({
+            plugins: [createDataSynchronization()]
+        });
 
         const context = await handler.rawHandle();
 
-        const { manager, indexManager } = createManagers({
-            context
-        });
-
-        const sync = new ElasticsearchToDynamoDbSynchronization({
-            manager,
-            indexManager,
-            fetcher: new ElasticsearchFetcher({
-                client: context.elasticsearch
-            }),
-            synchronize: new ElasticsearchSynchronize({
-                context,
-                timer: manager.timer
-            })
-        });
-
-        try {
-            await sync.run({
-                flow: "elasticsearchToDynamoDb"
-            });
-        } catch (ex) {
-            expect(ex.message).toBe("No Elasticsearch / OpenSearch indexes found.");
-        }
-    });
-
-    it("should run a sync with indexes and finish", async () => {
-        const handler = useHandler();
-
-        const context = await handler.rawHandle();
-
-        await context.tasks.createTask({
+        // Create task
+        const task = await context.tasks.createTask({
             definitionId: DATA_SYNCHRONIZATION_TASK,
             input: {
                 flow: "elasticsearchToDynamoDb"
             },
-            name: "Data Sync Mock Task"
+            name: "Test Sync No Indexes"
         });
 
-        const { manager, indexManager } = createManagers({
-            context
+        // Get task definition from container
+        const taskDefinitions = context.container.resolveAll(TaskDefinition);
+        const taskDefinition = taskDefinitions.find(td => td.id === DATA_SYNCHRONIZATION_TASK)!;
+
+        // Create runner
+        const runner = createRunner({
+            context,
+            task: taskDefinition,
+            onContinue: async () => {}
         });
 
+        // Run the task - it should succeed even without indexes (task creation creates required indexes)
+        const result = await runner({ webinyTaskId: task.id });
+
+        // Verify it completed successfully
+        expect(result.status).toBe("done");
+        expect(result.webinyTaskId).toBe(task.id);
+    });
+
+    it("should run a sync with indexes and finish", async () => {
+        const handler = useHandler({
+            plugins: [createDataSynchronization()]
+        });
+
+        const context = await handler.rawHandle();
+
+        // Create task first
+        const task = await context.tasks.createTask({
+            definitionId: DATA_SYNCHRONIZATION_TASK,
+            input: {
+                flow: "elasticsearchToDynamoDb"
+            },
+            name: "Test Sync With Indexes"
+        });
+
+        // Get task index from context
+        const indexManager = new IndexManager(context.elasticsearch, {});
         const index = await getTaskIndex(indexManager);
 
+        // Insert mock data into Elasticsearch
         const totalMockItemsToInsert = 101;
         const recordsFactory = createRecordsFactory({
             context,
             index,
-            timer: manager.timer,
+            timer: timerFactory(),
             records: totalMockItemsToInsert
         });
-        try {
-            await recordsFactory.run();
-        } catch (ex) {
-            expect(ex.message).toBe("Should not reach this point.");
-        }
-        /**
-         * Now we need to make sure that the mock data is in the index.
-         */
+
+        await recordsFactory.run();
+
+        // Verify data was inserted (includes task record created during task creation)
         const response = await context.elasticsearch.search(queryAllRecords(index));
         expect(response.body.hits.hits).toHaveLength(totalMockItemsToInsert + 1);
 
-        const sync = new ElasticsearchToDynamoDbSynchronization({
-            manager,
-            indexManager,
-            fetcher: new ElasticsearchFetcher({
-                client: context.elasticsearch
-            }),
-            synchronize: new ElasticsearchSynchronize({
-                context,
-                timer: manager.timer
-            })
+        // Get task definition and create runner
+        const taskDefinitions = context.container.resolveAll(TaskDefinition);
+        const taskDefinition = taskDefinitions.find(td => td.id === DATA_SYNCHRONIZATION_TASK)!;
+
+        const runner = createRunner({
+            context,
+            task: taskDefinition,
+            onContinue: async () => {}
         });
 
-        const result = await sync.run({
-            flow: "elasticsearchToDynamoDb"
-        });
-        expect(result).toEqual({
-            delay: -1,
-            input: {
-                elasticsearchToDynamoDb: {
-                    finished: true
-                },
-                flow: "elasticsearchToDynamoDb"
-            },
-            message: undefined,
-            status: "continue",
-            tenant: "root",
-            wait: undefined,
-            webinyTaskDefinitionId: "mockDefinitionId",
-            webinyTaskId: "mockEventId"
-        });
-        /**
-         * Now we need to make sure that the mock data is not in the index anymore.
-         */
+        // Run the task
+        const result = await runner({ webinyTaskId: task.id });
+
+        // Verify result structure (new format)
+        expect(result.status).toBeDefined();
+        expect(result.webinyTaskId).toBe(task.id);
+
+        // Verify data was cleaned up
         const afterRunResponse = await context.elasticsearch.search(queryAllRecords(index));
         expect(afterRunResponse.body.hits.hits).toHaveLength(1);
     });

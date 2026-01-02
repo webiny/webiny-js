@@ -4,6 +4,7 @@
  */
 import type { CmsModelField } from "@webiny/api-headless-cms/types/index.js";
 import type { ElasticsearchQuerySearchValuePlugins } from "./types.js";
+import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldType.js";
 
 interface Params {
     plugins: ElasticsearchQuerySearchValuePlugins;
@@ -16,7 +17,8 @@ interface Params {
  */
 export const transformValueForSearch = (params: Params): any => {
     const { field, plugins, value } = params;
-    const plugin = plugins[field.type];
+    const fieldType = getBaseFieldType(field);
+    const plugin = plugins[fieldType];
     if (!plugin) {
         return value;
     }

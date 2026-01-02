@@ -4,7 +4,7 @@ import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import models from "./mocks/contentModels";
 
 describe("multiple values in field", () => {
-    const manageOpts = { path: "manage/en-US" };
+    const manageOpts = { path: "manage" };
 
     const {
         createContentModelMutation,

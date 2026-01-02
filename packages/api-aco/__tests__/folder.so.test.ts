@@ -1,31 +1,13 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { mdbid } from "@webiny/utils";
 import { folderMocks } from "./mocks/folder.mock";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 import { userMock } from "~tests/mocks/user.mock";
 import { ROOT_FOLDER } from "~/constants";
 
-const createSampleFileData = (overrides: Record<string, any> = {}) => {
-    const id = mdbid();
-    return {
-        id,
-        type: "image/jpeg",
-        name: "image-48.jpg",
-        size: 269965,
-        key: `${id}/image.jpg`,
-        tags: [],
-        location: {
-            folderId: ""
-        },
-        ...overrides
-    };
-};
-
 describe("`folder` CRUD", () => {
     let folder1: Record<string, any>;
     let folder2: Record<string, any>;
     let aco: ReturnType<typeof useGraphQlHandler>["aco"];
-    let fm: ReturnType<typeof useGraphQlHandler>["fm"];
     let cms: ReturnType<typeof useGraphQlHandler>["cms"];
 
     beforeEach(async () => {
@@ -56,7 +38,6 @@ describe("`folder` CRUD", () => {
             });
 
         aco = handler.aco;
-        fm = handler.fm;
         cms = handler.cms;
     });
 
@@ -228,8 +209,12 @@ describe("`folder` CRUD", () => {
                     getFolder: {
                         data: null,
                         error: {
-                            code: "NOT_FOUND",
-                            data: null
+                            code: "Aco/Folder/NotFound",
+                            data: {
+                                folder: {
+                                    id: expect.any(String)
+                                }
+                            }
                         }
                     }
                 }
@@ -706,80 +691,6 @@ describe("`folder` CRUD", () => {
         }
     });
 
-    it("should NOT delete `FmFile` folder in case has child file", async () => {
-        // Let's create a folder.
-        const [folderResponse] = await aco.createFolder({
-            data: { ...folderMocks.folderA, type: "FmFile" }
-        });
-        const folder = folderResponse.data.aco.createFolder.data;
-
-        // Let's create a file within the folder.
-        const [fileResponse] = await fm.createFile({
-            data: {
-                ...createSampleFileData(),
-                location: {
-                    folderId: folder.id
-                }
-            }
-        });
-
-        const file = fileResponse.data.fileManager.createFile.data;
-
-        // Let's try to delete the folder.
-        const [failedResponse] = await aco.deleteFolder({ id: folder.id });
-
-        expect(failedResponse).toEqual({
-            data: {
-                aco: {
-                    deleteFolder: {
-                        data: null,
-                        error: expect.objectContaining({
-                            code: "DELETE_FOLDER_WITH_CHILDREN",
-                            message: "Delete all child folders and entries before proceeding."
-                        })
-                    }
-                }
-            }
-        });
-
-        // Let's delete the file.
-        await fm.deleteFile({
-            id: file.id
-        });
-
-        const [succesfullResponse] = await aco.deleteFolder({ id: folder.id });
-
-        expect(succesfullResponse).toEqual({
-            data: {
-                aco: {
-                    deleteFolder: {
-                        data: true,
-                        error: null
-                    }
-                }
-            }
-        });
-
-        // Let's list folders.
-        const [listFolderResponse] = await aco.listFolders({ where: { type: "FmFile" } });
-
-        expect(listFolderResponse).toEqual({
-            data: {
-                aco: {
-                    listFolders: {
-                        data: [],
-                        error: null,
-                        meta: {
-                            cursor: null,
-                            hasMoreItems: false,
-                            totalCount: 0
-                        }
-                    }
-                }
-            }
-        });
-    });
-
     it("should NOT delete `HCMS` folder in case has child entry", async () => {
         // Let's create model and group.
         const modelGroup = await cms.createTestModelGroup();
@@ -812,8 +723,9 @@ describe("`folder` CRUD", () => {
                     deleteFolder: {
                         data: null,
                         error: expect.objectContaining({
-                            code: "DELETE_FOLDER_WITH_CHILDREN",
-                            message: "Delete all child folders and entries before proceeding."
+                            code: "Aco/Folder/NotEmpty",
+                            data: null,
+                            message: "Folder is not empty."
                         })
                     }
                 }
@@ -871,14 +783,9 @@ describe("`folder` CRUD", () => {
                     createFolder: {
                         data: null,
                         error: {
-                            code: "FOLDER_ALREADY_EXISTS",
+                            code: "Aco/Folder/ValidationError",
                             message: `Folder with slug "${folderMocks.folderA.slug}" already exists at this level.`,
-                            data: {
-                                params: {
-                                    slug: "folder-a",
-                                    type: "page"
-                                }
-                            }
+                            data: null
                         }
                     }
                 }
@@ -900,17 +807,9 @@ describe("`folder` CRUD", () => {
                     createFolder: {
                         data: null,
                         error: {
-                            code: "VALIDATION_FAILED",
+                            code: "Aco/Folder/ValidationError",
                             message: "Validation failed.",
-                            data: [
-                                {
-                                    error: "Value is required.",
-                                    fieldId: "title",
-                                    storageId: "text@title",
-                                    id: "title",
-                                    parents: []
-                                }
-                            ]
+                            data: null
                         }
                     }
                 }
@@ -932,17 +831,9 @@ describe("`folder` CRUD", () => {
                     createFolder: {
                         data: null,
                         error: {
-                            code: "VALIDATION_FAILED",
+                            code: "Aco/Folder/ValidationError",
                             message: "Validation failed.",
-                            data: [
-                                {
-                                    error: "Value is required.",
-                                    fieldId: "slug",
-                                    storageId: "text@slug",
-                                    id: "slug",
-                                    parents: []
-                                }
-                            ]
+                            data: null
                         }
                     }
                 }
@@ -964,17 +855,9 @@ describe("`folder` CRUD", () => {
                     createFolder: {
                         data: null,
                         error: {
-                            code: "VALIDATION_FAILED",
+                            code: "Aco/Folder/ValidationError",
                             message: "Validation failed.",
-                            data: [
-                                {
-                                    error: "Value must consist of only 'a-z', '0-9' and '-'.",
-                                    fieldId: "slug",
-                                    storageId: "text@slug",
-                                    id: "slug",
-                                    parents: []
-                                }
-                            ]
+                            data: null
                         }
                     }
                 }
@@ -1012,9 +895,13 @@ describe("`folder` CRUD", () => {
         expect(result.data.aco.updateFolder).toEqual({
             data: null,
             error: {
-                code: "NOT_FOUND",
-                message: `Entry by ID "${id}" not found.`,
-                data: null
+                code: "Aco/Folder/NotFound",
+                message: `Folder not found!`,
+                data: {
+                    folder: {
+                        id: "any-id"
+                    }
+                }
             }
         });
     });
@@ -1042,7 +929,7 @@ describe("`folder` CRUD", () => {
                     updateFolder: {
                         data: null,
                         error: expect.objectContaining({
-                            code: "FOLDER_ALREADY_EXISTS",
+                            code: "Aco/Folder/ValidationError",
                             message: `Folder with slug "${folderMocks.folderA.slug}" already exists at this level.`
                         })
                     }

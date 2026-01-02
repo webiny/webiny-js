@@ -32,12 +32,11 @@ vi.mock("@webiny/aws-sdk/client-apigatewaymanagementapi", () => {
 interface InsertConnectionsParams {
     suffix?: string;
     tenant?: string;
-    locale?: string;
     identity?: IWebsocketsIdentity;
 }
 
 const insertConnections = async (amount: number, params?: InsertConnectionsParams) => {
-    const { suffix, tenant, locale, identity } = params || {};
+    const { suffix, tenant, identity } = params || {};
     const documentClient = getDocumentClient();
     const registry = new WebsocketsConnectionRegistry(documentClient);
 
@@ -46,7 +45,6 @@ const insertConnections = async (amount: number, params?: InsertConnectionsParam
         const connection: IWebsocketsConnectionRegistryData = {
             connectionId: `connection-${i}${suffix ? `-${suffix}` : ""}`,
             tenant: tenant || "root",
-            locale: locale || "en-US",
             identity: {
                 id: `id-${i}`,
                 type: "admin",
@@ -194,33 +192,16 @@ describe("crud graphql", () => {
         expect(resultDev.data.websockets.listConnections.data).toHaveLength(5);
     });
 
-    it("should list all connections for specific tenant/locale", async () => {
+    it("should list all connections for specific tenant", async () => {
         const { listConnections } = useGraphQLHandler();
         await insertConnections(5);
-        await insertConnections(5, {
-            suffix: `root-hr-HR`,
-            locale: "hr-HR"
-        });
-
-        const [resultAll] = await listConnections();
-        expect(resultAll.data.websockets.listConnections.data).toHaveLength(10);
 
         const [resultRoot] = await listConnections({
             where: {
-                tenant: "root",
-                locale: "en-US"
+                tenant: "root"
             }
         });
         expect(resultRoot.data.websockets.listConnections.data).toHaveLength(5);
-
-        const [resultDev] = await listConnections({
-            where: {
-                tenant: "root",
-                locale: "hr-HR"
-            }
-        });
-
-        expect(resultDev.data.websockets.listConnections.data).toHaveLength(5);
     });
 
     it("should disconnect a specific identity connection", async () => {
@@ -276,25 +257,23 @@ describe("crud graphql", () => {
         expect(resultAfterDisconnect.data.websockets.listConnections.data).toHaveLength(5);
     });
 
-    it("should disconnect specific tenant/locale combination", async () => {
+    it("should disconnect specific tenant combination", async () => {
         const { listConnections, disconnectTenant } = useGraphQLHandler();
 
         const rootEnConnections = await insertConnections(5);
         const devEnConnections = await insertConnections(5, {
             suffix: "dev-en",
-            tenant: "dev",
-            locale: "en-US"
+            tenant: "dev"
         });
         await insertConnections(5, {
             suffix: "dev-hr",
-            tenant: "dev",
-            locale: "hr-HR"
+            tenant: "dev"
         });
 
         const [resultBeforeDisconnect] = await listConnections();
         expect(resultBeforeDisconnect.data.websockets.listConnections.data).toHaveLength(15);
 
-        const [result] = await disconnectTenant("dev", "en-US");
+        const [result] = await disconnectTenant("dev");
         expect(result).toEqual({
             data: {
                 websockets: {
@@ -307,9 +286,9 @@ describe("crud graphql", () => {
         });
 
         const [resultAfterDisconnect] = await listConnections();
-        expect(resultAfterDisconnect.data.websockets.listConnections.data).toHaveLength(10);
+        expect(resultAfterDisconnect.data.websockets.listConnections.data).toHaveLength(5);
 
-        const [resultRoot] = await disconnectTenant("root", "en-US");
+        const [resultRoot] = await disconnectTenant("root");
         expect(resultRoot).toEqual({
             data: {
                 websockets: {
@@ -322,7 +301,7 @@ describe("crud graphql", () => {
         });
 
         const [resultAfterRootDisconnect] = await listConnections();
-        expect(resultAfterRootDisconnect.data.websockets.listConnections.data).toHaveLength(5);
+        expect(resultAfterRootDisconnect.data.websockets.listConnections.data).toHaveLength(0);
     });
 
     it("should disconnect all connections", async () => {
@@ -336,14 +315,12 @@ describe("crud graphql", () => {
             })),
             ...(await insertConnections(5, {
                 suffix: "webiny",
-                tenant: "webiny",
-                locale: "de-DE"
+                tenant: "webiny"
             })),
 
             ...(await insertConnections(5, {
                 suffix: "webiny-en",
-                tenant: "webiny",
-                locale: "en-US"
+                tenant: "webiny"
             }))
         ];
 

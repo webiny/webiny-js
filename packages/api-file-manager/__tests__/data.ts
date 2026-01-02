@@ -1,4 +1,4 @@
-import type { FileInput } from "~/types";
+import type { FileInput } from "~/domain/file/types.js";
 
 export default [
     {
@@ -6,7 +6,6 @@ export default [
         name: "credit_navigate_bifurcated.otf",
         size: 90878,
         type: "font/otf",
-        aliases: [],
         tags: [
             "landscape",
             "blog",
@@ -23,7 +22,6 @@ export default [
         name: "communications_concept_compressing.jpeg",
         size: 67864,
         type: "image/jpeg",
-        aliases: [],
         tags: ["banners"]
     },
     {
@@ -31,7 +29,6 @@ export default [
         name: "bi_directional_awesome.jpeg",
         size: 18233,
         type: "image/jpeg",
-        aliases: [],
         tags: ["blog", "banners"]
     },
     {
@@ -39,7 +36,6 @@ export default [
         name: "deposit_money_program.pdf",
         size: 29003,
         type: "application/pdf",
-        aliases: [],
         tags: ["blog", "science", "food", "vehicles", "banners", "internet", "serverless"]
     },
     {
@@ -47,7 +43,6 @@ export default [
         name: "loop_policy.png",
         size: 34155,
         type: "image/png",
-        aliases: [],
         tags: ["serverless"]
     },
     {
@@ -55,7 +50,6 @@ export default [
         name: "copying_json.png",
         size: 89979,
         type: "image/png",
-        aliases: [],
         tags: ["landscape", "blog", "science", "banners"]
     },
     {
@@ -63,7 +57,6 @@ export default [
         name: "human_unbranded_moldova.png",
         size: 2977,
         type: "image/png",
-        aliases: [],
         tags: ["landscape", "blog", "science", "internet"]
     },
     {
@@ -71,7 +64,6 @@ export default [
         name: "scsi.html",
         size: 11627,
         type: "text/html",
-        aliases: [],
         tags: ["landscape", "blog", "vehicles", "banners"]
     },
     {
@@ -79,7 +71,6 @@ export default [
         name: "small_wireless_principal.html",
         size: 33391,
         type: "text/html",
-        aliases: [],
         tags: ["landscape", "blog", "food", "vehicles", "banners", "internet"]
     },
     {
@@ -87,7 +78,6 @@ export default [
         name: "salad_payment_frame.png",
         size: 13381,
         type: "image/png",
-        aliases: [],
         tags: ["blog", "science"]
     },
     {
@@ -95,7 +85,6 @@ export default [
         name: "grow.html",
         size: 7165,
         type: "text/html",
-        aliases: [],
         tags: [
             "landscape",
             "blog",
@@ -112,7 +101,6 @@ export default [
         name: "blockchains_teal.png",
         size: 16305,
         type: "image/png",
-        aliases: [],
         tags: ["vehicles"]
     },
     {
@@ -120,7 +108,6 @@ export default [
         name: "health_viral.jpeg",
         size: 41274,
         type: "image/jpeg",
-        aliases: [],
         tags: ["landscape", "blog", "science", "vehicles", "internet", "serverless"]
     },
     {
@@ -128,7 +115,6 @@ export default [
         name: "bypassing_bacon_checking.pdf",
         size: 89908,
         type: "application/pdf",
-        aliases: [],
         tags: ["landscape", "science", "food", "banners", "internet", "serverless"]
     },
     {
@@ -136,7 +122,6 @@ export default [
         name: "infrastructure_connecting.jpeg",
         size: 16201,
         type: "image/jpeg",
-        aliases: [],
         tags: ["science", "banners"]
     },
     {
@@ -144,7 +129,6 @@ export default [
         name: "chief.html",
         size: 2330,
         type: "text/html",
-        aliases: [],
         tags: ["blog", "science", "food", "vehicles", "banners", "serverless"]
     },
     {
@@ -152,7 +136,6 @@ export default [
         name: "buckinghamshire_maroon_wooden.jpeg",
         size: 66512,
         type: "image/jpeg",
-        aliases: [],
         tags: [
             "landscape",
             "blog",
@@ -169,7 +152,6 @@ export default [
         name: "platforms_lavender.png",
         size: 91223,
         type: "image/png",
-        aliases: [],
         tags: ["landscape", "blog", "vehicles", "internet"]
     },
     {
@@ -177,7 +159,6 @@ export default [
         name: "navigating_adapter.jpeg",
         size: 31983,
         type: "image/jpeg",
-        aliases: [],
         tags: [
             "landscape",
             "blog",
@@ -194,7 +175,6 @@ export default [
         name: "png_home_navigating.pdf",
         size: 58734,
         type: "application/pdf",
-        aliases: [],
         tags: ["landscape", "blog", "science", "vehicles", "banners", "internet"]
     },
     {
@@ -202,7 +182,6 @@ export default [
         name: "dakota.jpeg",
         size: 89357,
         type: "image/jpeg",
-        aliases: [],
         tags: ["vehicles", "internet"]
     },
     {
@@ -210,7 +189,6 @@ export default [
         name: "beauty_human_tennessee.jpeg",
         size: 11477,
         type: "image/jpeg",
-        aliases: [],
         tags: ["science", "vehicles", "banners", "internet", "serverless"]
     },
     {
@@ -218,7 +196,6 @@ export default [
         name: "practical_creative_steel.otf",
         size: 79464,
         type: "font/otf",
-        aliases: [],
         tags: ["landscape", "science", "food", "vehicles", "banners", "internet"]
     },
     {
@@ -226,7 +203,6 @@ export default [
         name: "gorgeous.html",
         size: 66274,
         type: "text/html",
-        aliases: [],
         tags: ["science", "food", "banners"]
     },
     {
@@ -234,7 +210,6 @@ export default [
         name: "profound.otf",
         size: 54094,
         type: "font/otf",
-        aliases: [],
         tags: ["food", "banners"]
     },
     {
@@ -242,7 +217,6 @@ export default [
         name: "checking_redefine.pdf",
         size: 85740,
         type: "application/pdf",
-        aliases: [],
         tags: ["landscape", "science", "food", "banners"]
     },
     {
@@ -250,7 +224,6 @@ export default [
         name: "deposit_customer.pdf",
         size: 61733,
         type: "application/pdf",
-        aliases: [],
         tags: ["science", "serverless"]
     },
     {
@@ -258,7 +231,6 @@ export default [
         name: "cotton_calculating.png",
         size: 25516,
         type: "image/png",
-        aliases: [],
         tags: ["blog", "science", "internet"]
     },
     {
@@ -266,7 +238,6 @@ export default [
         name: "plastic_uic_franc.pdf",
         size: 1601,
         type: "application/pdf",
-        aliases: [],
         tags: ["landscape", "science", "food", "vehicles", "internet", "serverless"]
     },
     {
@@ -274,7 +245,6 @@ export default [
         name: "virtual.html",
         size: 74719,
         type: "text/html",
-        aliases: [],
         tags: ["science", "serverless"]
     },
     {
@@ -282,7 +252,6 @@ export default [
         name: "infrastructures.pdf",
         size: 1492,
         type: "application/pdf",
-        aliases: [],
         tags: ["blog", "science", "food"]
     },
     {
@@ -290,7 +259,6 @@ export default [
         name: "refined.jpeg",
         size: 82308,
         type: "image/jpeg",
-        aliases: [],
         tags: ["blog", "food", "vehicles", "banners", "internet", "serverless"]
     },
     {
@@ -298,7 +266,6 @@ export default [
         name: "arizona.jpeg",
         size: 58394,
         type: "image/jpeg",
-        aliases: [],
         tags: ["landscape", "blog", "food", "vehicles", "banners"]
     },
     {
@@ -306,7 +273,6 @@ export default [
         name: "capacitor.otf",
         size: 17502,
         type: "font/otf",
-        aliases: [],
         tags: ["landscape", "blog", "food", "vehicles", "banners"]
     },
     {
@@ -314,7 +280,6 @@ export default [
         name: "organic.otf",
         size: 46,
         type: "font/otf",
-        aliases: [],
         tags: ["blog", "science", "food", "vehicles", "banners", "serverless"]
     },
     {
@@ -322,7 +287,6 @@ export default [
         name: "online_cotton_invoice.jpeg",
         size: 36788,
         type: "image/jpeg",
-        aliases: [],
         tags: ["landscape", "blog", "science", "vehicles", "banners", "internet"]
     },
     {
@@ -330,7 +294,6 @@ export default [
         name: "plastic.pdf",
         size: 26288,
         type: "application/pdf",
-        aliases: [],
         tags: ["landscape", "blog", "vehicles", "banners"]
     },
     {
@@ -338,7 +301,6 @@ export default [
         name: "cross_media_tasty.html",
         size: 55115,
         type: "text/html",
-        aliases: [],
         tags: ["science", "banners", "serverless"]
     },
     {
@@ -346,7 +308,6 @@ export default [
         name: "supply_chains_magenta.otf",
         size: 49997,
         type: "font/otf",
-        aliases: [],
         tags: [
             "landscape",
             "blog",
@@ -363,7 +324,6 @@ export default [
         name: "magenta_vatu_manager.pdf",
         size: 41041,
         type: "application/pdf",
-        aliases: [],
         tags: ["landscape", "blog", "science", "vehicles", "banners", "internet", "serverless"]
     },
     {
@@ -371,7 +331,6 @@ export default [
         name: "scale_arizona_withdrawal.jpeg",
         size: 24036,
         type: "image/jpeg",
-        aliases: [],
         tags: ["landscape", "blog", "science", "food", "vehicles", "banners", "internet"]
     },
     {
@@ -379,7 +338,6 @@ export default [
         name: "cuban.html",
         size: 86554,
         type: "text/html",
-        aliases: [],
         tags: ["landscape", "blog", "banners", "internet", "serverless"]
     },
     {
@@ -387,7 +345,6 @@ export default [
         name: "up_iowa_fish.html",
         size: 41491,
         type: "text/html",
-        aliases: [],
         tags: ["landscape", "blog", "science", "food", "vehicles", "banners", "serverless"]
     },
     {
@@ -395,7 +352,6 @@ export default [
         name: "override_compress_users.html",
         size: 12911,
         type: "text/html",
-        aliases: [],
         tags: ["science", "food", "vehicles", "banners"]
     },
     {
@@ -403,7 +359,6 @@ export default [
         name: "health.png",
         size: 23277,
         type: "image/png",
-        aliases: [],
         tags: ["landscape", "blog", "science", "vehicles", "internet"]
     },
     {
@@ -411,7 +366,6 @@ export default [
         name: "customizable_architect.png",
         size: 1035,
         type: "image/png",
-        aliases: [],
         tags: ["landscape", "science", "food", "banners", "internet", "serverless"]
     },
     {
@@ -419,7 +373,6 @@ export default [
         name: "street.jpeg",
         size: 38921,
         type: "image/jpeg",
-        aliases: [],
         tags: ["food", "internet", "serverless"]
     },
     {
@@ -427,7 +380,6 @@ export default [
         name: "markets_outdoors_networks.otf",
         size: 66459,
         type: "font/otf",
-        aliases: [],
         tags: [
             "landscape",
             "blog",
@@ -444,7 +396,6 @@ export default [
         name: "maroon.pdf",
         size: 74890,
         type: "application/pdf",
-        aliases: [],
         tags: ["science", "banners"]
     },
     {
@@ -452,7 +403,6 @@ export default [
         name: "generic_communities_enterprise.otf",
         size: 61747,
         type: "font/otf",
-        aliases: [],
         tags: ["landscape", "blog", "science", "food", "vehicles", "banners", "serverless"]
     },
     {
@@ -460,7 +410,6 @@ export default [
         name: "computer_sexy_saint.png",
         size: 45891,
         type: "image/png",
-        aliases: [],
         tags: ["blog", "serverless"]
     },
     {
@@ -468,7 +417,6 @@ export default [
         name: "alliance.png",
         size: 36699,
         type: "image/png",
-        aliases: [],
         tags: [
             "landscape",
             "blog",
@@ -485,7 +433,6 @@ export default [
         name: "chair.pdf",
         size: 70666,
         type: "application/pdf",
-        aliases: [],
         tags: ["landscape", "blog", "food", "vehicles", "banners", "internet", "serverless"]
     },
     {
@@ -493,7 +440,6 @@ export default [
         name: "designer_haptic_loan.otf",
         size: 26669,
         type: "font/otf",
-        aliases: [],
         tags: ["food"]
     },
     {
@@ -501,7 +447,6 @@ export default [
         name: "division_directional.otf",
         size: 87269,
         type: "font/otf",
-        aliases: [],
         tags: ["landscape", "science", "internet"]
     },
     {
@@ -509,7 +454,6 @@ export default [
         name: "movies.otf",
         size: 8013,
         type: "font/otf",
-        aliases: [],
         tags: ["landscape", "food", "vehicles", "internet", "serverless"]
     },
     {
@@ -517,7 +461,6 @@ export default [
         name: "background.pdf",
         size: 17190,
         type: "application/pdf",
-        aliases: [],
         tags: [
             "landscape",
             "blog",
@@ -534,7 +477,6 @@ export default [
         name: "pizza_info_mediaries_licensed.png",
         size: 92963,
         type: "image/png",
-        aliases: [],
         tags: ["landscape", "science", "food", "vehicles", "banners", "internet", "serverless"]
     },
     {
@@ -542,7 +484,6 @@ export default [
         name: "industrial_licensed_synergies.png",
         size: 89869,
         type: "image/png",
-        aliases: [],
         tags: ["vehicles", "internet", "serverless"]
     },
     {
@@ -550,7 +491,6 @@ export default [
         name: "district_instruction.html",
         size: 95009,
         type: "text/html",
-        aliases: [],
         tags: ["landscape", "science", "vehicles", "banners", "internet", "serverless"]
     },
     {
@@ -558,7 +498,6 @@ export default [
         name: "fresh.otf",
         size: 54095,
         type: "font/otf",
-        aliases: [],
         tags: ["landscape", "science", "food", "vehicles", "banners", "internet", "serverless"]
     },
     {
@@ -566,7 +505,6 @@ export default [
         name: "wooden_utilisation.html",
         size: 37343,
         type: "text/html",
-        aliases: [],
         tags: [
             "landscape",
             "blog",
@@ -583,7 +521,6 @@ export default [
         name: "sports_overriding_corporate.pdf",
         size: 13091,
         type: "application/pdf",
-        aliases: [],
         tags: ["landscape", "blog", "science", "vehicles", "banners", "internet", "serverless"]
     },
     {
@@ -591,7 +528,6 @@ export default [
         name: "parsing_cambodia.html",
         size: 80223,
         type: "text/html",
-        aliases: [],
         tags: ["landscape", "blog", "science", "vehicles"]
     },
     {
@@ -599,7 +535,6 @@ export default [
         name: "philippine_verde.jpeg",
         size: 84513,
         type: "image/jpeg",
-        aliases: [],
         tags: ["science", "food"]
     },
     {
@@ -607,7 +542,6 @@ export default [
         name: "checking_keyboard.jpeg",
         size: 83500,
         type: "image/jpeg",
-        aliases: [],
         tags: ["landscape", "blog", "science", "vehicles", "banners", "internet", "serverless"]
     },
     {
@@ -615,7 +549,6 @@ export default [
         name: "card_central_intelligent.otf",
         size: 47416,
         type: "font/otf",
-        aliases: [],
         tags: ["food", "vehicles", "banners", "internet", "serverless"]
     },
     {
@@ -623,7 +556,6 @@ export default [
         name: "configuration_account.html",
         size: 4470,
         type: "text/html",
-        aliases: [],
         tags: ["blog", "science", "food"]
     },
     {
@@ -631,7 +563,6 @@ export default [
         name: "transmit_up_sized.png",
         size: 21935,
         type: "image/png",
-        aliases: [],
         tags: ["landscape", "blog", "science", "vehicles", "banners", "internet", "serverless"]
     },
     {
@@ -639,7 +570,6 @@ export default [
         name: "producer.jpeg",
         size: 19572,
         type: "image/jpeg",
-        aliases: [],
         tags: ["landscape", "blog", "science", "food", "vehicles", "banners", "internet"]
     },
     {
@@ -647,7 +577,6 @@ export default [
         name: "electronics_buckinghamshire.jpeg",
         size: 45156,
         type: "image/jpeg",
-        aliases: [],
         tags: ["science", "banners", "serverless"]
     },
     {
@@ -655,7 +584,6 @@ export default [
         name: "developer_granite_computers.pdf",
         size: 22119,
         type: "application/pdf",
-        aliases: [],
         tags: ["landscape", "blog", "food", "vehicles", "banners", "internet", "serverless"]
     },
     {
@@ -663,7 +591,6 @@ export default [
         name: "saudi_wooden.png",
         size: 12700,
         type: "image/png",
-        aliases: [],
         tags: ["vehicles"]
     },
     {
@@ -671,7 +598,6 @@ export default [
         name: "generate.png",
         size: 70181,
         type: "image/png",
-        aliases: [],
         tags: ["landscape", "vehicles"]
     },
     {
@@ -679,7 +605,6 @@ export default [
         name: "synergies_pizza.jpeg",
         size: 67525,
         type: "image/jpeg",
-        aliases: [],
         tags: ["science", "food", "banners", "internet", "serverless"]
     },
     {
@@ -687,7 +612,6 @@ export default [
         name: "fantastic.pdf",
         size: 11631,
         type: "application/pdf",
-        aliases: [],
         tags: ["blog", "science", "internet", "serverless"]
     },
     {
@@ -695,7 +619,6 @@ export default [
         name: "open_source_unleash.pdf",
         size: 60813,
         type: "application/pdf",
-        aliases: [],
         tags: ["landscape", "science", "vehicles", "internet"]
     },
     {
@@ -703,7 +626,6 @@ export default [
         name: "relationships_transmit.html",
         size: 67630,
         type: "text/html",
-        aliases: [],
         tags: ["landscape", "science", "food", "vehicles", "serverless"]
     },
     {
@@ -711,7 +633,6 @@ export default [
         name: "cambridgeshire_cotton.png",
         size: 62395,
         type: "image/png",
-        aliases: [],
         tags: ["blog", "food", "banners"]
     },
     {
@@ -719,7 +640,6 @@ export default [
         name: "web_enabled_administrator.jpeg",
         size: 62436,
         type: "image/jpeg",
-        aliases: [],
         tags: ["landscape", "vehicles"]
     },
     {
@@ -727,7 +647,6 @@ export default [
         name: "small_garden_optimal.png",
         size: 83728,
         type: "image/png",
-        aliases: [],
         tags: ["blog", "science", "vehicles", "banners", "internet", "serverless"]
     },
     {
@@ -735,7 +654,6 @@ export default [
         name: "pants_withdrawal_withdrawal.pdf",
         size: 62606,
         type: "application/pdf",
-        aliases: [],
         tags: ["vehicles", "internet"]
     },
     {
@@ -743,7 +661,6 @@ export default [
         name: "balanced.html",
         size: 19424,
         type: "text/html",
-        aliases: [],
         tags: [
             "landscape",
             "blog",
@@ -760,7 +677,6 @@ export default [
         name: "experiences_networked_associate.jpeg",
         size: 90088,
         type: "image/jpeg",
-        aliases: [],
         tags: ["landscape", "banners", "serverless"]
     },
     {
@@ -768,7 +684,6 @@ export default [
         name: "exuding_practical.otf",
         size: 78372,
         type: "font/otf",
-        aliases: [],
         tags: ["landscape", "science", "food", "banners", "internet"]
     },
     {
@@ -776,7 +691,6 @@ export default [
         name: "madagascar_front_line.otf",
         size: 61551,
         type: "font/otf",
-        aliases: [],
         tags: ["blog", "serverless"]
     },
     {
@@ -784,7 +698,6 @@ export default [
         name: "collaborative_keyboard.png",
         size: 77224,
         type: "image/png",
-        aliases: [],
         tags: ["landscape", "vehicles", "banners"]
     },
     {
@@ -792,7 +705,6 @@ export default [
         name: "dollar_soft.otf",
         size: 2573,
         type: "font/otf",
-        aliases: [],
         tags: [
             "landscape",
             "blog",
@@ -809,7 +721,6 @@ export default [
         name: "handmade_payment_synergies.jpeg",
         size: 99745,
         type: "image/jpeg",
-        aliases: [],
         tags: ["landscape", "blog", "science", "food", "vehicles", "banners", "serverless"]
     },
     {
@@ -817,7 +728,6 @@ export default [
         name: "global_silver_dominica.png",
         size: 561,
         type: "image/png",
-        aliases: [],
         tags: ["landscape", "blog", "food", "vehicles", "banners", "internet", "serverless"]
     },
     {
@@ -825,7 +735,6 @@ export default [
         name: "glen_vortals.html",
         size: 7929,
         type: "text/html",
-        aliases: [],
         tags: ["landscape", "blog", "food", "vehicles", "banners", "internet", "serverless"]
     },
     {
@@ -833,7 +742,6 @@ export default [
         name: "optical.jpeg",
         size: 33409,
         type: "image/jpeg",
-        aliases: [],
         tags: ["landscape", "science", "food", "vehicles", "banners", "internet", "serverless"]
     },
     {
@@ -841,7 +749,6 @@ export default [
         name: "quantifying_reverse_engineered.otf",
         size: 31476,
         type: "font/otf",
-        aliases: [],
         tags: ["blog", "science", "vehicles", "banners", "internet", "serverless"]
     },
     {
@@ -849,7 +756,6 @@ export default [
         name: "internal_account_cordoba.html",
         size: 84272,
         type: "text/html",
-        aliases: [],
         tags: ["blog"]
     },
     {
@@ -857,7 +763,6 @@ export default [
         name: "global_partnerships.jpeg",
         size: 12934,
         type: "image/jpeg",
-        aliases: [],
         tags: ["food", "internet", "serverless"]
     },
     {
@@ -865,7 +770,6 @@ export default [
         name: "producer_developer_representative.html",
         size: 90439,
         type: "text/html",
-        aliases: [],
         tags: ["landscape", "banners"]
     },
     {
@@ -873,7 +777,6 @@ export default [
         name: "hryvnia_invoice.html",
         size: 34696,
         type: "text/html",
-        aliases: [],
         tags: ["blog", "vehicles", "banners"]
     },
     {
@@ -881,7 +784,6 @@ export default [
         name: "cheese_legacy_secondary.pdf",
         size: 90337,
         type: "application/pdf",
-        aliases: [],
         tags: ["blog", "science", "food", "vehicles", "banners", "serverless"]
     },
     {
@@ -889,7 +791,6 @@ export default [
         name: "programming_gold.otf",
         size: 82745,
         type: "font/otf",
-        aliases: [],
         tags: ["vehicles", "banners"]
     },
     {
@@ -897,7 +798,6 @@ export default [
         name: "algeria_utah.jpeg",
         size: 72842,
         type: "image/jpeg",
-        aliases: [],
         tags: ["serverless"]
     }
 ] as Partial<FileInput>[];

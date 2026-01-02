@@ -1,5 +1,4 @@
 import type { ContentEntryTraverser } from "~/utils/contentEntryTraverser/ContentEntryTraverser.js";
-import type { Topic } from "@webiny/pubsub/types.js";
 import type {
     CmsDeleteEntryOptions,
     CmsEntry,
@@ -15,39 +14,7 @@ import type {
     CreateRevisionCmsEntryOptionsInput,
     DeleteMultipleEntriesParams,
     DeleteMultipleEntriesResponse,
-    EntryBeforeListTopicParams,
     GetUniqueFieldValuesParams,
-    OnEntryAfterCreateTopicParams,
-    OnEntryAfterDeleteTopicParams,
-    OnEntryAfterMoveTopicParams,
-    OnEntryAfterPublishTopicParams,
-    OnEntryAfterRepublishTopicParams,
-    OnEntryAfterRestoreFromBinTopicParams,
-    OnEntryAfterUnpublishTopicParams,
-    OnEntryAfterUpdateTopicParams,
-    OnEntryBeforeCreateTopicParams,
-    OnEntryBeforeDeleteTopicParams,
-    OnEntryBeforeGetTopicParams,
-    OnEntryBeforeMoveTopicParams,
-    OnEntryBeforePublishTopicParams,
-    OnEntryBeforeRepublishTopicParams,
-    OnEntryBeforeRestoreFromBinTopicParams,
-    OnEntryBeforeUnpublishTopicParams,
-    OnEntryBeforeUpdateTopicParams,
-    OnEntryCreateErrorTopicParams,
-    OnEntryCreateRevisionErrorTopicParams,
-    OnEntryDeleteErrorTopicParams,
-    OnEntryMoveErrorTopicParams,
-    OnEntryPublishErrorTopicParams,
-    OnEntryRepublishErrorTopicParams,
-    OnEntryRestoreFromBinErrorTopicParams,
-    OnEntryRevisionAfterCreateTopicParams,
-    OnEntryRevisionAfterDeleteTopicParams,
-    OnEntryRevisionBeforeCreateTopicParams,
-    OnEntryRevisionBeforeDeleteTopicParams,
-    OnEntryRevisionDeleteErrorTopicParams,
-    OnEntryUnpublishErrorTopicParams,
-    OnEntryUpdateErrorTopicParams,
     UpdateCmsEntryInput,
     UpdateCmsEntryOptionsInput
 } from "./types.js";
@@ -68,7 +35,7 @@ export interface CmsEntryContext {
     /**
      * Get a single content entry for a model.
      */
-    getEntry: <T = CmsEntryValues>(
+    getEntry: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryGetParams
     ) => Promise<CmsEntry<T>>;
@@ -79,7 +46,10 @@ export interface CmsEntryContext {
     /**
      * Get the entry for a model by a given ID.
      */
-    getEntryById<T = CmsEntryValues>(model: CmsModel, revision: string): Promise<CmsEntry<T>>;
+    getEntryById<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        revision: string
+    ): Promise<CmsEntry<T>>;
     /**
      * List entries for a model. Internal method used by get, listLatest and listPublished.
      */
@@ -136,7 +106,7 @@ export interface CmsEntryContext {
     /**
      * Update existing entry.
      */
-    updateEntry: <TInput = CmsEntryValues>(
+    updateEntry: <TInput extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         id: string,
         input: UpdateCmsEntryInput<TInput>,
@@ -206,49 +176,4 @@ export interface CmsEntryContext {
         model: CmsModel,
         params: GetUniqueFieldValuesParams
     ) => Promise<CmsEntryUniqueValue[]>;
-    /**
-     * Lifecycle Events
-     */
-    onEntryBeforeCreate: Topic<OnEntryBeforeCreateTopicParams>;
-    onEntryAfterCreate: Topic<OnEntryAfterCreateTopicParams>;
-    onEntryCreateError: Topic<OnEntryCreateErrorTopicParams>;
-
-    onEntryRevisionBeforeCreate: Topic<OnEntryRevisionBeforeCreateTopicParams>;
-    onEntryRevisionAfterCreate: Topic<OnEntryRevisionAfterCreateTopicParams>;
-    onEntryRevisionCreateError: Topic<OnEntryCreateRevisionErrorTopicParams>;
-
-    onEntryBeforeUpdate: Topic<OnEntryBeforeUpdateTopicParams>;
-    onEntryAfterUpdate: Topic<OnEntryAfterUpdateTopicParams>;
-    onEntryUpdateError: Topic<OnEntryUpdateErrorTopicParams>;
-
-    onEntryBeforeMove: Topic<OnEntryBeforeMoveTopicParams>;
-    onEntryAfterMove: Topic<OnEntryAfterMoveTopicParams>;
-    onEntryMoveError: Topic<OnEntryMoveErrorTopicParams>;
-
-    onEntryBeforeDelete: Topic<OnEntryBeforeDeleteTopicParams>;
-    onEntryAfterDelete: Topic<OnEntryAfterDeleteTopicParams>;
-    onEntryDeleteError: Topic<OnEntryDeleteErrorTopicParams>;
-
-    onEntryBeforeRestoreFromBin: Topic<OnEntryBeforeRestoreFromBinTopicParams>;
-    onEntryAfterRestoreFromBin: Topic<OnEntryAfterRestoreFromBinTopicParams>;
-    onEntryRestoreFromBinError: Topic<OnEntryRestoreFromBinErrorTopicParams>;
-
-    onEntryRevisionBeforeDelete: Topic<OnEntryRevisionBeforeDeleteTopicParams>;
-    onEntryRevisionAfterDelete: Topic<OnEntryRevisionAfterDeleteTopicParams>;
-    onEntryRevisionDeleteError: Topic<OnEntryRevisionDeleteErrorTopicParams>;
-
-    onEntryBeforePublish: Topic<OnEntryBeforePublishTopicParams>;
-    onEntryAfterPublish: Topic<OnEntryAfterPublishTopicParams>;
-    onEntryPublishError: Topic<OnEntryPublishErrorTopicParams>;
-
-    onEntryBeforeRepublish: Topic<OnEntryBeforeRepublishTopicParams>;
-    onEntryAfterRepublish: Topic<OnEntryAfterRepublishTopicParams>;
-    onEntryRepublishError: Topic<OnEntryRepublishErrorTopicParams>;
-
-    onEntryBeforeUnpublish: Topic<OnEntryBeforeUnpublishTopicParams>;
-    onEntryAfterUnpublish: Topic<OnEntryAfterUnpublishTopicParams>;
-    onEntryUnpublishError: Topic<OnEntryUnpublishErrorTopicParams>;
-
-    onEntryBeforeGet: Topic<OnEntryBeforeGetTopicParams>;
-    onEntryBeforeList: Topic<EntryBeforeListTopicParams>;
 }

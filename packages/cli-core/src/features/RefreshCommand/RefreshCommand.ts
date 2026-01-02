@@ -2,6 +2,7 @@ import { createImplementation } from "@webiny/di";
 import { CliCommand, GetProjectSdkService, StdioService } from "~/abstractions/index.js";
 import { ManuallyReportedError } from "~/utils/ManuallyReportedError.js";
 import { IBaseAppParams } from "~/abstractions/features/types.js";
+import { createBaseAppOptions } from "~/features/common/index.js";
 
 export interface IRefreshCommandParams extends IBaseAppParams {
     command: string[];
@@ -28,44 +29,7 @@ export class RefreshCommand implements CliCommand.Interface<IRefreshCommandParam
                     required: true
                 }
             ],
-            options: [
-                {
-                    name: "env",
-                    description: "Environment name (dev, prod, etc.)",
-                    type: "string",
-                    default: "dev",
-                    validation: params => {
-                        if ("app" in params && !params.env) {
-                            throw new Error("Environment name is required.");
-                        }
-                        return true;
-                    }
-                },
-                {
-                    name: "variant",
-                    description: "Variant of the app to refresh",
-                    type: "string",
-                    validation: params => {
-                        const isValid = projectSdk.isValidVariantName(params.variant);
-                        if (isValid.isErr()) {
-                            throw isValid.error;
-                        }
-                        return true;
-                    }
-                },
-                {
-                    name: "region",
-                    description: "Region to target",
-                    type: "string",
-                    validation: params => {
-                        const isValid = projectSdk.isValidRegionName(params.region);
-                        if (isValid.isErr()) {
-                            throw isValid.error;
-                        }
-                        return true;
-                    }
-                }
-            ],
+            options: createBaseAppOptions(projectSdk),
             handler: async (params: IRefreshCommandParams) => {
                 const projectSdk = await this.getProjectSdkService.execute();
 

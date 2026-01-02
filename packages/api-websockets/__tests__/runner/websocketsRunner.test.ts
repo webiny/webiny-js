@@ -3,7 +3,7 @@ import { WebsocketsRunner } from "~/runner";
 import { useHandler } from "~tests/helpers/useHandler";
 import { WebsocketsEventValidator } from "~/validator";
 import { MockWebsocketsEventValidator } from "~tests/mocks/MockWebsocketsEventValidator";
-import { WebsocketsContext } from "~/context";
+import { WebsocketsContext } from "~/context/WebsocketsContext.js";
 import { MockWebsocketsTransport } from "~tests/mocks/MockWebsocketsTransport";
 import { WebsocketsEventRoute } from "~/handler/types";
 import { createWebsocketsRoutePlugin } from "~/plugins";
@@ -127,8 +127,7 @@ describe("websockets runner", () => {
             },
             body: JSON.stringify({
                 token: "aToken",
-                tenant: "root",
-                locale: "en-US"
+                tenant: "root"
             })
         });
         expect(result).toEqual({
@@ -163,8 +162,7 @@ describe("websockets runner", () => {
             },
             body: JSON.stringify({
                 token: "aToken",
-                tenant: "root",
-                locale: "en-US"
+                tenant: "root"
             })
         });
         expect(result).toEqual({
@@ -191,8 +189,7 @@ describe("websockets runner", () => {
             },
             body: JSON.stringify({
                 token: "aToken",
-                tenant: "root",
-                locale: "en-US"
+                tenant: "root"
             })
         });
         expect(result).toEqual({
@@ -219,8 +216,7 @@ describe("websockets runner", () => {
             },
             body: JSON.stringify({
                 token: "aToken",
-                tenant: "root",
-                locale: "en-US"
+                tenant: "root"
             })
         });
         expect(result).toEqual({
@@ -263,8 +259,7 @@ describe("websockets runner", () => {
             },
             body: JSON.stringify({
                 token: "aToken",
-                tenant: "root",
-                locale: "en-US"
+                tenant: "root"
             })
         });
         expect(connectResult).toEqual({
@@ -294,8 +289,7 @@ describe("websockets runner", () => {
             },
             body: JSON.stringify({
                 token: "aToken",
-                tenant: "root",
-                locale: "en-US"
+                tenant: "root"
             })
         });
         expect(result).toEqual({
@@ -333,8 +327,7 @@ describe("websockets runner", () => {
             },
             body: JSON.stringify({
                 token: "aToken",
-                tenant: "root",
-                locale: "en-US"
+                tenant: "root"
             })
         });
         expect(result).toEqual({

@@ -48,13 +48,12 @@ interface IndexCreateParams {
     index: string;
     type: string;
     tenant: string;
-    locale: string;
     plugin: ElasticsearchIndexPlugin;
     onError?: OnError;
 }
 
 const indexCreate = async (params: IndexCreateParams): Promise<void> => {
-    const { client, index, plugin, tenant, locale, type, onError } = params;
+    const { client, index, plugin, tenant, type, onError } = params;
 
     try {
         await client.indices.create({
@@ -79,7 +78,6 @@ const indexCreate = async (params: IndexCreateParams): Promise<void> => {
                     data: error.data
                 },
                 type,
-                locale,
                 tenant,
                 index,
                 body: plugin.body
@@ -93,18 +91,16 @@ interface CreateIndexParams {
     plugins: PluginsContainer;
     type: string;
     tenant: string;
-    locale: string;
     index: string;
     onExists?: OnExists;
     onError?: OnError;
 }
 
 export const createIndex = async (params: CreateIndexParams): Promise<void> => {
-    const { plugins, type, locale, onExists } = params;
+    const { plugins, type, onExists } = params;
     const plugin = getLastAddedIndexPlugin<ElasticsearchIndexPlugin>({
         container: plugins,
-        type,
-        locale
+        type
     });
 
     const exists = await indexExists(params);

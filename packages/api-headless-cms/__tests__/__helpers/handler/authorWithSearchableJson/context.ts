@@ -3,7 +3,7 @@ import { createAuthorWithSearchableJson } from "~tests/__helpers/models/authorWi
 import { createDefaultGroup } from "~tests/__helpers/groups/defaultGroup.js";
 
 export const createAuthorWithSearchableJsonContextHandler = () => {
-    const path = "manage/en-US";
+    const path = "manage";
     const result = useHandler({
         path,
         plugins: [createDefaultGroup(), createAuthorWithSearchableJson()]

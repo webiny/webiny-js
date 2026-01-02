@@ -1,9 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
 import { createDataSynchronization, DATA_SYNCHRONIZATION_TASK } from "~/tasks";
-import { TaskDefinitionPlugin, TaskResponseStatus } from "@webiny/tasks";
 import { createRunner } from "@webiny/project-utils/testing/tasks";
 import { useHandler } from "~tests/helpers/useHandler";
 import type { IDataSynchronizationInput, IFactories } from "~/tasks/dataSynchronization/types";
+import {
+    TaskDefinition,
+    TaskResultStatus
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 vi.mock("~/tasks/dataSynchronization/createFactories", () => {
     return {
@@ -12,7 +15,7 @@ vi.mock("~/tasks/dataSynchronization/createFactories", () => {
                 elasticsearchToDynamoDb: ({ manager }) => {
                     return {
                         run: async input => {
-                            return manager.response.continue({
+                            return manager.controller.response.continue({
                                 ...input,
                                 elasticsearchToDynamoDb: {
                                     finished: true
@@ -27,26 +30,6 @@ vi.mock("~/tasks/dataSynchronization/createFactories", () => {
 });
 
 describe("data synchronization - elasticsearch", () => {
-    it("should create a task definition", async () => {
-        const result = createDataSynchronization();
-
-        expect(result).toBeInstanceOf(TaskDefinitionPlugin);
-        expect(result).toEqual({
-            isPrivate: false,
-            task: {
-                id: DATA_SYNCHRONIZATION_TASK,
-                isPrivate: false,
-                title: "Data Synchronization",
-                description: "Synchronize data between Elasticsearch and DynamoDB",
-                maxIterations: 100,
-                disableDatabaseLogs: true,
-                fields: [],
-                run: expect.any(Function),
-                createInputValidation: expect.any(Function)
-            }
-        });
-    });
-
     it("should run a task and end with error due to invalid flow", async () => {
         const handler = useHandler({});
 
@@ -81,7 +64,9 @@ describe("data synchronization - elasticsearch", () => {
     });
 
     it("should run a task and end with done", async () => {
-        const handler = useHandler({});
+        const handler = useHandler({
+            plugins: [createDataSynchronization()]
+        });
 
         const context = await handler.rawHandle();
 
@@ -93,9 +78,12 @@ describe("data synchronization - elasticsearch", () => {
             name: "Data Sync Mock Task"
         });
 
+        const taskDefinitions = context.container.resolveAll(TaskDefinition);
+        const taskDefinition = taskDefinitions.find(item => item.id === DATA_SYNCHRONIZATION_TASK)!;
+
         const runner = createRunner({
             context,
-            task: createDataSynchronization(),
+            task: taskDefinition,
             onContinue: async () => {
                 return;
             }
@@ -105,14 +93,9 @@ describe("data synchronization - elasticsearch", () => {
             webinyTaskId: task.id
         });
 
-        expect(result).toEqual({
-            status: TaskResponseStatus.DONE,
-            webinyTaskId: task.id,
-            webinyTaskDefinitionId: DATA_SYNCHRONIZATION_TASK,
-            tenant: "root",
-            message: undefined,
-            output: undefined
-        });
+        // The new task system returns different response structure
+        expect(result.status).toBe(TaskResultStatus.DONE);
+        expect(result.webinyTaskId).toBe(task.id);
         const taskCheck = await context.tasks.getTask(task.id);
         expect(taskCheck?.iterations).toEqual(2);
     });

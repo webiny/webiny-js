@@ -194,7 +194,7 @@ describe("Files CRUD test", { timeout: 100_000, retry: 3 }, () => {
             data: {
                 fileManager: {
                     listFiles: {
-                        data: [{ ...fileCData, aliases: [] }, fileBData],
+                        data: [{ ...fileCData }, fileBData],
                         error: null,
                         meta: {
                             hasMoreItems: false,
@@ -216,7 +216,7 @@ describe("Files CRUD test", { timeout: 100_000, retry: 3 }, () => {
             data: {
                 fileManager: {
                     listFiles: {
-                        data: [{ ...fileDData, aliases: [] }],
+                        data: [{ ...fileDData }],
                         error: null,
                         meta: {
                             hasMoreItems: false,
@@ -252,12 +252,7 @@ describe("Files CRUD test", { timeout: 100_000, retry: 3 }, () => {
             data: {
                 fileManager: {
                     listFiles: {
-                        data: [
-                            { ...fileDData, aliases: [] },
-                            { ...fileCData, aliases: [] },
-                            fileBData,
-                            fileAData
-                        ],
+                        data: [{ ...fileDData }, { ...fileCData }, fileBData, fileAData],
                         error: null,
                         meta: {
                             hasMoreItems: false,
@@ -433,8 +428,7 @@ describe("Files CRUD test", { timeout: 100_000, retry: 3 }, () => {
                     listFiles: {
                         data: [
                             {
-                                ...fileCData,
-                                aliases: []
+                                ...fileCData
                             },
                             fileBData
                         ],
@@ -459,8 +453,7 @@ describe("Files CRUD test", { timeout: 100_000, retry: 3 }, () => {
                     listFiles: {
                         data: [
                             {
-                                ...fileCData,
-                                aliases: []
+                                ...fileCData
                             },
                             fileAData
                         ],

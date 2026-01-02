@@ -1,6 +1,7 @@
 import { createImplementation } from "@webiny/di";
 import { CliCommand, GetProjectSdkService, UiService } from "~/abstractions/index.js";
 import { IBaseAppParams } from "~/abstractions/features/types.js";
+import { createBaseAppOptions } from "~/features/common/index.js";
 import open from "open";
 
 export type IOpenCommandParams = Omit<IBaseAppParams, "app">;
@@ -19,50 +20,21 @@ export class OpenCommand implements CliCommand.Interface<IOpenCommandParams> {
             name: "open",
             description: "Quickly open Admin application in your default browser",
             options: [
-                {
-                    name: "env",
-                    description: "Environment name (dev, prod, etc.)",
-                    type: "string",
-                    required: true
-                },
-                {
-                    name: "variant",
-                    description: "Variant of the app to watch",
-                    type: "string",
-                    validation: params => {
-                        const isValid = projectSdk.isValidVariantName(params.variant);
-                        if (isValid.isErr()) {
-                            throw isValid.error;
-                        }
-                        return true;
+                ...createBaseAppOptions(projectSdk, {
+                    variant: {
+                        description: "Variant of the app to watch"
                     }
-                },
-                {
-                    name: "region",
-                    description: "Region to target",
-                    type: "string",
-                    validation: params => {
-                        const isValid = projectSdk.isValidRegionName(params.region);
-                        if (isValid.isErr()) {
-                            throw isValid.error;
-                        }
-                        return true;
-                    }
-                },
+                }),
                 {
                     name: "json",
                     description: "Emit output as JSON",
                     type: "boolean"
                 }
             ],
-            handler: async (args: IOpenCommandParams) => {
+            handler: async () => {
                 ui.info(`Opening %s...`, "Admin app");
 
-                const appOutput = await projectSdk.getAppStackOutput<{ appUrl: string }>({
-                    app: "admin",
-                    env: args.env,
-                    variant: args.variant
-                });
+                const appOutput = await projectSdk.getAppStackOutput<{ appUrl: string }>("admin");
 
                 if (!appOutput) {
                     throw new Error(
@@ -77,7 +49,7 @@ export class OpenCommand implements CliCommand.Interface<IOpenCommandParams> {
                     );
                 }
 
-                return new Promise(resolve => {
+                return new Promise<void>(resolve => {
                     setTimeout(() => {
                         ui.success(`Successfully opened %s.`, "Admin app");
                         open(appUrl);

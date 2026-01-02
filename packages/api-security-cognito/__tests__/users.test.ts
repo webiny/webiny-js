@@ -1,10 +1,7 @@
 import { describe, test, expect, beforeEach } from "vitest";
 import useGqlHandler from "./useGqlHandler";
 import mocks from "./mocks/securityUser";
-import md5 from "md5";
 import type { AdminUser } from "@webiny/api-core/types/users.js";
-
-const createGravatar = (email: string) => `https://www.gravatar.com/avatar/${md5(email)}`;
 
 describe("Security User CRUD Test", () => {
     const { install, adminUsers, securityGroups } = useGqlHandler({ fullAccess: true });
@@ -58,7 +55,6 @@ describe("Security User CRUD Test", () => {
                         data: {
                             ...mocks.userA,
                             id: expect.any(String),
-                            gravatar: createGravatar(mocks.userA.email),
                             groups: [
                                 {
                                     id: fullAccessGroup.id,
@@ -88,7 +84,6 @@ describe("Security User CRUD Test", () => {
                         data: {
                             ...mocks.userB,
                             id: expect.any(String),
-                            gravatar: createGravatar(mocks.userB.email),
                             groups: [
                                 {
                                     id: fullAccessGroup.id,
@@ -274,7 +269,6 @@ describe("Security User CRUD Test", () => {
                         data: {
                             ...adminData,
                             id: expect.any(String),
-                            gravatar: createGravatar(adminData.email),
                             avatar: null,
                             groups: [
                                 {

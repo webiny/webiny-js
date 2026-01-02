@@ -4,8 +4,7 @@
   "references": [
     { "path": "../admin-ui/tsconfig.build.json" },
     { "path": "../app/tsconfig.build.json" },
-    { "path": "../app-admin/tsconfig.build.json" },
-    { "path": "../app-security/tsconfig.build.json" }
+    { "path": "../app-admin/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -25,9 +24,7 @@
       "@webiny/app-admin/features/wcp": ["../app-admin/src/features/wcp/index.js"],
       "@webiny/app-admin/features/tenancy": ["../app-admin/src/features/tenancy/index.js"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
-      "@webiny/app-admin": ["../app-admin/src"],
-      "@webiny/app-security/*": ["../app-security/src/*"],
-      "@webiny/app-security": ["../app-security/src"]
+      "@webiny/app-admin": ["../app-admin/src"]
     },
     "baseUrl": "."
   }

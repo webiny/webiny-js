@@ -5,3 +5,5 @@ console.error = (message, ...args) => {
     }
     originalConsoleError.call(console, message, ...args);
 };
+
+export {};

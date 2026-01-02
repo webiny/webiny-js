@@ -1,11 +1,11 @@
 import { describe, it, expect } from "vitest";
+import WebinyError from "@webiny/error";
 import { useRawHandler } from "~tests/helpers/useRawHandler";
-import { createTaskDefinition } from "~/task";
 import type { ITask } from "~/types";
 import { TaskDataStatus } from "~/types";
-import { NotFoundError } from "@webiny/handler-graphql";
-import WebinyError from "@webiny/error";
 import { createMockIdentity } from "~tests/mocks/identity";
+import { TaskDefinitionNotFoundError, TaskNotFoundError } from "~/domain/errors.js";
+import { createTaskDefinition } from "../helpers/createTaskDefinition.js";
 
 describe("store crud", () => {
     const handler = useRawHandler({
@@ -13,8 +13,8 @@ describe("store crud", () => {
             createTaskDefinition({
                 id: "testDefinition",
                 title: "Test definition",
-                async run({ response }) {
-                    return response.done("successfully ran the task");
+                run: ({ controller }) => {
+                    return controller.response.done("successfully ran the task");
                 }
             })
         ]
@@ -60,12 +60,7 @@ describe("store crud", () => {
             result = ex;
         }
 
-        expect(result).toBeInstanceOf(WebinyError);
-        expect(result!.message).toEqual("There is no task definition.");
-        expect(result!.code).toEqual("TASK_DEFINITION_ERROR");
-        expect(result!.data).toEqual({
-            id: "non-existing-definition"
-        });
+        expect(result).toBeInstanceOf(TaskDefinitionNotFoundError);
     });
 
     it("should fail on updating a task which does not exist", async () => {
@@ -79,7 +74,7 @@ describe("store crud", () => {
             result = ex;
         }
 
-        expect(result).toBeInstanceOf(NotFoundError);
+        expect(result).toBeInstanceOf(TaskNotFoundError);
     });
 
     it("should create, update and delete a task", async () => {

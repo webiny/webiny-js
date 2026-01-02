@@ -41,57 +41,57 @@ import {
 
 export const Security = {
     ApiKey: {
-        BeforeCreate: ApiKeyBeforeCreate,
-        AfterCreate: ApiKeyAfterCreate,
-        BeforeUpdate: ApiKeyBeforeUpdate,
-        AfterUpdate: ApiKeyAfterUpdate,
-        BeforeDelete: ApiKeyBeforeDelete,
-        AfterDelete: ApiKeyAfterDelete
+        BeforeCreate: ApiKeyBeforeCreate.ReactComponent,
+        AfterCreate: ApiKeyAfterCreate.ReactComponent,
+        BeforeUpdate: ApiKeyBeforeUpdate.ReactComponent,
+        AfterUpdate: ApiKeyAfterUpdate.ReactComponent,
+        BeforeDelete: ApiKeyBeforeDelete.ReactComponent,
+        AfterDelete: ApiKeyAfterDelete.ReactComponent
     },
     Group: {
-        BeforeCreate: GroupBeforeCreate,
-        AfterCreate: GroupAfterCreate,
-        BeforeUpdate: GroupBeforeUpdate,
-        AfterUpdate: GroupAfterUpdate,
-        BeforeDelete: GroupBeforeDelete,
-        AfterDelete: GroupAfterDelete
+        BeforeCreate: GroupBeforeCreate.ReactComponent,
+        AfterCreate: GroupAfterCreate.ReactComponent,
+        BeforeUpdate: GroupBeforeUpdate.ReactComponent,
+        AfterUpdate: GroupAfterUpdate.ReactComponent,
+        BeforeDelete: GroupBeforeDelete.ReactComponent,
+        AfterDelete: GroupAfterDelete.ReactComponent
     },
     Team: {
-        BeforeCreate: TeamBeforeCreate,
-        AfterCreate: TeamAfterCreate,
-        BeforeUpdate: TeamBeforeUpdate,
-        AfterUpdate: TeamAfterUpdate,
-        BeforeDelete: TeamBeforeDelete,
-        AfterDelete: TeamAfterDelete
+        BeforeCreate: TeamBeforeCreate.ReactComponent,
+        AfterCreate: TeamAfterCreate.ReactComponent,
+        BeforeUpdate: TeamBeforeUpdate.ReactComponent,
+        AfterUpdate: TeamAfterUpdate.ReactComponent,
+        BeforeDelete: TeamBeforeDelete.ReactComponent,
+        AfterDelete: TeamAfterDelete.ReactComponent
     },
     Authentication: {
-        Before: BeforeAuthentication,
-        After: AfterAuthentication
+        Before: BeforeAuthentication.ReactComponent,
+        After: AfterAuthentication.ReactComponent
     },
     User: {
-        BeforeCreate: UserBeforeCreate,
-        AfterCreate: UserAfterCreate,
-        BeforeUpdate: UserBeforeUpdate,
-        AfterUpdate: UserAfterUpdate,
-        BeforeDelete: UserBeforeDelete,
-        AfterDelete: UserAfterDelete
+        BeforeCreate: UserBeforeCreate.ReactComponent,
+        AfterCreate: UserAfterCreate.ReactComponent,
+        BeforeUpdate: UserBeforeUpdate.ReactComponent,
+        AfterUpdate: UserAfterUpdate.ReactComponent,
+        BeforeDelete: UserBeforeDelete.ReactComponent,
+        AfterDelete: UserAfterDelete.ReactComponent
     },
     Tenant: {
-        BeforeCreate: TenantBeforeCreate,
-        AfterCreate: TenantAfterCreate,
-        BeforeUpdate: TenantBeforeUpdate,
-        AfterUpdate: TenantAfterUpdate,
-        BeforeDelete: TenantBeforeDelete,
-        AfterDelete: TenantAfterDelete,
-        Installed: TenantInstalled
+        BeforeCreate: TenantBeforeCreate.ReactComponent,
+        AfterCreate: TenantAfterCreate.ReactComponent,
+        BeforeUpdate: TenantBeforeUpdate.ReactComponent,
+        AfterUpdate: TenantAfterUpdate.ReactComponent,
+        BeforeDelete: TenantBeforeDelete.ReactComponent,
+        AfterDelete: TenantAfterDelete.ReactComponent,
+        Installed: TenantInstalled.ReactComponent
     },
     System: {
-        Installed: SystemInstalled
+        Installed: SystemInstalled.ReactComponent
     },
     Settings: {
-        BeforeUpdate: SettingsBeforeUpdate,
-        AfterUpdate: SettingsAfterUpdate,
-        BeforeDelete: SettingsBeforeDelete,
-        AfterDelete: SettingsAfterDelete
+        BeforeUpdate: SettingsBeforeUpdate.ReactComponent,
+        AfterUpdate: SettingsAfterUpdate.ReactComponent,
+        BeforeDelete: SettingsBeforeDelete.ReactComponent,
+        AfterDelete: SettingsAfterDelete.ReactComponent
     }
 };

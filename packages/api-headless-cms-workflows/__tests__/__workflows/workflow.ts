@@ -1,10 +1,15 @@
+import type { Context } from "@webiny/api";
+import { StoreWorkflowUseCase } from "@webiny/api-workflows/features/workflow/StoreWorkflow/index.js";
 import { FULL_ACCESS_TEAM_ID } from "@webiny/testing";
-import type { Context } from "~/types.js";
 
-export const createWorkflow = async (context: Pick<Context, "workflows">) => {
+export const createWorkflow = async (context: Context) => {
     const id = `workflow-1`;
 
-    const workflow = await context.workflows.storeWorkflow("test", id, {
+    const storeWorkflow = context.container.resolve(StoreWorkflowUseCase);
+
+    const workflow = await storeWorkflow.execute({
+        app: "test",
+        id,
         name: "Test Workflow",
         steps: [
             {
@@ -17,8 +22,9 @@ export const createWorkflow = async (context: Pick<Context, "workflows">) => {
             }
         ]
     });
+
     return {
         id,
-        workflow
+        workflow: workflow.value
     };
 };

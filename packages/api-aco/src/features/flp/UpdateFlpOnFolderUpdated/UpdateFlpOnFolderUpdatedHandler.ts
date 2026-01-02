@@ -1,15 +1,14 @@
-import { WebinyError } from "@webiny/error";
-import type { UpdateFlpUseCase } from "../UpdateFlp/abstractions.js";
-import type { FolderAfterUpdateEvent } from "~/features/folders/UpdateFolder/events.js";
+import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
+import { UpdateFlpUseCase } from "../UpdateFlp/abstractions.js";
+import type { FolderAfterUpdateEvent } from "~/features/folder/UpdateFolder/events.js";
 import type { IUpdateFlpTaskInput } from "~/types.js";
 import { UPDATE_FLP_TASK_ID } from "~/flp/tasks/index.js";
-import { FolderAfterUpdateHandler } from "~/features/folders/UpdateFolder/index.js";
-import type { ITasksContextObject } from "@webiny/tasks";
+import { FolderAfterUpdateHandler } from "~/features/folder/UpdateFolder/index.js";
 
-export class UpdateFlpOnFolderUpdatedHandler implements FolderAfterUpdateHandler.Interface {
+class UpdateFlpOnFolderUpdatedHandlerImpl implements FolderAfterUpdateHandler.Interface {
     constructor(
         private updateFlpUseCase: UpdateFlpUseCase.Interface,
-        private tasks?: ITasksContextObject
+        private tasks?: TaskService.Interface
     ) {}
 
     async handle(event: FolderAfterUpdateEvent): Promise<void> {
@@ -24,11 +23,13 @@ export class UpdateFlpOnFolderUpdatedHandler implements FolderAfterUpdateHandler
             } else {
                 await this.updateFlpUseCase.execute({ folder });
             }
-        } catch (error) {
-            throw WebinyError.from(error, {
-                message: "Error while executing FLP update on folder updated",
-                code: "ACO_AFTER_FOLDER_UPDATE_FLP_HANDLER"
-            });
+        } catch {
+            // Ignore errors
         }
     }
 }
+
+export const UpdateFlpOnFolderUpdatedHandler = FolderAfterUpdateHandler.createImplementation({
+    implementation: UpdateFlpOnFolderUpdatedHandlerImpl,
+    dependencies: [UpdateFlpUseCase, [TaskService, { optional: true }]]
+});

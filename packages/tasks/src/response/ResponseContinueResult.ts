@@ -1,13 +1,13 @@
 import type { ITaskDataInput } from "~/types.js";
-import { TaskResponseStatus } from "~/types.js";
 import type { IResponseContinueResult } from "./abstractions/index.js";
+import { TaskResultStatus } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 export class ResponseContinueResult<T = ITaskDataInput> implements IResponseContinueResult<T> {
     public readonly message?: string | undefined;
     public readonly webinyTaskId: string;
     public readonly webinyTaskDefinitionId: string;
     public readonly tenant: string;
-    public readonly status: TaskResponseStatus.CONTINUE = TaskResponseStatus.CONTINUE;
+    public readonly status: TaskResultStatus.CONTINUE = TaskResultStatus.CONTINUE;
     public readonly input: T;
     /**
      * We need this to make sure that the task will not use the delay from the previous iteration.

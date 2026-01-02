@@ -1,5 +1,5 @@
 import React from "react";
-import { Dialog, Grid, OverlayLoader } from "@webiny/admin-ui";
+import { Dialog, Grid, Icon, OverlayLoader } from "@webiny/admin-ui";
 import { ReactComponent as StartIcon } from "@webiny/icons/check.svg";
 
 interface ITakeOverProps {
@@ -19,14 +19,19 @@ export const TakeOverDialog = (props: ITakeOverProps) => {
             onOpenChange={hide}
             title={
                 <>
-                    <StartIcon className={"fill-success"} />
+                    <Icon
+                        label={"Take Over Content Review?"}
+                        size={"md"}
+                        className={"fill-success"}
+                        icon={<StartIcon />}
+                    />
                     Take Over Content Review?
                 </>
             }
             actions={
                 <>
-                    <Dialog.CancelButton onClick={hide} />
-                    <Dialog.ConfirmButton text={"Take Over Content Review"} onClick={onTakeOver} />
+                    <Dialog.CancelAction onClick={hide} />
+                    <Dialog.ConfirmAction text={"Take Over Content Review"} onClick={onTakeOver} />
                 </>
             }
             showCloseButton={true}

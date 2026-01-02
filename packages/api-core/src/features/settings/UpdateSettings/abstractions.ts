@@ -14,14 +14,15 @@ type UpdateSettingsError =
     | IUpdateSettingsErrors[keyof IUpdateSettingsErrors]
     | SettingsRepository.Error;
 
-export interface IUpdateSettings {
+export interface IUpdateSettingsUseCase {
     execute(input: IUpdateSettingsInput): Promise<Result<ISettings, UpdateSettingsError>>;
 }
 
-export const UpdateSettings = createAbstraction<IUpdateSettings>("UpdateSettings");
+export const UpdateSettingsUseCase =
+    createAbstraction<IUpdateSettingsUseCase>("UpdateSettingsUseCase");
 
-export namespace UpdateSettings {
-    export type Interface = IUpdateSettings;
+export namespace UpdateSettingsUseCase {
+    export type Interface = IUpdateSettingsUseCase;
     export type Error = UpdateSettingsError;
 }
 

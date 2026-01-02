@@ -1,7 +1,7 @@
 import React, { memo } from "react";
 import { plugins } from "@webiny/plugins";
 import { useRouter, AdminConfig, AdminLayout, Wcp } from "@webiny/app-admin";
-import { HasPermission } from "@webiny/app-security";
+import { HasPermission } from "@webiny/app-admin";
 import { Permission } from "~/plugins/constants.js";
 import { Groups } from "~/ui/views/Groups/index.js";
 import { Teams } from "~/ui/views/Teams/index.js";
@@ -62,8 +62,13 @@ const AccessManagementExtension = () => {
                 <Menu
                     name={"security.roles"}
                     parent={"settings"}
-                    pinnable={true}
-                    element={<Menu.Link text={"Roles"} to={router.getLink(Routes.Roles.List)} />}
+                    element={
+                        <Menu.Link
+                            text={"Roles"}
+                            to={router.getLink(Routes.Roles.List)}
+                            pinnable={true}
+                        />
+                    }
                 />
             </HasPermission>
             <Wcp.CanUseTeams>
@@ -71,9 +76,12 @@ const AccessManagementExtension = () => {
                     <Menu
                         name={"security.teams"}
                         parent={"settings"}
-                        pinnable={true}
                         element={
-                            <Menu.Link text={"Teams"} to={router.getLink(Routes.Teams.List)} />
+                            <Menu.Link
+                                text={"Teams"}
+                                to={router.getLink(Routes.Teams.List)}
+                                pinnable={true}
+                            />
                         }
                     />
                 </HasPermission>
@@ -83,9 +91,12 @@ const AccessManagementExtension = () => {
                 <Menu
                     name={"security.apiKeys"}
                     parent={"settings"}
-                    pinnable={true}
                     element={
-                        <Menu.Link text={"API Keys"} to={router.getLink(Routes.ApiKeys.List)} />
+                        <Menu.Link
+                            text={"API Keys"}
+                            to={router.getLink(Routes.ApiKeys.List)}
+                            pinnable={true}
+                        />
                     }
                 />
             </HasPermission>

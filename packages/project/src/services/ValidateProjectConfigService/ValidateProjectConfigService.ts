@@ -1,5 +1,6 @@
 import { createImplementation } from "@webiny/di";
 import { ValidateProjectConfigService } from "~/abstractions/index.js";
+import { ProjectError } from "~/ProjectError.js";
 
 export class DefaultValidateProjectConfigService implements ValidateProjectConfigService.Interface {
     async execute(projectConfig: ValidateProjectConfigService.Params): Promise<void> {
@@ -13,8 +14,9 @@ export class DefaultValidateProjectConfigService implements ValidateProjectConfi
                     try {
                         await extension.validate();
                     } catch (error) {
-                        throw new Error(
-                            `Validation failed for extension of type "${extensionType}": ${error.message}`
+                        throw ProjectError.from(
+                            `Validation failed for extension of type %s: ${error.message}`,
+                            extensionType
                         );
                     }
                 }

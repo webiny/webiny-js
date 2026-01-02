@@ -30,9 +30,9 @@
   },
   "peerDependencies": {
     "@webiny/api": "*",
+    "@webiny/api-core": "*",
     "@webiny/api-dynamodb-to-elasticsearch": "*",
     "@webiny/api-elasticsearch": "*",
-    "@webiny/api-log": "*",
     "@webiny/aws-sdk": "*",
     "@webiny/handler-aws": "*",
     "@webiny/tasks": "*"

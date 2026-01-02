@@ -4,6 +4,7 @@
   "references": [
     { "path": "../api" },
     { "path": "../error" },
+    { "path": "../feature" },
     { "path": "../handler" },
     { "path": "../plugins" },
     { "path": "../utils" },
@@ -20,6 +21,10 @@
       "@webiny/api": ["../api/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
+      "@webiny/feature/api": ["../feature/src/api/index.js"],
+      "@webiny/feature/admin": ["../feature/src/admin/index.js"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],

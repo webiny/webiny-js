@@ -117,8 +117,13 @@ export const Settings = () => {
                                         <Grid>
                                             <Grid.Column span={12}>
                                                 <Alert title={settingsError.message} type="danger">
-                                                    {settingsError.data?.description && (
-                                                        <p>{settingsError.data.description}</p>
+                                                    {settingsError.code ===
+                                                        "PASSWORD_SECRET_ERROR" && (
+                                                        <p>
+                                                            To store the Mailer settings, you must
+                                                            have a password secret environment
+                                                            variable defined.
+                                                        </p>
                                                     )}
                                                 </Alert>
                                             </Grid.Column>

@@ -1,8 +1,9 @@
 import { ContextPlugin } from "@webiny/api";
+import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
+import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import type { AuditLogsContext } from "~/types.js";
 import { createAuditLogsContextValue } from "./AuditLogsContextValue.js";
 import { createStorage } from "~/storage/Storage.js";
-import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 
 export interface ISetupContextOptions {
     deleteLogsAfterDays: number | undefined;
@@ -28,12 +29,15 @@ export const createAcoAuditLogsContext = (params?: ISetupContextOptions) => {
             compressor: context.compressor
         });
 
+        const eventPublisher = context.container.resolve(EventPublisher);
+
         context.auditLogs = createAuditLogsContextValue({
             getContext: () => {
                 return context;
             },
             deleteLogsAfterDays: getDeleteLogsAfterDays(params?.deleteLogsAfterDays),
-            storage
+            storage,
+            eventPublisher
         });
     });
 

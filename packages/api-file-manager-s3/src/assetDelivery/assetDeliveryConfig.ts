@@ -20,13 +20,12 @@ export const assetDeliveryConfig = (params: AssetDeliveryParams) => {
          * Even though Lambda's response payload limit is 6,291,556 bytes, we leave some room for the response envelope.
          * We had situations where a 4.7MB file would cause the payload to go over the limit, so let's be on the safe side.
          */
-        assetStreamingMaxSize = 4718592,
-        ...baseParams
+        assetStreamingMaxSize = 4718592
     } = params;
 
     return [
         // Base asset delivery
-        createBaseAssetDelivery(baseParams),
+        createBaseAssetDelivery(),
         // S3 plugins
         createAssetDeliveryConfig(config => {
             const s3 = new S3({ region });

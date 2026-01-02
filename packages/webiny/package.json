@@ -14,7 +14,8 @@
     "@webiny/app-admin": "0.0.0",
     "@webiny/cli-core": "0.0.0",
     "@webiny/project": "0.0.0",
-    "@webiny/project-aws": "0.0.0"
+    "@webiny/project-aws": "0.0.0",
+    "@webiny/tasks": "0.0.0"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
@@ -98,6 +99,9 @@
     "./infra/features/AdminPulumi": "./infra/features/AdminPulumi.js",
     "./infra/features/ApiPulumi": "./infra/features/ApiPulumi.js",
     "./infra/features/CorePulumi": "./infra/features/CorePulumi.js",
-    "./extensions": "./extensions.js"
+    "./extensions": "./extensions.js",
+    "./infra/features/AdminStackOutputService": "./infra/features/AdminStackOutputService.js",
+    "./infra/features/CoreStackOutputService": "./infra/features/CoreStackOutputService.js",
+    "./infra/features/ApiStackOutputService": "./infra/features/ApiStackOutputService.js"
   }
 }

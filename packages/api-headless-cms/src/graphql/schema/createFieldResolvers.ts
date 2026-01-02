@@ -53,8 +53,6 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
                         field
                     }
                 );
-            } else if (field.settings?.showInApi === false) {
-                return null;
             }
 
             const createResolver = plugin[endpointType]?.createResolver || null;

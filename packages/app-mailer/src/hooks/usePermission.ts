@@ -1,4 +1,4 @@
-import { useSecurity } from "@webiny/app-security";
+import { useSecurity } from "@webiny/app-admin";
 import { useCallback } from "react";
 import type { MailerSecurityPermission } from "~/types.js";
 

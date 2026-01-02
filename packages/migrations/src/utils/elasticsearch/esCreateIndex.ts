@@ -6,15 +6,14 @@ import { elasticsearchIndexPlugins } from "~/utils/elasticsearch/plugins/index.j
 export interface EsCreateIndexParams {
     elasticsearchClient: Client;
     tenant: string;
-    locale: string;
     type: string;
     isHeadlessCmsModel: boolean;
 }
 
 export const esCreateIndex = async (params: EsCreateIndexParams): Promise<string> => {
-    const { elasticsearchClient, tenant, locale, type, isHeadlessCmsModel } = params;
+    const { elasticsearchClient, tenant, type, isHeadlessCmsModel } = params;
 
-    const indexName = esGetIndexName({ tenant, locale, type, isHeadlessCmsModel });
+    const indexName = esGetIndexName({ tenant, type, isHeadlessCmsModel });
 
     try {
         const exist = await esGetIndexExist(params);
@@ -24,15 +23,7 @@ export const esCreateIndex = async (params: EsCreateIndexParams): Promise<string
         }
 
         // Get registered plugins
-        const plugin = elasticsearchIndexPlugins()
-            .filter(plugin => {
-                if (!plugin.locales) {
-                    return true;
-                }
-
-                return plugin.locales.includes(locale.toLowerCase());
-            })
-            .pop();
+        const plugin = elasticsearchIndexPlugins().pop();
 
         await elasticsearchClient.indices.create({
             index: indexName,
@@ -52,7 +43,6 @@ export const esCreateIndex = async (params: EsCreateIndexParams): Promise<string
             ex.code || "CREATE_ELASTICSEARCH_INDEX_ERROR",
             {
                 error: ex,
-                locale,
                 tenant,
                 type
             }

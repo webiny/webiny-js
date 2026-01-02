@@ -22,8 +22,9 @@ export const LexicalEditor = (props: LexicalEditorProps) => {
     };
 
     return (
-        <FileManager accept={imagesOnly}>
-            {({ showFileManager }) => (
+        <FileManager
+            accept={imagesOnly}
+            render={({ showFileManager }) => (
                 <BaseEditor
                     {...props}
                     theme={editorTheme}
@@ -33,6 +34,6 @@ export const LexicalEditor = (props: LexicalEditorProps) => {
                     ]}
                 />
             )}
-        </FileManager>
+        />
     );
 };

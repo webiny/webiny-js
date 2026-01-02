@@ -1,11 +1,11 @@
-import type { SecurityPermission } from "@webiny/app-security/types.js";
+import { Identity } from "@webiny/app-admin/domain/Identity.js";
 
 /**
  * A base security permission for APW.
  *
  * @category SecurityPermission
  */
-export interface MailerSecurityPermission extends SecurityPermission {
+export interface MailerSecurityPermission extends Identity.Permission {
     changeSettings?: boolean;
 }
 

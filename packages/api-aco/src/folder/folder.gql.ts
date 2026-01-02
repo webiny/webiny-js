@@ -9,8 +9,15 @@ import { compress } from "~/utils/compress.js";
 
 import type { AcoContext, Folder } from "~/types.js";
 import type { FolderLevelPermission } from "~/flp/flp.types.js";
-import { FOLDER_MODEL_ID } from "~/folder/folder.model.js";
 import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
+import { GetFolderUseCase } from "~/features/folder/GetFolder/abstractions.js";
+import { ListFoldersUseCase } from "~/features/folder/ListFolders/abstractions.js";
+import { CreateFolderUseCase } from "~/features/folder/CreateFolder/abstractions.js";
+import { UpdateFolderUseCase } from "~/features/folder/UpdateFolder/abstractions.js";
+import { DeleteFolderUseCase } from "~/features/folder/DeleteFolder/abstractions.js";
+import { GetFolderHierarchyUseCase } from "~/features/folder/GetFolderHierarchy/abstractions.js";
+import { ListFolderLevelPermissionsTargetsUseCase } from "~/features/folder/ListFolderLevelPermissionsTargets/abstractions.js";
+import { FolderModel } from "~/domain/folder/abstractions.js";
 
 export const createFoldersSchema = (params: CreateFolderTypeDefsParams) => {
     const folderGraphQL = new GraphQLSchemaPlugin<AcoContext>({
@@ -36,22 +43,32 @@ export const createFoldersSchema = (params: CreateFolderTypeDefsParams) => {
             },
             AcoQuery: {
                 getFolderModel(_, __, context) {
-                    return resolve(() => {
+                    return resolve(async () => {
                         ensureAuthentication(context);
-                        return context.cms.getModel(FOLDER_MODEL_ID);
+                        return context.container.resolve(FolderModel);
                     });
                 },
                 getFolder: async (_, { id }, context) => {
-                    return resolve(() => {
+                    return resolve(async () => {
                         ensureAuthentication(context);
-                        return context.aco.folder.get(id);
+                        const getFolderUseCase = context.container.resolve(GetFolderUseCase);
+                        const result = await getFolderUseCase.execute(id);
+                        if (result.isFail()) {
+                            throw result.error;
+                        }
+                        return result.value;
                     });
                 },
                 listFolders: async (_, args: any, context) => {
                     try {
                         ensureAuthentication(context);
-                        const [entries, meta] = await context.aco.folder.list(args);
-                        return new ListResponse(entries, meta);
+                        const listFoldersUseCase = context.container.resolve(ListFoldersUseCase);
+                        const result = await listFoldersUseCase.execute(args);
+                        if (result.isFail()) {
+                            throw result.error;
+                        }
+                        const { folders, meta } = result.value;
+                        return new ListResponse(folders, meta);
                     } catch (e) {
                         return new ErrorResponse(e);
                     }
@@ -61,8 +78,13 @@ export const createFoldersSchema = (params: CreateFolderTypeDefsParams) => {
                         ensureAuthentication(context);
 
                         const flp = context.container.resolve(FolderLevelPermissions);
-                        const [entries] = await context.aco.folder.list(args);
-                        const foldersPromises = entries.map(folder => {
+                        const listFoldersUseCase = context.container.resolve(ListFoldersUseCase);
+                        const result = await listFoldersUseCase.execute(args);
+                        if (result.isFail()) {
+                            throw result.error;
+                        }
+                        const { folders } = result.value;
+                        const foldersPromises = folders.map(folder => {
                             const canManageStructure = flp.canManageFolderStructure(
                                 folder as unknown as FolderLevelPermission
                             );
@@ -105,9 +127,15 @@ export const createFoldersSchema = (params: CreateFolderTypeDefsParams) => {
                 },
                 getFolderHierarchy: async (_, args: any, context) => {
                     try {
-                        return resolve(() => {
+                        return resolve(async () => {
                             ensureAuthentication(context);
-                            return context.aco.folder.getFolderHierarchy(args);
+                            const getFolderHierarchyUseCase =
+                                context.container.resolve(GetFolderHierarchyUseCase);
+                            const result = await getFolderHierarchyUseCase.execute(args);
+                            if (result.isFail()) {
+                                throw result.error;
+                            }
+                            return result.value;
                         });
                     } catch (e) {
                         return new ErrorResponse(e);
@@ -116,8 +144,14 @@ export const createFoldersSchema = (params: CreateFolderTypeDefsParams) => {
                 listFolderLevelPermissionsTargets: async (_, args: any, context) => {
                     try {
                         ensureAuthentication(context);
-                        const [entries, meta] =
-                            await context.aco.folder.listFolderLevelPermissionsTargets();
+                        const listTargetsUseCase = context.container.resolve(
+                            ListFolderLevelPermissionsTargetsUseCase
+                        );
+                        const result = await listTargetsUseCase.execute();
+                        if (result.isFail()) {
+                            throw result.error;
+                        }
+                        const [entries, meta] = result.value;
                         return new ListResponse(entries, meta);
                     } catch (e) {
                         return new ErrorResponse(e);
@@ -126,21 +160,36 @@ export const createFoldersSchema = (params: CreateFolderTypeDefsParams) => {
             },
             AcoMutation: {
                 createFolder: async (_, { data }, context) => {
-                    return resolve(() => {
+                    return resolve(async () => {
                         ensureAuthentication(context);
-                        return context.aco.folder.create(data);
+                        const createFolderUseCase = context.container.resolve(CreateFolderUseCase);
+                        const result = await createFolderUseCase.execute(data);
+                        if (result.isFail()) {
+                            throw result.error;
+                        }
+                        return result.value;
                     });
                 },
                 updateFolder: async (_, { id, data }, context) => {
-                    return resolve(() => {
+                    return resolve(async () => {
                         ensureAuthentication(context);
-                        return context.aco.folder.update(id, data);
+                        const updateFolderUseCase = context.container.resolve(UpdateFolderUseCase);
+                        const result = await updateFolderUseCase.execute(id, data);
+                        if (result.isFail()) {
+                            throw result.error;
+                        }
+                        return result.value;
                     });
                 },
                 deleteFolder: async (_, { id }, context) => {
-                    return resolve(() => {
+                    return resolve(async () => {
                         ensureAuthentication(context);
-                        return context.aco.folder.delete(id);
+                        const deleteFolderUseCase = context.container.resolve(DeleteFolderUseCase);
+                        const result = await deleteFolderUseCase.execute(id);
+                        if (result.isFail()) {
+                            throw result.error;
+                        }
+                        return true;
                     });
                 }
             }

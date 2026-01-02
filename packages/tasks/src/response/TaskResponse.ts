@@ -2,15 +2,11 @@ import type {
     IResponse,
     IResponseError,
     ITaskResponse,
-    ITaskResponseAbortedResult,
-    ITaskResponseContinueOptions,
-    ITaskResponseContinueResult,
-    ITaskResponseDoneResult,
-    ITaskResponseDoneResultOutput,
-    ITaskResponseErrorResult
+    ITaskResponseContinueOptions
 } from "./abstractions/index.js";
 import type { ITaskDataInput } from "~/types.js";
 import { getErrorProperties } from "~/utils/getErrorProperties.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 /**
  * 355 days transformed into seconds.
@@ -46,10 +42,10 @@ export class TaskResponse implements ITaskResponse {
         this.response = response;
     }
 
-    public done<O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput>(
+    public done<O extends TaskDefinition.ResultDone = TaskDefinition.ResultDone>(
         message?: string | O,
         output?: O
-    ): ITaskResponseDoneResult<O> {
+    ): TaskDefinition.ResultDone<O> {
         if (typeof message === "object" && !output) {
             return this.response.done({
                 output: message
@@ -64,7 +60,7 @@ export class TaskResponse implements ITaskResponse {
     public continue<T = ITaskDataInput>(
         input: T,
         options?: ITaskResponseContinueOptions
-    ): ITaskResponseContinueResult {
+    ): TaskDefinition.ResultContinue {
         const wait = getWaitingTime(options);
         if (!wait || wait < 1) {
             return this.response.continue({
@@ -77,13 +73,13 @@ export class TaskResponse implements ITaskResponse {
         });
     }
 
-    public error(error: IResponseError | Error | string): ITaskResponseErrorResult {
+    public error(error: IResponseError | Error | string): TaskDefinition.ResultError {
         return this.response.error({
             error: this.getError(error)
         });
     }
 
-    public aborted(): ITaskResponseAbortedResult {
+    public aborted(): TaskDefinition.ResultAborted {
         return this.response.aborted();
     }
 

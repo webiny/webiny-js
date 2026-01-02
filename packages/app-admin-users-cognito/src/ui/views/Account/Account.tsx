@@ -17,11 +17,10 @@ import {
     SimpleForm,
     SimpleFormHeader,
     SimpleFormFooter,
-    SimpleFormContent
+    SimpleFormContent,
+    useIdentity
 } from "@webiny/app-admin";
-import { useSecurity } from "@webiny/app-security";
 import { CenteredView, useSnackbar } from "@webiny/app-admin";
-import type { SecurityIdentity } from "@webiny/app-security/types.js";
 import { Alert } from "@webiny/ui/Alert/index.js";
 import { usePasswordValidator } from "~/usePasswordValidator.js";
 
@@ -38,7 +37,7 @@ interface UserAccountFormData {
 const UserAccountForm = () => {
     const [loading, setLoading] = useState(false);
     const { showSnackbar } = useSnackbar();
-    const { setIdentity } = useSecurity();
+    const { identity } = useIdentity();
     const passwordValidator = usePasswordValidator();
 
     const currentUser = useQuery(GET_CURRENT_USER);
@@ -59,17 +58,14 @@ const UserAccountForm = () => {
             });
         }
 
-        setIdentity(identity => {
-            return {
-                ...(identity || ({} as SecurityIdentity)),
-                displayName: `${formData.firstName} ${formData.lastName}`,
-                profile: {
-                    ...(identity?.profile || {}),
-                    firstName: formData.firstName,
-                    lastName: formData.lastName,
-                    avatar: formData.avatar
-                }
-            };
+        identity.update({
+            displayName: `${formData.firstName} ${formData.lastName}`,
+            profile: {
+                ...(identity.profile || {}),
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                avatar: formData.avatar
+            }
         });
 
         showSnackbar("Account saved successfully!");

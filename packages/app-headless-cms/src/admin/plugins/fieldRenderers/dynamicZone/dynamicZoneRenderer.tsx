@@ -13,6 +13,7 @@ import { MultiValueDynamicZone } from "./MultiValueDynamicZone.js";
 import { AccordionRenderSettings, getAccordionRenderSettings } from "../AccordionRenderSettings.js";
 import { makeDecoratable } from "@webiny/react-composition";
 import { Accordion, FormComponentErrorMessage } from "@webiny/admin-ui";
+import { ReactComponent as HorizontalRuleIcon } from "@webiny/icons/horizontal_rule.svg";
 
 const noBottomPadding = css`
     > .webiny-ui-accordion-item__content {
@@ -51,8 +52,15 @@ export const DynamicZoneContainer = makeDecoratable(
 
         return (
             <>
-                <Accordion>
+                <Accordion background={"base"} variant={"container"}>
                     <Accordion.Item
+                        icon={
+                            <Accordion.Item.Icon
+                                color={"accent"}
+                                label="Accordion Item"
+                                icon={<HorizontalRuleIcon />}
+                            />
+                        }
                         title={title}
                         description={description}
                         className={className || defaultClassName}

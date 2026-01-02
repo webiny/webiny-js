@@ -8,7 +8,7 @@ import type { DataLoaderParams } from "./types.js";
 import { parseIdentifier } from "@webiny/utils";
 
 export const createGetLatestRevisionByEntryId = (params: DataLoaderParams) => {
-    const { entity, locale, tenant } = params;
+    const { entity, tenant } = params;
 
     const latestKey = createLatestSortKey();
 
@@ -17,7 +17,6 @@ export const createGetLatestRevisionByEntryId = (params: DataLoaderParams) => {
             const queries = ids.reduce<Record<string, any>>((collection, id) => {
                 const partitionKey = createPartitionKey({
                     tenant,
-                    locale,
                     id
                 });
                 if (collection[partitionKey]) {

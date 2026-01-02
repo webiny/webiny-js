@@ -4,7 +4,6 @@
   "references": [
     { "path": "../app/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
-    { "path": "../app-security/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../ui/tsconfig.build.json" }
   ],
@@ -25,8 +24,6 @@
       "@webiny/app-admin/features/tenancy": ["../app-admin/src/features/tenancy/index.js"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
-      "@webiny/app-security/*": ["../app-security/src/*"],
-      "@webiny/app-security": ["../app-security/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/ui/*": ["../ui/src/*"],

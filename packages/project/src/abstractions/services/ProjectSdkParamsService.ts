@@ -10,6 +10,9 @@ export interface IProjectSdkParams {
     cwd: string;
     extensions: ExtensionDefinitionModel<any>[];
     logging: ILoggingParams;
+    env: string;
+    variant?: string;
+    region?: string;
 }
 
 export interface IProjectSdkParamsService {

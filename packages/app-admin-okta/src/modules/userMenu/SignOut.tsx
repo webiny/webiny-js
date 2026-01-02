@@ -1,27 +1,18 @@
 import React from "react";
-import { useSecurity } from "@webiny/app-security";
+import { useAuthentication } from "@webiny/app-admin";
 import { ReactComponent as SignOutIcon } from "@webiny/icons/logout.svg";
 import { AdminConfig, makeDecoratable } from "@webiny/app-admin";
 
 const { Menu } = AdminConfig;
 
 export const SignOut = makeDecoratable("SignOut", () => {
-    const { identity } = useSecurity();
-
-    if (!identity) {
-        return null;
-    }
-
-    if (typeof identity.logout !== "function") {
-        console.warn(`Missing "logout" function implementation in SecurityIdentity!`);
-        return null;
-    }
+    const { logout } = useAuthentication();
 
     return (
         <Menu.User.Item
             text={"Sign out"}
             icon={<Menu.User.Item.Icon element={<SignOutIcon />} label={"Sign out"} />}
-            onClick={identity.logout}
+            onClick={logout}
         />
     );
 });

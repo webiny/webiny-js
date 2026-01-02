@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { defineExtension } from "~/defineExtension/index.js";
 
-export const pulumiResourceNamePrefix = defineExtension({
+export const PulumiResourceNamePrefix = defineExtension({
     type: "Infra/PulumiResourceNamePrefix",
     tags: { runtimeContext: "project" },
     description: 'Adjust the prefix for Pulumi resource names (default: "wby-").',

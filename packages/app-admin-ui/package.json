@@ -14,7 +14,6 @@
     "@webiny/admin-ui": "0.0.0",
     "@webiny/app": "0.0.0",
     "@webiny/app-admin": "0.0.0",
-    "@webiny/app-security": "0.0.0",
     "@webiny/icons": "0.0.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",

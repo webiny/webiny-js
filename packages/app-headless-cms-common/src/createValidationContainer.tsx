@@ -5,18 +5,16 @@ declare module "react" {
     namespace JSX {
         interface IntrinsicElements {
             "hcms-field-validation": {
+                class: string;
                 "data-path": string;
                 "data-field-type": string;
                 "data-field-multiple-values": string;
                 "data-field-renderer": string;
-                style: React.CSSProperties;
                 children: React.ReactNode;
             };
         }
     }
 }
-
-const ValidationContainerStyles = { display: "inherit" };
 
 export const createValidationContainer = (path: string) => {
     return function ValidationContainer({ children }: { children: React.ReactNode }) {
@@ -28,7 +26,7 @@ export const createValidationContainer = (path: string) => {
 
         return (
             <hcms-field-validation
-                style={ValidationContainerStyles}
+                class={"block"}
                 data-path={path}
                 data-field-type={field.type}
                 data-field-multiple-values={String(field.multipleValues)}

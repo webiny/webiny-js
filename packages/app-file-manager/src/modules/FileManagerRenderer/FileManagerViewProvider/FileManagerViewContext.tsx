@@ -81,6 +81,7 @@ export interface FileManagerViewContext<TFileItem extends FileItem = FileItem> e
         options?: UpdateFileOptions
     ) => Promise<void>;
     uploadFile: (file: File, options?: UploadFileOptions) => Promise<TFileItem | undefined>;
+    overlay?: boolean;
 }
 
 export const FileManagerViewContext = React.createContext<FileManagerViewContext | undefined>(
@@ -114,6 +115,7 @@ export interface FileManagerViewProviderProps {
     tags?: string[];
     scope?: string;
     own?: boolean;
+    overlay?: boolean;
     children?: React.ReactNode;
 }
 
@@ -467,6 +469,7 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
             }
         },
         own: Boolean(props.own),
+        overlay: props.overlay ?? true,
         scope: props.scope,
         setDragging(value = true) {
             setState(state => ({

@@ -55,7 +55,6 @@ class CreateGroupUseCaseImpl implements UseCaseAbstraction.Interface {
                 displayName: identity.displayName,
                 type: identity.type
             },
-            webinyVersion: process.env.WEBINY_VERSION || null,
             plugin: false
         };
 

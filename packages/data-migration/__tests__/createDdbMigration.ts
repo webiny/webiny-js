@@ -1,7 +1,7 @@
 import type { Table } from "@webiny/db-dynamodb/toolbox";
 import type { Constructor } from "@webiny/ioc";
 import { makeInjectable, inject } from "@webiny/ioc";
-import type { DataMigration, DataMigrationContext } from "~/index";
+import type { DataMigration } from "~/index";
 import { PrimaryDynamoTableSymbol } from "~/symbols";
 
 export const createDdbMigration = (
@@ -15,8 +15,8 @@ export const createDdbMigration = (
             this.table = table;
         }
 
-        execute(context: DataMigrationContext): Promise<void> {
-            context.logger.info(`Migrating stuff...`, { id });
+        execute(): Promise<void> {
+            console.info(`Migrating stuff...`, { id });
             if (opts.error) {
                 throw Error(`Something went wrong in ${id}`);
             }

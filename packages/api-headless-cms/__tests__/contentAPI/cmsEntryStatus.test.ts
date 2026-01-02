@@ -20,7 +20,7 @@ const categories = [
 
 describe("cms entry status filtering", () => {
     const manageOpts = {
-        path: "manage/en-US"
+        path: "manage"
     };
 
     const {

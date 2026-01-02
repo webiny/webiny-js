@@ -3,7 +3,6 @@ import type { S3 } from "@webiny/aws-sdk/client-s3/index.js";
 interface AssetMetadata {
     id: string;
     tenant: string;
-    locale: string;
     size: number;
     contentType: string;
 }
@@ -36,7 +35,6 @@ export class S3AssetMetadataReader {
         return {
             id: metadata.id,
             tenant: metadata.tenant,
-            locale: metadata.locale,
             size: metadata.size,
             contentType: metadata.contentType
         };

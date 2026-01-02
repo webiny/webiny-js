@@ -1,7 +1,7 @@
-import type { TaskResponseStatus } from "~/types.js";
+import { TaskResultStatus } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 export interface IResponseBaseResult {
-    status: TaskResponseStatus;
+    status: TaskResultStatus;
     webinyTaskId: string;
     webinyTaskDefinitionId: string;
     tenant: string;

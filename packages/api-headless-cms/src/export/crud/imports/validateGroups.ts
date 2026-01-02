@@ -1,5 +1,5 @@
 import type { CmsGroup } from "~/types/index.js";
-import { createGroupCreateValidation } from "~/crud/contentModelGroup/validation.js";
+import { createGroupCreateValidation } from "~/domain/contentModelGroup/validation.js";
 import { createZodError } from "@webiny/utils";
 import type { ValidatedCmsGroupResult } from "~/export/types.js";
 import { CmsImportAction } from "~/export/types.js";

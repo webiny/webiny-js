@@ -1,5 +1,6 @@
 import WebinyError from "@webiny/error";
 import type { CmsModelFieldValidatorPlugin } from "~/types/index.js";
+import { ListLatestEntriesUseCase } from "~/features/contentEntry/ListEntries/index.js";
 
 /**
  * Validation if the field value is unique.
@@ -12,7 +13,6 @@ export const createUniqueValidator = (): CmsModelFieldValidatorPlugin => {
         validator: {
             name: "unique",
             validate: async ({ field, value: initialValue, context, model, entry }) => {
-                const manager = await context.cms.getEntryManager(model);
                 /**
                  * If there is no value passed, we are assuming that user does not want any value to be validated.
                  * If user needs something to passed into a unique field, they must add "required" validator.
@@ -22,14 +22,17 @@ export const createUniqueValidator = (): CmsModelFieldValidatorPlugin => {
                     return true;
                 }
                 try {
-                    const [items] = await manager.listLatest({
+                    const listLatest = context.container.resolve(ListLatestEntriesUseCase);
+
+                    const listResult = await listLatest.execute(model, {
                         where: {
                             entryId_not: entry ? entry.entryId : undefined,
                             [field.fieldId]: value
                         },
                         limit: 1
                     });
-                    return items.length === 0;
+
+                    return listResult.value.entries.length === 0;
                 } catch (ex) {
                     throw new WebinyError(
                         "Error while checking if the field value is unique.",

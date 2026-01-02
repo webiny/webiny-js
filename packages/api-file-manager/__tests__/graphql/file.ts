@@ -7,7 +7,6 @@ const DATA_FIELD_WITH_ID = (fields: string[] = []) => {
             size
             type
             tags
-            aliases
             ${fields.join("\n")}
         }
     `;

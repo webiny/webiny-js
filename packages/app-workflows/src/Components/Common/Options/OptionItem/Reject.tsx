@@ -17,7 +17,7 @@ export const WorkflowStateOptionsReject = (props: IWorkflowStateOptionsRejectPro
     }
     return (
         <DropdownMenu.Item
-            icon={<Icon icon={<RejectIcon />} label={"Reject"} />}
+            icon={<Icon icon={<RejectIcon />} size={"sm"} label={"Reject"} />}
             text={"Reject"}
             onClick={onClick}
         />

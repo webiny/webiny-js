@@ -1,4 +1,3 @@
-import type { Plugin } from "@webiny/plugins/types.js";
 import type { Context, GenericRecord } from "@webiny/api/types.js";
 import type {
     GraphQLFieldResolver,
@@ -7,7 +6,6 @@ import type {
 } from "@webiny/handler-graphql/types.js";
 import type { processRequestBody } from "@webiny/handler-graphql";
 import type { DbContext } from "@webiny/handler-db/types.js";
-import type { Topic } from "@webiny/pubsub/types.js";
 import type { CmsModelConverterCallable } from "~/utils/converters/ConverterCollection.js";
 import type { HeadlessCmsExport, HeadlessCmsImport } from "~/export/types.js";
 import type { AccessControl } from "~/crud/AccessControl/AccessControl.js";
@@ -18,9 +16,7 @@ import type { CmsModelField, CmsModelFieldValidation, CmsModelUpdateInput } from
 import type { CmsModel, CmsModelCreateFromInput, CmsModelCreateInput } from "./model.js";
 import type { CmsGroup } from "./modelGroup.js";
 import type { CmsIdentity } from "./identity.js";
-import type { ISingletonModelManager } from "~/modelManager/index.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
-import type { I18NLocale } from "@webiny/api-core/types/i18n.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 
 export interface CmsError {
@@ -39,23 +35,11 @@ export interface CmsError {
 
 export type ApiEndpoint = "manage" | "preview" | "read";
 
-export interface HeadlessCms
-    extends CmsSystemContext,
-        CmsGroupContext,
-        CmsModelContext,
-        CmsEntryContext {
+export interface HeadlessCms extends CmsGroupContext, CmsModelContext, CmsEntryContext {
     /**
      * API type
      */
     type: ApiEndpoint | null;
-    /**
-     * Requested locale
-     */
-    locale: string;
-    /**
-     * returns an instance of current locale
-     */
-    getLocale: () => I18NLocale;
     /**
      * Means this request is a READ API
      */
@@ -234,34 +218,6 @@ export interface CmsFieldTypePlugins {
     [key: string]: CmsModelFieldToGraphQLPlugin;
 }
 
-export interface OnSystemBeforeInstallTopicParams {
-    tenant: string;
-    locale: string;
-}
-
-export interface OnSystemAfterInstallTopicParams {
-    tenant: string;
-    locale: string;
-}
-
-export interface OnSystemInstallErrorTopicParams {
-    error: Error;
-    tenant: string;
-    locale: string;
-}
-
-export type CmsSystemContext = {
-    getSystemVersion: () => Promise<string | null>;
-    setSystemVersion: (version: string) => Promise<void>;
-    installSystem: () => Promise<void>;
-    /**
-     * Lifecycle Events
-     */
-    onSystemBeforeInstall: Topic<OnSystemBeforeInstallTopicParams>;
-    onSystemAfterInstall: Topic<OnSystemAfterInstallTopicParams>;
-    onSystemInstallError: Topic<OnSystemInstallErrorTopicParams>;
-};
-
 /**
  * A GraphQL `params.data` parameter received when creating content model group.
  *
@@ -298,88 +254,7 @@ export interface CmsGroupUpdateInput {
 export interface CmsGroupListParams {
     where: {
         tenant: string;
-        locale: string;
     };
-}
-
-/**
- * @category CmsGroup
- * @category Topic
- */
-export interface OnGroupBeforeCreateTopicParams {
-    group: CmsGroup;
-}
-
-/**
- * @category CmsGroup
- * @category Topic
- */
-export interface OnGroupAfterCreateTopicParams {
-    group: CmsGroup;
-}
-
-/**
- * @category CmsGroup
- * @category Topic
- */
-export interface OnGroupCreateErrorTopicParams {
-    input: CmsGroupCreateInput;
-    group: CmsGroup;
-    error: Error;
-}
-
-/**
- * @category CmsGroup
- * @category Topic
- */
-export interface OnGroupBeforeUpdateTopicParams {
-    original: CmsGroup;
-    group: CmsGroup;
-}
-
-/**
- * @category CmsGroup
- * @category Topic
- */
-export interface OnGroupAfterUpdateTopicParams {
-    original: CmsGroup;
-    group: CmsGroup;
-}
-
-/**
- * @category CmsGroup
- * @category Topic
- */
-export interface OnGroupUpdateErrorTopicParams {
-    input: CmsGroupUpdateInput;
-    original: CmsGroup;
-    group: CmsGroup;
-    error: Error;
-}
-
-/**
- * @category CmsGroup
- * @category Topic
- */
-export interface OnGroupBeforeDeleteTopicParams {
-    group: CmsGroup;
-}
-
-/**
- * @category CmsGroup
- * @category Topic
- */
-export interface OnGroupAfterDeleteTopicParams {
-    group: CmsGroup;
-}
-
-/**
- * @category CmsGroup
- * @category Topic
- */
-export interface OnGroupDeleteErrorTopicParams {
-    group: CmsGroup;
-    error: Error;
 }
 
 /**
@@ -413,44 +288,6 @@ export interface CmsGroupContext {
      * Clear the cached groups.
      */
     clearGroupsCache: () => void;
-    /**
-     * Lifecycle Events
-     */
-    onGroupBeforeCreate: Topic<OnGroupBeforeCreateTopicParams>;
-    onGroupAfterCreate: Topic<OnGroupAfterCreateTopicParams>;
-    onGroupCreateError: Topic<OnGroupCreateErrorTopicParams>;
-    onGroupBeforeUpdate: Topic<OnGroupBeforeUpdateTopicParams>;
-    onGroupAfterUpdate: Topic<OnGroupAfterUpdateTopicParams>;
-    onGroupUpdateError: Topic<OnGroupUpdateErrorTopicParams>;
-    onGroupBeforeDelete: Topic<OnGroupBeforeDeleteTopicParams>;
-    onGroupAfterDelete: Topic<OnGroupAfterDeleteTopicParams>;
-    onGroupDeleteError: Topic<OnGroupDeleteErrorTopicParams>;
-}
-
-/**
- * A plugin to load a CmsModelManager.
- *
- * @see CmsModelManager
- *
- * @category Plugin
- * @category CmsModel
- * @category CmsEntry
- */
-export interface ModelManagerPlugin extends Plugin {
-    /**
-     * A plugin type.
-     */
-    type: "cms-content-model-manager";
-    /**
-     * Specific model CmsModelManager loader. Can target exact modelId(s).
-     * Be aware that if you define multiple plugins without `modelId`, last one will run.
-     */
-    modelId?: string[] | string;
-    /**
-     * Create a CmsModelManager for specific type - or new default one.
-     * For reference in how is this plugin run check [contentModelManagerFactory](https://github.com/webiny/webiny-js/blob/f15676/packages/api-headless-cms/src/content/plugins/CRUD/contentModel/contentModelManagerFactory.ts)
-     */
-    create<T = any>(context: CmsContext, model: CmsModel): Promise<CmsModelManager<T>>;
 }
 
 /**
@@ -464,7 +301,7 @@ export interface CmsEntryValues {
 }
 
 export interface ICmsEntryLocation {
-    folderId?: string | null;
+    folderId?: string;
 }
 
 export interface IEntryState {
@@ -480,11 +317,6 @@ export interface IEntryState {
  * @category CmsEntry
  */
 export interface CmsEntry<T = CmsEntryValues> {
-    /**
-     * A version of the webiny this entry was created with.
-     * This can be used when upgrading the system, so we know which entries to update.
-     */
-    webinyVersion: string;
     /**
      * Tenant id which is this entry for. Can be used in case of shared storage.
      */
@@ -620,29 +452,10 @@ export interface CmsEntry<T = CmsEntryValues> {
     lastPublishedBy: CmsIdentity | null;
 
     /**
-     * Deprecated fields. 👇
-     */
-
-    /**
-     * @deprecated Will be removed with the 5.41.0 release. Use `createdBy` field instead.
-     */
-    ownedBy?: CmsIdentity | null;
-
-    /**
-     * @deprecated Will be removed with the 5.41.0 release. Use `firstPublishedOn` or `lastPublishedOn` field instead.
-     */
-    publishedOn?: string | null;
-
-    /**
      * Model ID of the definition for the entry.
      * @see CmsModel
      */
     modelId: string;
-    /**
-     * A locale of the entry.
-     * @see I18NLocale.code
-     */
-    locale: string;
     /**
      * A revision version of the entry.
      */
@@ -682,9 +495,9 @@ export interface CmsEntry<T = CmsEntryValues> {
     wbyDeleted?: boolean | null;
     /**
      * This field preserves the original folderId value, as the ROOT_FOLDER is set upon deletion.
-     * The value is utilized when restoring the entry from the trash bin.
+     * The value is used when restoring the entry from the trash bin.
      */
-    binOriginalFolderId?: string | null;
+    binOriginalFolderId?: string;
 
     state?: IEntryState;
 }
@@ -696,156 +509,6 @@ export interface CmsStorageEntry extends CmsEntry {
 export interface CmsEntryUniqueValue {
     value: string;
     count: number;
-}
-
-/**
- * A definition for content model manager to be used in the code.
- * The default one uses `CmsEntryContext` methods internally, but devs can change to what every they want.
- *
- * @see CmsEntryContext
- *
- * @category Context
- * @category CmsEntry
- * @category CmsModel
- */
-export interface CmsModelManager<T = CmsEntryValues> {
-    model: CmsModel;
-    /**
-     * List only published entries in the content model.
-     */
-    listPublished(params: CmsEntryListParams): Promise<[CmsEntry<T>[], CmsEntryMeta]>;
-    /**
-     * List latest entries in the content model. Used for administration.
-     */
-    listLatest(params: CmsEntryListParams): Promise<[CmsEntry<T>[], CmsEntryMeta]>;
-    /**
-     * Get a list of published entries by the ID list.
-     */
-    getPublishedByIds(ids: string[]): Promise<CmsEntry<T>[]>;
-    /**
-     * Get a list of the latest entries by the ID list.
-     */
-    getLatestByIds(ids: string[]): Promise<CmsEntry<T>[]>;
-    /**
-     * Get an entry filtered by given params. Will always get one.
-     */
-    get(id: string): Promise<CmsEntry<T>>;
-    /**
-     * Create an entry.
-     */
-    create<I>(
-        data: CreateCmsEntryInput & I,
-        options?: CreateCmsEntryOptionsInput
-    ): Promise<CmsEntry<T>>;
-    /**
-     * Update an entry.
-     */
-    update(
-        id: string,
-        data: UpdateCmsEntryInput,
-        options?: UpdateCmsEntryOptionsInput
-    ): Promise<CmsEntry<T>>;
-    /**
-     * Delete an entry.
-     */
-    delete(id: string, options?: CmsDeleteEntryOptions): Promise<void>;
-}
-
-export type ICmsEntryManager<T = GenericRecord> = CmsModelManager<T>;
-
-/**
- * Create
- */
-export interface OnModelBeforeCreateTopicParams {
-    input: CmsModelCreateInput;
-    model: CmsModel;
-}
-
-export interface OnModelAfterCreateTopicParams {
-    input: CmsModelCreateInput;
-    model: CmsModel;
-}
-
-export interface OnModelCreateErrorTopicParams {
-    input: CmsModelCreateInput;
-    model: CmsModel;
-    error: Error;
-}
-
-/**
- * Create From / Clone
- */
-export interface OnModelBeforeCreateFromTopicParams {
-    input: CmsModelCreateInput;
-    original: CmsModel;
-    model: CmsModel;
-}
-
-export interface OnModelAfterCreateFromTopicParams {
-    input: CmsModelCreateInput;
-    original: CmsModel;
-    model: CmsModel;
-}
-
-export interface OnModelCreateFromErrorParams {
-    input: CmsModelCreateInput;
-    original: CmsModel;
-    model: CmsModel;
-    error: Error;
-}
-
-/**
- * Update
- */
-export interface OnModelBeforeUpdateTopicParams {
-    input: CmsModelUpdateInput;
-    original: CmsModel;
-    model: CmsModel;
-}
-
-export interface OnModelAfterUpdateTopicParams {
-    input: CmsModelUpdateInput;
-    original: CmsModel;
-    model: CmsModel;
-}
-
-export interface OnModelUpdateErrorTopicParams {
-    input: CmsModelUpdateInput;
-    original: CmsModel;
-    model: CmsModel;
-    error: Error;
-}
-
-/**
- * Delete
- */
-export interface OnModelBeforeDeleteTopicParams {
-    model: CmsModel;
-}
-
-export interface OnModelAfterDeleteTopicParams {
-    model: CmsModel;
-}
-
-export interface OnModelDeleteErrorTopicParams {
-    model: CmsModel;
-    error: Error;
-}
-
-/**
- * Initialize
- */
-export interface OnModelInitializeParams {
-    model: CmsModel;
-    data: Record<string, any>;
-}
-
-/**
- *
- */
-export interface CmsModelUpdateDirectParams {
-    model: CmsModel;
-    original: CmsModel;
 }
 
 export interface ICmsModelListParams {
@@ -886,11 +549,6 @@ export interface CmsModelContext {
      */
     createModelFrom(modelId: string, data: CmsModelCreateFromInput): Promise<CmsModel>;
     /**
-     * Update content model without data validation. Used internally.
-     * @hidden
-     */
-    updateModelDirect(params: CmsModelUpdateDirectParams): Promise<CmsModel>;
-    /**
      * Update content model.
      */
     updateModel(modelId: string, data: CmsModelUpdateInput): Promise<CmsModel>;
@@ -899,51 +557,9 @@ export interface CmsModelContext {
      */
     deleteModel(modelId: string): Promise<void>;
     /**
-     * Possibility for users to trigger the model initialization.
-     * They can hook into it and do what ever they want to.
-     *
-     * Primary idea behind this is creating the index, for the code models, in the ES.
-     */
-    initializeModel(modelId: string, data: Record<string, any>): Promise<boolean>;
-    /**
-     * Get an instance of CmsModelManager for given content modelId.
-     *
-     * @see CmsModelManager
-     */
-    getEntryManager<T extends CmsEntryValues = CmsEntryValues>(
-        model: CmsModel | string
-    ): Promise<ICmsEntryManager<T>>;
-    /**
-     * A model manager for a model which has a single entry.
-     */
-    getSingletonEntryManager<T extends CmsEntryValues = CmsEntryValues>(
-        model: CmsModel | string
-    ): Promise<ISingletonModelManager<T>>;
-    /**
-     * Get all content model managers mapped by modelId.
-     * @see CmsModelManager
-     */
-    getEntryManagers(): Map<string, ICmsEntryManager>;
-    /**
      * Clear all the model caches.
      */
     clearModelsCache(): void;
-    /**
-     * Lifecycle Events
-     */
-    onModelBeforeCreate: Topic<OnModelBeforeCreateTopicParams>;
-    onModelAfterCreate: Topic<OnModelAfterCreateTopicParams>;
-    onModelCreateError: Topic<OnModelCreateErrorTopicParams>;
-    onModelBeforeCreateFrom: Topic<OnModelBeforeCreateFromTopicParams>;
-    onModelAfterCreateFrom: Topic<OnModelAfterCreateFromTopicParams>;
-    onModelCreateFromError: Topic<OnModelCreateFromErrorParams>;
-    onModelBeforeUpdate: Topic<OnModelBeforeUpdateTopicParams>;
-    onModelAfterUpdate: Topic<OnModelAfterUpdateTopicParams>;
-    onModelUpdateError: Topic<OnModelUpdateErrorTopicParams>;
-    onModelBeforeDelete: Topic<OnModelBeforeDeleteTopicParams>;
-    onModelAfterDelete: Topic<OnModelAfterDeleteTopicParams>;
-    onModelDeleteError: Topic<OnModelDeleteErrorTopicParams>;
-    onModelInitialize: Topic<OnModelInitializeParams>;
 }
 
 /**
@@ -1167,264 +783,6 @@ export interface CmsEntryMeta {
 }
 
 /**
- * Create
- */
-export interface OnEntryBeforeCreateTopicParams {
-    input: CreateCmsEntryInput;
-    entry: CmsEntry;
-    model: CmsModel;
-}
-
-export interface OnEntryAfterCreateTopicParams {
-    input: CreateCmsEntryInput;
-    entry: CmsEntry;
-    model: CmsModel;
-    storageEntry: CmsEntry;
-}
-
-export interface OnEntryCreateErrorTopicParams {
-    error: Error;
-    input: CreateCmsEntryInput;
-    entry: CmsEntry;
-    model: CmsModel;
-}
-
-/**
- * Revision Create
- */
-export interface OnEntryRevisionBeforeCreateTopicParams {
-    input: CreateFromCmsEntryInput;
-    entry: CmsEntry;
-    original: CmsEntry;
-    model: CmsModel;
-}
-
-export interface OnEntryRevisionAfterCreateTopicParams {
-    input: CreateFromCmsEntryInput;
-    entry: CmsEntry;
-    original: CmsEntry;
-    model: CmsModel;
-    storageEntry: CmsEntry;
-}
-
-export interface OnEntryCreateRevisionErrorTopicParams {
-    error: Error;
-    input: CreateFromCmsEntryInput;
-    original: CmsEntry;
-    entry: CmsEntry;
-    model: CmsModel;
-}
-
-/**
- * Update
- */
-export interface OnEntryBeforeUpdateTopicParams {
-    input: UpdateCmsEntryInput;
-    original: CmsEntry;
-    entry: CmsEntry;
-    model: CmsModel;
-}
-
-export interface OnEntryAfterUpdateTopicParams {
-    input: UpdateCmsEntryInput;
-    original: CmsEntry;
-    entry: CmsEntry;
-    model: CmsModel;
-    storageEntry: CmsEntry;
-}
-
-export interface OnEntryUpdateErrorTopicParams {
-    error: Error;
-    input: UpdateCmsEntryInput;
-    entry: CmsEntry;
-    model: CmsModel;
-}
-
-/**
- * Move
- */
-export interface OnEntryBeforeMoveTopicParams {
-    folderId: string;
-    entry: CmsEntry;
-    model: CmsModel;
-}
-
-export interface OnEntryAfterMoveTopicParams {
-    folderId: string;
-    entry: CmsEntry;
-    model: CmsModel;
-}
-
-export interface OnEntryMoveErrorTopicParams {
-    error: Error;
-    folderId: string;
-    entry: CmsEntry;
-    model: CmsModel;
-}
-
-/**
- * Publish
- */
-export interface OnEntryBeforePublishTopicParams {
-    original: CmsEntry;
-    entry: CmsEntry;
-    model: CmsModel;
-}
-
-export interface OnEntryAfterPublishTopicParams {
-    original: CmsEntry;
-    entry: CmsEntry;
-    model: CmsModel;
-    storageEntry: CmsEntry;
-}
-
-export interface OnEntryPublishErrorTopicParams {
-    error: Error;
-    original: CmsEntry;
-    entry: CmsEntry;
-    model: CmsModel;
-}
-
-/**
- * Republish
- */
-export interface OnEntryBeforeRepublishTopicParams {
-    entry: CmsEntry;
-    model: CmsModel;
-}
-
-export interface OnEntryAfterRepublishTopicParams {
-    entry: CmsEntry;
-    model: CmsModel;
-    storageEntry: CmsEntry;
-}
-
-export interface OnEntryRepublishErrorTopicParams {
-    error: Error;
-    entry: CmsEntry;
-    model: CmsModel;
-}
-
-/**
- * Unpublish
- */
-export interface OnEntryBeforeUnpublishTopicParams {
-    entry: CmsEntry;
-    model: CmsModel;
-}
-
-export interface OnEntryAfterUnpublishTopicParams {
-    entry: CmsEntry;
-    model: CmsModel;
-    storageEntry: CmsEntry;
-}
-
-export interface OnEntryUnpublishErrorTopicParams {
-    error: Error;
-    entry: CmsEntry;
-    model: CmsModel;
-}
-
-/**
- * Delete
- */
-export interface OnEntryBeforeDeleteTopicParams {
-    entry: CmsEntry;
-    model: CmsModel;
-    permanent: boolean;
-}
-
-export interface OnEntryAfterDeleteTopicParams {
-    entry: CmsEntry;
-    model: CmsModel;
-    permanent: boolean;
-}
-
-export interface OnEntryDeleteErrorTopicParams {
-    error: Error;
-    entry: CmsEntry;
-    permanent: boolean;
-    model: CmsModel;
-}
-
-/**
- * Restore from bin
- */
-export interface OnEntryBeforeRestoreFromBinTopicParams {
-    entry: CmsEntry;
-    model: CmsModel;
-}
-
-export interface OnEntryAfterRestoreFromBinTopicParams {
-    entry: CmsEntry;
-    model: CmsModel;
-    storageEntry: CmsEntry;
-}
-
-export interface OnEntryRestoreFromBinErrorTopicParams {
-    error: Error;
-    entry: CmsEntry;
-    model: CmsModel;
-}
-
-/**
- * Delete Revision
- */
-export interface OnEntryRevisionBeforeDeleteTopicParams {
-    entry: CmsEntry;
-    model: CmsModel;
-}
-
-export interface OnEntryRevisionAfterDeleteTopicParams {
-    entry: CmsEntry;
-    model: CmsModel;
-}
-
-export interface OnEntryRevisionDeleteErrorTopicParams {
-    error: Error;
-    entry: CmsEntry;
-    model: CmsModel;
-}
-
-/**
- * Delete multiple
- */
-export interface OnEntryBeforeDeleteMultipleTopicParams {
-    model: CmsModel;
-    entries: CmsEntry[];
-    ids: string[];
-}
-
-export interface OnEntryAfterDeleteMultipleTopicParams {
-    model: CmsModel;
-    entries: CmsEntry[];
-    ids: string[];
-}
-
-export interface OnEntryDeleteMultipleErrorTopicParams {
-    model: CmsModel;
-    entries: CmsEntry[];
-    ids: string[];
-    error: Error;
-}
-
-/**
- * Get
- */
-export interface OnEntryBeforeGetTopicParams {
-    model: CmsModel;
-    where: CmsEntryListWhere;
-}
-
-/**
- * List
- */
-export interface EntryBeforeListTopicParams {
-    where: CmsEntryListWhere;
-    model: CmsModel;
-}
-
-/**
  * @category Context
  * @category CmsEntry
  */
@@ -1524,7 +882,7 @@ export interface CreateRevisionCmsEntryOptionsInput {
  * @category Context
  * @category CmsEntry
  */
-export type UpdateCmsEntryInput<TValues = CmsEntryValues> = TValues & {
+export type UpdateCmsEntryInput<TValues extends CmsEntryValues = CmsEntryValues> = TValues & {
     /**
      * Revision-level meta fields. 👇
      */
@@ -1704,12 +1062,10 @@ export interface CmsEntryPermission extends BaseCmsSecurityPermission {
 export interface CmsGroupStorageOperationsGetParams {
     id: string;
     tenant: string;
-    locale: string;
 }
 
 export interface CmsGroupStorageOperationsListWhereParams {
     tenant: string;
-    locale: string;
 
     [key: string]: any;
 }
@@ -1748,26 +1104,24 @@ export interface CmsGroupStorageOperations {
     /**
      * Create a new content model group.
      */
-    create: (params: CmsGroupStorageOperationsCreateParams) => Promise<CmsGroup>;
+    create: (params: CmsGroupStorageOperationsCreateParams) => Promise<void>;
     /**
      * Update existing content model group.
      */
-    update: (params: CmsGroupStorageOperationsUpdateParams) => Promise<CmsGroup>;
+    update: (params: CmsGroupStorageOperationsUpdateParams) => Promise<void>;
     /**
      * Delete the content model group.
      */
-    delete: (params: CmsGroupStorageOperationsDeleteParams) => Promise<CmsGroup>;
+    delete: (params: CmsGroupStorageOperationsDeleteParams) => Promise<void>;
 }
 
 export interface CmsModelStorageOperationsGetParams {
     tenant: string;
-    locale: string;
     modelId: string;
 }
 
 export interface CmsModelStorageOperationsListWhereParams {
     tenant: string;
-    locale: string;
 
     [key: string]: string;
 }
@@ -2160,45 +1514,8 @@ export enum CONTENT_ENTRY_STATUS {
     UNPUBLISHED = "unpublished"
 }
 
-export interface CmsSystem {
-    version?: string;
-    readAPIKey?: string;
-    /**
-     * System tenant.
-     */
-    tenant: string;
-}
-
-export interface CmsSystemStorageOperationsGetParams {
-    tenant: string;
-}
-
-export interface CmsSystemStorageOperationsCreateParams {
-    system: CmsSystem;
-}
-
-export interface CmsSystemStorageOperationsUpdateParams {
-    system: CmsSystem;
-}
-
-export interface CmsSystemStorageOperations {
-    /**
-     * Get the system data.
-     */
-    get: (params: CmsSystemStorageOperationsGetParams) => Promise<CmsSystem | null>;
-    /**
-     * Create the system info in the storage.
-     */
-    create: (params: CmsSystemStorageOperationsCreateParams) => Promise<CmsSystem>;
-    /**
-     * Update the system info in the storage.
-     */
-    update: (params: CmsSystemStorageOperationsUpdateParams) => Promise<CmsSystem>;
-}
-
 export interface HeadlessCmsStorageOperations<C = CmsContext> {
     name: string;
-    system: CmsSystemStorageOperations;
     groups: CmsGroupStorageOperations;
     models: CmsModelStorageOperations;
     entries: CmsEntryStorageOperations;

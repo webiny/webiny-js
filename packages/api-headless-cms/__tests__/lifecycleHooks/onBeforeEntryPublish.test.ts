@@ -4,6 +4,7 @@ import { useHandler } from "~tests/testHelpers/useHandler";
 import { articleModel } from "./mocks/article.model";
 import { CmsModelPlugin } from "~/plugins";
 import type { CmsContext } from "~/types";
+import { EntryBeforePublishHandler } from "~/features/contentEntry/PublishEntry/index.js";
 
 describe("onEntryBeforePublish", () => {
     it("should update values before publishing", async () => {
@@ -11,15 +12,20 @@ describe("onEntryBeforePublish", () => {
             plugins: [
                 new CmsModelPlugin(articleModel),
                 new ContextPlugin<CmsContext>(context => {
-                    context.cms.onEntryBeforePublish.subscribe(async ({ model, entry }) => {
-                        if (model.modelId !== "article") {
-                            return;
-                        }
+                    context.container.registerFactory(EntryBeforePublishHandler, () => ({
+                        async handle(event) {
+                            const { model, entry } = event.payload;
 
-                        if (entry.values["desiredEmbargoDate"]) {
-                            entry.values["articleEmbargoDate"] = entry.values["desiredEmbargoDate"];
+                            if (model.modelId !== "article") {
+                                return;
+                            }
+
+                            if (entry.values["desiredEmbargoDate"]) {
+                                entry.values["articleEmbargoDate"] =
+                                    entry.values["desiredEmbargoDate"];
+                            }
                         }
-                    });
+                    }));
                 })
             ]
         });

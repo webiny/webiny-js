@@ -16,7 +16,7 @@ import { Form } from "@webiny/form";
 import { ContentModelPermission } from "./components/ContentModelPermission.js";
 import { ContentEntryPermission } from "./components/ContentEntryPermission.js";
 import type { CmsSecurityPermission } from "~/types.js";
-import { useSecurity } from "@webiny/app-security";
+import { useSecurity } from "@webiny/app-admin";
 import { CheckboxGroup, Grid, Select } from "@webiny/admin-ui";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");

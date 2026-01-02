@@ -135,7 +135,7 @@ export function FloatingLinkEditor({
         const scrollerElem = anchorElem.parentElement;
 
         const update = () => {
-            editor.getEditorState().read(() => {
+            editor.read(() => {
                 updateLinkEditor();
             });
         };
@@ -186,7 +186,7 @@ export function FloatingLinkEditor({
     }, [editor, updateLinkEditor]);
 
     useEffect(() => {
-        editor.getEditorState().read(() => {
+        editor.read(() => {
             updateLinkEditor();
         });
     }, [editor, updateLinkEditor]);

@@ -54,7 +54,7 @@ class WcpGraphQLGateway implements WcpGatewayAbstraction.Interface {
     constructor(private client: GraphQLClient.Interface) {}
 
     async fetchProject(): Promise<WcpProjectData | null> {
-        const response = await this.client.execute<any, GetWcpProjectResponse>({
+        const response = await this.client.execute<GetWcpProjectResponse>({
             query: GET_WCP_PROJECT,
             headers: {
                 "x-tenant": "root"

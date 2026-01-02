@@ -9,8 +9,9 @@ import { DialogPortal } from "./components/DialogPortal.js";
 import { DialogRoot } from "./components/DialogRoot.js";
 import { DialogTrigger } from "./components/DialogTrigger.js";
 import { Icon } from "./components/Icon.js";
-import { ConfirmButton } from "./components/ConfirmButton.js";
-import { CancelButton } from "./components/CancelButton.js";
+import { ConfirmAction } from "./components/ConfirmAction.js";
+import { CancelAction } from "./components/CancelAction.js";
+import { CloseDialogIconButton } from "~/Dialog/components/CloseDialogIconButton.js";
 import { DialogClose } from "~/Dialog/components/DialogClose.js";
 
 interface DialogProps
@@ -119,7 +120,9 @@ const DialogBase = (props: DialogProps) => {
                     <DialogHeader {...headerProps} />
                     <DialogBody {...bodyProps} />
                     <DialogFooter {...footerProps} />
-                    {closeButtonProps.show && <DialogClose size={closeButtonProps.size} />}
+                    {closeButtonProps.show && (
+                        <CloseDialogIconButton size={closeButtonProps.size} />
+                    )}
                 </DialogContent>
             </DialogPortal>
         </DialogRoot>
@@ -131,9 +134,10 @@ DialogBase.displayName = "Dialog";
 const DecoratableDialog = makeDecoratable("Dialog", DialogBase);
 
 const Dialog = withStaticProps(DecoratableDialog, {
-    ConfirmButton,
-    CancelButton,
-    Icon
+    ConfirmAction,
+    CancelAction,
+    Icon,
+    Close: DialogClose
 });
 
 export { Dialog, type DialogProps };

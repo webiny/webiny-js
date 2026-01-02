@@ -39,6 +39,6 @@ export class StorageOperationsCmsModelPlugin extends Plugin {
      * The models created via the CRUD operations might get changed in the middle of the call, so we need to re-create the SO model.
      */
     private createCacheKey(model: CmsModel): string {
-        return [model.tenant, model.locale, model.modelId, model.savedOn || "unknown"].join("#");
+        return [model.tenant, model.modelId, model.savedOn || "unknown"].join("#");
     }
 }

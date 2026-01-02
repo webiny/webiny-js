@@ -28,7 +28,7 @@ export function useCurrentSelection() {
     const isMounted = useIsMounted();
 
     const storeSelection = useCallback(() => {
-        editor.getEditorState().read(() => {
+        editor.read(() => {
             if (isMounted()) {
                 setSelection(getOutput($getSelection()));
             }
@@ -52,7 +52,7 @@ export function useDeriveValueFromSelection<T>(generator: Generator<T>) {
     const isMounted = useIsMounted();
 
     const generateValue = useCallback(() => {
-        editor.getEditorState().read(() => {
+        editor.read(() => {
             if (isMounted()) {
                 setValue(generator(getOutput($getSelection())));
             }

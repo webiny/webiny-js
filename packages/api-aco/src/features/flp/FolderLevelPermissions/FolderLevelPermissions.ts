@@ -76,10 +76,10 @@ class FolderLevelPermissionsImpl implements FolderLevelPermissionsAbstraction.In
     }
 
     public async canAccessFolderContent(params: CanAccessFolderContentParams): Promise<boolean> {
-        if (
-            !this.canUseFolderLevelPermissions() ||
-            !this.identityContext.isAuthorizationEnabled()
-        ) {
+        const canUseFlp = this.canUseFolderLevelPermissions();
+        const authEnabled = this.identityContext.isAuthorizationEnabled();
+
+        if (!canUseFlp || !authEnabled) {
             return true;
         }
 

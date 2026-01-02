@@ -12,7 +12,7 @@ import {
     type IHydratedProjectConfig,
     type IProjectConfigDto
 } from "~/abstractions/models/index.js";
-import { extensionDefinitions as extensionDefinitionsExtension } from "~/extensions/extensionDefinitions.js";
+import { ExtensionDefinitions as ExtensionDefinitionsExtension } from "~/extensions/ExtensionDefinitions.js";
 import { ExtensionInstanceModel } from "~/defineExtension/index.js";
 import { ProjectConfigModel } from "~/models/ProjectConfigModel.js";
 import { renderConfig } from "./renderConfig.js";
@@ -40,9 +40,11 @@ export class DefaultGetProjectConfigService implements GetProjectConfigService.I
             );
 
             try {
+                const projectSdkParams = this.projectSdkParamsService.get();
                 this.cachedRenderedConfigs[cacheKey] = await renderConfig({
                     project,
-                    args: params.renderArgs
+                    args: params.renderArgs,
+                    sdkParams: projectSdkParams
                 });
             } catch (err) {
                 this.loggerService.error(
@@ -95,7 +97,7 @@ export class DefaultGetProjectConfigService implements GetProjectConfigService.I
         const tagsFilters = params?.tags || {};
 
         // Exclude extra extension definitions because we are handling these separately.
-        const extensionDefinitionsType = extensionDefinitionsExtension.definition.type;
+        const extensionDefinitionsType = ExtensionDefinitionsExtension.definition.type;
 
         const extensionsTypes = Object.keys(configDto).filter(
             key => key !== extensionDefinitionsType
@@ -130,7 +132,7 @@ export class DefaultGetProjectConfigService implements GetProjectConfigService.I
                         });
 
                         if (!extDef) {
-                            this.loggerService.debug(
+                            this.loggerService.warn(
                                 `Could not find extension definition for type: ${extensionType}. Skipping...`
                             );
                             return null;

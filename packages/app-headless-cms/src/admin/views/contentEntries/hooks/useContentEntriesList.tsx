@@ -95,16 +95,11 @@ export const ContentEntriesListProvider = ({ children }: ContentEntriesListProvi
 
     const searchQuery = route.params.search ?? "";
 
-    // Search-related logics: update `searchQuery` state and querystring
+    // Search-related logic: update `searchQuery` state and querystring
     const updateSearch = useCallback(
         debounce<UpdateSearchCallable>(({ search }) => {
-            if (!search) {
-                return;
-            }
-
-            setSearchQuery(search);
-
             if (searchQuery !== search) {
+                setSearchQuery(search);
                 goToRoute(Routes.ContentEntries.List, { ...route.params, search });
             }
         }, 500),

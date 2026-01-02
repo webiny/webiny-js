@@ -36,16 +36,16 @@ export class ElasticsearchToDynamoDbSynchronization implements ISynchronization 
         let currentIndex = indexes[next];
 
         while (currentIndex) {
-            if (this.manager.isAborted()) {
-                return this.manager.response.aborted();
+            if (this.manager.controller.runtime.isAborted()) {
+                return this.manager.controller.response.aborted();
             }
             /**
              * We will put 180 seconds because we are writing to the Elasticsearch/OpenSearch directly.
              * We want to leave enough time for possible retries.
              */
             //
-            else if (this.manager.isCloseToTimeout(180)) {
-                return this.manager.response.continue({
+            else if (this.manager.controller.runtime.isCloseToTimeout(180)) {
+                return this.manager.controller.response.continue({
                     ...input,
                     elasticsearchToDynamoDb: {
                         ...input.elasticsearchToDynamoDb,
@@ -77,7 +77,7 @@ export class ElasticsearchToDynamoDbSynchronization implements ISynchronization 
             currentIndex = indexes[next];
         }
 
-        return this.manager.response.continue({
+        return this.manager.controller.response.continue({
             ...input,
             elasticsearchToDynamoDb: {
                 finished: true

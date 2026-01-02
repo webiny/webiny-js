@@ -7,7 +7,7 @@ const identityA: IdentityData = {
     type: "test",
     displayName: "Aa"
 };
-describe.skip("Files settings test", () => {
+describe("Files settings test", () => {
     const { getSettings, updateSettings } = useGqlHandler({
         identity: identityA
     });
@@ -38,7 +38,7 @@ describe.skip("Files settings test", () => {
                     updateSettings: {
                         data: null,
                         error: {
-                            code: "VALIDATION_FAILED_INVALID_FIELDS",
+                            code: "FileManager/Settings/ValidationError",
                             message: "Validation failed.",
                             data: {
                                 invalidFields: {
@@ -67,7 +67,7 @@ describe.skip("Files settings test", () => {
                     updateSettings: {
                         data: null,
                         error: {
-                            code: "VALIDATION_FAILED_INVALID_FIELDS",
+                            code: "FileManager/Settings/ValidationError",
                             message: "Validation failed.",
                             data: {
                                 invalidFields: {

@@ -1,8 +1,7 @@
 import { createAbstraction } from "~/abstractions/createAbstraction.js";
-import { type IBaseAppParams } from "~/abstractions/types.js";
-import { type IPulumiGetStackExportServiceParams } from "~/abstractions/services/PulumiGetStackExportService.js";
+import { type AppName } from "~/abstractions/types.js";
 
-export type IGetAppStackExportParams = IBaseAppParams;
+export type IGetAppStackExportParams = { app: AppName };
 
 export interface IStackExport {
     [key: string]: any;
@@ -12,7 +11,7 @@ export type IGetAppStackExportResult<TExport extends IStackExport = IStackExport
 
 export interface IGetAppStackExport {
     execute<TExport extends IStackExport = IStackExport>(
-        params: IPulumiGetStackExportServiceParams
+        params: IGetAppStackExportParams
     ): Promise<IGetAppStackExportResult<TExport>>;
 }
 

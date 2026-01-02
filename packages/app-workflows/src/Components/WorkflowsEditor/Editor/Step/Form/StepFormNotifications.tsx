@@ -1,27 +1,8 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Bind } from "@webiny/form";
 import { validation } from "@webiny/validation";
-import type { CheckboxItemDto } from "@webiny/admin-ui";
 import { CheckboxGroup } from "@webiny/admin-ui";
-import type { IWorkflowStepNotification } from "~/types.js";
-
-const items: CheckboxItemDto[] = [
-    {
-        id: "slack",
-        value: "slack",
-        label: "Slack"
-    },
-    {
-        id: "email",
-        value: "email",
-        label: "Email"
-    },
-    {
-        id: "sms",
-        value: "sms",
-        label: "SMS"
-    }
-];
+import type { IWorkflowNotificationType, IWorkflowStepNotification } from "~/types.js";
 
 const convertInputValue = (value?: IWorkflowStepNotification[]): string[] => {
     if (!value?.length) {
@@ -30,7 +11,22 @@ const convertInputValue = (value?: IWorkflowStepNotification[]): string[] => {
     return value.map(v => v.id);
 };
 
-export const StepFormNotifications = () => {
+interface IStepFormNotificationsProps {
+    items: IWorkflowNotificationType[];
+}
+
+export const StepFormNotifications = (props: IStepFormNotificationsProps) => {
+    const { items: initialItems } = props;
+
+    const items = useMemo(() => {
+        return initialItems.map(item => {
+            return {
+                id: item.id,
+                value: item.id,
+                label: item.title
+            };
+        });
+    }, [initialItems]);
     return (
         <Bind name={"notifications"} validators={validation.create("required")}>
             {({ value, onChange }) => {

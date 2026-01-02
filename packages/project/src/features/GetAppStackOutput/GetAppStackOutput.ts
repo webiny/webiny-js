@@ -6,6 +6,7 @@ import {
     GetAppStackOutput,
     PulumiGetStackOutputService
 } from "~/abstractions/index.js";
+import { type AppName } from "~/abstractions/types.js";
 
 export class DefaultGetAppStackOutput implements GetAppStackOutput.Interface {
     constructor(
@@ -15,12 +16,12 @@ export class DefaultGetAppStackOutput implements GetAppStackOutput.Interface {
     ) {}
 
     async execute<TOutput extends GetAppStackOutput.StackOutput = GetAppStackOutput.StackOutput>(
-        params: GetAppStackOutput.Params
+        appName: AppName
     ) {
-        await this.buildAppWorkspaceService.execute(params);
+        await this.buildAppWorkspaceService.execute(appName);
 
-        const app = this.getAppService.execute(params.app);
-        return this.pulumiGetStackOutputService.execute<TOutput>(app, params);
+        const app = this.getAppService.execute(appName);
+        return this.pulumiGetStackOutputService.execute<TOutput>(app);
     }
 }
 

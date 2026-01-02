@@ -1,8 +1,8 @@
+import type { Identity } from "@webiny/app-admin/domain/Identity.js";
 import type { Plugin } from "@webiny/plugins/types.js";
-import type { SecurityIdentity } from "@webiny/app-security/types.js";
 
 export interface GraphQLPlaygroundTabParams {
-    identity: SecurityIdentity;
+    identity: Identity;
 }
 export interface GraphQLPlaygroundTab {
     name: string;

@@ -25,7 +25,7 @@ const float20Value = 0.02753098762000982458;
 
 describe("numbers model", () => {
     const handler = useGraphQLHandler({
-        path: "manage/en-US"
+        path: "manage"
     });
 
     beforeEach(async () => {

@@ -3,12 +3,10 @@ import dynamoDbPlugins from "./dynamoDb/index.js";
 import type { StorageOperationsFactory } from "~/types.js";
 import { ENTITIES } from "~/types.js";
 import { createTable } from "~/definitions/table.js";
-import { createSystemEntity } from "~/definitions/system.js";
 import { createGroupEntity } from "~/definitions/group.js";
 import { createModelEntity } from "~/definitions/model.js";
 import { createEntryEntity } from "~/definitions/entry.js";
 import { PluginsContainer } from "@webiny/plugins";
-import { createSystemStorageOperations } from "~/operations/system/index.js";
 import { createGroupsStorageOperations } from "~/operations/group/index.js";
 import { createModelsStorageOperations } from "~/operations/model/index.js";
 import { createEntriesStorageOperations } from "./operations/entry/index.js";
@@ -35,11 +33,6 @@ export const createStorageOperations: StorageOperationsFactory = params => {
     });
 
     const entities = {
-        system: createSystemEntity({
-            entityName: ENTITIES.SYSTEM,
-            table: tableInstance,
-            attributes: attributes ? attributes[ENTITIES.SYSTEM] : {}
-        }),
         groups: createGroupEntity({
             entityName: ENTITIES.GROUPS,
             table: tableInstance,
@@ -110,9 +103,6 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         },
         getEntities: () => entities,
         getTable: () => tableInstance,
-        system: createSystemStorageOperations({
-            entity: entities.system
-        }),
         groups: createGroupsStorageOperations({
             entity: entities.groups,
             plugins

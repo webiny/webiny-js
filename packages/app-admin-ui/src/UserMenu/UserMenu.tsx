@@ -5,7 +5,7 @@ import {
     useAdminConfig
 } from "@webiny/app-admin";
 import { DropdownMenu } from "@webiny/admin-ui";
-import { useSecurity } from "@webiny/app-security";
+import { useSecurity } from "@webiny/app-admin";
 
 export const UserMenu = UserMenuRendererSpec.createDecorator(() => {
     return function UserMenu() {
