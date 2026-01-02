@@ -25,10 +25,8 @@ export class ProjectConfigModel implements IProjectConfigModel {
         if (typeof type === "string") {
             extensionType = type;
         } else {
-            // Support both old (.definition) and new (.def) API
             // ExtensionComponent has .def, DefinitionAndComponentPair has .definition
-            // Both are guaranteed to have at least one of these properties
-            extensionType = type.def?.type || type.definition.type;
+            extensionType = type.def ? type.def.type : type.definition.type;
         }
         
         return (this.config[extensionType] || []) as unknown as Array<ExtensionInstanceModel<TParamsSchema>>;
