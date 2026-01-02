@@ -29,10 +29,6 @@ export const Extensions = () => {
                 <Infra.Aws.Tags tags={{ ENV: "non-production" }} />
             </Infra.Env.Is>*/}
 
-            {/*<Infra.Env.IsProduction>
-                <Infra.Vpc enabled={true} />
-            </Infra.Env.IsProduction>*/}
-
             {/*<Infra.Admin.CustomDomains
                 domains={["my.domain.com"]}
                 sslMethod="sni-only"

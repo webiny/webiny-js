@@ -13,7 +13,6 @@ export interface RenderConfigParams {
     project: IProjectModel;
     args?: Record<string, any>;
     sdkParams: ProjectSdkParamsService.Params;
-    productionEnvironments?: string[];
 }
 
 export interface RenderConfigParamsDto {
@@ -56,10 +55,7 @@ export async function renderConfig(params: RenderConfigParams) {
             stdio: ["pipe", "pipe", "pipe", "ipc"],
             env: {
                 ...process.env,
-                [WBY_PROJECT_SDK_CONTEXT]: serializeProjectSdkContext(
-                    params.sdkParams,
-                    params.productionEnvironments
-                )
+                [WBY_PROJECT_SDK_CONTEXT]: serializeProjectSdkContext(params.sdkParams)
             }
         });
 
