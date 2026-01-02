@@ -2,6 +2,7 @@ import { AsyncLocalStorage } from "async_hooks";
 import { AuthorizationContext as Abstraction } from "./abstractions.js";
 import { Authorizer } from "../Authorizer/index.js";
 import type { SecurityPermission } from "~/types/security.js";
+import { Identity } from "~/features/security/IdentityContext/index.js";
 
 const authorizationEnabledStorage = new AsyncLocalStorage<boolean>();
 
@@ -11,7 +12,7 @@ export class AuthorizationContext implements Abstraction.Interface {
 
     constructor(private getAuthorizers: () => Authorizer.Interface[]) {}
 
-    async loadPermissions(): Promise<SecurityPermission[]> {
+    async loadPermissions(identity: Identity): Promise<SecurityPermission[]> {
         if (this.permissions) {
             return this.permissions;
         }
@@ -24,7 +25,7 @@ export class AuthorizationContext implements Abstraction.Interface {
             // Execute authorizers in sequence until one returns permissions
             const authorizers = this.getAuthorizers();
             for (const authorizer of authorizers) {
-                const result = await authorizer.authorize();
+                const result = await authorizer.authorize(identity);
                 if (Array.isArray(result)) {
                     this.permissions = result;
                     return resolve(this.permissions);

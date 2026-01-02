@@ -2,20 +2,18 @@ import { Authorizer } from "~/features/security/authorization/Authorizer/index.j
 import type { PermissionsTenantLink, SecurityPermission } from "~/types/security.js";
 import { getPermissionsFromSecurityGroups } from "~/features/security/utils/getPermissionsFromSecurityGroups.js";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
-import { IdentityContext } from "~/features/security/IdentityContext/index.js";
 import { WcpContext } from "~/features/wcp/WcpContext/index.js";
 import { ListTenantLinksByIdentity } from "~/features/security/tenantLinks/ListTenantLinksByIdentity/index.js";
+import { Identity } from "~/features/security/IdentityContext/index.js";
 
 class TenantLinkAuthorizerImpl implements Authorizer.Interface {
     constructor(
         private readonly wcpContext: WcpContext.Interface,
         private readonly tenantContext: TenantContext.Interface,
-        private readonly identityContext: IdentityContext.Interface,
         private readonly listTenantLinks: ListTenantLinksByIdentity.Interface
     ) {}
 
-    async authorize(): Promise<SecurityPermission[] | null> {
-        const identity = this.identityContext.getIdentity();
+    async authorize(identity: Identity): Promise<SecurityPermission[] | null> {
         const tenant = this.tenantContext.getTenant();
 
         if (identity.isAnonymous() || identity.type !== "admin") {
@@ -70,5 +68,5 @@ class TenantLinkAuthorizerImpl implements Authorizer.Interface {
 
 export const TenantLinkAuthorizer = Authorizer.createImplementation({
     implementation: TenantLinkAuthorizerImpl,
-    dependencies: [WcpContext, TenantContext, IdentityContext, ListTenantLinksByIdentity]
+    dependencies: [WcpContext, TenantContext, ListTenantLinksByIdentity]
 });

@@ -1,8 +1,9 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { SecurityPermission } from "~/types/security.js";
+import { Identity } from "~/features/security/IdentityContext/index.js";
 
 export interface IAuthorizer {
-    authorize(): Promise<SecurityPermission[] | null>;
+    authorize(identity: Identity): Promise<SecurityPermission[] | null>;
 }
 
 export const Authorizer = createAbstraction<IAuthorizer>("Authorizer");

@@ -1,5 +1,5 @@
 import { Authorizer } from "~/features/security/authorization/Authorizer/index.js";
-import { IdentityContext } from "~/features/security/IdentityContext/index.js";
+import { Identity } from "~/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "~/types/security.js";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 import { GetTenantByIdUseCase } from "~/features/tenancy/GetTenantById/index.js";
@@ -8,13 +8,11 @@ import { PermissionsProcessor } from "./abstractions.js";
 class GroupsTeamsAuthorizerImpl implements Authorizer.Interface {
     constructor(
         private readonly tenantContext: TenantContext.Interface,
-        private readonly identityContext: IdentityContext.Interface,
         private readonly getTenantByIdUseCase: GetTenantByIdUseCase.Interface,
         private readonly permissionsProcessor: PermissionsProcessor.Interface
     ) {}
 
-    async authorize(): Promise<SecurityPermission[] | null> {
-        const identity = this.identityContext.getIdentity();
+    async authorize(identity: Identity): Promise<SecurityPermission[] | null> {
         const tenant = this.tenantContext.getTenant();
 
         if (identity.isAnonymous() || identity.type !== "admin") {
@@ -61,5 +59,5 @@ class GroupsTeamsAuthorizerImpl implements Authorizer.Interface {
 
 export const GroupsTeamsAuthorizer = Authorizer.createImplementation({
     implementation: GroupsTeamsAuthorizerImpl,
-    dependencies: [TenantContext, IdentityContext, GetTenantByIdUseCase, PermissionsProcessor]
+    dependencies: [TenantContext, GetTenantByIdUseCase, PermissionsProcessor]
 });

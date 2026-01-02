@@ -12,7 +12,6 @@ export class CreateTenantLinksUseCase implements CreateTenantLinks.Interface {
     }
 
     async execute(inputs: CreateTenantLinkInput[]): Promise<Result<void, CreateTenantLinks.Error>> {
-        console.log("CreateTenantLinks", inputs);
         return this.repository.createBatch(inputs);
     }
 }

@@ -57,18 +57,6 @@ export class LegacyContext {
         });
     }
 
-    getAuthorizers() {
-        return this.container.resolveAll(Authorizer).map(authorizer => {
-            return () => authorizer.authorize();
-        });
-    }
-
-    getAuthenticators(): Authenticator.Interface["authenticate"][] {
-        return this.container.resolveAll(Authenticator).map(authenticator => {
-            return (token: string) => authenticator.authenticate(token);
-        });
-    }
-
     async authenticate(token: string): Promise<void> {
         // Authenticate using new context
         const identity = await this.authenticationContext.authenticate(token);

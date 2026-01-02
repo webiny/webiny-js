@@ -21,7 +21,7 @@ import { $applyNodeReplacement, createEditor, DecoratorNode } from "lexical";
 
 const ImageComponent = React.lazy(() => {
     return import(
-        /* webpackChunkName: "LexicalNodesComponentsImageNodeImageComponent" */
+        /* webpackChunkName: "LexicalImageNodeComponent" */
         "./components/ImageNode/ImageComponent.js"
     );
 });
