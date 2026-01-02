@@ -134,14 +134,14 @@ export class GenerateWebinyPkgCommand implements Command.Interface<void> {
             fs.mkdirSync(target, { recursive: true });
         }
 
-        // Read all files/folders in source directory
-        const files = fs.readdirSync(source);
+        // Read all files/folders in source directory with file types
+        const entries = fs.readdirSync(source, { withFileTypes: true });
 
-        for (const file of files) {
-            const sourcePath = path.join(source, file);
-            const targetPath = path.join(target, file);
+        for (const entry of entries) {
+            const sourcePath = path.join(source, entry.name);
+            const targetPath = path.join(target, entry.name);
 
-            if (fs.statSync(sourcePath).isDirectory()) {
+            if (entry.isDirectory()) {
                 // Recursively copy subdirectories
                 this.copyDirectoryRecursive(sourcePath, targetPath);
             } else {
