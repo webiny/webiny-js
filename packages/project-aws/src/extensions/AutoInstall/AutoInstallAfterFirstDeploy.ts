@@ -1,7 +1,7 @@
 import { ApiAfterDeploy } from "@webiny/project/abstractions/index.js";
 import { UiService } from "@webiny/project/abstractions/services/UiService.js";
+import { GetProjectConfigService } from "@webiny/project/abstractions";
 import { ApiGqlClient } from "~/abstractions/ApiGqlClient.js";
-import { AutoInstallConfig } from "~/abstractions/AutoInstallConfig.js";
 
 const IS_INSTALLED_QUERY = `
     query IsSystemInstalled {
@@ -55,19 +55,22 @@ interface InstallResponse {
     };
 }
 
-class AutoInstallAfterFirstDeploy implements ApiAfterDeploy.Interface {
+class AutoInstallAfterFirstDeployImpl implements ApiAfterDeploy.Interface {
     constructor(
         private apiGqlClient: ApiGqlClient.Interface,
         private ui: UiService.Interface,
-        private autoInstallConfig: AutoInstallConfig.Interface
+        private getProjectConfig: GetProjectConfigService.Interface
     ) {}
 
     async execute(params: ApiAfterDeploy.Params) {
-        const config = this.autoInstallConfig.getConfig();
+        const projectConfig = await this.getProjectConfig.execute();
+        const adminAutoInstallExtensions = projectConfig.extensionsByType("Admin/AutoInstall");
 
-        if (!config.enabled) {
+        if (adminAutoInstallExtensions.length === 0) {
             return;
         }
+
+        const config = adminAutoInstallExtensions[0].params;
 
         // Check if system is already installed
         this.ui.info("Checking if system is already installed...");
@@ -122,7 +125,7 @@ class AutoInstallAfterFirstDeploy implements ApiAfterDeploy.Interface {
     }
 }
 
-export const AutoInstall = ApiAfterDeploy.createImplementation({
-    implementation: AutoInstallAfterFirstDeploy,
-    dependencies: [ApiGqlClient, UiService, AutoInstallConfig]
+export const AutoInstallAfterFirstDeploy = ApiAfterDeploy.createImplementation({
+    implementation: AutoInstallAfterFirstDeployImpl,
+    dependencies: [ApiGqlClient, UiService, GetProjectConfigService]
 });

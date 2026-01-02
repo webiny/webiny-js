@@ -10,10 +10,7 @@ export class InvokeLambdaFunctionImpl implements InvokeLambdaFunctionAbstraction
         params: InvokeLambdaFunctionAbstraction.Params
     ): Promise<InvokeLambdaFunctionAbstraction.Result<T>> {
         // Get region from stack output
-        const stackOutput = await this.getAppStackOutput.execute<IDefaultStackOutput>({
-            app: "api",
-            env: process.env.WEBINY_ENV || "dev"
-        });
+        const stackOutput = await this.getAppStackOutput.execute<IDefaultStackOutput>("api");
 
         if (!stackOutput) {
             throw new Error("Could not retrieve API stack output for Lambda invocation.");

@@ -1,17 +1,9 @@
 import React from "react";
-import { Infra } from "@webiny/project-aws/index.js";
+import { createPathResolver } from "@webiny/project";
+import { Infra } from "~/index.js";
 
-export interface AutoInstallAdminUserProps {
-    firstName: string;
-    lastName: string;
-    email: string;
-    password: string;
-}
+const p = createPathResolver(import.meta.dirname, "AutoInstall");
 
-export interface AutoInstallProps {
-    adminUser: AutoInstallAdminUserProps;
-}
-
-export const AutoInstall = (props: AutoInstallProps) => {
-    return <Infra.Admin.AutoInstall.ReactComponent adminUser={props.adminUser} />;
+export const AdminAutoInstall = () => {
+    return <Infra.Api.AfterDeploy src={p("AutoInstallAfterFirstDeploy.js")} />;
 };
