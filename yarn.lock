@@ -107,6 +107,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@auth0/auth0-spa-js@npm:^2.11.0":
+  version: 2.11.0
+  resolution: "@auth0/auth0-spa-js@npm:2.11.0"
+  dependencies:
+    browser-tabs-lock: "npm:^1.2.15"
+    dpop: "npm:^2.1.1"
+    es-cookie: "npm:~1.3.2"
+  checksum: 10/2ee8084da37b0a79eaff74b8d03ff96df13f89dce9df9bfe155e1b219159eeeea5b3d97bf449bc6a06ee7770e54e848b3f8b2a4b359ced192e8b468177d4a4d8
+  languageName: node
+  linkType: hard
+
 "@aws-amplify/auth@npm:^5.6.15":
   version: 5.6.15
   resolution: "@aws-amplify/auth@npm:5.6.15"
@@ -14678,6 +14689,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/auth0@workspace:packages/auth0"
   dependencies:
+    "@auth0/auth0-spa-js": "npm:^2.11.0"
     "@types/jsonwebtoken": "npm:^9.0.10"
     "@types/jwk-to-pem": "npm:^2.0.3"
     "@webiny/admin-ui": "npm:0.0.0"
@@ -17298,6 +17310,15 @@ __metadata:
     tslib: "npm:^2.8.1"
     worker-factory: "npm:^7.0.45"
   checksum: 10/1dc0f688856b86fccdc0d0d875c948f63dc4aea021e3099e8ee99ed75ca405a28e0959095f82209eb12f1d8d3e31381eabf96ff509022fbac4c4b099522aa2fc
+  languageName: node
+  linkType: hard
+
+"browser-tabs-lock@npm:^1.2.15":
+  version: 1.3.0
+  resolution: "browser-tabs-lock@npm:1.3.0"
+  dependencies:
+    lodash: "npm:>=4.17.21"
+  checksum: 10/2a6eba3d4ed168203b6303b201c5001553d854a33d0ce12dcc289315e5554c7154608d5d80f2e91ab40746c4cd54df58eb92c65a1e54e24823a1ccbfbc5da3c5
   languageName: node
   linkType: hard
 
@@ -20003,6 +20024,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dpop@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "dpop@npm:2.1.1"
+  checksum: 10/dfecbe6d5278dd07124b5b5be9ff1cc0cc9f3b3a1b84f441ae9c9666dfdc5d7ae1e703afa9b50fece70fdb636933755a75bb9bf5dea3a7ed8349e91be3152ea0
+  languageName: node
+  linkType: hard
+
 "dunder-proto@npm:^1.0.0, dunder-proto@npm:^1.0.1":
   version: 1.0.1
   resolution: "dunder-proto@npm:1.0.1"
@@ -20455,6 +20483,13 @@ __metadata:
     unbox-primitive: "npm:^1.1.0"
     which-typed-array: "npm:^1.1.19"
   checksum: 10/64e07a886f7439cf5ccfc100f9716e6173e10af6071a50a5031afbdde474a3dbc9619d5965da54e55f8908746a9134a46be02af8c732d574b7b81ed3124e2daf
+  languageName: node
+  linkType: hard
+
+"es-cookie@npm:~1.3.2":
+  version: 1.3.2
+  resolution: "es-cookie@npm:1.3.2"
+  checksum: 10/e0a60e5406f6326f1ad9007b1ad2659684e1603d293be4e9eace1be8aae2bcc694ffdf868e777bda947ad7eddf4079b6acd47a236d361fa8a3bc741bff05ba88
   languageName: node
   linkType: hard
 
@@ -25625,7 +25660,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:4, lodash@npm:4.17.21, lodash@npm:^4.0.1, lodash@npm:^4.17.14, lodash@npm:^4.17.15, lodash@npm:^4.17.19, lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.17.4, lodash@npm:~4.17.21":
+"lodash@npm:4, lodash@npm:4.17.21, lodash@npm:>=4.17.21, lodash@npm:^4.0.1, lodash@npm:^4.17.14, lodash@npm:^4.17.15, lodash@npm:^4.17.19, lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.17.4, lodash@npm:~4.17.21":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: 10/c08619c038846ea6ac754abd6dd29d2568aa705feb69339e836dfa8d8b09abbb2f859371e86863eda41848221f9af43714491467b5b0299122431e202bb0c532

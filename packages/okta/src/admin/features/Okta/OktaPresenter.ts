@@ -49,9 +49,6 @@ class OktaPresenterImpl implements Abstraction.Interface {
             }
         });
 
-        // Run as a service - this will trigger authStateManager updates
-        await this.oktaAuth.start();
-
         // Handle redirect callback if present
         if (this.oktaAuth.token.isLoginRedirect()) {
             runInAction(() => {
@@ -68,21 +65,15 @@ class OktaPresenterImpl implements Abstraction.Interface {
                     this.checkingSession = false;
                 });
             }
-
-            return;
         }
 
-        // // Check current auth state
-        // const currentAuthState = this.oktaAuth.authStateManager.getAuthState();
-        // if (currentAuthState?.isAuthenticated) {
-        //     await this.login();
-        //     return; // Don't check autoLogin if we're already authenticated
-        // }
+        // Run as a service - this will trigger authStateManager updates
+        await this.oktaAuth.start();
 
         // Only auto-login if not authenticated and autoLogin is enabled
-        // if (params.autoLogin) {
-        //     this.authenticate();
-        // }
+        if (!this.isOktaAuthenticated() && params.autoLogin) {
+            this.authenticate();
+        }
     }
 
     authenticate() {
@@ -128,6 +119,11 @@ class OktaPresenterImpl implements Abstraction.Interface {
             throw new Error("OktaAuth is not initialized.");
         }
         return this.oktaAuth;
+    }
+
+    private isOktaAuthenticated() {
+        const currentAuthState = this.getOktaAuth().authStateManager.getAuthState();
+        return currentAuthState?.isAuthenticated ?? false;
     }
 }
 
