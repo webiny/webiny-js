@@ -101,7 +101,6 @@
     "./infra/features/GetAppStackOutput": "./infra/features/GetAppStackOutput.js",
     "./infra/features/GetAppStackExport": "./infra/features/GetAppStackExport.js",
     "./extensions": "./extensions.js",
-    "./infra/features/ApiGqlClient": "./infra/features/ApiGqlClient.js",
     "./infra/features/InvokeLambdaFunction": "./infra/features/InvokeLambdaFunction.js",
     "./infra/features/AdminStackOutputService": "./infra/features/AdminStackOutputService.js",
     "./infra/features/CoreStackOutputService": "./infra/features/CoreStackOutputService.js",
