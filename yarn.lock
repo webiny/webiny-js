@@ -13195,7 +13195,7 @@ __metadata:
     jsonwebtoken: "npm:^9.0.3"
     lodash: "npm:^4.17.21"
     minimatch: "npm:^5.1.6"
-    pino: "npm:^9.6.0"
+    pino: "npm:^9.13.1"
     pino-lambda: "npm:^4.4.1"
     rimraf: "npm:^6.0.1"
     typescript: "npm:5.9.3"
@@ -28475,7 +28475,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pino@npm:9.14.0, pino@npm:^9.6.0":
+"pino@npm:9.14.0":
   version: 9.14.0
   resolution: "pino@npm:9.14.0"
   dependencies:
