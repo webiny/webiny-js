@@ -20,10 +20,17 @@ export class ProjectConfigModel implements IProjectConfigModel {
     extensionsByType<TParamsSchema extends z.ZodTypeAny>(
         type: string | DefinitionAndComponentPair<TParamsSchema> | ExtensionComponent<TParamsSchema>
     ): Array<ExtensionInstanceModel<TParamsSchema>> {
-        if (typeof type !== "string") {
+        let extensionType: string;
+        
+        if (typeof type === "string") {
+            extensionType = type;
+        } else {
             // Support both old (.definition) and new (.def) API
-            type = type.def?.type || type.definition?.type;
+            // ExtensionComponent has .def, DefinitionAndComponentPair has .definition
+            // Both are guaranteed to have at least one of these properties
+            extensionType = type.def?.type || type.definition.type;
         }
-        return (this.config[type] || []) as unknown as Array<ExtensionInstanceModel<TParamsSchema>>;
+        
+        return (this.config[extensionType] || []) as unknown as Array<ExtensionInstanceModel<TParamsSchema>>;
     }
 }
