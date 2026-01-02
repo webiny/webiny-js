@@ -27,7 +27,7 @@ import { getEsConfigFromExtension } from "../extensions/getEsConfigFromExtension
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
 import { License } from "@webiny/wcp";
 import { handleGuardDutyEvents } from "./handleGuardDutyEvents.js";
-import { ApiPulumi } from "@webiny/project/abstractions/index.js";
+import { ApiPulumi } from "~/abstractions/index.js";
 
 export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
 
@@ -138,7 +138,7 @@ export const createApiPulumiApp = () => {
             const pulumiHandlers = sdk.getContainer().resolve(ApiPulumi);
 
             app.addHandler(() => {
-                return pulumiHandlers.execute(app as unknown as ApiPulumiApp);
+                return pulumiHandlers.execute(app as ApiPulumiApp);
             });
 
             const isProduction = app.env.isProduction;

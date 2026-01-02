@@ -4,13 +4,11 @@ import {
     AdminBeforeBuild,
     AdminBeforeDeploy,
     AdminBeforeWatch,
-    AdminPulumi,
     ApiAfterBuild,
     ApiAfterDeploy,
     ApiBeforeBuild,
     ApiBeforeDeploy,
     ApiBeforeWatch,
-    ApiPulumi,
     CoreAfterBuild,
     CoreAfterDeploy,
     CoreBeforeBuild,
@@ -22,6 +20,8 @@ import {
 
 import {
     AdminCustomDomains,
+    AdminPulumi,
+    ApiPulumi,
     AwsTags,
     BlueGreenDeployments,
     CorePulumi,

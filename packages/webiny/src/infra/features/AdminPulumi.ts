@@ -1,1 +1,1 @@
-export * from "@webiny/project/abstractions/features/pulumi/AdminPulumi.js";
+export * from "@webiny/project-aws/abstractions/features/pulumi/AdminPulumi.js";

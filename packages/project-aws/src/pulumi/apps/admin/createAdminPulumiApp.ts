@@ -1,6 +1,6 @@
 import { type CorePulumiApp, createReactPulumiApp } from "~/pulumi/apps/index.js";
 import { getProjectSdk } from "@webiny/project";
-import { AdminPulumi } from "@webiny/project/abstractions/index.js";
+import { AdminPulumi } from "~/abstractions/index.js";
 import { AdminCustomDomains as adminCustomDomainsExt } from "~/pulumi/extensions/AdminCustomDomains.js";
 
 export type AdminPulumiApp = ReturnType<typeof createReactPulumiApp>;
@@ -31,7 +31,7 @@ export const createAdminPulumiApp = async () => {
             const pulumiHandlers = sdk.getContainer().resolve(AdminPulumi);
 
             app.addHandler(() => {
-                return pulumiHandlers.execute(app as unknown as CorePulumiApp);
+                return pulumiHandlers.execute(app as AdminPulumiApp);
             });
         }
     });
