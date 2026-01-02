@@ -79,7 +79,9 @@ describe("storage field path converters enabled", () => {
             where: { id: entry.id }
         });
 
-        const [[listResult]] = result.value;
+        const { entries } = result.value;
+
+        const [listResult] = entries;
 
         expect(listResult).toMatchObject({
             values: createEntryExpectedTransformedDatesData()

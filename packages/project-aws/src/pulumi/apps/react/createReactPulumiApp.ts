@@ -69,6 +69,7 @@ export const createReactPulumiApp = (projectAppParams: CreateReactPulumiAppParam
             const cloudfront = app.addResource(aws.cloudfront.Distribution, {
                 name: `${name}-app-cdn`,
                 config: {
+                    httpVersion: "http2and3",
                     enabled: true,
                     waitForDeployment: true,
                     origins: [bucket.origin],
