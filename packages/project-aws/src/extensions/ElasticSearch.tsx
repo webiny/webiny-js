@@ -7,15 +7,15 @@ import { ProjectDecorator } from "@webiny/project/extensions/index.js";
 const p = createPathResolver(import.meta.dirname, "ElasticSearch");
 
 export const ElasticSearch = (
-    props: React.ComponentProps<typeof PulumiElasticSearch.ReactComponent>
+    props: React.ComponentProps<typeof PulumiElasticSearch>
 ) => {
     return (
         <>
-            <PulumiElasticSearch.ReactComponent {...props} />
+            <PulumiElasticSearch {...props} />
             {props.enabled && (
                 <>
-                    <ProjectDecorator.ReactComponent src={p("InjectDdbEsLambdaFnHandler.js")} />
-                    <ProjectDecorator.ReactComponent src={p("ReplaceApiLambdaFnHandlers.js")} />
+                    <ProjectDecorator src={p("InjectDdbEsLambdaFnHandler.js")} />
+                    <ProjectDecorator src={p("ReplaceApiLambdaFnHandlers.js")} />
                     <Infra.Core.BeforeDeploy src={p("EnsureEsWasDeployed.ts")} />
                     <Infra.Core.BeforeDeploy src={p("EnsureEsServiceRoleBeforeCoreDeploy.js")} />
                 </>
