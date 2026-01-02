@@ -16,7 +16,6 @@ import {
     CoreBeforeBuild,
     CoreBeforeDeploy,
     CoreBeforeWatch,
-    CorePulumi,
     ProductionEnvironments,
     PulumiResourceNamePrefix
 } from "@webiny/project/extensions/index.js";
@@ -25,6 +24,7 @@ import {
     AdminCustomDomains,
     AwsTags,
     BlueGreenDeployments,
+    CorePulumi,
     Vpc
 } from "./pulumi/extensions/index.js";
 

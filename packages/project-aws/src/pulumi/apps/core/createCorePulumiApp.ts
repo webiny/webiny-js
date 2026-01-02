@@ -16,7 +16,7 @@ import {
 import * as random from "@pulumi/random";
 import { LogDynamo } from "./LogDynamo.js";
 import { getProjectSdk } from "@webiny/project";
-import { CorePulumi } from "@webiny/project/abstractions/index.js";
+import { CorePulumi } from "~/abstractions/index.js";
 import { getEsConfigFromExtension } from "~/pulumi/apps/extensions/getEsConfigFromExtension.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
@@ -233,7 +233,7 @@ export function createCorePulumiApp() {
             const pulumiHandlers = sdk.getContainer().resolve(CorePulumi);
 
             app.addHandler(() => {
-                return pulumiHandlers.execute(app as unknown as CorePulumiApp);
+                return pulumiHandlers.execute(app as CorePulumiApp);
             });
 
             const isProduction = app.env.isProduction;

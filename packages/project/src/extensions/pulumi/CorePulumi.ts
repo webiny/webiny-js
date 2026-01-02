@@ -1,16 +1,2 @@
-import { z } from "zod";
-import { defineExtension } from "~/defineExtension/index.js";
-import { zodPathToAbstraction } from "~/defineExtension/zodTypes/zodPathToAbstraction.js";
-import { CorePulumi as CorePulumiAbstraction } from "~/abstractions/features/pulumi/index.js";
-
-export const CorePulumi = defineExtension({
-    type: "Core/Pulumi",
-    tags: { runtimeContext: "project", appName: "core" },
-    description: "Modify Core app's cloud infrastructure using Pulumi.",
-    multiple: true,
-    paramsSchema: ({ project }) => {
-        return z.object({
-            src: zodPathToAbstraction(CorePulumiAbstraction, project)
-        });
-    }
-});
+// Re-export from @webiny/project-aws for backward compatibility
+export { CorePulumi } from "@webiny/project-aws/pulumi/extensions/index.js";

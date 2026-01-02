@@ -1,12 +1,2 @@
-import { createAbstraction } from "~/abstractions/createAbstraction.js";
-
-export interface ICorePulumi<TApp> {
-    execute(app: TApp): void | Promise<void>;
-}
-
-export const CorePulumi = createAbstraction<ICorePulumi<unknown>>("CorePulumi");
-
-export namespace CorePulumi {
-    export type Interface = ICorePulumi<unknown>;
-    export type Params = unknown;
-}
+// Re-export from @webiny/project-aws for backward compatibility
+export { CorePulumi, type ICorePulumi } from "@webiny/project-aws/abstractions/index.js";
