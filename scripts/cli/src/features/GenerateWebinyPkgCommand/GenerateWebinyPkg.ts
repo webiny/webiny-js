@@ -32,6 +32,12 @@ export class GenerateWebinyPkg implements GenerateWebinyPkg {
             fs.rmSync(webinySrcPath, { recursive: true, force: true });
         }
 
+        // Copy static files from src-static to src (if src-static exists).
+        const webinySrcStaticPath = wbyPkg.paths.packageFolder.join("src-static").toString();
+        if (fs.existsSync(webinySrcStaticPath)) {
+            this.copyDirectoryRecursive(webinySrcStaticPath, webinySrcPath);
+        }
+
         for (const pkgWithExports of packagesWithExports) {
             this.ui.newLine();
             this.ui.info(`%s`, pkgWithExports.name);
@@ -114,6 +120,29 @@ export class GenerateWebinyPkg implements GenerateWebinyPkg {
                 basePkgFilePath,
                 path.join(`webiny`, wbyPkgExportSettings.exportPath)
             );
+        }
+    }
+
+    private copyDirectoryRecursive(source: string, target: string) {
+        // Create target directory if it doesn't exist
+        if (!fs.existsSync(target)) {
+            fs.mkdirSync(target, { recursive: true });
+        }
+
+        // Read all files/folders in source directory with file types
+        const entries = fs.readdirSync(source, { withFileTypes: true });
+
+        for (const entry of entries) {
+            const sourcePath = path.join(source, entry.name);
+            const targetPath = path.join(target, entry.name);
+
+            if (entry.isDirectory()) {
+                // Recursively copy subdirectories
+                this.copyDirectoryRecursive(sourcePath, targetPath);
+            } else {
+                // Copy file
+                fs.copyFileSync(sourcePath, targetPath);
+            }
         }
     }
 }
