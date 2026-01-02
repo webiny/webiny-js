@@ -1,27 +1,24 @@
 import React from "react";
-import { useAuth0 } from "@auth0/auth0-react";
 import { makeDecoratable } from "@webiny/app-admin";
 import { Button, Icon, OverlayLoader } from "@webiny/admin-ui";
 import { ReactComponent as Auth0Icon } from "../assets/icons/auth0-icon.svg";
 import { View } from "./View.js";
 
 export interface LoginContentProps {
-    isLoading: boolean;
+    isAuthenticated: boolean;
+    isLoggingIn: boolean;
+    checkingSession: boolean;
     onLogin: () => void;
 }
 
 export const LoginContent = makeDecoratable(
     "LoginContent",
-    ({ onLogin, isLoading }: LoginContentProps) => {
-        const { isAuthenticated } = useAuth0();
-
+    ({ onLogin, isLoggingIn, checkingSession, isAuthenticated }: LoginContentProps) => {
         return (
             <>
-                {isAuthenticated ? <OverlayLoader text={"Logging in..."} /> : null}
-                {!isAuthenticated && isLoading ? (
-                    <OverlayLoader text={"Checking user session..."} />
-                ) : null}
-                {!isAuthenticated && !isLoading ? (
+                {isLoggingIn ? <OverlayLoader text={"Logging in..."} /> : null}
+                {checkingSession ? <OverlayLoader text={"Checking user session..."} /> : null}
+                {!isAuthenticated && !isLoggingIn && !checkingSession ? (
                     <View.Container>
                         <View.Content>
                             <View.Title
