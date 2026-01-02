@@ -31,7 +31,10 @@ export const ApiBackgroundTask = createAppModule({
                 }),
                 timeout: 900,
                 memorySize: 1024,
-                description: "Performs background tasks."
+                description: "Performs background tasks.",
+                loggingConfig: {
+                    logFormat: "JSON"
+                }
             }
         });
 
