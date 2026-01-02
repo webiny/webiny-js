@@ -23,7 +23,7 @@ class GroupsTeamsAuthorizerImpl implements Authorizer.Interface {
             return [];
         }
 
-        const currentTenantPermissions = await this.permissionsProcessor.getPermissions();
+        const currentTenantPermissions = await this.permissionsProcessor.getPermissions(identity);
 
         if (Array.isArray(currentTenantPermissions)) {
             return currentTenantPermissions;
@@ -46,7 +46,7 @@ class GroupsTeamsAuthorizerImpl implements Authorizer.Interface {
         const parentTenant = result.value;
 
         const parentTenantPermissions = await this.tenantContext.withTenant(parentTenant, () => {
-            return this.permissionsProcessor.getPermissions();
+            return this.permissionsProcessor.getPermissions(identity);
         });
 
         if (Array.isArray(parentTenantPermissions)) {

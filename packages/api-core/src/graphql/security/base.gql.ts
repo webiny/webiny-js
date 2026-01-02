@@ -1,5 +1,4 @@
 import { Response, GraphQLSchemaPlugin } from "@webiny/handler-graphql";
-import { getDefaultTenant as baseGetDefaultTenant } from "~/features/security/utils/getDefaultTenant.js";
 import type { SecurityContext } from "~/types/security.js";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 import { GetTenantByIdUseCase } from "~/features/tenancy/GetTenantById/index.js";
@@ -11,7 +10,10 @@ import { ProfileMapper } from "~/graphql/security/ProfileMapper.js";
 const emptyResolver = () => ({});
 
 const getDefaultTenant = async (context: SecurityContext) => {
-    const defaultTenant = await baseGetDefaultTenant(context);
+    const identity = context.security.getIdentity();
+    const defaultTenantId = identity.context.defaultTenantId ?? "root";
+
+    const defaultTenant = await context.tenancy.getTenantById(defaultTenantId);
     if (defaultTenant) {
         return defaultTenant;
     }

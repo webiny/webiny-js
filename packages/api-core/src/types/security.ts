@@ -45,26 +45,6 @@ export interface SecurityStorageOperations {
 
     deleteTeam(params: StorageOperationsDeleteTeamParams): Promise<void>;
 
-    createTenantLinks(params: StorageOperationsCreateTenantLinkParams[]): Promise<void>;
-
-    updateTenantLinks(params: StorageOperationsUpdateTenantLinkParams[]): Promise<void>;
-
-    deleteTenantLinks(params: StorageOperationsDeleteTenantLinkParams[]): Promise<void>;
-
-    listTenantLinksByType<TLink extends TenantLink = TenantLink>(
-        params: ListTenantLinksByTypeParams
-    ): Promise<TLink[]>;
-
-    listTenantLinksByTenant(params: StorageOperationsListTenantLinksParams): Promise<TenantLink[]>;
-
-    listTenantLinksByIdentity(
-        params: StorageOperationsListTenantLinksByIdentityParams
-    ): Promise<TenantLink[]>;
-
-    getTenantLinkByIdentity<TLink extends TenantLink = TenantLink>(
-        params: StorageOperationsGetTenantLinkByIdentityParams
-    ): Promise<TLink | null>;
-
     getApiKey(params: StorageOperationsGetApiKeyParams): Promise<ApiKey | null>;
 
     getApiKeyByToken(params: StorageOperationsGetApiKeyByTokenParams): Promise<ApiKey | null>;
@@ -190,43 +170,6 @@ export interface DeleteTeamParams {
     team: Team;
 }
 
-export interface CreateTenantLinkParams<TData = Record<string, any>> {
-    identity: string;
-    tenant: string;
-    type: string;
-    data?: TData;
-}
-
-export interface UpdateTenantLinkParams<TData = Record<string, any>> {
-    identity: string;
-    tenant: string;
-    type: string;
-    data?: TData;
-}
-
-export interface DeleteTenantLinkParams {
-    identity: string;
-    tenant: string;
-}
-
-export interface ListTenantLinksByTypeParams {
-    tenant: string;
-    type: string;
-}
-
-export interface ListTenantLinksByIdentityParams {
-    identity: string;
-}
-
-export interface ListTenantLinksParams {
-    tenant: string;
-}
-
-export interface GetTenantLinkByIdentityParams {
-    identity: string;
-    tenant: string;
-}
-
 export interface TenantLink<TData = any> {
     createdOn: string;
     identity: string;
@@ -328,16 +271,6 @@ export interface StorageOperationsListTeamsParams extends ListTeamsParams {
 export type StorageOperationsCreateTeamParams = CreateTeamParams;
 export type StorageOperationsUpdateTeamParams = UpdateTeamParams;
 export type StorageOperationsDeleteTeamParams = DeleteTeamParams;
-
-export interface StorageOperationsCreateTenantLinkParams extends CreateTenantLinkParams {
-    createdOn: string;
-}
-
-export type StorageOperationsUpdateTenantLinkParams = UpdateTenantLinkParams;
-export type StorageOperationsDeleteTenantLinkParams = DeleteTenantLinkParams;
-export type StorageOperationsListTenantLinksParams = ListTenantLinksParams;
-export type StorageOperationsListTenantLinksByIdentityParams = ListTenantLinksByIdentityParams;
-export type StorageOperationsGetTenantLinkByIdentityParams = GetTenantLinkByIdentityParams;
 export type StorageOperationsGetApiKeyParams = GetApiKeyParams;
 export type StorageOperationsGetApiKeyByTokenParams = GetApiKeyByTokenParams;
 export type StorageOperationsCreateApiKeyParams = CreateApiKeyParams;

@@ -5,12 +5,10 @@ import { SecurityStorageOperations } from "./shared/abstractions.js";
 import { AuthenticationContextFeature } from "./authentication/AuthenticationContext/index.js";
 import { AuthorizationContextFeature } from "./authorization/AuthorizationContext/index.js";
 import { GroupsTeamsAuthorizerFeature } from "./authorization/GroupsTeamsAuthorizer/feature.js";
-import { TenantLinkAuthorizerFeature } from "./authorization/TenantLinkAuthorizer/feature.js";
 import { IdentityContextFeature } from "./IdentityContext/index.js";
 import { ApiKeysFeature } from "./apiKeys/feature.js";
 import { GroupsFeature } from "./groups/feature.js";
 import { TeamsFeature } from "./teams/feature.js";
-import { TenantLinksFeature } from "./tenantLinks/feature.js";
 
 /**
  * Setup all security features in the DI container.
@@ -31,9 +29,6 @@ export const SecurityFeature = createFeature({
         ApiKeysFeature.register(container);
         GroupsFeature.register(container);
         TeamsFeature.register(container);
-        TenantLinksFeature.register(container);
-
         GroupsTeamsAuthorizerFeature.register(container);
-        TenantLinkAuthorizerFeature.register(container);
     }
 });

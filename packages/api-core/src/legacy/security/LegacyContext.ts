@@ -24,13 +24,6 @@ import { ListTeamsUseCase } from "~/features/security/teams/ListTeams/index.js";
 import { CreateTeam } from "~/features/security/teams/CreateTeam/index.js";
 import { UpdateTeam } from "~/features/security/teams/UpdateTeam/index.js";
 import { DeleteTeam } from "~/features/security/teams/DeleteTeam/index.js";
-import { CreateTenantLinks } from "~/features/security/tenantLinks/CreateTenantLinks/index.js";
-import { UpdateTenantLinks } from "~/features/security/tenantLinks/UpdateTenantLinks/index.js";
-import { DeleteTenantLinks } from "~/features/security/tenantLinks/DeleteTenantLinks/index.js";
-import { ListTenantLinksByType } from "~/features/security/tenantLinks/ListTenantLinksByType/index.js";
-import { ListTenantLinksByTenant } from "~/features/security/tenantLinks/ListTenantLinksByTenant/index.js";
-import { ListTenantLinksByIdentity } from "~/features/security/tenantLinks/ListTenantLinksByIdentity/index.js";
-import { GetTenantLinkByIdentity } from "~/features/security/tenantLinks/GetTenantLinkByIdentity/index.js";
 
 /**
  * Legacy bridge that implements the old Security interface.
@@ -325,76 +318,5 @@ export class LegacyContext {
         if (result.isFail()) {
             throw result.error;
         }
-    }
-
-    async createTenantLinks(params: any[]) {
-        const useCase = this.container.resolve(CreateTenantLinks);
-        const result = await useCase.execute(params);
-
-        if (result.isFail()) {
-            throw result.error;
-        }
-    }
-
-    async updateTenantLinks(params: any[]) {
-        const useCase = this.container.resolve(UpdateTenantLinks);
-        const result = await useCase.execute(params);
-
-        if (result.isFail()) {
-            throw result.error;
-        }
-    }
-
-    async deleteTenantLinks(params: any[]) {
-        const useCase = this.container.resolve(DeleteTenantLinks);
-        const result = await useCase.execute(params);
-
-        if (result.isFail()) {
-            throw result.error;
-        }
-    }
-
-    async listTenantLinksByType<TLink extends TenantLink = TenantLink>(params: any) {
-        const useCase = this.container.resolve(ListTenantLinksByType);
-        const result = await useCase.execute<TLink>(params);
-
-        if (result.isFail()) {
-            throw result.error;
-        }
-
-        return result.value;
-    }
-
-    async listTenantLinksByTenant(params: any) {
-        const useCase = this.container.resolve(ListTenantLinksByTenant);
-        const result = await useCase.execute(params);
-
-        if (result.isFail()) {
-            throw result.error;
-        }
-
-        return result.value;
-    }
-
-    async listTenantLinksByIdentity(params: any) {
-        const useCase = this.container.resolve(ListTenantLinksByIdentity);
-        const result = await useCase.execute(params);
-
-        if (result.isFail()) {
-            throw result.error;
-        }
-
-        return result.value;
-    }
-
-    async getTenantLinkByIdentity<TLink extends TenantLink = TenantLink>(params: any) {
-        const useCase = this.container.resolve(GetTenantLinkByIdentity);
-        const result = await useCase.execute<TLink>(params);
-
-        if (result.isFail()) {
-            throw result.error;
-        }
-
-        return result.value;
     }
 }

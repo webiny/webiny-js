@@ -1,8 +1,24 @@
 import type { SecurityPermission } from "~/types/security.js";
-import type { GenericRecord } from "@webiny/utils";
 
 export namespace Identity {
     export type Profile = IdentityProfile;
+}
+
+export interface IdentityContext {
+    /**
+     * Which tenant is the home tenant for this identity?
+     * If omitted, it will default to `root`.
+     */
+    defaultTenantId?: string;
+    /**
+     * Can this identity access the current tenant?
+     * If omitted, it will default to `true`.
+     */
+    canAccessTenant?: boolean;
+    /**
+     * Any other custom context data.
+     */
+    [key: string]: any;
 }
 
 /**
@@ -15,7 +31,7 @@ export abstract class Identity {
     readonly type: string;
     readonly permissions: SecurityPermission[];
     readonly profile: IdentityProfile;
-    readonly context: GenericRecord<string>;
+    readonly context: IdentityContext;
 
     constructor(identityData: IdentityData) {
         this.id = identityData.id;
