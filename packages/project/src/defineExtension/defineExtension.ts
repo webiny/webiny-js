@@ -13,8 +13,6 @@ export type ExtensionComponent<TParamsSchema extends z.ZodTypeAny> = ReturnType<
 > & {
     def: ReturnType<typeof createExtensionDefinition<TParamsSchema>>;
     getDefinition: () => ReturnType<typeof createExtensionDefinition<TParamsSchema>>;
-    // Keep backward compatibility property
-    ReactComponent: ReturnType<typeof createExtensionReactComponent<TParamsSchema>>;
 };
 
 export function defineExtension<TParamsSchema extends z.ZodTypeAny>(
@@ -27,8 +25,6 @@ export function defineExtension<TParamsSchema extends z.ZodTypeAny>(
     const component = ReactComponent as ExtensionComponent<TParamsSchema>;
     component.def = definition;
     component.getDefinition = () => definition;
-    // Keep backward compatibility
-    component.ReactComponent = ReactComponent;
 
     return component;
 }
