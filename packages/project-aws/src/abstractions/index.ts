@@ -4,3 +4,4 @@ export * from "./services/AdminStackOutputService.js";
 export * from "./InvokeLambdaFunction.js";
 export * from "./GetApiGqlClient.js";
 export * from "./ApiGqlClient.js";
+export * from "./AutoInstallConfig.js";
