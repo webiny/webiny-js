@@ -20,6 +20,7 @@ export const createLoginMutation = () => {
                             }
                             firstName
                             lastName
+                            email
                             avatar
                             external
                             createdOn

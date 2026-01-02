@@ -7,6 +7,7 @@ interface IdentityProfile {
     teams: { id: string; slug: string; name: string }[];
     firstName: string;
     lastName: string;
+    email?: string;
     avatar?: {
         id: string;
         src: string;
@@ -27,6 +28,7 @@ export class ProfileMapper {
             lastName: user.lastName ?? "",
             groups: [],
             teams: [],
+            email: user.email ?? null,
             avatar: user.avatar,
             external: user.external ?? false,
             createdOn: user.createdOn

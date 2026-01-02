@@ -1,11 +1,7 @@
 import React, { useMemo } from "react";
 import type { CreateAuthenticationConfig } from "~/createAuthentication/index.js";
 import { createAuthentication } from "~/createAuthentication/index.js";
-import { AdminConfig, LoginScreenRenderer } from "@webiny/app-admin";
-import { UserInfo } from "~/plugins/userMenu/UserInfo.js";
-import { SignOut } from "~/plugins/userMenu/SignOut.js";
-
-const { Menu } = AdminConfig;
+import {  LoginScreenRenderer } from "@webiny/app-admin";
 
 const createLoginScreenDecorator = (config?: CreateAuthenticationConfig) => {
     const LoginComponent = createAuthentication(config);
@@ -16,32 +12,17 @@ const createLoginScreenDecorator = (config?: CreateAuthenticationConfig) => {
     });
 };
 
-export interface CognitoUserMenuItems {
-    userInfo: boolean;
-    signOut: boolean;
-}
 
 export interface CognitoProps {
     config?: CreateAuthenticationConfig;
-    userMenuItems?: CognitoUserMenuItems;
 }
 
-export const CognitoLogin = ({ userMenuItems, config }: CognitoProps) => {
+export const CognitoLogin = ({ config }: CognitoProps) => {
     const LoginScreenDecorator = useMemo(() => createLoginScreenDecorator(config), []);
 
     return (
         <>
             <LoginScreenDecorator />
-            {userMenuItems ? (
-                <AdminConfig>
-                    {userMenuItems.userInfo ? (
-                        <Menu.User name={"userInfo"} element={<UserInfo />} />
-                    ) : null}
-                    {userMenuItems.signOut ? (
-                        <Menu.User name={"signOut"} element={<SignOut />} />
-                    ) : null}
-                </AdminConfig>
-            ) : null}
         </>
     );
 };

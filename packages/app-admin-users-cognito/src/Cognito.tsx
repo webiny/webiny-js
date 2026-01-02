@@ -23,10 +23,7 @@ const CognitoIdP = (props: CognitoProps) => {
 
     return (
         <Fragment>
-            <CognitoLogin
-                config={props.config}
-                userMenuItems={{ userInfo: false, signOut: false }}
-            />
+            <CognitoLogin config={props.config} />
             <AdminConfig>
                 <HasPermission name={Permission.Users}>
                     <Route

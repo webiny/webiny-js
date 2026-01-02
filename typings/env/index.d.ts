@@ -54,7 +54,9 @@ declare namespace NodeJS {
          * Okta
          */
         OKTA_ISSUER?: string;
+        OKTA_CLIENT_ID?: string;
         REACT_APP_OKTA_ISSUER?: string;
+        REACT_APP_OKTA_CLIENT_ID?: string;
         /**
          * Auth0
          */

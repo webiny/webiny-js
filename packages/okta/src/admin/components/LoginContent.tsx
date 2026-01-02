@@ -1,7 +1,9 @@
 import React from "react";
 import { makeDecoratable } from "@webiny/app-admin";
-import { Button, Icon, OverlayLoader } from "@webiny/admin-ui";
-import { ReactComponent as Auth0Icon } from "./auth0-icon.svg";
+import { Button } from "@webiny/admin-ui";
+import { Icon } from "@webiny/admin-ui";
+import { OverlayLoader } from "@webiny/admin-ui";
+import { ReactComponent as OktaIcon } from "./okta-icon.svg";
 import { View } from "./View.js";
 
 export interface LoginContentProps {
@@ -24,7 +26,7 @@ export const LoginContent = makeDecoratable(
                             <View.Title
                                 title={"Sign In"}
                                 description={
-                                    "You will be taken to Auth0 website to complete the sign in process."
+                                    "You will be taken to Okta website to complete the sign in process."
                                 }
                             />
 
@@ -34,8 +36,8 @@ export const LoginContent = makeDecoratable(
                                     className={"w-full"}
                                     containerClassName={"w-full"}
                                     onClick={onLogin}
-                                    icon={<Icon icon={<Auth0Icon />} label={"Auth0"} />}
-                                    text={"Sign in with Auth0"}
+                                    icon={<Icon icon={<OktaIcon />} label={"Okta"} />}
+                                    text={"Sign in with Okta"}
                                 />
                             </div>
                         </View.Content>

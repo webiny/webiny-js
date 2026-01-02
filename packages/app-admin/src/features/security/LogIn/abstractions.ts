@@ -27,7 +27,7 @@ export interface IIdentityDTO {
     permissions: Identity.Permission[];
     currentTenant: Tenant;
     defaultTenant: Tenant;
-    profile?: Identity.Profile;
+    profile: Identity.Profile;
 }
 
 export interface ILogInRepository {

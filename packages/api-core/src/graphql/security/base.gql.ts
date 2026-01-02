@@ -38,6 +38,7 @@ export default new GraphQLSchemaPlugin<SecurityContext>({
             teams: [SecurityIdentityProfileTeam!]!
             firstName: String
             lastName: String
+            email: String
             avatar: JSON
             external: Boolean!
             createdOn: DateTime!
