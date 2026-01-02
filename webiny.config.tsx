@@ -1,5 +1,5 @@
 import React from "react";
-import {  Cli, Infra, Project, Security } from "webiny/extensions";
+import { Cli, Infra, Project, Security } from "webiny/extensions";
 import { MySchemaExtension } from "./extensions/graphql/MySchemaExtension.js";
 
 // import { Okta } from "@webiny/okta";
@@ -58,14 +58,17 @@ export const Extensions = () => {
 
             {/* Project 👇 */}
             <Project.Telemetry enabled={false} />
-            <Project.AutoInstall
-                adminUser={{
-                    firstName: "John",
-                    lastName: "Doe",
-                    email: "admin@example.com",
-                    password: "SecurePassword123"
-                }}
-            />
+
+            {process.env.WEBINY_AUTO_INSTALL && (
+                <Project.AutoInstall
+                    adminUser={{
+                        firstName: "Ad",
+                        lastName: "Min",
+                        email: "admin@webiny.com",
+                        password: "12345678"
+                    }}
+                />
+            )}
 
             {/* API */}
             <MySchemaExtension />

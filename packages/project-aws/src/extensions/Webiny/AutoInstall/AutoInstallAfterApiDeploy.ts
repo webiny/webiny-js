@@ -18,7 +18,7 @@ const IS_INSTALLED_QUERY = `
 `;
 
 const INSTALL_MUTATION = `
-    mutation InstallSystem($installationInput: [SystemInstallInput!]!) {
+    mutation InstallSystem($installationInput: JSON!) {
         system {
             installSystem(installationInput: $installationInput) {
                 data
@@ -55,16 +55,16 @@ interface InstallResponse {
     };
 }
 
-class AutoInstallAfterFirstDeployImpl implements ApiAfterDeploy.Interface {
+class AutoInstallAfterApiDeployImpl implements ApiAfterDeploy.Interface {
     constructor(
         private apiGqlClient: ApiGqlClient.Interface,
         private ui: UiService.Interface,
         private getProjectConfig: GetProjectConfigService.Interface
     ) {}
 
-    async execute(params: ApiAfterDeploy.Params) {
+    async execute() {
         const projectConfig = await this.getProjectConfig.execute();
-        const adminAutoInstallExtensions = projectConfig.extensionsByType("Admin/AutoInstall");
+        const adminAutoInstallExtensions = projectConfig.extensionsByType("Project/AutoInstall");
 
         if (adminAutoInstallExtensions.length === 0) {
             return;
@@ -125,7 +125,7 @@ class AutoInstallAfterFirstDeployImpl implements ApiAfterDeploy.Interface {
     }
 }
 
-export const AutoInstallAfterFirstDeploy = ApiAfterDeploy.createImplementation({
-    implementation: AutoInstallAfterFirstDeployImpl,
+export const AutoInstallAfterApiDeploy = ApiAfterDeploy.createImplementation({
+    implementation: AutoInstallAfterApiDeployImpl,
     dependencies: [ApiGqlClient, UiService, GetProjectConfigService]
 });
