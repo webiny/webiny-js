@@ -29,16 +29,7 @@ import {
 } from "./pulumi/extensions/index.js";
 
 import { OpenSearch, ElasticSearch, AwsDefaultRegion } from "./extensions/index.js";
-import {
-    EnvIs,
-    EnvIsProduction,
-    useEnv,
-    useVariant,
-    useRegion,
-    useIsProduction,
-    useEnvContext,
-    useProductionEnvironments
-} from "@webiny/project/extensions/infra/index.js";
+import { EnvIs } from "@webiny/project/extensions/infra/index.js";
 
 export const Infra = {
     Vpc: Vpc.ReactComponent,
@@ -52,14 +43,7 @@ export const Infra = {
         Tags: AwsTags.ReactComponent
     },
     Env: {
-        Is: EnvIs,
-        IsProduction: EnvIsProduction,
-        useEnv,
-        useVariant,
-        useRegion,
-        useIsProduction,
-        useEnvContext,
-        useProductionEnvironments
+        Is: EnvIs
     },
     Admin: {
         BeforeBuild: AdminBeforeBuild.ReactComponent,

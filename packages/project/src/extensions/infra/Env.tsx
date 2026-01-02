@@ -1,5 +1,10 @@
 import React from "react";
-import { useEnv, useVariant, useRegion, useEnvContext, useProductionEnvironments } from "~/services/GetProjectConfigService/EnvContext.js";
+import {
+    useEnv,
+    useVariant,
+    useRegion,
+    useEnvContext
+} from "~/services/GetProjectConfigService/EnvContext.js";
 
 export interface EnvIsProps {
     env?: string | string[];
@@ -46,24 +51,5 @@ export const EnvIs: React.FC<EnvIsProps> = ({ env, variant, region, children }) 
     return <>{children}</>;
 };
 
-/**
- * Hook to check if the current environment is a production environment.
- * Uses production environments from the ProductionEnvironments extension if configured,
- * otherwise defaults to ["prod", "production"].
- */
-export const useIsProduction = () => {
-    const currentEnv = useEnv();
-    const productionEnvironments = useProductionEnvironments();
-    return productionEnvironments.includes(currentEnv);
-};
-
-/**
- * Conditionally renders children if the current environment is a production environment.
- */
-export const EnvIsProduction: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const isProduction = useIsProduction();
-    return isProduction ? <>{children}</> : null;
-};
-
 // Export hooks for direct use
-export { useEnv, useVariant, useRegion, useEnvContext, useProductionEnvironments };
+export { useEnv, useVariant, useRegion, useEnvContext };

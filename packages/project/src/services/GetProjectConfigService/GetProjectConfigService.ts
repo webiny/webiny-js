@@ -69,16 +69,6 @@ export class DefaultGetProjectConfigService implements GetProjectConfigService.I
         const renderedConfig = this.cachedRenderedConfigs[cacheKey];
         this.loggerService.debug({ config: renderedConfig }, `Project config rendering complete.`);
 
-        // Extract and cache production environments from the rendered config
-        // This will be used in subsequent renders
-        if (!this.cachedProductionEnvironments) {
-            this.cachedProductionEnvironments = extractProductionEnvironmentsFromConfig(renderedConfig);
-            this.loggerService.debug(
-                { productionEnvironments: this.cachedProductionEnvironments },
-                `Extracted production environments from config.`
-            );
-        }
-
         const hydratedConfig = await this.hydrateConfig(renderedConfig, params);
         this.loggerService.debug({ config: hydratedConfig }, `Project config hydration complete.`);
 
