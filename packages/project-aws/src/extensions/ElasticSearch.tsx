@@ -15,7 +15,7 @@ export const ElasticSearch = (
             {props.enabled && (
                 <>
                     {/* Override database setup to indicate ElasticSearch is enabled */}
-                    <DatabaseSetup name="ddb+es" />
+                    <DatabaseSetup.ReactComponent name="ddb+es" />
                     
                     <ProjectDecorator.ReactComponent src={p("InjectDdbEsLambdaFnHandler.js")} />
                     <ProjectDecorator.ReactComponent src={p("ReplaceApiLambdaFnHandlers.js")} />

@@ -25,7 +25,7 @@ export const Webiny = () => {
             <ProjectDecorator.ReactComponent src={p("Webiny/BuildAppWorkspace.js")} />
 
             {/* Database Setup - default to DynamoDB only */}
-            <DatabaseSetup name="ddb" />
+            <DatabaseSetup.ReactComponent name="ddb" />
 
             {/* Set database setup output value in Core stack */}
             <Infra.Core.Pulumi src={p("Webiny/SetDatabaseSetupOutput.js")} />

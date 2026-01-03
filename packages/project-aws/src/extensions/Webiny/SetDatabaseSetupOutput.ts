@@ -1,14 +1,15 @@
-import { CorePulumi } from "@webiny/project/abstractions/index.js";
-import { ProjectSdk } from "@webiny/project";
+import { CorePulumi, GetProjectConfigService } from "@webiny/project/abstractions/index.js";
 import { DatabaseSetup } from "@webiny/project/extensions/index.js";
 
-class SetDatabaseSetupOutput implements CorePulumi.Interface {
-    constructor(private project: ProjectSdk) {}
+class SetDatabaseSetupOutputImpl implements CorePulumi.Interface {
+    constructor(private getProjectConfigService: GetProjectConfigService.Interface) {}
 
     async execute(app: any): Promise<void> {
         // Get the DatabaseSetup extension value
-        const databaseSetupExtension = this.project.config.getExtension(DatabaseSetup);
-        
+        const projectConfig = await this.getProjectConfigService.execute();
+
+        const [databaseSetupExtension] = projectConfig.extensionsByType(DatabaseSetup);
+
         if (databaseSetupExtension) {
             const databaseSetup = databaseSetupExtension.params.name;
             app.addOutputs({
@@ -24,6 +25,6 @@ class SetDatabaseSetupOutput implements CorePulumi.Interface {
 }
 
 export const SetDatabaseSetupOutput = CorePulumi.createImplementation({
-    implementation: SetDatabaseSetupOutput,
-    dependencies: [ProjectSdk]
+    implementation: SetDatabaseSetupOutputImpl,
+    dependencies: [GetProjectConfigService]
 });
