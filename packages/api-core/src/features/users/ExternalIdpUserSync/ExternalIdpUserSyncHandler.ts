@@ -20,6 +20,11 @@ class ExternalIdpUserSyncHandlerImpl implements AfterLoginHandler.Interface {
     async handle(event: AfterLoginHandler.Event): Promise<void> {
         const { identity } = event.payload;
 
+        // We only sync external identities
+        if (!identity.profile.external) {
+            return;
+        }
+
         await this.identityContext.withoutAuthorization(async () => {
             // Check if user exists
             const getUserResult = await this.getUserUseCase.execute({ id: identity.id });

@@ -22,10 +22,9 @@ class CognitoIdpProviderFactoryImpl implements IdpProviderFactory.Interface {
                 config: this.config,
                 isApplicable: (token: JwtPayload) => {
                     const tokenIssuer = token.iss as string;
+
                     return (
-                        (tokenIssuer?.includes("cognito-idp") &&
-                            tokenIssuer?.includes("amazonaws.com")) ??
-                        false
+                        tokenIssuer.includes("cognito-idp") || tokenIssuer.includes("amazonaws.com")
                     );
                 }
             },

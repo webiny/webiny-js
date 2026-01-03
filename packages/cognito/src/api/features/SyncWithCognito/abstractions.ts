@@ -5,25 +5,9 @@ export interface AttributeGetter {
     (user: BaseUserAttributes): string;
 }
 
-interface CognitoConfigAutoVerify {
-    email?: boolean;
-}
-
 export interface ICognitoConfig {
     region: string;
     userPoolId: string;
-    updateAttributes?: Record<string, string | AttributeGetter>;
-
-    getUsername?<
-        TBaseUserAttributes extends Pick<BaseUserAttributes, "email"> = Pick<
-            BaseUserAttributes,
-            "email"
-        >
-    >(
-        user: TBaseUserAttributes
-    ): string;
-
-    autoVerify?: CognitoConfigAutoVerify;
 }
 
 export const CognitoConfig = createAbstraction<ICognitoConfig>("CognitoConfig");

@@ -2,9 +2,8 @@ import { CognitoIdentityProvider } from "@webiny/aws-sdk/client-cognito-identity
 import { UserAfterUpdateHandler } from "@webiny/api-core/features/UpdateUser";
 import { createImplementation } from "@webiny/feature/api";
 import type { AdminUser } from "@webiny/api-core/types/users.js";
-import { CognitoConfig, type ICognitoConfig, type AttributeGetter } from "./abstractions.js";
-
-type GetUsername = NonNullable<ICognitoConfig["getUsername"]>;
+import { CognitoConfig, type AttributeGetter } from "./abstractions.js";
+import { Username } from "~/api/domain/Username.js";
 
 type MappedAttrType = (user: AdminUser) => string | keyof AdminUser;
 
@@ -14,23 +13,13 @@ const defaultUpdateAttributes = {
     preferred_username: "email"
 };
 
-const defaultGetUsername: GetUsername = user => user.email.toLowerCase();
-
-const defaultAutoVerify = {
-    email: true
-};
-
 class UserAfterUpdateHandlerImpl implements UserAfterUpdateHandler.Interface {
     private cognito: CognitoIdentityProvider;
-    private getUsername: GetUsername;
-    private autoVerify: { email?: boolean };
     private updateAttributes: Record<string, string | AttributeGetter>;
 
     constructor(private config: CognitoConfig.Interface) {
         this.cognito = new CognitoIdentityProvider({ region: config.region });
-        this.getUsername = config.getUsername || defaultGetUsername;
-        this.autoVerify = config.autoVerify || defaultAutoVerify;
-        this.updateAttributes = config.updateAttributes || defaultUpdateAttributes;
+        this.updateAttributes = defaultUpdateAttributes;
     }
 
     async handle(event: UserAfterUpdateHandler.Event): Promise<void> {
@@ -54,14 +43,14 @@ class UserAfterUpdateHandlerImpl implements UserAfterUpdateHandler.Interface {
         if (originalUser.email !== updatedUser.email) {
             newAttributes.push({
                 Name: "email_verified",
-                Value: this.autoVerify.email ? "true" : "false"
+                Value: "true"
             });
         }
 
         const params = {
             UserAttributes: newAttributes,
             UserPoolId: this.config.userPoolId,
-            Username: this.getUsername(originalUser)
+            Username: Username.fromUser(originalUser)
         };
 
         await this.cognito.adminUpdateUserAttributes(params);
@@ -71,7 +60,7 @@ class UserAfterUpdateHandlerImpl implements UserAfterUpdateHandler.Interface {
             const pass = {
                 Permanent: true,
                 Password: password,
-                Username: this.getUsername(updatedUser),
+                Username: Username.fromUser(updatedUser),
                 UserPoolId: this.config.userPoolId
             };
 

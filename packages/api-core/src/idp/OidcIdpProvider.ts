@@ -72,6 +72,18 @@ export class OidcIdpProvider {
         // Call config.getIdentity to get IdentityData
         const identity = await this.providerConfig.config.getIdentity(verifiedPayload);
 
-        return identity;
+
+        // Handle default values
+        const context = identity.context ?? {};
+
+        if (context.canAccessTenant === undefined) {
+            context.canAccessTenant = true;
+        }
+
+        if (context.defaultTenantId === undefined) {
+            context.defaultTenantId = "root";
+        }
+
+        return { ...identity, context };
     }
 }
