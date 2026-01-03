@@ -1,7 +1,15 @@
 {
-  "extends": "../../../../../../tsconfig.json",
   "include": ["src"],
   "compilerOptions": {
+    "skipLibCheck": true,
+    "noEmit": true,
+    "allowJs": true,
+    "checkJs": false,
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
     "composite": false
   }
 }
