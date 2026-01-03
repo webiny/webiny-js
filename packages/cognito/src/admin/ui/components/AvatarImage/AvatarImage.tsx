@@ -2,7 +2,7 @@ import * as React from "react";
 import type { SingleImageUploadProps } from "@webiny/app-admin";
 import { SingleImageUpload } from "@webiny/app-admin";
 import { AvatarImagePreview } from "./AvatarImagePreview.js";
-import { AvatarImageTrigger } from "~/ui/components/AvatarImage/AvatarImageTrigger.js";
+import { AvatarImageTrigger } from "~/admin/ui/components/AvatarImage/AvatarImageTrigger.js";
 import { cn } from "@webiny/admin-ui";
 
 export const AvatarImage = ({ round, ...props }: SingleImageUploadProps) => {

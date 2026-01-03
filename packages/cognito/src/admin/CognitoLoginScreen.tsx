@@ -3,7 +3,6 @@ import { observer } from "mobx-react-lite";
 import { useFeature } from "@webiny/app";
 import { CognitoFeature } from "./features/Cognito/CognitoFeature.js";
 import { SignIn } from "./components/SignIn.js";
-import { SignedIn } from "./components/SignedIn.js";
 import { RequireNewPassword } from "./components/RequireNewPassword.js";
 import { ForgotPassword } from "./components/ForgotPassword.js";
 import { SetNewPassword } from "./components/SetNewPassword.js";
@@ -27,24 +26,55 @@ export const CognitoLoginScreen = observer((props: CognitoLoginScreenProps) => {
         });
     }, []);
 
-    const { authState, checkingUser } = presenter.vm;
+    const vm = presenter.vm;
 
-    if (checkingUser) {
+    if (vm.checkingUser) {
         return <LoggingIn />;
     }
 
-    // Render appropriate view based on auth state
-    switch (authState) {
+    switch (vm.authState) {
         case "signedIn":
-            return <SignedIn>{props.children}</SignedIn>;
+            return <>{props.children}</>;
+
         case "requireNewPassword":
-            return <RequireNewPassword />;
+            return (
+                <RequireNewPassword
+                    vm={vm.requireNewPassword}
+                    onSubmit={(password, attributes) =>
+                        presenter.confirmNewPassword(password, attributes)
+                    }
+                    onCancel={() => presenter.showSignIn()}
+                />
+            );
+
         case "forgotPassword":
-            return <ForgotPassword />;
+            return (
+                <ForgotPassword
+                    vm={vm.forgotPassword}
+                    onSubmit={username => presenter.requestPasswordReset(username)}
+                    onCancel={() => presenter.showSignIn()}
+                />
+            );
+
         case "setNewPassword":
-            return <SetNewPassword />;
+            return (
+                <SetNewPassword
+                    vm={vm.setNewPassword}
+                    onSubmit={(username, code, password) =>
+                        presenter.confirmPasswordReset(username, code, password)
+                    }
+                    onCancel={() => presenter.showSignIn()}
+                />
+            );
+
         case "signIn":
         default:
-            return <SignIn />;
+            return (
+                <SignIn
+                    vm={vm.signIn}
+                    onSubmit={(username, password) => presenter.signIn(username, password)}
+                    onForgotPassword={() => presenter.showForgotPassword()}
+                />
+            );
     }
 });

@@ -1,108 +1,75 @@
 import React from "react";
-import { Form } from "@webiny/form";
+import { Button, Grid, Input, Alert, Link, Text } from "@webiny/admin-ui";
+import { Form, Bind } from "@webiny/form";
 import { validation } from "@webiny/validation";
-import { View } from "~/components/View.js";
-import { useAuthenticator } from "@webiny/app-cognito-authenticator/hooks/useAuthenticator.js";
-import type { UseSetNewPasswordCallableParams } from "@webiny/app-cognito-authenticator/hooks/useSetNewPassword.js";
-import { useSetNewPassword } from "@webiny/app-cognito-authenticator/hooks/useSetNewPassword.js";
-import { Button, Grid, Input, Link, OverlayLoader, Text } from "@webiny/admin-ui";
+import { View } from "./View.js";
+import type { SetNewPasswordVM } from "../features/Cognito/abstractions.js";
 
-export const SetNewPassword = () => {
-    const { changeState } = useAuthenticator();
-    const { shouldRender, setPassword, error, loading } = useSetNewPassword();
+export interface SetNewPasswordProps {
+    vm: SetNewPasswordVM;
+    onSubmit: (username: string, code: string, password: string) => void;
+    onCancel: () => void;
+}
 
-    if (!shouldRender) {
-        return null;
-    }
+export const SetNewPassword = (props: SetNewPasswordProps) => {
+    const { vm, onSubmit, onCancel } = props;
 
     return (
         <View.Container>
-            <Form<UseSetNewPasswordCallableParams>
-                onSubmit={data => setPassword(data)}
+            <Form
+                onSubmit={(data: any) => onSubmit(data.username, data.code, data.password)}
                 submitOnEnter
             >
-                {({ Bind, submit, data }) => {
-                    const retypePasswordValidator = (value: string) => {
-                        if (value !== data.password) {
-                            throw Error("Passwords do not match!");
-                        }
-                    };
+                {({ Bind, submit }) => (
+                    <View.Content>
+                        <View.Title title={"Enter verification code"} />
 
-                    return (
-                        <View.Content>
-                            {loading && <OverlayLoader />}
-                            <View.Title title={"Set new password"} />
-                            <View.Error description={error} />
+                        {vm.message && (
+                            <div className={"mb-lg"}>
+                                <Alert title={vm.message.title} type={vm.message.type}>
+                                    {vm.message.text}
+                                </Alert>
+                            </div>
+                        )}
 
-                            <Grid>
-                                <Grid.Column span={12} data-testid="password-reset-code">
-                                    <Bind name="code" validators={validation.create("required")}>
-                                        <Input
-                                            size={"lg"}
-                                            autoComplete="off"
-                                            label={"Password reset code"}
-                                            description={"Enter the code we sent to your email."}
-                                        />
-                                    </Bind>
-                                </Grid.Column>
-                                <Grid.Column span={12} data-testid="new-password-input">
-                                    <Bind
-                                        name="password"
-                                        validators={validation.create("required")}
-                                    >
-                                        <Input
-                                            size={"lg"}
-                                            autoComplete={"off"}
-                                            type={"password"}
-                                            label={"New password"}
-                                            description={"Enter your new password."}
-                                        />
-                                    </Bind>
-                                </Grid.Column>
-                                <Grid.Column span={12} data-testid="retype-password-input">
-                                    <Bind
-                                        name="retypePassword"
-                                        validators={[
-                                            validation.create("required"),
-                                            retypePasswordValidator
-                                        ]}
-                                    >
-                                        <Input
-                                            autoComplete={"off"}
-                                            size={"lg"}
-                                            type={"password"}
-                                            label={"Retype password"}
-                                            description={"Enter your new password once more."}
-                                        />
-                                    </Bind>
-                                </Grid.Column>
-                                <Grid.Column span={12}>
-                                    <div
-                                        className={
-                                            "flex flex-row-reverse items-center justify-between"
-                                        }
-                                    >
-                                        <Button
-                                            text={"Set new password"}
-                                            data-testid="submit-btn-new-psw"
-                                            onClick={ev => {
-                                                submit(ev);
-                                            }}
-                                            size={"lg"}
-                                        />
-                                        <Text as={"div"} size={"sm"}>
-                                            Want to sign in?&nbsp;
-                                            <Link to={"#"} onClick={() => changeState("signIn")}>
-                                                Sign in
-                                            </Link>
-                                            .
-                                        </Text>
-                                    </div>
-                                </Grid.Column>
-                            </Grid>
-                        </View.Content>
-                    );
-                }}
+                        <Grid>
+                            <Grid.Column span={12}>
+                                <Bind
+                                    name="username"
+                                    validators={validation.create("required,email")}
+                                >
+                                    <Input label={"Email"} />
+                                </Bind>
+                            </Grid.Column>
+                            <Grid.Column span={12}>
+                                <Bind name="code" validators={validation.create("required")}>
+                                    <Input label={"Verification Code"} />
+                                </Bind>
+                            </Grid.Column>
+                            <Grid.Column span={12}>
+                                <Bind name="password" validators={validation.create("required")}>
+                                    <Input
+                                        type={"password"}
+                                        label={"New Password"}
+                                        autoComplete={"off"}
+                                    />
+                                </Bind>
+                            </Grid.Column>
+                            <Grid.Column span={12}>
+                                <div
+                                    className={"flex flex-row-reverse items-center justify-between"}
+                                >
+                                    <Button text={"Reset Password"} onClick={submit} />
+                                    <Text as={"div"} size={"sm"}>
+                                        <Link to="#" onClick={onCancel}>
+                                            Back to Sign In
+                                        </Link>
+                                    </Text>
+                                </div>
+                            </Grid.Column>
+                        </Grid>
+                    </View.Content>
+                )}
             </Form>
         </View.Container>
     );

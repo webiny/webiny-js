@@ -1,5 +1,5 @@
 import React from "react";
-import { useUserForm } from "~/ui/views/Users/hooks/useUserForm.js";
+import { useUserForm } from "~/admin/ui/views/Users/hooks/useUserForm.js";
 import { Cell, Grid } from "@webiny/ui/Grid/index.js";
 import { Alert } from "@webiny/ui/Alert/index.js";
 import { Elevation } from "@webiny/ui/Elevation/index.js";

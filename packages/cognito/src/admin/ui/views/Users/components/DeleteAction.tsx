@@ -3,7 +3,7 @@ import { i18n } from "@webiny/app/i18n/index.js";
 import { useSecurity } from "@webiny/app-admin";
 import { Tooltip } from "@webiny/ui/Tooltip/index.js";
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons/index.js";
-import type { UserItem } from "~/UserItem.js";
+import type { UserItem } from "~/admin/ui/UserItem.js";
 
 const t = i18n.ns("app-identity/admin/users/data-list");
 

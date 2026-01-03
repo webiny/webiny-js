@@ -22,7 +22,7 @@ import {
 } from "@webiny/app-admin";
 import { CenteredView, useSnackbar } from "@webiny/app-admin";
 import { Alert } from "@webiny/ui/Alert/index.js";
-import { usePasswordValidator } from "~/usePasswordValidator.js";
+import { usePasswordValidator } from "~/admin/ui/usePasswordValidator.js";
 
 const t = i18n.ns("app-security-admin-users/account-form");
 

@@ -22,8 +22,8 @@ import { DeleteIcon } from "@webiny/ui/List/DataList/icons/index.js";
 import { useRouter, useSnackbar, useConfirmationDialog, SearchUI } from "@webiny/app-admin";
 import { DELETE_USER, LIST_USERS } from "./graphql.js";
 import { deserializeSorters } from "../utils.js";
-import type { UserItem } from "~/UserItem.js";
-import { Routes } from "~/routes.js";
+import { Routes } from "~/admin/routes.js";
+import type { UserItem } from "~/admin/ui/UserItem.js";
 
 const t = i18n.ns("app-identity/admin/users/data-list");
 

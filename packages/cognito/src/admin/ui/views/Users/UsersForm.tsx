@@ -20,8 +20,8 @@ import {
     TeamsMultiAutocomplete
 } from "@webiny/app-security-access-management";
 import { AvatarImage } from "../../components/AvatarImage/index.js";
-import { useUserForm } from "~/ui/views/Users/hooks/useUserForm.js";
-import { usePasswordValidator } from "~/usePasswordValidator.js";
+import { useUserForm } from "~/admin/ui/views/Users/hooks/useUserForm.js";
+import { usePasswordValidator } from "~/admin/ui/usePasswordValidator.js";
 
 const t = i18n.ns("app-security-admin-users/account-form");
 
