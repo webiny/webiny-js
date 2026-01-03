@@ -73,7 +73,8 @@ export interface SetNewPasswordVM {
 export interface ICognitoPresenter {
   vm: {
     authState: AuthState;
-    checkingUser: boolean;
+    checkingSession: boolean;
+    isLoggingIn: boolean;
     isAuthenticated: boolean;
     signIn: SignInVM;
     requireNewPassword: RequireNewPasswordVM;

@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, Input, Alert, Link, Button, Text } from "@webiny/admin-ui";
+import { Grid, Input, Alert, Link, Button, Text, OverlayLoader } from "@webiny/admin-ui";
 import { Form, Bind } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { View } from "./View.js";
@@ -21,6 +21,7 @@ export const SignIn = (props: SignInProps) => {
             <Form onSubmit={(data: any) => onSubmit(data.username, data.password)} submitOnEnter>
                 {({ submit }) => (
                     <View.Content>
+                        {vm.isLoading ? <OverlayLoader text={"Authenticating..."}/> : null}
                         <View.Title title={title} description={description} />
 
                         {vm.message && (

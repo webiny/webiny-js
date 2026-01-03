@@ -9,43 +9,49 @@ import {
     ICognitoInitParams
 } from "./abstractions.js";
 import { LogInUseCase } from "@webiny/app-admin/features/security/LogIn/index.js";
+import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/index.js";
 
 class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
-    // Private observable state (no underscore)
     private authState: AuthState = "signIn";
     private authData: AuthData | null = null;
     private message: AuthMessage | null = null;
-    private checkingUser = false;
-    private loggingIn = false;
+    private checkingSession = false;
+    private isLoggingIn = false;
+    private formLoading = false;
     private cognitoUser: any = null;
     private initialized = false;
 
-    constructor(private logInUseCase: LogInUseCase.Interface) {
+    constructor(
+        private identity: IdentityContext.Interface,
+        private logInUseCase: LogInUseCase.Interface
+    ) {
         makeAutoObservable(this);
     }
 
-    // VM getter computes derived state
     get vm() {
+        const identity = this.identity.getIdentity();
+
         return {
             authState: this.authState,
-            checkingUser: this.checkingUser,
-            isAuthenticated: this.authState === "signedIn",
+            checkingSession: this.checkingSession,
+            isLoggingIn: this.isLoggingIn,
+            isAuthenticated: identity.isAuthenticated,
 
             // View-specific VMs
             signIn: {
-                isLoading: this.loggingIn,
+                isLoading: this.formLoading,
                 message: this.message
             },
             requireNewPassword: {
-                isLoading: this.loggingIn,
+                isLoading: this.formLoading,
                 requiredAttributes: (this.authData && this.authData.requiredAttributes) || []
             },
             forgotPassword: {
-                isLoading: this.loggingIn,
+                isLoading: this.formLoading,
                 message: this.message
             },
             setNewPassword: {
-                isLoading: this.loggingIn,
+                isLoading: this.formLoading,
                 message: this.message
             }
         };
@@ -71,9 +77,11 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
     // Public API
     async signIn(username: string, password: string): Promise<void> {
         runInAction(() => {
-            this.loggingIn = true;
+            this.formLoading = true;
             this.message = null;
         });
+
+        const usernameOrPassword = ["UserNotFoundException", "NotAuthorizedException"];
 
         try {
             const user = await Auth.signIn(username, password);
@@ -85,29 +93,34 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
                     this.authData = {
                         requiredAttributes: user.challengeParam.requiredAttributes || []
                     };
-                    this.loggingIn = false;
+                    this.formLoading = false;
                 });
             } else {
                 await this.handleSignedIn();
                 runInAction(() => {
-                    this.loggingIn = false;
+                    this.formLoading = false;
                 });
             }
         } catch (error) {
+            let message = error.message;
+
+            if (usernameOrPassword.includes(error.code)) {
+                message = "Incorrect username or password.";
+            }
             runInAction(() => {
                 this.message = {
                     title: "Login Failed",
-                    text: error.message,
+                    text: message,
                     type: "danger"
                 };
-                this.loggingIn = false;
+                this.formLoading = false;
             });
         }
     }
 
     async confirmNewPassword(password: string, requiredAttributes: any): Promise<void> {
         runInAction(() => {
-            this.loggingIn = true;
+            this.formLoading = true;
             this.message = null;
         });
 
@@ -124,14 +137,14 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
             });
         } finally {
             runInAction(() => {
-                this.loggingIn = false;
+                this.formLoading = false;
             });
         }
     }
 
     async requestPasswordReset(username: string): Promise<void> {
         runInAction(() => {
-            this.loggingIn = true;
+            this.formLoading = true;
             this.message = null;
         });
 
@@ -156,14 +169,14 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
             });
         } finally {
             runInAction(() => {
-                this.loggingIn = false;
+                this.formLoading = false;
             });
         }
     }
 
     async confirmPasswordReset(username: string, code: string, password: string): Promise<void> {
         runInAction(() => {
-            this.loggingIn = true;
+            this.formLoading = true;
             this.message = null;
         });
 
@@ -187,7 +200,7 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
             });
         } finally {
             runInAction(() => {
-                this.loggingIn = false;
+                this.formLoading = false;
             });
         }
     }
@@ -205,6 +218,10 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
 
     // Private/internal methods
     private async handleSignedIn(): Promise<void> {
+        runInAction(() => {
+            this.isLoggingIn = true;
+        });
+
         try {
             await this.logInUseCase.execute({
                 idTokenProvider: async () => {
@@ -228,6 +245,10 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
             runInAction(() => {
                 this.authState = "signIn";
             });
+        } finally {
+            runInAction(() => {
+                this.isLoggingIn = false;
+            });
         }
     }
 
@@ -235,7 +256,7 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
         const query = new URLSearchParams(window.location.search);
         const queryData: Record<string, string> = {};
         query.forEach((value, key) => (queryData[key] = value));
-        const { state, ...params } = queryData;
+        const { state } = queryData;
 
         if (state) {
             // Handle state from URL if needed
@@ -247,19 +268,19 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
 
     private async checkSession(): Promise<void> {
         runInAction(() => {
-            this.checkingUser = true;
+            this.checkingSession = true;
         });
 
         try {
             const cognitoUser = await Auth.currentSession();
             if (cognitoUser) {
-                await this.handleSignedIn();
+                this.handleSignedIn();
             }
         } catch {
             // Not authenticated, stay on signIn
         } finally {
             runInAction(() => {
-                this.checkingUser = false;
+                this.checkingSession = false;
             });
         }
     }
@@ -267,5 +288,5 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
 
 export const CognitoPresenter = CognitoPresenterAbstraction.createImplementation({
     implementation: CognitoPresenterImpl,
-    dependencies: [LogInUseCase]
+    dependencies: [IdentityContext, LogInUseCase]
 });
