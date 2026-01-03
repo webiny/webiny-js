@@ -6,6 +6,7 @@ import Renderer from "react-test-renderer";
 import { serializeError } from "serialize-error";
 import type { RenderConfigWorkerMessageDto, RenderConfigParamsDto } from "./renderConfig.js";
 import { ProjectModel } from "~/models/ProjectModel.js";
+import { EnvProvider } from "./EnvContext.js";
 
 const sendError = (err: Error) => {
     const message: RenderConfigWorkerMessageDto = {
@@ -49,7 +50,9 @@ const onChange = debounce((value: any) => {
 });
 
 Renderer.create(
-    <Properties onChange={onChange}>
-        <Extensions />
-    </Properties>
+    <EnvProvider>
+        <Properties onChange={onChange}>
+            <Extensions />
+        </Properties>
+    </EnvProvider>
 );

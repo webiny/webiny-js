@@ -4,4 +4,5 @@
  *
  * This file ensures all type augmentations are loaded without requiring explicit imports.
  */
+
 import "@webiny/tasks/global.js";

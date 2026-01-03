@@ -1,12 +1,16 @@
 import { ApiKeyAfterUpdateHandler } from "webiny/api/security/features/UpdateApiKey";
 
+import { Logger } from "webiny/api/features/Logger";
+
 class MyApiKeyAfterUpdateImpl implements ApiKeyAfterUpdateHandler.Interface {
+    constructor(private logger: Logger.Interface) {}
+
     async handle() {
-        console.log("An API key was updated!");
+        this.logger.warn("An API key was updated!");
     }
 }
 
 export const MyApiKeyAfterUpdate = ApiKeyAfterUpdateHandler.createImplementation({
     implementation: MyApiKeyAfterUpdateImpl,
-    dependencies: []
+    dependencies: [Logger]
 });

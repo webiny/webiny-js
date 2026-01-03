@@ -49,7 +49,10 @@ export const ApiFileManager = createAppModule({
                         S3_BUCKET: core.fileManagerBucketId
                     }))
                 },
-                vpcConfig: app.getModule(VpcConfig).functionVpcConfig
+                vpcConfig: app.getModule(VpcConfig).functionVpcConfig,
+                loggingConfig: {
+                    logFormat: "JSON"
+                }
             }
         });
 
@@ -70,6 +73,9 @@ export const ApiFileManager = createAppModule({
                             ...config.env
                         };
                     })
+                },
+                loggingConfig: {
+                    logFormat: "JSON"
                 }
             }
         });

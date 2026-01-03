@@ -65,7 +65,7 @@ describe("entry values modifier", () => {
                 id: createResult.value.id
             }
         });
-        const [listValues] = listResult.value;
+        const { entries: listValues } = listResult.value;
         expect(listValues[0].values).toEqual(createGlobalModifierValues());
     });
 
@@ -103,7 +103,7 @@ describe("entry values modifier", () => {
                 id: createResult.value.id
             }
         });
-        const [listValue] = listResult.value;
+        const { entries: listValue } = listResult.value;
         expect(listValue[0].values).toEqual(createTargetedModifierValues());
     });
 
@@ -143,7 +143,7 @@ describe("entry values modifier", () => {
             }
         });
 
-        const [listValue] = listResult.value;
+        const { entries: listValue } = listResult.value;
         expect(listValue[0].values.title).toEqual(createExpectedGetResult().values.title);
     });
 
@@ -188,7 +188,7 @@ describe("entry values modifier", () => {
                 id: createResult.value.id
             }
         });
-        const [listValue] = listResult.value;
+        const { entries: listValue } = listResult.value;
         expect(listValue[0].values).toEqual({
             ...createGlobalModifierValues(),
             ...createTargetedModifierValues()

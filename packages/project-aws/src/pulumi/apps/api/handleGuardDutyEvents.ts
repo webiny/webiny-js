@@ -20,6 +20,9 @@ export const handleGuardDutyEvents = (app: ApiPulumiApp) => {
                         ...env?.variables
                     };
                 })
+            },
+            loggingConfig: {
+                logFormat: "JSON"
             }
         }
     });
