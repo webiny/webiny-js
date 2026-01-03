@@ -5,18 +5,21 @@ import {
     AdminBeforeDeploy,
     AdminBeforeWatch,
     AdminPulumi,
+    AdminStackOutputValue,
     ApiAfterBuild,
     ApiAfterDeploy,
     ApiBeforeBuild,
     ApiBeforeDeploy,
     ApiBeforeWatch,
     ApiPulumi,
+    ApiStackOutputValue,
     CoreAfterBuild,
     CoreAfterDeploy,
     CoreBeforeBuild,
     CoreBeforeDeploy,
     CoreBeforeWatch,
     CorePulumi,
+    CoreStackOutputValue,
     ProductionEnvironments,
     PulumiResourceNamePrefix
 } from "@webiny/project/extensions/index.js";
@@ -53,7 +56,8 @@ export const Infra = {
         AfterBuild: AdminAfterBuild.ReactComponent,
         AfterDeploy: AdminAfterDeploy.ReactComponent,
         Pulumi: AdminPulumi.ReactComponent,
-        CustomDomains: AdminCustomDomains.ReactComponent
+        CustomDomains: AdminCustomDomains.ReactComponent,
+        StackOutputValue: AdminStackOutputValue.ReactComponent
     },
     Api: {
         BeforeBuild: ApiBeforeBuild.ReactComponent,
@@ -61,7 +65,8 @@ export const Infra = {
         BeforeWatch: ApiBeforeWatch.ReactComponent,
         AfterBuild: ApiAfterBuild.ReactComponent,
         AfterDeploy: ApiAfterDeploy.ReactComponent,
-        Pulumi: ApiPulumi.ReactComponent
+        Pulumi: ApiPulumi.ReactComponent,
+        StackOutputValue: ApiStackOutputValue.ReactComponent
     },
     Core: {
         BeforeBuild: CoreBeforeBuild.ReactComponent,
@@ -69,6 +74,7 @@ export const Infra = {
         BeforeWatch: CoreBeforeWatch.ReactComponent,
         AfterBuild: CoreAfterBuild.ReactComponent,
         AfterDeploy: CoreAfterDeploy.ReactComponent,
-        Pulumi: CorePulumi.ReactComponent
+        Pulumi: CorePulumi.ReactComponent,
+        StackOutputValue: CoreStackOutputValue.ReactComponent
     }
 };

@@ -3,6 +3,7 @@ import { createAbstraction } from "@webiny/project/abstractions/createAbstractio
 export interface ICoreStackOutput {
     region?: string;
     deploymentId?: string;
+    databaseSetup?: string;
     elasticsearchDomainEndpoint?: string;
     elasticsearchDomainArn?: string;
     [key: string]: any;

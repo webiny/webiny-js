@@ -6,6 +6,7 @@ import {
     AfterDeploy,
     ApiAfterDeploy,
     BeforeDeploy,
+    DatabaseSetup,
     ExtensionDefinitions,
     Project,
     ProjectDecorator,
@@ -13,6 +14,7 @@ import {
 } from "@webiny/project/extensions/index.js";
 import { createPathResolver } from "@webiny/project";
 import { CliCommand } from "@webiny/cli-core/extensions/index.js";
+import { Infra } from "~/index.js";
 
 const p = createPathResolver(import.meta.dirname);
 
@@ -21,6 +23,12 @@ export const Webiny = () => {
         <>
             <Project />
             <ProjectDecorator.ReactComponent src={p("Webiny/BuildAppWorkspace.js")} />
+
+            {/* Database Setup - default to DynamoDB only */}
+            <DatabaseSetup name="ddb" />
+
+            {/* Set database setup output value in Core stack */}
+            <Infra.Core.Pulumi src={p("Webiny/SetDatabaseSetupOutput.js")} />
 
             {/* Stack Output Services */}
             <ProjectImplementation.ReactComponent

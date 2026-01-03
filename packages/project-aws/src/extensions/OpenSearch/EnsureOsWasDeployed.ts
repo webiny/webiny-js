@@ -15,17 +15,17 @@ class EnsureOsWasDeployedImpl implements CoreBeforeDeploy.Interface {
             return;
         }
 
-        // Check if `elasticsearchDomainEndpoint` exists in the output.
-        // If it exists, core was deployed with OpenSearch and we can proceed.
-        const hasOpenSearchDomain = !!output.elasticsearchDomainArn;
-        if (hasOpenSearchDomain) {
+        // Check if `databaseSetup` matches 'ddb+os'
+        // If it matches, Core was deployed with OpenSearch and we can proceed.
+        const hasDatabaseSetup = output.databaseSetup === "ddb+os";
+        if (hasDatabaseSetup) {
             return;
         }
 
-        // Core was previously deployed without OpenSearch
+        // Core was previously deployed without OpenSearch or with a different setup
         throw GracefulError.from(
             new Error(
-                "Cannot deploy with OpenSearch enabled. The Core application was previously deployed WITHOUT OpenSearch."
+                "Cannot deploy with OpenSearch enabled. The Core application was previously deployed with a different database setup."
             ),
             [
                 "Once a deployment method is chosen (%s or %s), you cannot switch between them.",

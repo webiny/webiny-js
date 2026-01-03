@@ -15,17 +15,17 @@ class EnsureEsWasDeployedImpl implements CoreBeforeDeploy.Interface {
             return;
         }
 
-        // Check if `elasticsearchDomainEndpoint` exists in the output.
-        // If it exists, Core was deployed with ElasticSearch and we can proceed.
-        const hasElasticSearchDomain = !!output.elasticsearchDomainArn;
-        if (hasElasticSearchDomain) {
+        // Check if `databaseSetup` matches 'ddb+es'
+        // If it matches, Core was deployed with ElasticSearch and we can proceed.
+        const hasDatabaseSetup = output.databaseSetup === "ddb+es";
+        if (hasDatabaseSetup) {
             return;
         }
 
-        // Core was previously deployed without ElasticSearch
+        // Core was previously deployed without ElasticSearch or with a different setup
         throw GracefulError.from(
             new Error(
-                "Cannot deploy with ElasticSearch enabled. The Core application was previously deployed WITHOUT ElasticSearch."
+                "Cannot deploy with ElasticSearch enabled. The Core application was previously deployed with a different database setup."
             ),
             [
                 "Once a deployment method is chosen (%s or %s), you cannot switch between them.",
