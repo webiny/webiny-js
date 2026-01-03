@@ -3,25 +3,28 @@ import { AdminConfig, AdminLayout } from "@webiny/app-admin";
 import { plugins } from "@webiny/plugins";
 import { HasPermission } from "@webiny/app-admin";
 import { useRouter } from "@webiny/app-admin";
-import { Permission } from "~/plugins/constants.js";
-import { UsersView } from "~/ui/views/Users/UsersView.js";
-import { Account } from "~/ui/views/Account/index.js";
+import { Permission } from "./plugins/constants.js";
+import { UsersView } from "./ui/views/Users/UsersView.js";
+import { Account } from "./ui/views/Account/index.js";
 import { AccountDetails } from "./plugins/userMenu/AccountDetails.js";
 import permissionRenderer from "./plugins/permissionRenderer/index.js";
-import type { CognitoProps } from "./CognitoLogin.js";
-import { CognitoLogin } from "./CognitoLogin.js";
-import { Routes } from "~/routes.js";
+import { CognitoLogin, type CognitoLoginProps } from "./CognitoLogin.js";
+import { Routes } from "./routes.js";
 
 const { Route, Menu } = AdminConfig;
 
-const CognitoIdP = (props: CognitoProps) => {
+export interface CognitoAdminProps {
+    login: CognitoLoginProps;
+}
+
+const CognitoIdP = (props: CognitoAdminProps) => {
     const { getLink } = useRouter();
 
     plugins.register([permissionRenderer]);
 
     return (
         <Fragment>
-            <CognitoLogin config={props.config} />
+            <CognitoLogin {...props.login} />
             <AdminConfig>
                 <HasPermission name={Permission.Users}>
                     <Route
@@ -49,7 +52,7 @@ const CognitoIdP = (props: CognitoProps) => {
                     />
                     <Menu
                         name={"cognito.settings.adminUsers"}
-                        parent={"settings"}
+                        parent={"cognito.settings"}
                         element={
                             <Menu.Link
                                 text={"Users"}
@@ -70,4 +73,4 @@ const CognitoIdP = (props: CognitoProps) => {
     );
 };
 
-export const Cognito = memo(CognitoIdP);
+export const CognitoAdmin = memo(CognitoIdP);

@@ -1,7 +1,8 @@
 import React from "react";
 import { Cli, Infra, Project, Security } from "webiny/extensions";
 import { MySchemaExtension } from "./extensions/graphql/MySchemaExtension.js";
-import { MyIdpExtension } from "./extensions/idp/okta/MyIdpExtension.js";
+import { Cognito } from "@webiny/cognito";
+// import { MyIdpExtension } from "./extensions/idp/okta/MyIdpExtension.js";
 
 export const Extensions = () => {
     return (
@@ -59,7 +60,8 @@ export const Extensions = () => {
             <Project.Telemetry enabled={false} />
 
             {/* API */}
-            <MyIdpExtension/>
+            {/*<MyIdpExtension/>*/}
+            <Cognito />
             <MySchemaExtension />
 
             {/* Security 👇 */}

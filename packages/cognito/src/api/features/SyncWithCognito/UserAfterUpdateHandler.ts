@@ -4,23 +4,33 @@ import { createImplementation } from "@webiny/feature/api";
 import type { AdminUser } from "@webiny/api-core/types/users.js";
 import { CognitoConfig, type ICognitoConfig, type AttributeGetter } from "./abstractions.js";
 
+type GetUsername = NonNullable<ICognitoConfig["getUsername"]>;
+
 type MappedAttrType = (user: AdminUser) => string | keyof AdminUser;
+
+const defaultUpdateAttributes = {
+    family_name: "lastName",
+    given_name: "firstName",
+    preferred_username: "email"
+};
+
+const defaultGetUsername: GetUsername = user => user.email.toLowerCase();
+
+const defaultAutoVerify = {
+    email: true
+};
 
 class UserAfterUpdateHandlerImpl implements UserAfterUpdateHandler.Interface {
     private cognito: CognitoIdentityProvider;
+    private getUsername: GetUsername;
     private autoVerify: { email?: boolean };
     private updateAttributes: Record<string, string | AttributeGetter>;
 
     constructor(private config: CognitoConfig.Interface) {
         this.cognito = new CognitoIdentityProvider({ region: config.region });
-        this.autoVerify = {
-            email: true
-        };
-        this.updateAttributes = {
-            family_name: "lastName",
-            given_name: "firstName",
-            preferred_username: "email"
-        };
+        this.getUsername = config.getUsername || defaultGetUsername;
+        this.autoVerify = config.autoVerify || defaultAutoVerify;
+        this.updateAttributes = config.updateAttributes || defaultUpdateAttributes;
     }
 
     async handle(event: UserAfterUpdateHandler.Event): Promise<void> {
@@ -51,7 +61,7 @@ class UserAfterUpdateHandlerImpl implements UserAfterUpdateHandler.Interface {
         const params = {
             UserAttributes: newAttributes,
             UserPoolId: this.config.userPoolId,
-            Username: originalUser.email.toLowerCase()
+            Username: this.getUsername(originalUser)
         };
 
         await this.cognito.adminUpdateUserAttributes(params);
@@ -61,7 +71,7 @@ class UserAfterUpdateHandlerImpl implements UserAfterUpdateHandler.Interface {
             const pass = {
                 Permanent: true,
                 Password: password,
-                Username: updatedUser.email.toLowerCase(),
+                Username: this.getUsername(updatedUser),
                 UserPoolId: this.config.userPoolId
             };
 

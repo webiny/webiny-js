@@ -33,4 +33,6 @@ export namespace GraphQLSchema {
     export type Interface = IGraphQLSchema;
     export type TypeDefs = ITypeDefs;
     export type Resolvers = IResolvers<any>;
+    export type GetTypeDefsReturn = Promise<ITypeDefs> | ITypeDefs;
+    export type GetResolversReturn = Promise<IResolvers<any>> | IResolvers<any>;
 }

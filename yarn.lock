@@ -38,6 +38,42 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@apollo/client@npm:^3.11.4":
+  version: 3.14.0
+  resolution: "@apollo/client@npm:3.14.0"
+  dependencies:
+    "@graphql-typed-document-node/core": "npm:^3.1.1"
+    "@wry/caches": "npm:^1.0.0"
+    "@wry/equality": "npm:^0.5.6"
+    "@wry/trie": "npm:^0.5.0"
+    graphql-tag: "npm:^2.12.6"
+    hoist-non-react-statics: "npm:^3.3.2"
+    optimism: "npm:^0.18.0"
+    prop-types: "npm:^15.7.2"
+    rehackt: "npm:^0.1.0"
+    symbol-observable: "npm:^4.0.0"
+    ts-invariant: "npm:^0.10.3"
+    tslib: "npm:^2.3.0"
+    zen-observable-ts: "npm:^1.2.5"
+  peerDependencies:
+    graphql: ^15.0.0 || ^16.0.0
+    graphql-ws: ^5.5.5 || ^6.0.3
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || >=19.0.0-rc
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || >=19.0.0-rc
+    subscriptions-transport-ws: ^0.9.0 || ^0.11.0
+  peerDependenciesMeta:
+    graphql-ws:
+      optional: true
+    react:
+      optional: true
+    react-dom:
+      optional: true
+    subscriptions-transport-ws:
+      optional: true
+  checksum: 10/c5f8ce8c50028d199f9d20e7751cdeafad1bf085ae2b78ff12493a11966070dc0e78fa5d93372b64c75dc33cd7b9699d809217f78299d5103ab76be957173c6d
+  languageName: node
+  linkType: hard
+
 "@apollo/react-common@npm:^3.1.4":
   version: 3.1.4
   resolution: "@apollo/react-common@npm:3.1.4"
@@ -13110,7 +13146,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-core@npm:0.0.0, @webiny/api-core@workspace:packages/api-core":
+"@webiny/api-core@npm:*, @webiny/api-core@npm:0.0.0, @webiny/api-core@workspace:packages/api-core":
   version: 0.0.0-use.local
   resolution: "@webiny/api-core@workspace:packages/api-core"
   dependencies:
@@ -13823,7 +13859,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api@npm:0.0.0, @webiny/api@workspace:packages/api":
+"@webiny/api@npm:*, @webiny/api@npm:0.0.0, @webiny/api@workspace:packages/api":
   version: 0.0.0-use.local
   resolution: "@webiny/api@workspace:packages/api"
   dependencies:
@@ -13954,7 +13990,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-admin@npm:0.0.0, @webiny/app-admin@workspace:packages/app-admin":
+"@webiny/app-admin@npm:*, @webiny/app-admin@npm:0.0.0, @webiny/app-admin@workspace:packages/app-admin":
   version: 0.0.0-use.local
   resolution: "@webiny/app-admin@workspace:packages/app-admin"
   dependencies:
@@ -14637,7 +14673,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app@npm:0.0.0, @webiny/app@workspace:packages/app":
+"@webiny/app@npm:*, @webiny/app@npm:0.0.0, @webiny/app@workspace:packages/app":
   version: 0.0.0-use.local
   resolution: "@webiny/app@workspace:packages/app"
   dependencies:
@@ -14726,7 +14762,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/aws-sdk@npm:0.0.0, @webiny/aws-sdk@workspace:packages/aws-sdk":
+"@webiny/aws-sdk@npm:*, @webiny/aws-sdk@npm:0.0.0, @webiny/aws-sdk@workspace:packages/aws-sdk":
   version: 0.0.0-use.local
   resolution: "@webiny/aws-sdk@workspace:packages/aws-sdk"
   dependencies:
@@ -14854,6 +14890,34 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/cognito@workspace:packages/cognito":
+  version: 0.0.0-use.local
+  resolution: "@webiny/cognito@workspace:packages/cognito"
+  dependencies:
+    "@apollo/client": "npm:^3.11.4"
+    "@aws-amplify/auth": "npm:^5.6.15"
+    "@types/react": "npm:^18.2.79"
+    "@webiny/api": "npm:*"
+    "@webiny/api-core": "npm:*"
+    "@webiny/app": "npm:*"
+    "@webiny/app-admin": "npm:*"
+    "@webiny/aws-sdk": "npm:*"
+    "@webiny/feature": "npm:*"
+    "@webiny/form": "npm:*"
+    "@webiny/handler-graphql": "npm:*"
+    "@webiny/icons": "npm:*"
+    "@webiny/plugins": "npm:*"
+    "@webiny/project": "npm:*"
+    "@webiny/project-aws": "npm:*"
+    "@webiny/ui": "npm:*"
+    "@webiny/validation": "npm:*"
+    graphql: "npm:^16.9.0"
+    mobx: "npm:^6.13.3"
+    mobx-react-lite: "npm:^4.0.7"
+    react: "npm:^18.2.0"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/common-audit-logs@npm:0.0.0, @webiny/common-audit-logs@workspace:packages/common-audit-logs":
   version: 0.0.0-use.local
   resolution: "@webiny/common-audit-logs@workspace:packages/common-audit-logs"
@@ -14960,7 +15024,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/feature@npm:0.0.0, @webiny/feature@workspace:packages/feature":
+"@webiny/feature@npm:*, @webiny/feature@npm:0.0.0, @webiny/feature@workspace:packages/feature":
   version: 0.0.0-use.local
   resolution: "@webiny/feature@workspace:packages/feature"
   dependencies:
@@ -14970,7 +15034,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/form@npm:0.0.0, @webiny/form@workspace:packages/form":
+"@webiny/form@npm:*, @webiny/form@npm:0.0.0, @webiny/form@workspace:packages/form":
   version: 0.0.0-use.local
   resolution: "@webiny/form@workspace:packages/form"
   dependencies:
@@ -15046,7 +15110,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-graphql@npm:0.0.0, @webiny/handler-graphql@workspace:packages/handler-graphql":
+"@webiny/handler-graphql@npm:*, @webiny/handler-graphql@npm:0.0.0, @webiny/handler-graphql@workspace:packages/handler-graphql":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-graphql@workspace:packages/handler-graphql"
   dependencies:
@@ -15130,7 +15194,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/icons@npm:0.0.0, @webiny/icons@workspace:packages/icons":
+"@webiny/icons@npm:*, @webiny/icons@npm:0.0.0, @webiny/icons@workspace:packages/icons":
   version: 0.0.0-use.local
   resolution: "@webiny/icons@workspace:packages/icons"
   dependencies:
@@ -15305,7 +15369,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/plugins@npm:0.0.0, @webiny/plugins@workspace:packages/plugins":
+"@webiny/plugins@npm:*, @webiny/plugins@npm:0.0.0, @webiny/plugins@workspace:packages/plugins":
   version: 0.0.0-use.local
   resolution: "@webiny/plugins@workspace:packages/plugins"
   dependencies:
@@ -15318,7 +15382,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/project-aws@npm:0.0.0, @webiny/project-aws@workspace:packages/project-aws":
+"@webiny/project-aws@npm:*, @webiny/project-aws@npm:0.0.0, @webiny/project-aws@workspace:packages/project-aws":
   version: 0.0.0-use.local
   resolution: "@webiny/project-aws@workspace:packages/project-aws"
   dependencies:
@@ -15412,7 +15476,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/project@npm:0.0.0, @webiny/project@workspace:packages/project":
+"@webiny/project@npm:*, @webiny/project@npm:0.0.0, @webiny/project@workspace:packages/project":
   version: 0.0.0-use.local
   resolution: "@webiny/project@workspace:packages/project"
   dependencies:
@@ -15674,7 +15738,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/ui@npm:0.0.0, @webiny/ui@workspace:packages/ui":
+"@webiny/ui@npm:*, @webiny/ui@npm:0.0.0, @webiny/ui@workspace:packages/ui":
   version: 0.0.0-use.local
   resolution: "@webiny/ui@workspace:packages/ui"
   dependencies:
@@ -15720,7 +15784,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/validation@npm:0.0.0, @webiny/validation@workspace:packages/validation":
+"@webiny/validation@npm:*, @webiny/validation@npm:0.0.0, @webiny/validation@workspace:packages/validation":
   version: 0.0.0-use.local
   resolution: "@webiny/validation@workspace:packages/validation"
   dependencies:
@@ -15813,6 +15877,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@wry/caches@npm:^1.0.0":
+  version: 1.0.1
+  resolution: "@wry/caches@npm:1.0.1"
+  dependencies:
+    tslib: "npm:^2.3.0"
+  checksum: 10/055f592ee52b5fd9aa86e274e54e4a8b2650f619000bf6f61880ce14aaf47eb2ab34f3ada2eab964fe8b2f19bf8097ecacddcea4638fcc64c3d3a0a512aaa07c
+  languageName: node
+  linkType: hard
+
 "@wry/context@npm:^0.4.0":
   version: 0.4.4
   resolution: "@wry/context@npm:0.4.4"
@@ -15823,12 +15896,39 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@wry/context@npm:^0.7.0":
+  version: 0.7.4
+  resolution: "@wry/context@npm:0.7.4"
+  dependencies:
+    tslib: "npm:^2.3.0"
+  checksum: 10/70d648949a97a035b2be2d6ddb716d4162113e850ab2c4c86331b2da94a7e826204080ce04eee2a95665bd3a0b245bf2ea3aae9adfa57b004ae0d2d49bdb5c8f
+  languageName: node
+  linkType: hard
+
 "@wry/equality@npm:^0.1.2, @wry/equality@npm:^0.1.9":
   version: 0.1.11
   resolution: "@wry/equality@npm:0.1.11"
   dependencies:
     tslib: "npm:^1.9.3"
   checksum: 10/b3672e3c1be3b19589eff5135af835dc84ba57c1caddd6d37ec2f1910fb4054ac2693c48d39750bcad21e733d7652169b6842ebb2cbf7a1a835502fec7f86480
+  languageName: node
+  linkType: hard
+
+"@wry/equality@npm:^0.5.6":
+  version: 0.5.7
+  resolution: "@wry/equality@npm:0.5.7"
+  dependencies:
+    tslib: "npm:^2.3.0"
+  checksum: 10/69dccf33c0c41fd7ec5550f5703b857c6484a949412ad747001da941270ea436648c3ab988a2091765304249585ac30c7b417fad8be9a7ce19c1221f71548e35
+  languageName: node
+  linkType: hard
+
+"@wry/trie@npm:^0.5.0":
+  version: 0.5.0
+  resolution: "@wry/trie@npm:0.5.0"
+  dependencies:
+    tslib: "npm:^2.3.0"
+  checksum: 10/578a08f3a96256c9b163230337183d9511fd775bdfe147a30561ccaacedc9ce33b9731ee6e591bb1f5f53e41b26789e519b47dff5100c7bf4e1cd2df3062f797
   languageName: node
   linkType: hard
 
@@ -22782,7 +22882,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql@npm:^16.12.0":
+"graphql@npm:^16.12.0, graphql@npm:^16.9.0":
   version: 16.12.0
   resolution: "graphql@npm:16.12.0"
   checksum: 10/e299bc97cca178e549c8c1ed4cb164f631f07be987d3657f76cdf18c0250040cc0d456d4b6d41c87b855cac97b15a62ed345557527efcb0546492895a893bb87
@@ -26523,7 +26623,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mobx-react-lite@npm:^4.0.5":
+"mobx-react-lite@npm:^4.0.5, mobx-react-lite@npm:^4.0.7":
   version: 4.1.1
   resolution: "mobx-react-lite@npm:4.1.1"
   dependencies:
@@ -26540,7 +26640,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mobx@npm:^6.12.0, mobx@npm:^6.15.0":
+"mobx@npm:^6.12.0, mobx@npm:^6.13.3, mobx@npm:^6.15.0":
   version: 6.15.0
   resolution: "mobx@npm:6.15.0"
   checksum: 10/cf7fd4f96d521962c87883a7d41d745ba35af6130265f619e22c2d1ddff875e7f766726984f53bf5d5e215074146e6b190bc0e8668eb675cca9cb5d5204987fa
@@ -27621,6 +27721,18 @@ __metadata:
   dependencies:
     "@wry/context": "npm:^0.4.0"
   checksum: 10/c66d93f0202aa5fb7b89168491d132418fda8c6ba4107f4715fc82c9f8e05d400299f28966370b6df4ae2b836c1ad3dee46ff2ca02a8e28136cbec2110ed3a4a
+  languageName: node
+  linkType: hard
+
+"optimism@npm:^0.18.0":
+  version: 0.18.1
+  resolution: "optimism@npm:0.18.1"
+  dependencies:
+    "@wry/caches": "npm:^1.0.0"
+    "@wry/context": "npm:^0.7.0"
+    "@wry/trie": "npm:^0.5.0"
+    tslib: "npm:^2.3.0"
+  checksum: 10/d805f5995d61a417d4fd49a923749db1aa310d1ae8de084ec3a5f589f8b185d9a41b7b4422d33ee75ce43115c264e14bca086f8be2bb182c76448ad08997213a
   languageName: node
   linkType: hard
 
@@ -30005,6 +30117,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"rehackt@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "rehackt@npm:0.1.0"
+  peerDependencies:
+    "@types/react": "*"
+    react: "*"
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    react:
+      optional: true
+  checksum: 10/c81adead82c165dffc574cbf9e1de3605522782a56b48df48b68d53d45c4d8c9253df3790109335bf97072424e54ad2423bb9544ca3a985fa91995dda43452fc
+  languageName: node
+  linkType: hard
+
 "relateurl@npm:^0.2.7":
   version: 0.2.7
   resolution: "relateurl@npm:0.2.7"
@@ -32287,6 +32414,13 @@ __metadata:
   version: 1.2.0
   resolution: "symbol-observable@npm:1.2.0"
   checksum: 10/4684327a2fef2453dcd4238b5bd8f69c460a4708fb8c024a824c6a707ca644b2b2a586e36e5197d0d1162ff48e288299a48844a8c46274ffcfd9260e03df7692
+  languageName: node
+  linkType: hard
+
+"symbol-observable@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "symbol-observable@npm:4.0.0"
+  checksum: 10/983aef3912ad080fc834b9ad115d44bc2994074c57cea4fb008e9f7ab9bb4118b908c63d9edc861f51257bc0595025510bdf7263bb09d8953a6929f240165c24
   languageName: node
   linkType: hard
 
@@ -34797,7 +34931,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zen-observable@npm:^0.8.0":
+"zen-observable-ts@npm:^1.2.5":
+  version: 1.2.5
+  resolution: "zen-observable-ts@npm:1.2.5"
+  dependencies:
+    zen-observable: "npm:0.8.15"
+  checksum: 10/2384cf92a60e39e7b9735a0696f119684fee0f8bcc81d71474c92d656eca1bc3e87b484a04e97546e56bd539f8756bf97cf21a28a933ff7a94b35a8d217848eb
+  languageName: node
+  linkType: hard
+
+"zen-observable@npm:0.8.15, zen-observable@npm:^0.8.0":
   version: 0.8.15
   resolution: "zen-observable@npm:0.8.15"
   checksum: 10/30eac3f4055d33f446b4cd075d3543da347c2c8e68fbc35c3f5a19fb43be67c6ed27ee136bc8f8933efa547be7ce04957809ad00ee7f1b00a964f199ae6fb514

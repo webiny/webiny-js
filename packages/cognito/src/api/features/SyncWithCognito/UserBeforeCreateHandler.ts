@@ -4,10 +4,19 @@ import WebinyError from "@webiny/error";
 import { UserBeforeCreateHandler } from "@webiny/api-core/features/CreateUser";
 import { ListUsersUseCase } from "@webiny/api-core/features/ListUsers";
 import { createImplementation } from "@webiny/feature/api";
-import { CognitoConfig } from "./abstractions.js";
+import { CognitoConfig, type ICognitoConfig } from "./abstractions.js";
+
+type GetUsername = NonNullable<ICognitoConfig["getUsername"]>;
+
+const defaultGetUsername: GetUsername = user => user.email.toLowerCase();
+
+const defaultAutoVerify = {
+    email: true
+};
 
 class UserBeforeCreateHandlerImpl implements UserBeforeCreateHandler.Interface {
     private cognito: CognitoIdentityProvider;
+    private getUsername: GetUsername;
     private autoVerify: { email?: boolean };
 
     constructor(
@@ -15,9 +24,8 @@ class UserBeforeCreateHandlerImpl implements UserBeforeCreateHandler.Interface {
         private listUsersUseCase: ListUsersUseCase.Interface
     ) {
         this.cognito = new CognitoIdentityProvider({ region: config.region });
-        this.autoVerify = {
-            email: true
-        };
+        this.getUsername = config.getUsername ?? defaultGetUsername;
+        this.autoVerify = config.autoVerify ?? defaultAutoVerify;
     }
 
     async handle(event: UserBeforeCreateHandler.Event): Promise<void> {
@@ -32,7 +40,7 @@ class UserBeforeCreateHandlerImpl implements UserBeforeCreateHandler.Interface {
         // @ts-expect-error
         delete user["password"];
 
-        const username = user.email.toLowerCase();
+        const username = this.getUsername(input);
 
         try {
             await this.cognito.adminGetUser({
