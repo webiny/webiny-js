@@ -14597,7 +14597,7 @@ __metadata:
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
     jsonwebtoken: "npm:^9.0.3"
-    mobx: "npm:^6.12.0"
+    mobx: "npm:^6.15.0"
     mobx-react-lite: "npm:^3.4.3"
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
@@ -14775,11 +14775,11 @@ __metadata:
     "@webiny/project-aws": "npm:*"
     "@webiny/ui": "npm:*"
     "@webiny/validation": "npm:*"
-    graphql: "npm:^16.9.0"
+    graphql: "npm:^16.12.0"
     graphql-tag: "npm:^2.12.6"
     jsonwebtoken: "npm:^9.0.3"
     lodash: "npm:^4.17.21"
-    mobx: "npm:^6.13.3"
+    mobx: "npm:^6.15.0"
     mobx-react-lite: "npm:^3.4.3"
     react: "npm:^18.2.0"
   languageName: unknown
@@ -15229,7 +15229,7 @@ __metadata:
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
     jsonwebtoken: "npm:^9.0.3"
-    mobx: "npm:^6.12.0"
+    mobx: "npm:^6.15.0"
     mobx-react-lite: "npm:^3.4.3"
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
@@ -22700,7 +22700,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql@npm:^16.12.0, graphql@npm:^16.9.0":
+"graphql@npm:^16.12.0":
   version: 16.12.0
   resolution: "graphql@npm:16.12.0"
   checksum: 10/e299bc97cca178e549c8c1ed4cb164f631f07be987d3657f76cdf18c0250040cc0d456d4b6d41c87b855cac97b15a62ed345557527efcb0546492895a893bb87
@@ -26423,7 +26423,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mobx@npm:^6.12.0, mobx@npm:^6.13.3, mobx@npm:^6.15.0":
+"mobx@npm:^6.15.0":
   version: 6.15.0
   resolution: "mobx@npm:6.15.0"
   checksum: 10/cf7fd4f96d521962c87883a7d41d745ba35af6130265f619e22c2d1ddff875e7f766726984f53bf5d5e215074146e6b190bc0e8668eb675cca9cb5d5204987fa
