@@ -36,8 +36,21 @@ export const Webiny = () => {
                 singleton
             />
 
+            <ProjectImplementation.ReactComponent
+                src={p("../features/InvokeLambdaFunction.js")}
+                singleton
+            />
+
+            <ProjectImplementation.ReactComponent
+                src={p("../features/ApiGqlClient.js")}
+                singleton
+            />
+
             <AdminAfterDeploy.ReactComponent src={p("Webiny/UploadAdminAppToS3.js")} />
             <ApiAfterDeploy.ReactComponent src={p("Webiny/ExecuteDataMigrations.js")} />
+            <ApiAfterDeploy.ReactComponent
+                src={p("Webiny/AutoInstall/AutoInstallAfterApiDeploy.js")}
+            />
             <ExtensionDefinitions.ReactComponent src={p("Webiny/definitions.js")} />
 
             {/* Admin env vars */}

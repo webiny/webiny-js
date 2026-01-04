@@ -54,7 +54,10 @@ export const SyncSystemLambda = createAppModule({
                         AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
                     }))
                 },
-                vpcConfig: app.getModule(VpcConfig).functionVpcConfig
+                vpcConfig: app.getModule(VpcConfig).functionVpcConfig,
+                loggingConfig: {
+                    logFormat: "JSON"
+                }
             }
         });
 

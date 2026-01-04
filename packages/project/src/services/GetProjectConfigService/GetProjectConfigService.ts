@@ -40,9 +40,11 @@ export class DefaultGetProjectConfigService implements GetProjectConfigService.I
             );
 
             try {
+                const projectSdkParams = this.projectSdkParamsService.get();
                 this.cachedRenderedConfigs[cacheKey] = await renderConfig({
                     project,
-                    args: params.renderArgs
+                    args: params.renderArgs,
+                    sdkParams: projectSdkParams
                 });
             } catch (err) {
                 this.loggerService.error(

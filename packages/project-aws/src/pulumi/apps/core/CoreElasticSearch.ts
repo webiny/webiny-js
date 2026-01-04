@@ -31,12 +31,12 @@ function getDevClusterConfig(): aws.types.input.elasticsearch.DomainClusterConfi
 
 function getProdClusterConfig(): aws.types.input.elasticsearch.DomainClusterConfig {
     return {
-        // For production deployments, we create 2 instances and configure multi-AZ.
+        // For production deployments, we create 3 instances and configure multi-AZ across 3 zones.
         instanceType: "t3.medium.elasticsearch",
-        instanceCount: 2,
+        instanceCount: 3,
         zoneAwarenessEnabled: true,
         zoneAwarenessConfig: {
-            availabilityZoneCount: 2
+            availabilityZoneCount: 3
         }
     };
 }
@@ -237,7 +237,10 @@ export const ElasticSearch = createAppModule({
                           subnetIds: vpc.subnets.private.map(s => s.output.id),
                           securityGroupIds: [vpc.vpc.output.defaultSecurityGroupId]
                       }
-                    : undefined
+                    : undefined,
+                loggingConfig: {
+                    logFormat: "JSON"
+                }
             }
         });
 

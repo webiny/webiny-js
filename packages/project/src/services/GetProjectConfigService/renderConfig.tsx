@@ -6,10 +6,13 @@ import {
     type IProjectModel,
     type IProjectModelDto
 } from "~/abstractions/models/index.js";
+import { type ProjectSdkParamsService } from "~/abstractions/index.js";
+import { serializeProjectSdkContext, WBY_PROJECT_SDK_CONTEXT } from "~/utils/index.js";
 
 export interface RenderConfigParams {
     project: IProjectModel;
     args?: Record<string, any>;
+    sdkParams: ProjectSdkParamsService.Params;
 }
 
 export interface RenderConfigParamsDto {
@@ -50,7 +53,10 @@ export async function renderConfig(params: RenderConfigParams) {
 
         const childProcess = fork(workerPath, args, {
             stdio: ["pipe", "pipe", "pipe", "ipc"],
-            env: process.env
+            env: {
+                ...process.env,
+                [WBY_PROJECT_SDK_CONTEXT]: serializeProjectSdkContext(params.sdkParams)
+            }
         });
 
         // The only message we expect to receive is the parsed project config.
