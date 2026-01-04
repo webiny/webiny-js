@@ -1,5 +1,6 @@
 export * from "./AboutCommand.js";
 export * from "./BuildCommand/index.js";
+export * from "./ConfigCommand.js";
 export * from "./DeployCommand/index.js";
 export * from "./DestroyCommand/index.js";
 export * from "./InfoCommand/index.js";
