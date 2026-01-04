@@ -1,5 +1,6 @@
 import * as React from "react";
 import startCase from "lodash/startCase";
+import capitalize from "lodash/capitalize";
 import { Logo, makeDecoratable } from "@webiny/app-admin";
 import { Alert, Grid, Heading, Text } from "@webiny/admin-ui";
 
@@ -50,7 +51,8 @@ export interface TitleProps {
 const Title = makeDecoratable("ViewTitle", ({ title, description }: TitleProps) => {
     return (
         <div className={"mb-md"}>
-            <Heading level={4}>{startCase(title.toLowerCase())}</Heading>
+            {/*<Heading level={4}>{startCase(title.toLowerCase())}</Heading>*/}
+            <Heading level={4}>{capitalize(title)}</Heading>
             {description && (
                 <Text as={"div"} size={"sm"} className={"text-neutral-strong"}>
                     {description}

@@ -1,6 +1,6 @@
 import React from "react";
 import { RegisterFeature } from "@webiny/app-admin";
-import { CognitoFeature } from "./features/Cognito/CognitoFeature.js";
+import { CognitoFeature } from "./presentation/Cognito/feature.js";
 import { CognitoAdmin } from "./Cognito.js";
 
 export const Extension = () => {

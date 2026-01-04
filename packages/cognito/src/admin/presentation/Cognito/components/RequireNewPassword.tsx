@@ -3,7 +3,7 @@ import { Button, Grid, Heading, Input } from "@webiny/admin-ui";
 import { Form, Bind } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { View } from "./View.js";
-import type { RequireNewPasswordVM } from "../features/Cognito/abstractions.js";
+import type { RequireNewPasswordVM } from "~/admin/presentation/Cognito/abstractions.js";
 
 const sentenceCase = (str: string) => {
     const lower = str.toLowerCase();

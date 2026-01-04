@@ -2,11 +2,12 @@ import React, { useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { useFeature } from "@webiny/app";
 import { OverlayLoader } from "@webiny/admin-ui";
-import { CognitoFeature } from "./features/Cognito/CognitoFeature.js";
+import { CognitoFeature } from "./feature.js";
 import { SignIn } from "./components/SignIn.js";
 import { RequireNewPassword } from "./components/RequireNewPassword.js";
-import { ForgotPassword } from "./components/ForgotPassword.js";
+import { RequestPasswordResetCode } from "./components/RequestPasswordResetCode.js";
 import { SetNewPassword } from "./components/SetNewPassword.js";
+import { PasswordResetCodeSent } from "~/admin/presentation/Cognito/components/PasswordResetCodeSent.js";
 
 export interface CognitoLoginScreenProps {
     region: string;
@@ -49,10 +50,19 @@ export const CognitoLoginScreen = observer((props: CognitoLoginScreenProps) => {
                         />
                     )}
 
-                    {vm.authState === "forgotPassword" && (
-                        <ForgotPassword
-                            vm={vm.forgotPassword}
-                            onSubmit={username => presenter.requestPasswordReset(username)}
+                    {vm.authState === "requestPasswordResetCode" && (
+                        <RequestPasswordResetCode
+                            vm={vm.requestPasswordResetCode}
+                            onRequestCode={username => presenter.requestPasswordReset(username)}
+                            onCancel={() => presenter.showSignIn()}
+                        />
+                    )}
+
+                    {vm.authState === "passwordResetCodeSent" && (
+                        <PasswordResetCodeSent
+                            vm={vm.passwordResetCodeSent}
+                            onResendCode={() => presenter.resendPasswordResetCode()}
+                            onCodeAcquired={() => presenter.showSetNewPassword()}
                             onCancel={() => presenter.showSignIn()}
                         />
                     )}
@@ -60,8 +70,8 @@ export const CognitoLoginScreen = observer((props: CognitoLoginScreenProps) => {
                     {vm.authState === "setNewPassword" && (
                         <SetNewPassword
                             vm={vm.setNewPassword}
-                            onSubmit={(username, code, password) =>
-                                presenter.confirmPasswordReset(username, code, password)
+                            onSetNewPassword={(code, password) =>
+                                presenter.confirmPasswordReset(code, password)
                             }
                             onCancel={() => presenter.showSignIn()}
                         />
@@ -71,7 +81,7 @@ export const CognitoLoginScreen = observer((props: CognitoLoginScreenProps) => {
                         <SignIn
                             vm={vm.signIn}
                             onSubmit={(username, password) => presenter.signIn(username, password)}
-                            onForgotPassword={() => presenter.showForgotPassword()}
+                            onForgotPassword={() => presenter.showRequestPasswordResetCode()}
                         />
                     )}
                 </>

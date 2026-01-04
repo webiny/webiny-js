@@ -1,6 +1,9 @@
 import React, { Fragment } from "react";
 import { LoginScreenRenderer } from "@webiny/app-admin";
-import { CognitoLoginScreen, type CognitoLoginScreenProps } from "./CognitoLoginScreen.js";
+import {
+    CognitoLoginScreen,
+    type CognitoLoginScreenProps
+} from "./presentation/Cognito/CognitoLoginScreen.js";
 
 const createLoginScreenPlugin = (params: Omit<CognitoLoginScreenProps, "children">) => {
     return LoginScreenRenderer.createDecorator(() => {

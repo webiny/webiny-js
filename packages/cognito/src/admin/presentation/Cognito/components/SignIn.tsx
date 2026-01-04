@@ -3,7 +3,7 @@ import { Grid, Input, Alert, Link, Button, Text, OverlayLoader } from "@webiny/a
 import { Form, Bind } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { View } from "./View.js";
-import type { SignInVM } from "../features/Cognito/abstractions.js";
+import type { SignInVM } from "~/admin/presentation/Cognito/abstractions.js";
 
 export interface SignInProps {
     vm: SignInVM;
@@ -21,7 +21,7 @@ export const SignIn = (props: SignInProps) => {
             <Form onSubmit={(data: any) => onSubmit(data.username, data.password)} submitOnEnter>
                 {({ submit }) => (
                     <View.Content>
-                        {vm.isLoading ? <OverlayLoader text={"Authenticating..."}/> : null}
+                        {vm.isLoading ? <OverlayLoader text={"Authenticating..."} /> : null}
                         <View.Title title={title} description={description} />
 
                         {vm.message && (
@@ -63,8 +63,10 @@ export const SignIn = (props: SignInProps) => {
                                         onClick={submit}
                                         disabled={vm.isLoading}
                                     />
-                                    <Text as={"div"} size={"sm"} onClick={onForgotPassword}>
-                                        <Link to="#">Forgot password?</Link>
+                                    <Text as={"div"} size={"sm"}>
+                                        <Link to="#" onClick={onForgotPassword}>
+                                            Forgot password?
+                                        </Link>
                                     </Text>
                                 </div>
                             </Grid.Column>

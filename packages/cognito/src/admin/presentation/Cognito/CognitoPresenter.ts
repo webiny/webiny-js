@@ -42,17 +42,21 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
                 isLoading: this.formLoading,
                 message: this.message
             },
-            requireNewPassword: {
+            requestPasswordResetCode: {
                 isLoading: this.formLoading,
-                requiredAttributes: (this.authData && this.authData.requiredAttributes) || []
+                message: this.message
             },
-            forgotPassword: {
+            passwordResetCodeSent: {
                 isLoading: this.formLoading,
                 message: this.message
             },
             setNewPassword: {
                 isLoading: this.formLoading,
                 message: this.message
+            },
+            requireNewPassword: {
+                isLoading: this.formLoading,
+                requiredAttributes: (this.authData && this.authData.requiredAttributes) || []
             }
         };
     }
@@ -150,31 +154,41 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
 
         try {
             await Auth.forgotPassword(username);
-            runInAction(() => {
-                this.authState = "setNewPassword";
-                this.authData = { username };
-                this.message = {
-                    title: "Code Sent",
-                    text: "Check your email for the reset code",
-                    type: "success"
-                };
-            });
         } catch (error) {
-            runInAction(() => {
-                this.message = {
-                    title: "Error",
-                    text: error.message,
-                    type: "danger"
-                };
-            });
+            // We ignore errors and pretend that everything went fine.
+            // Showing an error would give a potential attacker information about which usernames exist (or not).
+            // This way it's more difficult to exploit the process.
         } finally {
             runInAction(() => {
+                this.authState = "passwordResetCodeSent";
+                this.authData = { username };
                 this.formLoading = false;
             });
         }
     }
 
-    async confirmPasswordReset(username: string, code: string, password: string): Promise<void> {
+    async resendPasswordResetCode(): Promise<void> {
+        const username = this.authData?.username;
+        if (this.authState !== "passwordResetCodeSent" || !username) {
+            return;
+        }
+
+        await this.requestPasswordReset(username!);
+        runInAction(() => {
+            this.message = {
+                title: "Code Resent",
+                text: "Password reset code has been resent to your email address. Please check your inbox!",
+                type: "success"
+            };
+        });
+    }
+
+    async confirmPasswordReset(code: string, password: string): Promise<void> {
+        const username = this.authData?.username;
+        if (!username) {
+            return;
+        }
+
         runInAction(() => {
             this.formLoading = true;
             this.message = null;
@@ -211,8 +225,13 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
         this.message = null;
     }
 
-    showForgotPassword(): void {
-        this.authState = "forgotPassword";
+    showRequestPasswordResetCode(): void {
+        this.authState = "requestPasswordResetCode";
+        this.message = null;
+    }
+
+    showSetNewPassword(): void {
+        this.authState = "setNewPassword";
         this.message = null;
     }
 

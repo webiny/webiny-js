@@ -3,23 +3,27 @@ import { Button, Grid, Input, Alert, Link, Text } from "@webiny/admin-ui";
 import { Form, Bind } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { View } from "./View.js";
-import type { ForgotPasswordVM } from "../features/Cognito/abstractions.js";
+import type { RequestPasswordResetCodeVM } from "~/admin/presentation/Cognito/abstractions.js";
+import { FooterSignIn } from "~/admin/presentation/Cognito/components/FooterSignIn.js";
 
 export interface ForgotPasswordProps {
-    vm: ForgotPasswordVM;
-    onSubmit: (username: string) => void;
+    vm: RequestPasswordResetCodeVM;
+    onRequestCode: (username: string) => void;
     onCancel: () => void;
 }
 
-export const ForgotPassword = (props: ForgotPasswordProps) => {
-    const { vm, onSubmit, onCancel } = props;
+export const RequestPasswordResetCode = (props: ForgotPasswordProps) => {
+    const { vm, ...actions } = props;
 
     return (
         <View.Container>
-            <Form onSubmit={(data: any) => onSubmit(data.username)} submitOnEnter>
-                {({ Bind, submit }) => (
+            <Form onSubmit={(data: any) => actions.onRequestCode(data.username)} submitOnEnter>
+                {({ submit }) => (
                     <View.Content>
-                        <View.Title title={"Reset your password"} />
+                        <View.Title
+                            title={"Password recovery"}
+                            description={"Request a password reset code."}
+                        />
 
                         {vm.message && (
                             <div className={"mb-lg"}>
@@ -43,13 +47,11 @@ export const ForgotPassword = (props: ForgotPasswordProps) => {
                                     className={"flex flex-row-reverse items-center justify-between"}
                                 >
                                     <Button
-                                        text={"Send Code"}
+                                        text={"Send me the code"}
                                         onClick={submit}
                                         disabled={vm.isLoading}
                                     />
-                                    <Text as={"div"} size={"sm"} onClick={onCancel}>
-                                        <Link to="#">Back to Sign In</Link>
-                                    </Text>
+                                    <FooterSignIn onSignIn={actions.onCancel} />
                                 </div>
                             </Grid.Column>
                         </Grid>
