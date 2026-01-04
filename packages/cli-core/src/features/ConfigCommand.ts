@@ -7,6 +7,8 @@ export interface IConfigCommandParams {
     region?: string;
     variant?: string;
     json?: boolean;
+    extensionType?: string;
+    t?: string;
 }
 
 export class ConfigCommand implements CliCommand.Interface<IConfigCommandParams> {
@@ -21,8 +23,22 @@ export class ConfigCommand implements CliCommand.Interface<IConfigCommandParams>
         return {
             name: "config",
             description: "Prints the current project configuration",
-            options: createBaseAppOptions(projectSdk),
-            handler: async () => {
+            options: [
+                ...createBaseAppOptions(projectSdk),
+                {
+                    name: "extension-type",
+                    alias: "t",
+                    description: "Filter by extension type",
+                    type: "string"
+                },
+                {
+                    name: "json",
+                    description: "Emit output as JSON",
+                    type: "boolean",
+                    default: true
+                }
+            ],
+            handler: async (params: IConfigCommandParams) => {
                 const ui = this.uiService;
 
                 // Get a ProjectSdk instance with the specified env/region/variant params
@@ -31,7 +47,29 @@ export class ConfigCommand implements CliCommand.Interface<IConfigCommandParams>
 
                 const projectConfig = await projectSdk.getProjectConfig();
 
-                ui.raw(JSON.stringify(projectConfig.config, null, 2));
+                // Get the extension type from either --extension-type or -t
+                const extensionType = params.extensionType || params.t;
+
+                let output: string;
+                if (extensionType) {
+                    // Filter extensions by type
+                    const extensions = projectConfig.config[extensionType];
+                    if (!extensions) {
+                        ui.warning(`Extension type %s not found in configuration.`, extensionType);
+                        ui.emptyLine()
+                        ui.info("Available extension types:");
+                        Object.keys(projectConfig.config).forEach(type => {
+                            ui.text(`  - ${type}`);
+                        });
+                        return;
+                    }
+                    output = JSON.stringify(extensions, null, 2);
+                } else {
+                    // Show full config
+                    output = JSON.stringify(projectConfig.config, null, 2);
+                }
+
+                ui.raw(output);
             }
         };
     }
