@@ -7,8 +7,10 @@ export const DatabaseSetup = defineExtension({
     description: "Define the database setup configuration (ddb, ddb+es, or ddb+os).",
     multiple: false,
     paramsSchema: z.object({
-        name: z
+        setupName: z
             .enum(["ddb", "ddb+es", "ddb+os"])
-            .describe("The database setup type: ddb (DynamoDB only), ddb+es (DynamoDB + ElasticSearch), or ddb+os (DynamoDB + OpenSearch)")
+            .describe(
+                "The database setup type: ddb (DynamoDB only), ddb+es (DynamoDB + ElasticSearch), or ddb+os (DynamoDB + OpenSearch)"
+            )
     })
 });

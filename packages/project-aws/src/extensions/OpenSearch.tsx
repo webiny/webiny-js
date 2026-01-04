@@ -13,7 +13,7 @@ export const OpenSearch = (props: React.ComponentProps<typeof PulumiOpenSearch.R
             {props.enabled && (
                 <>
                     {/* Override database setup to indicate OpenSearch is enabled */}
-                    <DatabaseSetup.ReactComponent name="ddb+os" />
+                    <DatabaseSetup.ReactComponent setupName="ddb+os" />
 
                     <ProjectDecorator.ReactComponent src={p("InjectDdbEsLambdaFnHandler.js")} />
                     <ProjectDecorator.ReactComponent src={p("ReplaceApiLambdaFnHandlers.js")} />

@@ -11,7 +11,7 @@ export const Extensions = () => {
             {/*<Admin.Extension src={"./extensions/AdminLogo/AdminLogo.tsx"} />*/}
 
             {/* Infra 👇 */}
-            <Infra.PulumiResourceNamePrefixadsad prefix={"myproj-"} />
+            <Infra.PulumiResourceNamePrefix prefix={"myproj-"} />
             <Infra.ProductionEnvironments environments={["prod", "staging"]} />
             <Infra.Core.Pulumi src={"./extensions/MyCorePulumiHandler.ts"} />
             <Infra.Vpc enabled={true} />
