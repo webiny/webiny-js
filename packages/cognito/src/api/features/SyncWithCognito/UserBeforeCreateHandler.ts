@@ -7,7 +7,6 @@ import { createImplementation } from "@webiny/feature/api";
 import { CognitoConfig } from "./abstractions.js";
 import { Username } from "~/api/domain/Username.js";
 
-
 class UserBeforeCreateHandlerImpl implements UserBeforeCreateHandler.Interface {
     private cognito: CognitoIdentityProvider;
 

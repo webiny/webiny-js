@@ -4,7 +4,7 @@ import {
     AdminAfterDeploy,
     AdminBeforeBuild,
     AdminBeforeWatch,
-    ApiAfterBuild,
+    // ApiAfterBuild,
     ApiBeforeDeploy,
     ApiBeforeWatch,
     BeforeBuild,

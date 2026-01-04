@@ -20,7 +20,9 @@ type ExtensionReactComponentProps<TParamsSchema extends z.ZodTypeAny> = z.infer<
 export function createExtensionReactComponent<TParamsSchema extends z.ZodTypeAny>(
     extensionParams: DefineExtensionParams<TParamsSchema>
 ) {
-    const ExtensionReactComponent: React.FC<ExtensionReactComponentProps<TParamsSchema>> = props => {
+    const ExtensionReactComponent: React.FC<
+        ExtensionReactComponentProps<TParamsSchema>
+    > = props => {
         const { name, remove, before, after, ...keyValues } = props;
 
         const getId = useIdGenerator(extensionParams.type);

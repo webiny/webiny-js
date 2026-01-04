@@ -29,3 +29,7 @@ export * from "~/components/SplitView/index.js";
 export * from "~/components/Permissions/index.js";
 export * from "~/components/SearchUI.js";
 export * from "~/components/RegisterFeature.js";
+export * from "~/components/GroupsMultiAutocomplete/index.js";
+export * from "~/components/GroupAutocomplete/index.js";
+export * from "~/components/TeamAutocomplete/index.js";
+export * from "~/components/TeamsMultiAutocomplete/index.js";

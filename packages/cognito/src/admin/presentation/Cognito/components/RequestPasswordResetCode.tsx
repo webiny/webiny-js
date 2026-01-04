@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Grid, Input, Alert, Link, Text } from "@webiny/admin-ui";
+import { Button, Grid, Input, Alert } from "@webiny/admin-ui";
 import { Form, Bind } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { View } from "./View.js";

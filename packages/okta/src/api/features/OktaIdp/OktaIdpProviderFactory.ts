@@ -4,8 +4,6 @@ import { OidcIdpProvider } from "@webiny/api-core/idp";
 import { jwksCache } from "@webiny/api-core/idp";
 import { OktaIdpConfig } from "./abstractions.js";
 
-const random = 12;
-
 class OktaIdpProviderFactoryImpl implements IdpProviderFactory.Interface {
     constructor(private config: OktaIdpConfig.Interface) {}
 
@@ -17,7 +15,11 @@ class OktaIdpProviderFactoryImpl implements IdpProviderFactory.Interface {
                 config: this.config,
                 isApplicable: (token: JwtPayload) => {
                     const issuer = token.iss as string;
-                    return issuer?.includes("okta.com") ?? false;
+                    if (!issuer) {
+                        return false;
+                    }
+
+                    return new URL(issuer).hostname.includes("okta.com") ?? false;
                 }
             },
             jwksCache

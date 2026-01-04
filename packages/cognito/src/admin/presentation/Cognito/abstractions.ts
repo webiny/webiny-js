@@ -7,7 +7,7 @@ export type AuthState =
     | "requestPasswordResetCode"
     | "passwordResetCodeSent"
     | "setNewPassword"
-    | "requireNewPassword"
+    | "requireNewPassword";
 
 export interface AuthDataVerified {
     email?: string;

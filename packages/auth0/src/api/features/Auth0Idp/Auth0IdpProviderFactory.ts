@@ -15,7 +15,11 @@ class Auth0IdpProviderFactoryImpl implements IdpProviderFactory.Interface {
                 config: this.config,
                 isApplicable: (token: JwtPayload) => {
                     const issuer = token.iss as string;
-                    return issuer?.includes("auth0.com") ?? false;
+                    if (!issuer) {
+                        return false;
+                    }
+
+                    return new URL(issuer).hostname.includes("auth0.com") ?? false;
                 }
             },
             jwksCache

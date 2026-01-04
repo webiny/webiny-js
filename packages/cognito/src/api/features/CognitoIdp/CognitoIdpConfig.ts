@@ -16,7 +16,7 @@ class CognitoIdpConfigImpl implements CognitoIdpConfigAbstraction.Interface {
             profile: {
                 email: email || "",
                 firstName: givenName || "",
-                lastName: familyName || "",
+                lastName: familyName || ""
             }
         };
     }

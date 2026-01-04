@@ -7,7 +7,9 @@ import {
     SimpleFormHeader,
     SimpleFormFooter,
     SimpleFormContent,
-    EmptyView
+    EmptyView,
+    GroupsMultiAutocomplete,
+    TeamsMultiAutocomplete
 } from "@webiny/app-admin";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { ReactComponent as SecurityIcon } from "@webiny/icons/gpp_maybe.svg";
@@ -15,10 +17,6 @@ import { ReactComponent as SecurityTeamsIcon } from "@webiny/icons/admin_panel_s
 import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
 import { Accordion, Alert, OverlayLoader, Button, Input, Grid } from "@webiny/admin-ui";
 import { config as appConfig } from "@webiny/app/config.js";
-import {
-    GroupsMultiAutocomplete,
-    TeamsMultiAutocomplete
-} from "@webiny/app-security-access-management";
 import { AvatarImage } from "../../components/AvatarImage/index.js";
 import { useUserForm } from "~/admin/ui/views/Users/hooks/useUserForm.js";
 import { usePasswordValidator } from "~/admin/presentation/shared/usePasswordValidator.js";
@@ -77,7 +75,7 @@ export const UserForm = ({ teams }: UserFormProps) => {
                     <SimpleFormHeader title={formTitle} />
                     <SimpleFormContent>
                         {isExternal && (
-                            <Grid>
+                            <Grid className={"mb-lg"}>
                                 <Grid.Column span={12}>
                                     <Alert type={"info"} title={"External User"}>
                                         This user is an external user and cannot be edited.
@@ -160,6 +158,7 @@ export const UserForm = ({ teams }: UserFormProps) => {
                                             <GroupsMultiAutocomplete
                                                 label={"Roles"}
                                                 data-testid="groups-autocomplete"
+                                                disabled={isExternal}
                                             />
                                         </Bind>
                                     </Grid.Column>
@@ -177,6 +176,7 @@ export const UserForm = ({ teams }: UserFormProps) => {
                                                 <TeamsMultiAutocomplete
                                                     label={"Teams"}
                                                     data-testid="teams-autocomplete"
+                                                    disabled={isExternal}
                                                 />
                                             </Bind>
                                         </Grid.Column>

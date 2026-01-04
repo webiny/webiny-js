@@ -3,30 +3,20 @@ import { ENTITIES } from "./types.js";
 import type {
     ApiKey,
     Group,
-    ListTenantLinksByTypeParams,
     SecurityStorageOperations,
-    StorageOperationsGetTenantLinkByIdentityParams,
-    Team,
-    TenantLink
+    Team
 } from "@webiny/api-core/types/security.js";
 import WebinyError from "@webiny/error";
 import { createTable } from "./definitions/table.js";
-import {
-    createApiKeyEntity,
-    createGroupEntity,
-    createTeamEntity,
-    createTenantLinkEntity
-} from "./definitions/entities.js";
+import { createApiKeyEntity, createGroupEntity, createTeamEntity } from "./definitions/entities.js";
 import type { QueryOneParams } from "@webiny/db-dynamodb";
 import {
     cleanupItem,
     cleanupItems,
-    createEntityWriteBatch,
     deleteItem,
     getClean,
     put,
     queryAll,
-    queryAllClean,
     queryOneClean,
     sortItems
 } from "@webiny/db-dynamodb";
@@ -34,7 +24,7 @@ import {
 const reservedFields: string[] = ["PK", "SK", "index", "data"];
 
 const isReserved = (name: string): void => {
-    if (reservedFields.includes(name) === false) {
+    if (!reservedFields.includes(name)) {
         return;
     }
     throw new WebinyError(`Attribute name "${name}" is not allowed.`, "ATTRIBUTE_NOT_ALLOWED", {
@@ -57,11 +47,7 @@ export const createStorageOperations = (
     const entities = {
         apiKeys: createApiKeyEntity(table, attributes ? attributes[ENTITIES.API_KEY] : {}),
         groups: createGroupEntity(table, attributes ? attributes[ENTITIES.GROUP] : {}),
-        teams: createTeamEntity(table, attributes ? attributes[ENTITIES.TEAM] : {}),
-        tenantLinks: createTenantLinkEntity(
-            table,
-            attributes ? attributes[ENTITIES.TENANT_LINK] : {}
-        )
+        teams: createTeamEntity(table, attributes ? attributes[ENTITIES.TEAM] : {})
     };
 
     const createApiKeyKeys = ({ id, tenant }: Pick<ApiKey, "id" | "tenant">) => ({
@@ -160,22 +146,6 @@ export const createStorageOperations = (
                 });
             }
         },
-        async createTenantLinks(links): Promise<void> {
-            const batchWrite = createEntityWriteBatch({
-                entity: entities.tenantLinks,
-                put: links.map(link => {
-                    return {
-                        PK: `IDENTITY#${link.identity}`,
-                        SK: `LINK#T#${link.tenant}`,
-                        GSI1_PK: `T#${link.tenant}`,
-                        GSI1_SK: `TYPE#${link.type}#IDENTITY#${link.identity}`,
-                        ...cleanupItem(entities.tenantLinks, link)
-                    };
-                })
-            });
-
-            await batchWrite.execute();
-        },
         async deleteApiKey({ apiKey }) {
             const keys = createApiKeyKeys(apiKey);
 
@@ -223,18 +193,6 @@ export const createStorageOperations = (
                     data: { keys, team }
                 });
             }
-        },
-        async deleteTenantLinks(links): Promise<void> {
-            const batchWrite = createEntityWriteBatch({
-                entity: entities.tenantLinks,
-                delete: links.map(link => {
-                    return {
-                        PK: `IDENTITY#${link.identity}`,
-                        SK: `LINK#T#${link.tenant}`
-                    };
-                })
-            });
-            await batchWrite.execute();
         },
         async getApiKey({ id, tenant }) {
             const keys = createApiKeyKeys({ id, tenant });
@@ -317,26 +275,6 @@ export const createStorageOperations = (
                     message: "Could not load team.",
                     code: "GET_TEAM_ERROR",
                     data: { id, slug }
-                });
-            }
-        },
-        async getTenantLinkByIdentity<TLink extends TenantLink = TenantLink>({
-            tenant,
-            identity
-        }: StorageOperationsGetTenantLinkByIdentityParams): Promise<TLink | null> {
-            try {
-                return await queryOneClean<TLink>({
-                    entity: entities.tenantLinks,
-                    partitionKey: `IDENTITY#${identity}`,
-                    options: {
-                        eq: `LINK#T#${tenant}`
-                    }
-                });
-            } catch (err) {
-                throw WebinyError.from(err, {
-                    message: "Could not get tenant link for identity.",
-                    code: "GET_TENANT_LINK_BY_IDENTITY",
-                    data: { tenant, identity }
                 });
             }
         },
@@ -437,32 +375,6 @@ export const createStorageOperations = (
             }
             return items;
         },
-        async listTenantLinksByIdentity({ identity }): Promise<TenantLink[]> {
-            return await queryAllClean<TenantLink>({
-                entity: entities.tenantLinks,
-                partitionKey: `IDENTITY#${identity}`,
-                options: {
-                    beginsWith: "LINK#"
-                }
-            });
-        },
-        async listTenantLinksByTenant({ tenant }): Promise<TenantLink[]> {
-            return await queryAllClean<TenantLink>({
-                entity: entities.tenantLinks,
-                partitionKey: `T#${tenant}`,
-                options: { index: "GSI1" }
-            });
-        },
-        async listTenantLinksByType<TLink = TenantLink>({
-            type,
-            tenant
-        }: ListTenantLinksByTypeParams): Promise<TLink[]> {
-            return await queryAllClean<TLink>({
-                entity: entities.tenantLinks,
-                partitionKey: `T#${tenant}`,
-                options: { index: "GSI1", beginsWith: `TYPE#${type}#` }
-            });
-        },
         async updateApiKey({ apiKey }): Promise<void> {
             const keys = {
                 ...createApiKeyKeys(apiKey),
@@ -526,22 +438,6 @@ export const createStorageOperations = (
                     data: { keys, team }
                 });
             }
-        },
-        async updateTenantLinks(links): Promise<void> {
-            const batchWrite = createEntityWriteBatch({
-                entity: entities.tenantLinks,
-                put: links.map(link => {
-                    return {
-                        PK: `IDENTITY#${link.identity}`,
-                        SK: `LINK#T#${link.tenant}`,
-                        GSI1_PK: `T#${link.tenant}`,
-                        GSI1_SK: `TYPE#${link.type}#IDENTITY#${link.identity}`,
-                        ...cleanupItem(entities.tenantLinks, link)
-                    };
-                })
-            });
-
-            await batchWrite.execute();
         }
     };
 };

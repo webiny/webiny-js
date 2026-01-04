@@ -154,7 +154,7 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
 
         try {
             await Auth.forgotPassword(username);
-        } catch (error) {
+        } catch {
             // We ignore errors and pretend that everything went fine.
             // Showing an error would give a potential attacker information about which usernames exist (or not).
             // This way it's more difficult to exploit the process.
@@ -293,6 +293,7 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
         try {
             const cognitoUser = await Auth.currentSession();
             if (cognitoUser) {
+                // We don't need to `await`, we simply start a separate "branch" of execution.
                 this.handleSignedIn();
             }
         } catch {

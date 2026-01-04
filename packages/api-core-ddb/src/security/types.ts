@@ -4,7 +4,6 @@ import type { AttributeDefinition } from "@webiny/db-dynamodb/toolbox.js";
 export type Attributes = Record<string, AttributeDefinition>;
 
 export enum ENTITIES {
-    TENANT_LINK = "SecurityIdentity2Tenant",
     API_KEY = "SecurityApiKey",
     GROUP = "SecurityGroup",
     TEAM = "SecurityTeam"

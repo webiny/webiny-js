@@ -12,29 +12,32 @@
     "./*": "./dist/*.js"
   },
   "dependencies": {
-    "@apollo/client": "^3.11.4",
+    "@apollo/react-hooks": "^3.1.5",
     "@aws-amplify/auth": "^5.6.15",
-    "@webiny/api": "*",
+    "@webiny/admin-ui": "*",
     "@webiny/api-core": "*",
     "@webiny/app": "*",
     "@webiny/app-admin": "*",
     "@webiny/aws-sdk": "*",
+    "@webiny/error": "*",
     "@webiny/feature": "*",
     "@webiny/form": "*",
     "@webiny/handler-graphql": "*",
     "@webiny/icons": "*",
     "@webiny/plugins": "*",
-    "@webiny/project": "*",
     "@webiny/project-aws": "*",
     "@webiny/ui": "*",
     "@webiny/validation": "*",
     "graphql": "^16.9.0",
+    "graphql-tag": "^2.12.6",
+    "jsonwebtoken": "^9.0.3",
     "lodash": "^4.17.21",
     "mobx": "^6.13.3",
-    "mobx-react-lite": "^4.0.7",
+    "mobx-react-lite": "^3.4.3",
     "react": "^18.2.0"
   },
   "devDependencies": {
-    "@types/react": "^18.2.79"
+    "@types/react": "^18.2.79",
+    "@webiny/build-tools": "*"
   }
 }

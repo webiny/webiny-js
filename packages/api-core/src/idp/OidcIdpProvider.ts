@@ -72,7 +72,6 @@ export class OidcIdpProvider {
         // Call config.getIdentity to get IdentityData
         const identity = await this.providerConfig.config.getIdentity(verifiedPayload);
 
-
         // Handle default values
         const context = identity.context ?? {};
 

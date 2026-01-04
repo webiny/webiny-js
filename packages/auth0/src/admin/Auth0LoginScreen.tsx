@@ -10,36 +10,34 @@ export interface CreateAuthenticationConfig {
     children: React.ReactNode;
 }
 
-export const Auth0LoginScreen = observer(
-    ({ auth0, children }: CreateAuthenticationConfig) => {
-        const { presenter } = useFeature(Auth0Feature);
+export const Auth0LoginScreen = observer(({ auth0, children }: CreateAuthenticationConfig) => {
+    const { presenter } = useFeature(Auth0Feature);
 
-        const autoLogin = useMemo(() => {
-            const query = new URLSearchParams(window.location.search);
-            return query.get("action") !== "logout";
-        }, []);
+    const autoLogin = useMemo(() => {
+        const query = new URLSearchParams(window.location.search);
+        return query.get("action") !== "logout";
+    }, []);
 
-        useEffect(() => {
-            presenter.init({
-                issuer: auth0.domain,
-                clientId: auth0.clientId,
-                autoLogin
-            });
-        }, []);
+    useEffect(() => {
+        presenter.init({
+            issuer: auth0.domain,
+            clientId: auth0.clientId,
+            autoLogin
+        });
+    }, []);
 
-        const vm = presenter.vm;
+    const vm = presenter.vm;
 
-        if (vm.isAuthenticated) {
-            return <>{children}</>;
-        }
-
-        return (
-            <LoginContent
-                onLogin={() => presenter.authenticate()}
-                checkingSession={vm.checkingSession}
-                isLoggingIn={vm.isLoggingIn}
-                isAuthenticated={vm.isAuthenticated}
-            />
-        );
+    if (vm.isAuthenticated) {
+        return <>{children}</>;
     }
-);
+
+    return (
+        <LoginContent
+            onLogin={() => presenter.authenticate()}
+            checkingSession={vm.checkingSession}
+            isLoggingIn={vm.isLoggingIn}
+            isAuthenticated={vm.isAuthenticated}
+        />
+    );
+});

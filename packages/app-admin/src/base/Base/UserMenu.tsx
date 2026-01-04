@@ -4,7 +4,6 @@ import { SignOut } from "./UserMenu/SignOut.js";
 import { UserInfo } from "./UserMenu/UserInfo.js";
 import { ExitTenant } from "./UserMenu/ExitTenant.js";
 
-
 const { Menu } = AdminConfig;
 
 export const UserMenu = React.memo(() => {
