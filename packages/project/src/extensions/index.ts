@@ -4,6 +4,7 @@ import { ProjectImplementation } from "./ProjectImplementation.js";
 import { ProjectId } from "./ProjectId.js";
 import { Telemetry } from "./Telemetry.js";
 import { EnvVar } from "./EnvVar.js";
+import { DatabaseSetup } from "./DatabaseSetup.js";
 
 // Hooks.
 import {
@@ -35,7 +36,10 @@ import {
     ApiPulumi,
     CorePulumi,
     ProductionEnvironments,
-    PulumiResourceNamePrefix
+    PulumiResourceNamePrefix,
+    CoreStackOutputValue,
+    ApiStackOutputValue,
+    AdminStackOutputValue
 } from "./pulumi/index.js";
 
 // Exports.
@@ -45,6 +49,7 @@ export { ProjectDecorator };
 export { ProjectImplementation };
 export { ExtensionDefinitions };
 export { EnvVar };
+export { DatabaseSetup };
 
 // Hooks.
 export { BeforeBuild };
@@ -74,6 +79,9 @@ export { AdminPulumi };
 export { ApiPulumi };
 export { PulumiResourceNamePrefix };
 export { ProductionEnvironments };
+export { CoreStackOutputValue };
+export { ApiStackOutputValue };
+export { AdminStackOutputValue };
 
 // Definitions (used internally). 👇
 export const definitions = [
@@ -109,7 +117,11 @@ export const definitions = [
     // Pulumi.
     CorePulumi.def,
     PulumiResourceNamePrefix.def,
-    ProductionEnvironments.def
+    ProductionEnvironments.def,
+    CoreStackOutputValue.def,
+    ApiStackOutputValue.def,
+    AdminStackOutputValue.def,
+    DatabaseSetup.def
 ];
 
 export { Project } from "./Project.js";

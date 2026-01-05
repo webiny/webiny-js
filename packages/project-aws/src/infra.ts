@@ -5,18 +5,21 @@ import {
     AdminBeforeDeploy,
     AdminBeforeWatch,
     AdminPulumi,
+    AdminStackOutputValue,
     ApiAfterBuild,
     ApiAfterDeploy,
     ApiBeforeBuild,
     ApiBeforeDeploy,
     ApiBeforeWatch,
     ApiPulumi,
+    ApiStackOutputValue,
     CoreAfterBuild,
     CoreAfterDeploy,
     CoreBeforeBuild,
     CoreBeforeDeploy,
     CoreBeforeWatch,
     CorePulumi,
+    CoreStackOutputValue,
     ProductionEnvironments,
     PulumiResourceNamePrefix
 } from "@webiny/project/extensions/index.js";
@@ -53,7 +56,8 @@ export const Infra = {
         AfterBuild: AdminAfterBuild,
         AfterDeploy: AdminAfterDeploy,
         Pulumi: AdminPulumi,
-        CustomDomains: AdminCustomDomains
+        CustomDomains: AdminCustomDomains,
+        StackOutputValue: AdminStackOutputValue
     },
     Api: {
         BeforeBuild: ApiBeforeBuild,
@@ -61,7 +65,8 @@ export const Infra = {
         BeforeWatch: ApiBeforeWatch,
         AfterBuild: ApiAfterBuild,
         AfterDeploy: ApiAfterDeploy,
-        Pulumi: ApiPulumi
+        Pulumi: ApiPulumi,
+        StackOutputValue: ApiStackOutputValue
     },
     Core: {
         BeforeBuild: CoreBeforeBuild,
@@ -69,6 +74,7 @@ export const Infra = {
         BeforeWatch: CoreBeforeWatch,
         AfterBuild: CoreAfterBuild,
         AfterDeploy: CoreAfterDeploy,
-        Pulumi: CorePulumi
+        Pulumi: CorePulumi,
+        StackOutputValue: CoreStackOutputValue
     }
 };
