@@ -32,9 +32,6 @@ import {
 
 // Pulumi.
 import {
-    AdminPulumi,
-    ApiPulumi,
-    CorePulumi,
     ProductionEnvironments,
     PulumiResourceNamePrefix,
     CoreStackOutputValue,
@@ -74,9 +71,6 @@ export { CoreAfterBuild };
 export { CoreAfterDeploy };
 
 // Pulumi.
-export { CorePulumi };
-export { AdminPulumi };
-export { ApiPulumi };
 export { PulumiResourceNamePrefix };
 export { ProductionEnvironments };
 export { CoreStackOutputValue };
@@ -115,7 +109,6 @@ export const definitions = [
     CoreBeforeWatch.def,
 
     // Pulumi.
-    CorePulumi.def,
     PulumiResourceNamePrefix.def,
     ProductionEnvironments.def,
     CoreStackOutputValue.def,

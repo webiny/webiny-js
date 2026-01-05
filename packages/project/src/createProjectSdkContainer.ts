@@ -11,20 +11,17 @@ import {
     adminBeforeBuild,
     adminBeforeDeploy,
     adminBeforeWatch,
-    adminPulumi,
     apiAfterBuild,
     apiAfterDeploy,
     apiBeforeBuild,
     apiBeforeDeploy,
     apiBeforeWatch,
-    apiPulumi,
     buildApp,
     coreAfterBuild,
     coreAfterDeploy,
     coreBeforeBuild,
     coreBeforeDeploy,
     coreBeforeWatch,
-    corePulumi,
     deployApp,
     destroyApp,
     getApp,
@@ -44,6 +41,18 @@ import {
     validateProjectConfig,
     watch
 } from "./features/index.js";
+
+import {
+    adminPulumi,
+    apiPulumi,
+    corePulumi
+} from "@webiny/project-aws/pulumi/features/index.js";
+
+import {
+    AdminPulumi as AdminPulumiExt,
+    ApiPulumi as ApiPulumiExt,
+    CorePulumi as CorePulumiExt
+} from "@webiny/project-aws/pulumi/extensions/index.js";
 
 import {
     getAppService,
@@ -117,12 +126,6 @@ import {
     CoreBeforeDeploy as CoreBeforeDeployExt,
     CoreBeforeWatch as CoreBeforeWatchExt
 } from "./extensions/hooks/index.js";
-
-import {
-    CorePulumi as CorePulumiExt,
-    ApiPulumi as ApiPulumiExt,
-    AdminPulumi as AdminPulumiExt
-} from "./extensions/pulumi/index.js";
 
 import { ProjectDecorator as ProjectDecoratorExt } from "./extensions/ProjectDecorator.js";
 import { ProjectImplementation as ProjectImplementationExt } from "./extensions/ProjectImplementation.js";
