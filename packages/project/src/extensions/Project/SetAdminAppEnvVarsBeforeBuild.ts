@@ -4,7 +4,6 @@ import {
     GetProjectVersionService,
     IsTelemetryEnabled
 } from "~/abstractions/index.js";
-import { isEnabled as telemetryEnabledViaGlobalCfg } from "@webiny/telemetry/cli.js";
 import { globalConfig } from "@webiny/global-config";
 import { isCI } from "ci-info";
 
@@ -19,17 +18,7 @@ class SetAdminAppEnvVarsBeforeBuildImpl implements AdminBeforeBuild.Interface {
         const projectId = await this.getProjectIdService.execute();
         const projectVersion = this.getProjectVersionService.execute();
 
-        const telemetryDisabledViaGlobalConfig = !telemetryEnabledViaGlobalCfg();
-        const telemetryDisabledViaExtension = await this.isTelemetryEnabled
-            .execute()
-            .then(enabled => !enabled);
-
-        let telemetry = true;
-        if (telemetryDisabledViaExtension) {
-            telemetry = false;
-        } else if (telemetryDisabledViaGlobalConfig) {
-            telemetry = false;
-        }
+        const telemetry = await this.isTelemetryEnabled.execute();
 
         if (projectId) {
             process.env.REACT_APP_WCP_PROJECT_ID = projectId;
