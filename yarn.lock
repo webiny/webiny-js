@@ -12918,6 +12918,7 @@ __metadata:
     find-up: "npm:^5.0.0"
     pino: "npm:^9.13.1"
     rimraf: "npm:^6.0.1"
+    tsx: "npm:^4.20.5"
     type-fest: "npm:^5.2.0"
     typescript: "npm:5.9.3"
     yargs: "npm:^17.7.2"
@@ -14321,7 +14322,6 @@ __metadata:
     lodash: "npm:^4.17.21"
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
-    react-helmet: "npm:^6.1.0"
     rimraf: "npm:^6.0.1"
     typescript: "npm:5.9.3"
   languageName: unknown
@@ -14527,7 +14527,6 @@ __metadata:
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
-    "@webiny/app-security-access-management": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
     "@webiny/form": "npm:0.0.0"
@@ -14789,6 +14788,7 @@ __metadata:
     "@webiny/handler-graphql": "npm:*"
     "@webiny/icons": "npm:*"
     "@webiny/plugins": "npm:*"
+    "@webiny/project": "npm:*"
     "@webiny/project-aws": "npm:*"
     "@webiny/ui": "npm:*"
     "@webiny/validation": "npm:*"
@@ -15361,7 +15361,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/project@npm:0.0.0, @webiny/project@workspace:packages/project":
+"@webiny/project@npm:*, @webiny/project@npm:0.0.0, @webiny/project@workspace:packages/project":
   version: 0.0.0-use.local
   resolution: "@webiny/project@workspace:packages/project"
   dependencies:

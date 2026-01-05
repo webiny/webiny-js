@@ -17,10 +17,7 @@ export interface UpdateRoleInput {
     permissions?: SecurityPermission[];
 }
 
-export interface GetRoleInput {
-    id?: string;
-    slug?: string;
-}
+export type GetRoleInput = { id: string; slug?: never } | { id?: never; slug: string };
 
 export interface ListRolesInput {
     where?: {

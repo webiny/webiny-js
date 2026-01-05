@@ -125,6 +125,7 @@ export const UserForm = ({ teams }: UserFormProps) => {
                                                 label={t`Email`}
                                                 disabled={emailIsDisabled || isExternal}
                                                 data-testid="account.email"
+                                                autoComplete="new-password"
                                                 description={
                                                     "Email is your unique identifier used to login!"
                                                 }
@@ -134,7 +135,7 @@ export const UserForm = ({ teams }: UserFormProps) => {
                                     <Grid.Column span={12}>
                                         <Bind name="password" validators={passwordValidator}>
                                             <Input
-                                                autoComplete="off"
+                                                autoComplete="new-password"
                                                 disabled={data.external}
                                                 description={
                                                     data.id && "Type a new password to reset it."

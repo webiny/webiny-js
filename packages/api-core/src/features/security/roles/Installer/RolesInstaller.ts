@@ -34,8 +34,6 @@ class RolesInstallerImpl implements AppInstaller.Interface {
                 throw result.error;
             }
 
-            console.log("FullAccess Role", result.value);
-
             this.createdRoles.push(result.value);
         }
     }

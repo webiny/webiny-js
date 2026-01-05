@@ -41,6 +41,7 @@ export const SetNewPassword = (props: SetNewPasswordProps) => {
                                     <Input
                                         label={"Verification Code"}
                                         description={"Enter the code we sent to your email."}
+                                        autoComplete={"new-password"}
                                     />
                                 </Bind>
                             </Grid.Column>
@@ -53,7 +54,7 @@ export const SetNewPassword = (props: SetNewPasswordProps) => {
                                         type={"password"}
                                         label={"New Password"}
                                         description={"Enter your new password."}
-                                        autoComplete={"off"}
+                                        autoComplete={"new-password"}
                                     />
                                 </Bind>
                             </Grid.Column>
@@ -96,7 +97,7 @@ const RetypePassword = () => {
                 type={"password"}
                 label={"Retype Password"}
                 description={"Enter your new password once more."}
-                autoComplete={"off"}
+                autoComplete={"new-password"}
             />
         </Bind>
     );

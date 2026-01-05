@@ -4,7 +4,7 @@ import {
     AdminAfterDeploy,
     AdminBeforeBuild,
     AdminBeforeWatch,
-    // ApiAfterBuild,
+    ApiAfterBuild,
     ApiBeforeDeploy,
     ApiBeforeWatch,
     BeforeBuild,
@@ -18,8 +18,7 @@ export const Project = () => {
         <>
             <AdminBeforeBuild src={p("SetAdminAppEnvVarsBeforeBuild.js")} />
             <AdminBeforeWatch src={p("SetAdminAppEnvVarsBeforeWatch.js")} />
-            {/* TODO: update telemetry code to ESM, then update this plugin. */}
-            {/*<ApiAfterBuild src={p("WcpInjectTelemetryClientAfterBuild.js")} />*/}
+            <ApiAfterBuild src={p("WcpInjectTelemetryClientAfterBuild.js")} />
             <ApiBeforeDeploy src={p("EnsureCoreDeployedBeforeApiDeploy.js")} />
             <ApiBeforeWatch src={p("EnsureApiDeployedBeforeWatch.js")} />
             <AdminBeforeBuild src={p("EnsureApiDeployedBeforeAdminBuild.js")} />

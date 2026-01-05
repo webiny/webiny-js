@@ -19,7 +19,7 @@ class AdminUserSchemaImpl implements GraphQLSchema.Interface {
                 lastName: String!
                 password: String!
                 avatar: JSON
-                groups: [RefInput!]
+                roles: [RefInput!]
                 teams: [RefInput!]
             }
 
@@ -32,7 +32,7 @@ class AdminUserSchemaImpl implements GraphQLSchema.Interface {
                 lastName: String
                 password: String
                 avatar: JSON
-                groups: [RefInput!]
+                roles: [RefInput!]
                 teams: [RefInput!]
             }
 

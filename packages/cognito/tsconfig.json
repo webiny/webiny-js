@@ -12,6 +12,7 @@
     { "path": "../form" },
     { "path": "../handler-graphql" },
     { "path": "../plugins" },
+    { "path": "../project" },
     { "path": "../project-aws" },
     { "path": "../ui" },
     { "path": "../validation" }
@@ -179,6 +180,8 @@
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
+      "@webiny/project/*": ["../project/src/*"],
+      "@webiny/project": ["../project/src"],
       "@webiny/project-aws/*": ["../project-aws/src/*"],
       "@webiny/project-aws": ["../project-aws/src"],
       "@webiny/ui/*": ["../ui/src/*"],

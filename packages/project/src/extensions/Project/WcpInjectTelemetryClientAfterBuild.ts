@@ -36,7 +36,7 @@ class WcpInjectTelemetryClientAfterBuildImpl implements ApiAfterBuild.Interface 
         // 1. Download telemetry client code.
         const latestTelemetryClientUrl = this.wcpService
             .getWcpApiUrl()
-            .join("/clients/latest.js")
+            .join("/clients/latest.mjs")
             .toString();
 
         try {

@@ -9,8 +9,8 @@ import { GetUserUseCase } from "~/features/users/GetUser/index.js";
 import { ListRolesUseCase } from "~/features/security/roles/ListRoles/index.js";
 import { ListTeamsUseCase } from "~/features/security/teams/ListTeams/index.js";
 import { ProfileMapper } from "~/graphql/security/ProfileMapper.js";
-import { Identity } from "~/features/security/IdentityContext/index.js";
 import type { SecurityContext } from "~/types/security.js";
+import type { AdminUser } from "~/types/users.js";
 
 const getDefaultTenant = async (context: SecurityContext) => {
     const identity = context.security.getIdentity();
@@ -78,15 +78,45 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
         SecurityMutation: {
             login: async (_, __, context) => {
                 const identity = context.security.getIdentity();
-                if (identity) {
-                    try {
-                        const eventPublisher = context.container.resolve(EventPublisher);
-                        await eventPublisher.publish(new AfterLoginEvent({ identity }));
-                    } catch (err) {
-                        return new ErrorResponse(err);
-                    }
+                if (identity.isAnonymous()) {
+                    return new ErrorResponse({
+                        code: "NOT_AUTHENTICATED",
+                        message: "Unauthenticated!"
+                    });
                 }
-                return new Response(identity.toJson());
+
+                // Roles and teams are stored in the user record.
+                const getUser = context.container.resolve(GetUserUseCase);
+                const listRoles = context.container.resolve(ListRolesUseCase);
+                const listTeams = context.container.resolve(ListTeamsUseCase);
+
+                const adminUserResult = await getUser.execute({ id: identity.id });
+
+                if (!adminUserResult) {
+                    return new ErrorResponse({
+                        code: "NOT_AUTHENTICATED",
+                        message: "Missing user profile!"
+                    });
+                }
+
+                const user = adminUserResult.value;
+
+                const [roles, teams] = await Promise.all([
+                    getRoles(user, listRoles),
+                    getTeams(user, listTeams)
+                ]);
+
+                try {
+                    const eventPublisher = context.container.resolve(EventPublisher);
+                    await eventPublisher.publish(new AfterLoginEvent({ identity }));
+                } catch (err) {
+                    return new ErrorResponse(err);
+                }
+                return new Response({
+                    ...identity.toJson(),
+                    roles,
+                    teams
+                });
             }
         },
         SecurityIdentity: {
@@ -95,44 +125,6 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
             },
             currentTenant(_, __, context) {
                 return context.tenancy.getCurrentTenant();
-            },
-            async roles(identity: Identity, _, context) {
-                const listRolesUseCase = context.container.resolve(ListRolesUseCase);
-
-                const roleIds = identity.roles ?? [];
-                if (roleIds.length > 0) {
-                    const listRoles = await listRolesUseCase.execute({
-                        where: { id_in: roleIds }
-                    });
-
-                    if (listRoles.isOk()) {
-                        return listRoles.value.map(role => ({
-                            id: role.id,
-                            slug: role.slug,
-                            name: role.name
-                        }));
-                    }
-                }
-
-                return [];
-            },
-            async teams(identity: Identity, _, context) {
-                const listTeamsUseCase = context.container.resolve(ListTeamsUseCase);
-
-                const teamIds = identity.teams ?? [];
-                if (teamIds.length > 0) {
-                    const listTeamsResult = await listTeamsUseCase.execute({
-                        where: { id_in: teamIds }
-                    });
-                    if (listTeamsResult.isOk()) {
-                        return listTeamsResult.value.map(team => ({
-                            id: team.id,
-                            slug: team.slug,
-                            name: team.name
-                        }));
-                    }
-                }
-                return [];
             },
             async profile(identity, _, context) {
                 // TODO: refactor this resolver into a proper class with dependencies.
@@ -179,3 +171,39 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
         }
     }
 });
+
+const getRoles = async (user: AdminUser, listRoles: ListRolesUseCase.Interface) => {
+    const roleIds = user.roles ?? [];
+    if (roleIds.length > 0) {
+        const result = await listRoles.execute({
+            where: { id_in: roleIds }
+        });
+
+        if (result.isOk()) {
+            return result.value.map(role => ({
+                id: role.id,
+                slug: role.slug,
+                name: role.name
+            }));
+        }
+    }
+
+    return [];
+};
+
+const getTeams = async (user: AdminUser, listTeams: ListTeamsUseCase.Interface) => {
+    const teamIds = user.teams ?? [];
+    if (teamIds.length > 0) {
+        const result = await listTeams.execute({
+            where: { id_in: teamIds }
+        });
+        if (result.isOk()) {
+            return result.value.map(team => ({
+                id: team.id,
+                slug: team.slug,
+                name: team.name
+            }));
+        }
+    }
+    return [];
+};

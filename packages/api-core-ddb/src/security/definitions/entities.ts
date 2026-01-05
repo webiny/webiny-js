@@ -96,7 +96,7 @@ export const createTeamEntity = (
         description: {
             type: "string"
         },
-        groups: {
+        roles: {
             type: "list"
         },
         ...attributes

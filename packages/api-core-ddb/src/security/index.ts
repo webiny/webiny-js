@@ -56,12 +56,12 @@ export const createStorageOperations = (
     });
 
     const createRoleKeys = (role: Pick<Role, "tenant" | "id">) => ({
-        PK: `T#${role.tenant}#GROUP#${role.id}`,
+        PK: `T#${role.tenant}#ROLE#${role.id}`,
         SK: `A`
     });
 
     const createRoleGsiKeys = (role: Pick<Role, "tenant" | "slug">) => ({
-        GSI1_PK: `T#${role.tenant}#GROUPS`,
+        GSI1_PK: `T#${role.tenant}#ROLES`,
         GSI1_SK: role.slug
     });
 
@@ -118,7 +118,7 @@ export const createStorageOperations = (
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not create role.",
-                    code: "CREATE_GROUP_ERROR",
+                    code: "CREATE_ROLE_ERROR",
                     data: { keys }
                 });
             }
@@ -240,7 +240,7 @@ export const createStorageOperations = (
                 }
                 return await queryOneClean<Role>({
                     entity: entities.roles,
-                    partitionKey: `T#${tenant}#GROUPS`,
+                    partitionKey: `T#${tenant}#ROLES`,
                     options: {
                         index: "GSI1",
                         eq: slug
@@ -249,7 +249,7 @@ export const createStorageOperations = (
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not load role.",
-                    code: "GET_GROUP_ERROR",
+                    code: "GET_ROLE_ERROR",
                     data: { id, slug }
                 });
             }
@@ -309,7 +309,7 @@ export const createStorageOperations = (
             try {
                 items = await queryAll<Role>({
                     entity: entities.roles,
-                    partitionKey: `T#${tenant}#GROUPS`,
+                    partitionKey: `T#${tenant}#ROLES`,
                     options: {
                         index: "GSI1"
                     }
@@ -317,7 +317,7 @@ export const createStorageOperations = (
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not list roles.",
-                    code: "LIST_GROUP_ERROR"
+                    code: "LIST_ROLE_ERROR"
                 });
             }
 
@@ -414,7 +414,7 @@ export const createStorageOperations = (
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not update role.",
-                    code: "UPDATE_GROUP_ERROR",
+                    code: "UPDATE_ROLE_ERROR",
                     data: { keys, role }
                 });
             }

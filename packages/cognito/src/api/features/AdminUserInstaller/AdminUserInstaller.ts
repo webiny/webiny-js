@@ -29,7 +29,6 @@ class AdminUsersInstallerImpl implements AppInstaller.Interface<AdminUserInstall
         // Load `full-access` group and assign it to the new user
         const groupResult = await this.getRole.execute({ slug: "full-access" });
         if (groupResult.isFail()) {
-            console.log(groupResult.error);
             throw new Error(`Failed to get full-access group: ${groupResult.error.message}`);
         }
 

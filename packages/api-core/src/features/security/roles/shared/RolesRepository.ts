@@ -112,7 +112,6 @@ class RolesRepositoryImpl implements RepositoryAbstraction.Interface {
     async update(role: Role): Promise<Result<void, RepositoryAbstraction.Error>> {
         try {
             await this.storageOperations.updateRole({ role });
-
             return Result.ok();
         } catch (error) {
             return Result.fail(new RoleStorageError(error));
