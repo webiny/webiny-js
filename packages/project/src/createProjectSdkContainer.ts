@@ -127,6 +127,7 @@ import {
 import { ProjectDecorator as ProjectDecoratorExt } from "./extensions/ProjectDecorator.js";
 import { ProjectImplementation as ProjectImplementationExt } from "./extensions/ProjectImplementation.js";
 import { EnvVar as EnvVarExt } from "./extensions/EnvVar.js";
+import { EnsureTelemetryEnabledForOss } from "./extensions/Project/EnsureTelemetryEnabledForOss.js";
 
 export const createProjectSdkContainer = async (
     params: Partial<ProjectSdkParamsService.Params>
@@ -212,6 +213,9 @@ export const createProjectSdkContainer = async (
     container.registerComposite(coreBeforeWatch);
     container.registerComposite(coreAfterBuild);
     container.registerComposite(coreAfterDeploy);
+
+    // Register built-in implementations.
+    container.register(EnsureTelemetryEnabledForOss).inSingletonScope();
 
     // Initialize project SDK.
     container.resolve(ProjectSdkParamsService).set(params);
