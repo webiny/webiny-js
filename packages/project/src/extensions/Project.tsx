@@ -27,7 +27,7 @@ export const Project = () => {
             <AdminAfterDeploy src={p("TelemetryNoLongerNewUser.js")} />
             <BeforeBuild src={p("WcpSetEnvVarsBeforeBuild.js")} />
             <BeforeWatch src={p("WcpSetEnvVarsBeforeWatch.js")} />
-            <BeforeDeploy src={p("EnsureTelemetryEnabledForOssImpl.js")} />
+            <BeforeDeploy src={p("EnsureTelemetryEnabledForOss.js")} />
         </>
     );
 };
