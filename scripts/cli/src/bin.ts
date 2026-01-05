@@ -1,10 +1,5 @@
-#!/usr/bin/env node
-import "tsx/esm";
+import { Cli } from "./Cli.js";
 
-(async () => {
-    const { Cli } = await import("./Cli.js");
+const cli = await Cli.init();
 
-    const cli = await Cli.init();
-
-    await cli.run();
-})();
+await cli.run();
