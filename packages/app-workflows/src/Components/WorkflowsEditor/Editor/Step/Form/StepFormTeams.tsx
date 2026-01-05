@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import type { BindComponentRenderProp } from "@webiny/form";
 import { Bind } from "@webiny/form";
 import { validation } from "@webiny/validation";
-import { TeamsMultiAutocomplete } from "@webiny/app-security-access-management";
+import { TeamsMultiAutocomplete } from "@webiny/app-admin";
 
 interface IInput {
     id?: string;

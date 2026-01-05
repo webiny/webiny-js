@@ -8,7 +8,7 @@ import {
     SimpleFormFooter,
     SimpleFormContent,
     EmptyView,
-    GroupsMultiAutocomplete,
+    RolesMultiAutocomplete,
     TeamsMultiAutocomplete
 } from "@webiny/app-admin";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
@@ -154,10 +154,10 @@ export const UserForm = ({ teams }: UserFormProps) => {
                             >
                                 <Grid>
                                     <Grid.Column span={12}>
-                                        <Bind name={"groups"} validators={groupValidators}>
-                                            <GroupsMultiAutocomplete
+                                        <Bind name={"roles"} validators={groupValidators}>
+                                            <RolesMultiAutocomplete
                                                 label={"Roles"}
-                                                data-testid="groups-autocomplete"
+                                                data-testid="roles-autocomplete"
                                                 disabled={isExternal}
                                             />
                                         </Bind>

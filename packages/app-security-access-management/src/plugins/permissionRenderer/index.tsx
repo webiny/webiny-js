@@ -7,7 +7,7 @@ import { PermissionRendererPlugin } from "@webiny/app-admin/plugins/PermissionRe
 
 const t = i18n.ns("app-security-admin-users/plugins/permissionRenderer");
 
-export default new PermissionRendererPlugin({
+export const permissionRendererPlugin = new PermissionRendererPlugin({
     render(props) {
         return (
             <Accordion.Item

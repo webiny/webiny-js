@@ -5,7 +5,7 @@ export type Attributes = Record<string, AttributeDefinition>;
 
 export enum ENTITIES {
     API_KEY = "SecurityApiKey",
-    GROUP = "SecurityGroup",
+    ROLE = "SecurityRole",
     TEAM = "SecurityTeam"
 }
 

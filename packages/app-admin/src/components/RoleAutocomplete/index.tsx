@@ -1,14 +1,14 @@
 import React from "react";
 import type { AutoCompleteProps } from "@webiny/ui/AutoComplete/index.js";
 import { AutoComplete } from "@webiny/ui/AutoComplete/index.js";
-import { LIST_TEAMS } from "./graphql.js";
+import { LIST_ROLES } from "./graphql.js";
 import { useQuery } from "@apollo/react-hooks";
 
-type TeamAutocompleteProps = Partial<AutoCompleteProps>;
-export const TeamAutocomplete = (props: TeamAutocompleteProps) => {
-    const { data, loading } = useQuery(LIST_TEAMS);
+type RoleAutocompleteProps = Partial<AutoCompleteProps>;
+export const RoleAutocomplete = (props: RoleAutocompleteProps) => {
+    const { data, loading } = useQuery(LIST_ROLES);
 
-    const options = loading || !data ? [] : data.security.teams.data;
+    const options = loading || !data ? [] : data.security.roles.data;
 
     return (
         <AutoComplete

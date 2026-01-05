@@ -6,7 +6,8 @@ import {
     SystemInstallerRepository,
     type SystemInstallerViewModel,
     type WizardStep,
-    type WizardStepState
+    type WizardStepState,
+    type ErrorObject
 } from "./abstractions.js";
 import { TelemetryService } from "~/features/telemetry/index.js";
 
@@ -21,7 +22,7 @@ class SystemInstallerPresenterImpl implements Abstraction.Interface {
     private loading = true;
     private isInstalled = false;
     private currentStep = 0;
-    private error: Error | undefined = undefined;
+    private error: ErrorObject | undefined = undefined;
     private installing = false;
     private startUsing = false;
     private installerData: Record<string, any> = {};
@@ -132,6 +133,7 @@ class SystemInstallerPresenterImpl implements Abstraction.Interface {
             runInAction(() => {
                 this.error = error;
                 this.installing = false;
+                console.log("error", error);
             });
         }
     };

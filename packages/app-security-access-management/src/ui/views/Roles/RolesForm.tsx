@@ -14,12 +14,12 @@ import {
     useRouter,
     useSnackbar
 } from "@webiny/app-admin";
-import { CREATE_GROUP, LIST_GROUPS, READ_GROUP, UPDATE_GROUP } from "./graphql.js";
+import { CREATE_ROLE, LIST_ROLES, READ_ROLE, UPDATE_ROLE } from "./graphql.js";
 import isEmpty from "lodash/isEmpty.js";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { ReactComponent as CopyIcon } from "@webiny/icons/content_copy.svg";
 import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
-import type { Group } from "~/types.js";
+import type { Role } from "~/types.js";
 import {
     Alert,
     Button,
@@ -34,16 +34,16 @@ import { Routes } from "~/routes.js";
 
 const t = i18n.ns("app-security/admin/roles/form");
 
-export interface GroupsFormProps {
+export interface RolesFormProps {
     newEntry: boolean;
     id: string | undefined;
 }
 
-export const GroupsForm = ({ id, newEntry }: GroupsFormProps) => {
+export const RolesForm = ({ id, newEntry }: RolesFormProps) => {
     const { goToRoute } = useRouter();
     const { showSnackbar } = useSnackbar();
 
-    const getQuery = useQuery(READ_GROUP, {
+    const getQuery = useQuery(READ_ROLE, {
         variables: { id },
         skip: !id,
         onCompleted: data => {
@@ -59,18 +59,18 @@ export const GroupsForm = ({ id, newEntry }: GroupsFormProps) => {
         }
     });
 
-    const [create, createMutation] = useMutation(CREATE_GROUP, {
-        refetchQueries: [{ query: LIST_GROUPS }]
+    const [create, createMutation] = useMutation(CREATE_ROLE, {
+        refetchQueries: [{ query: LIST_ROLES }]
     });
 
-    const [update, updateMutation] = useMutation(UPDATE_GROUP, {
-        refetchQueries: [{ query: LIST_GROUPS }]
+    const [update, updateMutation] = useMutation(UPDATE_ROLE, {
+        refetchQueries: [{ query: LIST_ROLES }]
     });
 
     const loading = [getQuery, createMutation, updateMutation].find(item => item.loading);
 
     const onSubmit = useCallback(
-        async ({ id, name, description, slug, permissions, createdOn }: Group) => {
+        async ({ id, name, description, slug, permissions, createdOn }: Role) => {
             if (!permissions || !permissions.length) {
                 showSnackbar(t`You must configure permissions before saving!`, {
                     timeout: 60000,
@@ -123,11 +123,11 @@ export const GroupsForm = ({ id, newEntry }: GroupsFormProps) => {
         [id]
     );
 
-    const data: Group = loading ? {} : get(getQuery, "data.security.group.data", {});
+    const data: Role = loading ? {} : get(getQuery, "data.security.group.data", {});
 
-    const systemGroup = data.slug === "full-access" || data.system;
-    const pluginGroup = data.plugin;
-    const canModifyGroup = !systemGroup && !pluginGroup;
+    const systemRole = data.slug === "full-access" || data.system;
+    const pluginRole = data.plugin;
+    const canModifyRole = !systemRole && !pluginRole;
 
     const showEmptyView = !newEntry && !loading && isEmpty(data);
     // Render "No content" selected view.
@@ -160,7 +160,7 @@ export const GroupsForm = ({ id, newEntry }: GroupsFormProps) => {
                         <SimpleFormContent>
                             <Grid>
                                 <>
-                                    {pluginGroup && (
+                                    {pluginRole && (
                                         <Grid.Column span={12}>
                                             <Alert
                                                 type={"warning"}
@@ -179,7 +179,7 @@ export const GroupsForm = ({ id, newEntry }: GroupsFormProps) => {
                                             <Input
                                                 size={"lg"}
                                                 label={t`Name`}
-                                                disabled={!canModifyGroup}
+                                                disabled={!canModifyRole}
                                                 data-testid="admin.am.group.new.name"
                                             />
                                         </Bind>
@@ -191,7 +191,7 @@ export const GroupsForm = ({ id, newEntry }: GroupsFormProps) => {
                                         >
                                             <Input
                                                 size={"lg"}
-                                                disabled={!canModifyGroup || !newEntry}
+                                                disabled={!canModifyRole || !newEntry}
                                                 label={t`Slug`}
                                                 data-testid="admin.am.group.new.slug"
                                             />
@@ -206,7 +206,7 @@ export const GroupsForm = ({ id, newEntry }: GroupsFormProps) => {
                                                 size={"lg"}
                                                 label={t`Description`}
                                                 rows={3}
-                                                disabled={!canModifyGroup}
+                                                disabled={!canModifyRole}
                                                 data-testid="admin.am.group.new.description"
                                             />
                                         </Bind>
@@ -234,7 +234,7 @@ export const GroupsForm = ({ id, newEntry }: GroupsFormProps) => {
                             </div>
                         </SimpleFormHeader>
                         <SimpleFormContent>
-                            {systemGroup && (
+                            {systemRole && (
                                 <Grid.Column span={12}>
                                     <Alert type={"warning"} title={"Permissions are locked"}>
                                         This is a protected system role and you can&apos;t modify
@@ -244,7 +244,7 @@ export const GroupsForm = ({ id, newEntry }: GroupsFormProps) => {
                             )}
                             <Grid>
                                 <>
-                                    {canModifyGroup && (
+                                    {canModifyRole && (
                                         <Grid.Column span={12}>
                                             <Bind name={"permissions"} defaultValue={[]}>
                                                 {bind => (
@@ -257,7 +257,7 @@ export const GroupsForm = ({ id, newEntry }: GroupsFormProps) => {
                             </Grid>
                         </SimpleFormContent>
                         <SimpleFormFooter>
-                            {canModifyGroup && (
+                            {canModifyRole && (
                                 <>
                                     <Button
                                         variant={"secondary"}

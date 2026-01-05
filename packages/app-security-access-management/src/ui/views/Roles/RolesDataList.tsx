@@ -16,10 +16,10 @@ import {
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons/index.js";
 import { useRouter, SearchUI, useSnackbar, useConfirmationDialog } from "@webiny/app-admin";
 import { useQuery, useMutation } from "@apollo/react-hooks";
-import type { ListGroupsResponse } from "./graphql.js";
-import { LIST_GROUPS, DELETE_GROUP } from "./graphql.js";
+import type { ListRolesResponse } from "./graphql.js";
+import { LIST_ROLES, DELETE_ROLE } from "./graphql.js";
 import { deserializeSorters } from "../utils.js";
-import type { Group } from "~/types.js";
+import type { Role } from "~/types.js";
 import { Button, Grid, Select, Tooltip } from "@webiny/admin-ui";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { Routes } from "~/routes.js";
@@ -45,11 +45,11 @@ const SORTERS = [
     }
 ];
 
-export interface GroupsDataListProps {
+export interface RolesDataListProps {
     activeId: string | undefined;
 }
 
-export const GroupsDataList = ({ activeId }: GroupsDataListProps) => {
+export const RolesDataList = ({ activeId }: RolesDataListProps) => {
     const [filter, setFilter] = useState("");
     const [sort, setSort] = useState(SORTERS[0].sorter);
     const { goToRoute } = useRouter();
@@ -58,16 +58,16 @@ export const GroupsDataList = ({ activeId }: GroupsDataListProps) => {
         dataTestId: "default-data-list.delete-dialog"
     });
 
-    const { data: listResponse, loading: listLoading } = useQuery<ListGroupsResponse>(LIST_GROUPS);
+    const { data: listResponse, loading: listLoading } = useQuery<ListRolesResponse>(LIST_ROLES);
 
-    const [deleteIt, { loading: deleteLoading }] = useMutation(DELETE_GROUP, {
-        refetchQueries: [{ query: LIST_GROUPS }]
+    const [deleteIt, { loading: deleteLoading }] = useMutation(DELETE_ROLE, {
+        refetchQueries: [{ query: LIST_ROLES }]
     });
 
-    const data = listLoading && !listResponse ? [] : listResponse?.security.groups.data || [];
+    const data = listLoading && !listResponse ? [] : listResponse?.security.roles.data || [];
 
-    const filterGroup = useCallback(
-        ({ name, slug, description }: Group) => {
+    const filterRole = useCallback(
+        ({ name, slug, description }: Role) => {
             return (
                 name.toLowerCase().includes(filter) ||
                 slug.toLowerCase().includes(filter) ||
@@ -77,25 +77,25 @@ export const GroupsDataList = ({ activeId }: GroupsDataListProps) => {
         [filter]
     );
 
-    const sortGroups = useCallback(
-        (groups: Group[]) => {
+    const sortRoles = useCallback(
+        (roles: Role[]) => {
             if (!sort) {
-                return groups;
+                return roles;
             }
             const [key, sortBy] = deserializeSorters(sort);
-            return orderBy(groups, [key], [sortBy]);
+            return orderBy(roles, [key], [sortBy]);
         },
         [sort]
     );
 
     const deleteItem = useCallback(
-        (item: Group) => {
+        (item: Role) => {
             showConfirmation(async () => {
                 const { data } = await deleteIt({
                     variables: item
                 });
 
-                const { error } = data.security.deleteGroup;
+                const { error } = data.security.deleteRole;
                 if (error) {
                     return showSnackbar(error.message);
                 }
@@ -110,7 +110,7 @@ export const GroupsDataList = ({ activeId }: GroupsDataListProps) => {
         [activeId]
     );
 
-    const groupsDataListModalOverlay = useMemo(
+    const rolesDataListModalOverlay = useMemo(
         () => (
             <DataListModalOverlay>
                 <Grid>
@@ -131,8 +131,8 @@ export const GroupsDataList = ({ activeId }: GroupsDataListProps) => {
         [sort]
     );
 
-    const filteredData = filter === "" ? data : data.filter(filterGroup);
-    const groupList = sortGroups(filteredData);
+    const filteredData = filter === "" ? data : data.filter(filterRole);
+    const groupList = sortRoles(filteredData);
 
     return (
         <DataList
@@ -158,12 +158,12 @@ export const GroupsDataList = ({ activeId }: GroupsDataListProps) => {
                     inputPlaceholder={t`Search roles...`}
                 />
             }
-            modalOverlay={groupsDataListModalOverlay}
+            modalOverlay={rolesDataListModalOverlay}
             modalOverlayAction={
                 <DataListModalOverlayAction data-testid={"default-data-list.filter"} />
             }
         >
-            {({ data }: { data: Group[] }) => (
+            {({ data }: { data: Role[] }) => (
                 <ScrollList data-testid="default-data-list">
                     {data.map(item => (
                         <ListItem key={item.id} selected={item.id === activeId}>

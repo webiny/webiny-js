@@ -1,5 +1,5 @@
 export enum Permission {
-    Groups = "security.group",
+    Roles = "security.group",
     Teams = "security.team",
     ApiKeys = "security.apiKey"
 }

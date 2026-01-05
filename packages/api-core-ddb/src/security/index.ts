@@ -46,7 +46,7 @@ export const createStorageOperations = (
 
     const entities = {
         apiKeys: createApiKeyEntity(table, attributes ? attributes[ENTITIES.API_KEY] : {}),
-        roles: createRoleEntity(table, attributes ? attributes[ENTITIES.GROUP] : {}),
+        roles: createRoleEntity(table, attributes ? attributes[ENTITIES.ROLE] : {}),
         teams: createTeamEntity(table, attributes ? attributes[ENTITIES.TEAM] : {})
     };
 

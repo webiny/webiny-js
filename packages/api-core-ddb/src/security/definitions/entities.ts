@@ -36,7 +36,7 @@ export const createRoleEntity = (
     table: Table<string, string, string>,
     attributes: Attributes = {}
 ) => {
-    return createEntity(ENTITIES.GROUP, table, {
+    return createEntity(ENTITIES.ROLE, table, {
         id: {
             type: "string"
         },

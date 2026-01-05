@@ -23,7 +23,7 @@ import type { ApiKey } from "~/types.js";
 import { useSnackbar, useConfirmationDialog, useRouter, SearchUI } from "@webiny/app-admin";
 import { Routes } from "~/routes.js";
 
-const t = i18n.ns("app-security/admin/groups/data-list");
+const t = i18n.ns("app-security/admin/roles/data-list");
 
 const SORTERS = [
     {
@@ -109,7 +109,7 @@ export const ApiKeysDataList = ({ activeId }: ApiKeysDataListProps) => {
         [activeId]
     );
 
-    const groupsDataListModalOverlay = useMemo(
+    const rolesDataListModalOverlay = useMemo(
         () => (
             <DataListModalOverlay>
                 <Grid>
@@ -159,7 +159,7 @@ export const ApiKeysDataList = ({ activeId }: ApiKeysDataListProps) => {
                     inputPlaceholder={t`Search API keys...`}
                 />
             }
-            modalOverlay={groupsDataListModalOverlay}
+            modalOverlay={rolesDataListModalOverlay}
             modalOverlayAction={
                 <DataListModalOverlayAction data-testid={"default-data-list.filter"} />
             }

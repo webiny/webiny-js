@@ -6,7 +6,7 @@ const fields = `
     name
     slug
     description
-    groups {
+    roles {
         id
         slug
         name

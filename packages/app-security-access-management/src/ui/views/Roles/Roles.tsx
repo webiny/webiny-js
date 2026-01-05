@@ -1,19 +1,19 @@
 import React from "react";
 import { SplitView, LeftPanel, RightPanel, useRoute } from "@webiny/app-admin";
-import { GroupsDataList } from "./GroupsDataList.js";
-import { GroupsForm } from "./GroupsForm.js";
+import { RolesDataList } from "./RolesDataList.js";
+import { RolesForm } from "./RolesForm.js";
 import { Routes } from "~/routes.js";
 
-export const Groups = () => {
+export const Roles = () => {
     const { route } = useRoute(Routes.Roles.List);
 
     return (
         <SplitView>
             <LeftPanel>
-                <GroupsDataList activeId={route.params.id} />
+                <RolesDataList activeId={route.params.id} />
             </LeftPanel>
             <RightPanel>
-                <GroupsForm newEntry={route.params.new === true} id={route.params.id} />
+                <RolesForm newEntry={route.params.new === true} id={route.params.id} />
             </RightPanel>
         </SplitView>
     );

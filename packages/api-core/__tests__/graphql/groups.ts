@@ -16,10 +16,10 @@ const ERROR_FIELD = /* GraphQL */ `
     }
 `;
 
-export const CREATE_SECURITY_GROUP = /* GraphQL */ `
-    mutation CreateGroup($data: SecurityGroupCreateInput!) {
+export const CREATE_SECURITY_ROLE = /* GraphQL */ `
+    mutation CreateGroup($data: SecurityRoleCreateInput!) {
         security {
-            createGroup(data: $data) {
+            createRole(data: $data) {
                 data ${DATA_FIELD("id")}
                 error ${ERROR_FIELD}
             }
@@ -27,10 +27,10 @@ export const CREATE_SECURITY_GROUP = /* GraphQL */ `
     }
 `;
 
-export const UPDATE_SECURITY_GROUP = /* GraphQL */ `
-    mutation UpdateGroup($id: ID!, $data: SecurityGroupUpdateInput!) {
+export const UPDATE_SECURITY_ROLE = /* GraphQL */ `
+    mutation UpdateRole($id: ID!, $data: SecurityRoleUpdateInput!) {
         security {
-            updateGroup(id: $id, data: $data) {
+            updateRole(id: $id, data: $data) {
                 data ${DATA_FIELD()}
                 error ${ERROR_FIELD}
             }
@@ -38,10 +38,10 @@ export const UPDATE_SECURITY_GROUP = /* GraphQL */ `
     }
 `;
 
-export const DELETE_SECURITY_GROUP = /* GraphQL */ `
-    mutation DeleteGroup($id: ID!) {
+export const DELETE_SECURITY_ROLE = /* GraphQL */ `
+    mutation DeleteRole($id: ID!) {
         security {
-            deleteGroup(id: $id) {
+            deleteRole(id: $id) {
                 data
                 error ${ERROR_FIELD}
             }
@@ -49,7 +49,7 @@ export const DELETE_SECURITY_GROUP = /* GraphQL */ `
     }
 `;
 
-export const LIST_SECURITY_GROUPS = /* GraphQL */ `
+export const LIST_SECURITY_ROLES = /* GraphQL */ `
     query ListGroups {
         security {
             listGroups {
@@ -60,7 +60,7 @@ export const LIST_SECURITY_GROUPS = /* GraphQL */ `
     }
 `;
 
-export const GET_SECURITY_GROUP = /* GraphQL */ `
+export const GET_SECURITY_ROLE = /* GraphQL */ `
     query GetGroup($id: ID!) {
         security {
             getGroup(where: { id: $id }) {

@@ -1,15 +1,20 @@
 import gql from "graphql-tag";
 
-export const LIST_GROUPS = gql`
-    query listGroups {
+export const LIST_ROLES = gql`
+    query ListRoles {
         security {
-            groups: listGroups {
+            roles: listRoles {
                 data {
                     id
                     slug
                     name
                     description
                     createdOn
+                }
+                error {
+                    data
+                    message
+                    code
                 }
             }
         }

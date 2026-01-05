@@ -35,8 +35,18 @@ export type WizardStep = {
 
 export type WizardStepState = "current" | "idle" | "completed";
 
+export type ErrorObject = {
+    message: string;
+    code: string;
+    data: {
+        reason: string;
+        failedApp: string;
+        cause: Record<string, any>;
+    };
+};
+
 export interface SystemInstallerViewModel {
-    error: Error | undefined;
+    error: ErrorObject | undefined;
     loading: boolean;
     isInstalled: boolean;
     startUsing: boolean;

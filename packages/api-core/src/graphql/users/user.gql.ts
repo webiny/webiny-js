@@ -71,7 +71,7 @@ export const createUsersGraphQL = (params: CreateUserGraphQlPluginsParams) => {
                     displayName: String!
                     email: String!
 
-                    roles: [SecurityGroup]
+                    roles: [SecurityRole]
                     firstName: String
                     lastName: String
                     avatar: JSON

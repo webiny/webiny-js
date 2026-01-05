@@ -30,6 +30,10 @@ class RolesInstallerImpl implements AppInstaller.Interface {
                 permissions: [{ name: "*" }]
             });
 
+            if (result.isFail()) {
+                throw result.error;
+            }
+
             this.createdRoles.push(result.value);
         }
     }

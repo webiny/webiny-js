@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import type { Group } from "~/types.js";
+import type { Role } from "~/types.js";
 
 const fields = `
     id
@@ -12,18 +12,18 @@ const fields = `
     createdOn
 `;
 
-export interface ListGroupsResponse {
+export interface ListRolesResponse {
     security: {
-        groups: {
-            data: Group[];
+        roles: {
+            data: Role[];
         };
     };
 }
 
-export const LIST_GROUPS = gql`
-    query listGroups {
+export const LIST_ROLES = gql`
+    query listRoles {
         security {
-            groups: listGroups {
+            roles: listRoles {
                 data {
                     ${fields}
                 }
@@ -32,43 +32,26 @@ export const LIST_GROUPS = gql`
     }
 `;
 
-export const READ_GROUP = gql`
-    query getGroup($id: ID!) {
+export const READ_ROLE = gql`
+    query getRole($id: ID!) {
         security {
-            group: getGroup(where: { id: $id }){
-                data {
-                    ${fields}
-                }
-                error {
-                    code
-                    message
-                }
-            }
-        }
-    }
-`;
-
-export const CREATE_GROUP = gql`
-    mutation createGroup($data: SecurityGroupCreateInput!){
-        security {
-            group: createGroup(data: $data) {
+            role: getRole(where: { id: $id }){
                 data {
                     ${fields}
                 }
                 error {
                     code
                     message
-                    data
                 }
             }
         }
     }
 `;
 
-export const UPDATE_GROUP = gql`
-    mutation updateGroup($id: ID!, $data: SecurityGroupUpdateInput!){
+export const CREATE_ROLE = gql`
+    mutation createRole($data: SecurityRoleCreateInput!){
         security {
-            group: updateGroup(id: $id, data: $data) {
+            role: createRole(data: $data) {
                 data {
                     ${fields}
                 }
@@ -82,10 +65,27 @@ export const UPDATE_GROUP = gql`
     }
 `;
 
-export const DELETE_GROUP = gql`
-    mutation deleteGroup($id: ID!) {
+export const UPDATE_ROLE = gql`
+    mutation updateRole($id: ID!, $data: SecurityRoleUpdateInput!){
         security {
-            deleteGroup(id: $id) {
+            role: updateRole(id: $id, data: $data) {
+                data {
+                    ${fields}
+                }
+                error {
+                    code
+                    message
+                    data
+                }
+            }
+        }
+    }
+`;
+
+export const DELETE_ROLE = gql`
+    mutation deleteRole($id: ID!) {
+        security {
+            deleteRole(id: $id) {
                 data
                 error {
                     code
