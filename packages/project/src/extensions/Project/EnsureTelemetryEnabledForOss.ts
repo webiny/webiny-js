@@ -4,7 +4,7 @@ import { GracefulError } from "@webiny/project";
 class EnsureTelemetryEnabledForOssImpl implements BeforeDeploy.Interface {
     constructor(private isTelemetryEnabled: IsTelemetryEnabled.Interface) {}
 
-    async execute(params: BeforeDeploy.Params) {
+    async execute(_params: BeforeDeploy.Params) {
         const telemetryEnabled = await this.isTelemetryEnabled.execute();
         const wcpProjectId = process.env.WCP_PROJECT_ID;
 
