@@ -5,7 +5,7 @@ export const customGroupAuthorizer = () => {
     return new ContextPlugin<ApiCoreContext>(({ security }) => {
         security.addAuthorizer(async () => {
             const identity = security.getIdentity();
-            if (identity && identity.context.groups.includes("full-access")) {
+            if (identity && identity.roles.includes("full-access")) {
                 return [
                     {
                         name: "*"

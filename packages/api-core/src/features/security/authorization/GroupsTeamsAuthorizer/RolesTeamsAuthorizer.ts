@@ -20,7 +20,7 @@ class GroupsTeamsAuthorizerImpl implements Authorizer.Interface {
         }
 
         if (!identity.context.canAccessTenant) {
-            return [];
+            return null;
         }
 
         const currentTenantPermissions = await this.permissionsProcessor.getPermissions(identity);

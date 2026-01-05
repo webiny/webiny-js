@@ -12,9 +12,9 @@ export const customAuthenticator = () => {
                 id: "123456789",
                 displayName: "John Doe",
                 type: "admin",
-                context: {
-                    // This is a mock only for test.
-                    groups: ["full-access"]
+                roles: ["full-access"],
+                profile: {
+                    external: true
                 }
             };
         });

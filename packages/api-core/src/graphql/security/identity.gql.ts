@@ -85,6 +85,13 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
                     });
                 }
 
+                try {
+                    const eventPublisher = context.container.resolve(EventPublisher);
+                    await eventPublisher.publish(new AfterLoginEvent({ identity }));
+                } catch (err) {
+                    return new ErrorResponse(err);
+                }
+
                 // Roles and teams are stored in the user record.
                 const getUser = context.container.resolve(GetUserUseCase);
                 const listRoles = context.container.resolve(ListRolesUseCase);
@@ -92,7 +99,7 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
 
                 const adminUserResult = await getUser.execute({ id: identity.id });
 
-                if (!adminUserResult) {
+                if (adminUserResult.isFail()) {
                     return new ErrorResponse({
                         code: "NOT_AUTHENTICATED",
                         message: "Missing user profile!"
@@ -106,12 +113,6 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
                     getTeams(user, listTeams)
                 ]);
 
-                try {
-                    const eventPublisher = context.container.resolve(EventPublisher);
-                    await eventPublisher.publish(new AfterLoginEvent({ identity }));
-                } catch (err) {
-                    return new ErrorResponse(err);
-                }
                 return new Response({
                     ...identity.toJson(),
                     roles,

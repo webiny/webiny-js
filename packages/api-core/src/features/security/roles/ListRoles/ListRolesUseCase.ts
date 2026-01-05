@@ -10,17 +10,12 @@ class ListRolesUseCaseImpl implements UseCaseAbstraction.Interface {
     private repository: RolesRepository.Interface;
     private identityContext: IdentityContext.Interface;
 
-    constructor(
-        repository: RolesRepository.Interface,
-        identityContext: IdentityContext.Interface
-    ) {
+    constructor(repository: RolesRepository.Interface, identityContext: IdentityContext.Interface) {
         this.repository = repository;
         this.identityContext = identityContext;
     }
 
-    async execute(
-        params: ListRolesInput = {}
-    ): Promise<Result<Role[], UseCaseAbstraction.Error>> {
+    async execute(params: ListRolesInput = {}): Promise<Result<Role[], UseCaseAbstraction.Error>> {
         const hasPermission = await this.identityContext.getPermission("security.role");
         if (!hasPermission) {
             return Result.fail(new NotAuthorizedError());

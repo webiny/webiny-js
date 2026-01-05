@@ -11,9 +11,8 @@ export class RoleBeforeUpdateEvent extends DomainEvent<RoleBeforeUpdatePayload> 
     }
 }
 
-export const RoleBeforeUpdateHandler = createAbstraction<IEventHandler<RoleBeforeUpdateEvent>>(
-    "RoleBeforeUpdateHandler"
-);
+export const RoleBeforeUpdateHandler =
+    createAbstraction<IEventHandler<RoleBeforeUpdateEvent>>("RoleBeforeUpdateHandler");
 
 export namespace RoleBeforeUpdateHandler {
     export type Interface = IEventHandler<RoleBeforeUpdateEvent>;

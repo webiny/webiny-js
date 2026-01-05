@@ -1,10 +1,10 @@
 import { describe, test, expect, beforeEach } from "vitest";
 import { createSecurityRolePlugin } from "~/legacy/security/plugins/SecurityRolePlugin";
 import { useGqlHandler } from "~tests/useGqlHandler";
-import mocks from "~tests/mocks/securityGroup.js";
+import mocks from "~tests/mocks/securityRole.js";
 
-describe("Security Group CRUD Test", () => {
-    const { install, securityGroup } = useGqlHandler({
+describe("Security Role CRUD Test", () => {
+    const { install, securityRole } = useGqlHandler({
         plugins: [
             createSecurityRolePlugin({
                 id: "test-role-1",
@@ -25,22 +25,22 @@ describe("Security Group CRUD Test", () => {
         await install.install();
     });
 
-    test("should able to create, read, update and delete `Security Groups`", async () => {
-        const [responseA] = await securityGroup.create({ data: mocks.groupA });
+    test("should able to create, read, update and delete `Security Roles`", async () => {
+        const [responseA] = await securityRole.create({ data: mocks.roleA });
 
-        // Let's create two groups.
-        const groupA = responseA.data.security.createGroup.data;
-        expect(groupA).toEqual({ id: groupA.id, ...mocks.groupA });
+        // Let's create two roles.
+        const roleA = responseA.data.security.createRole.data;
+        expect(roleA).toEqual({ id: roleA.id, ...mocks.roleA });
 
-        const [responseB] = await securityGroup.create({ data: mocks.groupB });
+        const [responseB] = await securityRole.create({ data: mocks.roleB });
 
-        const groupB = responseB.data.security.createGroup.data;
-        expect(groupB).toEqual({ id: groupB.id, ...mocks.groupB });
+        const roleB = responseB.data.security.createRole.data;
+        expect(roleB).toEqual({ id: roleB.id, ...mocks.roleB });
 
-        // Let's check whether both of the group exists
-        const [listResponse] = await securityGroup.list();
+        // Let's check whether both of the role exists
+        const [listResponse] = await securityRole.list();
 
-        expect(listResponse.data.security.listGroups).toEqual({
+        expect(listResponse.data.security.listRoles).toEqual({
             error: null,
             data: [
                 {
@@ -74,15 +74,9 @@ describe("Security Group CRUD Test", () => {
                     ]
                 },
                 {
-                    name: "Anonymous",
-                    description: "Permissions for anonymous users (public access).",
-                    slug: "anonymous",
-                    permissions: []
-                },
-                {
-                    name: "Group-A",
+                    name: "Role-A",
                     description: "A: Dolor odit et quia animi ipsum nostrum nesciunt.",
-                    slug: "group-a",
+                    slug: "role-a",
                     permissions: [
                         {
                             name: "security.*"
@@ -90,9 +84,9 @@ describe("Security Group CRUD Test", () => {
                     ]
                 },
                 {
-                    name: "Group-B",
+                    name: "Role-B",
                     description: "B: Dolor odit et quia animi ipsum nostrum nesciunt.",
-                    slug: "group-b",
+                    slug: "role-b",
                     permissions: [
                         {
                             name: "security.*"
@@ -102,22 +96,22 @@ describe("Security Group CRUD Test", () => {
             ]
         });
 
-        // Let's update the "groupB" name
-        const updatedName = "Group B - updated";
-        const [updateB] = await securityGroup.update({
-            id: groupB.id,
+        // Let's update the "roleB" name
+        const updatedName = "Role B - updated";
+        const [updateB] = await securityRole.update({
+            id: roleB.id,
             data: {
                 name: updatedName,
-                permissions: mocks.groupB.permissions
+                permissions: mocks.roleB.permissions
             }
         });
 
         expect(updateB).toEqual({
             data: {
                 security: {
-                    updateGroup: {
+                    updateRole: {
                         data: {
-                            ...mocks.groupB,
+                            ...mocks.roleB,
                             name: updatedName
                         },
                         error: null
@@ -126,15 +120,15 @@ describe("Security Group CRUD Test", () => {
             }
         });
 
-        // Let's delete  "groupB"
-        const [deleteB] = await securityGroup.delete({
-            id: groupB.id
+        // Let's delete  "roleB"
+        const [deleteB] = await securityRole.delete({
+            id: roleB.id
         });
 
         expect(deleteB).toEqual({
             data: {
                 security: {
-                    deleteGroup: {
+                    deleteRole: {
                         data: true,
                         error: null
                     }
@@ -142,16 +136,16 @@ describe("Security Group CRUD Test", () => {
             }
         });
 
-        // Should not contain "groupB"
-        const [getB] = await securityGroup.get({ id: groupB.id });
+        // Should not contain "roleB"
+        const [getB] = await securityRole.get({ id: roleB.id });
 
         expect(getB).toMatchObject({
             data: {
                 security: {
-                    getGroup: {
+                    getRole: {
                         data: null,
                         error: {
-                            code: "GROUP_NOT_FOUND",
+                            code: "ROLE_NOT_FOUND",
                             data: null
                         }
                     }
@@ -159,14 +153,14 @@ describe("Security Group CRUD Test", () => {
             }
         });
 
-        // Should contain "groupA" by slug
-        const [getA] = await securityGroup.get({ id: groupA.id });
+        // Should contain "roleA" by slug
+        const [getA] = await securityRole.get({ id: roleA.id });
 
         expect(getA).toEqual({
             data: {
                 security: {
-                    getGroup: {
-                        data: mocks.groupA,
+                    getRole: {
+                        data: mocks.roleA,
                         error: null
                     }
                 }
@@ -174,23 +168,23 @@ describe("Security Group CRUD Test", () => {
         });
     });
 
-    test('should not allow creating a group with same "slug"', async () => {
-        // Creating a group
-        await securityGroup.create({ data: mocks.groupA });
+    test('should not allow creating a role with same "slug"', async () => {
+        // Creating a role
+        await securityRole.create({ data: mocks.roleA });
 
-        // Creating a group with same "slug" should not be allowed
-        const [response] = await securityGroup.create({ data: mocks.groupA });
+        // Creating a role with same "slug" should not be allowed
+        const [response] = await securityRole.create({ data: mocks.roleA });
 
         expect(response).toEqual({
             data: {
                 security: {
-                    createGroup: {
+                    createRole: {
                         data: null,
                         error: {
-                            code: "GROUP_EXISTS",
-                            message: `Group with slug "${mocks.groupA.slug}" already exists.`,
+                            code: "ROLE_EXISTS",
+                            message: `Role with slug "${mocks.roleA.slug}" already exists.`,
                             data: {
-                                slug: "group-a"
+                                slug: "role-a"
                             }
                         }
                     }
@@ -199,9 +193,9 @@ describe("Security Group CRUD Test", () => {
         });
     });
 
-    test("should not allow update of a group created via a plugin", async () => {
-        // Creating a group with same "slug" should not be allowed
-        const [response] = await securityGroup.update({
+    test("should not allow update of a role created via a plugin", async () => {
+        // Creating a role with same "slug" should not be allowed
+        const [response] = await securityRole.update({
             id: "test-role-1",
             data: {
                 name: "Test Role 1 - updated"
@@ -211,12 +205,12 @@ describe("Security Group CRUD Test", () => {
         expect(response).toEqual({
             data: {
                 security: {
-                    updateGroup: {
+                    updateRole: {
                         data: null,
                         error: {
-                            code: "CANNOT_UPDATE_PLUGIN_GROUPS",
+                            code: "CANNOT_UPDATE_PLUGIN_ROLES",
                             data: null,
-                            message: "Cannot update groups created via plugins."
+                            message: "Cannot update roles created via plugins."
                         }
                     }
                 }
@@ -224,18 +218,18 @@ describe("Security Group CRUD Test", () => {
         });
     });
 
-    test("should not allow deletion of a group created via a plugin", async () => {
-        const [response] = await securityGroup.delete({ id: "test-role-1" });
+    test("should not allow deletion of a role created via a plugin", async () => {
+        const [response] = await securityRole.delete({ id: "test-role-1" });
 
         expect(response).toEqual({
             data: {
                 security: {
-                    deleteGroup: {
+                    deleteRole: {
                         data: null,
                         error: {
-                            code: "CANNOT_DELETE_PLUGIN_GROUPS",
+                            code: "CANNOT_DELETE_PLUGIN_ROLES",
                             data: null,
-                            message: "Cannot delete groups created via plugins."
+                            message: "Cannot delete roles created via plugins."
                         }
                     }
                 }

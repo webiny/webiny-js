@@ -10,10 +10,7 @@ export class GetRoleUseCaseImpl implements UseCaseAbstraction.Interface {
     private repository: RolesRepository.Interface;
     private identityContext: IdentityContext.Interface;
 
-    constructor(
-        repository: RolesRepository.Interface,
-        identityContext: IdentityContext.Interface
-    ) {
+    constructor(repository: RolesRepository.Interface, identityContext: IdentityContext.Interface) {
         this.repository = repository;
         this.identityContext = identityContext;
     }

@@ -13,17 +13,17 @@ import {
     ApiKeyAfterDeleteHandler
 } from "~/features/security/apiKeys/DeleteApiKey/events.js";
 import {
-    GroupBeforeCreateHandler,
-    GroupAfterCreateHandler
-} from "~/features/security/roles/CreateGroup/events.js";
+    RoleBeforeCreateHandler,
+    RoleAfterCreateHandler
+} from "~/features/security/roles/CreateRole/events.js";
 import {
-    GroupBeforeUpdateHandler,
-    GroupAfterUpdateHandler
-} from "~/features/security/roles/UpdateGroup/events.js";
+    RoleBeforeUpdateHandler,
+    RoleAfterUpdateHandler
+} from "~/features/security/roles/UpdateRole/events.js";
 import {
-    GroupBeforeDeleteHandler,
-    GroupAfterDeleteHandler
-} from "~/features/security/roles/DeleteGroup/events.js";
+    RoleBeforeDeleteHandler,
+    RoleAfterDeleteHandler
+} from "~/features/security/roles/DeleteRole/events.js";
 import type { ApiCoreContext } from "~/types/core.js";
 
 export const tracker = new LifecycleEventTracker();
@@ -78,51 +78,51 @@ export const assignApiKeyLifecycleEvents = () => {
     });
 };
 
-export const assignGroupLifecycleEvents = () => {
+export const assignRoleLifecycleEvents = () => {
     return new ContextPlugin<ApiCoreContext>(async context => {
         if (!context.container) {
             return;
         }
 
         // Register before create handler
-        context.container.registerFactory(GroupBeforeCreateHandler, () => ({
-            handle: async (event: GroupBeforeCreateHandler.Event) => {
-                tracker.track("group:beforeCreate", event);
+        context.container.registerFactory(RoleBeforeCreateHandler, () => ({
+            handle: async (event: RoleBeforeCreateHandler.Event) => {
+                tracker.track("role:beforeCreate", event);
             }
         }));
 
         // Register after create handler
-        context.container.registerFactory(GroupAfterCreateHandler, () => ({
-            handle: async (event: GroupAfterCreateHandler.Event) => {
-                tracker.track("group:afterCreate", event);
+        context.container.registerFactory(RoleAfterCreateHandler, () => ({
+            handle: async (event: RoleAfterCreateHandler.Event) => {
+                tracker.track("role:afterCreate", event);
             }
         }));
 
         // Register before update handler
-        context.container.registerFactory(GroupBeforeUpdateHandler, () => ({
-            handle: async (event: GroupBeforeUpdateHandler.Event) => {
-                tracker.track("group:beforeUpdate", event);
+        context.container.registerFactory(RoleBeforeUpdateHandler, () => ({
+            handle: async (event: RoleBeforeUpdateHandler.Event) => {
+                tracker.track("role:beforeUpdate", event);
             }
         }));
 
         // Register after update handler
-        context.container.registerFactory(GroupAfterUpdateHandler, () => ({
-            handle: async (event: GroupAfterUpdateHandler.Event) => {
-                tracker.track("group:afterUpdate", event);
+        context.container.registerFactory(RoleAfterUpdateHandler, () => ({
+            handle: async (event: RoleAfterUpdateHandler.Event) => {
+                tracker.track("role:afterUpdate", event);
             }
         }));
 
         // Register before delete handler
-        context.container.registerFactory(GroupBeforeDeleteHandler, () => ({
-            handle: async (event: GroupBeforeDeleteHandler.Event) => {
-                tracker.track("group:beforeDelete", event);
+        context.container.registerFactory(RoleBeforeDeleteHandler, () => ({
+            handle: async (event: RoleBeforeDeleteHandler.Event) => {
+                tracker.track("role:beforeDelete", event);
             }
         }));
 
         // Register after delete handler
-        context.container.registerFactory(GroupAfterDeleteHandler, () => ({
-            handle: async (event: GroupAfterDeleteHandler.Event) => {
-                tracker.track("group:afterDelete", event);
+        context.container.registerFactory(RoleAfterDeleteHandler, () => ({
+            handle: async (event: RoleAfterDeleteHandler.Event) => {
+                tracker.track("role:afterDelete", event);
             }
         }));
     });

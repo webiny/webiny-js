@@ -17,7 +17,7 @@ const ERROR_FIELD = /* GraphQL */ `
 `;
 
 export const CREATE_SECURITY_ROLE = /* GraphQL */ `
-    mutation CreateGroup($data: SecurityRoleCreateInput!) {
+    mutation CreateRole($data: SecurityRoleCreateInput!) {
         security {
             createRole(data: $data) {
                 data ${DATA_FIELD("id")}
@@ -50,9 +50,9 @@ export const DELETE_SECURITY_ROLE = /* GraphQL */ `
 `;
 
 export const LIST_SECURITY_ROLES = /* GraphQL */ `
-    query ListGroups {
+    query ListRoles {
         security {
-            listGroups {
+            listRoles {
                 data ${DATA_FIELD()}
                 error ${ERROR_FIELD}
             }
@@ -61,9 +61,9 @@ export const LIST_SECURITY_ROLES = /* GraphQL */ `
 `;
 
 export const GET_SECURITY_ROLE = /* GraphQL */ `
-    query GetGroup($id: ID!) {
+    query GetRole($id: ID!) {
         security {
-            getGroup(where: { id: $id }) {
+            getRole(where: { id: $id }) {
                 data ${DATA_FIELD()}
                 error ${ERROR_FIELD}
             }
