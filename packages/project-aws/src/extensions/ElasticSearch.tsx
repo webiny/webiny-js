@@ -6,9 +6,7 @@ import { ProjectDecorator, DatabaseSetup } from "@webiny/project/extensions/inde
 
 const p = createPathResolver(import.meta.dirname, "ElasticSearch");
 
-export const ElasticSearch = (
-    props: React.ComponentProps<typeof PulumiElasticSearch>
-) => {
+export const ElasticSearch = (props: React.ComponentProps<typeof PulumiElasticSearch>) => {
     return (
         <>
             <PulumiElasticSearch {...props} />
