@@ -21,7 +21,6 @@ export const AdminExtension = defineExtension({
 
         const componentName = Case.pascal("Something" + Date.now()) + "Extension";
 
-        const importName = "{ Extension as " + componentName + " }";
         const srcWithoutExt = params.src.replace(/\.[^/.]+$/, "");
 
         const project = new Project();
@@ -51,7 +50,7 @@ export const AdminExtension = defineExtension({
         }
 
         source.insertImportDeclaration(index, {
-            defaultImport: importName,
+            namedImports: [{ name: "Extension", alias: componentName }],
             moduleSpecifier: importPath
         });
 

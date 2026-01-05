@@ -51,7 +51,6 @@ export const defineApiExtension = (params: DefineApiExtensionParams) =>
                 extensionFileName.replace(".ts", "")
             ].join("/");
 
-            const importName = `{ ${exportName} as ${exportNameAlias} }`;
             const project = new Project();
             project.addSourceFileAtPath(extensionsTsFilePath);
 
@@ -71,7 +70,7 @@ export const defineApiExtension = (params: DefineApiExtensionParams) =>
             }
 
             source.insertImportDeclaration(index, {
-                defaultImport: importName,
+                namedImports: [{ name: exportName, alias: exportNameAlias }],
                 moduleSpecifier: importPath
             });
 
@@ -97,7 +96,7 @@ export const defineApiExtension = (params: DefineApiExtensionParams) =>
                     source.getImportDeclaration(contextPluginImportPath);
                 if (!existingContextPluginImport) {
                     source.insertImportDeclaration(index, {
-                        defaultImport: "{createContextPlugin}",
+                        namedImports: ["createContextPlugin"],
                         moduleSpecifier: contextPluginImportPath
                     });
                 }
