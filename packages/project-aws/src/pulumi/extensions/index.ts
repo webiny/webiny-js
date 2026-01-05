@@ -13,10 +13,10 @@ export { AdminCustomDomains };
 export { BlueGreenDeployments };
 
 export const definitions = [
-    AwsTags.definition,
-    Vpc.definition,
-    ElasticSearch.definition,
-    OpenSearch.definition,
-    AdminCustomDomains.definition,
-    BlueGreenDeployments.definition
+    AwsTags.def,
+    Vpc.def,
+    ElasticSearch.def,
+    OpenSearch.def,
+    AdminCustomDomains.def,
+    BlueGreenDeployments.def
 ];

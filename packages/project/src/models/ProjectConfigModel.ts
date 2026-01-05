@@ -4,7 +4,7 @@ import {
 } from "~/abstractions/models/index.js";
 import { type ExtensionInstanceModel } from "~/defineExtension/models/index.js";
 import { type z } from "zod";
-import { type DefinitionAndComponentPair } from "~/defineExtension/index.js";
+import { type ExtensionComponent } from "~/defineExtension/index.js";
 
 export class ProjectConfigModel implements IProjectConfigModel {
     public readonly config: IHydratedProjectConfig;
@@ -18,11 +18,19 @@ export class ProjectConfigModel implements IProjectConfigModel {
     }
 
     extensionsByType<TParamsSchema extends z.ZodTypeAny>(
-        type: string | DefinitionAndComponentPair<TParamsSchema>
+        type: string | ExtensionComponent<TParamsSchema>
     ): Array<ExtensionInstanceModel<TParamsSchema>> {
-        if (typeof type !== "string") {
-            type = type.definition.type;
+        let extensionType: string;
+
+        if (typeof type === "string") {
+            extensionType = type;
+        } else {
+            // ExtensionComponent has .def property
+            extensionType = type.def.type;
         }
-        return (this.config[type] || []) as unknown as Array<ExtensionInstanceModel<TParamsSchema>>;
+
+        return (this.config[extensionType] || []) as unknown as Array<
+            ExtensionInstanceModel<TParamsSchema>
+        >;
     }
 }

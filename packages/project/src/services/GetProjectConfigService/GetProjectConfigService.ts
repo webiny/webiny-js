@@ -97,7 +97,7 @@ export class DefaultGetProjectConfigService implements GetProjectConfigService.I
         const tagsFilters = params?.tags || {};
 
         // Exclude extra extension definitions because we are handling these separately.
-        const extensionDefinitionsType = ExtensionDefinitionsExtension.definition.type;
+        const extensionDefinitionsType = ExtensionDefinitionsExtension.def.type;
 
         const extensionsTypes = Object.keys(configDto).filter(
             key => key !== extensionDefinitionsType
