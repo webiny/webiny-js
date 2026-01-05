@@ -1,6 +1,5 @@
 import type { AdminUser } from "~/types/users.js";
 
-// Re-export domain entity
 export type { AdminUser };
 
 // Input types
@@ -11,7 +10,7 @@ export interface CreateUserInput {
     firstName?: string;
     lastName?: string;
     avatar?: Record<string, any> | null;
-    groups?: string[];
+    roles?: string[];
     teams?: string[];
     password?: string; // Only for Cognito
     external?: boolean;
@@ -22,7 +21,7 @@ export interface UpdateUserInput {
     firstName?: string;
     lastName?: string;
     avatar?: Record<string, any> | null;
-    groups?: string[];
+    roles?: string[];
     teams?: string[];
     password?: string; // Only for Cognito
 }

@@ -30,6 +30,7 @@ export const CreateUserUseCase = createAbstraction<ICreateUser>("CreateUserUseCa
 // Namespace exports
 export namespace CreateUserUseCase {
     export type Interface = ICreateUser;
+    export type Input = CreateUserInput;
     export type Error = CreateUserError;
 }
 

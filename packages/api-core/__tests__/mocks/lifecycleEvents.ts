@@ -15,15 +15,15 @@ import {
 import {
     GroupBeforeCreateHandler,
     GroupAfterCreateHandler
-} from "~/features/security/groups/CreateGroup/events.js";
+} from "~/features/security/roles/CreateGroup/events.js";
 import {
     GroupBeforeUpdateHandler,
     GroupAfterUpdateHandler
-} from "~/features/security/groups/UpdateGroup/events.js";
+} from "~/features/security/roles/UpdateGroup/events.js";
 import {
     GroupBeforeDeleteHandler,
     GroupAfterDeleteHandler
-} from "~/features/security/groups/DeleteGroup/events.js";
+} from "~/features/security/roles/DeleteGroup/events.js";
 import type { ApiCoreContext } from "~/types/core.js";
 
 export const tracker = new LifecycleEventTracker();

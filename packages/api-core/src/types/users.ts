@@ -21,7 +21,7 @@ export interface BaseUserAttributes {
     // Check `api-security-okta` package for an example.
     email: string;
 
-    groups?: string[];
+    roles?: string[];
     teams?: string[];
 
     // Optional fields.

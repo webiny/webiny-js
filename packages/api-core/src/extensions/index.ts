@@ -6,12 +6,12 @@ import {
     ApiKeyAfterUpdate,
     ApiKeyBeforeDelete,
     ApiKeyAfterDelete,
-    GroupBeforeCreate,
-    GroupAfterCreate,
-    GroupBeforeUpdate,
-    GroupAfterUpdate,
-    GroupBeforeDelete,
-    GroupAfterDelete,
+    RoleBeforeCreate,
+    RoleAfterCreate,
+    RoleBeforeUpdate,
+    RoleAfterUpdate,
+    RoleBeforeDelete,
+    RoleAfterDelete,
     TeamBeforeCreate,
     TeamAfterCreate,
     TeamBeforeUpdate,
@@ -52,12 +52,12 @@ export { ApiKeyAfterUpdate };
 export { ApiKeyBeforeDelete };
 export { ApiKeyAfterDelete };
 
-export { GroupBeforeCreate };
-export { GroupAfterCreate };
-export { GroupBeforeUpdate };
-export { GroupAfterUpdate };
-export { GroupBeforeDelete };
-export { GroupAfterDelete };
+export { RoleBeforeCreate };
+export { RoleAfterCreate };
+export { RoleBeforeUpdate };
+export { RoleAfterUpdate };
+export { RoleBeforeDelete };
+export { RoleAfterDelete };
 
 export { TeamBeforeCreate };
 export { TeamAfterCreate };
@@ -100,12 +100,12 @@ export const definitions = [
     ApiKeyAfterUpdate.definition,
     ApiKeyBeforeDelete.definition,
     ApiKeyAfterDelete.definition,
-    GroupBeforeCreate.definition,
-    GroupAfterCreate.definition,
-    GroupBeforeUpdate.definition,
-    GroupAfterUpdate.definition,
-    GroupBeforeDelete.definition,
-    GroupAfterDelete.definition,
+    RoleBeforeCreate.definition,
+    RoleAfterCreate.definition,
+    RoleBeforeUpdate.definition,
+    RoleAfterUpdate.definition,
+    RoleBeforeDelete.definition,
+    RoleAfterDelete.definition,
     TeamBeforeCreate.definition,
     TeamAfterCreate.definition,
     TeamBeforeUpdate.definition,

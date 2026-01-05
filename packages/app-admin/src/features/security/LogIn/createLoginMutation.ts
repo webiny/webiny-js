@@ -7,17 +7,17 @@ export const createLoginMutation = () => {
                         id
                         displayName
                         type
+                        roles {
+                            id
+                            slug
+                            name
+                        }
+                        teams {
+                            id
+                            slug
+                            name
+                        }
                         profile {
-                            groups {
-                                id
-                                slug
-                                name
-                            }
-                            teams {
-                                id
-                                slug
-                                name
-                            }
                             firstName
                             lastName
                             email

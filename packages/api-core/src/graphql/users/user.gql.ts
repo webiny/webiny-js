@@ -71,7 +71,7 @@ export const createUsersGraphQL = (params: CreateUserGraphQlPluginsParams) => {
                     displayName: String!
                     email: String!
 
-                    groups: [SecurityGroup]
+                    roles: [SecurityGroup]
                     firstName: String
                     lastName: String
                     avatar: JSON
@@ -104,12 +104,12 @@ export const createUsersGraphQL = (params: CreateUserGraphQlPluginsParams) => {
             `,
             resolvers: {
                 AdminUser: {
-                    groups(user: AdminUser, _, context) {
-                        if (!user.groups) {
+                    roles(user: AdminUser, _, context) {
+                        if (!user.roles) {
                             return null;
                         }
 
-                        return context.security.listGroups({ where: { id_in: user.groups } });
+                        return context.security.listRoles({ where: { id_in: user.roles } });
                     }
                 },
                 AdminUsersQuery: {

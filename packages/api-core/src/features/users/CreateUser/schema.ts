@@ -18,7 +18,7 @@ export const createUserValidation = z.object({
         })
         .optional()
         .nullable(),
-    groups: z.array(z.string()).optional().default([]),
+    roles: z.array(z.string()).optional().default([]),
     teams: z.array(z.string()).optional().default([]),
     password: z.string().optional(),
     external: z.boolean().optional().default(false)

@@ -7,8 +7,8 @@ import { AuthorizationContextFeature } from "./authorization/AuthorizationContex
 import { GroupsTeamsAuthorizerFeature } from "./authorization/GroupsTeamsAuthorizer/feature.js";
 import { IdentityContextFeature } from "./IdentityContext/index.js";
 import { ApiKeysFeature } from "./apiKeys/feature.js";
-import { GroupsFeature } from "./groups/feature.js";
 import { TeamsFeature } from "./teams/feature.js";
+import { RolesFeature } from "~/features/security/roles/feature.js";
 
 /**
  * Setup all security features in the DI container.
@@ -27,7 +27,7 @@ export const SecurityFeature = createFeature({
         AuthenticationContextFeature.register(container);
         IdentityContextFeature.register(container);
         ApiKeysFeature.register(container);
-        GroupsFeature.register(container);
+        RolesFeature.register(container);
         TeamsFeature.register(container);
         GroupsTeamsAuthorizerFeature.register(container);
     }

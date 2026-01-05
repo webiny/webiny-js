@@ -1,10 +1,10 @@
 import { createImplementation } from "@webiny/feature/api";
-import { AppInstaller } from "@webiny/api-core/features/InstallTenant";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import type { AdminUser } from "@webiny/api-core/types/users.js";
+import { AppInstaller } from "@webiny/api-core/features/InstallTenant";
 import { CreateUserUseCase } from "@webiny/api-core/features/CreateUser";
 import { DeleteUserUseCase } from "@webiny/api-core/features/DeleteUser";
-import { GetGroupUseCase } from "@webiny/api-core/features/GetGroup";
+import { GetRoleUseCase } from "@webiny/api-core/features/GetRole";
 
 interface AdminUserInstallationData {
     firstName: string;
@@ -20,14 +20,14 @@ class AdminUsersInstallerImpl implements AppInstaller.Interface<AdminUserInstall
     private createdUser: AdminUser | undefined;
 
     constructor(
-        private getGroup: GetGroupUseCase.Interface,
+        private getRole: GetRoleUseCase.Interface,
         private createUserUseCase: CreateUserUseCase.Interface,
         private deleteUserUseCase: DeleteUserUseCase.Interface
     ) {}
 
     async install(_: Tenant, data: AdminUserInstallationData): Promise<void> {
         // Load `full-access` group and assign it to the new user
-        const groupResult = await this.getGroup.execute({ slug: "full-access" });
+        const groupResult = await this.getRole.execute({ slug: "full-access" });
         if (groupResult.isFail()) {
             throw new Error(`Failed to get full-access group: ${groupResult.error.message}`);
         }
@@ -35,10 +35,10 @@ class AdminUsersInstallerImpl implements AppInstaller.Interface<AdminUserInstall
         const group = groupResult.value;
 
         // Create user with displayName and full-access group
-        const userWithDisplayName = {
+        const userWithDisplayName: CreateUserUseCase.Input = {
             ...data,
             displayName: `${data.firstName} ${data.lastName}`,
-            groups: [group.id],
+            roles: [group.id],
             teams: []
         };
 
@@ -60,5 +60,5 @@ class AdminUsersInstallerImpl implements AppInstaller.Interface<AdminUserInstall
 export const AdminUserInstaller = createImplementation({
     abstraction: AppInstaller,
     implementation: AdminUsersInstallerImpl,
-    dependencies: [GetGroupUseCase, CreateUserUseCase, DeleteUserUseCase]
+    dependencies: [GetRoleUseCase, CreateUserUseCase, DeleteUserUseCase]
 });

@@ -11,12 +11,10 @@ export const LOGIN = /* GraphQL */ `
         security {
             login {
                 data {
-                    ...on Admin {
-                        id
-                        displayName
-                        permissions
-                        type
-                    }
+                    id
+                    displayName
+                    permissions
+                    type
                 }
                 error ${ERROR_FIELD}
             }

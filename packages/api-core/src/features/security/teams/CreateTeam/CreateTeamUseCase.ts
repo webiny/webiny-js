@@ -46,7 +46,7 @@ export class CreateTeamUseCase implements CreateTeam.Interface {
             name: data.name,
             slug: data.slug,
             description: data.description,
-            groups: data.groups,
+            roles: data.roles,
             system: input.system || false,
             tenant: tenant.id,
             createdOn: new Date().toISOString(),

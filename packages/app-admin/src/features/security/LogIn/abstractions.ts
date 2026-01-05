@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import { AuthenticationContext } from "~/features/security/AuthenticationContext/index.js";
-import type { Identity } from "~/domain/Identity.js";
+import type { Identity, IRole, ITeam } from "~/domain/Identity.js";
 import type { Tenant } from "~/features/tenancy/abstractions.js";
 
 // Use Case
@@ -24,6 +24,8 @@ export interface IIdentityDTO {
     id: string;
     type: string;
     displayName: string;
+    roles: IRole[];
+    teams: ITeam[];
     permissions: Identity.Permission[];
     currentTenant: Tenant;
     defaultTenant: Tenant;

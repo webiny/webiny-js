@@ -32,7 +32,7 @@ const createEntity = (
     });
 };
 
-export const createGroupEntity = (
+export const createRoleEntity = (
     table: Table<string, string, string>,
     attributes: Attributes = {}
 ) => {

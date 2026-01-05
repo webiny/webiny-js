@@ -20,8 +20,6 @@ export interface ITeam {
 }
 
 export interface IProfile {
-    roles: IRole[];
-    teams: ITeam[];
     external: boolean;
     email?: string;
     firstName?: string;
@@ -35,8 +33,10 @@ export interface IdentityData {
     id: string;
     type: string;
     displayName: string;
-    profile: Identity.Profile;
+    roles: IRole[];
+    teams: ITeam[];
     permissions: Identity.Permission[];
+    profile: Identity.Profile;
     currentTenant: Tenant;
     defaultTenant: Tenant;
 }
@@ -45,11 +45,11 @@ const anonymousData: IdentityData = {
     id: "anonymous",
     displayName: "Anonymous",
     type: "admin",
+    roles: [],
+    teams: [],
     permissions: [],
     profile: {
-        external: false,
-        roles: [],
-        teams: []
+        external: false
     },
     currentTenant: {
         id: "root",
@@ -91,6 +91,14 @@ export class Identity {
 
     get displayName() {
         return this.data.displayName;
+    }
+
+    get roles() {
+        return this.data.roles ?? [];
+    }
+
+    get teams() {
+        return this.data.teams ?? [];
     }
 
     get profile() {

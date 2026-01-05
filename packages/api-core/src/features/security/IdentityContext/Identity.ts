@@ -21,25 +21,59 @@ export interface IdentityContext {
     [key: string]: any;
 }
 
+interface IdentityProfileContext {
+    canAccessTenant?: boolean;
+    defaultTenantId?: string;
+    [key: string]: any;
+}
+
+export type IdentityData = {
+    id: string;
+    displayName: string;
+    type: string;
+    roles?: string[];
+    teams?: string[];
+    permissions?: SecurityPermission[];
+    profile?: IdentityProfileData;
+    context?: IdentityProfileContext;
+};
+
 /**
  * Abstract base class for all identity types.
  * Provides a common interface for identity checks across the codebase.
  */
 export abstract class Identity {
-    readonly id: string;
-    readonly displayName: string;
-    readonly type: string;
-    readonly permissions: SecurityPermission[];
-    readonly profile: IdentityProfile;
-    readonly context: IdentityContext;
+    private readonly data: IdentityData;
+    public readonly profile: IdentityProfile;
+    public readonly context: IdentityContext;
 
     constructor(identityData: IdentityData) {
-        this.id = identityData.id;
-        this.displayName = identityData.displayName;
-        this.type = identityData.type;
-        this.permissions = identityData.permissions ?? [];
+        this.data = identityData;
         this.profile = new IdentityProfile(this.id, identityData.profile || {});
         this.context = identityData.context ?? {};
+    }
+
+    get id() {
+        return this.data.id;
+    }
+
+    get displayName() {
+        return this.data.displayName;
+    }
+    get type() {
+        return this.data.type;
+    }
+
+    get permissions(): SecurityPermission[] {
+        return this.data.permissions ?? [];
+    }
+
+    get roles(): string[] {
+        return this.data.roles ?? [];
+    }
+
+    get teams(): string[] {
+        return this.data.teams ?? [];
     }
 
     /**
@@ -52,6 +86,8 @@ export abstract class Identity {
             id: this.id,
             displayName: this.displayName,
             type: this.type,
+            roles: this.roles,
+            teams: this.teams,
             permissions: this.permissions,
             profile: this.profile.toJson()
         };
@@ -59,8 +95,6 @@ export abstract class Identity {
 }
 
 interface IdentityProfileData {
-    groups?: string[];
-    teams?: string[];
     firstName?: string;
     lastName?: string;
     email?: string;
@@ -72,14 +106,6 @@ class IdentityProfile {
         private id: string,
         private data: Partial<IdentityProfileData>
     ) {}
-
-    get groups(): string[] {
-        return this.data.groups ?? [];
-    }
-
-    get teams(): string[] {
-        return this.data.teams ?? [];
-    }
 
     get firstName(): string {
         return this.data.firstName ?? "";
@@ -99,8 +125,6 @@ class IdentityProfile {
 
     toJson() {
         return {
-            groups: this.groups,
-            teams: this.teams,
             firstName: this.firstName,
             lastName: this.lastName,
             email: this.email,
@@ -108,18 +132,3 @@ class IdentityProfile {
         };
     }
 }
-
-interface IdentityProfileContext {
-    canAccessTenant?: boolean;
-    defaultTenantId?: string;
-    [key: string]: any;
-}
-
-export type IdentityData = {
-    id: string;
-    displayName: string;
-    type: string;
-    permissions?: SecurityPermission[];
-    profile?: IdentityProfileData;
-    context?: IdentityProfileContext;
-};

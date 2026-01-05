@@ -1,7 +1,7 @@
 import { createImplementation } from "@webiny/feature/api";
 import { AfterLoginHandler } from "~/features/security/login/index.js";
 import { IdentityContext } from "~/features/security/IdentityContext/index.js";
-import { ListGroupsUseCase } from "~/features/security/groups/ListGroups/index.js";
+import { ListRolesUseCase } from "~/features/security/roles/ListRoles/index.js";
 import { ListTeamsUseCase } from "~/features/security/teams/ListTeams/index.js";
 import { GetUserUseCase } from "~/features/users/GetUser/index.js";
 import { CreateUserUseCase } from "~/features/users/CreateUser/index.js";
@@ -13,7 +13,7 @@ class ExternalIdpUserSyncHandlerImpl implements AfterLoginHandler.Interface {
         private getUserUseCase: GetUserUseCase.Interface,
         private createUserUseCase: CreateUserUseCase.Interface,
         private updateUserUseCase: UpdateUserUseCase.Interface,
-        private listGroupsUseCase: ListGroupsUseCase.Interface,
+        private listRolesUseCase: ListRolesUseCase.Interface,
         private listTeamsUseCase: ListTeamsUseCase.Interface
     ) {}
 
@@ -37,24 +37,24 @@ class ExternalIdpUserSyncHandlerImpl implements AfterLoginHandler.Interface {
                 email: identity.profile.email,
                 firstName: identity.profile.firstName || "",
                 lastName: identity.profile.lastName || "",
-                groups: [] as string[],
+                roles: [] as string[],
                 teams: [] as string[],
                 external: true
             };
 
-            // Resolve groups
-            const groupSlugs = identity.profile.groups;
-            if (groupSlugs.length > 0) {
-                const listGroupsResult = await this.listGroupsUseCase.execute({
-                    where: { slug_in: groupSlugs }
+            // Resolve roles
+            const roleSlugs = identity.roles;
+            if (roleSlugs.length > 0) {
+                const listRolesResult = await this.listRolesUseCase.execute({
+                    where: { slug_in: roleSlugs }
                 });
-                if (listGroupsResult.isOk()) {
-                    data.groups = listGroupsResult.value.map(group => group.id);
+                if (listRolesResult.isOk()) {
+                    data.roles = listRolesResult.value.map(role => role.id);
                 }
             }
 
             // Resolve teams
-            const teamSlugs = identity.profile.teams;
+            const teamSlugs = identity.teams;
             if (teamSlugs.length > 0) {
                 const listTeamsResult = await this.listTeamsUseCase.execute({
                     where: { slug_in: teamSlugs }
@@ -83,7 +83,7 @@ export const ExternalIdpUserSyncHandler = createImplementation({
         GetUserUseCase,
         CreateUserUseCase,
         UpdateUserUseCase,
-        ListGroupsUseCase,
+        ListRolesUseCase,
         ListTeamsUseCase
     ]
 });

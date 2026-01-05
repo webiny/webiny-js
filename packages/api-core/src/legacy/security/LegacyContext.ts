@@ -14,11 +14,11 @@ import { ListApiKeys } from "~/features/security/apiKeys/ListApiKeys/index.js";
 import { CreateApiKey } from "~/features/security/apiKeys/CreateApiKey/index.js";
 import { UpdateApiKey } from "~/features/security/apiKeys/UpdateApiKey/index.js";
 import { DeleteApiKey } from "~/features/security/apiKeys/DeleteApiKey/index.js";
-import { GetGroupUseCase } from "~/features/security/groups/GetGroup/index.js";
-import { ListGroupsUseCase } from "~/features/security/groups/ListGroups/index.js";
-import { CreateGroupUseCase } from "~/features/security/groups/CreateGroup/index.js";
-import { UpdateGroup } from "~/features/security/groups/UpdateGroup/index.js";
-import { DeleteGroupUseCase } from "~/features/security/groups/DeleteGroup/index.js";
+import { GetRoleUseCase } from "~/features/security/roles/GetRole/index.js";
+import { ListRolesUseCase } from "~/features/security/roles/ListRoles/index.js";
+import { CreateRoleUseCase } from "~/features/security/roles/CreateRole/index.js";
+import { UpdateRole } from "~/features/security/roles/UpdateRole/index.js";
+import { DeleteRoleUseCase } from "~/features/security/roles/DeleteRole/index.js";
 import { GetTeam } from "~/features/security/teams/GetTeam/index.js";
 import { ListTeamsUseCase } from "~/features/security/teams/ListTeams/index.js";
 import { CreateTeam } from "~/features/security/teams/CreateTeam/index.js";
@@ -203,8 +203,8 @@ export class LegacyContext {
         return true;
     }
 
-    async getGroup(params: any) {
-        const useCase = this.container.resolve(GetGroupUseCase);
+    async getRole(params: any) {
+        const useCase = this.container.resolve(GetRoleUseCase);
         const result = await useCase.execute(params.where);
 
         if (result.isFail()) {
@@ -214,8 +214,8 @@ export class LegacyContext {
         return result.value;
     }
 
-    async listGroups(params?: any) {
-        const useCase = this.container.resolve(ListGroupsUseCase);
+    async listRoles(params?: any) {
+        const useCase = this.container.resolve(ListRolesUseCase);
         const result = await useCase.execute(params);
 
         if (result.isFail()) {
@@ -225,8 +225,8 @@ export class LegacyContext {
         return result.value;
     }
 
-    async createGroup(input: any) {
-        const useCase = this.container.resolve(CreateGroupUseCase);
+    async createRole(input: any) {
+        const useCase = this.container.resolve(CreateRoleUseCase);
         const result = await useCase.execute(input);
 
         if (result.isFail()) {
@@ -236,8 +236,8 @@ export class LegacyContext {
         return result.value;
     }
 
-    async updateGroup(id: string, input: any) {
-        const useCase = this.container.resolve(UpdateGroup);
+    async updateRole(id: string, input: any) {
+        const useCase = this.container.resolve(UpdateRole);
         const result = await useCase.execute(id, input);
 
         if (result.isFail()) {
@@ -247,8 +247,8 @@ export class LegacyContext {
         return result.value;
     }
 
-    async deleteGroup(id: string) {
-        const useCase = this.container.resolve(DeleteGroupUseCase);
+    async deleteRole(id: string) {
+        const useCase = this.container.resolve(DeleteRoleUseCase);
         const result = await useCase.execute(id);
 
         if (result.isFail()) {

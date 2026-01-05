@@ -1,11 +1,11 @@
 import { createFeature } from "@webiny/feature/api";
-import { GroupsTeamsAuthorizer } from "./GroupsTeamsAuthorizer.js";
-import { GetPermissionsFromGroupsAndTeams } from "./GetPermissionsFromGroupsAndTeams.js";
+import { RolesTeamsAuthorizer } from "./RolesTeamsAuthorizer.js";
+import { GetPermissionsFromIdentity } from "./GetPermissionsFromIdentity.js";
 
 export const GroupsTeamsAuthorizerFeature = createFeature({
     name: "GroupsTeamsAuthorizer",
     register(container) {
-        container.register(GroupsTeamsAuthorizer).inSingletonScope();
-        container.register(GetPermissionsFromGroupsAndTeams);
+        container.register(RolesTeamsAuthorizer).inSingletonScope();
+        container.register(GetPermissionsFromIdentity);
     }
 });

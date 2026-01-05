@@ -1,9 +1,11 @@
 {
-  "name": "@webiny/scripts",
+  "name": "@webiny-scripts/cli",
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "main": "src/bin.js",
+  "bin": {
+    "webiny-scripts": "./src/bin.ts"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"

@@ -6,13 +6,13 @@ export * from "./ApiKeyAfterUpdate.js";
 export * from "./ApiKeyBeforeDelete.js";
 export * from "./ApiKeyAfterDelete.js";
 
-// Group event handlers
-export * from "./GroupBeforeCreate.js";
-export * from "./GroupAfterCreate.js";
-export * from "./GroupBeforeUpdate.js";
-export * from "./GroupAfterUpdate.js";
-export * from "./GroupBeforeDelete.js";
-export * from "./GroupAfterDelete.js";
+// Role event handlers
+export * from "./RoleBeforeCreate.js";
+export * from "./RoleAfterCreate.js";
+export * from "./RoleBeforeUpdate.js";
+export * from "./RoleAfterUpdate.js";
+export * from "./RoleBeforeDelete.js";
+export * from "./RoleAfterDelete.js";
 
 // Team event handlers
 export * from "./TeamBeforeCreate.js";

@@ -19,6 +19,8 @@ class IdpAuthenticatorImpl implements Authenticator.Interface {
             return null;
         }
 
+        // TODO: validate expiration claim
+
         // Iterate through factories to find applicable provider
         for (const factory of this.providerFactories) {
             const provider = await factory.getIdpProvider();
