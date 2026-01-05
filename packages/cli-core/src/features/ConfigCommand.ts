@@ -56,7 +56,7 @@ export class ConfigCommand implements CliCommand.Interface<IConfigCommandParams>
                     const extensions = projectConfig.config[extensionType];
                     if (!extensions) {
                         ui.warning(`Extension type %s not found in configuration.`, extensionType);
-                        ui.emptyLine()
+                        ui.emptyLine();
                         ui.info("Available extension types:");
                         Object.keys(projectConfig.config).forEach(type => {
                             ui.text(`  - ${type}`);
