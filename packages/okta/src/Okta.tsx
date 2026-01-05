@@ -12,11 +12,12 @@ export const Okta = (props: OktaProps) => {
     return (
         <>
             {/* Lambda vars */}
-            <EnvVar.ReactComponent varName={"OKTA_ISSUER"} value={props.issuer} />
-            <EnvVar.ReactComponent varName={"REACT_APP_OKTA_ISSUER"} value={props.issuer} />
+            <EnvVar varName={"OKTA_ISSUER"} value={props.issuer} />
+            <EnvVar varName={"OKTA_CLIENT_ID"} value={props.clientId} />
             {/* Admin app vars */}
-            <EnvVar.ReactComponent varName={"OKTA_CLIENT_ID"} value={props.clientId} />
-            <EnvVar.ReactComponent varName={"REACT_APP_OKTA_CLIENT_ID"} value={props.clientId} />
+            <EnvVar varName={"REACT_APP_IDP_TYPE"} value={"okta"} />
+            <EnvVar varName={"REACT_APP_OKTA_ISSUER"} value={props.issuer} />
+            <EnvVar varName={"REACT_APP_OKTA_CLIENT_ID"} value={props.clientId} />
             {/* Api extensions */}
             <Api.Extension
                 src={import.meta.dirname + "/api/features/OktaIdp/feature.js"}

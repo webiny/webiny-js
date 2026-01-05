@@ -4,6 +4,7 @@ import { ProjectImplementation } from "./ProjectImplementation.js";
 import { ProjectId } from "./ProjectId.js";
 import { Telemetry } from "./Telemetry.js";
 import { EnvVar } from "./EnvVar.js";
+import { DatabaseSetup } from "./DatabaseSetup.js";
 
 // Hooks.
 import {
@@ -35,7 +36,10 @@ import {
     ApiPulumi,
     CorePulumi,
     ProductionEnvironments,
-    PulumiResourceNamePrefix
+    PulumiResourceNamePrefix,
+    CoreStackOutputValue,
+    ApiStackOutputValue,
+    AdminStackOutputValue
 } from "./pulumi/index.js";
 
 // Exports.
@@ -45,6 +49,7 @@ export { ProjectDecorator };
 export { ProjectImplementation };
 export { ExtensionDefinitions };
 export { EnvVar };
+export { DatabaseSetup };
 
 // Hooks.
 export { BeforeBuild };
@@ -74,42 +79,49 @@ export { AdminPulumi };
 export { ApiPulumi };
 export { PulumiResourceNamePrefix };
 export { ProductionEnvironments };
+export { CoreStackOutputValue };
+export { ApiStackOutputValue };
+export { AdminStackOutputValue };
 
 // Definitions (used internally). 👇
 export const definitions = [
-    Telemetry.definition,
-    ProjectId.definition,
-    ProjectDecorator.definition,
-    ProjectImplementation.definition,
-    ExtensionDefinitions.definition,
-    EnvVar.definition,
+    Telemetry.def,
+    ProjectId.def,
+    ProjectDecorator.def,
+    ProjectImplementation.def,
+    ExtensionDefinitions.def,
+    EnvVar.def,
 
     // Hooks.
-    AdminAfterBuild.definition,
-    AdminAfterDeploy.definition,
-    BeforeBuild.definition,
-    BeforeDeploy.definition,
-    BeforeWatch.definition,
-    AfterBuild.definition,
-    AfterDeploy.definition,
-    AdminBeforeBuild.definition,
-    AdminBeforeDeploy.definition,
-    AdminBeforeWatch.definition,
-    ApiAfterBuild.definition,
-    ApiAfterDeploy.definition,
-    ApiBeforeBuild.definition,
-    ApiBeforeDeploy.definition,
-    ApiBeforeWatch.definition,
-    CoreAfterBuild.definition,
-    CoreAfterDeploy.definition,
-    CoreBeforeBuild.definition,
-    CoreBeforeDeploy.definition,
-    CoreBeforeWatch.definition,
+    AdminAfterBuild.def,
+    AdminAfterDeploy.def,
+    BeforeBuild.def,
+    BeforeDeploy.def,
+    BeforeWatch.def,
+    AfterBuild.def,
+    AfterDeploy.def,
+    AdminBeforeBuild.def,
+    AdminBeforeDeploy.def,
+    AdminBeforeWatch.def,
+    ApiAfterBuild.def,
+    ApiAfterDeploy.def,
+    ApiBeforeBuild.def,
+    ApiBeforeDeploy.def,
+    ApiBeforeWatch.def,
+    CoreAfterBuild.def,
+    CoreAfterDeploy.def,
+    CoreBeforeBuild.def,
+    CoreBeforeDeploy.def,
+    CoreBeforeWatch.def,
 
     // Pulumi.
-    CorePulumi.definition,
-    PulumiResourceNamePrefix.definition,
-    ProductionEnvironments.definition
+    CorePulumi.def,
+    PulumiResourceNamePrefix.def,
+    ProductionEnvironments.def,
+    CoreStackOutputValue.def,
+    ApiStackOutputValue.def,
+    AdminStackOutputValue.def,
+    DatabaseSetup.def
 ];
 
 export { Project } from "./Project.js";

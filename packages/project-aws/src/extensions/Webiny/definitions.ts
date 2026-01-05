@@ -16,7 +16,7 @@ const definitions = [
     ...cmsDefinitions,
     ...adminDefinitions,
     ...projectAws,
-    AutoInstall.definition
+    AutoInstall
 ] as unknown as ExtensionDefinitionModel<any>[];
 
 export default definitions;

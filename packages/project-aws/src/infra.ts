@@ -5,18 +5,21 @@ import {
     AdminBeforeDeploy,
     AdminBeforeWatch,
     AdminPulumi,
+    AdminStackOutputValue,
     ApiAfterBuild,
     ApiAfterDeploy,
     ApiBeforeBuild,
     ApiBeforeDeploy,
     ApiBeforeWatch,
     ApiPulumi,
+    ApiStackOutputValue,
     CoreAfterBuild,
     CoreAfterDeploy,
     CoreBeforeBuild,
     CoreBeforeDeploy,
     CoreBeforeWatch,
     CorePulumi,
+    CoreStackOutputValue,
     ProductionEnvironments,
     PulumiResourceNamePrefix
 } from "@webiny/project/extensions/index.js";
@@ -32,43 +35,46 @@ import { OpenSearch, ElasticSearch, AwsDefaultRegion } from "./extensions/index.
 import { EnvIs, EnvIsNot } from "@webiny/project/extensions/infra/index.js";
 
 export const Infra = {
-    Vpc: Vpc.ReactComponent,
-    BlueGreenDeployments: BlueGreenDeployments.ReactComponent,
+    Vpc,
+    BlueGreenDeployments,
     ElasticSearch,
     OpenSearch,
-    PulumiResourceNamePrefix: PulumiResourceNamePrefix.ReactComponent,
-    ProductionEnvironments: ProductionEnvironments.ReactComponent,
+    PulumiResourceNamePrefix,
+    ProductionEnvironments,
     Aws: {
         DefaultRegion: AwsDefaultRegion,
-        Tags: AwsTags.ReactComponent
+        Tags: AwsTags
     },
     Env: {
         Is: EnvIs,
         IsNot: EnvIsNot
     },
     Admin: {
-        BeforeBuild: AdminBeforeBuild.ReactComponent,
-        BeforeDeploy: AdminBeforeDeploy.ReactComponent,
-        BeforeWatch: AdminBeforeWatch.ReactComponent,
-        AfterBuild: AdminAfterBuild.ReactComponent,
-        AfterDeploy: AdminAfterDeploy.ReactComponent,
-        Pulumi: AdminPulumi.ReactComponent,
-        CustomDomains: AdminCustomDomains.ReactComponent
+        BeforeBuild: AdminBeforeBuild,
+        BeforeDeploy: AdminBeforeDeploy,
+        BeforeWatch: AdminBeforeWatch,
+        AfterBuild: AdminAfterBuild,
+        AfterDeploy: AdminAfterDeploy,
+        Pulumi: AdminPulumi,
+        CustomDomains: AdminCustomDomains,
+        StackOutputValue: AdminStackOutputValue
     },
     Api: {
-        BeforeBuild: ApiBeforeBuild.ReactComponent,
-        BeforeDeploy: ApiBeforeDeploy.ReactComponent,
-        BeforeWatch: ApiBeforeWatch.ReactComponent,
-        AfterBuild: ApiAfterBuild.ReactComponent,
-        AfterDeploy: ApiAfterDeploy.ReactComponent,
-        Pulumi: ApiPulumi.ReactComponent
+        BeforeBuild: ApiBeforeBuild,
+        BeforeDeploy: ApiBeforeDeploy,
+        BeforeWatch: ApiBeforeWatch,
+        AfterBuild: ApiAfterBuild,
+        AfterDeploy: ApiAfterDeploy,
+        Pulumi: ApiPulumi,
+        StackOutputValue: ApiStackOutputValue
     },
     Core: {
-        BeforeBuild: CoreBeforeBuild.ReactComponent,
-        BeforeDeploy: CoreBeforeDeploy.ReactComponent,
-        BeforeWatch: CoreBeforeWatch.ReactComponent,
-        AfterBuild: CoreAfterBuild.ReactComponent,
-        AfterDeploy: CoreAfterDeploy.ReactComponent,
-        Pulumi: CorePulumi.ReactComponent
+        BeforeBuild: CoreBeforeBuild,
+        BeforeDeploy: CoreBeforeDeploy,
+        BeforeWatch: CoreBeforeWatch,
+        AfterBuild: CoreAfterBuild,
+        AfterDeploy: CoreAfterDeploy,
+        Pulumi: CorePulumi,
+        StackOutputValue: CoreStackOutputValue
     }
 };

@@ -12,11 +12,12 @@ export const Auth0 = (props: Auth0Props) => {
     return (
         <>
             {/* Lambda vars */}
-            <EnvVar.ReactComponent varName={"AUTH0_ISSUER"} value={props.issuer} />
-            <EnvVar.ReactComponent varName={"REACT_APP_AUTH0_ISSUER"} value={props.issuer} />
+            <EnvVar varName={"AUTH0_ISSUER"} value={props.issuer} />
+            <EnvVar varName={"AUTH0_CLIENT_ID"} value={props.clientId} />
             {/* Admin app vars */}
-            <EnvVar.ReactComponent varName={"AUTH0_CLIENT_ID"} value={props.clientId} />
-            <EnvVar.ReactComponent varName={"REACT_APP_AUTH0_CLIENT_ID"} value={props.clientId} />
+            <EnvVar varName={"REACT_APP_IDP_TYPE"} value={"auth0"} />
+            <EnvVar varName={"REACT_APP_AUTH0_ISSUER"} value={props.issuer} />
+            <EnvVar varName={"REACT_APP_AUTH0_CLIENT_ID"} value={props.clientId} />
             {/* Api extensions */}
             <Api.Extension
                 src={import.meta.dirname + "/api/features/Auth0Idp/feature.js"}

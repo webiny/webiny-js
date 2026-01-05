@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Property, useIdGenerator } from "@webiny/react-properties";
 import { type DefineExtensionParams } from "./types.js";
 import { type z } from "zod";
@@ -28,7 +28,14 @@ export function createExtensionReactComponent<TParamsSchema extends z.ZodTypeAny
         const getId = useIdGenerator(extensionParams.type);
 
         // By passing undefined, we're letting RP generate a unique ID for us.
-        const propertyId = name ? getId(name) : undefined;
+        const propertyId = useMemo(() => {
+            if (extensionParams.multiple) {
+                return name ? getId(name) : undefined;
+            }
+
+            return getId(extensionParams.type);
+        }, [name, extensionParams.multiple, getId]);
+
         const propertyName = name || extensionParams.type;
 
         const placeAfter = after !== undefined ? getId(after) : undefined;
