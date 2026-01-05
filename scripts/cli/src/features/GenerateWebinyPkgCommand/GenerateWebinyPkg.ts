@@ -36,6 +36,8 @@ export class GenerateWebinyPkg implements GenerateWebinyPkg {
         const webinySrcStaticPath = wbyPkg.paths.packageFolder.join("src-static").toString();
         if (fs.existsSync(webinySrcStaticPath)) {
             this.copyDirectoryRecursive(webinySrcStaticPath, webinySrcPath);
+            // Generate exports for static files
+            this.generateExportsForStaticFiles(webinySrcStaticPath, webinySrcPath, wbyPkg);
         }
 
         for (const pkgWithExports of packagesWithExports) {
@@ -52,6 +54,41 @@ export class GenerateWebinyPkg implements GenerateWebinyPkg {
 
         this.ui.newLine();
         this.ui.success(`%s package generated.`, "webiny");
+    }
+
+    private generateExportsForStaticFiles(
+        srcStaticPath: string,
+        srcPath: string,
+        wbyPkg: ListPackagesService.Package
+    ) {
+        const staticFiles = this.getAllFiles(srcStaticPath);
+
+        for (const staticFile of staticFiles) {
+            const relativePath = path.relative(srcStaticPath, staticFile);
+            const exportKey = `./${relativePath}`;
+            const exportValue = `./${relativePath}`;
+
+            // @ts-ignore
+            wbyPkg.packageJson.exports![exportKey] = exportValue;
+
+            this.ui.debug(` Static file export: %s → %s`, exportKey, exportValue);
+        }
+    }
+
+    private getAllFiles(dirPath: string, arrayOfFiles: string[] = []): string[] {
+        const files = fs.readdirSync(dirPath, { withFileTypes: true });
+
+        for (const file of files) {
+            const fullPath = path.join(dirPath, file.name);
+
+            if (file.isDirectory()) {
+                this.getAllFiles(fullPath, arrayOfFiles);
+            } else {
+                arrayOfFiles.push(fullPath);
+            }
+        }
+
+        return arrayOfFiles;
     }
 
     private generateExportsForPkg(
