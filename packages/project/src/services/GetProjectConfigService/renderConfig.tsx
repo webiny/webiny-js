@@ -51,12 +51,14 @@ export async function renderConfig(params: RenderConfigParams) {
             })
         ];
 
+        const env = {
+            ...process.env,
+            [WBY_PROJECT_SDK_CONTEXT]: serializeProjectSdkContext(params.sdkParams)
+        };
+
         const childProcess = fork(workerPath, args, {
             stdio: ["pipe", "pipe", "pipe", "ipc"],
-            env: {
-                ...process.env,
-                [WBY_PROJECT_SDK_CONTEXT]: serializeProjectSdkContext(params.sdkParams)
-            }
+            env
         });
 
         // The only message we expect to receive is the parsed project config.

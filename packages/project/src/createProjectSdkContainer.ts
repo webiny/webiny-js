@@ -323,5 +323,6 @@ export const createProjectSdkContainer = async (
         const projectDecoratorImpl = await importFromPath(projectDecorator.params.src);
         container.registerDecorator(projectDecoratorImpl);
     }
+
     return container;
 };

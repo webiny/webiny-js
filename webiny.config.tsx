@@ -68,6 +68,17 @@ export const Extensions = () => {
             {/* Project 👇 */}
             <Project.Telemetry enabled={false} />
 
+            {process.env.WEBINY_AUTO_INSTALL && (
+                <Project.AutoInstall
+                    adminUser={{
+                        firstName: "Ad",
+                        lastName: "Min",
+                        email: "admin@webiny.com",
+                        password: "12345678"
+                    }}
+                />
+            )}
+
             {/* API */}
             <MySchemaExtension />
 

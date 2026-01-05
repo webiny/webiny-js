@@ -83,6 +83,7 @@
   "webiny": {
     "exports": {
       ".": "./extensions",
+      "./abstractions/InvokeLambdaFunction.ts": "./infra/features/InvokeLambdaFunction",
       "./abstractions/services/AdminStackOutputService.ts": "./infra/features/AdminStackOutputService",
       "./abstractions/services/CoreStackOutputService.ts": "./infra/features/CoreStackOutputService",
       "./abstractions/services/ApiStackOutputService.ts": "./infra/features/ApiStackOutputService"

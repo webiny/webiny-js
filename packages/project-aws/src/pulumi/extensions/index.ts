@@ -19,13 +19,13 @@ export { AdminCustomDomains };
 export { BlueGreenDeployments };
 
 export const definitions = [
-    AdminPulumi.definition,
-    ApiPulumi.definition,
-    AwsTags.definition,
-    CorePulumi.definition,
-    Vpc.definition,
-    ElasticSearch.definition,
-    OpenSearch.definition,
-    AdminCustomDomains.definition,
-    BlueGreenDeployments.definition
+    AdminPulumi.def,
+    ApiPulumi.def,
+    AwsTags.def,
+    CorePulumi.def,
+    Vpc.def,
+    ElasticSearch.def,
+    OpenSearch.def,
+    AdminCustomDomains.def,
+    BlueGreenDeployments.def
 ];

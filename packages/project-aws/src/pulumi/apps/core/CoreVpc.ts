@@ -14,7 +14,8 @@ export const CoreVpc = createAppModule({
             }
         });
 
-        // Create one public and two private subnets.
+        // Create one public and three private subnets.
+        // The third subnet will use the third AZ if available, otherwise reuses the first AZ.
         const publicSubnet = app.addResource(aws.ec2.Subnet, {
             name: "public",
             config: {
@@ -45,8 +46,18 @@ export const CoreVpc = createAppModule({
             config: {
                 vpcId: vpc.output.id,
                 cidrBlock: "10.0.2.0/24",
-                availabilityZone: availabilityZones.apply(zone => zone.names[1]),
+                availabilityZone: availabilityZones.apply(zone => zone.names[1] || zone.names[0]),
                 tags: { Name: "private-subnet-2" }
+            }
+        });
+
+        const privateSubnet3 = app.addResource(aws.ec2.Subnet, {
+            name: "private-subnet-3",
+            config: {
+                vpcId: vpc.output.id,
+                cidrBlock: "10.0.3.0/24",
+                availabilityZone: availabilityZones.apply(zone => zone.names[2] || zone.names[0]),
+                tags: { Name: "private-subnet-3" }
             }
         });
 
@@ -126,9 +137,17 @@ export const CoreVpc = createAppModule({
             }
         });
 
+        app.addResource(aws.ec2.RouteTableAssociation, {
+            name: "private-subnet-3-route-table-association",
+            config: {
+                subnetId: privateSubnet3.output.id,
+                routeTableId: privateSubnetRouteTable.output.id
+            }
+        });
+
         const subnets = {
             public: [publicSubnet],
-            private: [privateSubnet1, privateSubnet2]
+            private: [privateSubnet1, privateSubnet2, privateSubnet3]
         };
 
         const routeTables = {
