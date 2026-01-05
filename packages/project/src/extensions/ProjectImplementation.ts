@@ -5,6 +5,7 @@ import { zodPathToFile } from "../defineExtension/zodTypes/zodPathToFile.js";
 export const ProjectImplementation = defineExtension({
     type: "Project/Implementation",
     tags: { runtimeContext: "project" },
+    multiple: true,
     description: "Define a custom implementation or replace an existing one.",
     paramsSchema: ({ project }) => {
         return z.object({

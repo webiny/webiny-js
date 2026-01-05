@@ -17,6 +17,7 @@ import {
 import {
     aboutCommand,
     buildCommand,
+    configCommand,
     ddbPutItemConditionalCheckFailedGracefulErrorHandler,
     deployCommand,
     destroyCommand,
@@ -67,6 +68,7 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
     // Features (commands).
     container.register(aboutCommand).inSingletonScope();
     container.register(buildCommand).inSingletonScope();
+    container.register(configCommand).inSingletonScope();
     container.register(deployCommand).inSingletonScope();
     container.register(pulumiCommand).inSingletonScope();
     container.register(refreshCommand).inSingletonScope();
