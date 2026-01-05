@@ -3,11 +3,6 @@ import { createExtensionDefinition } from "./createExtensionDefinition.js";
 import { createExtensionReactComponent } from "./createExtensionReactComponent.js";
 import { type z } from "zod";
 
-export interface ExtensionComponentAndDef<TParamsSchema extends z.ZodTypeAny> {
-    definition: ReturnType<typeof createExtensionDefinition<TParamsSchema>>;
-    ReactComponent: ReturnType<typeof createExtensionReactComponent<TParamsSchema>>;
-}
-
 export type ExtensionComponent<TParamsSchema extends z.ZodTypeAny> = ReturnType<
     typeof createExtensionReactComponent<TParamsSchema>
 > & {
