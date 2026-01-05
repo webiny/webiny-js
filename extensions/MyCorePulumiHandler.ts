@@ -4,7 +4,7 @@ import { UiService } from "webiny/infra/features/UiService";
 class MyCorePulumiHandlerImpl implements CorePulumi.Interface {
     constructor(private ui: UiService.Interface) {}
 
-    execute(app: any) {
+    execute(app: CorePulumi.Params) {
         this.ui.info("🔮 Executing MyCorePulumiHandler with environment:", app.env);
     }
 }

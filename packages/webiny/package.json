@@ -96,15 +96,15 @@
     "./infra/features/CoreBeforeDeploy": "./infra/features/CoreBeforeDeploy.js",
     "./infra/features/LoggerService": "./infra/features/LoggerService.js",
     "./infra/features/UiService": "./infra/features/UiService.js",
-    "./infra/features/AdminPulumi": "./infra/features/AdminPulumi.js",
-    "./infra/features/ApiPulumi": "./infra/features/ApiPulumi.js",
-    "./infra/features/CorePulumi": "./infra/features/CorePulumi.js",
     "./infra/features/GetAppStackOutput": "./infra/features/GetAppStackOutput.js",
     "./infra/features/GetAppStackExport": "./infra/features/GetAppStackExport.js",
     "./extensions": "./extensions.js",
     "./infra/features/InvokeLambdaFunction": "./infra/features/InvokeLambdaFunction.js",
     "./infra/features/AdminStackOutputService": "./infra/features/AdminStackOutputService.js",
     "./infra/features/CoreStackOutputService": "./infra/features/CoreStackOutputService.js",
-    "./infra/features/ApiStackOutputService": "./infra/features/ApiStackOutputService.js"
+    "./infra/features/ApiStackOutputService": "./infra/features/ApiStackOutputService.js",
+    "./infra/features/AdminPulumi": "./infra/features/AdminPulumi.js",
+    "./infra/features/ApiPulumi": "./infra/features/ApiPulumi.js",
+    "./infra/features/CorePulumi": "./infra/features/CorePulumi.js"
   }
 }

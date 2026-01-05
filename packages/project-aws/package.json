@@ -86,7 +86,10 @@
       "./abstractions/InvokeLambdaFunction.ts": "./infra/features/InvokeLambdaFunction",
       "./abstractions/services/AdminStackOutputService.ts": "./infra/features/AdminStackOutputService",
       "./abstractions/services/CoreStackOutputService.ts": "./infra/features/CoreStackOutputService",
-      "./abstractions/services/ApiStackOutputService.ts": "./infra/features/ApiStackOutputService"
+      "./abstractions/services/ApiStackOutputService.ts": "./infra/features/ApiStackOutputService",
+      "./abstractions/features/pulumi/AdminPulumi.ts": "./infra/features/AdminPulumi",
+      "./abstractions/features/pulumi/ApiPulumi.ts": "./infra/features/ApiPulumi",
+      "./abstractions/features/pulumi/CorePulumi.ts": "./infra/features/CorePulumi"
     }
   },
   "adio": {
