@@ -26,7 +26,7 @@ export class ValidateWebinyLinks {
         this.ui.newLine();
 
         const packagesDir = path.join(process.cwd(), "packages");
-        
+
         if (!fs.existsSync(packagesDir)) {
             this.ui.error("Packages directory not found at: %s", packagesDir);
             process.exit(1);
@@ -34,7 +34,7 @@ export class ValidateWebinyLinks {
 
         // Collect all Webiny URLs
         const links = this.scanForLinks(packagesDir);
-        
+
         if (links.size === 0) {
             this.ui.info("No Webiny URLs found.");
             return;
@@ -57,7 +57,10 @@ export class ValidateWebinyLinks {
         const brokenLinks = results.filter(r => !r.valid);
         if (brokenLinks.length > 0 && errorOnBrokenLinks) {
             this.ui.newLine();
-            this.ui.error("Found %s broken link(s). Exiting with error.", brokenLinks.length.toString());
+            this.ui.error(
+                "Found %s broken link(s). Exiting with error.",
+                brokenLinks.length.toString()
+            );
             process.exit(1);
         }
     }
@@ -78,7 +81,7 @@ export class ValidateWebinyLinks {
                         matches.forEach(url => {
                             // Clean up common trailing characters that aren't part of the URL
                             const cleanedUrl = url.replace(/[.`,;]+$/, "");
-                            
+
                             if (!links.has(cleanedUrl)) {
                                 links.set(cleanedUrl, []);
                             }
@@ -92,7 +95,11 @@ export class ValidateWebinyLinks {
                 });
             } catch (error) {
                 // Skip files that can't be read (binary files, permission errors, etc.)
-                this.ui.debug("Could not read file %s: %s", filePath, error instanceof Error ? error.message : String(error));
+                this.ui.debug(
+                    "Could not read file %s: %s",
+                    filePath,
+                    error instanceof Error ? error.message : String(error)
+                );
             }
         };
 
@@ -104,11 +111,13 @@ export class ValidateWebinyLinks {
                     const fullPath = path.join(dirPath, entry.name);
 
                     // Skip node_modules, dist, build, .git, etc.
-                    if (entry.name === "node_modules" || 
-                        entry.name === "dist" || 
+                    if (
+                        entry.name === "node_modules" ||
+                        entry.name === "dist" ||
                         entry.name === "build" ||
                         entry.name === ".git" ||
-                        entry.name === "coverage") {
+                        entry.name === "coverage"
+                    ) {
                         continue;
                     }
 
@@ -117,14 +126,30 @@ export class ValidateWebinyLinks {
                     } else if (entry.isFile()) {
                         // Only scan text-based files
                         const ext = path.extname(entry.name).toLowerCase();
-                        if ([".ts", ".tsx", ".js", ".jsx", ".md", ".txt", ".json", ".yaml", ".yml"].includes(ext)) {
+                        if (
+                            [
+                                ".ts",
+                                ".tsx",
+                                ".js",
+                                ".jsx",
+                                ".md",
+                                ".txt",
+                                ".json",
+                                ".yaml",
+                                ".yml"
+                            ].includes(ext)
+                        ) {
                             scanFile(fullPath);
                         }
                     }
                 }
             } catch (error) {
                 // Skip directories that can't be read (permission errors, etc.)
-                this.ui.debug("Could not read directory %s: %s", dirPath, error instanceof Error ? error.message : String(error));
+                this.ui.debug(
+                    "Could not read directory %s: %s",
+                    dirPath,
+                    error instanceof Error ? error.message : String(error)
+                );
             }
         };
 
@@ -133,7 +158,7 @@ export class ValidateWebinyLinks {
     }
 
     private async validateUrl(url: string, locations: LinkInfo[]): Promise<ValidationResult> {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             const makeRequest = (targetUrl: string, redirectCount = 0) => {
                 // Prevent infinite redirect loops
                 if (redirectCount > 5) {
@@ -147,32 +172,45 @@ export class ValidateWebinyLinks {
                 }
 
                 const protocol = targetUrl.startsWith("https") ? https : http;
-                
-                const request = protocol.get(targetUrl, {
-                    timeout: 10000,
-                    headers: {
-                        "User-Agent": "Webiny-Link-Validator/1.0"
-                    }
-                }, (response) => {
-                    // Follow redirects
-                    if (response.statusCode && response.statusCode >= 300 && response.statusCode < 400 && response.headers.location) {
-                        const redirectUrl = response.headers.location;
-                        this.ui.debug("URL %s redirects to %s", targetUrl, redirectUrl);
-                        makeRequest(redirectUrl, redirectCount + 1);
-                        return;
-                    }
 
-                    const valid = response.statusCode !== undefined && response.statusCode >= 200 && response.statusCode < 400;
-                    
-                    resolve({
-                        url,
-                        valid,
-                        statusCode: response.statusCode,
-                        locations: locations.map(l => ({ file: l.file, line: l.line }))
-                    });
-                });
+                const request = protocol.get(
+                    targetUrl,
+                    {
+                        timeout: 10000,
+                        headers: {
+                            "User-Agent": "Webiny-Link-Validator/1.0"
+                        }
+                    },
+                    response => {
+                        // Follow redirects
+                        if (
+                            response.statusCode &&
+                            response.statusCode >= 300 &&
+                            response.statusCode < 400 &&
+                            response.headers.location
+                        ) {
+                            // Resolve relative redirect URLs against the current URL
+                            const redirectUrl = new URL(response.headers.location, targetUrl).href;
+                            this.ui.debug("URL %s redirects to %s", targetUrl, redirectUrl);
+                            makeRequest(redirectUrl, redirectCount + 1);
+                            return;
+                        }
 
-                request.on("error", (error) => {
+                        const valid =
+                            response.statusCode !== undefined &&
+                            response.statusCode >= 200 &&
+                            response.statusCode < 400;
+
+                        resolve({
+                            url,
+                            valid,
+                            statusCode: response.statusCode,
+                            locations: locations.map(l => ({ file: l.file, line: l.line }))
+                        });
+                    }
+                );
+
+                request.on("error", error => {
                     resolve({
                         url,
                         valid: false,
@@ -203,7 +241,11 @@ export class ValidateWebinyLinks {
         if (validLinks.length > 0) {
             this.ui.success("Valid links (%s):", validLinks.length.toString());
             validLinks.forEach(result => {
-                this.ui.info("  ✓ %s (Status: %s)", result.url, result.statusCode?.toString() || "N/A");
+                this.ui.info(
+                    "  ✓ %s (Status: %s)",
+                    result.url,
+                    result.statusCode?.toString() || "N/A"
+                );
                 result.locations.forEach(loc => {
                     const relativePath = path.relative(process.cwd(), loc.file);
                     this.ui.debug("    - %s:%s", relativePath, loc.line.toString());
@@ -226,7 +268,8 @@ export class ValidateWebinyLinks {
         }
 
         // Summary
-        this.ui.info("Summary: %s total, %s valid, %s broken", 
+        this.ui.info(
+            "Summary: %s total, %s valid, %s broken",
             results.length.toString(),
             validLinks.length.toString(),
             brokenLinks.length.toString()
