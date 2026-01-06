@@ -10,7 +10,7 @@ import {
 import { type AppModel } from "~/models/index.js";
 import { createEnvConfiguration, withPulumiConfigPassphrase } from "~/utils/env/index.js";
 import { mapStackOutput } from "./mapStackOutput.js";
-import fs from "fs";
+import fs from "fs/promises";
 import path from "path";
 
 export class DefaultPulumiGetStackOutputService implements PulumiGetStackOutputService.Interface {
@@ -25,7 +25,7 @@ export class DefaultPulumiGetStackOutputService implements PulumiGetStackOutputS
     async execute(app: AppModel, params?: PulumiGetStackOutputService.Params) {
         // Try to read from cache if skipCache is not true
         if (!params?.skipCache) {
-            const cachedOutput = this.readFromCache(app);
+            const cachedOutput = await this.readFromCache(app);
             if (cachedOutput !== null) {
                 const map = params?.map;
                 if (!map) {
@@ -59,7 +59,7 @@ export class DefaultPulumiGetStackOutputService implements PulumiGetStackOutputS
             }
 
             // Write to cache
-            this.writeToCache(app, stackOutputJson);
+            await this.writeToCache(app, stackOutputJson);
 
             const map = params?.map;
             if (!map) {
@@ -94,33 +94,26 @@ export class DefaultPulumiGetStackOutputService implements PulumiGetStackOutputS
         return path.join(cacheDir, cacheKey);
     }
 
-    private readFromCache(app: AppModel): Record<string, any> | null {
+    private async readFromCache(app: AppModel): Promise<Record<string, any> | null> {
         const cachePath = this.getCachePath(app);
         
-        if (!fs.existsSync(cachePath)) {
-            return null;
-        }
-
         try {
-            const content = fs.readFileSync(cachePath, "utf-8");
+            const content = await fs.readFile(cachePath, "utf-8");
             return JSON.parse(content);
         } catch (error) {
-            this.loggerService.error("Could not read or parse cache file.", cachePath, error);
+            // File doesn't exist or couldn't be read/parsed
             return null;
         }
     }
 
-    private writeToCache(app: AppModel, data: Record<string, any>): void {
+    private async writeToCache(app: AppModel, data: Record<string, any>): Promise<void> {
         const cachePath = this.getCachePath(app);
         const cacheDir = path.dirname(cachePath);
 
-        // Create cache directory if it doesn't exist
-        if (!fs.existsSync(cacheDir)) {
-            fs.mkdirSync(cacheDir, { recursive: true });
-        }
-
         try {
-            fs.writeFileSync(cachePath, JSON.stringify(data, null, 2), "utf-8");
+            // Create cache directory if it doesn't exist
+            await fs.mkdir(cacheDir, { recursive: true });
+            await fs.writeFile(cachePath, JSON.stringify(data, null, 2), "utf-8");
         } catch (error) {
             this.loggerService.error("Could not write to cache file.", cachePath, error);
         }
