@@ -64,7 +64,8 @@ export class ValidateWebinyLinks {
 
     private scanForLinks(dir: string): Map<string, LinkInfo[]> {
         const links = new Map<string, LinkInfo[]>();
-        const webinyLinkRegex = /https?:\/\/webiny\.link\/[^\s\)">]*/g;
+        // Match webiny.link URLs, stopping at whitespace or common URL terminators
+        const webinyLinkRegex = /https?:\/\/webiny\.link\/[^\s\)<>"'`]*/g;
 
         const scanFile = (filePath: string) => {
             try {
@@ -75,11 +76,14 @@ export class ValidateWebinyLinks {
                     const matches = line.match(webinyLinkRegex);
                     if (matches) {
                         matches.forEach(url => {
-                            if (!links.has(url)) {
-                                links.set(url, []);
+                            // Clean up common trailing characters that aren't part of the URL
+                            const cleanedUrl = url.replace(/[.`,;]+$/, "");
+                            
+                            if (!links.has(cleanedUrl)) {
+                                links.set(cleanedUrl, []);
                             }
-                            links.get(url)!.push({
-                                url,
+                            links.get(cleanedUrl)!.push({
+                                url: cleanedUrl,
                                 file: filePath,
                                 line: index + 1
                             });
@@ -87,7 +91,8 @@ export class ValidateWebinyLinks {
                     }
                 });
             } catch (error) {
-                // Skip files that can't be read (binary files, etc.)
+                // Skip files that can't be read (binary files, permission errors, etc.)
+                this.ui.debug("Could not read file %s: %s", filePath, error instanceof Error ? error.message : String(error));
             }
         };
 
@@ -118,7 +123,8 @@ export class ValidateWebinyLinks {
                     }
                 }
             } catch (error) {
-                // Skip directories that can't be read
+                // Skip directories that can't be read (permission errors, etc.)
+                this.ui.debug("Could not read directory %s: %s", dirPath, error instanceof Error ? error.message : String(error));
             }
         };
 
@@ -128,48 +134,65 @@ export class ValidateWebinyLinks {
 
     private async validateUrl(url: string, locations: LinkInfo[]): Promise<ValidationResult> {
         return new Promise((resolve) => {
-            const protocol = url.startsWith("https") ? https : http;
-            
-            const request = protocol.get(url, {
-                timeout: 10000,
-                headers: {
-                    "User-Agent": "Webiny-Link-Validator/1.0"
-                }
-            }, (response) => {
-                // Follow redirects
-                if (response.statusCode && response.statusCode >= 300 && response.statusCode < 400 && response.headers.location) {
-                    const redirectUrl = response.headers.location;
-                    this.ui.debug("URL %s redirects to %s", url, redirectUrl);
+            const makeRequest = (targetUrl: string, redirectCount = 0) => {
+                // Prevent infinite redirect loops
+                if (redirectCount > 5) {
+                    resolve({
+                        url,
+                        valid: false,
+                        error: "Too many redirects",
+                        locations: locations.map(l => ({ file: l.file, line: l.line }))
+                    });
+                    return;
                 }
 
-                const valid = response.statusCode !== undefined && response.statusCode >= 200 && response.statusCode < 400;
+                const protocol = targetUrl.startsWith("https") ? https : http;
                 
-                resolve({
-                    url,
-                    valid,
-                    statusCode: response.statusCode,
-                    locations: locations.map(l => ({ file: l.file, line: l.line }))
-                });
-            });
+                const request = protocol.get(targetUrl, {
+                    timeout: 10000,
+                    headers: {
+                        "User-Agent": "Webiny-Link-Validator/1.0"
+                    }
+                }, (response) => {
+                    // Follow redirects
+                    if (response.statusCode && response.statusCode >= 300 && response.statusCode < 400 && response.headers.location) {
+                        const redirectUrl = response.headers.location;
+                        this.ui.debug("URL %s redirects to %s", targetUrl, redirectUrl);
+                        makeRequest(redirectUrl, redirectCount + 1);
+                        return;
+                    }
 
-            request.on("error", (error) => {
-                resolve({
-                    url,
-                    valid: false,
-                    error: error.message,
-                    locations: locations.map(l => ({ file: l.file, line: l.line }))
+                    const valid = response.statusCode !== undefined && response.statusCode >= 200 && response.statusCode < 400;
+                    
+                    resolve({
+                        url,
+                        valid,
+                        statusCode: response.statusCode,
+                        locations: locations.map(l => ({ file: l.file, line: l.line }))
+                    });
                 });
-            });
 
-            request.on("timeout", () => {
-                request.destroy();
-                resolve({
-                    url,
-                    valid: false,
-                    error: "Request timeout",
-                    locations: locations.map(l => ({ file: l.file, line: l.line }))
+                request.on("error", (error) => {
+                    resolve({
+                        url,
+                        valid: false,
+                        error: error.message,
+                        locations: locations.map(l => ({ file: l.file, line: l.line }))
+                    });
                 });
-            });
+
+                request.on("timeout", () => {
+                    request.destroy();
+                    resolve({
+                        url,
+                        valid: false,
+                        error: "Request timeout",
+                        locations: locations.map(l => ({ file: l.file, line: l.line }))
+                    });
+                });
+            };
+
+            makeRequest(url);
         });
     }
 
