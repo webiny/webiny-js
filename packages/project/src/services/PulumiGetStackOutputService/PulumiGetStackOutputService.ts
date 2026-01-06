@@ -26,12 +26,15 @@ export class DefaultPulumiGetStackOutputService implements PulumiGetStackOutputS
         private projectSdkParamsService: ProjectSdkParamsService.Interface
     ) {}
 
-    async execute(app: AppModel, params?: PulumiGetStackOutputService.Params) {
+    async execute<TOutput extends Record<string, any> = Record<string, any>>(
+        app: AppModel,
+        params?: PulumiGetStackOutputService.Params
+    ): Promise<TOutput | null> {
         // Try to read from cache if skipCache is not true
         if (!params?.skipCache) {
             const cachedOutput = await this.readFromCache(app);
             if (cachedOutput !== null) {
-                return this.applyMapping(cachedOutput, params?.map);
+                return this.applyMapping(cachedOutput, params?.map) as TOutput;
             }
         }
 
@@ -60,7 +63,7 @@ export class DefaultPulumiGetStackOutputService implements PulumiGetStackOutputS
             // Write to cache
             await this.writeToCache(app, stackOutputJson);
 
-            return this.applyMapping(stackOutputJson, params?.map);
+            return this.applyMapping(stackOutputJson, params?.map) as TOutput;
         } catch {
             this.loggerService.error(
                 "Could not parse stack output as JSON.",
@@ -72,7 +75,10 @@ export class DefaultPulumiGetStackOutputService implements PulumiGetStackOutputS
         }
     }
 
-    private applyMapping(data: Record<string, any>, map?: Record<string, any>): Record<string, any> {
+    private applyMapping(
+        data: Record<string, any>,
+        map?: Record<string, any>
+    ): Record<string, any> {
         if (!map) {
             return data;
         }
@@ -124,5 +130,11 @@ export class DefaultPulumiGetStackOutputService implements PulumiGetStackOutputS
 export const pulumiGetStackOutputService = createImplementation({
     abstraction: PulumiGetStackOutputService,
     implementation: DefaultPulumiGetStackOutputService,
-    dependencies: [GetPulumiService, PulumiSelectStackService, LoggerService, GetProjectService, ProjectSdkParamsService]
+    dependencies: [
+        GetPulumiService,
+        PulumiSelectStackService,
+        LoggerService,
+        GetProjectService,
+        ProjectSdkParamsService
+    ]
 });
