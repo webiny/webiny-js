@@ -31,12 +31,7 @@ export class DefaultPulumiGetStackOutputService implements PulumiGetStackOutputS
         if (!params?.skipCache) {
             const cachedOutput = await this.readFromCache(app);
             if (cachedOutput !== null) {
-                const map = params?.map;
-                if (!map) {
-                    return cachedOutput;
-                }
-                // If a mapping is provided, we map the cached output to the specified structure.
-                return mapStackOutput(cachedOutput, map);
+                return this.applyMapping(cachedOutput, params?.map);
             }
         }
 
@@ -65,13 +60,7 @@ export class DefaultPulumiGetStackOutputService implements PulumiGetStackOutputS
             // Write to cache
             await this.writeToCache(app, stackOutputJson);
 
-            const map = params?.map;
-            if (!map) {
-                return stackOutputJson;
-            }
-
-            // If a mapping is provided, we map the output to the specified structure.
-            return mapStackOutput(stackOutputJson, map);
+            return this.applyMapping(stackOutputJson, params?.map);
         } catch {
             this.loggerService.error(
                 "Could not parse stack output as JSON.",
@@ -81,6 +70,14 @@ export class DefaultPulumiGetStackOutputService implements PulumiGetStackOutputS
             );
             return null;
         }
+    }
+
+    private applyMapping(data: Record<string, any>, map?: Record<string, any>): Record<string, any> {
+        if (!map) {
+            return data;
+        }
+        // If a mapping is provided, we map the output to the specified structure.
+        return mapStackOutput(data, map);
     }
 
     private getCacheKey(app: AppModel): string {
