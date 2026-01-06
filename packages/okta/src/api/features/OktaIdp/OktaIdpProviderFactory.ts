@@ -19,7 +19,7 @@ class OktaIdpProviderFactoryImpl implements IdpProviderFactory.Interface {
                         return false;
                     }
 
-                    return new URL(issuer).hostname.includes("okta.com") ?? false;
+                    return new URL(issuer).hostname.endsWith(".okta.com") ?? false;
                 }
             },
             jwksCache

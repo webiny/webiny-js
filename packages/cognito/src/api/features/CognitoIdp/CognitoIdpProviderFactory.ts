@@ -13,11 +13,11 @@ class CognitoIdpProviderFactoryImpl implements IdpProviderFactory.Interface {
         const clientId = String(process.env.COGNITO_CLIENT_ID);
 
         // Cognito issuer format: https://cognito-idp.{region}.amazonaws.com/{userPoolId}
-        const issuer = `https://cognito-idp.${region}.amazonaws.com/${userPoolId}`;
+        const expectedIssuer = `https://cognito-idp.${region}.amazonaws.com/${userPoolId}`;
 
         return new OidcIdpProvider(
             {
-                issuer,
+                issuer: expectedIssuer,
                 clientId,
                 config: this.config,
                 isApplicable: (token: JwtPayload) => {
@@ -26,12 +26,7 @@ class CognitoIdpProviderFactoryImpl implements IdpProviderFactory.Interface {
                         return false;
                     }
 
-                    const url = new URL(issuer);
-
-                    return (
-                        url.hostname.includes("cognito-idp") ||
-                        url.hostname.includes("amazonaws.com")
-                    );
+                    return issuer === expectedIssuer;
                 }
             },
             jwksCache

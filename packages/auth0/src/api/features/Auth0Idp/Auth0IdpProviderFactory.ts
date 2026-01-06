@@ -19,7 +19,7 @@ class Auth0IdpProviderFactoryImpl implements IdpProviderFactory.Interface {
                         return false;
                     }
 
-                    return new URL(issuer).hostname.includes("auth0.com") ?? false;
+                    return new URL(issuer).hostname.endsWith(".auth0.com") ?? false;
                 }
             },
             jwksCache
