@@ -43,18 +43,6 @@ import {
 } from "./features/index.js";
 
 import {
-    adminPulumi,
-    apiPulumi,
-    corePulumi
-} from "@webiny/project-aws/pulumi/features/index.js";
-
-import {
-    AdminPulumi as AdminPulumiExt,
-    ApiPulumi as ApiPulumiExt,
-    CorePulumi as CorePulumiExt
-} from "@webiny/project-aws/pulumi/extensions/index.js";
-
-import {
     getAppService,
     buildAppWorkspaceService,
     buildProjectWorkspaceService,
@@ -282,22 +270,6 @@ export const createProjectSdkContainer = async (
         const hookImpl = await importFromPath(hookExtension.params.src);
         container.register(hookImpl).inSingletonScope();
     }
-
-    const pulumiExtensions = [
-        ...projectExtensions.extensionsByType(CorePulumiExt),
-        ...projectExtensions.extensionsByType(ApiPulumiExt),
-        ...projectExtensions.extensionsByType(AdminPulumiExt)
-    ];
-
-    for (const pulumiExtension of pulumiExtensions) {
-        const pulumiImpl = await importFromPath(pulumiExtension.params.src);
-        container.register(pulumiImpl).inSingletonScope();
-    }
-
-    // Pulumi.
-    container.registerComposite(corePulumi);
-    container.registerComposite(apiPulumi);
-    container.registerComposite(adminPulumi);
 
     // Decorators that must be applied last on top of potentially custom ones.
     container.registerDecorator(buildAppWithHooks);
