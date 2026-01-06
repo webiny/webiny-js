@@ -15,6 +15,8 @@ export * from "./GetProjectInfo/index.js";
 export * from "./GetPulumiResourceNamePrefix/index.js";
 export * from "./IsCi/index.js";
 export * from "./IsTelemetryEnabled/index.js";
+export * from "./IsWcpEnabled/index.js";
+export * from "./IsWebinyJsRepo/index.js";
 export * from "./RefreshApp/index.js";
 export * from "./RunPulumiCommand/index.js";
 export * from "./ValidateProjectConfig/index.js";
