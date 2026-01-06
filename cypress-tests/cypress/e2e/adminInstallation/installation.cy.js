@@ -30,7 +30,7 @@ context("Admin Installation", () => {
             cy.findByRole("combobox").click();
             cy.findByText("GitHub").click();
 
-            cy.findByLabelText("I agree to Webiny’s Terms of Service and Privacy policy.").click();
+            cy.findByLabelText(/I agree to Webiny.*/i).click();
 
             cy.findByText("Next step").click();
 
@@ -49,7 +49,7 @@ context("Admin Installation", () => {
             cy.findByLabelText("Email").type(username);
             cy.findByLabelText("Password").type(password);
             cy.findByText("Submit").click();
-            cy.findByText(/Join our community/i);
+            cy.findByText(/what are we doing today?/i);
         }
     );
 });
