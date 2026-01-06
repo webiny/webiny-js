@@ -9,8 +9,8 @@ class LogInRepositoryImpl implements Abstraction.Interface {
         private mapper: IdentityMapper.Interface
     ) {}
 
-    async login(identityType: string): Promise<Identity> {
-        const dto = await this.gateway.execute(identityType);
+    async login(): Promise<Identity> {
+        const dto = await this.gateway.execute();
         return this.mapper.toIdentity(dto);
     }
 }

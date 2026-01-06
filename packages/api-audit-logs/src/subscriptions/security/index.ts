@@ -1,6 +1,6 @@
-import { AuditLogGroupAfterCreateHandler } from "./handlers/AuditLogGroupAfterCreateHandler.js";
-import { AuditLogGroupAfterUpdateHandler } from "./handlers/AuditLogGroupAfterUpdateHandler.js";
-import { AuditLogGroupAfterDeleteHandler } from "./handlers/AuditLogGroupAfterDeleteHandler.js";
+import { AuditLogRoleAfterCreateHandler } from "./handlers/AuditLogRoleAfterCreateHandler.js";
+import { AuditLogRoleAfterUpdateHandler } from "./handlers/AuditLogRoleAfterUpdateHandler.js";
+import { AuditLogRoleAfterDeleteHandler } from "./handlers/AuditLogRoleAfterDeleteHandler.js";
 import { AuditLogTeamAfterCreateHandler } from "./handlers/AuditLogTeamAfterCreateHandler.js";
 import { AuditLogTeamAfterUpdateHandler } from "./handlers/AuditLogTeamAfterUpdateHandler.js";
 import { AuditLogTeamAfterDeleteHandler } from "./handlers/AuditLogTeamAfterDeleteHandler.js";
@@ -14,9 +14,9 @@ import { AuditLogsContext } from "~/abstractions.js";
 
 export const createSecurityHooks = (context: AuditLogsContext.Interface) => {
     // Register group (role) event handlers
-    context.container.register(AuditLogGroupAfterCreateHandler);
-    context.container.register(AuditLogGroupAfterUpdateHandler);
-    context.container.register(AuditLogGroupAfterDeleteHandler);
+    context.container.register(AuditLogRoleAfterCreateHandler);
+    context.container.register(AuditLogRoleAfterUpdateHandler);
+    context.container.register(AuditLogRoleAfterDeleteHandler);
 
     // Register team event handlers
     context.container.register(AuditLogTeamAfterCreateHandler);

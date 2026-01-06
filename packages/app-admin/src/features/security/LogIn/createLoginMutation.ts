@@ -1,24 +1,39 @@
-export const createLoginMutation = (identityType: string, fieldSelections: string[]) => {
+export const createLoginMutation = () => {
     return /* GraphQL */ `
         mutation Login {
             security {
                 login {
                     data {
-                        ... on ${identityType} {
+                        id
+                        displayName
+                        type
+                        roles {
                             id
-                            displayName
-                            type
-                            ${fieldSelections.join("\n")}
-                            currentTenant {
-                                id
-                                name
-                            }
-                            defaultTenant {
-                                id
-                                name
-                            }
-                            permissions
+                            slug
+                            name
                         }
+                        teams {
+                            id
+                            slug
+                            name
+                        }
+                        profile {
+                            firstName
+                            lastName
+                            email
+                            avatar
+                            external
+                            createdOn
+                        }
+                        currentTenant {
+                            id
+                            name
+                        }
+                        defaultTenant {
+                            id
+                            name
+                        }
+                        permissions
                     }
                     error {
                         code

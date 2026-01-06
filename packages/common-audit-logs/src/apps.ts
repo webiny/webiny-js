@@ -32,11 +32,6 @@ const publishActions = {
     UNPUBLISH: { type: ActionType.UNPUBLISH, displayName: "Unpublish" }
 };
 
-const importExportActions = {
-    IMPORT: { type: ActionType.IMPORT, displayName: "Import" },
-    EXPORT: { type: ActionType.EXPORT, displayName: "Export" }
-};
-
 const trashBinActions = {
     MOVE_TO_TRASH: { type: ActionType.MOVE_TO_TRASH, displayName: "Move to trash" },
     RESTORE_FROM_TRASH: { type: ActionType.RESTORE_FROM_TRASH, displayName: "Restore from trash" }
@@ -103,49 +98,6 @@ export const apps: App[] = [
         ]
     },
     {
-        app: "FORM_BUILDER",
-        displayName: "Form Builder",
-        entities: [
-            {
-                type: "FORM",
-                displayName: "Form",
-                linkToEntity(id) {
-                    return `/form-builder/forms?id=${id}`;
-                },
-                actions: [
-                    commonActions.CREATE,
-                    commonActions.DELETE,
-                    importExportActions.EXPORT,
-                    importExportActions.IMPORT
-                ]
-            },
-            {
-                type: "FORM_REVISION",
-                displayName: "Form revision",
-                linkToEntity(id) {
-                    return `/form-builder/forms?id=${id}`;
-                },
-                actions: [
-                    commonActions.CREATE,
-                    commonActions.UPDATE,
-                    commonActions.DELETE,
-                    publishActions.PUBLISH,
-                    publishActions.UNPUBLISH
-                ]
-            },
-            {
-                type: "FORM_SUBMISSION",
-                displayName: "Form submission",
-                actions: [importExportActions.EXPORT]
-            },
-            {
-                type: "SETTINGS",
-                displayName: "Settings",
-                actions: [commonActions.UPDATE]
-            }
-        ]
-    },
-    {
         app: "HEADLESS_CMS",
         displayName: "Headless CMS",
         entities: [
@@ -194,20 +146,6 @@ export const apps: App[] = [
         ]
     },
     {
-        app: "I18N",
-        displayName: "i18n",
-        entities: [
-            {
-                type: "LOCALE",
-                displayName: "Locale",
-                linkToEntity(id) {
-                    return `/i18n/locales?code=${id}`;
-                },
-                actions: [commonActions.CREATE, commonActions.UPDATE, commonActions.DELETE]
-            }
-        ]
-    },
-    {
         app: "MAILER",
         displayName: "Mailer",
         entities: [
@@ -215,109 +153,6 @@ export const apps: App[] = [
                 type: "SETTINGS",
                 displayName: "Settings",
                 actions: [commonActions.UPDATE]
-            }
-        ]
-    },
-    {
-        app: "PAGE_BUILDER",
-        displayName: "Page Builder",
-        entities: [
-            {
-                type: "BLOCK",
-                displayName: "Block",
-                linkToEntity(id) {
-                    return `/page-builder/block-editor/${id}`;
-                },
-                actions: [
-                    commonActions.CREATE,
-                    commonActions.UPDATE,
-                    commonActions.DELETE,
-                    importExportActions.EXPORT,
-                    importExportActions.IMPORT
-                ]
-            },
-            {
-                type: "BLOCK_CATEGORY",
-                displayName: "Block category",
-                linkToEntity(slug) {
-                    return `/page-builder/block-categories?slug=${slug}`;
-                },
-                actions: [commonActions.CREATE, commonActions.UPDATE, commonActions.DELETE]
-            },
-            {
-                type: "CATEGORY",
-                displayName: "Category",
-                linkToEntity(slug) {
-                    return `/page-builder/categories?slug=${slug}`;
-                },
-                actions: [commonActions.CREATE, commonActions.UPDATE, commonActions.DELETE]
-            },
-            {
-                type: "MENU",
-                displayName: "Menu",
-                linkToEntity(slug) {
-                    return `/page-builder/menus?slug=${slug}`;
-                },
-                actions: [commonActions.CREATE, commonActions.UPDATE, commonActions.DELETE]
-            },
-            {
-                type: "PAGE",
-                displayName: "Page",
-                linkToEntity(id) {
-                    return `/page-builder/editor/${id}`;
-                },
-                actions: [
-                    commonActions.CREATE,
-                    commonActions.DELETE,
-                    importExportActions.EXPORT,
-                    importExportActions.IMPORT
-                ]
-            },
-            {
-                type: "PAGE_ELEMENT",
-                displayName: "Page element",
-                actions: [commonActions.CREATE, commonActions.UPDATE, commonActions.DELETE]
-            },
-            {
-                type: "PAGE_FOLDER",
-                displayName: "Page folder",
-                linkToEntity(id) {
-                    return `/page-builder/pages?folderId=${id}`;
-                },
-                actions: [commonActions.CREATE, commonActions.UPDATE, commonActions.DELETE]
-            },
-            {
-                type: "PAGE_REVISION",
-                displayName: "Page revision",
-                linkToEntity(id) {
-                    return `/page-builder/editor/${id}`;
-                },
-                actions: [
-                    commonActions.CREATE,
-                    { ...commonActions.UPDATE, newEntryDelay: 60 },
-                    commonActions.DELETE,
-                    publishActions.PUBLISH,
-                    publishActions.UNPUBLISH
-                ]
-            },
-            {
-                type: "SETTINGS",
-                displayName: "Settings",
-                actions: [commonActions.UPDATE]
-            },
-            {
-                type: "TEMPLATE",
-                displayName: "Template",
-                linkToEntity(id) {
-                    return `/page-builder/page-templates?id=${id}`;
-                },
-                actions: [
-                    commonActions.CREATE,
-                    commonActions.UPDATE,
-                    commonActions.DELETE,
-                    importExportActions.EXPORT,
-                    importExportActions.IMPORT
-                ]
             }
         ]
     },

@@ -1,5 +1,6 @@
 import {
     BeforeDeploy,
+    IsCi,
     IsTelemetryEnabled,
     IsWcpEnabled,
     IsWebinyJsRepo
@@ -10,10 +11,16 @@ class EnsureTelemetryEnabledForOssImpl implements BeforeDeploy.Interface {
     constructor(
         private isTelemetryEnabled: IsTelemetryEnabled.Interface,
         private isWcpEnabled: IsWcpEnabled.Interface,
-        private isWebinyJsRepo: IsWebinyJsRepo.Interface
+        private isWebinyJsRepo: IsWebinyJsRepo.Interface,
+        private isCi: IsCi.Interface
     ) {}
 
     async execute() {
+        // Skip telemetry checks in CI environments
+        if (this.isCi.execute()) {
+            return;
+        }
+
         // Don't enforce telemetry validation in the webiny-js development repository
         const isDevRepo = this.isWebinyJsRepo.execute();
         if (isDevRepo) {
@@ -41,5 +48,5 @@ class EnsureTelemetryEnabledForOssImpl implements BeforeDeploy.Interface {
 
 export const EnsureTelemetryEnabledForOss = BeforeDeploy.createImplementation({
     implementation: EnsureTelemetryEnabledForOssImpl,
-    dependencies: [IsTelemetryEnabled, IsWcpEnabled, IsWebinyJsRepo]
+    dependencies: [IsTelemetryEnabled, IsWcpEnabled, IsWebinyJsRepo, IsCi]
 });

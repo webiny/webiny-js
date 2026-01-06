@@ -32,11 +32,11 @@ const createEntity = (
     });
 };
 
-export const createGroupEntity = (
+export const createRoleEntity = (
     table: Table<string, string, string>,
     attributes: Attributes = {}
 ) => {
-    return createEntity(ENTITIES.GROUP, table, {
+    return createEntity(ENTITIES.ROLE, table, {
         id: {
             type: "string"
         },
@@ -96,7 +96,7 @@ export const createTeamEntity = (
         description: {
             type: "string"
         },
-        groups: {
+        roles: {
             type: "list"
         },
         ...attributes
@@ -131,30 +131,6 @@ export const createApiKeyEntity = (
         },
         permissions: {
             type: "list"
-        },
-        ...attributes
-    });
-};
-
-export const createTenantLinkEntity = (
-    table: Table<string, string, string>,
-    attributes: Attributes = {}
-) => {
-    return createEntity(ENTITIES.TENANT_LINK, table, {
-        createdOn: {
-            type: "string"
-        },
-        identity: {
-            type: "string"
-        },
-        tenant: {
-            type: "string"
-        },
-        type: {
-            type: "string"
-        },
-        data: {
-            type: "map"
         },
         ...attributes
     });

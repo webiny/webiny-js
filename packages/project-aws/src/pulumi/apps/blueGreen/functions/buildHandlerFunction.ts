@@ -21,7 +21,7 @@ export const buildHandlerFunction = ({
     storeKey,
     domains
 }: IBuildRequestFunctionParams): string => {
-    const target = __dirname + `/handler.js`;
+    const target = __dirname + `/handler.mjs`;
     if (!existsSync(target)) {
         throw new Error(`File "${target}" does not exist.`);
     }

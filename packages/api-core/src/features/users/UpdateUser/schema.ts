@@ -11,7 +11,7 @@ export const updateUserValidation = z.object({
         })
         .optional()
         .nullable(),
-    groups: z.array(z.string()).optional(),
+    roles: z.array(z.string()).optional(),
     teams: z.array(z.string()).optional(),
     password: z.string().optional()
 });

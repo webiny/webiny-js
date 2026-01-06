@@ -54,13 +54,15 @@ declare namespace NodeJS {
          * Okta
          */
         OKTA_ISSUER?: string;
+        OKTA_CLIENT_ID?: string;
         REACT_APP_OKTA_ISSUER?: string;
+        REACT_APP_OKTA_CLIENT_ID?: string;
         /**
          * Auth0
          */
-        AUTH0_DOMAIN?: string;
+        AUTH0_ISSUER?: string;
         AUTH0_CLIENT_ID?: string;
-        REACT_APP_AUTH0_DOMAIN?: string;
+        REACT_APP_AUTH0_ISSUER?: string;
         REACT_APP_AUTH0_CLIENT_ID?: string;
         /**
          * api-mailer

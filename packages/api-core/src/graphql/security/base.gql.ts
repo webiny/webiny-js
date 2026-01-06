@@ -1,29 +1,10 @@
-import { Response, GraphQLSchemaPlugin } from "@webiny/handler-graphql";
-import { getDefaultTenant as baseGetDefaultTenant } from "~/features/security/utils/getDefaultTenant.js";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import type { SecurityContext } from "~/types/security.js";
 
 const emptyResolver = () => ({});
 
-const getDefaultTenant = async (context: SecurityContext) => {
-    const defaultTenant = await baseGetDefaultTenant(context);
-    if (defaultTenant) {
-        return defaultTenant;
-    }
-
-    return context.tenancy.getRootTenant();
-};
-
 export default new GraphQLSchemaPlugin<SecurityContext>({
     typeDefs: /* GraphQL */ `
-        interface SecurityIdentity {
-            id: ID!
-            type: String!
-            displayName: String!
-            permissions: [JSON!]!
-            currentTenant: Tenant
-            defaultTenant: Tenant
-        }
-
         type TenantResponse {
             data: Tenant
             error: SecurityError
@@ -68,19 +49,6 @@ export default new GraphQLSchemaPlugin<SecurityContext>({
         },
         Mutation: {
             security: emptyResolver
-        },
-        SecurityQuery: {
-            async getDefaultTenant(_, __, context) {
-                return new Response(getDefaultTenant(context));
-            }
-        },
-        SecurityIdentity: {
-            defaultTenant(_, __, context) {
-                return getDefaultTenant(context);
-            },
-            currentTenant(_, __, context) {
-                return context.tenancy.getCurrentTenant();
-            }
         }
     }
 });

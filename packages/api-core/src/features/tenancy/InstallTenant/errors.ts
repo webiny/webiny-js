@@ -12,7 +12,7 @@ export class InstallTenantError extends BaseError<InstallTenantErrorData> {
 
     constructor(data: InstallTenantErrorData) {
         super({
-            message: `Installation failed for app "${data.failedApp}": ${data.reason}`,
+            message: "Installation failed",
             data
         });
     }

@@ -67,6 +67,7 @@
       "@webiny/api-core/features/EventPublisher": [
         "../api-core/src/features/eventPublisher/index.js"
       ],
+      "@webiny/api-core/features/LoggerService": ["../api-core/src/features/logger/index.js"],
       "@webiny/api-core/features/IdentityContext": [
         "../api-core/src/features/security/IdentityContext/index.js"
       ],
@@ -114,20 +115,20 @@
       "@webiny/api-core/features/Authorizer": [
         "../api-core/src/features/security/authorization/Authorizer/index.js"
       ],
-      "@webiny/api-core/features/CreateGroup": [
-        "../api-core/src/features/security/groups/CreateGroup/index.js"
+      "@webiny/api-core/features/CreateRole": [
+        "../api-core/src/features/security/roles/CreateRole/index.js"
       ],
-      "@webiny/api-core/features/DeleteGroup": [
-        "../api-core/src/features/security/groups/DeleteGroup/index.js"
+      "@webiny/api-core/features/DeleteRole": [
+        "../api-core/src/features/security/roles/DeleteRole/index.js"
       ],
-      "@webiny/api-core/features/GetGroup": [
-        "../api-core/src/features/security/groups/GetGroup/index.js"
+      "@webiny/api-core/features/GetRole": [
+        "../api-core/src/features/security/roles/GetRole/index.js"
       ],
-      "@webiny/api-core/features/ListGroups": [
-        "../api-core/src/features/security/groups/ListGroups/index.js"
+      "@webiny/api-core/features/ListRoles": [
+        "../api-core/src/features/security/roles/ListRoles/index.js"
       ],
-      "@webiny/api-core/features/UpdateGroup": [
-        "../api-core/src/features/security/groups/UpdateGroup/index.js"
+      "@webiny/api-core/features/UpdateRole": [
+        "../api-core/src/features/security/roles/UpdateRole/index.js"
       ],
       "@webiny/api-core/features/CreateTeam": [
         "../api-core/src/features/security/teams/CreateTeam/index.js"

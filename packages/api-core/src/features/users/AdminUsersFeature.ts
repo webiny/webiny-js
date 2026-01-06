@@ -7,6 +7,7 @@ import { UpdateUserFeature } from "./UpdateUser/feature.js";
 import { DeleteUserFeature } from "./DeleteUser/feature.js";
 import { ListUserTeamsFeature } from "~/features/users/ListUserTeams/feature.js";
 import { AdminUsersStorageOperations } from "~/features/users/shared/storageAbstractions.js";
+import { ExternalIdpUserSyncFeature } from "~/features/users/ExternalIdpUserSync/index.js";
 
 export const AdminUsersFeature = createFeature({
     name: "AdminUsers",
@@ -21,6 +22,7 @@ export const AdminUsersFeature = createFeature({
         CreateUserFeature.register(container);
         UpdateUserFeature.register(container);
         DeleteUserFeature.register(container);
+        ExternalIdpUserSyncFeature.register(container);
 
         // Legacy storage ops
         container.registerInstance(AdminUsersStorageOperations, storageOperations);

@@ -3,8 +3,7 @@ import { parentPort, workerData } from "worker_threads";
 const { handler: handlerParams } = workerData;
 
 try {
-    const { default: importedCode } = await import(handlerParams.path);
-    const { handler } = importedCode;
+    const { handler } = await import(handlerParams.path);
 
     const result = await handler(...handlerParams.args);
     parentPort!.postMessage(JSON.stringify({ success: true, result, error: null }));

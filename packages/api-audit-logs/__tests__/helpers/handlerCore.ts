@@ -10,7 +10,6 @@ import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/type
 import type { AuditLogsContext } from "~/types";
 import { createAco } from "@webiny/api-aco";
 import { createAuditLogs } from "~/index";
-import type { FileManagerStorageOperations } from "@webiny/api-file-manager/types";
 import { createFileManagerContext } from "@webiny/api-file-manager";
 import { createMailerContext } from "@webiny/api-mailer";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
@@ -50,7 +49,6 @@ export const createHandlerCore = (params?: CreateHandlerCoreParams) => {
 
     const documentClient = getDocumentClient();
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-    const fileManagerStorage = getStorageOps<FileManagerStorageOperations>("fileManager");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
     const testProjectLicense = createTestWcpLicense();
@@ -102,9 +100,7 @@ export const createHandlerCore = (params?: CreateHandlerCoreParams) => {
             apiKeyAuthorization({ identityType: "api-key" }),
             createHeadlessCmsContext({ storageOperations: cmsStorage.storageOperations }),
             createMailerContext(),
-            createFileManagerContext({
-                storageOperations: fileManagerStorage.storageOperations
-            }),
+            createFileManagerContext(),
             createHeadlessCmsGraphQL(),
             createWebsiteBuilder(),
             createAco({ documentClient }),
