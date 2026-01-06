@@ -13,7 +13,7 @@ export const createRsbuildConfig = ({ cwd }) => {
 
     return /** @type {import("@rsbuild/core").RsbuildConfig} */ ({
         source: { entry: { index: paths.admin.entryFile }, define: envVars },
-        output: { distPath: { root: paths.admin.outputFolder } },
+        output: { distPath: { root: paths.admin.outputFolderForDisplay } },
         mode,
         dev: { hmr: true },
         tools: {
@@ -74,12 +74,18 @@ const getPaths = cwd => {
 
     const adminTsConfigFilePath = path.join(adminRootFolderPath, "tsconfig.json");
 
+    const projectRootFolder = process.cwd();
+    const relativePath = path.relative(projectRootFolder, adminOutputFolderPath);
+    // Remove .webiny/workspace/apps/ prefix for display purposes
+    const displayPath = relativePath.replace(/^\.webiny[/\\]workspace[/\\]apps[/\\]/, "");
+
     return {
-        projectRootFolder: process.cwd(),
+        projectRootFolder,
         admin: {
             rootFolder: adminRootFolderPath,
             tsConfig: adminTsConfigFilePath,
             outputFolder: adminOutputFolderPath,
+            outputFolderForDisplay: displayPath,
             entryFile: adminEntryFilePath,
             faviconFile: adminFaviconFilePath
         }

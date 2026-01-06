@@ -18,7 +18,7 @@ export const createRsbuildConfig = ({ cwd }) => {
                     return "[name].cjs";
                 }
             },
-            distPath: { root: paths.fn.outputFolder }
+            distPath: { root: paths.fn.outputFolderForDisplay }
         },
         tools: {
             rspack: {
@@ -59,12 +59,18 @@ const getPaths = cwd => {
 
     const fnTsConfigFilePath = path.join(fnRootFolderPath, "tsconfig.json");
 
+    const projectRootFolder = process.cwd();
+    const relativePath = path.relative(projectRootFolder, fnOutputFolderPath);
+    // Remove .webiny/workspace/apps/ prefix for display purposes
+    const displayPath = relativePath.replace(/^\.webiny[/\\]workspace[/\\]apps[/\\]/, "");
+
     return {
-        projectRootFolder: process.cwd(),
+        projectRootFolder,
         fn: {
             rootFolder: fnRootFolderPath,
             tsConfig: fnTsConfigFilePath,
             outputFolder: fnOutputFolderPath,
+            outputFolderForDisplay: displayPath,
             entryFile: fnEntryFilePath
         }
     };
