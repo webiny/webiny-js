@@ -14,6 +14,10 @@ import fs from "fs/promises";
 import path from "path";
 
 export class DefaultPulumiGetStackOutputService implements PulumiGetStackOutputService.Interface {
+    private static readonly DEFAULT_ENV = "dev";
+    private static readonly DEFAULT_REGION = "default";
+    private static readonly DEFAULT_VARIANT = "default";
+
     constructor(
         private getPulumiService: GetPulumiService.Interface,
         private pulumiSelectStackService: PulumiSelectStackService.Interface,
@@ -81,9 +85,9 @@ export class DefaultPulumiGetStackOutputService implements PulumiGetStackOutputS
 
     private getCacheKey(app: AppModel): string {
         const sdkParams = this.projectSdkParamsService.get();
-        const env = sdkParams.env || "dev";
-        const region = sdkParams.region || "default";
-        const variant = sdkParams.variant || "default";
+        const env = sdkParams.env || DefaultPulumiGetStackOutputService.DEFAULT_ENV;
+        const region = sdkParams.region || DefaultPulumiGetStackOutputService.DEFAULT_REGION;
+        const variant = sdkParams.variant || DefaultPulumiGetStackOutputService.DEFAULT_VARIANT;
         return `${app.name}-${env}-${region}-${variant}.json`;
     }
 
@@ -96,12 +100,12 @@ export class DefaultPulumiGetStackOutputService implements PulumiGetStackOutputS
 
     private async readFromCache(app: AppModel): Promise<Record<string, any> | null> {
         const cachePath = this.getCachePath(app);
-        
+
         try {
             const content = await fs.readFile(cachePath, "utf-8");
             return JSON.parse(content);
         } catch (error) {
-            // File doesn't exist or couldn't be read/parsed
+            // File doesn't exist or couldn't be read/parsed - this is expected on first run
             return null;
         }
     }
