@@ -1,15 +1,25 @@
-import { BeforeDeploy, IsTelemetryEnabled } from "~/abstractions/index.js";
+import { BeforeDeploy, IsTelemetryEnabled, IsWcpEnabled, IsWebinyJsRepo } from "~/abstractions/index.js";
 import { GracefulError } from "@webiny/project";
 
 class EnsureTelemetryEnabledForOssImpl implements BeforeDeploy.Interface {
-    constructor(private isTelemetryEnabled: IsTelemetryEnabled.Interface) {}
+    constructor(
+        private isTelemetryEnabled: IsTelemetryEnabled.Interface,
+        private isWcpEnabled: IsWcpEnabled.Interface,
+        private isWebinyJsRepo: IsWebinyJsRepo.Interface
+    ) {}
 
     async execute() {
+        // Don't enforce telemetry validation in the webiny-js development repository
+        const isDevRepo = this.isWebinyJsRepo.execute();
+        if (isDevRepo) {
+            return;
+        }
+
         const telemetryEnabled = await this.isTelemetryEnabled.execute();
-        const wcpProjectId = process.env.WCP_PROJECT_ID;
+        const wcpEnabled = await this.isWcpEnabled.execute();
 
         // If telemetry is disabled and WCP is not connected, throw an error
-        if (!telemetryEnabled && !wcpProjectId) {
+        if (!telemetryEnabled && !wcpEnabled) {
             const message = [
                 `You are trying to disable telemetry in the open-source edition of Webiny, which is not possible.`,
                 `Please re-enable telemetry to proceed with the deployment, or connect your project to Webiny Control Panel (WCP).`,
@@ -25,5 +35,5 @@ class EnsureTelemetryEnabledForOssImpl implements BeforeDeploy.Interface {
 
 export const EnsureTelemetryEnabledForOss = BeforeDeploy.createImplementation({
     implementation: EnsureTelemetryEnabledForOssImpl,
-    dependencies: [IsTelemetryEnabled]
+    dependencies: [IsTelemetryEnabled, IsWcpEnabled, IsWebinyJsRepo]
 });
