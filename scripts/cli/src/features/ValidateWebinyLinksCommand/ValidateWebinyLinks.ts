@@ -22,7 +22,7 @@ export class ValidateWebinyLinks {
     constructor(private ui: UiService.Interface) {}
 
     async execute(errorOnBrokenLinks: boolean): Promise<void> {
-        this.ui.info("Scanning packages folder for webiny.link URLs...");
+        this.ui.info("Scanning packages folder for Webiny URLs...");
         this.ui.newLine();
 
         const packagesDir = path.join(process.cwd(), "packages");
@@ -32,15 +32,15 @@ export class ValidateWebinyLinks {
             process.exit(1);
         }
 
-        // Collect all webiny.link URLs
+        // Collect all Webiny URLs
         const links = this.scanForLinks(packagesDir);
         
-        if (links.length === 0) {
-            this.ui.info("No webiny.link URLs found.");
+        if (links.size === 0) {
+            this.ui.info("No Webiny URLs found.");
             return;
         }
 
-        this.ui.info("Found %s unique webiny.link URL(s)", links.size.toString());
+        this.ui.info("Found %s unique Webiny URL(s)", links.size.toString());
         this.ui.newLine();
 
         // Validate each unique URL
@@ -64,8 +64,8 @@ export class ValidateWebinyLinks {
 
     private scanForLinks(dir: string): Map<string, LinkInfo[]> {
         const links = new Map<string, LinkInfo[]>();
-        // Match webiny.link URLs, stopping at whitespace or common URL terminators
-        const webinyLinkRegex = /https?:\/\/webiny\.link\/[^\s\)<>"'`]*/g;
+        // Match Webiny URLs (webiny.link, webiny.com, www.webiny.com), stopping at whitespace or common URL terminators
+        const webinyUrlRegex = /https?:\/\/(?:www\.)?webiny\.(?:link|com)(?:\/[^\s\)<>"'`]*)?/g;
 
         const scanFile = (filePath: string) => {
             try {
@@ -73,7 +73,7 @@ export class ValidateWebinyLinks {
                 const lines = content.split("\n");
 
                 lines.forEach((line, index) => {
-                    const matches = line.match(webinyLinkRegex);
+                    const matches = line.match(webinyUrlRegex);
                     if (matches) {
                         matches.forEach(url => {
                             // Clean up common trailing characters that aren't part of the URL

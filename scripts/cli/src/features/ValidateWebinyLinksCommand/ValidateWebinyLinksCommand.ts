@@ -12,7 +12,7 @@ export class ValidateWebinyLinksCommand implements Command.Interface<CommandPara
     async execute(): Promise<Command.CommandDefinition<CommandParams>> {
         return {
             name: "validate-webiny-links",
-            description: "Validates webiny.link URLs in the packages folder",
+            description: "Validates Webiny URLs (webiny.link, webiny.com) in the packages folder",
             params: [],
             options: [
                 {
