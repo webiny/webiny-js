@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { Node, Project, ArrayLiteralExpression } from "ts-morph";
-import Case from "case";
 import { Abstraction } from "@webiny/di";
 import { defineExtension } from "~/defineExtension/index.js";
 import { zodPathToAbstraction } from "~/defineExtension/zodTypes/zodPathToAbstraction.js";

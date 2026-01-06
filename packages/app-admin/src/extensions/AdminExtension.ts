@@ -1,7 +1,6 @@
 import { defineExtension, zodPathToFile } from "@webiny/project/extensions/index.js";
 import { z } from "zod";
 import path from "path";
-import Case from "case";
 import { type JsxFragment, Node, Project } from "ts-morph";
 import crypto from "crypto";
 
