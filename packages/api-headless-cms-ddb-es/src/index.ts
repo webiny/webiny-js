@@ -60,13 +60,11 @@ export const createStorageOperations: StorageOperationsFactory = params => {
     const entities = {
         groups: createGroupEntity({
             entityName: ENTITIES.GROUPS,
-            table: tableInstance,
-            attributes: attributes ? attributes[ENTITIES.GROUPS] : {}
+            table: tableInstance
         }),
         models: createModelEntity({
             entityName: ENTITIES.MODELS,
-            table: tableInstance,
-            attributes: attributes ? attributes[ENTITIES.MODELS] : {}
+            table: tableInstance
         }),
         entries: createEntryEntity({
             entityName: ENTITIES.ENTRIES,

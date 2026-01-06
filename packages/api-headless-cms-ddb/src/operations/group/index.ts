@@ -9,7 +9,7 @@ import type {
 } from "@webiny/api-headless-cms/types/index.js";
 import type { Entity } from "@webiny/db-dynamodb/toolbox.js";
 import WebinyError from "@webiny/error";
-import { getClean } from "@webiny/db-dynamodb/utils/get.js";
+import { get as getOne } from "@webiny/db-dynamodb/utils/get.js";
 import type { QueryAllParams } from "@webiny/db-dynamodb/utils/query.js";
 import { queryAll } from "@webiny/db-dynamodb/utils/query.js";
 import { filterItems } from "@webiny/db-dynamodb/utils/filter.js";
@@ -73,7 +73,7 @@ export const createGroupsStorageOperations = (
             await put({
                 entity,
                 item: {
-                    ...group,
+                    data: group,
                     TYPE: createType(),
                     ...keys
                 }
@@ -97,7 +97,7 @@ export const createGroupsStorageOperations = (
             await put({
                 entity,
                 item: {
-                    ...group,
+                    data: group,
                     TYPE: createType(),
                     ...keys
                 }
@@ -138,10 +138,12 @@ export const createGroupsStorageOperations = (
         const keys = createKeys(params);
 
         try {
-            return await getClean<CmsGroup>({
+            const result = await getOne<{ data: CmsGroup }>({
                 entity,
                 keys
             });
+
+            return result ? result.data : null;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not get group.",
@@ -167,7 +169,8 @@ export const createGroupsStorageOperations = (
 
         let records: CmsGroup[] = [];
         try {
-            records = await queryAll(queryAllParams);
+            const ddbRecords = await queryAll<{ data: CmsGroup }>(queryAllParams);
+            records = ddbRecords.map(item => item.data);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not list groups.",
@@ -190,10 +193,10 @@ export const createGroupsStorageOperations = (
         if (!sort || sort.length === 0) {
             return filteredItems;
         }
+
         return sortItems({
             items: filteredItems,
-            sort,
-            fields: []
+            sort
         });
     };
 

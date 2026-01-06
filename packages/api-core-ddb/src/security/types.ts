@@ -12,5 +12,4 @@ export enum ENTITIES {
 export interface SecurityStorageParams {
     documentClient: DynamoDBDocument;
     table?: string;
-    attributes?: Record<ENTITIES, Attributes>;
 }
