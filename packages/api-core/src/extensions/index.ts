@@ -6,12 +6,12 @@ import {
     ApiKeyAfterUpdate,
     ApiKeyBeforeDelete,
     ApiKeyAfterDelete,
-    GroupBeforeCreate,
-    GroupAfterCreate,
-    GroupBeforeUpdate,
-    GroupAfterUpdate,
-    GroupBeforeDelete,
-    GroupAfterDelete,
+    RoleBeforeCreate,
+    RoleAfterCreate,
+    RoleBeforeUpdate,
+    RoleAfterUpdate,
+    RoleBeforeDelete,
+    RoleAfterDelete,
     TeamBeforeCreate,
     TeamAfterCreate,
     TeamBeforeUpdate,
@@ -52,12 +52,12 @@ export { ApiKeyAfterUpdate };
 export { ApiKeyBeforeDelete };
 export { ApiKeyAfterDelete };
 
-export { GroupBeforeCreate };
-export { GroupAfterCreate };
-export { GroupBeforeUpdate };
-export { GroupAfterUpdate };
-export { GroupBeforeDelete };
-export { GroupAfterDelete };
+export { RoleBeforeCreate };
+export { RoleAfterCreate };
+export { RoleBeforeUpdate };
+export { RoleAfterUpdate };
+export { RoleBeforeDelete };
+export { RoleAfterDelete };
 
 export { TeamBeforeCreate };
 export { TeamAfterCreate };
@@ -93,43 +93,43 @@ export { SettingsAfterDelete };
 
 // Definitions (used internally). 👇
 export const definitions = [
-    GenericExtension.definition,
-    ApiKeyBeforeCreate.definition,
-    ApiKeyAfterCreate.definition,
-    ApiKeyBeforeUpdate.definition,
-    ApiKeyAfterUpdate.definition,
-    ApiKeyBeforeDelete.definition,
-    ApiKeyAfterDelete.definition,
-    GroupBeforeCreate.definition,
-    GroupAfterCreate.definition,
-    GroupBeforeUpdate.definition,
-    GroupAfterUpdate.definition,
-    GroupBeforeDelete.definition,
-    GroupAfterDelete.definition,
-    TeamBeforeCreate.definition,
-    TeamAfterCreate.definition,
-    TeamBeforeUpdate.definition,
-    TeamAfterUpdate.definition,
-    TeamBeforeDelete.definition,
-    TeamAfterDelete.definition,
-    BeforeAuthentication.definition,
-    AfterAuthentication.definition,
-    UserBeforeCreate.definition,
-    UserAfterCreate.definition,
-    UserBeforeUpdate.definition,
-    UserAfterUpdate.definition,
-    UserBeforeDelete.definition,
-    UserAfterDelete.definition,
-    TenantBeforeCreate.definition,
-    TenantAfterCreate.definition,
-    TenantBeforeUpdate.definition,
-    TenantAfterUpdate.definition,
-    TenantBeforeDelete.definition,
-    TenantAfterDelete.definition,
-    TenantInstalled.definition,
-    SystemInstalled.definition,
-    SettingsBeforeUpdate.definition,
-    SettingsAfterUpdate.definition,
-    SettingsBeforeDelete.definition,
-    SettingsAfterDelete.definition
+    GenericExtension.def,
+    ApiKeyBeforeCreate.def,
+    ApiKeyAfterCreate.def,
+    ApiKeyBeforeUpdate.def,
+    ApiKeyAfterUpdate.def,
+    ApiKeyBeforeDelete.def,
+    ApiKeyAfterDelete.def,
+    RoleBeforeCreate.def,
+    RoleAfterCreate.def,
+    RoleBeforeUpdate.def,
+    RoleAfterUpdate.def,
+    RoleBeforeDelete.def,
+    RoleAfterDelete.def,
+    TeamBeforeCreate.def,
+    TeamAfterCreate.def,
+    TeamBeforeUpdate.def,
+    TeamAfterUpdate.def,
+    TeamBeforeDelete.def,
+    TeamAfterDelete.def,
+    BeforeAuthentication.def,
+    AfterAuthentication.def,
+    UserBeforeCreate.def,
+    UserAfterCreate.def,
+    UserBeforeUpdate.def,
+    UserAfterUpdate.def,
+    UserBeforeDelete.def,
+    UserAfterDelete.def,
+    TenantBeforeCreate.def,
+    TenantAfterCreate.def,
+    TenantBeforeUpdate.def,
+    TenantAfterUpdate.def,
+    TenantBeforeDelete.def,
+    TenantAfterDelete.def,
+    TenantInstalled.def,
+    SystemInstalled.def,
+    SettingsBeforeUpdate.def,
+    SettingsAfterUpdate.def,
+    SettingsBeforeDelete.def,
+    SettingsAfterDelete.def
 ];

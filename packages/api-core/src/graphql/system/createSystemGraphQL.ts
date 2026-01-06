@@ -48,7 +48,6 @@ export const createSystemGraphQL = () => {
                 installSystem: async (_, args: InstallTenantArgs, context) => {
                     const installSystem = context.container.resolve(InstallSystemUseCase);
 
-                    console.log("installSystem", args);
                     const result = await installSystem.execute(args.installationInput);
 
                     if (result.isOk()) {

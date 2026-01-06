@@ -21,13 +21,16 @@ export interface BaseUserAttributes {
     // Check `api-security-okta` package for an example.
     email: string;
 
-    groups?: string[];
+    roles?: string[];
     teams?: string[];
 
     // Optional fields.
     firstName?: string;
     lastName?: string;
-    avatar?: Record<string, any> | null;
+    avatar?: {
+        id: string;
+        src: string;
+    } | null;
 
     // Tells us if the entry has been created based on an identity coming from an external IdP.
     external?: boolean;

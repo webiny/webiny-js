@@ -4,7 +4,6 @@ import { LogInUseCase } from "./LogInUseCase.js";
 import { IdentityMapper } from "./IdentityMapper.js";
 import { LogInGateway } from "./LogInGateway.js";
 import { LogInRepository } from "./LogInRepository.js";
-import { LoginFieldSelectionComposite } from "./LoginFieldSelectionComposite.js";
 
 export const LogInFeature = createFeature({
     name: "LogIn",
@@ -13,7 +12,6 @@ export const LogInFeature = createFeature({
         container.register(IdentityMapper).inSingletonScope();
         container.register(LogInGateway).inSingletonScope();
         container.register(LogInRepository).inSingletonScope();
-        container.registerComposite(LoginFieldSelectionComposite);
     },
     resolve(container) {
         return {

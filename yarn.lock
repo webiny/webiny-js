@@ -107,26 +107,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@auth0/auth0-react@npm:^2.5.0":
-  version: 2.5.0
-  resolution: "@auth0/auth0-react@npm:2.5.0"
-  dependencies:
-    "@auth0/auth0-spa-js": "npm:^2.4.1"
-  peerDependencies:
-    react: ^16.11.0 || ^17 || ^18 || ^19
-    react-dom: ^16.11.0 || ^17 || ^18 || ^19
-  checksum: 10/39ad93eb613e84f5cc6339055f3e9b5b5fe3085cacbe60a03389bf2d74e1abafceb6f011e3f84f0a1170e3c65ac1a59fb17d401bf54bcc293052db63fbabe65d
-  languageName: node
-  linkType: hard
-
-"@auth0/auth0-spa-js@npm:^2.4.1":
-  version: 2.4.1
-  resolution: "@auth0/auth0-spa-js@npm:2.4.1"
+"@auth0/auth0-spa-js@npm:^2.11.0":
+  version: 2.11.0
+  resolution: "@auth0/auth0-spa-js@npm:2.11.0"
   dependencies:
     browser-tabs-lock: "npm:^1.2.15"
     dpop: "npm:^2.1.1"
     es-cookie: "npm:~1.3.2"
-  checksum: 10/b57cc52223fd0e6a7d92216cff68d363f976ff75bb75c38bd86c159cee58fc911a22ddc32b11b4eeeb6456216b80a6cce0e53e101261f7a0653f7d603489d25c
+  checksum: 10/2ee8084da37b0a79eaff74b8d03ff96df13f89dce9df9bfe155e1b219159eeeea5b3d97bf449bc6a06ee7770e54e848b3f8b2a4b359ced192e8b468177d4a4d8
   languageName: node
   linkType: hard
 
@@ -3645,16 +3633,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/polyfill@npm:^7.10.1":
-  version: 7.12.1
-  resolution: "@babel/polyfill@npm:7.12.1"
-  dependencies:
-    core-js: "npm:^2.6.5"
-    regenerator-runtime: "npm:^0.13.4"
-  checksum: 10/8b6839593f26db556b09a33736d0648edad2239a7f7abff1636c1275cc3f76f98b67e1d9e378cc518b44bfb05e71ca88cc7637ee661ffa68f99241f0896fc9f8
-  languageName: node
-  linkType: hard
-
 "@babel/preset-env@npm:^7.19.4, @babel/preset-env@npm:^7.28.5":
   version: 7.28.5
   resolution: "@babel/preset-env@npm:7.28.5"
@@ -3794,16 +3772,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime-corejs3@npm:^7.12.5":
-  version: 7.28.4
-  resolution: "@babel/runtime-corejs3@npm:7.28.4"
+"@babel/runtime@npm:7.22.10":
+  version: 7.22.10
+  resolution: "@babel/runtime@npm:7.22.10"
   dependencies:
-    core-js-pure: "npm:^3.43.0"
-  checksum: 10/99079931145c0606a9967fe002c3528ae237b759cee115fc97a5dc17101d5ccdf9a794fd4ce5d94c7e2e8ee1f9f6816fb50b4472e980b5e4dd878fbdfac02619
+    regenerator-runtime: "npm:^0.14.0"
+  checksum: 10/88bba6dfdfd6f6e9365199397146a0dd5d04409e7142a0df95125a198eb76c83fd0a52c117aba50f9a61db2f0186780574c071ea48010e5ffa1f157585c8c950
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.10.3, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.14.0, @babel/runtime@npm:^7.14.6, @babel/runtime@npm:^7.18.3, @babel/runtime@npm:^7.2.0, @babel/runtime@npm:^7.21.0, @babel/runtime@npm:^7.27.0, @babel/runtime@npm:^7.28.3, @babel/runtime@npm:^7.28.4, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.7.6, @babel/runtime@npm:^7.8.7, @babel/runtime@npm:^7.9.2":
+"@babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.14.0, @babel/runtime@npm:^7.14.6, @babel/runtime@npm:^7.18.3, @babel/runtime@npm:^7.2.0, @babel/runtime@npm:^7.21.0, @babel/runtime@npm:^7.27.0, @babel/runtime@npm:^7.28.3, @babel/runtime@npm:^7.28.4, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.7.6, @babel/runtime@npm:^7.8.7, @babel/runtime@npm:^7.9.2":
   version: 7.28.4
   resolution: "@babel/runtime@npm:7.28.4"
   checksum: 10/6c9a70452322ea80b3c9b2a412bcf60771819213a67576c8cec41e88a95bb7bf01fc983754cda35dc19603eef52df22203ccbf7777b9d6316932f9fb77c25163
@@ -7086,72 +7064,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@okta/okta-auth-js@npm:^5.11.0":
-  version: 5.11.0
-  resolution: "@okta/okta-auth-js@npm:5.11.0"
+"@okta/okta-auth-js@npm:^7.8.0":
+  version: 7.14.1
+  resolution: "@okta/okta-auth-js@npm:7.14.1"
   dependencies:
-    "@babel/runtime": "npm:^7.12.5"
-    "@okta/okta-idx-js": "npm:0.23.0"
-    "@peculiar/webcrypto": "npm:1.1.6"
+    "@babel/runtime": "npm:^7.27.0"
+    "@peculiar/webcrypto": "npm:^1.4.0"
     Base64: "npm:1.1.0"
     atob: "npm:^2.1.2"
+    broadcast-channel: "npm:~5.3.0"
     btoa: "npm:^1.2.1"
-    core-js: "npm:^3.6.5"
-    cross-fetch: "npm:^3.0.6"
-    js-cookie: "npm:2.2.1"
+    core-js: "npm:^3.39.0"
+    cross-fetch: "npm:^3.1.5"
+    fast-text-encoding: "npm:^1.0.6"
+    js-cookie: "npm:^3.0.1"
     node-cache: "npm:^5.1.2"
     p-cancelable: "npm:^2.0.0"
-    text-encoding: "npm:^0.7.0"
     tiny-emitter: "npm:1.1.0"
     webcrypto-shim: "npm:^0.1.5"
     xhr2: "npm:0.1.3"
-  checksum: 10/d2144d383c3d9e01fb4350f7607ab594dd7e522981b7e2e5517896b20a12d02b50fab780cfc7e58f7fe8a7e7d8dc804e600eabdfd9c672b5d59b5c351da1d5e1
-  languageName: node
-  linkType: hard
-
-"@okta/okta-idx-js@npm:0.23.0":
-  version: 0.23.0
-  resolution: "@okta/okta-idx-js@npm:0.23.0"
-  dependencies:
-    "@babel/runtime": "npm:^7.12.5"
-    "@babel/runtime-corejs3": "npm:^7.12.5"
-    core-js: "npm:^3.15.1"
-    jsonpath-plus: "npm:^5.1.0"
-  checksum: 10/357014138252d41236016d9d13c1f5b17ad44dba5f23a76e694cd59d0d7c95b60fc9d24a286c5a827a01162205deea95b325d90b78f29f0321c2abef296506d4
-  languageName: node
-  linkType: hard
-
-"@okta/okta-react@npm:^6.10.0":
-  version: 6.10.0
-  resolution: "@okta/okta-react@npm:6.10.0"
-  dependencies:
-    "@babel/runtime": "npm:^7.27.0"
-    compare-versions: "npm:^4.1.2"
-  peerDependencies:
-    "@okta/okta-auth-js": ^5.3.1 || ^6.0.0 || ^7.0.0
-    react: ">=16.8.0"
-    react-dom: ">=16.8.0"
-    react-router-dom: ">=5.1.0"
-  checksum: 10/343e234088f176bc034455680bc4d37101a7928215856536d8e24c84a9215e24b02dd2aac7b90b195adc8fe80355595bbb8bceccb5e18228d0752e00abeabb3d
-  languageName: node
-  linkType: hard
-
-"@okta/okta-signin-widget@npm:^5.16.1":
-  version: 5.16.1
-  resolution: "@okta/okta-signin-widget@npm:5.16.1"
-  dependencies:
-    "@babel/polyfill": "npm:^7.10.1"
-    "@babel/runtime": "npm:^7.10.3"
-    cross-fetch: "npm:^3.0.4"
-    fsevents: "npm:*"
-    handlebars: "npm:^4.5.3"
-    q: "npm:1.4.1"
-    u2f-api-polyfill: "npm:0.4.3"
-    underscore: "npm:1.13.1"
-  dependenciesMeta:
-    fsevents:
-      optional: true
-  checksum: 10/48b963a96c5a5bcc6d873cd4c5286fed108227f7f2feb89d6da90db0e23f6fc86b6c88ecaa88566d247e84d28952592cb1334cc019500220adbe6f6e4aa17090
+  checksum: 10/3213b0b39226114b2653f7933cbb4918629d0a918f81f6be38e65acaa3bae226fb94659209f34bccfa264a0bb95d7fb66570515fb90375310b852f50c5bdee9c
   languageName: node
   linkType: hard
 
@@ -7454,7 +7386,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@peculiar/asn1-schema@npm:^2.0.27, @peculiar/asn1-schema@npm:^2.3.13":
+"@peculiar/asn1-schema@npm:^2.3.13":
   version: 2.5.0
   resolution: "@peculiar/asn1-schema@npm:2.5.0"
   dependencies:
@@ -7462,6 +7394,17 @@ __metadata:
     pvtsutils: "npm:^1.3.6"
     tslib: "npm:^2.8.1"
   checksum: 10/6256d0ecd30a091df95dcecbd1c8fb4d0da355c84bf4306f1a2232d318d2fe6f398333f72e1f05c44eedfe9be807900ac87eeebda3276fbca5a0505d5435ce7a
+  languageName: node
+  linkType: hard
+
+"@peculiar/asn1-schema@npm:^2.3.8":
+  version: 2.6.0
+  resolution: "@peculiar/asn1-schema@npm:2.6.0"
+  dependencies:
+    asn1js: "npm:^3.0.6"
+    pvtsutils: "npm:^1.3.6"
+    tslib: "npm:^2.8.1"
+  checksum: 10/af9b1094d0e020f0fd828777488578322d62a41f597ead7d80939dafcfe35b672fcb0ec7460ef66b2a155f9614d4340a98896d417a830aff1685cb4c21d5bbe4
   languageName: node
   linkType: hard
 
@@ -7474,16 +7417,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@peculiar/webcrypto@npm:1.1.6":
-  version: 1.1.6
-  resolution: "@peculiar/webcrypto@npm:1.1.6"
+"@peculiar/webcrypto@npm:^1.4.0":
+  version: 1.5.0
+  resolution: "@peculiar/webcrypto@npm:1.5.0"
   dependencies:
-    "@peculiar/asn1-schema": "npm:^2.0.27"
+    "@peculiar/asn1-schema": "npm:^2.3.8"
     "@peculiar/json-schema": "npm:^1.1.12"
-    pvtsutils: "npm:^1.1.2"
-    tslib: "npm:^2.1.0"
-    webcrypto-core: "npm:^1.2.0"
-  checksum: 10/39b138fca67ae60cf414b239bd670ec01441b957bad5cde44523a6aa0c3ff9caf441fc6729c5974e6a60837bd1ceeabeaa75f79a1af799005714de91d0e293ce
+    pvtsutils: "npm:^1.3.5"
+    tslib: "npm:^2.6.2"
+    webcrypto-core: "npm:^1.8.0"
+  checksum: 10/a6658390c37b1d386f46066e796985eb56f6f86a772e1373c364ec9a8257adf8623f156596613d2828b489e2b5f32f9d2b0820289b4981646001cba7d21ae2f6
   languageName: node
   linkType: hard
 
@@ -12966,6 +12909,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny-scripts/cli@workspace:scripts/cli":
+  version: 0.0.0-use.local
+  resolution: "@webiny-scripts/cli@workspace:scripts/cli"
+  dependencies:
+    "@webiny/di": "npm:^0.2.3"
+    chalk: "npm:^4.1.2"
+    find-up: "npm:^5.0.0"
+    pino: "npm:^9.13.1"
+    rimraf: "npm:^6.0.1"
+    type-fest: "npm:^5.2.0"
+    typescript: "npm:5.9.3"
+    yargs: "npm:^17.7.2"
+  languageName: unknown
+  linkType: soft
+
 "@webiny-scripts/prepublish-only@workspace:scripts/prepublishOnly":
   version: 0.0.0-use.local
   resolution: "@webiny-scripts/prepublish-only@workspace:scripts/prepublishOnly"
@@ -12982,7 +12940,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/admin-ui@npm:0.0.0, @webiny/admin-ui@workspace:packages/admin-ui":
+"@webiny/admin-ui@npm:*, @webiny/admin-ui@npm:0.0.0, @webiny/admin-ui@workspace:packages/admin-ui":
   version: 0.0.0-use.local
   resolution: "@webiny/admin-ui@workspace:packages/admin-ui"
   dependencies:
@@ -13136,20 +13094,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-cognito-authenticator@npm:0.0.0, @webiny/api-cognito-authenticator@workspace:packages/api-cognito-authenticator":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-cognito-authenticator@workspace:packages/api-cognito-authenticator"
-  dependencies:
-    "@types/jsonwebtoken": "npm:^9.0.10"
-    "@types/jwk-to-pem": "npm:^2.0.3"
-    "@webiny/api-core": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    jsonwebtoken: "npm:^9.0.3"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-  languageName: unknown
-  linkType: soft
-
 "@webiny/api-core-ddb@npm:0.0.0, @webiny/api-core-ddb@workspace:packages/api-core-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-core-ddb@workspace:packages/api-core-ddb"
@@ -13167,7 +13111,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-core@npm:0.0.0, @webiny/api-core@workspace:packages/api-core":
+"@webiny/api-core@npm:*, @webiny/api-core@npm:0.0.0, @webiny/api-core@workspace:packages/api-core":
   version: 0.0.0-use.local
   resolution: "@webiny/api-core@workspace:packages/api-core"
   dependencies:
@@ -13189,7 +13133,6 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     dataloader: "npm:^2.2.3"
-    deep-equal: "npm:^2.2.3"
     jest-dynalite: "npm:^3.6.1"
     jose: "npm:^5.10.0"
     jsonwebtoken: "npm:^9.0.3"
@@ -13732,63 +13675,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-security-auth0@workspace:packages/api-security-auth0":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-security-auth0@workspace:packages/api-security-auth0"
-  dependencies:
-    "@types/jsonwebtoken": "npm:^9.0.10"
-    "@types/jwk-to-pem": "npm:^2.0.3"
-    "@webiny/api-core": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/error": "npm:0.0.0"
-    "@webiny/handler": "npm:0.0.0"
-    "@webiny/handler-graphql": "npm:0.0.0"
-    jsonwebtoken: "npm:^9.0.3"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/api-security-cognito@npm:0.0.0, @webiny/api-security-cognito@workspace:packages/api-security-cognito":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-security-cognito@workspace:packages/api-security-cognito"
-  dependencies:
-    "@types/jsonwebtoken": "npm:^9.0.10"
-    "@webiny/api": "npm:0.0.0"
-    "@webiny/api-cognito-authenticator": "npm:0.0.0"
-    "@webiny/api-core": "npm:0.0.0"
-    "@webiny/aws-sdk": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/error": "npm:0.0.0"
-    "@webiny/feature": "npm:0.0.0"
-    "@webiny/handler": "npm:0.0.0"
-    "@webiny/handler-aws": "npm:0.0.0"
-    "@webiny/handler-graphql": "npm:0.0.0"
-    "@webiny/plugins": "npm:0.0.0"
-    "@webiny/project-utils": "npm:0.0.0"
-    deep-equal: "npm:^2.2.3"
-    md5: "npm:^2.3.0"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-    vitest: "npm:^3.2.4"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/api-security-okta@workspace:packages/api-security-okta":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-security-okta@workspace:packages/api-security-okta"
-  dependencies:
-    "@webiny/api": "npm:0.0.0"
-    "@webiny/api-core": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/error": "npm:0.0.0"
-    "@webiny/handler-graphql": "npm:0.0.0"
-    jsonwebtoken: "npm:^9.0.3"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-  languageName: unknown
-  linkType: soft
-
 "@webiny/api-sync-system@workspace:packages/api-sync-system":
   version: 0.0.0-use.local
   resolution: "@webiny/api-sync-system@workspace:packages/api-sync-system"
@@ -13973,81 +13859,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-admin-auth0@workspace:packages/app-admin-auth0":
-  version: 0.0.0-use.local
-  resolution: "@webiny/app-admin-auth0@workspace:packages/app-admin-auth0"
-  dependencies:
-    "@apollo/react-hooks": "npm:^3.1.5"
-    "@auth0/auth0-react": "npm:^2.5.0"
-    "@emotion/styled": "npm:11.10.6"
-    "@webiny/admin-ui": "npm:0.0.0"
-    "@webiny/app-admin": "npm:0.0.0"
-    "@webiny/app-serverless-cms": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/icons": "npm:0.0.0"
-    "@webiny/ui": "npm:0.0.0"
-    apollo-client: "npm:^2.6.10"
-    emotion: "npm:10.0.27"
-    graphql: "npm:^16.12.0"
-    graphql-tag: "npm:^2.12.6"
-    lodash: "npm:^4.17.21"
-    react: "npm:18.2.0"
-    react-dom: "npm:18.2.0"
-    react-helmet: "npm:^6.1.0"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/app-admin-cognito@npm:0.0.0, @webiny/app-admin-cognito@workspace:packages/app-admin-cognito":
-  version: 0.0.0-use.local
-  resolution: "@webiny/app-admin-cognito@workspace:packages/app-admin-cognito"
-  dependencies:
-    "@aws-amplify/auth": "npm:^5.6.15"
-    "@webiny/admin-ui": "npm:0.0.0"
-    "@webiny/app": "npm:0.0.0"
-    "@webiny/app-admin": "npm:0.0.0"
-    "@webiny/app-cognito-authenticator": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/form": "npm:0.0.0"
-    "@webiny/react-composition": "npm:0.0.0"
-    "@webiny/validation": "npm:0.0.0"
-    apollo-client: "npm:^2.6.10"
-    react: "npm:18.2.0"
-    react-dom: "npm:18.2.0"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/app-admin-okta@workspace:packages/app-admin-okta":
-  version: 0.0.0-use.local
-  resolution: "@webiny/app-admin-okta@workspace:packages/app-admin-okta"
-  dependencies:
-    "@apollo/react-hooks": "npm:^3.1.5"
-    "@emotion/styled": "npm:11.10.6"
-    "@okta/okta-auth-js": "npm:^5.11.0"
-    "@okta/okta-react": "npm:^6.10.0"
-    "@okta/okta-signin-widget": "npm:^5.16.1"
-    "@webiny/admin-ui": "npm:0.0.0"
-    "@webiny/app-admin": "npm:0.0.0"
-    "@webiny/app-serverless-cms": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/icons": "npm:0.0.0"
-    "@webiny/ui": "npm:0.0.0"
-    apollo-client: "npm:^2.6.10"
-    emotion: "npm:10.0.27"
-    graphql: "npm:^16.12.0"
-    graphql-tag: "npm:^2.12.6"
-    lodash: "npm:^4.17.21"
-    react: "npm:18.2.0"
-    react-dom: "npm:18.2.0"
-    react-helmet: "npm:^6.1.0"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-  languageName: unknown
-  linkType: soft
-
 "@webiny/app-admin-ui@npm:0.0.0, @webiny/app-admin-ui@workspace:packages/app-admin-ui":
   version: 0.0.0-use.local
   resolution: "@webiny/app-admin-ui@workspace:packages/app-admin-ui"
@@ -14069,37 +13880,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-admin-users-cognito@npm:0.0.0, @webiny/app-admin-users-cognito@workspace:packages/app-admin-users-cognito":
-  version: 0.0.0-use.local
-  resolution: "@webiny/app-admin-users-cognito@workspace:packages/app-admin-users-cognito"
-  dependencies:
-    "@apollo/react-hooks": "npm:^3.1.5"
-    "@emotion/styled": "npm:11.10.6"
-    "@webiny/admin-ui": "npm:0.0.0"
-    "@webiny/app": "npm:0.0.0"
-    "@webiny/app-admin": "npm:0.0.0"
-    "@webiny/app-admin-cognito": "npm:0.0.0"
-    "@webiny/app-security-access-management": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/form": "npm:0.0.0"
-    "@webiny/icons": "npm:0.0.0"
-    "@webiny/plugins": "npm:0.0.0"
-    "@webiny/ui": "npm:0.0.0"
-    "@webiny/validation": "npm:0.0.0"
-    apollo-client: "npm:^2.6.10"
-    emotion: "npm:10.0.27"
-    graphql: "npm:^16.12.0"
-    graphql-tag: "npm:^2.12.6"
-    lodash: "npm:^4.17.21"
-    react: "npm:18.2.0"
-    react-dom: "npm:18.2.0"
-    react-helmet: "npm:^6.1.0"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/app-admin@npm:0.0.0, @webiny/app-admin@workspace:packages/app-admin":
+"@webiny/app-admin@npm:*, @webiny/app-admin@npm:0.0.0, @webiny/app-admin@workspace:packages/app-admin":
   version: 0.0.0-use.local
   resolution: "@webiny/app-admin@workspace:packages/app-admin"
   dependencies:
@@ -14143,7 +13924,6 @@ __metadata:
     apollo-link: "npm:^1.2.14"
     apollo-link-context: "npm:^1.0.20"
     apollo-utilities: "npm:^1.3.4"
-    case: "npm:^1.6.3"
     classnames: "npm:^2.5.1"
     emotion: "npm:10.0.27"
     graphql: "npm:^16.12.0"
@@ -14203,21 +13983,6 @@ __metadata:
     zod: "npm:^3.25.76"
   peerDependencies:
     react: 18.2.0
-  languageName: unknown
-  linkType: soft
-
-"@webiny/app-cognito-authenticator@npm:0.0.0, @webiny/app-cognito-authenticator@workspace:packages/app-cognito-authenticator":
-  version: 0.0.0-use.local
-  resolution: "@webiny/app-cognito-authenticator@workspace:packages/app-cognito-authenticator"
-  dependencies:
-    "@aws-amplify/auth": "npm:^5.6.15"
-    "@types/lodash": "npm:^4.17.20"
-    "@webiny/build-tools": "npm:0.0.0"
-    lodash: "npm:^4.17.21"
-    react: "npm:18.2.0"
-    react-dom: "npm:18.2.0"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
   languageName: unknown
   linkType: soft
 
@@ -14553,7 +14318,6 @@ __metadata:
     lodash: "npm:^4.17.21"
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
-    react-helmet: "npm:^6.1.0"
     rimraf: "npm:^6.0.1"
     typescript: "npm:5.9.3"
   languageName: unknown
@@ -14759,7 +14523,6 @@ __metadata:
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
-    "@webiny/app-security-access-management": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
     "@webiny/form": "npm:0.0.0"
@@ -14782,7 +14545,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app@npm:0.0.0, @webiny/app@workspace:packages/app":
+"@webiny/app@npm:*, @webiny/app@npm:0.0.0, @webiny/app@workspace:packages/app":
   version: 0.0.0-use.local
   resolution: "@webiny/app@workspace:packages/app"
   dependencies:
@@ -14830,6 +14593,31 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/auth0@workspace:packages/auth0":
+  version: 0.0.0-use.local
+  resolution: "@webiny/auth0@workspace:packages/auth0"
+  dependencies:
+    "@auth0/auth0-spa-js": "npm:^2.11.0"
+    "@types/jsonwebtoken": "npm:^9.0.10"
+    "@types/jwk-to-pem": "npm:^2.0.3"
+    "@webiny/admin-ui": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/app": "npm:0.0.0"
+    "@webiny/app-admin": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/project": "npm:0.0.0"
+    "@webiny/project-aws": "npm:0.0.0"
+    jsonwebtoken: "npm:^9.0.3"
+    mobx: "npm:^6.15.0"
+    mobx-react-lite: "npm:^3.4.3"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
+    rimraf: "npm:^6.0.1"
+    typescript: "npm:5.9.3"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/aws-helpers@workspace:packages/aws-helpers":
   version: 0.0.0-use.local
   resolution: "@webiny/aws-helpers@workspace:packages/aws-helpers"
@@ -14849,7 +14637,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/aws-sdk@npm:0.0.0, @webiny/aws-sdk@workspace:packages/aws-sdk":
+"@webiny/aws-sdk@npm:*, @webiny/aws-sdk@npm:0.0.0, @webiny/aws-sdk@workspace:packages/aws-sdk":
   version: 0.0.0-use.local
   resolution: "@webiny/aws-sdk@workspace:packages/aws-sdk"
   dependencies:
@@ -14883,7 +14671,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/build-tools@npm:0.0.0, @webiny/build-tools@workspace:packages/build-tools":
+"@webiny/build-tools@npm:*, @webiny/build-tools@npm:0.0.0, @webiny/build-tools@workspace:packages/build-tools":
   version: 0.0.0-use.local
   resolution: "@webiny/build-tools@workspace:packages/build-tools"
   dependencies:
@@ -14977,6 +14765,39 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/cognito@workspace:packages/cognito":
+  version: 0.0.0-use.local
+  resolution: "@webiny/cognito@workspace:packages/cognito"
+  dependencies:
+    "@apollo/react-hooks": "npm:^3.1.5"
+    "@aws-amplify/auth": "npm:^5.6.15"
+    "@types/react": "npm:^18.2.79"
+    "@webiny/admin-ui": "npm:*"
+    "@webiny/api-core": "npm:*"
+    "@webiny/app": "npm:*"
+    "@webiny/app-admin": "npm:*"
+    "@webiny/aws-sdk": "npm:*"
+    "@webiny/build-tools": "npm:*"
+    "@webiny/error": "npm:*"
+    "@webiny/feature": "npm:*"
+    "@webiny/form": "npm:*"
+    "@webiny/handler-graphql": "npm:*"
+    "@webiny/icons": "npm:*"
+    "@webiny/plugins": "npm:*"
+    "@webiny/project": "npm:*"
+    "@webiny/project-aws": "npm:*"
+    "@webiny/ui": "npm:*"
+    "@webiny/validation": "npm:*"
+    graphql: "npm:^16.12.0"
+    graphql-tag: "npm:^2.12.6"
+    jsonwebtoken: "npm:^9.0.3"
+    lodash: "npm:^4.17.21"
+    mobx: "npm:^6.15.0"
+    mobx-react-lite: "npm:^3.4.3"
+    react: "npm:^18.2.0"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/common-audit-logs@npm:0.0.0, @webiny/common-audit-logs@workspace:packages/common-audit-logs":
   version: 0.0.0-use.local
   resolution: "@webiny/common-audit-logs@workspace:packages/common-audit-logs"
@@ -15062,7 +14883,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@webiny/error@npm:0.0.0, @webiny/error@workspace:packages/error":
+"@webiny/error@npm:*, @webiny/error@npm:0.0.0, @webiny/error@workspace:packages/error":
   version: 0.0.0-use.local
   resolution: "@webiny/error@workspace:packages/error"
   dependencies:
@@ -15083,7 +14904,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/feature@npm:0.0.0, @webiny/feature@workspace:packages/feature":
+"@webiny/feature@npm:*, @webiny/feature@npm:0.0.0, @webiny/feature@workspace:packages/feature":
   version: 0.0.0-use.local
   resolution: "@webiny/feature@workspace:packages/feature"
   dependencies:
@@ -15093,7 +14914,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/form@npm:0.0.0, @webiny/form@workspace:packages/form":
+"@webiny/form@npm:*, @webiny/form@npm:0.0.0, @webiny/form@workspace:packages/form":
   version: 0.0.0-use.local
   resolution: "@webiny/form@workspace:packages/form"
   dependencies:
@@ -15170,7 +14991,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-graphql@npm:0.0.0, @webiny/handler-graphql@workspace:packages/handler-graphql":
+"@webiny/handler-graphql@npm:*, @webiny/handler-graphql@npm:0.0.0, @webiny/handler-graphql@workspace:packages/handler-graphql":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-graphql@workspace:packages/handler-graphql"
   dependencies:
@@ -15254,7 +15075,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/icons@npm:0.0.0, @webiny/icons@workspace:packages/icons":
+"@webiny/icons@npm:*, @webiny/icons@npm:0.0.0, @webiny/icons@workspace:packages/icons":
   version: 0.0.0-use.local
   resolution: "@webiny/icons@workspace:packages/icons"
   dependencies:
@@ -15405,7 +15226,32 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/plugins@npm:0.0.0, @webiny/plugins@workspace:packages/plugins":
+"@webiny/okta@workspace:packages/okta":
+  version: 0.0.0-use.local
+  resolution: "@webiny/okta@workspace:packages/okta"
+  dependencies:
+    "@okta/okta-auth-js": "npm:^7.8.0"
+    "@types/jsonwebtoken": "npm:^9.0.10"
+    "@types/jwk-to-pem": "npm:^2.0.3"
+    "@webiny/admin-ui": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/app": "npm:0.0.0"
+    "@webiny/app-admin": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/project": "npm:0.0.0"
+    "@webiny/project-aws": "npm:0.0.0"
+    jsonwebtoken: "npm:^9.0.3"
+    mobx: "npm:^6.15.0"
+    mobx-react-lite: "npm:^3.4.3"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
+    rimraf: "npm:^6.0.1"
+    typescript: "npm:5.9.3"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/plugins@npm:*, @webiny/plugins@npm:0.0.0, @webiny/plugins@workspace:packages/plugins":
   version: 0.0.0-use.local
   resolution: "@webiny/plugins@workspace:packages/plugins"
   dependencies:
@@ -15418,7 +15264,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/project-aws@npm:0.0.0, @webiny/project-aws@workspace:packages/project-aws":
+"@webiny/project-aws@npm:*, @webiny/project-aws@npm:0.0.0, @webiny/project-aws@workspace:packages/project-aws":
   version: 0.0.0-use.local
   resolution: "@webiny/project-aws@workspace:packages/project-aws"
   dependencies:
@@ -15449,14 +15295,12 @@ __metadata:
     "@webiny/api-mailer": "npm:0.0.0"
     "@webiny/api-record-locking": "npm:0.0.0"
     "@webiny/api-scheduler": "npm:0.0.0"
-    "@webiny/api-security-cognito": "npm:0.0.0"
     "@webiny/api-website-builder": "npm:0.0.0"
     "@webiny/api-website-builder-workflows": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/api-workflows": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
-    "@webiny/app-admin-users-cognito": "npm:0.0.0"
     "@webiny/app-serverless-cms": "npm:0.0.0"
     "@webiny/aws-layers": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
@@ -15513,7 +15357,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/project@npm:0.0.0, @webiny/project@workspace:packages/project":
+"@webiny/project@npm:*, @webiny/project@npm:0.0.0, @webiny/project@workspace:packages/project":
   version: 0.0.0-use.local
   resolution: "@webiny/project@workspace:packages/project"
   dependencies:
@@ -15533,7 +15377,6 @@ __metadata:
     "@webiny/telemetry": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
-    case: "npm:^1.6.3"
     chalk: "npm:^4.1.2"
     chokidar: "npm:^4.0.3"
     ci-info: "npm:^4.3.0"
@@ -15649,21 +15492,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/scripts@workspace:scripts/cli":
-  version: 0.0.0-use.local
-  resolution: "@webiny/scripts@workspace:scripts/cli"
-  dependencies:
-    "@webiny/di": "npm:^0.2.3"
-    chalk: "npm:^4.1.2"
-    find-up: "npm:^5.0.0"
-    pino: "npm:^9.13.1"
-    rimraf: "npm:^6.0.1"
-    type-fest: "npm:^5.2.0"
-    typescript: "npm:5.9.3"
-    yargs: "npm:^17.7.2"
-  languageName: unknown
-  linkType: soft
-
 "@webiny/shared-aco@npm:0.0.0, @webiny/shared-aco@workspace:packages/shared-aco":
   version: 0.0.0-use.local
   resolution: "@webiny/shared-aco@workspace:packages/shared-aco"
@@ -15775,7 +15603,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/ui@npm:0.0.0, @webiny/ui@workspace:packages/ui":
+"@webiny/ui@npm:*, @webiny/ui@npm:0.0.0, @webiny/ui@workspace:packages/ui":
   version: 0.0.0-use.local
   resolution: "@webiny/ui@workspace:packages/ui"
   dependencies:
@@ -15821,7 +15649,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/validation@npm:0.0.0, @webiny/validation@workspace:packages/validation":
+"@webiny/validation@npm:*, @webiny/validation@npm:0.0.0, @webiny/validation@workspace:packages/validation":
   version: 0.0.0-use.local
   resolution: "@webiny/validation@workspace:packages/validation"
   dependencies:
@@ -17390,6 +17218,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"broadcast-channel@npm:~5.3.0":
+  version: 5.3.0
+  resolution: "broadcast-channel@npm:5.3.0"
+  dependencies:
+    "@babel/runtime": "npm:7.22.10"
+    oblivious-set: "npm:1.1.1"
+    p-queue: "npm:6.6.2"
+    unload: "npm:2.4.1"
+  checksum: 10/8ca75e1639cb9823e64713b5c635a822d78034bb7d97b7ec0c2c79d5336813bbd452cf107aef523ae1df0410eaabd4ad471c409cb7112e65b35360734506de35
+  languageName: node
+  linkType: hard
+
 "broker-factory@npm:^3.1.9":
   version: 3.1.9
   resolution: "broker-factory@npm:3.1.9"
@@ -17802,13 +17642,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"case@npm:^1.6.3":
-  version: 1.6.3
-  resolution: "case@npm:1.6.3"
-  checksum: 10/2fc1df75bbb4118339e06141b9a54aba95cc62460ac92730290144fbec6b6a04f5bf7abf6a6486a1338f5821bd184402f216cec8cea0472451759c27e20fc332
-  languageName: node
-  linkType: hard
-
 "caseless@npm:~0.12.0":
   version: 0.12.0
   resolution: "caseless@npm:0.12.0"
@@ -17904,13 +17737,6 @@ __metadata:
   version: 2.1.0
   resolution: "chardet@npm:2.1.0"
   checksum: 10/8085fd8e5b1234fafacb279b4dab84dc127f512f953441daf09fc71ade70106af0dff28e86bfda00bab0de61fb475fa9003c87f82cbad3da02a4f299bfd427da
-  languageName: node
-  linkType: hard
-
-"charenc@npm:0.0.2":
-  version: 0.0.2
-  resolution: "charenc@npm:0.0.2"
-  checksum: 10/81dcadbe57e861d527faf6dd3855dc857395a1c4d6781f4847288ab23cffb7b3ee80d57c15bba7252ffe3e5e8019db767757ee7975663ad2ca0939bb8fcaf2e5
   languageName: node
   linkType: hard
 
@@ -18501,13 +18327,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"compare-versions@npm:^4.1.2":
-  version: 4.1.4
-  resolution: "compare-versions@npm:4.1.4"
-  checksum: 10/0c4f0d943477b824234f5c6600ea7404a86ef506c696b9d91ee67979bd32c08371a8b6532cc17e6e17cf2916e46ef16d499dce70245a4f6786c3c055afcea697
-  languageName: node
-  linkType: hard
-
 "compress-commons@npm:^6.0.2":
   version: 6.0.2
   resolution: "compress-commons@npm:6.0.2"
@@ -18784,24 +18603,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"core-js-pure@npm:^3.10.2, core-js-pure@npm:^3.43.0":
+"core-js-pure@npm:^3.10.2":
   version: 3.45.1
   resolution: "core-js-pure@npm:3.45.1"
   checksum: 10/8c5091695fc9c5d9c45774f1a6dcd1bdc5fcf96e55749d93a40c09b9cf23dbaa72e72da187833ba93d80f67080d9d6c88f8f2256d30e9a9d20a12838f024aba1
   languageName: node
   linkType: hard
 
-"core-js@npm:3.45.1, core-js@npm:^3.15.1, core-js@npm:^3.6.1, core-js@npm:^3.6.5":
+"core-js@npm:3.45.1, core-js@npm:^3.6.1":
   version: 3.45.1
   resolution: "core-js@npm:3.45.1"
   checksum: 10/b9dca79b1af8bb4f0d4af0752ea98d694fe157abaf55513fd4084df32dfd4398f0fc57898b32cdb643c1cecb87b9231c2a2ce535797c80ae328eac6d6078ee61
   languageName: node
   linkType: hard
 
-"core-js@npm:^2.6.5":
-  version: 2.6.12
-  resolution: "core-js@npm:2.6.12"
-  checksum: 10/7c624eb00a59c74c769d5d80f751f3bf1fc6201205b6562f27286ad5e00bbca1483f2f7eb0c2854b86f526ef5c7dc958b45f2ff536f8a31b8e9cb1a13a96efca
+"core-js@npm:^3.39.0":
+  version: 3.47.0
+  resolution: "core-js@npm:3.47.0"
+  checksum: 10/c02dc6a091c7e6799e3527dc06a428c44bbcff7f8f6ee700ff818b90aa2ebaf1f17b0234146e692811da97cda5a39a6095ecadec9fd1a74b1135103eb0e96cb1
   languageName: node
   linkType: hard
 
@@ -18977,7 +18796,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-fetch@npm:^3.0.4, cross-fetch@npm:^3.0.6, cross-fetch@npm:^3.2.0":
+"cross-fetch@npm:^3.1.5, cross-fetch@npm:^3.2.0":
   version: 3.2.0
   resolution: "cross-fetch@npm:3.2.0"
   dependencies:
@@ -19016,13 +18835,6 @@ __metadata:
     shebang-command: "npm:^2.0.0"
     which: "npm:^2.0.1"
   checksum: 10/0d52657d7ae36eb130999dffff1168ec348687b48dd38e2ff59992ed916c88d328cf1d07ff4a4a10bc78de5e1c23f04b306d569e42f7a2293915c081e4dfee86
-  languageName: node
-  linkType: hard
-
-"crypt@npm:0.0.2":
-  version: 0.0.2
-  resolution: "crypt@npm:0.0.2"
-  checksum: 10/2c72768de3d28278c7c9ffd81a298b26f87ecdfe94415084f339e6632f089b43fe039f2c93f612bcb5ffe447238373d93b2e8c90894cba6cfb0ac7a74616f8b9
   languageName: node
   linkType: hard
 
@@ -21610,6 +21422,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fast-text-encoding@npm:^1.0.6":
+  version: 1.0.6
+  resolution: "fast-text-encoding@npm:1.0.6"
+  checksum: 10/f7b9e2e7a21e4ae5f4b8d3729850be83fb45052b28c9c38c09b8366463a291d6dc5448359238bdaf87f6a9e907d5895a94319a2c5e0e9f0786859ad6312d1d06
+  languageName: node
+  linkType: hard
+
 "fast-unique-numbers@npm:^9.0.23":
   version: 9.0.23
   resolution: "fast-unique-numbers@npm:9.0.23"
@@ -22236,7 +22055,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fsevents@npm:*, fsevents@npm:^2.3.3, fsevents@npm:~2.3.2, fsevents@npm:~2.3.3":
+"fsevents@npm:^2.3.3, fsevents@npm:~2.3.2, fsevents@npm:~2.3.3":
   version: 2.3.3
   resolution: "fsevents@npm:2.3.3"
   dependencies:
@@ -22246,7 +22065,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fsevents@patch:fsevents@npm%3A*#optional!builtin<compat/fsevents>, fsevents@patch:fsevents@npm%3A^2.3.3#optional!builtin<compat/fsevents>, fsevents@patch:fsevents@npm%3A~2.3.2#optional!builtin<compat/fsevents>, fsevents@patch:fsevents@npm%3A~2.3.3#optional!builtin<compat/fsevents>":
+"fsevents@patch:fsevents@npm%3A^2.3.3#optional!builtin<compat/fsevents>, fsevents@patch:fsevents@npm%3A~2.3.2#optional!builtin<compat/fsevents>, fsevents@patch:fsevents@npm%3A~2.3.3#optional!builtin<compat/fsevents>":
   version: 2.3.3
   resolution: "fsevents@patch:fsevents@npm%3A2.3.3#optional!builtin<compat/fsevents>::version=2.3.3&hash=df0bf1"
   dependencies:
@@ -22894,7 +22713,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"handlebars@npm:4.7.8, handlebars@npm:^4.5.3, handlebars@npm:^4.7.7":
+"handlebars@npm:4.7.8, handlebars@npm:^4.7.7":
   version: 4.7.8
   resolution: "handlebars@npm:4.7.8"
   dependencies:
@@ -23744,13 +23563,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-buffer@npm:~1.1.6":
-  version: 1.1.6
-  resolution: "is-buffer@npm:1.1.6"
-  checksum: 10/f63da109e74bbe8947036ed529d43e4ae0c5fcd0909921dce4917ad3ea212c6a87c29f525ba1d17c0858c18331cf1046d4fc69ef59ed26896b25c8288a627133
-  languageName: node
-  linkType: hard
-
 "is-callable@npm:^1.2.7":
   version: 1.2.7
   resolution: "is-callable@npm:1.2.7"
@@ -24512,10 +24324,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-cookie@npm:2.2.1, js-cookie@npm:^2.2.1":
+"js-cookie@npm:^2.2.1":
   version: 2.2.1
   resolution: "js-cookie@npm:2.2.1"
   checksum: 10/4387f5f5691cb96ca9ff8852c589d3012b53f484fda68630a39e20cabc6c5b740f09225e23233ba56cd9de6ebe300a23d20b2c7315f10c309ad5a89fd8c4990b
+  languageName: node
+  linkType: hard
+
+"js-cookie@npm:^3.0.1":
+  version: 3.0.5
+  resolution: "js-cookie@npm:3.0.5"
+  checksum: 10/366494b1630b9fb8abaef3659748db5dfd52c58c6fc3459b9f0a03b492593bc1b01c6dfcc066b46f6413c28edb3a00cc68fb61ea8cdf6991bedf1f100f8a389d
   languageName: node
   linkType: hard
 
@@ -24792,13 +24611,6 @@ __metadata:
   version: 1.3.1
   resolution: "jsonparse@npm:1.3.1"
   checksum: 10/24531e956f0f19d79e22c157cebd81b37af3486ae22f9bc1028f8c2a4d1b70df48b168ff86f8568d9c2248182de9b6da9f50f685d5e4b9d1d2d339d2a29d15bc
-  languageName: node
-  linkType: hard
-
-"jsonpath-plus@npm:^5.1.0":
-  version: 5.1.0
-  resolution: "jsonpath-plus@npm:5.1.0"
-  checksum: 10/8b7b6a6d3da9b53000dd66614428fc2c3daaf49a80a3d237626ccba50d2a6d5948a5e1b35ffd9275899af08e3b39667edc8659a32b8d327b06d6a0ee2b8fc8d4
   languageName: node
   linkType: hard
 
@@ -26098,17 +25910,6 @@ __metadata:
   version: 1.1.0
   resolution: "math-intrinsics@npm:1.1.0"
   checksum: 10/11df2eda46d092a6035479632e1ec865b8134bdfc4bd9e571a656f4191525404f13a283a515938c3a8de934dbfd9c09674d9da9fa831e6eb7e22b50b197d2edd
-  languageName: node
-  linkType: hard
-
-"md5@npm:^2.3.0":
-  version: 2.3.0
-  resolution: "md5@npm:2.3.0"
-  dependencies:
-    charenc: "npm:0.0.2"
-    crypt: "npm:0.0.2"
-    is-buffer: "npm:~1.1.6"
-  checksum: 10/88dce9fb8df1a084c2385726dcc18c7f54e0b64c261b5def7cdfe4928c4ee1cd68695c34108b4fab7ecceb05838c938aa411c6143df9fdc0026c4ddb4e4e72fa
   languageName: node
   linkType: hard
 
@@ -27589,6 +27390,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"oblivious-set@npm:1.1.1":
+  version: 1.1.1
+  resolution: "oblivious-set@npm:1.1.1"
+  checksum: 10/ea1830c38ad5b8b71e6573d0dda3ecaf01e7e0c25c5d612d6f2915e8568c2148a5e0aab31a7d4155db96e6623a123cce57d9b4929947d2ab4c040505947674c6
+  languageName: node
+  linkType: hard
+
 "on-exit-leak-free@npm:2.1.2, on-exit-leak-free@npm:^2.1.0":
   version: 2.1.2
   resolution: "on-exit-leak-free@npm:2.1.2"
@@ -29058,7 +28866,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pvtsutils@npm:^1.1.2, pvtsutils@npm:^1.3.5, pvtsutils@npm:^1.3.6":
+"pvtsutils@npm:^1.3.5, pvtsutils@npm:^1.3.6":
   version: 1.3.6
   resolution: "pvtsutils@npm:1.3.6"
   dependencies:
@@ -29071,13 +28879,6 @@ __metadata:
   version: 1.1.3
   resolution: "pvutils@npm:1.1.3"
   checksum: 10/e5201b8f78ece68eae414a938c844bc45fb3f0de298178eed1775a217eedfd897c4346e5e54f410bb4d7466e09ceb262e85f20fd64239b8bb2595f14c52fa95e
-  languageName: node
-  linkType: hard
-
-"q@npm:1.4.1":
-  version: 1.4.1
-  resolution: "q@npm:1.4.1"
-  checksum: 10/31ac481a91ccb6e9a1e4270194aac1c483eb6919ad54e93069d309f7e225a0a2ad5e8f667bc220c02d01f9225f73d6674f15386914cdc741b1c6ece274e9569d
   languageName: node
   linkType: hard
 
@@ -30026,14 +29827,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"regenerator-runtime@npm:^0.13.4":
-  version: 0.13.11
-  resolution: "regenerator-runtime@npm:0.13.11"
-  checksum: 10/d493e9e118abef5b099c78170834f18540c4933cedf9bfabc32d3af94abfb59a7907bd7950259cbab0a929ebca7db77301e8024e5121e6482a82f78283dfd20c
-  languageName: node
-  linkType: hard
-
-"regenerator-runtime@npm:^0.14.1":
+"regenerator-runtime@npm:^0.14.0, regenerator-runtime@npm:^0.14.1":
   version: 0.14.1
   resolution: "regenerator-runtime@npm:0.14.1"
   checksum: 10/5db3161abb311eef8c45bcf6565f4f378f785900ed3945acf740a9888c792f75b98ecb77f0775f3bf95502ff423529d23e94f41d80c8256e8fa05ed4b07cf471
@@ -32590,13 +32384,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"text-encoding@npm:^0.7.0":
-  version: 0.7.0
-  resolution: "text-encoding@npm:0.7.0"
-  checksum: 10/c61b7a59a54c58f0714da0ef4c1f65732821bb1f761e6f21c3e681e51c6dd56fdefa4fcfccd3254bf47132d87420fbc9898da21a804c89e87861f4e1478d5f18
-  languageName: node
-  linkType: hard
-
 "text-extensions@npm:^1.0.0":
   version: 1.9.0
   resolution: "text-extensions@npm:1.9.0"
@@ -33295,13 +33082,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"u2f-api-polyfill@npm:0.4.3":
-  version: 0.4.3
-  resolution: "u2f-api-polyfill@npm:0.4.3"
-  checksum: 10/0f97687950250fdc9daf94a1ac9a05a01016d034bd22d44ed2267f1fab2ad1cef7d5db249b8b65f9de4c02797bc796086f923fdd6c0167d8d40d21053576a4af
-  languageName: node
-  linkType: hard
-
 "uglify-js@npm:^3.1.4":
   version: 3.19.3
   resolution: "uglify-js@npm:3.19.3"
@@ -33330,13 +33110,6 @@ __metadata:
     buffer: "npm:^5.2.1"
     through: "npm:^2.3.8"
   checksum: 10/4ffc0e14f4af97400ed0f37be83b112b25309af21dd08fa55c4513e7cb4367333f63712aec010925dbe491ef6e92db1248e1e306e589f9f6a8da8b3a9c4db90b
-  languageName: node
-  linkType: hard
-
-"underscore@npm:1.13.1":
-  version: 1.13.1
-  resolution: "underscore@npm:1.13.1"
-  checksum: 10/71bec536cb8068edc94f55560e0512e7b5d892631eabc9078925fb0685dc1b183c1783d0936a9ba327a82c83380b1a1d53f385a91f739c3ee63ffedb8e5e40e2
   languageName: node
   linkType: hard
 
@@ -33514,6 +33287,13 @@ __metadata:
   version: 1.1.4
   resolution: "unix-crypt-td-js@npm:1.1.4"
   checksum: 10/1006c3de8c0137300b76ba3b8b545611ba5964a51a5d71cb9473078a87723c1d568f7fe6a46e993262f7d0bafa381548dd7dfe2568837931ec112b4c9fbf9d53
+  languageName: node
+  linkType: hard
+
+"unload@npm:2.4.1":
+  version: 2.4.1
+  resolution: "unload@npm:2.4.1"
+  checksum: 10/00b1181eac776c7e3bf9ea3ff93e183a926d83ad445ff616e5b5f06c0b4abab19522cf3376a4a4161e4e293f55ab4d58782c48d00a3784c878e13eb7c69d2679
   languageName: node
   linkType: hard
 
@@ -34092,7 +33872,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webcrypto-core@npm:^1.2.0":
+"webcrypto-core@npm:^1.8.0":
   version: 1.8.1
   resolution: "webcrypto-core@npm:1.8.1"
   dependencies:

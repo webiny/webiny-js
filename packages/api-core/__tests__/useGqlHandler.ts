@@ -4,12 +4,12 @@ import type { PluginCollection } from "@webiny/plugins/types";
 
 // Graphql
 import {
-    CREATE_SECURITY_GROUP,
-    DELETE_SECURITY_GROUP,
-    GET_SECURITY_GROUP,
-    LIST_SECURITY_GROUPS,
-    UPDATE_SECURITY_GROUP
-} from "./graphql/groups";
+    CREATE_SECURITY_ROLE,
+    DELETE_SECURITY_ROLE,
+    GET_SECURITY_ROLE,
+    LIST_SECURITY_ROLES,
+    UPDATE_SECURITY_ROLE
+} from "./graphql/roles";
 
 import {
     CREATE_SECURITY_TEAM,
@@ -38,7 +38,6 @@ import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 import { createApiCore } from "~/index.js";
 import { createRootTenantMock } from "./mocks/createRootTenantMock";
 import { authenticateUsingHttpHeader } from "~/legacy/security/plugins/authenticateUsingHttpHeader.js";
-import tenantLinkAuthorization from "~/legacy/security/plugins/tenantLinkAuthorization.js";
 import type { ApiCoreStorageOperations } from "~/types/core.js";
 
 type UseGqlHandlerParams = {
@@ -65,7 +64,6 @@ export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
             triggerAuthentication(),
             customAuthenticator(),
             customGroupAuthorizer(),
-            tenantLinkAuthorization({ identityType: "admin" }),
             opts.plugins
         ].filter(Boolean) as PluginCollection
     });
@@ -91,21 +89,21 @@ export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
         return [JSON.parse(response.body), response];
     };
 
-    const securityGroup = {
+    const securityRole = {
         async create(variables = {}) {
-            return invoke({ body: { query: CREATE_SECURITY_GROUP, variables } });
+            return invoke({ body: { query: CREATE_SECURITY_ROLE, variables } });
         },
         async update(variables = {}) {
-            return invoke({ body: { query: UPDATE_SECURITY_GROUP, variables } });
+            return invoke({ body: { query: UPDATE_SECURITY_ROLE, variables } });
         },
         async delete(variables = {}) {
-            return invoke({ body: { query: DELETE_SECURITY_GROUP, variables } });
+            return invoke({ body: { query: DELETE_SECURITY_ROLE, variables } });
         },
         async list(variables = {}, headers = {}) {
-            return invoke({ body: { query: LIST_SECURITY_GROUPS, variables }, headers });
+            return invoke({ body: { query: LIST_SECURITY_ROLES, variables }, headers });
         },
         async get(variables = {}) {
-            return invoke({ body: { query: GET_SECURITY_GROUP, variables } });
+            return invoke({ body: { query: GET_SECURITY_ROLE, variables } });
         }
     };
     const securityTeam = {
@@ -166,7 +164,7 @@ export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
         handler,
         invoke,
         securityIdentity,
-        securityGroup,
+        securityRole,
         securityTeam,
         securityApiKeys,
         install

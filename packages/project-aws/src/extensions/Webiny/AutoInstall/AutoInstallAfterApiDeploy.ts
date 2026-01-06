@@ -1,5 +1,6 @@
 import { ApiAfterDeploy } from "@webiny/project/abstractions/index.js";
 import { UiService } from "@webiny/project/abstractions/services/UiService.js";
+import { LoggerService } from "@webiny/project/abstractions/services/LoggerService.js";
 import { GetProjectConfigService } from "@webiny/project/abstractions";
 import { ApiGqlClient } from "~/abstractions/ApiGqlClient.js";
 
@@ -59,7 +60,8 @@ class AutoInstallAfterApiDeployImpl implements ApiAfterDeploy.Interface {
     constructor(
         private apiGqlClient: ApiGqlClient.Interface,
         private ui: UiService.Interface,
-        private getProjectConfig: GetProjectConfigService.Interface
+        private getProjectConfig: GetProjectConfigService.Interface,
+        private logger: LoggerService.Interface
     ) {}
 
     async execute() {
@@ -85,6 +87,7 @@ class AutoInstallAfterApiDeployImpl implements ApiAfterDeploy.Interface {
                 return;
             }
         } catch (error: any) {
+            this.logger.error("Failed to check installation status", { error });
             this.ui.warning(`Could not check installation status: ${error.message}`);
             return;
         }
@@ -114,6 +117,7 @@ class AutoInstallAfterApiDeployImpl implements ApiAfterDeploy.Interface {
 
         if (installResponse.data?.system.installSystem.error) {
             const { message, code } = installResponse.data.system.installSystem.error;
+            this.logger.error("Installation failed", { message, code });
             this.ui.error(`Installation failed: ${message} (${code})`);
             throw new Error(message);
         }
@@ -127,5 +131,5 @@ class AutoInstallAfterApiDeployImpl implements ApiAfterDeploy.Interface {
 
 export const AutoInstallAfterApiDeploy = ApiAfterDeploy.createImplementation({
     implementation: AutoInstallAfterApiDeployImpl,
-    dependencies: [ApiGqlClient, UiService, GetProjectConfigService]
+    dependencies: [ApiGqlClient, UiService, GetProjectConfigService, LoggerService]
 });

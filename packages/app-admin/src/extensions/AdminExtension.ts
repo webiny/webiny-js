@@ -1,8 +1,8 @@
 import { defineExtension, zodPathToFile } from "@webiny/project/extensions/index.js";
 import { z } from "zod";
 import path from "path";
-import Case from "case";
 import { type JsxFragment, Node, Project } from "ts-morph";
+import crypto from "crypto";
 
 export const AdminExtension = defineExtension({
     type: "Admin/Extension",
@@ -19,20 +19,16 @@ export const AdminExtension = defineExtension({
             .join("apps", "admin", "src", "Extensions.tsx")
             .toString();
 
-        const componentName = Case.pascal("Something" + Date.now()) + "Extension";
-
-        const importName = "{ Extension as " + componentName + " }";
-        const srcWithoutExt = params.src.replace(/\.[^/.]+$/, "");
+        // Generate a constant hash-based component name to avoid using timestamps
+        const hash = crypto.createHash("sha256").update(params.src).digest("hex");
+        const componentName = `AdminExtension_${hash.slice(-10)}`;
 
         const project = new Project();
 
-        const importPath = path.join(
-            path.relative(
-                path.dirname(extensionsTsxFilePath),
-                ctx.project.paths.rootFolder.toString()
-            ),
-            srcWithoutExt
-        );
+        const importPath = path
+            .relative(path.dirname(extensionsTsxFilePath), params.src)
+            .replace(".tsx", ".js");
+
         project.addSourceFileAtPath(extensionsTsxFilePath);
 
         const source = project.getSourceFileOrThrow(extensionsTsxFilePath);
@@ -51,7 +47,7 @@ export const AdminExtension = defineExtension({
         }
 
         source.insertImportDeclaration(index, {
-            defaultImport: importName,
+            namedImports: [{ name: "Extension", alias: componentName }],
             moduleSpecifier: importPath
         });
 

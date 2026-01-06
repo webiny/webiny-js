@@ -1,9 +1,8 @@
 import { describe, test, expect, beforeEach } from "vitest";
 import { useGqlHandler } from "../useGqlHandler";
-import { defaultIdentity } from "~tests/mocks/defaultIdentity.js";
 
 describe(`"Login" test`, () => {
-    const { install, securityIdentity } = useGqlHandler({ plugins: [defaultIdentity()] });
+    const { install, securityIdentity } = useGqlHandler({ plugins: [] });
 
     beforeEach(async () => {
         const [response] = await install.install({

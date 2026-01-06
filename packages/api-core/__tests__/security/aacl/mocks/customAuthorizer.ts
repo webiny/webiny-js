@@ -24,7 +24,7 @@ export const customAuthorizer = () => {
                 { name: "cms.contentModelGroup", own: false, rwd: "r", pw: "", groups: {} },
                 { name: "cms.contentEntry", own: true, rwd: "rwd", pw: "p" },
                 { name: "security.*" },
-                { name: "security.group" },
+                { name: "security.role" },
                 { name: "security.apiKey" },
                 { name: "adminUsers.*" },
                 { name: "i18n.*" },

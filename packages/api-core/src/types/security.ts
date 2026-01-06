@@ -25,15 +25,15 @@ export interface GetTeamWhere {
 export type Security = LegacyContext;
 
 export interface SecurityStorageOperations {
-    getGroup(params: StorageOperationsGetGroupParams): Promise<Group | null>;
+    getRole(params: StorageOperationsGetRoleParams): Promise<Role | null>;
 
-    listGroups(params: StorageOperationsListGroupsParams): Promise<Group[]>;
+    listRoles(params: StorageOperationsListRolesParams): Promise<Role[]>;
 
-    createGroup(params: StorageOperationsCreateGroupParams): Promise<void>;
+    createRole(params: StorageOperationsCreateRoleParams): Promise<void>;
 
-    updateGroup(params: StorageOperationsUpdateGroupParams): Promise<void>;
+    updateRole(params: StorageOperationsUpdateRoleParams): Promise<void>;
 
-    deleteGroup(params: StorageOperationsDeleteGroupParams): Promise<void>;
+    deleteRole(params: StorageOperationsDeleteRoleParams): Promise<void>;
 
     getTeam(params: StorageOperationsGetTeamParams): Promise<Team | null>;
 
@@ -44,26 +44,6 @@ export interface SecurityStorageOperations {
     updateTeam(params: StorageOperationsUpdateTeamParams): Promise<void>;
 
     deleteTeam(params: StorageOperationsDeleteTeamParams): Promise<void>;
-
-    createTenantLinks(params: StorageOperationsCreateTenantLinkParams[]): Promise<void>;
-
-    updateTenantLinks(params: StorageOperationsUpdateTenantLinkParams[]): Promise<void>;
-
-    deleteTenantLinks(params: StorageOperationsDeleteTenantLinkParams[]): Promise<void>;
-
-    listTenantLinksByType<TLink extends TenantLink = TenantLink>(
-        params: ListTenantLinksByTypeParams
-    ): Promise<TLink[]>;
-
-    listTenantLinksByTenant(params: StorageOperationsListTenantLinksParams): Promise<TenantLink[]>;
-
-    listTenantLinksByIdentity(
-        params: StorageOperationsListTenantLinksByIdentityParams
-    ): Promise<TenantLink[]>;
-
-    getTenantLinkByIdentity<TLink extends TenantLink = TenantLink>(
-        params: StorageOperationsGetTenantLinkByIdentityParams
-    ): Promise<TLink | null>;
 
     getApiKey(params: StorageOperationsGetApiKeyParams): Promise<ApiKey | null>;
 
@@ -96,11 +76,11 @@ export interface CreatedBy {
     type: string;
 }
 
-export interface Group {
-    // Groups defined via plugins might not have `tenant` specified (meaning they are global).
+export interface Role {
+    // Roles defined via plugins might not have `tenant` specified (meaning they are global).
     tenant: string | null;
 
-    // Groups defined via plugins don't have `createdOn` and `createdBy` specified.
+    // Roles defined via plugins don't have `createdOn` and `createdBy` specified.
     createdOn: string | null;
     createdBy: CreatedBy | null;
 
@@ -111,18 +91,18 @@ export interface Group {
     system: boolean;
     permissions: SecurityPermission[];
 
-    // Set to `true` when a group is defined via a plugin.
+    // Set to `true` when a role is defined via a plugin.
     plugin?: boolean;
 }
 
-export type SecurityRole = Group;
+export type SecurityRole = Role;
 export type SecurityTeam = Team;
 
-export interface GetGroupParams {
+export interface GetRoleParams {
     where: GetGroupWhere;
 }
 
-export interface ListGroupsParams {
+export interface ListRolesParams {
     where?: {
         id_in?: string[];
         slug_in?: string[];
@@ -130,16 +110,16 @@ export interface ListGroupsParams {
     sort?: string[];
 }
 
-export interface CreateGroupParams {
-    group: Group;
+export interface CreateRoleParams {
+    role: Role;
 }
 
-export interface UpdateGroupParams {
-    group: Group;
+export interface UpdateRoleParams {
+    role: Role;
 }
 
-export interface DeleteGroupParams {
-    group: Group;
+export interface DeleteRoleParams {
+    role: Role;
 }
 
 export interface Team {
@@ -155,13 +135,13 @@ export interface Team {
     slug: string;
     description: string;
     system: boolean;
-    groups: string[];
+    roles: string[];
 
-    // Set to `true` when a group is defined via a plugin.
+    // Set to `true` when a role is defined via a plugin.
     plugin?: boolean;
 }
 
-export type TeamInput = Pick<Team, "name" | "slug" | "description" | "groups"> & {
+export type TeamInput = Pick<Team, "name" | "slug" | "description" | "roles"> & {
     system?: boolean;
 };
 
@@ -189,66 +169,6 @@ export interface UpdateTeamParams {
 export interface DeleteTeamParams {
     team: Team;
 }
-
-export interface CreateTenantLinkParams<TData = Record<string, any>> {
-    identity: string;
-    tenant: string;
-    type: string;
-    data?: TData;
-}
-
-export interface UpdateTenantLinkParams<TData = Record<string, any>> {
-    identity: string;
-    tenant: string;
-    type: string;
-    data?: TData;
-}
-
-export interface DeleteTenantLinkParams {
-    identity: string;
-    tenant: string;
-}
-
-export interface ListTenantLinksByTypeParams {
-    tenant: string;
-    type: string;
-}
-
-export interface ListTenantLinksByIdentityParams {
-    identity: string;
-}
-
-export interface ListTenantLinksParams {
-    tenant: string;
-}
-
-export interface GetTenantLinkByIdentityParams {
-    identity: string;
-    tenant: string;
-}
-
-export interface TenantLink<TData = any> {
-    createdOn: string;
-    identity: string;
-    tenant: string;
-    type: string;
-    data?: TData;
-}
-
-export interface PermissionsTenantLinkGroup {
-    id: string;
-    permissions: SecurityPermission[];
-}
-
-export interface PermissionsTenantLinkTeam {
-    id: string;
-    groups: Array<{ id: string; permissions: SecurityPermission[] }>;
-}
-
-export type PermissionsTenantLink = TenantLink<{
-    groups: PermissionsTenantLinkGroup[];
-    teams: PermissionsTenantLinkTeam[];
-}>;
 
 export interface ApiKey {
     id: string;
@@ -297,21 +217,21 @@ export interface StorageOperationsListApiKeysParams extends ListApiKeysParams {
     };
 }
 
-export interface StorageOperationsGetGroupParams extends GetGroupParams {
-    where: GetGroupParams["where"] & {
+export interface StorageOperationsGetRoleParams extends GetRoleParams {
+    where: GetRoleParams["where"] & {
         tenant: string;
     };
 }
 
-export interface StorageOperationsListGroupsParams extends ListGroupsParams {
-    where: ListGroupsParams["where"] & {
+export interface StorageOperationsListRolesParams extends ListRolesParams {
+    where: ListRolesParams["where"] & {
         tenant: string;
     };
 }
 
-export type StorageOperationsCreateGroupParams = CreateGroupParams;
-export type StorageOperationsUpdateGroupParams = UpdateGroupParams;
-export type StorageOperationsDeleteGroupParams = DeleteGroupParams;
+export type StorageOperationsCreateRoleParams = CreateRoleParams;
+export type StorageOperationsUpdateRoleParams = UpdateRoleParams;
+export type StorageOperationsDeleteRoleParams = DeleteRoleParams;
 
 export interface StorageOperationsGetTeamParams extends GetTeamParams {
     where: GetTeamParams["where"] & {
@@ -328,16 +248,6 @@ export interface StorageOperationsListTeamsParams extends ListTeamsParams {
 export type StorageOperationsCreateTeamParams = CreateTeamParams;
 export type StorageOperationsUpdateTeamParams = UpdateTeamParams;
 export type StorageOperationsDeleteTeamParams = DeleteTeamParams;
-
-export interface StorageOperationsCreateTenantLinkParams extends CreateTenantLinkParams {
-    createdOn: string;
-}
-
-export type StorageOperationsUpdateTenantLinkParams = UpdateTenantLinkParams;
-export type StorageOperationsDeleteTenantLinkParams = DeleteTenantLinkParams;
-export type StorageOperationsListTenantLinksParams = ListTenantLinksParams;
-export type StorageOperationsListTenantLinksByIdentityParams = ListTenantLinksByIdentityParams;
-export type StorageOperationsGetTenantLinkByIdentityParams = GetTenantLinkByIdentityParams;
 export type StorageOperationsGetApiKeyParams = GetApiKeyParams;
 export type StorageOperationsGetApiKeyByTokenParams = GetApiKeyByTokenParams;
 export type StorageOperationsCreateApiKeyParams = CreateApiKeyParams;

@@ -73,8 +73,35 @@ class BatchingGraphQLClientImpl implements GraphQLClient.Interface {
             return;
         }
 
-        // Multiple requests - batch them
-        const batchedOperations = batch.map(({ request }): BatchOperation => {
+        // Group requests by headers (only batch requests with identical headers)
+        const groupedByHeaders = new Map<string, BatchedRequest[]>();
+        for (const item of batch) {
+            const headersKey = this.serializeHeaders(item.request.headers);
+            if (!groupedByHeaders.has(headersKey)) {
+                groupedByHeaders.set(headersKey, []);
+            }
+            groupedByHeaders.get(headersKey)!.push(item);
+        }
+
+        // Process each group separately
+        const batchPromises = Array.from(groupedByHeaders.entries()).map(requests => {
+            const group = requests[1];
+
+            if (group.length === 1) {
+                // Single request in this group - use decoratee directly
+                const { request, resolve, reject } = group[0];
+                return this.decoratee.execute(request.request).then(resolve).catch(reject);
+            }
+
+            // Multiple requests with same headers - batch them
+            return this.executeBatchGroup(group);
+        });
+
+        await Promise.all(batchPromises);
+    }
+
+    private async executeBatchGroup(group: BatchedRequest[]): Promise<void> {
+        const batchedOperations = group.map(({ request }): BatchOperation => {
             return {
                 query: request.queryAsString,
                 operationName: request.operationName,
@@ -82,19 +109,31 @@ class BatchingGraphQLClientImpl implements GraphQLClient.Interface {
             };
         });
 
-        // Merge headers from the first request (assuming all have same headers)
-        const headers = batch[0].request.headers;
+        const headers = group[0].request.headers;
 
         try {
             const results = await this.executeBatch(batchedOperations, headers);
-            batch.forEach(({ resolve }, index) => {
+            group.forEach(({ resolve }, index) => {
                 resolve(results[index]);
             });
         } catch (error) {
-            batch.forEach(({ reject }) => {
+            group.forEach(({ reject }) => {
                 reject(error);
             });
         }
+    }
+
+    private serializeHeaders(headers?: GraphQLClient.Headers): string {
+        if (!headers) {
+            return "{}";
+        }
+        // Sort keys for consistent serialization
+        const sortedKeys = Object.keys(headers).sort();
+        const sortedHeaders: Record<string, string> = {};
+        for (const key of sortedKeys) {
+            sortedHeaders[key] = String(headers[key]);
+        }
+        return JSON.stringify(sortedHeaders);
     }
 
     private async executeBatch(

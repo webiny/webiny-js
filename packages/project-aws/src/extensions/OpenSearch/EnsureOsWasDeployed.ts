@@ -11,7 +11,7 @@ class EnsureOsWasDeployedImpl implements CoreBeforeDeploy.Interface {
         const output = await this.coreStackOutputService.execute();
 
         // If there's no output, Core hasn't been deployed yet, so we can proceed.
-        if (!output) {
+        if (!output?.databaseSetup) {
             return;
         }
 

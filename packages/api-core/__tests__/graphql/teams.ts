@@ -3,7 +3,7 @@ const DATA_FIELD = (extra = "") => /* GraphQL */ `
         name
         description
         slug
-        groups {
+        roles {
             id
             name
         }

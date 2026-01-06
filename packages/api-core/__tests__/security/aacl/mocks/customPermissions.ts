@@ -35,7 +35,7 @@ export const customPermissions = [
         rwd: "rwd"
     },
     { name: "security.*" },
-    { name: "security.group" },
+    { name: "security.role" },
     { name: "security.apiKey" },
     { name: "adminUsers.*" },
     { name: "i18n.*" },

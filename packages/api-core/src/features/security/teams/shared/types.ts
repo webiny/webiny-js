@@ -6,14 +6,14 @@ export interface CreateTeamInput {
     name: string;
     slug: string;
     description: string;
-    groups: string[];
+    roles: string[];
     system?: boolean;
 }
 
 export interface UpdateTeamInput {
     name?: string;
     description?: string;
-    groups?: string[];
+    roles?: string[];
 }
 
 export type GetTeamInput =

@@ -20,7 +20,7 @@ class LoginUseCaseImpl implements UseCase.Interface {
         // TODO: if it's a multi-tenant system, and current tenant is not known (no URL param, no localStorage),
         // execute the GET_DEFAULT_TENANT query to first determine the tenant. Only then login the user.
 
-        const identity = await this.logInRepository.login(params.identityType);
+        const identity = await this.logInRepository.login();
 
         // 3. Ensure identity has some permissions
         this.validatePermissions(identity.getPermissions());

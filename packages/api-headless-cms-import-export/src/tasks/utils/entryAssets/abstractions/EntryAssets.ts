@@ -3,13 +3,11 @@ import type { GenericRecord } from "@webiny/api/types.js";
 
 export interface IKeyAsset {
     key: string;
-    alias?: never;
     url: string;
 }
 
 export interface IAliasAsset {
     key?: never;
-    alias: string;
     url: string;
 }
 

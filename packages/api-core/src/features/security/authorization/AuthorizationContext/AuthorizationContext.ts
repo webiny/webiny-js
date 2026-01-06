@@ -1,18 +1,18 @@
 import { AsyncLocalStorage } from "async_hooks";
-import { createImplementation } from "@webiny/di";
 import { AuthorizationContext as Abstraction } from "./abstractions.js";
 import { Authorizer } from "../Authorizer/index.js";
 import type { SecurityPermission } from "~/types/security.js";
+import { Identity } from "~/features/security/IdentityContext/index.js";
 
 const authorizationEnabledStorage = new AsyncLocalStorage<boolean>();
 
-class AuthorizationContextImpl implements Abstraction.Interface {
+export class AuthorizationContext implements Abstraction.Interface {
     private permissions?: SecurityPermission[];
     private permissionsLoader?: Promise<SecurityPermission[]>;
 
-    constructor(private authorizers: Authorizer.Interface[]) {}
+    constructor(private getAuthorizers: () => Authorizer.Interface[]) {}
 
-    async loadPermissions(): Promise<SecurityPermission[]> {
+    async loadPermissions(identity: Identity): Promise<SecurityPermission[]> {
         if (this.permissions) {
             return this.permissions;
         }
@@ -23,8 +23,9 @@ class AuthorizationContextImpl implements Abstraction.Interface {
 
         this.permissionsLoader = new Promise<SecurityPermission[]>(async resolve => {
             // Execute authorizers in sequence until one returns permissions
-            for (const authorizer of this.authorizers) {
-                const result = await authorizer.authorize();
+            const authorizers = this.getAuthorizers();
+            for (const authorizer of authorizers) {
+                const result = await authorizer.authorize(identity);
                 if (Array.isArray(result)) {
                     this.permissions = result;
                     return resolve(this.permissions);
@@ -53,9 +54,3 @@ class AuthorizationContextImpl implements Abstraction.Interface {
         this.permissionsLoader = undefined;
     }
 }
-
-export const AuthorizationContext = createImplementation({
-    abstraction: Abstraction,
-    implementation: AuthorizationContextImpl,
-    dependencies: [[Authorizer, { multiple: true }]]
-});

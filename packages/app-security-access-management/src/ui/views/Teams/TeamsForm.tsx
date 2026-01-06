@@ -17,10 +17,10 @@ import {
 import { CREATE_TEAM, LIST_TEAMS, READ_TEAM, UPDATE_TEAM } from "./graphql.js";
 import isEmpty from "lodash/isEmpty.js";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
-import { GroupsMultiAutocomplete } from "~/components/GroupsMultiAutocomplete/index.js";
 import type { Team } from "~/types.js";
 import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
 import { Alert, Button, Grid, Input, OverlayLoader, Textarea } from "@webiny/admin-ui";
+import { RolesMultiAutocomplete } from "@webiny/app-admin";
 import { Routes } from "~/routes.js";
 
 const t = i18n.ns("app-security/admin/teams/form");
@@ -69,7 +69,7 @@ export const TeamsForm = ({ newEntry, id }: TeamsFormProps) => {
                       {
                           variables: {
                               id: formData.id,
-                              data: pick(formData, ["name", "description", "groups"])
+                              data: pick(formData, ["name", "description", "roles"])
                           }
                       }
                   ]
@@ -77,7 +77,7 @@ export const TeamsForm = ({ newEntry, id }: TeamsFormProps) => {
                       create,
                       {
                           variables: {
-                              data: pick(formData, ["name", "slug", "description", "groups"])
+                              data: pick(formData, ["name", "slug", "description", "roles"])
                           }
                       }
                   ];
@@ -192,11 +192,11 @@ export const TeamsForm = ({ newEntry, id }: TeamsFormProps) => {
                                     </Bind>
                                 </Grid.Column>
                                 <Grid.Column span={12}>
-                                    <Bind name="groups" validators={validation.create("required")}>
-                                        <GroupsMultiAutocomplete
+                                    <Bind name="roles" validators={validation.create("required")}>
+                                        <RolesMultiAutocomplete
                                             disabled={!canModifyTeam}
                                             label={t`Roles`}
-                                            data-testid="admin.am.team.new.groups"
+                                            data-testid="admin.am.team.new.roles"
                                         />
                                     </Bind>
                                 </Grid.Column>

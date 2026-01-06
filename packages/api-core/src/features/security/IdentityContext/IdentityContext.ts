@@ -103,7 +103,7 @@ class IdentityContextImpl implements Abstraction.Interface {
     }
 
     async listPermissions(): Promise<SecurityPermission[]> {
-        const permissions = await this.authorizationContext.loadPermissions();
+        const permissions = await this.authorizationContext.loadPermissions(this.getIdentity());
         // TODO: extract this into a decorator
         return this.applyAaclLogic(permissions);
     }
@@ -123,12 +123,13 @@ class IdentityContextImpl implements Abstraction.Interface {
 
         if (aaclEnabled) {
             // Add AACL metadata permission
-            permissions.push({
-                name: "aacl",
-                teams: teamsEnabled
-            } as AaclPermission);
-
-            return permissions;
+            return [
+                ...permissions,
+                {
+                    name: "aacl",
+                    teams: teamsEnabled
+                } as AaclPermission
+            ];
         }
 
         // If AACL is not enabled, filter out custom Webiny apps permissions

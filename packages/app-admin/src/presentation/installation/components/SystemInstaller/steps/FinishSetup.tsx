@@ -2,10 +2,13 @@ import React, { useEffect } from "react";
 import { Text, Button, Grid, Loader, Alert } from "@webiny/admin-ui";
 import { Center } from "./Center.js";
 import { Container } from "./Container.js";
-import type { ISystemInstallerPresenter } from "~/presentation/installation/presenters/SystemInstaller/abstractions.js";
+import type {
+    ErrorObject,
+    ISystemInstallerPresenter
+} from "~/presentation/installation/presenters/SystemInstaller/abstractions.js";
 
 interface StepProps {
-    error?: Error;
+    error?: ErrorObject;
     isInstalled: boolean;
     installing: boolean;
     installSystem: ISystemInstallerPresenter["installSystem"];
@@ -33,7 +36,9 @@ export const FinishSetupStep = ({
                     <Grid>
                         {error ? (
                             <Grid.Column span={12}>
-                                <Alert type={"danger"}>{error.message}</Alert>
+                                <Alert type={"danger"} title={error.message}>
+                                    {error.data.reason}
+                                </Alert>
                             </Grid.Column>
                         ) : (
                             <></>

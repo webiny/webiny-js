@@ -39,6 +39,8 @@ import {
     getPulumiResourceNamePrefix,
     isCi,
     isTelemetryEnabled,
+    isWcpEnabled,
+    isWebinyJsRepo,
     refreshApp,
     runPulumiCommand,
     validateProjectConfig,
@@ -186,6 +188,8 @@ export const createProjectSdkContainer = async (
     container.register(getPulumiResourceNamePrefix).inSingletonScope();
     container.register(isCi).inSingletonScope();
     container.register(isTelemetryEnabled).inSingletonScope();
+    container.register(isWcpEnabled).inSingletonScope();
+    container.register(isWebinyJsRepo).inSingletonScope();
     container.register(refreshApp).inSingletonScope();
     container.register(runPulumiCommand).inSingletonScope();
     container.register(validateProjectConfig).inSingletonScope();

@@ -1,11 +1,8 @@
-import type { SecurityContext } from "~/types";
 import { ContextPlugin } from "@webiny/api";
-import type { Context as BaseContext } from "@webiny/handler/types";
-
-interface Context extends BaseContext, SecurityContext {}
+import type { ApiCoreContext } from "~/types/core.js";
 
 export const customAuthenticator = () => {
-    return new ContextPlugin<Context>(context => {
+    return new ContextPlugin<ApiCoreContext>(context => {
         context.security.addAuthenticator(async () => {
             if ("authorization" in context.request.headers) {
                 return null;
@@ -15,7 +12,10 @@ export const customAuthenticator = () => {
                 id: "123456789",
                 displayName: "John Doe",
                 type: "admin",
-                groups: ["full-access"]
+                roles: ["full-access"],
+                profile: {
+                    external: true
+                }
             };
         });
     });

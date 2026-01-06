@@ -11,7 +11,7 @@ class SetDatabaseSetupOutputImpl implements CorePulumi.Interface {
         const [databaseSetupExtension] = projectConfig.extensionsByType(DatabaseSetup);
 
         if (databaseSetupExtension) {
-            const databaseSetup = databaseSetupExtension.params.name;
+            const databaseSetup = databaseSetupExtension.params.setupName;
             app.addOutputs({
                 databaseSetup
             });

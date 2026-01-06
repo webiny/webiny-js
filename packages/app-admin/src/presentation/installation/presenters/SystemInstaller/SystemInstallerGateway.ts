@@ -82,7 +82,7 @@ class SystemInstallerGraphQLGateway implements Abstraction.Interface {
         });
 
         if (response.system.installSystem.error) {
-            throw new Error(response.system.installSystem.error.message);
+            throw response.system.installSystem.error;
         }
     }
 }

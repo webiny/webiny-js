@@ -6,17 +6,16 @@ import { ProjectDecorator, DatabaseSetup } from "@webiny/project/extensions/inde
 
 const p = createPathResolver(import.meta.dirname, "OpenSearch");
 
-export const OpenSearch = (props: React.ComponentProps<typeof PulumiOpenSearch.ReactComponent>) => {
+export const OpenSearch = (props: React.ComponentProps<typeof PulumiOpenSearch>) => {
     return (
         <>
-            <PulumiOpenSearch.ReactComponent {...props} />
+            <PulumiOpenSearch {...props} />
             {props.enabled && (
                 <>
                     {/* Override database setup to indicate OpenSearch is enabled */}
-                    <DatabaseSetup.ReactComponent name="ddb+os" />
-
-                    <ProjectDecorator.ReactComponent src={p("InjectDdbEsLambdaFnHandler.js")} />
-                    <ProjectDecorator.ReactComponent src={p("ReplaceApiLambdaFnHandlers.js")} />
+                    <DatabaseSetup setupName="ddb+os" />
+                    <ProjectDecorator src={p("InjectDdbEsLambdaFnHandler.js")} />
+                    <ProjectDecorator src={p("ReplaceApiLambdaFnHandlers.js")} />
                     <Infra.Core.BeforeDeploy src={p("EnsureOsServiceRoleBeforeCoreDeploy.js")} />
                     <Infra.Core.BeforeDeploy src={p("EnsureOsWasDeployed.js")} />
                 </>
