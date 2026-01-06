@@ -1,6 +1,6 @@
 import { FileBeforeUpdateHandler } from "@webiny/api-file-manager/features/file/UpdateFile/events.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
-import { CdnPathsGenerator } from "./CdnPathsGenerator.js";
+import { CdnPathsGenerator } from "~/utils/CdnPathsGenerator.js";
 
 class FlushCacheOnFileUpdateHandlerImpl implements FileBeforeUpdateHandler.Interface {
     private readonly pathsGenerator: CdnPathsGenerator;
@@ -24,7 +24,7 @@ class FlushCacheOnFileUpdateHandlerImpl implements FileBeforeUpdateHandler.Inter
             definition: "cloudfrontInvalidateCache",
             input: {
                 caller: "fm-before-update",
-                paths: this.pathsGenerator.generate(file)
+                paths: this.pathsGenerator.generate(file.id)
             }
         });
     }
