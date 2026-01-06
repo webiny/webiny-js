@@ -11,19 +11,14 @@ class EnsureTelemetryEnabledForOssImpl implements BeforeDeploy.Interface {
         // If telemetry is disabled and WCP is not connected, throw an error
         if (!telemetryEnabled && !wcpProjectId) {
             const message = [
-                `You are trying to disable telemetry in the open-source edition of Webiny.`,
-                `This feature is only available in the enterprise edition.`,
-                `Please remove %s from your %s file or connect your project to Webiny Control Panel (WCP).`
+                `You are trying to disable telemetry in the open-source edition of Webiny, which is not possible.`,
+                `Please re-enable telemetry to proceed with the deployment, or connect your project to Webiny Control Panel (WCP).`,
+                `Learn more: https://webiny.link/telemetry-oss`
             ].join(" ");
 
-            const error = new Error(message);
+            const error = new Error("Cannot deploy with telemetry disabled in OSS edition.");
 
-            throw GracefulError.from(
-                error,
-                message,
-                "<Project.Telemetry enabled={false} />",
-                "webiny.config.tsx"
-            );
+            throw GracefulError.from(error, message);
         }
     }
 }
