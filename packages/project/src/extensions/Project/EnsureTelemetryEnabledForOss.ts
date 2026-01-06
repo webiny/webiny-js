@@ -1,4 +1,9 @@
-import { BeforeDeploy, IsTelemetryEnabled, IsWcpEnabled, IsWebinyJsRepo } from "~/abstractions/index.js";
+import {
+    BeforeDeploy,
+    IsTelemetryEnabled,
+    IsWcpEnabled,
+    IsWebinyJsRepo
+} from "~/abstractions/index.js";
 import { GracefulError } from "@webiny/project";
 
 class EnsureTelemetryEnabledForOssImpl implements BeforeDeploy.Interface {
@@ -21,7 +26,8 @@ class EnsureTelemetryEnabledForOssImpl implements BeforeDeploy.Interface {
         // If telemetry is disabled and WCP is not connected, throw an error
         if (!telemetryEnabled && !wcpEnabled) {
             const message = [
-                `You are trying to disable telemetry in the open-source edition of Webiny, which is not possible.`,
+                `You are trying to deploy your project, but telemetry is currently disabled.`,
+                `The open-source edition of Webiny requires telemetry to be enabled.`,
                 `Please re-enable telemetry to proceed with the deployment, or connect your project to Webiny Control Panel (WCP).`,
                 `Learn more: https://webiny.link/telemetry-oss`
             ].join(" ");
