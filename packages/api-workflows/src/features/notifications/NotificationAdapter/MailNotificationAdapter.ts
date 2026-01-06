@@ -1,7 +1,7 @@
 import { MailerService } from "@webiny/api-mailer";
-import { NotificationTransport } from "./abstractions.js";
+import { NotificationAdapter } from "./abstractions.js";
 
-class MailNotificationTransportImpl implements NotificationTransport.Interface {
+class MailNotificationAdapterImpl implements NotificationAdapter.Interface {
     public readonly id = "e-mail";
     public readonly title = "E-Mail";
 
@@ -11,7 +11,7 @@ class MailNotificationTransportImpl implements NotificationTransport.Interface {
         this.mailer = mailer;
     }
 
-    public async send(params: NotificationTransport.SendParams): Promise<void> {
+    public async send(params: NotificationAdapter.SendParams): Promise<void> {
         const { users, message } = params;
 
         const bcc = users
@@ -47,7 +47,7 @@ class MailNotificationTransportImpl implements NotificationTransport.Interface {
     }
 }
 
-export const MailNotificationTransport = NotificationTransport.createImplementation({
-    implementation: MailNotificationTransportImpl,
+export const MailNotificationAdapter = NotificationAdapter.createImplementation({
+    implementation: MailNotificationAdapterImpl,
     dependencies: [MailerService]
 });

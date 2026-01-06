@@ -1,11 +1,11 @@
 import { Result } from "@webiny/feature/api";
 import { ListNotificationTypesRepository as Repository } from "./abstractions.js";
-import { NotificationTransport } from "~/features/notifications/NotificationTransport/index.js";
+import { NotificationAdapter } from "../NotificationAdapter/index.js";
 
 class ListNotificationTypesRepositoryImpl implements Repository.Interface {
     private readonly types;
 
-    public constructor(types: NotificationTransport.Interface[]) {
+    public constructor(types: NotificationAdapter.Interface[]) {
         this.types = types;
     }
 
@@ -23,5 +23,5 @@ class ListNotificationTypesRepositoryImpl implements Repository.Interface {
 
 export const ListNotificationTypesRepository = Repository.createImplementation({
     implementation: ListNotificationTypesRepositoryImpl,
-    dependencies: [[NotificationTransport, { multiple: true }]]
+    dependencies: [[NotificationAdapter, { multiple: true }]]
 });

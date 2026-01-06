@@ -1,94 +1,108 @@
 import { createAbstraction } from "@webiny/feature/api";
 
-export interface INotificationTypeMessage {
-    title: string;
-    body: string;
-    url: string;
+export interface INotificationMessageTitleParams {
+    id: string;
+    entryTitle: string;
 }
 
-export const NotificationTypeMessageOnRequestReview = createAbstraction<INotificationTypeMessage>(
-    "WorkflowNotificationTypeMessageOnRequestReview"
+export interface INotificationMessageBodyParams {
+    id: string;
+    entryTitle: string;
+}
+
+export interface INotificationMessageUrlParams {
+    id: string;
+    entryTitle: string;
+}
+
+export interface INotificationMessage {
+    getTitle(params: INotificationMessageTitleParams): string;
+    getBody(params: INotificationMessageBodyParams): string;
+    getUrl(params: INotificationMessageUrlParams): string;
+}
+
+export const NotificationReviewRequestMessage = createAbstraction<INotificationMessage>(
+    "WorkflowNotificationReviewRequestMessage"
 );
 
-export namespace NotificationTypeMessageOnRequestReview {
-    export type Interface = INotificationTypeMessage;
+export namespace NotificationReviewRequestMessage {
+    export type Interface = INotificationMessage;
 }
 
-export const NotificationTypeMessageOnRequestReviewCancel =
-    createAbstraction<INotificationTypeMessage>(
-        "WorkflowNotificationTypeMessageOnRequestReviewCancel"
-    );
-
-export namespace NotificationTypeMessageOnRequestReviewCancel {
-    export type Interface = INotificationTypeMessage;
-}
-
-export const NotificationTypeMessageOnReviewStepStart = createAbstraction<INotificationTypeMessage>(
-    "WorkflowNotificationTypeMessageOnReviewStepStart"
+export const NotificationReviewCancelMessage = createAbstraction<INotificationMessage>(
+    "WorkflowNotificationReviewCancelMessage"
 );
 
-export namespace NotificationTypeMessageOnReviewStepStart {
-    export type Interface = INotificationTypeMessage;
+export namespace NotificationReviewCancelMessage {
+    export type Interface = INotificationMessage;
 }
 
-export const NotificationTypeMessageOnReviewStepApprove =
-    createAbstraction<INotificationTypeMessage>(
-        "WorkflowNotificationTypeMessageOnReviewStepApprove"
-    );
-
-export namespace NotificationTypeMessageOnReviewStepApprove {
-    export type Interface = INotificationTypeMessage;
-}
-
-export const NotificationTypeMessageOnReviewReject = createAbstraction<INotificationTypeMessage>(
-    "WorkflowNotificationTypeMessageOnReviewReject"
+export const NotificationReviewStepStartMessage = createAbstraction<INotificationMessage>(
+    "WorkflowNotificationReviewStepStartMessage"
 );
 
-export namespace NotificationTypeMessageOnReviewReject {
-    export type Interface = INotificationTypeMessage;
+export namespace NotificationReviewStepStartMessage {
+    export type Interface = INotificationMessage;
 }
 
-export const NotificationTypeMessageOnReviewApprove = createAbstraction<INotificationTypeMessage>(
-    "WorkflowNotificationTypeMessageOnReviewApprove"
+export const NotificationReviewStepApproveMessage = createAbstraction<INotificationMessage>(
+    "WorkflowNotificationReviewStepApproveMessage"
 );
 
-export namespace NotificationTypeMessageOnReviewApprove {
-    export type Interface = INotificationTypeMessage;
+export namespace NotificationReviewStepApproveMessage {
+    export type Interface = INotificationMessage;
 }
 
-export type INotificationTypes =
-    | NotificationTypeMessageOnRequestReview.Interface
-    | NotificationTypeMessageOnRequestReviewCancel.Interface
-    | NotificationTypeMessageOnReviewStepStart.Interface
-    | NotificationTypeMessageOnReviewStepApprove.Interface
-    | NotificationTypeMessageOnReviewReject.Interface
-    | NotificationTypeMessageOnReviewApprove.Interface;
+export const NotificationReviewRejectMessage = createAbstraction<INotificationMessage>(
+    "WorkflowNotificationReviewRejectMessage"
+);
+
+export namespace NotificationReviewRejectMessage {
+    export type Interface = INotificationMessage;
+}
+
+export const NotificationReviewApproveMessage = createAbstraction<INotificationMessage>(
+    "WorkflowNotificationReviewApproveMessage"
+);
+
+export namespace NotificationReviewApproveMessage {
+    export type Interface = INotificationMessage;
+}
+
+export type INotificationMessages =
+    | NotificationReviewRequestMessage.Interface
+    | NotificationReviewCancelMessage.Interface
+    | NotificationReviewStepStartMessage.Interface
+    | NotificationReviewStepApproveMessage.Interface
+    | NotificationReviewRejectMessage.Interface
+    | NotificationReviewApproveMessage.Interface;
+
 
 export interface INotificationTypeMessages {
     /**
      * User requests a review for a content.
      */
-    onRequestReview: NotificationTypeMessageOnRequestReview.Interface;
+    reviewRequest: NotificationReviewRequestMessage.Interface;
     /**
      * User cancels a review for a content.
      */
-    onRequestReviewCancel: NotificationTypeMessageOnRequestReviewCancel.Interface;
+    reviewCancel: NotificationReviewCancelMessage.Interface;
     /**
      * Reviewer starts a review step.
      */
-    onReviewStepStart: NotificationTypeMessageOnReviewStepStart.Interface;
+    reviewStepStart: NotificationReviewStepStartMessage.Interface;
     /**
      * Reviewer approves a review step - there are more steps after this one.
      */
-    onReviewStepApprove: NotificationTypeMessageOnReviewStepApprove.Interface;
+    reviewStepApprove: NotificationReviewStepApproveMessage.Interface;
     /**
      * Reviewer rejects a review - no step specific reject because as soon as step is rejected, whole review is rejected.
      */
-    onReviewReject: NotificationTypeMessageOnReviewReject.Interface;
+    reviewReject: NotificationReviewRejectMessage.Interface;
     /**
      * Reviewer approves a final review step.
      */
-    onReviewApprove: NotificationTypeMessageOnReviewApprove.Interface;
+    reviewApprove: NotificationReviewApproveMessage.Interface;
 }
 
 export interface INotificationType {

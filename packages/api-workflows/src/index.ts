@@ -39,7 +39,7 @@ import { RejectWorkflowStateStepFeature } from "~/features/workflowState/RejectW
 import { TakeOverWorkflowStateStepFeature } from "~/features/workflowState/TakeOverWorkflowStateStep/feature.js";
 import { GetUserTeamsFeature } from "~/features/internal/GetUserTeams/feature.js";
 import { ListNotificationTypesFeature } from "~/features/notifications/ListNotificationTypes/index.js";
-import { NotificationTransportFeature } from "./features/notifications/NotificationTransport/index.js";
+import { NotificationAdapterFeature } from "./features/notifications/NotificationAdapter/index.js";
 import { createNotificationsGraphQL } from "~/graphql/notifications.js";
 
 export const createWorkflows = () => {
@@ -79,7 +79,7 @@ export const createWorkflows = () => {
 
         // Register notification features
         ListNotificationTypesFeature.register(context.container);
-        NotificationTransportFeature.register(context.container);
+        NotificationAdapterFeature.register(context.container);
 
         // Register workflow features
         GetWorkflowFeature.register(context.container);
