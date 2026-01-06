@@ -30,12 +30,6 @@ export const Webiny = () => {
             {/* Set database setup output value in Core stack */}
             <Infra.Core.Pulumi src={p("Webiny/SetDatabaseSetupOutput.js")} />
 
-            {/* Database Setup - default to DynamoDB only */}
-            <DatabaseSetup.ReactComponent name="ddb" />
-
-            {/* Set database setup output value in Core stack */}
-            <Infra.Core.Pulumi src={p("Webiny/SetDatabaseSetupOutput.js")} />
-
             {/* Stack Output Services */}
             <ProjectImplementation src={p("Webiny/CoreStackOutputService.js")} singleton />
             <ProjectImplementation src={p("Webiny/ApiStackOutputService.js")} singleton />
