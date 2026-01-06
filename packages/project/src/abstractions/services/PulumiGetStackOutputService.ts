@@ -3,6 +3,7 @@ import { type IAppModel } from "~/abstractions/models/IAppModel.js";
 
 export interface IPulumiGetStackOutputServiceParams {
     map?: Record<string, any>;
+    skipCache?: boolean;
 }
 
 export interface IPulumiGetStackOutputService {
