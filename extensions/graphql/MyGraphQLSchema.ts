@@ -17,6 +17,7 @@ class Schema implements GraphQLSchema.Interface {
             Query: {
                 hello: () => {
                     const identity = this.identityContext.getIdentity();
+
                     return `Hello, ${identity.displayName}!`;
                 }
             }

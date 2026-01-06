@@ -7,9 +7,9 @@ class MyIdpConfig implements Auth0IdpConfig.Interface {
             type: "admin",
             displayName: token["name"],
             // User profile on this tenant
+            roles: [token["webiny_group"]],
+            teams: [token["team"]].filter(Boolean),
             profile: {
-                groups: [token["webiny_group"]],
-                teams: [token["team"]].filter(Boolean),
                 firstName: token["given_name"],
                 lastName: token["family_name"],
                 email: token["email"]

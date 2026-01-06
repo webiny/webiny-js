@@ -1,14 +1,16 @@
 import React from "react";
-import { Cli, Infra, Project, Security } from "webiny/extensions";
+import { Admin, Cli, Infra, Project, Security } from "webiny/extensions";
 import { MySchemaExtension } from "./extensions/graphql/MySchemaExtension.js";
 import { Cognito } from "@webiny/cognito";
-// import { MyIdpExtension } from "./extensions/idp/okta/MyIdpExtension.js";
+import { MyIdpExtension } from "./extensions/idp/auth0/MyIdpExtension.js";
+import { AiTextWriter } from "./extensions/aiTextWriter/AiTextWriter.js";
 
 export const Extensions = () => {
     return (
         <>
+            <AiTextWriter />
             {/* Admin 👇 */}
-            {/*<Admin.Extension src={"./extensions/AdminLogo/AdminLogo.tsx"} />*/}
+            <Admin.Extension src={"./extensions/AdminLogo/AdminLogo.tsx"} />
 
             {/* Infra 👇 */}
             <Infra.PulumiResourceNamePrefix prefix={"myproj-"} />
@@ -81,6 +83,7 @@ export const Extensions = () => {
 
             {/* API */}
             {/*<MyIdpExtension/>*/}
+
             <Cognito />
 
             <MySchemaExtension />

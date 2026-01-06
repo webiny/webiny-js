@@ -25,10 +25,9 @@ export const AdminExtension = defineExtension({
 
         const project = new Project();
 
-        const importPath = path.relative(
-            path.dirname(extensionsTsxFilePath),
-            params.src
-        ).replace(".tsx", ".js");
+        const importPath = path
+            .relative(path.dirname(extensionsTsxFilePath), params.src)
+            .replace(".tsx", ".js");
 
         project.addSourceFileAtPath(extensionsTsxFilePath);
 
