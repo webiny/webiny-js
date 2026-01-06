@@ -18,26 +18,41 @@ export const createRsbuildConfig = ({ cwd }) => {
                     return "[name].cjs";
                 }
             },
-            distPath: { root: paths.fn.outputFolderForDisplay }
+            distPath: { root: paths.fn.outputFolder }
         },
         tools: {
-            rspack: {
-                externals: [/^@aws-sdk/, /^sharp$/],
-                plugins: [
+            rspack: config => {
+                // Customize stats context to change how paths are displayed in build output
+                // This changes the base path for display purposes without affecting actual file output
+                const projectRoot = paths.projectRootFolder;
+                const outputPath = paths.fn.outputFolder;
+                const relativePath = path.relative(projectRoot, outputPath);
+                const cleanPath = relativePath.replace(/^\.webiny[/\\]workspace[/\\]apps[/\\]/, "");
+                const newContext = path.join(projectRoot, path.dirname(cleanPath));
+
+                config.stats = config.stats || {};
+                if (typeof config.stats === "object") {
+                    config.stats.context = newContext;
+                }
+
+                // Add existing rspack configurations
+                config.externals = [/^@aws-sdk/, /^sharp$/];
+                config.plugins = config.plugins || [];
+                config.plugins.push(
                     // This is necessary to enable JSDOM usage in Lambda.
                     // https://rspack.dev/plugins/webpack/ignore-plugin
                     new rspack.IgnorePlugin({
                         resourceRegExp: /canvas/,
                         contextRegExp: /jsdom$/
                     })
-                ],
-                resolve: {
-                    fallback: {
-                        // Disable optional native dependency used by 'ws' package for performance optimizations.
-                        // Not needed in Lambda environment and can cause bundling/deployment issues.
-                        bufferutil: false
-                    }
-                }
+                );
+                config.resolve = config.resolve || {};
+                config.resolve.fallback = config.resolve.fallback || {};
+                // Disable optional native dependency used by 'ws' package for performance optimizations.
+                // Not needed in Lambda environment and can cause bundling/deployment issues.
+                config.resolve.fallback.bufferutil = false;
+
+                return config;
             }
         },
         mode,
@@ -59,18 +74,12 @@ const getPaths = cwd => {
 
     const fnTsConfigFilePath = path.join(fnRootFolderPath, "tsconfig.json");
 
-    const projectRootFolder = process.cwd();
-    const relativePath = path.relative(projectRootFolder, fnOutputFolderPath);
-    // Remove .webiny/workspace/apps/ prefix for display purposes
-    const displayPath = relativePath.replace(/^\.webiny[/\\]workspace[/\\]apps[/\\]/, "");
-
     return {
-        projectRootFolder,
+        projectRootFolder: process.cwd(),
         fn: {
             rootFolder: fnRootFolderPath,
             tsConfig: fnTsConfigFilePath,
             outputFolder: fnOutputFolderPath,
-            outputFolderForDisplay: displayPath,
             entryFile: fnEntryFilePath
         }
     };

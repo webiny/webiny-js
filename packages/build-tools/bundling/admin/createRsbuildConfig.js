@@ -13,7 +13,7 @@ export const createRsbuildConfig = ({ cwd }) => {
 
     return /** @type {import("@rsbuild/core").RsbuildConfig} */ ({
         source: { entry: { index: paths.admin.entryFile }, define: envVars },
-        output: { distPath: { root: paths.admin.outputFolderForDisplay } },
+        output: { distPath: { root: paths.admin.outputFolder } },
         mode,
         dev: { hmr: true },
         tools: {
@@ -23,6 +23,22 @@ export const createRsbuildConfig = ({ cwd }) => {
                         base: getTailwindBasePath(paths.projectRootFolder)
                     })
                 );
+            },
+            rspack: config => {
+                // Customize stats context to change how paths are displayed in build output
+                // This changes the base path for display purposes without affecting actual file output
+                const projectRoot = paths.projectRootFolder;
+                const outputPath = paths.admin.outputFolder;
+                const relativePath = path.relative(projectRoot, outputPath);
+                const cleanPath = relativePath.replace(/^\.webiny[/\\]workspace[/\\]apps[/\\]/, "");
+                const newContext = path.join(projectRoot, path.dirname(cleanPath));
+
+                config.stats = config.stats || {};
+                if (typeof config.stats === "object") {
+                    config.stats.context = newContext;
+                }
+
+                return config;
             }
         },
         server: { port: 3001 },
@@ -74,18 +90,12 @@ const getPaths = cwd => {
 
     const adminTsConfigFilePath = path.join(adminRootFolderPath, "tsconfig.json");
 
-    const projectRootFolder = process.cwd();
-    const relativePath = path.relative(projectRootFolder, adminOutputFolderPath);
-    // Remove .webiny/workspace/apps/ prefix for display purposes
-    const displayPath = relativePath.replace(/^\.webiny[/\\]workspace[/\\]apps[/\\]/, "");
-
     return {
-        projectRootFolder,
+        projectRootFolder: process.cwd(),
         admin: {
             rootFolder: adminRootFolderPath,
             tsConfig: adminTsConfigFilePath,
             outputFolder: adminOutputFolderPath,
-            outputFolderForDisplay: displayPath,
             entryFile: adminEntryFilePath,
             faviconFile: adminFaviconFilePath
         }
