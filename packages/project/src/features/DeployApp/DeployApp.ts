@@ -96,7 +96,12 @@ export class DefaultDeployApp implements DeployApp.Interface {
         await output;
 
         // Update the stack output cache after successful deployment
-        await this.pulumiGetStackOutputService.execute(app, { skipCache: true });
+        try {
+            await this.pulumiGetStackOutputService.execute(app, { skipCache: true });
+        } catch (error) {
+            // Cache refresh failure shouldn't affect deployment success
+            this.logger.error("Failed to update stack output cache after deployment.", error);
+        }
     }
 }
 
