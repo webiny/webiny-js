@@ -61,8 +61,8 @@ export class DeployAppWithHooks implements DeployApp.Interface {
 export const deployAppWithHooks = DeployApp.createDecorator({
     decorator: DeployAppWithHooks,
     dependencies: [
-        AfterDeploy,
         BeforeDeploy,
+        AfterDeploy,
         AdminBeforeDeploy,
         AdminAfterDeploy,
         ApiBeforeDeploy,

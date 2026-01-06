@@ -16,6 +16,8 @@ export { GetProjectInfo } from "./GetProjectInfo.js";
 export { GetPulumiResourceNamePrefix } from "./GetPulumiResourceNamePrefix.js";
 export { IsCi } from "./IsCi.js";
 export { IsTelemetryEnabled } from "./IsTelemetryEnabled.js";
+export { IsWcpEnabled } from "./IsWcpEnabled.js";
+export { IsWebinyJsRepo } from "./IsWebinyJsRepo.js";
 export { RefreshApp } from "./RefreshApp.js";
 export { RunPulumiCommand } from "./RunPulumiCommand.js";
 export { ValidateProjectConfig } from "./ValidateProjectConfig.js";
