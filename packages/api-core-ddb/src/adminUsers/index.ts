@@ -129,15 +129,16 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
             where,
             sort
         }: StorageOperationsListUsersParams) {
-            let items;
+            let items: TUser[];
             try {
-                items = await queryAll<{ data: TUser }>({
+                const ddbItems = await queryAll<{ data: TUser }>({
                     entity: entities.users,
                     partitionKey: `T#${where.tenant}#ADMIN_USERS`,
                     options: {
                         index: "GSI1"
                     }
                 });
+                items = ddbItems.map(item => item.data);
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not list users.",
@@ -145,7 +146,7 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
                 });
             }
 
-            return sortItems({ items, sort }).map(item => item.data);
+            return sortItems({ items, sort });
         },
         async updateUser({ user }) {
             const keys = {

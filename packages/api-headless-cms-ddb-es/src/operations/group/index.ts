@@ -9,14 +9,14 @@ import type {
 } from "@webiny/api-headless-cms/types/index.js";
 import type { Entity } from "@webiny/db-dynamodb/toolbox.js";
 import WebinyError from "@webiny/error";
-import { getClean } from "@webiny/db-dynamodb/utils/get.js";
+import { get as getOne } from "@webiny/db-dynamodb/utils/get.js";
 import type { QueryAllParams } from "@webiny/db-dynamodb/utils/query.js";
 import { queryAll } from "@webiny/db-dynamodb/utils/query.js";
 import { filterItems } from "@webiny/db-dynamodb/utils/filter.js";
 import type { PluginsContainer } from "@webiny/plugins";
 import { ValueFilterPlugin } from "@webiny/db-dynamodb/plugins/definitions/ValueFilterPlugin.js";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort.js";
-import { deleteItem, put, cleanupItems } from "@webiny/db-dynamodb";
+import { deleteItem, put } from "@webiny/db-dynamodb";
 
 interface PartitionKeyParams {
     tenant: string;
@@ -49,7 +49,7 @@ const createType = (): string => {
     return "cms.group";
 };
 
-export interface CreateGroupsStorageOperationsParams {
+interface CreateGroupsStorageOperationsParams {
     entity: Entity<any>;
     plugins: PluginsContainer;
 }
@@ -73,7 +73,7 @@ export const createGroupsStorageOperations = (
             await put({
                 entity,
                 item: {
-                    ...group,
+                    data: group,
                     TYPE: createType(),
                     ...keys
                 }
@@ -97,7 +97,7 @@ export const createGroupsStorageOperations = (
             await put({
                 entity,
                 item: {
-                    ...group,
+                    data: group,
                     TYPE: createType(),
                     ...keys
                 }
@@ -136,11 +136,14 @@ export const createGroupsStorageOperations = (
     };
     const get = async (params: CmsGroupStorageOperationsGetParams) => {
         const keys = createKeys(params);
+
         try {
-            return await getClean<CmsGroup>({
+            const result = await getOne<{ data: CmsGroup }>({
                 entity,
                 keys
             });
+
+            return result ? result.data : null;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not get group.",
@@ -154,11 +157,11 @@ export const createGroupsStorageOperations = (
         }
     };
     const list = async (params: CmsGroupStorageOperationsListParams) => {
-        const { sort, where: initialWhere } = params;
+        const { sort, where } = params;
 
         const queryAllParams: QueryAllParams = {
             entity,
-            partitionKey: createPartitionKey(initialWhere),
+            partitionKey: createPartitionKey(where),
             options: {
                 gte: " "
             }
@@ -166,7 +169,8 @@ export const createGroupsStorageOperations = (
 
         let records: CmsGroup[] = [];
         try {
-            records = await queryAll(queryAllParams);
+            const ddbRecords = await queryAll<{ data: CmsGroup }>(queryAllParams);
+            records = ddbRecords.map(item => item.data);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not list groups.",
@@ -175,33 +179,24 @@ export const createGroupsStorageOperations = (
                     error: ex,
                     ...params,
                     sort,
-                    where: initialWhere
+                    where
                 }
             );
         }
 
-        const where: Partial<CmsGroupStorageOperationsListParams["where"]> = {
-            ...initialWhere
-        };
-        delete where["tenant"];
-
-        const filteredItems = cleanupItems(
-            entity,
-            filterItems({
-                items: records,
-                where,
-                fields: [],
-                plugins
-            })
-        );
-
-        if (!sort || sort.length === 0 || filteredItems.length === 0) {
+        const filteredItems = filterItems({
+            items: records,
+            where,
+            fields: [],
+            plugins
+        });
+        if (!sort || sort.length === 0) {
             return filteredItems;
         }
+
         return sortItems({
             items: filteredItems,
-            sort,
-            fields: []
+            sort
         });
     };
 

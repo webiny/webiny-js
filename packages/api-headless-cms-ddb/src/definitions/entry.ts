@@ -1,15 +1,13 @@
 import type { Table } from "@webiny/db-dynamodb/toolbox.js";
 import { Entity } from "@webiny/db-dynamodb/toolbox.js";
-import type { Attributes } from "~/types.js";
 
 interface Params {
     table: Table<string, string, string>;
     entityName: string;
-    attributes: Attributes;
 }
 
 export const createEntryEntity = (params: Params): Entity<any> => {
-    const { table, entityName, attributes } = params;
+    const { table, entityName } = params;
     return new Entity({
         name: entityName,
         table,
@@ -122,8 +120,7 @@ export const createEntryEntity = (params: Params): Entity<any> => {
             },
             state: {
                 type: "map"
-            },
-            ...(attributes || {})
+            }
         }
     });
 };
