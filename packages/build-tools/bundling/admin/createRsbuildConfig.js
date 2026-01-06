@@ -6,6 +6,9 @@ import { pluginTypeCheck } from "@rsbuild/plugin-type-check";
 import tailwindcss from "@tailwindcss/postcss";
 import fs from "fs";
 
+// Pattern to remove from build output paths for cleaner display
+const BUILD_PATH_PREFIX_PATTERN = /^\.webiny[/\\]workspace[/\\]apps[/\\]/;
+
 export const createRsbuildConfig = ({ cwd }) => {
     const paths = getPaths(cwd);
     const envVars = getEnvVars();
@@ -30,8 +33,13 @@ export const createRsbuildConfig = ({ cwd }) => {
                 const projectRoot = paths.projectRootFolder;
                 const outputPath = paths.admin.outputFolder;
                 const relativePath = path.relative(projectRoot, outputPath);
-                const cleanPath = relativePath.replace(/^\.webiny[/\\]workspace[/\\]apps[/\\]/, "");
-                const newContext = path.join(projectRoot, path.dirname(cleanPath));
+                const cleanPath = relativePath.replace(BUILD_PATH_PREFIX_PATTERN, "");
+                
+                // Use the parent directory of cleanPath, or projectRoot if cleanPath is empty or has no directory
+                const newContext =
+                    cleanPath && cleanPath.includes(path.sep)
+                        ? path.join(projectRoot, path.dirname(cleanPath))
+                        : projectRoot;
 
                 config.stats = config.stats || {};
                 if (typeof config.stats === "object") {
