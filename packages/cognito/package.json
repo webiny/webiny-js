@@ -7,10 +7,6 @@
   "main": "index.js",
   "description": "Security plugins for Cognito",
   "author": "Webiny Ltd.",
-  "exports": {
-    ".": "./dist/index.js",
-    "./*": "./dist/*.js"
-  },
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
     "@aws-amplify/auth": "^5.6.15",
@@ -40,5 +36,9 @@
   "devDependencies": {
     "@types/react": "^18.2.79",
     "@webiny/build-tools": "*"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
   }
 }

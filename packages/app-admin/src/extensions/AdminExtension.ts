@@ -19,21 +19,17 @@ export const AdminExtension = defineExtension({
             .join("apps", "admin", "src", "Extensions.tsx")
             .toString();
 
-        const srcWithoutExt = params.src.replace(/\.[^/.]+$/, "");
-
         // Generate a constant hash-based component name to avoid using timestamps
         const hash = crypto.createHash("sha256").update(params.src).digest("hex");
         const componentName = `AdminExtension_${hash.slice(-10)}`;
 
         const project = new Project();
 
-        const importPath = path.join(
-            path.relative(
-                path.dirname(extensionsTsxFilePath),
-                ctx.project.paths.rootFolder.toString()
-            ),
-            srcWithoutExt
-        );
+        const importPath = path.relative(
+            path.dirname(extensionsTsxFilePath),
+            params.src
+        ).replace(".tsx", ".js");
+
         project.addSourceFileAtPath(extensionsTsxFilePath);
 
         const source = project.getSourceFileOrThrow(extensionsTsxFilePath);

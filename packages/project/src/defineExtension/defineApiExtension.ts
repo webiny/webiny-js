@@ -51,7 +51,7 @@ export const defineApiExtension = (params: DefineApiExtensionParams) =>
             // 3. Calculate import path relative to `extensions.ts` file.
             const importPath = [
                 path.relative(path.dirname(extensionsTsFilePath), path.dirname(extensionFilePath)),
-                extensionFileName.replace(".ts", "")
+                extensionFileName.replace(".ts", ".js")
             ].join("/");
 
             const project = new Project();
