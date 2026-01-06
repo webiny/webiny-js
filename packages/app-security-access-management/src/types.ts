@@ -1,6 +1,6 @@
 import type { Identity } from "@webiny/app-admin/domain/Identity.js";
 
-export interface Group {
+export interface Role {
     id: string;
     name: string;
     description: string;

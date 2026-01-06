@@ -21,12 +21,14 @@ export const defineApiExtension = (params: DefineApiExtensionParams) =>
         paramsSchema: ({ project }) => {
             if (!params.abstraction) {
                 return z.object({
-                    src: z.string()
+                    src: z.string(),
+                    exportName: z.string().optional()
                 });
             }
 
             return z.object({
-                src: zodPathToAbstraction(params.abstraction, project)
+                src: zodPathToAbstraction(params.abstraction, project),
+                exportName: z.string().optional()
             });
         },
         async build(params, ctx) {
@@ -39,7 +41,7 @@ export const defineApiExtension = (params: DefineApiExtensionParams) =>
             const extensionFileName = path.basename(extensionFilePath);
 
             // 1. Export name is always the file name without extension.
-            const exportName = extensionFileName.replace(".ts", "");
+            const exportName = params.exportName ?? extensionFileName.replace(".ts", "");
 
             // 2. Alias name is "ApiExtension_" + hash of the file path. This way we
             //    avoid potential naming conflicts and keep the identifier constant.
@@ -79,9 +81,9 @@ export const defineApiExtension = (params: DefineApiExtensionParams) =>
                 Node.isArrayLiteralExpression(node)
             ) as ArrayLiteralExpression;
 
-            pluginsArray.addElement(`createContextPlugin((ctx) => {
-        ctx.container.register(${exportNameAlias});
-    })`);
+            pluginsArray.addElement(
+                `\ncreateContextPlugin(ctx => {\n\tregisterExtension(ctx.container, ${exportNameAlias});\n})`
+            );
 
             {
                 let index = 1;

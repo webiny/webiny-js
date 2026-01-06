@@ -33,8 +33,10 @@ export const SimpleLink = makeDecoratable(
             routerGateway.pushState(to);
         };
 
+        const onClick = rest.onClick ?? handleClick;
+
         return (
-            <a href={to} rel="noreferrer noopener" {...rest} onClick={handleClick}>
+            <a href={to} rel="noreferrer noopener" {...rest} onClick={onClick}>
                 {children}
             </a>
         );

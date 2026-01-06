@@ -61,7 +61,7 @@ describe("Security Team CRUD Test", () => {
                     name: "Test Team 2",
                     description: "2nd test team defined via an extension.",
                     slug: "test-team-2",
-                    groups: [
+                    roles: [
                         {
                             id: "test-team-1",
                             name: "Test Team 1"
@@ -72,7 +72,7 @@ describe("Security Team CRUD Test", () => {
                     name: "Test Team 1",
                     description: "1st test team defined via an extension.",
                     slug: "test-team-1",
-                    groups: [
+                    roles: [
                         {
                             id: "test-team-2",
                             name: "Test Team 2"
@@ -83,13 +83,13 @@ describe("Security Team CRUD Test", () => {
                     name: "Team-A",
                     description: "A: Dolor odit et quia animi ipsum nostrum nesciunt.",
                     slug: "team-a",
-                    groups: []
+                    roles: []
                 },
                 {
                     name: "Team-B",
                     description: "B: Dolor odit et quia animi ipsum nostrum nesciunt.",
                     slug: "team-b",
-                    groups: []
+                    roles: []
                 }
             ],
             error: null

@@ -168,7 +168,7 @@ describe("Security API Key Test", () => {
     test("should authenticate using API key sent via headers", async () => {
         const { securityApiKeys } = useGqlHandler();
 
-        const { securityGroup } = useGqlHandler({
+        const { securityRole } = useGqlHandler({
             plugins: [
                 apiKeyAuthentication({ identityType: "apiKey" }),
                 apiKeyAuthorization({ identityType: "apiKey" })
@@ -179,7 +179,7 @@ describe("Security API Key Test", () => {
             data: {
                 name: "API Key",
                 description: "API key description",
-                permissions: [{ name: "security.group" }]
+                permissions: [{ name: "security.role" }]
             }
         });
 
@@ -193,7 +193,7 @@ describe("Security API Key Test", () => {
                             id: expect.any(String),
                             name: "API Key",
                             description: "API key description",
-                            permissions: [{ name: "security.group" }],
+                            permissions: [{ name: "security.role" }],
                             token: expect.stringMatching(/a[a-f0-9]{47}/),
                             createdOn: expect.stringMatching(/^20/)
                         },
@@ -204,12 +204,12 @@ describe("Security API Key Test", () => {
         });
 
         // Should throw Not Authorized error
-        const [listErrorResponse] = await securityGroup.list({}, { Authorization: "123" });
+        const [listErrorResponse] = await securityRole.list({}, { Authorization: "123" });
 
         expect(listErrorResponse).toEqual({
             data: {
                 security: {
-                    listGroups: {
+                    listRoles: {
                         data: null,
                         error: {
                             message: "Not authorized!",
@@ -221,9 +221,11 @@ describe("Security API Key Test", () => {
             }
         });
 
-        // "listGroups" should return an array of users
-        const [listResponse] = await securityGroup.list({}, { Authorization: apiKey.token });
+        // "listRoles" should return an array of users
+        const [listResponse] = await securityRole.list({}, { Authorization: apiKey.token });
 
-        expect(listResponse.data.security.listGroups.data.length).toEqual(2);
+        // Expect 1 role: ful-access
+        expect(listResponse.data.security.listRoles.data.length).toEqual(1);
+        expect(listResponse.data.security.listRoles.data[0].slug).toBe("full-access");
     });
 });

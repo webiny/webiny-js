@@ -3,6 +3,7 @@ import { Menus } from "./Base/Menus.js";
 import { RoutesConfig } from "./Base/RoutesConfig.js";
 import { Tenant } from "./Base/Tenant.js";
 import { AdminConfigProvider } from "~/config/AdminConfig.js";
+import { UserMenu } from "./Base/UserMenu.js";
 
 const BaseExtension = () => {
     return (
@@ -10,6 +11,7 @@ const BaseExtension = () => {
             <AdminConfigProvider />
             <Tenant />
             <Menus />
+            <UserMenu />
             <RoutesConfig />
         </>
     );

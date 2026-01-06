@@ -1,5 +1,5 @@
 import { AsyncPluginsContainer } from "@webiny/plugins";
-import type { HandlerFactory } from "~/types.js";
+import type { HandlerFactory, LambdaContext } from "~/types.js";
 import { registry } from "./registry.js";
 
 // TODO: Once we have a better infrastructure for handling such cases, we should refactor this.
@@ -12,7 +12,7 @@ const withRequest = lambdaRequestTracker();
 export const createHandler: HandlerFactory = ({ plugins, ...params }) => {
     const pluginsContainer = new AsyncPluginsContainer(plugins);
 
-    return async (event, context) => {
+    return async (event, context = {} as LambdaContext) => {
         withRequest(event, context);
 
         const plugins = await pluginsContainer.init();

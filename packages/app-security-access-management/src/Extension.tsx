@@ -3,27 +3,27 @@ import { plugins } from "@webiny/plugins";
 import { useRouter, AdminConfig, AdminLayout, Wcp } from "@webiny/app-admin";
 import { HasPermission } from "@webiny/app-admin";
 import { Permission } from "~/plugins/constants.js";
-import { Groups } from "~/ui/views/Groups/index.js";
+import { Roles } from "~/ui/views/Roles/index.js";
 import { Teams } from "~/ui/views/Teams/index.js";
 import { ApiKeys } from "~/ui/views/ApiKeys/index.js";
-import accessManagementPlugins from "./plugins/index.js";
 import { Routes } from "~/routes.js";
+import { permissionRendererPlugin } from "~/plugins/permissionRenderer/index.js";
 
 const { Menu, Route } = AdminConfig;
 
 const AccessManagementExtension = () => {
     const router = useRouter();
 
-    plugins.register(accessManagementPlugins());
+    plugins.register(permissionRendererPlugin);
 
     return (
         <AdminConfig>
-            <HasPermission name={Permission.Groups}>
+            <HasPermission name={Permission.Roles}>
                 <Route
                     route={Routes.Roles.List}
                     element={
                         <AdminLayout title={"Access Management - Roles"}>
-                            <Groups />
+                            <Roles />
                         </AdminLayout>
                     }
                 />
@@ -51,14 +51,14 @@ const AccessManagementExtension = () => {
                 />
             </HasPermission>
 
-            <HasPermission any={[Permission.Groups, Permission.ApiKeys, Permission.Teams]}>
+            <HasPermission any={[Permission.Roles, Permission.ApiKeys, Permission.Teams]}>
                 <Menu
                     name={"security.settings"}
                     parent={"settings"}
                     element={<Menu.Group text={"Access Management"} />}
                 />
             </HasPermission>
-            <HasPermission name={Permission.Groups}>
+            <HasPermission name={Permission.Roles}>
                 <Menu
                     name={"security.roles"}
                     parent={"settings"}

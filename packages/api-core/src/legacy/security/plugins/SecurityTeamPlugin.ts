@@ -24,7 +24,7 @@ export class SecurityTeamPlugin extends Plugin {
             name,
             slug,
             description,
-            groups: roles,
+            roles: roles,
             tenant,
 
             // Internal properties.

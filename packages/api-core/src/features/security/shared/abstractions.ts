@@ -1,7 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type {
     SecurityStorageOperations as ISecurityStorageOperations,
-    Group,
+    Role,
     Team
 } from "~/types/security.js";
 
@@ -18,17 +18,17 @@ export namespace SecurityStorageOperations {
 }
 
 /**
- * GroupsProvider abstraction
- * Provides groups defined via plugins
+ * RolesProvider abstraction
+ * Provides roles defined via plugins
  */
-export interface IGroupsProvider {
-    (): Promise<Group[]>;
+export interface IRolesProvider {
+    (): Promise<Role[]>;
 }
 
-export const GroupsProvider = createAbstraction<IGroupsProvider>("GroupsProvider");
+export const RolesProvider = createAbstraction<IRolesProvider>("RolesProvider");
 
-export namespace GroupsProvider {
-    export type Interface = IGroupsProvider;
+export namespace RolesProvider {
+    export type Interface = IRolesProvider;
 }
 
 /**

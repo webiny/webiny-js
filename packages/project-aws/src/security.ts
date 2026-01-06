@@ -5,12 +5,12 @@ import {
     ApiKeyAfterUpdate,
     ApiKeyBeforeDelete,
     ApiKeyAfterDelete,
-    GroupBeforeCreate,
-    GroupAfterCreate,
-    GroupBeforeUpdate,
-    GroupAfterUpdate,
-    GroupBeforeDelete,
-    GroupAfterDelete,
+    RoleBeforeCreate,
+    RoleAfterCreate,
+    RoleBeforeUpdate,
+    RoleAfterUpdate,
+    RoleBeforeDelete,
+    RoleAfterDelete,
     TeamBeforeCreate,
     TeamAfterCreate,
     TeamBeforeUpdate,
@@ -48,13 +48,13 @@ export const Security = {
         BeforeDelete: ApiKeyBeforeDelete,
         AfterDelete: ApiKeyAfterDelete
     },
-    Group: {
-        BeforeCreate: GroupBeforeCreate,
-        AfterCreate: GroupAfterCreate,
-        BeforeUpdate: GroupBeforeUpdate,
-        AfterUpdate: GroupAfterUpdate,
-        BeforeDelete: GroupBeforeDelete,
-        AfterDelete: GroupAfterDelete
+    Role: {
+        BeforeCreate: RoleBeforeCreate,
+        AfterCreate: RoleAfterCreate,
+        BeforeUpdate: RoleBeforeUpdate,
+        AfterUpdate: RoleAfterUpdate,
+        BeforeDelete: RoleBeforeDelete,
+        AfterDelete: RoleAfterDelete
     },
     Team: {
         BeforeCreate: TeamBeforeCreate,
