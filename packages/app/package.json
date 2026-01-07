@@ -58,12 +58,12 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@types/lodash": "4.17.20",
+    "@types/lodash": "^4.17.21",
     "@types/universal-router": "^8.0.0",
     "@types/warning": "^3.0.3",
     "@webiny/build-tools": "0.0.0",
-    "rimraf": "^6.0.1",
-    "type-fest": "^5.2.0",
+    "rimraf": "^6.1.2",
+    "type-fest": "^5.3.1",
     "typescript": "5.9.3",
     "vitest": "^3.2.4"
   },

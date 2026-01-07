@@ -20,16 +20,16 @@
     "decompress": "^4.2.1",
     "execa": "^5.1.1",
     "find-up": "^5.0.0",
-    "fs-extra": "^11.3.2",
+    "fs-extra": "^11.3.3",
     "lodash": "^4.17.21",
     "read-json-sync": "2.0.1",
     "semver": "^7.7.3",
     "tar": "^6.2.1"
   },
   "devDependencies": {
-    "@types/lodash": "4.17.20",
+    "@types/lodash": "^4.17.21",
     "@webiny/build-tools": "0.0.0",
-    "rimraf": "^6.0.1",
+    "rimraf": "^6.1.2",
     "typescript": "5.9.3"
   },
   "adio": {

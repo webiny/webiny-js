@@ -29,12 +29,12 @@
     "@aws-sdk/s3-presigned-post": "^3.964.0",
     "@aws-sdk/s3-request-presigner": "^3.964.0",
     "@aws-sdk/util-dynamodb": "^3.964.0",
-    "@types/aws-lambda": "8.10.152",
+    "@types/aws-lambda": "8.10.159",
     "@webiny/utils": "0.0.0"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
-    "rimraf": "^6.0.1",
+    "rimraf": "^6.1.2",
     "typescript": "5.9.3"
   },
   "publishConfig": {

@@ -61,7 +61,7 @@
     "@webiny/utils": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "chalk": "^4.1.2",
-    "core-js": "3.45.1",
+    "core-js": "3.47.0",
     "cross-fetch": "^3.2.0",
     "find-up": "^5.0.0",
     "invariant": "^2.2.4",
@@ -73,7 +73,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@types/lodash": "4.17.20",
+    "@types/lodash": "^4.17.21",
     "@types/ncp": "^2.0.8",
     "@webiny/build-tools": "0.0.0",
     "typescript": "5.9.3"

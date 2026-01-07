@@ -10,10 +10,10 @@
     "cli-progress": "^3.12.0",
     "fast-glob": "^3.3.3",
     "find-up": "^5.0.0",
-    "p-limit": "^7.1.1",
+    "p-limit": "^7.2.0",
     "read-json-sync": "2.0.1",
     "ts-morph": "^24.0.0",
-    "tsx": "^4.20.5"
+    "tsx": "^4.21.0"
   },
   "devDependencies": {
     "@types/cli-progress": "^3.11.6"

@@ -25,14 +25,14 @@
     "@webiny/validation": "0.0.0",
     "mime": "^3.0.0",
     "object-hash": "^3.0.0",
-    "p-map": "^7.0.3",
+    "p-map": "^7.0.4",
     "p-reduce": "^3.0.0",
     "sanitize-filename": "^1.6.3",
     "sharp": "^0.34.5"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
-    "rimraf": "^6.0.1",
+    "rimraf": "^6.1.2",
     "typescript": "5.9.3",
     "vitest": "^3.2.4"
   },
