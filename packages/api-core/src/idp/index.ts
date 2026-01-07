@@ -1,8 +1,2 @@
-export { IdpProviderFactory } from "./abstractions.js";
-export { IdpProvider } from "./abstractions.js";
-export { OidcIdpConfig } from "./abstractions.js";
-export { OidcIdpProvider } from "./OidcIdpProvider.js";
-export { jwksCache } from "./JwksCache.js";
+export { IdentityProvider, OidcIdentityProvider, JwtIdentityProvider } from "./abstractions.js";
 export type { IdentityData } from "./types.js";
-export type { Jwk } from "./types.js";
-export type { JwtPayload } from "./types.js";
