@@ -81,7 +81,6 @@ export type INotificationMessages =
     | NotificationReviewRejectMessage.Interface
     | NotificationReviewApproveMessage.Interface;
 
-
 export interface INotificationTypeMessages {
     /**
      * User requests a review for a content.
@@ -173,7 +172,6 @@ export namespace NotificationAdapter {
     export type Interface = INotificationAdapter;
     export type SendParams = INotificationAdapterSendParams;
 }
-
 
 export namespace Notification {
     export type Type = INotificationType;
