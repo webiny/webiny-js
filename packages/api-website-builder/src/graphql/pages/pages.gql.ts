@@ -1,5 +1,3 @@
-import { GetSettingsUseCase } from "@webiny/api-core/features/GetSettings";
-import { UpdateSettingsUseCase } from "@webiny/api-core/features/UpdateSettings";
 import {
     ErrorResponse,
     GraphQLSchemaPlugin,
@@ -25,6 +23,7 @@ import { UnpublishPageUseCase } from "~/features/pages/UnpublishPage/index.js";
 import { MovePageUseCase } from "~/features/pages/MovePage/index.js";
 import { DuplicatePageUseCase } from "~/features/pages/DuplicatePage/index.js";
 import { CreatePageRevisionFromUseCase } from "~/features/pages/CreatePageRevisionFrom/index.js";
+import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 
 export const createPagesSchema = () => {
     const pageGraphQL = new GraphQLSchemaPlugin<ApiCoreContext>({
@@ -113,8 +112,10 @@ export const createPagesSchema = () => {
                 getSettings: async (_, __, context) => {
                     ensureAuthentication(context);
 
-                    const getSettings = context.container.resolve(GetSettingsUseCase);
-                    const result = await getSettings.execute(WEBSITE_BUILDER_SETTINGS);
+                    const keyValueStore = context.container.resolve(KeyValueStore);
+                    const result = await keyValueStore.get<{ previewDomain: string | undefined }>(
+                        WEBSITE_BUILDER_SETTINGS
+                    );
 
                     if (result.isFail()) {
                         return new Response({
@@ -123,7 +124,7 @@ export const createPagesSchema = () => {
                         });
                     }
 
-                    const settings = result.value.data;
+                    const settings = result.value;
 
                     return new Response({
                         // TODO: add a WB GetSettings use case and a Settings domain model with defaults.
@@ -132,13 +133,13 @@ export const createPagesSchema = () => {
                 },
                 getIntegrations: async (_, __, context) => {
                     ensureAuthentication(context);
-                    const getSettings = context.container.resolve(GetSettingsUseCase);
-                    const settings = await getSettings.execute(WEBSITE_BUILDER_INTEGRATIONS);
+                    const keyValueStore = context.container.resolve(KeyValueStore);
+                    const settings = await keyValueStore.get(WEBSITE_BUILDER_INTEGRATIONS);
                     if (settings.isFail()) {
                         return new Response({});
                     }
 
-                    return new Response(settings.value.data);
+                    return new Response(settings.value);
                 }
             },
             WbMutation: {
@@ -251,12 +252,8 @@ export const createPagesSchema = () => {
                 updateSettings: async (_, args, context) => {
                     return resolve(async () => {
                         ensureAuthentication(context);
-                        const saveSettings = context.container.resolve(UpdateSettingsUseCase);
-
-                        await saveSettings.execute({
-                            name: WEBSITE_BUILDER_SETTINGS,
-                            data: args.data
-                        });
+                        const keyValueStore = context.container.resolve(KeyValueStore);
+                        await keyValueStore.set(WEBSITE_BUILDER_SETTINGS, args.data);
 
                         return true;
                     });
@@ -264,12 +261,8 @@ export const createPagesSchema = () => {
                 updateIntegrations: async (_, args, context) => {
                     return resolve(async () => {
                         ensureAuthentication(context);
-                        const saveSettings = context.container.resolve(UpdateSettingsUseCase);
-
-                        await saveSettings.execute({
-                            name: WEBSITE_BUILDER_INTEGRATIONS,
-                            data: args.data
-                        });
+                        const keyValueStore = context.container.resolve(KeyValueStore);
+                        await keyValueStore.set(WEBSITE_BUILDER_INTEGRATIONS, args.data);
 
                         return true;
                     });

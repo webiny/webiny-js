@@ -2,31 +2,35 @@ import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js"
 import { createStandardEntity, createTable } from "@webiny/db-dynamodb";
 
 interface CreateKeysParams {
-    tenant: string;
-    name: string;
+    scopedKey: string;
 }
 
-export class SettingsDynamoTable {
+interface CreateGsiKeysParams {
+    scope: string;
+    scopedKey: string;
+}
+
+export class KeyValueStoreDynamoTable {
     private readonly entity: ReturnType<typeof createStandardEntity>;
 
     constructor(documentClient: DynamoDBDocument) {
         this.entity = createStandardEntity({
-            name: "Settings",
+            name: "KeyValueStore",
             table: createTable({ documentClient })
         });
     }
 
-    createKeys({ tenant, name }: CreateKeysParams) {
+    createKeys({ scopedKey }: CreateKeysParams) {
         return {
-            PK: `T#${tenant}#SETTINGS#${name}`,
+            PK: `KV#${scopedKey}`,
             SK: `A`
         };
     }
 
-    createGsiKeys({ tenant, name }: CreateKeysParams) {
+    createGsiKeys({ scope, scopedKey }: CreateGsiKeysParams) {
         return {
-            GSI1_PK: `T#${tenant}#SETTINGS`,
-            GSI1_SK: name
+            GSI1_PK: `KV#${scope}`,
+            GSI1_SK: `KEY#${scopedKey}`
         };
     }
 
