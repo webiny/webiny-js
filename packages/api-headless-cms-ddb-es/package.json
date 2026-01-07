@@ -41,7 +41,7 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@elastic/elasticsearch": "7.17.14",
+    "@elastic/elasticsearch": "7.12.0",
     "@types/jsonpack": "^1.1.6",
     "@webiny/api-core": "0.0.0",
     "@webiny/api-dynamodb-to-elasticsearch": "0.0.0",

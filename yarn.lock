@@ -4428,15 +4428,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@elastic/elasticsearch@npm:7.17.14":
-  version: 7.17.14
-  resolution: "@elastic/elasticsearch@npm:7.17.14"
+"@elastic/elasticsearch@npm:7.12.0":
+  version: 7.12.0
+  resolution: "@elastic/elasticsearch@npm:7.12.0"
   dependencies:
     debug: "npm:^4.3.1"
     hpagent: "npm:^0.1.1"
     ms: "npm:^2.1.3"
-    secure-json-parse: "npm:^2.4.0"
-  checksum: 10/ef26489eb8db667f0a6c2be4641e9b388bc5badd2ab7791eb82dffa138653642678f7e6ab2741b914747e95e0d43bf9daa0821bc509318c14cb40869cc9ebbc9
+    pump: "npm:^3.0.0"
+    secure-json-parse: "npm:^2.3.1"
+  checksum: 10/f465c04ff7d899f67bbf680f3a84fbe5cd90597e29032e3ec412c62155fde999e7c5c2c929272d7bfbaebf791d26a59caeaacc3f1c64f4882f5c549735e81df9
   languageName: node
   linkType: hard
 
@@ -13491,7 +13492,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-elasticsearch@workspace:packages/api-elasticsearch"
   dependencies:
-    "@elastic/elasticsearch": "npm:7.17.14"
+    "@elastic/elasticsearch": "npm:7.12.0"
     "@webiny/api": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
@@ -13634,7 +13635,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-headless-cms-ddb-es@workspace:packages/api-headless-cms-ddb-es"
   dependencies:
-    "@elastic/elasticsearch": "npm:7.17.14"
+    "@elastic/elasticsearch": "npm:7.12.0"
     "@types/jsonpack": "npm:^1.1.6"
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
@@ -15104,7 +15105,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/data-migration@workspace:packages/data-migration"
   dependencies:
-    "@elastic/elasticsearch": "npm:7.17.14"
+    "@elastic/elasticsearch": "npm:7.12.0"
     "@types/center-align": "npm:^1.0.2"
     "@types/semver": "npm:^7.7.1"
     "@webiny/aws-sdk": "npm:0.0.0"
@@ -15494,7 +15495,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/migrations@workspace:packages/migrations"
   dependencies:
-    "@elastic/elasticsearch": "npm:7.17.14"
+    "@elastic/elasticsearch": "npm:7.12.0"
     "@webiny/api-elasticsearch": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/api-headless-cms-ddb-es": "npm:0.0.0"
@@ -15626,7 +15627,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/project-utils@workspace:packages/project-utils"
   dependencies:
-    "@elastic/elasticsearch": "npm:7.17.14"
+    "@elastic/elasticsearch": "npm:7.12.0"
     "@webiny/build-tools": "npm:0.0.0"
     get-yarn-workspaces: "npm:1.0.2"
     jest-dynalite: "npm:^3.6.1"
@@ -31308,7 +31309,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"secure-json-parse@npm:^2.4.0, secure-json-parse@npm:^2.7.0":
+"secure-json-parse@npm:^2.3.1, secure-json-parse@npm:^2.4.0, secure-json-parse@npm:^2.7.0":
   version: 2.7.0
   resolution: "secure-json-parse@npm:2.7.0"
   checksum: 10/974386587060b6fc5b1ac06481b2f9dbbb0d63c860cc73dc7533f27835fdb67b0ef08762dbfef25625c15bc0a0c366899e00076cb0d556af06b71e22f1dede4c
