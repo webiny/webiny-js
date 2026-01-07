@@ -27,7 +27,7 @@ describe("Settings Transporter CRUD", () => {
     const { handle } = createContextHandler();
 
     beforeEach(() => {
-        delete process.env["WEBINY_MAILER_PASSWORD_SECRET"];
+        delete process.env["WEBINY_API_MAILER_PASSWORD_SECRET"];
     });
 
     // TODO: @bruno - the `catch` block is no longer triggered
@@ -63,7 +63,7 @@ describe("Settings Transporter CRUD", () => {
     };
 
     it("should not return response with password when saving settings", async () => {
-        process.env.WEBINY_MAILER_PASSWORD_SECRET = "really secret secret";
+        process.env.WEBINY_API_MAILER_PASSWORD_SECRET = "really secret secret";
 
         const context = await handle();
 
@@ -79,7 +79,7 @@ describe("Settings Transporter CRUD", () => {
     });
 
     it("should return response with password when getting settings", async () => {
-        process.env.WEBINY_MAILER_PASSWORD_SECRET = "really secret secret";
+        process.env.WEBINY_API_MAILER_PASSWORD_SECRET = "really secret secret";
 
         const context = await handle();
 
@@ -97,7 +97,7 @@ describe("Settings Transporter CRUD", () => {
     });
 
     it("should not return response with password when updating settings", async () => {
-        process.env.WEBINY_MAILER_PASSWORD_SECRET = "really secret secret";
+        process.env.WEBINY_API_MAILER_PASSWORD_SECRET = "really secret secret";
 
         const context = await handle();
 
@@ -133,7 +133,7 @@ describe("Settings Transporter CRUD", () => {
     });
 
     it("should be possible to update settings without password", async () => {
-        process.env.WEBINY_MAILER_PASSWORD_SECRET = "really secret secret";
+        process.env.WEBINY_API_MAILER_PASSWORD_SECRET = "really secret secret";
 
         const context = await handle();
 
@@ -173,7 +173,7 @@ describe("Settings Transporter CRUD", () => {
     });
 
     it("should be possible to access settings when no permissions", async () => {
-        process.env.WEBINY_MAILER_PASSWORD_SECRET = "really secret secret";
+        process.env.WEBINY_API_MAILER_PASSWORD_SECRET = "really secret secret";
 
         const fullCtx = await handle();
 
@@ -197,7 +197,7 @@ describe("Settings Transporter CRUD", () => {
     });
 
     it("should not be possible to save settings due to no permissions", async () => {
-        process.env.WEBINY_MAILER_PASSWORD_SECRET = "really secret secret";
+        process.env.WEBINY_API_MAILER_PASSWORD_SECRET = "really secret secret";
 
         const { handle: noAccessHandle } = createContextHandler({
             permissions: []
