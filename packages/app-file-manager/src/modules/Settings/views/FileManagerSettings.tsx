@@ -1,6 +1,6 @@
 import * as React from "react";
-import { Button, Grid, Input, OverlayLoader } from "@webiny/admin-ui";
-import { Form } from "@webiny/form";
+import { Button, Grid, Input, Link, OverlayLoader, Text, Heading } from "@webiny/admin-ui";
+import { Form, useBind } from "@webiny/form";
 import { Mutation, Query } from "@apollo/react-components";
 import {
     CenteredView,
@@ -8,6 +8,7 @@ import {
     SimpleFormContent,
     SimpleFormFooter,
     SimpleFormHeader,
+    useDialogs,
     useSnackbar
 } from "@webiny/app-admin";
 import type { GetSettingsResponse } from "../graphql.js";
@@ -17,14 +18,58 @@ import { validation } from "@webiny/validation";
 import type { QueryGetSettingsResult, Settings } from "~/types.js";
 import type { MutationFunction, MutationResult } from "@apollo/react-common";
 
-function prefixValidator(value: string) {
-    if (!value || !value.endsWith("/files/")) {
-        throw Error(`File URL prefix must end with "/files/"`);
-    }
-}
+const Code = ({ children }: { children: React.ReactNode }) => {
+    return <code className={"text-md font-bold"}>{children}</code>;
+};
+
+const textClassName = "mb-md";
+const headingLevel = 5;
 
 export const FileManagerSettings = () => {
     const { showSnackbar } = useSnackbar();
+
+    const { showDialog } = useDialogs();
+
+    const learnMore = () => {
+        showDialog({
+            title: "How to configure file delivery URL?",
+            content: (
+                <div>
+                    <Text as={"div"} className={textClassName}>
+                        The file delivery URL must include the <Code>/files/</Code> path to reach
+                        Webiny Asset Delivery through AWS CloudFront. When configuring a custom
+                        domain, you have two options:
+                    </Text>
+                    <Heading level={headingLevel} className={"mb-xs"}>
+                        Option 1: Custom domain directly on CloudFront
+                    </Heading>
+                    <Text as={"div"} className={textClassName}>
+                        Keep the <Code>/files/</Code> path in your URL.
+                        <br />
+                        Example: <Code>https://mydomain.com/files/</Code>.
+                    </Text>
+                    <Heading level={headingLevel} className={"mb-xs"}>
+                        Option 2: Additional CDN in front of CloudFront
+                    </Heading>
+                    <Text as={"div"} className={textClassName}>
+                        Configure your CDN to forward requests to CloudFront&apos;s /files/ path.
+                        This lets you use a clean URL for users while maintaining the required path
+                        on the backend.
+                        <ul className={"list-disc my-sm ml-md"}>
+                            <li>
+                                User-facing URL: <Code>https://mydomain.com/</Code>
+                            </li>
+                            <li>
+                                Your CDN forwards to: <Code>https://api.cloudfront.net/files/</Code>
+                            </li>
+                        </ul>
+                    </Text>
+                </div>
+            ),
+            acceptLabel: "Got it!",
+            cancelLabel: null
+        });
+    };
 
     return (
         <Query query={graphql.GET_SETTINGS}>
@@ -114,13 +159,24 @@ export const FileManagerSettings = () => {
                                                         <Bind
                                                             name={"srcPrefix"}
                                                             validators={[
-                                                                validation.create("url"),
-                                                                prefixValidator
+                                                                validation.create("required,url")
                                                             ]}
                                                         >
                                                             <Input
-                                                                label="File URL prefix"
-                                                                description="This prefix will be prepended to the file key to form the full file URL."
+                                                                label="File delivery URL"
+                                                                note={<UrlPreview />}
+                                                                description={
+                                                                    <>
+                                                                        This URL will be prepended
+                                                                        to the file key.&nbsp;
+                                                                        <Link
+                                                                            to="#"
+                                                                            onClick={learnMore}
+                                                                        >
+                                                                            How to configure?
+                                                                        </Link>
+                                                                    </>
+                                                                }
                                                             />
                                                         </Bind>
                                                     </Grid.Column>
@@ -129,9 +185,7 @@ export const FileManagerSettings = () => {
                                             <SimpleFormFooter>
                                                 <Button
                                                     text={"Save settings"}
-                                                    onClick={ev => {
-                                                        form.submit(ev);
-                                                    }}
+                                                    onClick={form.submit}
                                                 />
                                             </SimpleFormFooter>
                                         </SimpleForm>
@@ -143,5 +197,21 @@ export const FileManagerSettings = () => {
                 </Mutation>
             )}
         </Query>
+    );
+};
+
+const UrlPreview = () => {
+    const deliveryUrl = useBind({
+        name: "srcPrefix"
+    });
+
+    let prefix = deliveryUrl.value ?? "";
+
+    prefix = prefix.endsWith("/") ? prefix : `${prefix}/`;
+
+    return (
+        <>
+            Example URL: <strong>{prefix}768bed3e544f/image.jpg</strong>
+        </>
     );
 };

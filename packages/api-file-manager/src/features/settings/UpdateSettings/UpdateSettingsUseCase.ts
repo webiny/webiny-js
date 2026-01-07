@@ -23,7 +23,7 @@ class UpdateSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
         input: UpdateSettingsInput
     ): Promise<Result<FileManagerSettings, UseCaseAbstraction.Error>> {
         // Validate input
-        const validationResult = updateSettingsValidation.safeParse(input);
+        const validationResult = await updateSettingsValidation.safeParseAsync(input);
         if (!validationResult.success) {
             const zodError = createZodError(validationResult.error);
             return Result.fail(new SettingsValidationError(zodError.data!.invalidFields));
