@@ -50,7 +50,7 @@ export class LoggerImpl implements LoggerAbstraction.Interface {
     }
 
     private getLogLevel() {
-        return process.env.WEBINY_LOG_LEVEL || DEFAULT_LOG_LEVEL;
+        return process.env.WEBINY_API_LOG_LEVEL || DEFAULT_LOG_LEVEL;
     }
 }
 
