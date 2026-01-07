@@ -35,7 +35,12 @@ export const createEntity = (params: ICreateEntityParams): ICreateEntityResult =
         partitionKey: "PK",
         sortKey: "SK",
         DocumentClient: client,
-        indexes: createTableGSIIndexes(gsiAmount),
+        indexes: {
+            ...createTableGSIIndexes(gsiAmount),
+            GSI_TENANT: {
+                partitionKey: "GSI_TENANT"
+            }
+        },
         autoExecute: true,
         autoParse: true
     });
@@ -49,6 +54,10 @@ export const createEntity = (params: ICreateEntityParams): ICreateEntityResult =
             },
             SK: {
                 sortKey: true
+            },
+            GSI_TENANT: {
+                type: "string",
+                required: true
             },
             GSI1_PK: {
                 type: "string",
