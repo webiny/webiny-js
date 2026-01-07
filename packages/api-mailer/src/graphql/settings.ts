@@ -2,6 +2,7 @@ import { ErrorResponse, GraphQLSchemaPlugin, Response } from "@webiny/handler-gr
 import { GetSettingsUseCase } from "~/features/GetSettings/abstractions.js";
 import { SaveSettingsUseCase } from "~/features/SaveSettings/abstractions.js";
 import type { Context } from "@webiny/api/types.js";
+import { getSecret } from "~/features/Encryption/utils/secret.js";
 
 const emptyResolver = () => ({});
 
@@ -58,6 +59,11 @@ export const createSettingsGraphQL = () => {
             MailerQuery: {
                 getSettings: async (_, __, context) => {
                     try {
+                        // First check of encryption key is set!
+                        // If not, this function will throw an error.
+                        // TODO: refactor this to make more sense.
+                        getSecret();
+
                         const getSettings = context.container.resolve(GetSettingsUseCase);
                         const result = await getSettings.execute();
 

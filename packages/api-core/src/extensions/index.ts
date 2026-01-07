@@ -33,11 +33,7 @@ import {
     TenantBeforeDelete,
     TenantAfterDelete,
     TenantInstalled,
-    SystemInstalled,
-    SettingsBeforeUpdate,
-    SettingsAfterUpdate,
-    SettingsBeforeDelete,
-    SettingsAfterDelete
+    SystemInstalled
 } from "./eventHandlers/index.js";
 
 // Generic extension that supports any API abstraction.
@@ -86,11 +82,6 @@ export { TenantInstalled };
 
 export { SystemInstalled };
 
-export { SettingsBeforeUpdate };
-export { SettingsAfterUpdate };
-export { SettingsBeforeDelete };
-export { SettingsAfterDelete };
-
 // Definitions (used internally). 👇
 export const definitions = [
     GenericExtension.def,
@@ -127,9 +118,5 @@ export const definitions = [
     TenantBeforeDelete.def,
     TenantAfterDelete.def,
     TenantInstalled.def,
-    SystemInstalled.def,
-    SettingsBeforeUpdate.def,
-    SettingsAfterUpdate.def,
-    SettingsBeforeDelete.def,
-    SettingsAfterDelete.def
+    SystemInstalled.def
 ];

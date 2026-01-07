@@ -1,14 +1,16 @@
 import { Result } from "@webiny/feature/api";
 import { GetSettingsUseCase as UseCaseAbstraction } from "./abstractions.js";
-import { GetSettingsUseCase as BaseGetSettings } from "@webiny/api-core/features/settings/GetSettings";
 import type { FileManagerSettings } from "~/domain/settings/types.js";
 import { FILE_MANAGER_GENERAL_SETTINGS } from "~/domain/settings/constants.js";
+import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 
 class GetSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(private getSettings: BaseGetSettings.Interface) {}
+    constructor(private keyValueStore: KeyValueStore.Interface) {}
 
     async execute(): Promise<Result<FileManagerSettings, UseCaseAbstraction.Error>> {
-        const result = await this.getSettings.execute(FILE_MANAGER_GENERAL_SETTINGS);
+        const result = await this.keyValueStore.get<FileManagerSettings>(
+            FILE_MANAGER_GENERAL_SETTINGS
+        );
 
         if (result.isFail()) {
             // Return default values
@@ -19,7 +21,7 @@ class GetSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
             });
         }
 
-        const settings = result.value.data as FileManagerSettings;
+        const settings = result.value;
 
         return Result.ok(settings);
     }
@@ -27,5 +29,5 @@ class GetSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const GetSettingsUseCase = UseCaseAbstraction.createImplementation({
     implementation: GetSettingsUseCaseImpl,
-    dependencies: [BaseGetSettings]
+    dependencies: [KeyValueStore]
 });

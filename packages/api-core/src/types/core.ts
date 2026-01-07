@@ -3,7 +3,7 @@ import type { SecurityContext, SecurityStorageOperations } from "~/types/securit
 import type { TenancyContext, TenancyStorageOperations } from "~/types/tenancy.js";
 import type { WcpContext } from "~/features/wcp/WcpContext/types.js";
 import type { AdminUsersContext, AdminUsersStorageOperations } from "~/types/users.js";
-import { SettingsStorageOperations } from "~/features/settings/index.js";
+import { KeyValueStorageOperations } from "~/features/keyValueStore/index.js";
 
 export type ApiCoreContext = BaseContext &
     SecurityContext &
@@ -15,5 +15,5 @@ export type ApiCoreStorageOperations = {
     usersStorageOperations: AdminUsersStorageOperations;
     tenancyStorageOperations: TenancyStorageOperations;
     securityStorageOperations: SecurityStorageOperations;
-    settingsStorageOperations: SettingsStorageOperations.Interface;
+    keyValueStorageOperations: KeyValueStorageOperations.Interface;
 };

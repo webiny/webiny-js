@@ -11,7 +11,7 @@ interface CacheEntry {
     jwks: Jwk[];
 }
 
-export class JwksCache implements JwkCache.Interface{
+export class JwksCache implements JwkCache.Interface {
     private cache = new Map<string, CacheEntry>();
 
     async getKeys(issuer: string): Promise<Jwk[]> {
