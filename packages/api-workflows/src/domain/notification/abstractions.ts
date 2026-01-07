@@ -1,5 +1,9 @@
 import { createAbstraction } from "@webiny/feature/api";
+import type { NonEmptyArray } from "@webiny/api/types.js";
 
+/**
+ * Notification Message
+ */
 export interface INotificationMessageTitleParams {
     id: string;
     entryTitle: string;
@@ -105,6 +109,9 @@ export interface INotificationTypeMessages {
     reviewApprove: NotificationReviewApproveMessage.Interface;
 }
 
+/**
+ * Notification Type
+ */
 export interface INotificationType {
     id: string;
     title: string;
@@ -114,4 +121,62 @@ export const NotificationType = createAbstraction<INotificationType>("WorkflowNo
 
 export namespace NotificationType {
     export type Interface = INotificationType;
+}
+
+/**
+ * Notification Message Body Converter
+ */
+export interface INotificationMessageBodyConverter {
+    convert(body: string): string;
+}
+
+export const NotificationMessageBodyConverter =
+    createAbstraction<INotificationMessageBodyConverter>("NotificationMessageBodyConverter");
+
+export namespace NotificationMessageBodyConverter {
+    export type Interface = INotificationMessageBodyConverter;
+}
+
+/**
+ * Notification Adapter
+ */
+export interface INotificationAdapterUser {
+    id: string;
+    email: string;
+    displayName: string;
+}
+
+export interface INotificationAdapterMessage {
+    type: keyof INotificationTypeMessages;
+    title: string;
+    url: string;
+    body: string;
+}
+
+export interface INotificationAdapterSendParams {
+    users: NonEmptyArray<INotificationAdapterUser>;
+    message: INotificationAdapterMessage;
+}
+
+export interface INotificationAdapter {
+    id: string;
+    title: string;
+    getMessageBodyConverter(): NotificationMessageBodyConverter.Interface | null;
+    send(params: INotificationAdapterSendParams): Promise<void>;
+}
+
+export const NotificationAdapter = createAbstraction<INotificationAdapter>(
+    "WorkflowNotificationAdapter"
+);
+
+export namespace NotificationAdapter {
+    export type Interface = INotificationAdapter;
+    export type SendParams = INotificationAdapterSendParams;
+}
+
+
+export namespace Notification {
+    export type Type = INotificationType;
+    export type Adapter = INotificationAdapter;
+    export type MessageBodyConverter = INotificationMessageBodyConverter;
 }

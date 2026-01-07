@@ -3,7 +3,7 @@ import {
     type INotificationMessageTitleParams,
     type INotificationMessageUrlParams,
     NotificationReviewRequestMessage as NotificationMessage
-} from "~/domain/notifications/abstractions.js";
+} from "../abstractions.js";
 
 class NotificationReviewRequestMessageImpl implements NotificationMessage.Interface {
     public getBody(params: INotificationMessageBodyParams): string {

@@ -7,7 +7,7 @@ import {
 import { WORKFLOWS_PERMISSION } from "~/constants.js";
 import type { IWorkflowsSecurityPermission } from "~/types.js";
 import { WorkflowsSecurityPermissionAccessLevel } from "~/types.js";
-import { NotificationAuthorizedError } from "~/domain/notifications/errors.js";
+import { NotificationAuthorizedError } from "~/domain/notification/errors.js";
 
 class ListNotificationTypesUseCaseImpl implements UseCase.Interface {
     public constructor(

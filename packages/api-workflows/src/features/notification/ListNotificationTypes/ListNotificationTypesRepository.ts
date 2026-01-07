@@ -1,6 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { ListNotificationTypesRepository as Repository } from "./abstractions.js";
-import { NotificationAdapter } from "../NotificationAdapter/index.js";
+import { NotificationAdapter } from "~/domain/notification/abstractions.js";
 
 class ListNotificationTypesRepositoryImpl implements Repository.Interface {
     private readonly types;

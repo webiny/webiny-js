@@ -1,5 +1,5 @@
 import { GraphQLSchemaPlugin, resolveList } from "@webiny/handler-graphql";
-import { ListNotificationTypesUseCase } from "~/features/notifications/ListNotificationTypes/index.js";
+import { ListNotificationTypesUseCase } from "~/features/notification/ListNotificationTypes/index.js";
 
 export const createNotificationsGraphQL = () => {
     return new GraphQLSchemaPlugin({

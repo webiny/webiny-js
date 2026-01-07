@@ -1,7 +1,10 @@
 import { MailerService } from "@webiny/api-mailer";
-import { NotificationAdapter } from "./abstractions.js";
+import {
+    NotificationAdapter,
+    NotificationMessageBodyConverter
+} from "~/domain/notification/abstractions.js";
 
-class MailNotificationAdapterImpl implements NotificationAdapter.Interface {
+class NotificationMailAdapterImpl implements NotificationAdapter.Interface {
     public readonly id = "e-mail";
     public readonly title = "E-Mail";
 
@@ -9,6 +12,10 @@ class MailNotificationAdapterImpl implements NotificationAdapter.Interface {
 
     public constructor(mailer: MailerService.Interface) {
         this.mailer = mailer;
+    }
+
+    public getMessageBodyConverter(): NotificationMessageBodyConverter.Interface | null {
+        return null;
     }
 
     public async send(params: NotificationAdapter.SendParams): Promise<void> {
@@ -47,7 +54,7 @@ class MailNotificationAdapterImpl implements NotificationAdapter.Interface {
     }
 }
 
-export const MailNotificationAdapter = NotificationAdapter.createImplementation({
-    implementation: MailNotificationAdapterImpl,
+export const NotificationMailAdapter = NotificationAdapter.createImplementation({
+    implementation: NotificationMailAdapterImpl,
     dependencies: [MailerService]
 });

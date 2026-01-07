@@ -1,7 +1,7 @@
 import type { Result } from "@webiny/feature/api";
 import { createAbstraction } from "@webiny/feature/api";
-import type { INotificationType } from "~/domain/notifications/abstractions.js";
-import { NotificationAuthorizedError } from "~/domain/notifications/errors.js";
+import type { INotificationType } from "~/domain/notification/abstractions.js";
+import { NotificationAuthorizedError } from "~/domain/notification/errors.js";
 
 /**
  * ListNotificationTypes use case interface
