@@ -170,7 +170,8 @@ export const NotificationAdapter = createAbstraction<INotificationAdapter>(
 
 export namespace NotificationAdapter {
     export type Interface = INotificationAdapter;
-    export type SendParams = INotificationAdapterSendParams;
+    export type Params = INotificationAdapterSendParams;
+    export type User = INotificationAdapterUser;
 }
 
 export namespace Notification {
