@@ -59,7 +59,7 @@ class FolderLevelPermissionsStorageOperations
         });
     }
 
-    async list({
+    public async list({
         where: { tenant, locale, type, path_startsWith, parentId }
     }: StorageOperationsListFlpsParams): Promise<FolderLevelPermission[]> {
         try {
@@ -102,7 +102,7 @@ class FolderLevelPermissionsStorageOperations
         }
     }
 
-    async get({
+    public async get({
         tenant,
         locale,
         id
@@ -127,7 +127,9 @@ class FolderLevelPermissionsStorageOperations
         }
     }
 
-    async create({ data }: StorageOperationsCreateFlpParams): Promise<FolderLevelPermission> {
+    public async create({
+        data
+    }: StorageOperationsCreateFlpParams): Promise<FolderLevelPermission> {
         const keys = {
             ...this.createKeys(data),
             ...this.createGsiKeys(data)
@@ -152,7 +154,7 @@ class FolderLevelPermissionsStorageOperations
         }
     }
 
-    async update({
+    public async update({
         data: inputData,
         original
     }: StorageOperationsUpdateFlpParams): Promise<FolderLevelPermission> {
@@ -185,7 +187,7 @@ class FolderLevelPermissionsStorageOperations
         }
     }
 
-    async delete({ flp }: StorageOperationsDeleteFlpParams): Promise<void> {
+    public async delete({ flp }: StorageOperationsDeleteFlpParams): Promise<void> {
         const keys = this.createKeys(flp);
 
         try {
@@ -202,7 +204,7 @@ class FolderLevelPermissionsStorageOperations
         }
     }
 
-    async batchUpdate({
+    public async batchUpdate({
         items
     }: StorageOperationsBatchUpdateFlpParams): Promise<FolderLevelPermission[]> {
         try {
@@ -245,18 +247,22 @@ class FolderLevelPermissionsStorageOperations
         }
     }
 
-    private createKeys = ({ id, tenant, locale }: CreateKeysParams) => ({
-        PK: `T#${tenant}#L#${locale}#FLP#${id}`,
-        SK: `A`
-    });
+    private createKeys({ id, tenant, locale }: CreateKeysParams) {
+        return {
+            PK: `T#${tenant}#L#${locale}#FLP#${id}`,
+            SK: `A`
+        };
+    }
 
-    private createGsiKeys = ({ tenant, locale, type, path, parentId }: CreateGsiKeysParams) => ({
-        GSI1_PK: `T#${tenant}#L#${locale}#AT#${type}#FLP`,
-        GSI1_SK: path,
-        GSI2_PK: `T#${tenant}#L#${locale}#FLP`,
-        GSI2_SK: parentId,
-        GSI_TENANT: tenant
-    });
+    private createGsiKeys({ tenant, locale, type, path, parentId }: CreateGsiKeysParams) {
+        return {
+            GSI1_PK: `T#${tenant}#L#${locale}#AT#${type}#FLP`,
+            GSI1_SK: path,
+            GSI2_PK: `T#${tenant}#L#${locale}#FLP`,
+            GSI2_SK: parentId,
+            GSI_TENANT: tenant
+        };
+    }
 }
 
 export const createFlpOperations = (params: StorageOperationsConfig) => {
