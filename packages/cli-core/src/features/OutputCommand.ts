@@ -42,7 +42,7 @@ export class OutputCommand implements CliCommand.Interface<IOutputCommandParams>
             handler: async (params: IOutputCommandParams) => {
                 const projectSdk = await this.getProjectSdkService.execute();
                 const ui = this.uiService;
-                
+
                 const output = await projectSdk.getAppStackOutput(params.app);
                 if (params.json) {
                     ui.text(JSON.stringify(output, null, 2));
@@ -55,8 +55,42 @@ export class OutputCommand implements CliCommand.Interface<IOutputCommandParams>
                     return;
                 }
 
-                // HERE
+                // Format and display output
+                const formatValue = (value: any, indent: number = 0): string[] => {
+                    const lines: string[] = [];
+                    const indentStr = "  ".repeat(indent);
 
+                    if (value === null || value === undefined) {
+                        return [indentStr + "(empty)"];
+                    }
+
+                    if (typeof value === "object" && !Array.isArray(value)) {
+                        for (const [key, val] of Object.entries(value)) {
+                            if (typeof val === "object" && val !== null && !Array.isArray(val)) {
+                                lines.push(indentStr + `${key}:`);
+                                lines.push(...formatValue(val, indent + 1));
+                            } else {
+                                lines.push(indentStr + `${key}: ${JSON.stringify(val)}`);
+                            }
+                        }
+                    } else {
+                        lines.push(indentStr + JSON.stringify(value));
+                    }
+
+                    return lines;
+                };
+
+                const lines: string[] = [];
+                for (const [key, value] of Object.entries(output)) {
+                    if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+                        lines.push(`${key}:`);
+                        lines.push(...formatValue(value, 1));
+                    } else {
+                        lines.push(`${key}: ${JSON.stringify(value)}`);
+                    }
+                }
+
+                ui.text(lines.join("\n"));
             }
         };
     }
