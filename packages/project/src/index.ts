@@ -27,5 +27,6 @@ export type { IStackOutput } from "~/abstractions/features/GetAppStackOutput.js"
 export { PackageJson } from "@webiny/build-tools/utils/PackageJson.js";
 
 export { createPathResolver } from "./utils/createPathResolver.js";
+export { isRemotePulumiBackend } from "./utils/isRemotePulumiBackend.js";
 
 export { GracefulError } from "./GracefulError.js";
