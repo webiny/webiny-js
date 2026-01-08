@@ -1,13 +1,20 @@
 import type { AdminUsersStorageOperations, CreateAdminUsersStorageOperations } from "./types.js";
 import WebinyError from "@webiny/error";
-import { createTable } from "./definitions/table.js";
+import {
+    createTable,
+    deleteItem,
+    get,
+    put,
+    queryAll,
+    queryOne,
+    sortItems
+} from "@webiny/db-dynamodb";
 import { createUserEntity } from "./definitions/entities.js";
 import type {
     AdminUser,
     StorageOperationsGetUserParams,
     StorageOperationsListUsersParams
 } from "@webiny/api-core/types/users.js";
-import { deleteItem, get, put, queryAll, queryOne, sortItems } from "@webiny/db-dynamodb";
 
 const reservedFields = ["PK", "SK", "index", "data"];
 
@@ -29,7 +36,7 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
     }
 
     const table = createTable({
-        table: tableName,
+        name: tableName,
         documentClient
     });
 

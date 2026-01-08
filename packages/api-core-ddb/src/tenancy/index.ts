@@ -1,8 +1,12 @@
-import { batchReadAll, createEntityWriteBatch, createTableWriteBatch } from "@webiny/db-dynamodb";
+import {
+    batchReadAll,
+    createEntityWriteBatch,
+    createTable,
+    createTableWriteBatch
+} from "@webiny/db-dynamodb";
 import type { QueryAllParams } from "@webiny/db-dynamodb/utils/query.js";
 import { queryAll } from "@webiny/db-dynamodb/utils/query.js";
 import WebinyError from "@webiny/error";
-import { createTable } from "./definitions/table.js";
 import { createTenantEntity } from "./definitions/tenantEntity.js";
 import type { CreateTenancyStorageOperations } from "./types.js";
 import { ENTITIES } from "./types.js";
@@ -23,7 +27,10 @@ const setTenantDefaults = (item: Tenant) => {
 export const createStorageOperations: CreateTenancyStorageOperations = params => {
     const { documentClient } = params;
 
-    const tableInstance = createTable({ documentClient });
+    const tableInstance = createTable({
+        name: (process.env.DB_TABLE_TENANCY || process.env.DB_TABLE) as string,
+        documentClient
+    });
 
     const entities = {
         tenants: createTenantEntity({
