@@ -34,6 +34,10 @@ export class DefaultPulumiGetStackOutputService implements PulumiGetStackOutputS
         if (!params?.skipCache) {
             const cachedOutput = await this.readFromCache(app);
             if (cachedOutput !== null) {
+                this.loggerService.debug(
+                    { app: app.name, cacheKey: this.getCacheKey(app) },
+                    "Stack output read from cache"
+                );
                 return this.applyMapping(cachedOutput, params?.map) as TOutput;
             }
         }
@@ -62,6 +66,10 @@ export class DefaultPulumiGetStackOutputService implements PulumiGetStackOutputS
 
             // Write to cache
             await this.writeToCache(app, stackOutputJson);
+            this.loggerService.debug("Stack output stored to cache", {
+                app: app.name,
+                cacheKey: this.getCacheKey(app)
+            });
 
             return this.applyMapping(stackOutputJson, params?.map) as TOutput;
         } catch {
