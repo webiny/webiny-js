@@ -15,7 +15,11 @@ const sendError = (err: Error) => {
         data: null
     };
 
-    process.send!(message);
+    if (process.send) {
+        process.send!(message);
+    } else {
+        console.error(message);
+    }
 };
 
 const sendSuccess = (data: Record<string, any> = {}) => {
@@ -25,7 +29,11 @@ const sendSuccess = (data: Record<string, any> = {}) => {
         data
     };
 
-    process.send!(message);
+    if (process.send) {
+        process.send!(message);
+    } else {
+        console.log(message);
+    }
 };
 
 process.on("uncaughtException", err => {
