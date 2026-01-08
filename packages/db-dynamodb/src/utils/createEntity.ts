@@ -50,10 +50,19 @@ export const createLegacyEntity = (params: CreateLegacyEntityParams) => {
             SK: {
                 sortKey: true
             },
+            GSI_TENANT: {
+                type: "string"
+            },
             GSI1_PK: {
                 type: "string"
             },
             GSI1_SK: {
+                type: "string"
+            },
+            GSI2_PK: {
+                type: "string"
+            },
+            GSI2_SK: {
                 type: "string"
             },
             TYPE: {
