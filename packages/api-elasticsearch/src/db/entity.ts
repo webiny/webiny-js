@@ -1,15 +1,14 @@
 import type { TableDef } from "@webiny/db-dynamodb/toolbox.js";
-import type { IEntity } from "@webiny/db-dynamodb";
-import { createEntity } from "@webiny/db-dynamodb";
+import { createStandardEntity } from "@webiny/db-dynamodb";
 
 export interface ICreateElasticsearchEntityParams {
     table: TableDef;
     entityName: string;
 }
 
-export const createElasticsearchEntity = (params: ICreateElasticsearchEntityParams): IEntity => {
+export const createElasticsearchEntity = (params: ICreateElasticsearchEntityParams) => {
     const { table, entityName } = params;
-    return createEntity({
+    return createStandardEntity({
         name: entityName,
         table,
         attributes: {

@@ -3,14 +3,16 @@ import type { TableConstructor, TableDef } from "@webiny/db-dynamodb/toolbox.js"
 import { Table } from "@webiny/db-dynamodb/toolbox.js";
 
 export interface ICreateElasticsearchTableParams {
+    name?: string;
     documentClient: DynamoDBDocument;
 }
 
 export const createElasticsearchTable = ({
+    name,
     documentClient
 }: ICreateElasticsearchTableParams): TableDef => {
     const config: TableConstructor<string, string, string> = {
-        name: process.env.DB_TABLE_ELASTICSEARCH as string,
+        name: name || (process.env.DB_TABLE_ELASTICSEARCH as string),
         partitionKey: "PK",
         sortKey: "SK",
         indexes: {

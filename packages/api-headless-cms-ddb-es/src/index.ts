@@ -5,16 +5,17 @@ import { createModelsStorageOperations } from "./operations/model/index.js";
 import { createEntriesStorageOperations } from "./operations/entry/index.js";
 import type { StorageOperationsFactory } from "~/types.js";
 import { ENTITIES } from "~/types.js";
-import { createTable } from "~/definitions/table.js";
-import { createElasticsearchTable } from "~/definitions/tableElasticsearch.js";
 import { createGroupEntity } from "~/definitions/group.js";
 import { createModelEntity } from "~/definitions/model.js";
 import { createEntryEntity } from "~/definitions/entry.js";
-import { createEntryElasticsearchEntity } from "~/definitions/entryElasticsearch.js";
 import { createElasticsearchIndex } from "~/elasticsearch/createElasticsearchIndex.js";
 import { PluginsContainer } from "@webiny/plugins";
 import { createGroupsStorageOperations } from "~/operations/group/index.js";
-import { ElasticsearchQueryBuilderOperatorPlugin } from "@webiny/api-elasticsearch";
+import {
+    createElasticsearchEntity,
+    createElasticsearchTable,
+    ElasticsearchQueryBuilderOperatorPlugin
+} from "@webiny/api-elasticsearch";
 import { elasticsearchIndexPlugins } from "./elasticsearch/indices/index.js";
 import { deleteElasticsearchIndex } from "./elasticsearch/deleteElasticsearchIndex.js";
 import {
@@ -35,12 +36,12 @@ import { CompressorPlugin } from "@webiny/api";
 import { ModelBeforeCreateHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";
 import { ModelBeforeCreateFromHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModelFrom/events.js";
 import { ModelAfterDeleteHandler } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/events.js";
+import { createTable } from "@webiny/db-dynamodb";
 
 export * from "./plugins/index.js";
 
 export const createStorageOperations: StorageOperationsFactory = params => {
     const {
-        attributes,
         table,
         esTable,
         documentClient,
@@ -49,11 +50,11 @@ export const createStorageOperations: StorageOperationsFactory = params => {
     } = params;
 
     const tableInstance = createTable({
-        table,
+        name: table,
         documentClient
     });
     const tableElasticsearchInstance = createElasticsearchTable({
-        table: esTable,
+        name: esTable,
         documentClient
     });
 
@@ -68,13 +69,11 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         }),
         entries: createEntryEntity({
             entityName: ENTITIES.ENTRIES,
-            table: tableInstance,
-            attributes: attributes ? attributes[ENTITIES.ENTRIES] : {}
+            table: tableInstance
         }),
-        entriesEs: createEntryElasticsearchEntity({
+        entriesEs: createElasticsearchEntity({
             entityName: ENTITIES.ENTRIES_ES,
-            table: tableElasticsearchInstance,
-            attributes: attributes ? attributes[ENTITIES.ENTRIES_ES] : {}
+            table: tableElasticsearchInstance
         })
     };
 

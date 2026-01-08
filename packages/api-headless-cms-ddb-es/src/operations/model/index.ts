@@ -12,7 +12,7 @@ import type { Entity } from "@webiny/db-dynamodb/toolbox.js";
 import { configurations } from "~/configurations.js";
 import type { Client } from "@elastic/elasticsearch";
 import type { QueryAllParams } from "@webiny/db-dynamodb/utils/query.js";
-import { deleteItem, put, queryAll, get as getOne } from "@webiny/db-dynamodb";
+import { deleteItem, get as getOne, put, queryAll } from "@webiny/db-dynamodb";
 
 interface PartitionKeysParams {
     tenant: string;
@@ -31,15 +31,20 @@ const createSortKey = (params: SortKeyParams): string => {
     return params.modelId;
 };
 
-interface Keys {
+interface IDynamoDbTableKeys {
     PK: string;
     SK: string;
+    GSI_TENANT: string;
 }
 
-const createKeys = (params: PartitionKeysParams & SortKeyParams): Keys => {
+const createKeys = (params: PartitionKeysParams & SortKeyParams): IDynamoDbTableKeys => {
+    if (!params.tenant) {
+        throw new Error("Missing tenant when creating model keys!");
+    }
     return {
         PK: createPartitionKey(params),
-        SK: createSortKey(params)
+        SK: createSortKey(params),
+        GSI_TENANT: params.tenant
     };
 };
 

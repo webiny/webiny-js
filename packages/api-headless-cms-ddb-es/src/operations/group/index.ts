@@ -34,14 +34,16 @@ const createSortKeys = (params: SortKeyParams): string => {
     return id;
 };
 
-interface Keys {
+interface IDynamoDbTableKeys {
     PK: string;
     SK: string;
+    GSI_TENANT: string;
 }
-const createKeys = (params: PartitionKeyParams & SortKeyParams): Keys => {
+const createKeys = (params: PartitionKeyParams & SortKeyParams): IDynamoDbTableKeys => {
     return {
         PK: createPartitionKey(params),
-        SK: createSortKeys(params)
+        SK: createSortKeys(params),
+        GSI_TENANT: params.tenant
     };
 };
 

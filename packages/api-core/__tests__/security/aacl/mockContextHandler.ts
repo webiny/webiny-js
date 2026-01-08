@@ -1,9 +1,8 @@
 import { ContextPlugin } from "@webiny/handler";
 import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
 import dbPlugins from "@webiny/handler-db";
-import { DynamoDbDriver } from "@webiny/db-dynamodb";
+import { createTable, DynamoDbDriver } from "@webiny/db-dynamodb";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
-import { Table } from "@webiny/db-dynamodb/toolbox";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import type { LambdaContext } from "@webiny/handler-aws/types";
 import { createApiCore } from "~/index.js";
@@ -17,17 +16,9 @@ export const createMockContextHandler = () => {
     const tableName = process.env.DB_TABLE as string;
     const documentClient = getDocumentClient();
 
-    const table = new Table({
+    const table = createTable({
         name: process.env.DB_TABLE as string,
-        partitionKey: "PK",
-        sortKey: "SK",
-        DocumentClient: documentClient,
-        indexes: {
-            GSI1: {
-                partitionKey: "GSI1_PK",
-                sortKey: "GSI1_SK"
-            }
-        }
+        documentClient
     });
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");

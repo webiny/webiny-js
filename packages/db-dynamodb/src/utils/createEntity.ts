@@ -4,12 +4,14 @@ import { Entity } from "~/toolbox.js";
 export interface ICreateStandardEntityParams {
     table: Table<string, string, string>;
     name: string;
+    attributes?: AttributeDefinitions;
 }
 
 export const createStandardEntity = (params: ICreateStandardEntityParams): Entity<any> => {
+    const { name, table, attributes = {} } = params;
     return new Entity({
-        name: params.name,
-        table: params.table,
+        name,
+        table,
         attributes: {
             PK: {
                 partitionKey: true
@@ -37,7 +39,8 @@ export const createStandardEntity = (params: ICreateStandardEntityParams): Entit
             },
             data: {
                 type: "map"
-            }
+            },
+            ...attributes
         }
     });
 };
