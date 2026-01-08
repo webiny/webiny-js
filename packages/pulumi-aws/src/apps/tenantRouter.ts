@@ -5,24 +5,49 @@ import { PulumiApp, PulumiAppResource } from "@webiny/pulumi";
 import { CoreOutput } from "./common";
 import { LAMBDA_RUNTIME } from "~/constants";
 import { getEnvVariableAwsRegion } from "~/env/awsRegion";
+import type { WebsiteRedirect } from "~/apps/website/index.js";
 
 interface Params {
     region: string;
     dynamoDbTable: string;
+    redirects: WebsiteRedirect[];
 }
 
-function createFunctionArchive({ dynamoDbTable, region }: Params) {
+const PERMANENT_CACHE = 31536000;
+const TEMPORARY_CACHE = 86400;
+
+function createFunctionArchive({ dynamoDbTable, region, redirects }: Params) {
     const handler = readFileSync(
         __dirname + "/../components/tenantRouter/functions/origin/request.js",
         "utf-8"
     );
+
+    const matchRedirect = readFileSync(
+        __dirname + "/../components/tenantRouter/functions/origin/matchRedirect.js",
+        "utf-8"
+    );
+
+    const redirectsMap = redirects.reduce((acc, redirect) => {
+        const maxAge = redirect.permanent ? PERMANENT_CACHE : TEMPORARY_CACHE;
+
+        return {
+            ...acc,
+            [redirect.from]: {
+                to: redirect.to,
+                permanent: redirect.permanent,
+                maxAge: redirect.maxAge ?? maxAge
+            }
+        };
+    }, {});
 
     const source = handler
         .replace("{DB_TABLE_NAME}", dynamoDbTable)
         .replace("{DB_TABLE_REGION}", region);
 
     return new pulumi.asset.AssetArchive({
-        "index.js": new pulumi.asset.StringAsset(source)
+        "index.js": new pulumi.asset.StringAsset(source),
+        "matchRedirect.js": new pulumi.asset.StringAsset(matchRedirect),
+        "redirects.json": new pulumi.asset.StringAsset(JSON.stringify(redirectsMap))
     });
 }
 
@@ -30,7 +55,8 @@ const PREFIX = "website-router";
 
 export function applyTenantRouter(
     app: PulumiApp,
-    cloudfront: PulumiAppResource<typeof aws.cloudfront.Distribution>
+    cloudfront: PulumiAppResource<typeof aws.cloudfront.Distribution>,
+    redirects: WebsiteRedirect[]
 ) {
     const region = getEnvVariableAwsRegion();
 
@@ -100,7 +126,8 @@ export function applyTenantRouter(
             code: dynamoDbTable.apply(dynamoDbTable => {
                 return createFunctionArchive({
                     region,
-                    dynamoDbTable
+                    dynamoDbTable,
+                    redirects
                 });
             })
         },

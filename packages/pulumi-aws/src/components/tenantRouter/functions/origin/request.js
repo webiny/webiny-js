@@ -1,5 +1,7 @@
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const { DynamoDBDocument, QueryCommand, GetCommand } = require("@aws-sdk/lib-dynamodb");
+const redirects = require("./redirects.json");
+const { matchRedirect } = require("./matchRedirect.js");
 
 // Since Lambda@Edge doesn't support ENV variables, the easiest way to pass
 // config values to it is to inject them into the source code before deploy.
@@ -82,6 +84,11 @@ async function handleOriginRequest(request) {
     const isCustomOrigin = Boolean(origin.custom);
     const requestedDomain = request.headers.host[0].value;
     const originDomain = isCustomOrigin ? origin.custom.domainName : origin.s3.domainName;
+
+    const redirect = matchRedirect(request, redirects);
+    if (redirect) {
+        return redirect();
+    }
 
     let tenant;
     if (await hasMultipleTenants()) {

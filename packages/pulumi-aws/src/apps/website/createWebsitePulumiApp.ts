@@ -16,6 +16,18 @@ import { getEnvVariableWebinyProjectName } from "~/env/projectName";
 
 export type WebsitePulumiApp = ReturnType<typeof createWebsitePulumiApp>;
 
+export type WebsiteRedirect = {
+    from: string;
+    to: string;
+    permanent: boolean;
+    /**
+     * Cache duration in seconds.
+     * For permanent redirects, the default value is 1 year (31536000 seconds).
+     * For temporary redirects, the default value is 1 day (86400 seconds).
+     */
+    maxAge?: number;
+};
+
 export interface CreateWebsitePulumiAppParams {
     /**
      * Custom domain(s) configuration.
@@ -38,6 +50,11 @@ export interface CreateWebsitePulumiAppParams {
      * or add additional ones into the mix.
      */
     pulumi?: (app: WebsitePulumiApp) => void | Promise<void>;
+
+    /**
+     * Define redirects to be handled by website Lambda@Edge function.
+     */
+    redirects?: () => Promise<WebsiteRedirect[]> | WebsiteRedirect[];
 
     /**
      * Prefixes names of all Pulumi cloud infrastructure resource with given prefix.
@@ -271,7 +288,11 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
                 process.env.WCP_PROJECT_ENVIRONMENT ||
                 process.env.WEBINY_MULTI_TENANCY === "true"
             ) {
-                const { originLambda } = applyTenantRouter(app, deliveryCloudfront);
+                const redirects = projectAppParams.redirects
+                    ? await projectAppParams.redirects()
+                    : [];
+
+                const { originLambda } = applyTenantRouter(app, deliveryCloudfront, redirects);
 
                 app.addHandler(() => {
                     app.addOutputs({

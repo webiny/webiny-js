@@ -16,7 +16,7 @@ export interface CreateWebsiteAppParams extends CreateWebsitePulumiAppParams {
     plugins?: PluginCollection;
 }
 
-interface CreateWebsiteAppResult {
+export interface CreateWebsiteAppResult {
     id: string;
     name: string;
     description: string;
