@@ -12,6 +12,7 @@ export const CoreDynamo = createAppModule({
                 attributes: [
                     { name: "PK", type: "S" },
                     { name: "SK", type: "S" },
+                    { name: "GSI_TENANT", type: "S" },
                     { name: "GSI1_PK", type: "S" },
                     { name: "GSI1_SK", type: "S" },
                     { name: "GSI2_PK", type: "S" },
@@ -21,6 +22,11 @@ export const CoreDynamo = createAppModule({
                 hashKey: "PK",
                 rangeKey: "SK",
                 globalSecondaryIndexes: [
+                    {
+                        name: "GSI_TENANT",
+                        hashKey: "GSI_TENANT",
+                        projectionType: "KEYS_ONLY"
+                    },
                     {
                         name: "GSI1",
                         hashKey: "GSI1_PK",

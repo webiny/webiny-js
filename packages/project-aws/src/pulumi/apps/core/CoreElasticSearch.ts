@@ -136,13 +136,21 @@ export const ElasticSearch = createAppModule({
             config: {
                 attributes: [
                     { name: "PK", type: "S" },
-                    { name: "SK", type: "S" }
+                    { name: "SK", type: "S" },
+                    { name: "GSI_TENANT", type: "S" }
                 ],
                 streamEnabled: true,
                 streamViewType: "NEW_AND_OLD_IMAGES",
                 billingMode: "PAY_PER_REQUEST",
                 hashKey: "PK",
-                rangeKey: "SK"
+                rangeKey: "SK",
+                globalSecondaryIndexes: [
+                    {
+                        name: "GSI_TENANT",
+                        hashKey: "GSI_TENANT",
+                        projectionType: "KEYS_ONLY"
+                    }
+                ]
             },
             opts: { protect: params.protect }
         });
