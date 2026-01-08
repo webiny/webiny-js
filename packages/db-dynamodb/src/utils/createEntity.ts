@@ -1,12 +1,12 @@
 import type { AttributeDefinitions, Table } from "~/toolbox.js";
 import { Entity } from "~/toolbox.js";
 
-interface CreateStandardEntityParams {
+export interface ICreateStandardEntityParams {
     table: Table<string, string, string>;
     name: string;
 }
 
-export const createStandardEntity = (params: CreateStandardEntityParams): Entity<any> => {
+export const createStandardEntity = (params: ICreateStandardEntityParams): Entity<any> => {
     return new Entity({
         name: params.name,
         table: params.table,
@@ -17,10 +17,19 @@ export const createStandardEntity = (params: CreateStandardEntityParams): Entity
             SK: {
                 sortKey: true
             },
+            GSI_TENANT: {
+                type: "string"
+            },
             GSI1_PK: {
                 type: "string"
             },
             GSI1_SK: {
+                type: "string"
+            },
+            GSI2_PK: {
+                type: "string"
+            },
+            GSI2_SK: {
                 type: "string"
             },
             TYPE: {
