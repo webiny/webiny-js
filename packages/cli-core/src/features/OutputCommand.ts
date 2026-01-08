@@ -1,5 +1,5 @@
 import { createImplementation } from "@webiny/di";
-import { CliCommand, GetProjectSdkService, StdioService } from "~/abstractions/index.js";
+import { CliCommand, GetProjectSdkService, UiService } from "~/abstractions/index.js";
 import { IBaseAppParams } from "~/abstractions/features/types.js";
 import { createBaseAppOptions } from "~/features/common/index.js";
 
@@ -10,7 +10,7 @@ export interface IOutputCommandParams extends IBaseAppParams {
 export class OutputCommand implements CliCommand.Interface<IOutputCommandParams> {
     constructor(
         private getProjectSdkService: GetProjectSdkService.Interface,
-        private stdioService: StdioService.Interface
+        private uiService: UiService.Interface
     ) {}
 
     async execute(): Promise<CliCommand.CommandDefinition<IOutputCommandParams>> {
@@ -41,11 +41,22 @@ export class OutputCommand implements CliCommand.Interface<IOutputCommandParams>
             ],
             handler: async (params: IOutputCommandParams) => {
                 const projectSdk = await this.getProjectSdkService.execute();
-                const stdio = this.stdioService;
+                const ui = this.uiService;
+                
+                const output = await projectSdk.getAppStackOutput(params.app);
+                if (params.json) {
+                    ui.text(JSON.stringify(output, null, 2));
+                    return;
+                }
 
-                const { pulumiProcess } = await projectSdk.getAppOutput(params);
+                // Nice indentation for console output.
+                if (!output || Object.keys(output).length === 0) {
+                    ui.text("No output values found.");
+                    return;
+                }
 
-                pulumiProcess.stdout!.pipe(stdio.getStdout());
+                // HERE
+
             }
         };
     }
@@ -54,5 +65,5 @@ export class OutputCommand implements CliCommand.Interface<IOutputCommandParams>
 export const outputCommand = createImplementation({
     abstraction: CliCommand,
     implementation: OutputCommand,
-    dependencies: [GetProjectSdkService, StdioService]
+    dependencies: [GetProjectSdkService, UiService]
 });
