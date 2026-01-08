@@ -1,1 +1,1 @@
-import "webiny/global";
+import "../../packages/webiny/src/global.js";
