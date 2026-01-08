@@ -56,41 +56,33 @@ export class OutputCommand implements CliCommand.Interface<IOutputCommandParams>
                 }
 
                 // Format and display output
-                const formatValue = (value: any, indent: number = 0): string[] => {
-                    const lines: string[] = [];
+                const formatValue = (key: string, value: any, indent: number = 0): void => {
                     const indentStr = "  ".repeat(indent);
 
                     if (value === null || value === undefined) {
-                        return [indentStr + "(empty)"];
+                        ui.info(`${indentStr}${key}: (empty)`);
+                        return;
                     }
 
                     if (typeof value === "object" && !Array.isArray(value)) {
-                        for (const [key, val] of Object.entries(value)) {
-                            if (typeof val === "object" && val !== null && !Array.isArray(val)) {
-                                lines.push(indentStr + `${key}:`);
-                                lines.push(...formatValue(val, indent + 1));
-                            } else {
-                                lines.push(indentStr + `${key}: ${JSON.stringify(val)}`);
-                            }
+                        if (indent === 0) {
+                            ui.emptyLine();
+                        }
+                        ui.textBold(`${indentStr}${key}:`);
+                        for (const [k, v] of Object.entries(value)) {
+                            formatValue(k, v, indent + 1);
+                        }
+                        if (indent === 0) {
+                            ui.emptyLine();
                         }
                     } else {
-                        lines.push(indentStr + JSON.stringify(value));
+                        ui.info(`${indentStr}${key}: ${JSON.stringify(value)}`);
                     }
-
-                    return lines;
                 };
 
-                const lines: string[] = [];
                 for (const [key, value] of Object.entries(output)) {
-                    if (typeof value === "object" && value !== null && !Array.isArray(value)) {
-                        lines.push(`${key}:`);
-                        lines.push(...formatValue(value, 1));
-                    } else {
-                        lines.push(`${key}: ${JSON.stringify(value)}`);
-                    }
+                    formatValue(key, value, 0);
                 }
-
-                ui.text(lines.join("\n"));
             }
         };
     }
