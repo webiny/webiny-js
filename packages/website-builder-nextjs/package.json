@@ -29,7 +29,7 @@
     "next": "^15.5.9",
     "typescript": "5.9.3",
     "vitest": "^3.2.4",
-    "webpack": "^5.101.3"
+    "webpack": "^5.104.1"
   },
   "publishConfig": {
     "access": "public",

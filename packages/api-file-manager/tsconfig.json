@@ -5,14 +5,13 @@
     { "path": "../api" },
     { "path": "../api-core" },
     { "path": "../api-headless-cms" },
-    { "path": "../aws-sdk" },
     { "path": "../error" },
     { "path": "../feature" },
     { "path": "../handler" },
-    { "path": "../handler-aws" },
     { "path": "../handler-graphql" },
     { "path": "../plugins" },
     { "path": "../wcp" },
+    { "path": "../handler-aws" },
     { "path": "../utils" }
   ],
   "compilerOptions": {
@@ -34,16 +33,6 @@
       "@webiny/api-core/features/WcpContext": ["../api-core/src/features/wcp/WcpContext/index.js"],
       "@webiny/api-core/features/TaskService": [
         "../api-core/src/features/task/TaskService/index.js"
-      ],
-      "@webiny/api-core/features/settings": ["../api-core/src/features/settings/index.js"],
-      "@webiny/api-core/features/GetSettings": [
-        "../api-core/src/features/settings/GetSettings/index.js"
-      ],
-      "@webiny/api-core/features/UpdateSettings": [
-        "../api-core/src/features/settings/UpdateSettings/index.js"
-      ],
-      "@webiny/api-core/features/DeleteSettings": [
-        "../api-core/src/features/settings/DeleteSettings/index.js"
       ],
       "@webiny/api-core/features/CreateApiKey": [
         "../api-core/src/features/security/apiKeys/CreateApiKey/index.js"
@@ -156,8 +145,6 @@
       "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
-      "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
-      "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
       "@webiny/feature/api": ["../feature/src/api/index.js"],
@@ -166,14 +153,14 @@
       "@webiny/feature": ["../feature/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
-      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
-      "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"],
+      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
+      "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"]
     },

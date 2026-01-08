@@ -31,7 +31,7 @@
     "@apollo/react-hooks": "^3.1.5",
     "@emotion/react": "11.10.8",
     "@emotion/styled": "11.10.6",
-    "@iconify/json": "^2.2.386",
+    "@iconify/json": "^2.2.425",
     "@monaco-editor/react": "^4.7.0",
     "@svgr/webpack": "^6.5.1",
     "@types/mime": "^2.0.3",
@@ -93,7 +93,7 @@
     "@types/store": "^2.0.5",
     "@types/tinycolor2": "^1.4.6",
     "@webiny/build-tools": "0.0.0",
-    "rimraf": "^6.0.1",
+    "rimraf": "^6.1.2",
     "typescript": "5.9.3",
     "vitest": "^3.2.4"
   },

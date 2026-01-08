@@ -52,7 +52,7 @@ export class DefaultLoggerService implements LoggerService.Interface {
         }
 
         const logStream = this.getLogStream();
-        const level = process.env.LOG_LEVEL || DEFAULT_LOG_LEVEL;
+        const level = process.env.WEBINY_CLI_LOG_LEVEL || DEFAULT_LOG_LEVEL;
         this.pinoLogger = pino({ level }, logStream);
 
         return this.pinoLogger;

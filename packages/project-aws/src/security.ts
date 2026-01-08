@@ -32,11 +32,7 @@ import {
     TenantBeforeDelete,
     TenantAfterDelete,
     TenantInstalled,
-    SystemInstalled,
-    SettingsBeforeUpdate,
-    SettingsAfterUpdate,
-    SettingsBeforeDelete,
-    SettingsAfterDelete
+    SystemInstalled
 } from "@webiny/api-core/extensions/index.js";
 
 export const Security = {
@@ -87,11 +83,5 @@ export const Security = {
     },
     System: {
         Installed: SystemInstalled
-    },
-    Settings: {
-        BeforeUpdate: SettingsBeforeUpdate,
-        AfterUpdate: SettingsAfterUpdate,
-        BeforeDelete: SettingsBeforeDelete,
-        AfterDelete: SettingsAfterDelete
     }
 };

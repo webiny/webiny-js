@@ -9,11 +9,8 @@ import type {
     CmsModelStorageOperationsUpdateParams
 } from "@webiny/api-headless-cms/types/index.js";
 import type { Entity } from "@webiny/db-dynamodb/toolbox.js";
-import { getClean } from "@webiny/db-dynamodb/utils/get.js";
-import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup.js";
-import type { QueryAllParams } from "@webiny/db-dynamodb/utils/query.js";
-import { queryAllClean } from "@webiny/db-dynamodb/utils/query.js";
-import { deleteItem, put } from "@webiny/db-dynamodb";
+import { queryAll, type QueryAllParams } from "@webiny/db-dynamodb/utils/query.js";
+import { deleteItem, put, get as getOne } from "@webiny/db-dynamodb";
 import { convertException } from "@webiny/utils";
 
 interface PartitionKeysParams {
@@ -66,7 +63,7 @@ export const createModelsStorageOperations = (
             await put({
                 entity,
                 item: {
-                    ...cleanupItem(entity, model),
+                    data: model,
                     ...keys,
                     TYPE: createType()
                 }
@@ -90,7 +87,7 @@ export const createModelsStorageOperations = (
             await put({
                 entity,
                 item: {
-                    ...cleanupItem(entity, model),
+                    data: model,
                     ...keys,
                     TYPE: createType()
                 }
@@ -136,10 +133,12 @@ export const createModelsStorageOperations = (
         const keys = createKeys(params);
 
         try {
-            return await getClean<CmsModel>({
+            const result = await getOne<{ data: CmsModel }>({
                 entity,
                 keys
             });
+
+            return result ? result.data : null;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not get model.",
@@ -162,7 +161,8 @@ export const createModelsStorageOperations = (
             }
         };
         try {
-            return await queryAllClean<CmsModel>(queryAllParams);
+            const result = await queryAll<{ data: CmsModel }>(queryAllParams);
+            return result ? result.map(item => item.data) : [];
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not list models.",

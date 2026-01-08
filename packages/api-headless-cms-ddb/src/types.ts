@@ -49,7 +49,6 @@ export interface TableModifier {
 export interface StorageOperationsFactoryParams {
     documentClient: DynamoDBDocument;
     table?: TableModifier;
-    attributes?: Record<ENTITIES, Attributes>;
     plugins?: Plugin[] | Plugin[][];
 }
 

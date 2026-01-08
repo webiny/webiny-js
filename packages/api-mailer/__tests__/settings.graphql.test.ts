@@ -13,7 +13,7 @@ describe("Mailer Settings GraphQL", () => {
     const handler = createGraphQLHandler();
 
     beforeEach(() => {
-        process.env.WEBINY_MAILER_PASSWORD_SECRET = "really secret secret";
+        process.env.WEBINY_API_MAILER_PASSWORD_SECRET = "really secret secret";
     });
 
     it("should fetch settings and there should be nothing in it", async () => {
@@ -133,7 +133,7 @@ describe("Mailer Settings GraphQL", () => {
 
     // TODO: @bruno - this test is no longer failing
     it.skip("should not be possible to get or save settings when no secret is available", async () => {
-        delete process.env.WEBINY_MAILER_PASSWORD_SECRET;
+        delete process.env.WEBINY_API_MAILER_PASSWORD_SECRET;
 
         const [getResponse] = await handler.getSettings();
 

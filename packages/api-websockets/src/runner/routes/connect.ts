@@ -25,7 +25,11 @@ export const createWebsocketsRouteConnectPlugin = () => {
         }
 
         await registry.register({
-            identity,
+            identity: {
+                id: identity.id,
+                displayName: identity.displayName,
+                type: identity.type
+            },
             connectionId: event.requestContext.connectionId,
             tenant,
             domainName: event.requestContext.domainName,

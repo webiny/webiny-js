@@ -45,9 +45,3 @@ export * from "./TenantInstalled.js";
 
 // System event handlers
 export * from "./SystemInstalled.js";
-
-// Settings event handlers
-export * from "./SettingsBeforeUpdate.js";
-export * from "./SettingsAfterUpdate.js";
-export * from "./SettingsBeforeDelete.js";
-export * from "./SettingsAfterDelete.js";

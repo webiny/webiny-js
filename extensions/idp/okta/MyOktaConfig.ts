@@ -4,12 +4,11 @@ class MyIdpConfig implements OktaIdpConfig.Interface {
     getIdentity(token: OktaIdpConfig.JwtPayload) {
         return {
             id: String(token["sub"]),
-            type: "admin",
             displayName: token["name"],
+            roles: [token["webiny_group"]],
+            teams: [token["team"]].filter(Boolean),
             // User profile on this tenant
             profile: {
-                groups: [token["webiny_group"]],
-                teams: [token["team"]].filter(Boolean),
                 firstName: token["first_name"],
                 lastName: token["last_name"],
                 email: token["email"]

@@ -25,12 +25,12 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^9.9.0",
-    "@types/lodash": "4.17.20",
+    "@types/lodash": "^4.17.21",
     "@webiny/build-tools": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "aws-sdk-client-mock": "^4.1.0",
     "jest-dynalite": "^3.6.1",
-    "rimraf": "^6.0.1",
+    "rimraf": "^6.1.2",
     "typescript": "5.9.3",
     "vitest": "^3.2.4"
   },

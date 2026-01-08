@@ -1,9 +1,9 @@
 import { ServiceDiscovery } from "@webiny/api";
 import { createImplementation } from "@webiny/feature/api";
 import { AppInstaller } from "@webiny/api-core/features/InstallTenant";
-import { DeleteSettingsUseCase } from "@webiny/api-core/features/DeleteSettings";
 import { FILE_MANAGER_GENERAL_SETTINGS } from "~/domain/settings/constants.js";
 import { UpdateSettingsUseCase } from "~/features/settings/UpdateSettings/abstractions.js";
+import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 
 class SettingsInstallerImpl implements AppInstaller.Interface {
     readonly alwaysRun = true;
@@ -12,7 +12,7 @@ class SettingsInstallerImpl implements AppInstaller.Interface {
 
     constructor(
         private updateSettings: UpdateSettingsUseCase.Interface,
-        private deleteSettings: DeleteSettingsUseCase.Interface
+        private keyValueStore: KeyValueStore.Interface
     ) {}
 
     async install(): Promise<void> {
@@ -26,12 +26,12 @@ class SettingsInstallerImpl implements AppInstaller.Interface {
     }
 
     async uninstall(): Promise<void> {
-        await this.deleteSettings.execute(FILE_MANAGER_GENERAL_SETTINGS);
+        await this.keyValueStore.delete(FILE_MANAGER_GENERAL_SETTINGS);
     }
 }
 
 export const SettingsInstaller = createImplementation({
     abstraction: AppInstaller,
     implementation: SettingsInstallerImpl,
-    dependencies: [UpdateSettingsUseCase, DeleteSettingsUseCase]
+    dependencies: [UpdateSettingsUseCase, KeyValueStore]
 });

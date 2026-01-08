@@ -1,4 +1,5 @@
 import type { Jwk } from "~/features/security/utils/verifyJwtUsingJwk.js";
+import { JwkCache } from "./abstractions.js";
 
 interface OidcConfiguration {
     jwks_uri: string;
@@ -10,10 +11,10 @@ interface CacheEntry {
     jwks: Jwk[];
 }
 
-export class JwksCache {
+export class JwksCache implements JwkCache.Interface {
     private cache = new Map<string, CacheEntry>();
 
-    async getJwks(issuer: string): Promise<Jwk[]> {
+    async getKeys(issuer: string): Promise<Jwk[]> {
         // Check cache first
         const cached = this.cache.get(issuer);
         if (cached) {
@@ -46,6 +47,3 @@ export class JwksCache {
         this.cache.clear();
     }
 }
-
-// Global singleton instance to survive Lambda warm starts
-export const jwksCache = new JwksCache();

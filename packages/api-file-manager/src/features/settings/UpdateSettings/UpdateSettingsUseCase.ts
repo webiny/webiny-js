@@ -1,6 +1,6 @@
 import { Result } from "@webiny/feature/api";
+import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { UpdateSettingsUseCase as UseCaseAbstraction } from "./abstractions.js";
-import { UpdateSettingsUseCase as CoreUpdateSettingsUseCase } from "@webiny/api-core/features/settings/UpdateSettings";
 import { GetSettingsUseCase } from "../GetSettings/abstractions.js";
 import type { FileManagerSettings } from "~/domain/settings/types.js";
 import type { UpdateSettingsInput } from "~/domain/settings/types.js";
@@ -14,7 +14,7 @@ import { createZodError } from "@webiny/utils";
 
 class UpdateSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
-        private updateSettings: CoreUpdateSettingsUseCase.Interface,
+        private keyValueStore: KeyValueStore.Interface,
         private getSettings: GetSettingsUseCase.Interface,
         private eventPublisher: EventPublisher.Interface
     ) {}
@@ -23,7 +23,7 @@ class UpdateSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
         input: UpdateSettingsInput
     ): Promise<Result<FileManagerSettings, UseCaseAbstraction.Error>> {
         // Validate input
-        const validationResult = updateSettingsValidation.safeParse(input);
+        const validationResult = await updateSettingsValidation.safeParseAsync(input);
         if (!validationResult.success) {
             const zodError = createZodError(validationResult.error);
             return Result.fail(new SettingsValidationError(zodError.data!.invalidFields));
@@ -36,7 +36,7 @@ class UpdateSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
         const existing = existingResult.value;
 
         // Prepare merged settings
-        const mergedSettings: FileManagerSettings = {
+        const updatedSettings: FileManagerSettings = {
             ...existing,
             ...validatedInput
         };
@@ -45,21 +45,16 @@ class UpdateSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
         await this.eventPublisher.publish(
             new SettingsBeforeUpdateEvent({
                 original: existing,
-                settings: mergedSettings,
+                settings: updatedSettings,
                 input: validatedInput
             })
         );
 
-        const result = await this.updateSettings.execute({
-            name: FILE_MANAGER_GENERAL_SETTINGS,
-            data: mergedSettings
-        });
+        const result = await this.keyValueStore.set(FILE_MANAGER_GENERAL_SETTINGS, updatedSettings);
 
         if (result.isFail()) {
             return Result.fail(new SettingsUpdateError(result.error));
         }
-
-        const updatedSettings = result.value.data as FileManagerSettings;
 
         // Publish AfterUpdate event
         await this.eventPublisher.publish(
@@ -76,5 +71,5 @@ class UpdateSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const UpdateSettingsUseCase = UseCaseAbstraction.createImplementation({
     implementation: UpdateSettingsUseCaseImpl,
-    dependencies: [CoreUpdateSettingsUseCase, GetSettingsUseCase, EventPublisher]
+    dependencies: [KeyValueStore, GetSettingsUseCase, EventPublisher]
 });

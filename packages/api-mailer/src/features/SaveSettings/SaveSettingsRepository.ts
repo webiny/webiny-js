@@ -1,28 +1,25 @@
 import { Result } from "@webiny/feature/api";
-import { UpdateSettingsUseCase } from "@webiny/api-core/features/settings/UpdateSettings/index.js";
-import { GetSettingsUseCase } from "@webiny/api-core/features/settings/GetSettings/index.js";
 import { Encryption } from "~/domain/Encryption/abstractions.js";
 import { SaveSettingsRepository, type SaveSettingsInput } from "./abstractions.js";
 import type { TransportSettings } from "~/types.js";
 import { SettingsPersistenceError } from "~/domain/errors.js";
+import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
+import { MAILER_TRANSPORT_SETTINGS } from "~/constants.js";
 
-const SETTINGS_NAME = "mailerTransportSettings";
 const DEFAULT_PORT = 25;
 
 class SaveSettingsRepositoryImpl implements SaveSettingsRepository.Interface {
     constructor(
-        private getSettings: GetSettingsUseCase.Interface,
-        private updateSettings: UpdateSettingsUseCase.Interface,
+        private keyValueStore: KeyValueStore.Interface,
         private encryption: Encryption.Interface
     ) {}
 
     async execute(input: SaveSettingsInput): SaveSettingsRepository.Return {
         // Check if settings exist
-        const existingResult = await this.getSettings.execute(SETTINGS_NAME);
+        const existingResult =
+            await this.keyValueStore.get<TransportSettings>(MAILER_TRANSPORT_SETTINGS);
         const existingSettings = existingResult.isOk() ? existingResult.value : null;
-        const transportSettings: Partial<TransportSettings> = existingSettings
-            ? existingSettings.data
-            : {};
+        const transportSettings: Partial<TransportSettings> = existingSettings ?? {};
 
         // If updating and no password provided, keep the existing password
         let passwordToStore = input.password || "";
@@ -40,14 +37,11 @@ class SaveSettingsRepositoryImpl implements SaveSettingsRepository.Interface {
             user: input.user ?? transportSettings.user,
             password: encryptedPassword,
             from: input.from ?? transportSettings.from,
-            replyTo: input.replyTo ?? transportSettings.replyTo ?? ""
+            replyTo: input.replyTo ?? transportSettings.replyTo
         };
 
         // Save settings
-        const result = await this.updateSettings.execute({
-            name: SETTINGS_NAME,
-            data
-        });
+        const result = await this.keyValueStore.set(MAILER_TRANSPORT_SETTINGS, data);
 
         if (result.isFail()) {
             return Result.fail(new SettingsPersistenceError(result.error));
@@ -65,5 +59,5 @@ class SaveSettingsRepositoryImpl implements SaveSettingsRepository.Interface {
 
 export const SaveSettingsRepositoryImplementation = SaveSettingsRepository.createImplementation({
     implementation: SaveSettingsRepositoryImpl,
-    dependencies: [GetSettingsUseCase, UpdateSettingsUseCase, Encryption]
+    dependencies: [KeyValueStore, Encryption]
 });
