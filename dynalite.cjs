@@ -25,7 +25,7 @@ const withTenantGlobalSecondaryIndex = table => {
     GlobalSecondaryIndexes: [
       ...(table.GlobalSecondaryIndexes || []),
       {
-        IndexName: `GSI_TENANT_INDEX`,
+        IndexName: `GSI_TENANT`,
         KeySchema: [
           {
             AttributeName: `GSI_TENANT`,
@@ -33,7 +33,7 @@ const withTenantGlobalSecondaryIndex = table => {
           }
         ],
         Projection: {
-          ProjectionType: "ALL"
+          ProjectionType: "KEYS_ONLY"
         },
         ProvisionedThroughput: {
           ReadCapacityUnits: 1,
