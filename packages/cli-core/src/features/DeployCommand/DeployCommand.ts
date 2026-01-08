@@ -1,10 +1,11 @@
 import { createImplementation } from "@webiny/di";
 import { CliCommand, GetProjectSdkService, StdioService, UiService } from "~/abstractions/index.js";
 import { DeployOutput } from "./deployOutputs/DeployOutput.js";
-import { AppName } from "@webiny/project";
+import { AppName, isRemotePulumiBackend } from "@webiny/project";
 import { BuildRunner } from "~/features/BuildCommand/buildRunners/BuildRunner.js";
 import { createBaseAppOptions } from "~/features/common/index.js";
 import { setTimeout } from "node:timers/promises";
+import chalk from "chalk";
 import ora from "ora";
 import open from "open";
 
@@ -19,6 +20,7 @@ export interface IDeployCommandParams {
     deploymentLogs?: boolean;
     build?: boolean;
     preview?: boolean;
+    allowLocalStateFiles?: boolean;
 }
 
 export interface IDeploySingleAppParams {
@@ -82,6 +84,37 @@ export class DeployCommand implements CliCommand.Interface<IDeployCommandParams>
                     description: "Print deployment logs (automatically enabled in CI environments)",
                     type: "boolean",
                     default: false
+                },
+                {
+                    name: "allow-local-state-files",
+                    description:
+                        "Allow using local Pulumi state files with production environment deployment (not recommended).",
+                    type: "boolean",
+                    validation: (params: IDeployCommandParams) => {
+                        const prodEnvs = ["prod", "production"];
+                        const isProdEnv = prodEnvs.includes(params.env);
+
+                        if (!isProdEnv) {
+                            return true;
+                        }
+
+                        if (isRemotePulumiBackend()) {
+                            return true;
+                        }
+
+                        if (params.allowLocalStateFiles) {
+                            return true;
+                        }
+
+                        throw new Error(
+                            [
+                                "Please confirm you want to use local Pulumi state files with",
+                                "your production deployment by appending",
+                                `${chalk.red("--allow-local-state-files")} to the command.`,
+                                "Learn more: https://webiny.link/state-files-production."
+                            ].join(" ")
+                        );
+                    }
                 }
             ],
             handler: async (params: IDeployCommandParams) => {
