@@ -67,11 +67,11 @@ declare namespace NodeJS {
         /**
          * api-mailer
          */
-        WEBINY_MAILER_HOST?: string;
-        WEBINY_MAILER_USER?: string;
-        WEBINY_MAILER_PASSWORD?: string;
-        WEBINY_MAILER_REPLY_TO?: string;
-        WEBINY_MAILER_FROM?: string;
-        WEBINY_MAILER_PASSWORD_SECRET?: string;
+        WEBINY_API_MAILER_HOST?: string;
+        WEBINY_API_MAILER_USER?: string;
+        WEBINY_API_MAILER_PASSWORD?: string;
+        WEBINY_API_MAILER_REPLY_TO?: string;
+        WEBINY_API_MAILER_FROM?: string;
+        WEBINY_API_MAILER_PASSWORD_SECRET?: string;
     }
 }

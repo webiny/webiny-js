@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
-    "rimraf": "^6.0.1",
+    "rimraf": "^6.1.2",
     "typescript": "5.9.3"
   },
   "publishConfig": {
@@ -34,9 +34,7 @@
     "./api/features/Logger": "./api/features/Logger.js",
     "./api/security/features/IdentityContext": "./api/security/features/IdentityContext.js",
     "./api/wcp/WcpContext": "./api/wcp/WcpContext.js",
-    "./api/features/GetSettings": "./api/features/GetSettings.js",
-    "./api/features/UpdateSettings": "./api/features/UpdateSettings.js",
-    "./api/features/DeleteSettings": "./api/features/DeleteSettings.js",
+    "./api/features/KeyValueStore": "./api/features/KeyValueStore.js",
     "./api/security/features/CreateApiKey": "./api/security/features/CreateApiKey.js",
     "./api/security/features/DeleteApiKey": "./api/security/features/DeleteApiKey.js",
     "./api/security/features/GetApiKey": "./api/security/features/GetApiKey.js",

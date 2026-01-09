@@ -1,6 +1,6 @@
 import { FileAfterDeleteHandler } from "@webiny/api-file-manager/features/file/DeleteFile/events.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
-import { CdnPathsGenerator } from "./CdnPathsGenerator.js";
+import { CdnPathsGenerator } from "~/utils/CdnPathsGenerator.js";
 
 class FlushCacheOnFileDeleteHandlerImpl implements FileAfterDeleteHandler.Interface {
     private readonly pathsGenerator: CdnPathsGenerator;
@@ -16,7 +16,7 @@ class FlushCacheOnFileDeleteHandlerImpl implements FileAfterDeleteHandler.Interf
             definition: "cloudfrontInvalidateCache",
             input: {
                 caller: "fm-before-delete",
-                paths: this.pathsGenerator.generate(file)
+                paths: this.pathsGenerator.generate(file.id)
             }
         });
     }

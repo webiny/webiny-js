@@ -3,7 +3,7 @@ import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js"
 import { createStorageOperations as createUsersStorageOperations } from "./adminUsers/index.js";
 import { createStorageOperations as createTenancyStorageOperations } from "./tenancy/index.js";
 import { createStorageOperations as createSecurityStorageOperations } from "./security/index.js";
-import { createStorageOperations as createSettingsStorageOperations } from "./settings/index.js";
+import { createStorageOperations as createKeyValueStorageOperations } from "./keyValueStore/index.js";
 
 interface CreateApiCoreDdbParams {
     documentClient: DynamoDBDocument;
@@ -22,7 +22,7 @@ export const createApiCoreDdb = ({
         securityStorageOperations: createSecurityStorageOperations({
             documentClient
         }),
-        settingsStorageOperations: createSettingsStorageOperations({
+        keyValueStorageOperations: createKeyValueStorageOperations({
             documentClient
         })
     };

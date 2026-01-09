@@ -136,8 +136,8 @@ describe("export cms structure", () => {
                 fields: fixFields(model.fields),
                 layout: model.layout
             });
-            expect(jsonModel.imageFieldId).toEqual(model.imageFieldId || undefined);
-            expect(jsonModel.descriptionFieldId).toEqual(model.descriptionFieldId || undefined);
+            expect(jsonModel.imageFieldId).toEqual(model.imageFieldId ?? null);
+            expect(jsonModel.descriptionFieldId).toEqual(model.descriptionFieldId ?? null);
         }
     });
 });

@@ -25,7 +25,7 @@ import { CompressorPlugin } from "@webiny/api";
 export * from "./plugins/index.js";
 
 export const createStorageOperations: StorageOperationsFactory = params => {
-    const { attributes, table, documentClient, plugins: userPlugins } = params;
+    const { table, documentClient, plugins: userPlugins } = params;
 
     const tableInstance = createTable({
         table,
@@ -35,18 +35,15 @@ export const createStorageOperations: StorageOperationsFactory = params => {
     const entities = {
         groups: createGroupEntity({
             entityName: ENTITIES.GROUPS,
-            table: tableInstance,
-            attributes: attributes ? attributes[ENTITIES.GROUPS] : {}
+            table: tableInstance
         }),
         models: createModelEntity({
             entityName: ENTITIES.MODELS,
-            table: tableInstance,
-            attributes: attributes ? attributes[ENTITIES.MODELS] : {}
+            table: tableInstance
         }),
         entries: createEntryEntity({
             entityName: ENTITIES.ENTRIES,
-            table: tableInstance,
-            attributes: attributes ? attributes[ENTITIES.ENTRIES] : {}
+            table: tableInstance
         })
     };
 

@@ -3,7 +3,6 @@ import type { PulumiApp } from "@webiny/pulumi/types.js";
 import type { IGetSyncSystemOutputResult } from "../types.js";
 import { createSyncResourceName } from "../createSyncResourceName.js";
 import { ApiGraphql } from "~/pulumi/apps/api/ApiGraphql.js";
-import { ApiFileManager } from "~/pulumi/apps/api/ApiFileManager.js";
 import type { WithServiceManifest } from "~/pulumi/utils/withServiceManifest.js";
 
 export interface IAttachEventBusPermissionsParam {
@@ -23,7 +22,6 @@ export const attachEventBusPermissions = (params: IAttachEventBusPermissionsPara
     const { eventBusArn } = syncSystem;
 
     const graphql = app.getModule(ApiGraphql);
-    const fileManager = app.getModule(ApiFileManager);
 
     const lambdaToEventBridgeResourceName = createSyncResourceName(`lambda-to-event-bridge`);
     const eventBridgePolicy = app.addResource(aws.iam.Policy, {
@@ -52,17 +50,9 @@ export const attachEventBusPermissions = (params: IAttachEventBusPermissionsPara
             policyArn: eventBridgePolicy.output.arn
         }
     });
-    const fileManagerManagePolicyAttachment = app.addResource(aws.iam.RolePolicyAttachment, {
-        name: `${lambdaToEventBridgeResourceName}-fm-role-policy-attachment`,
-        config: {
-            role: fileManager.roles.manage.output.name,
-            policyArn: eventBridgePolicy.output.arn
-        }
-    });
 
     return {
         eventBridgePolicy,
-        graphQlPolicyAttachment,
-        fileManagerManagePolicyAttachment
+        graphQlPolicyAttachment
     };
 };

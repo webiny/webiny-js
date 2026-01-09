@@ -71,16 +71,6 @@
       "@webiny/api-core/features/TaskService": [
         "../api-core/src/features/task/TaskService/index.js"
       ],
-      "@webiny/api-core/features/settings": ["../api-core/src/features/settings/index.js"],
-      "@webiny/api-core/features/GetSettings": [
-        "../api-core/src/features/settings/GetSettings/index.js"
-      ],
-      "@webiny/api-core/features/UpdateSettings": [
-        "../api-core/src/features/settings/UpdateSettings/index.js"
-      ],
-      "@webiny/api-core/features/DeleteSettings": [
-        "../api-core/src/features/settings/DeleteSettings/index.js"
-      ],
       "@webiny/api-core/features/CreateApiKey": [
         "../api-core/src/features/security/apiKeys/CreateApiKey/index.js"
       ],

@@ -80,7 +80,7 @@ export const Extensions = () => {
             )}
 
             {/* API */}
-            {/*<MyIdpExtension/>*/}
+            {/*<MyIdpExtension />*/}
             <Cognito />
 
             <MySchemaExtension />

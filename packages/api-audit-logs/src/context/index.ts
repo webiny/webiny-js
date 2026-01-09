@@ -21,7 +21,7 @@ const getDeleteLogsAfterDays = (days?: number): number => {
     return 60;
 };
 
-export const createAcoAuditLogsContext = (params?: ISetupContextOptions) => {
+export const createAuditLogsContext = (params?: ISetupContextOptions) => {
     const plugin = new ContextPlugin<AuditLogsContext>(async context => {
         const storage = createStorage({
             tableName: params?.tableName,

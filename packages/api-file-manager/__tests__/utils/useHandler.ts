@@ -1,6 +1,6 @@
 import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
 import type { LambdaContext } from "@webiny/handler-aws/types";
-import type { FileManagerContext } from "~/types";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import type { HandlerParams } from "./plugins";
 import { handlerPlugins } from "./plugins";
 
@@ -8,12 +8,12 @@ export const useHandler = (params: HandlerParams = {}) => {
     const corePlugins = handlerPlugins(params);
 
     const plugins = [...corePlugins].concat([
-        createRawEventHandler<any, FileManagerContext, FileManagerContext>(async ({ context }) => {
+        createRawEventHandler<any, ApiCoreContext>(async ({ context }) => {
             return context;
         })
     ]);
 
-    const handler = createRawHandler<any, FileManagerContext>({
+    const handler = createRawHandler<any, ApiCoreContext>({
         plugins,
         debug: process.env.DEBUG === "true"
     });

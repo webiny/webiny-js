@@ -5,7 +5,13 @@ const password = zod.string().describe("Password");
 const common = {
     from: zod.string().email().describe("Mail from"),
     port: zod.number().optional().nullish().describe("Port"),
-    replyTo: zod.string().email().optional().describe("Mail reply-to"),
+    replyTo: zod
+        .preprocess(
+            // We need to set empty strings to `null` before email validation kicks in
+            value => (value === "" ? null : value),
+            zod.string().email().optional().nullish()
+        )
+        .describe("Mail reply-to"),
     host: zod.string().describe("Hostname"),
     user: zod.string().describe("User")
 };

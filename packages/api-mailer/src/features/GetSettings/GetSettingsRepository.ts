@@ -1,19 +1,18 @@
 import { Result } from "@webiny/feature/api";
-import { GetSettingsUseCase as CoreGetSettings } from "@webiny/api-core/features/GetSettings";
 import { Encryption } from "~/domain/Encryption/abstractions.js";
 import { GetSettingsRepository } from "./abstractions.js";
 import type { TransportSettings } from "~/types.js";
-
-const SETTINGS_NAME = "mailerTransportSettings";
+import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
+import { MAILER_TRANSPORT_SETTINGS } from "~/constants.js";
 
 class GetSettingsRepositoryImpl implements GetSettingsRepository.Interface {
     constructor(
-        private getSettings: CoreGetSettings.Interface,
+        private keyValueStore: KeyValueStore.Interface,
         private encryption: Encryption.Interface
     ) {}
 
     async get(): Promise<Result<TransportSettings | null>> {
-        const result = await this.getSettings.execute(SETTINGS_NAME);
+        const result = await this.keyValueStore.get<TransportSettings>(MAILER_TRANSPORT_SETTINGS);
 
         if (result.isFail()) {
             return Result.ok(null);
@@ -24,18 +23,18 @@ class GetSettingsRepositoryImpl implements GetSettingsRepository.Interface {
             return Result.ok(null);
         }
 
-        const data = settings.data as TransportSettings;
-
         // Decrypt password if present
-        const password = data.password ? await this.encryption.decrypt(String(data.password)) : "";
+        const password = settings.password
+            ? await this.encryption.decrypt(String(settings.password))
+            : "";
 
         const transportSettings: TransportSettings = {
-            host: String(data.host || ""),
-            port: Number(data.port || 25),
-            user: String(data.user || ""),
+            host: String(settings.host || ""),
+            port: Number(settings.port || 25),
+            user: String(settings.user || ""),
             password,
-            from: String(data.from || ""),
-            replyTo: data.replyTo ? String(data.replyTo) : undefined
+            from: String(settings.from || ""),
+            replyTo: settings.replyTo ? String(settings.replyTo) : undefined
         };
 
         return Result.ok(transportSettings);
@@ -44,5 +43,5 @@ class GetSettingsRepositoryImpl implements GetSettingsRepository.Interface {
 
 export const GetSettingsRepositoryImplementation = GetSettingsRepository.createImplementation({
     implementation: GetSettingsRepositoryImpl,
-    dependencies: [CoreGetSettings, Encryption]
+    dependencies: [KeyValueStore, Encryption]
 });

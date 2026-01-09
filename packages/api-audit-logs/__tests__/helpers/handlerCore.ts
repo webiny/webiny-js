@@ -13,7 +13,7 @@ import { createAuditLogs } from "~/index";
 import { createFileManagerContext } from "@webiny/api-file-manager";
 import { createMailerContext } from "@webiny/api-mailer";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
-import { createAcoAuditLogsContext } from "~/context/index.js";
+import { createAuditLogsContext } from "~/context/index.js";
 import { createWebsiteBuilder } from "@webiny/api-website-builder";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { ApiKey } from "@webiny/api-core/types/security.js";
@@ -105,7 +105,7 @@ export const createHandlerCore = (params?: CreateHandlerCoreParams) => {
             createWebsiteBuilder(),
             createAco({ documentClient }),
             createAuditLogs(),
-            createAcoAuditLogsContext(),
+            createAuditLogsContext(),
             plugins,
             graphQLHandlerPlugins(),
             bottomPlugins

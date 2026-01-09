@@ -1,36 +1,66 @@
-import type { JwtPayload } from "jsonwebtoken";
+import type { JwtPayload as IJwtPayload, JwtHeader as IJwtHeader } from "jsonwebtoken";
 import { createAbstraction } from "@webiny/feature/api";
-import type { IdentityData } from "~/features/security/IdentityContext/Identity.js";
+import type { IdentityData as IIdentityData } from "~/features/security/IdentityContext/Identity.js";
+import type { Jwk as IJwk } from "~/features/security/utils/verifyJwtUsingJwk.js";
 
-export interface IIdpProviderFactory {
-    getIdpProvider(): Promise<IIdpProvider> | IIdpProvider;
+export type IJwt = {
+    header: IJwtHeader;
+    payload: IJwtPayload;
+};
+
+// Generic Idp Provider
+export interface IIdentityProvider {
+    isApplicable(token: string): boolean;
+    getIdentity(token: string): Promise<IIdentityData | null>;
 }
 
-export interface IIdpProvider {
-    isApplicable(token: JwtPayload): boolean;
-    getIdentity(token: string): Promise<IdentityData | null>;
+export const IdentityProvider = createAbstraction<IIdentityProvider>("IdentityProvider");
+
+export namespace IdentityProvider {
+    export type Interface = IIdentityProvider;
+    export type IdentityData = IIdentityData;
+    export type JwtPayload = IJwtPayload;
 }
 
-export interface IOidcIdpConfig {
-    getIdentity(token: JwtPayload): Promise<IdentityData> | IdentityData;
-    verifyTokenClaims?(token: JwtPayload): Promise<JwtPayload> | JwtPayload;
-    verifyToken?(token: string): Promise<JwtPayload> | JwtPayload;
+export interface IJwtIdentityProvider {
+    isApplicable(token: IJwtPayload): boolean;
+    getIdentity(token: string, jwt: IJwt): Promise<IIdentityData | null> | IIdentityData | null;
 }
 
-export const IdpProviderFactory = createAbstraction<IIdpProviderFactory>("IdpProviderFactory");
+export const JwtIdentityProvider = createAbstraction<IJwtIdentityProvider>("JwtIdentityProvider");
 
-export namespace IdpProviderFactory {
-    export type Interface = IIdpProviderFactory;
+export namespace JwtIdentityProvider {
+    export type Interface = IJwtIdentityProvider;
+    export type Jwt = IJwt;
+    export type JwtPayload = IJwtPayload;
+    export type JwtHeader = IJwtHeader;
 }
 
-export const IdpProvider = createAbstraction<IIdpProvider>("IdpProvider");
-
-export namespace IdpProvider {
-    export type Interface = IIdpProvider;
+// OIDC Provider
+export interface IOidcIdentityProvider {
+    issuer: string;
+    clientId: string;
+    isApplicable(token: IJwtPayload): boolean;
+    getIdentity(jwt: IJwtPayload): Promise<IIdentityData> | IIdentityData;
+    verifyToken?(token: string): Promise<IJwtPayload | undefined>;
+    verifyTokenClaims?(token: IJwtPayload): Promise<void> | void;
 }
 
-export const OidcIdpConfig = createAbstraction<IOidcIdpConfig>("OidcIdpConfig");
+export const OidcIdentityProvider =
+    createAbstraction<IOidcIdentityProvider>("OidcIdentityProvider");
 
-export namespace OidcIdpConfig {
-    export type Interface = IOidcIdpConfig;
+export namespace OidcIdentityProvider {
+    export type Interface = IOidcIdentityProvider;
+    export type JwtPayload = IJwtPayload;
+    export type IdentityData = IIdentityData;
+}
+
+interface IJwkCache {
+    getKeys(issuer: string): Promise<IJwk[]>;
+}
+
+export const JwkCache = createAbstraction<IJwkCache>("JwkCache");
+export namespace JwkCache {
+    export type Interface = IJwkCache;
+    export type Jwk = IJwk;
 }

@@ -65,6 +65,7 @@ export class Converter implements IConverter {
             PK: defaultKeys.partitionKey,
             SK: defaultKeys.sortKey as unknown as string,
             ...keys,
+            GSI_TENANT: auditLog.tenant,
             data: {
                 ...auditLog,
                 expiresAt: auditLog.expiresAt.toISOString(),
