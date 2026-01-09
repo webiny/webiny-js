@@ -6,6 +6,7 @@
     "@types/react": "18.2.79",
     "@types/react-dom": "18.2.25",
     "@webiny/cli": "latest",
+    "@webiny/cognito": "latest",
     "eslint": "^9.35.0",
     "eslint-plugin-react": "^7.37.5",
     "globals": "^16.3.0",
