@@ -86,7 +86,12 @@ import {
     wcpService
 } from "./services/index.js";
 
-import { buildAppWithHooks, deployAppWithHooks, watchWithHooks } from "./decorators/index.js";
+import {
+    buildAppWithHooks,
+    deployAppWithHooks,
+    watchWithHooks,
+    getPulumiServiceWithDownloadInfo
+} from "./decorators/index.js";
 
 import {
     GetProject,
@@ -306,6 +311,7 @@ export const createProjectSdkContainer = async (
     container.registerDecorator(buildAppWithHooks);
     container.registerDecorator(deployAppWithHooks);
     container.registerDecorator(watchWithHooks);
+    container.registerDecorator(getPulumiServiceWithDownloadInfo);
 
     // Register custom implementations first (they replace existing implementations)
     const projectImplementations = [
