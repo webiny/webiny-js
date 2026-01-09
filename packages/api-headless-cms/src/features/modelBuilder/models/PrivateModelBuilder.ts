@@ -10,6 +10,7 @@ export class PrivateModelBuilder implements IPrivateModelBuilder {
     private config: {
         modelId?: string;
         name?: string;
+        titleFieldId?: string;
         fields?: CmsModelField[];
     } = {};
 
@@ -22,6 +23,11 @@ export class PrivateModelBuilder implements IPrivateModelBuilder {
 
     name(name: string): this {
         this.config.name = name;
+        return this;
+    }
+
+    titleFieldId(id: string): this {
+        this.config.titleFieldId = id;
         return this;
     }
 
@@ -53,6 +59,7 @@ export class PrivateModelBuilder implements IPrivateModelBuilder {
         return {
             modelId: this.config.modelId,
             name: this.config.name,
+            titleFieldId: this.config.titleFieldId,
             fields: this.config.fields,
             authorization: false,
             noValidate: true
