@@ -4,7 +4,6 @@ import {
     ProjectSdkParamsService
 } from "~/abstractions/index.js";
 import { GracefulError } from "@webiny/project";
-import chalk from "chalk";
 
 class ValidateProductionPulumiStateImpl implements CoreBeforeDeploy.Interface {
     constructor(
@@ -32,18 +31,15 @@ class ValidateProductionPulumiStateImpl implements CoreBeforeDeploy.Interface {
             return;
         }
 
-        const error = new Error(
-            "Please confirm you want to use local Pulumi state files with your production deployment."
-        );
+        const error = new Error("Cannot deploy to production with local state files.");
 
         const message = [
-            "Please confirm you want to use local Pulumi state files with",
-            "your production deployment by appending",
-            "%s to the command.",
+            "Use the %s flag to continue with local Pulumi state files,",
+            "or configure a remote backend for production deployments.",
             "Learn more: https://webiny.link/state-files-production."
         ].join(" ");
 
-        throw GracefulError.from(error, message, chalk.red("--allow-local-state-files"));
+        throw GracefulError.from(error, message, "--allow-local-state-files");
     }
 }
 
