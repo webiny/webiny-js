@@ -21,18 +21,20 @@ class FieldBuilderRegistryImpl implements IFieldBuilderRegistry {
         }
 
         // Return Proxy for dynamic method access
-        return new Proxy(this, {
+        const proxy = new Proxy(this, {
             get(target, prop: string) {
                 // Check if it's a registered field type
                 const factory = target.fieldTypes.get(prop);
                 if (factory) {
-                    return () => factory.create();
+                    return () => factory.create(proxy as IFieldBuilderRegistry);
                 }
 
                 // Otherwise return the actual property
                 return (target as any)[prop];
             }
         }) as any;
+
+        return proxy;
     }
 }
 

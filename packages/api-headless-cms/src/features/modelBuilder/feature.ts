@@ -1,6 +1,7 @@
 import { createFeature } from "@webiny/feature/api";
 import { FieldBuilderRegistry } from "./fields/FieldBuilderRegistry.js";
 import { TextFieldType } from "./fields/TextFieldType.js";
+import { ObjectFieldType } from "./fields/ObjectFieldType.js";
 import { PublicModelProvider } from "./models/PublicModelProvider.js";
 import { PrivateModelProvider } from "./models/PrivateModelProvider.js";
 import { ModelsProvider } from "./models/ModelsProvider.js";
@@ -10,6 +11,7 @@ export const ModelBuilderFeature = createFeature({
     register(container) {
         // Register core field types
         container.register(TextFieldType);
+        container.register(ObjectFieldType);
 
         // Register field builder registry (will automatically get all FieldType implementations)
         container.register(FieldBuilderRegistry).inSingletonScope();

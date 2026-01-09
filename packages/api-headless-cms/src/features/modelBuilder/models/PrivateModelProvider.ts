@@ -19,6 +19,21 @@ class PrivateModelProviderImpl implements ProviderAbstraction.Interface {
             const modelBuilder = await model.buildModel(builder);
             const modelConfig = modelBuilder.build();
 
+            // Normalize fields: remove empty tags arrays to match old behavior
+            const normalizeField = (field: any): any => {
+                if (field.tags && Array.isArray(field.tags) && field.tags.length === 0) {
+                    delete field.tags;
+                }
+                if (field.settings?.fields) {
+                    field.settings.fields = field.settings.fields.map(normalizeField);
+                }
+                return field;
+            };
+
+            if (modelConfig.fields) {
+                modelConfig.fields = modelConfig.fields.map(normalizeField);
+            }
+
             // Convert to CmsModel using existing plugin
             const plugin = createPrivateModelPlugin(modelConfig);
             models.push(plugin.contentModel as CmsModel);
