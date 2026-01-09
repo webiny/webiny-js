@@ -1,6 +1,6 @@
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
 import { FieldBuilder } from "./FieldBuilder.js";
-import { FieldBuilderRegistry, type IFieldBuilderRegistry } from "../abstractions.js";
+import { type IFieldBuilderRegistry } from "../abstractions.js";
 
 export interface IDynamicZoneTemplate {
     id: string;
@@ -13,23 +13,24 @@ export interface IDynamicZoneTemplate {
 
 export interface IDynamicZoneFieldBuilder extends FieldBuilder<"dynamicZone"> {
     required(message?: string): this;
-    templates(
-        builder: (registry: IFieldBuilderRegistry) => Array<{
-            id: string;
+    template(
+        id: string,
+        config: {
             name: string;
             gqlTypeName: string;
             icon?: string;
             description?: string;
-            fields: Record<string, FieldBuilder<any>>;
-        }>
+            fields: (registry: IFieldBuilderRegistry) => Record<string, FieldBuilder<any>>;
+        }
     ): this;
-    rawTemplates(templates: IDynamicZoneTemplate[]): this;
 }
 
 class DynamicZoneFieldBuilder
     extends FieldBuilder<"dynamicZone">
     implements IDynamicZoneFieldBuilder
 {
+    private templates: IDynamicZoneTemplate[] = [];
+
     constructor(private registry: IFieldBuilderRegistry) {
         super("dynamicZone");
     }
@@ -42,44 +43,40 @@ class DynamicZoneFieldBuilder
         });
     }
 
-    templates(
-        builder: (registry: IFieldBuilderRegistry) => Array<{
-            id: string;
+    template(
+        id: string,
+        config: {
             name: string;
             gqlTypeName: string;
             icon?: string;
             description?: string;
-            fields: Record<string, FieldBuilder<any>>;
-        }>
+            fields: (registry: IFieldBuilderRegistry) => Record<string, FieldBuilder<any>>;
+        }
     ): this {
-        const templateConfigs = builder(this.registry);
-        const templates: IDynamicZoneTemplate[] = [];
+        const fieldBuilders = config.fields(this.registry);
+        const fields: any[] = [];
 
-        for (const templateConfig of templateConfigs) {
-            const fields: any[] = [];
-            for (const [, fieldBuilder] of Object.entries(templateConfig.fields)) {
-                fields.push((fieldBuilder as any).build());
-            }
-
-            templates.push({
-                id: templateConfig.id,
-                name: templateConfig.name,
-                gqlTypeName: templateConfig.gqlTypeName,
-                icon: templateConfig.icon,
-                description: templateConfig.description,
-                fields
-            });
+        for (const [, fieldBuilder] of Object.entries(fieldBuilders)) {
+            fields.push((fieldBuilder as any).build());
         }
 
-        this.config.settings = this.config.settings || {};
-        this.config.settings.templates = templates;
+        this.templates.push({
+            id,
+            name: config.name,
+            gqlTypeName: config.gqlTypeName,
+            icon: config.icon,
+            description: config.description,
+            fields
+        });
+
         return this;
     }
 
-    rawTemplates(templates: IDynamicZoneTemplate[]): this {
+    override build() {
+        // Set templates in settings before building
         this.config.settings = this.config.settings || {};
-        this.config.settings.templates = templates;
-        return this;
+        this.config.settings.templates = this.templates;
+        return super.build();
     }
 }
 

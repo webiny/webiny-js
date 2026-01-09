@@ -128,9 +128,9 @@ describe("Model Builder Comparison - Old vs New API", () => {
                 expect(newField.label).toBe(oldField.label);
                 expect(newField.storageId).toBe(oldField.storageId);
                 expect(newField.multipleValues).toBe(oldField.multipleValues);
-                // Normalize: undefined validation equals empty array
+                // Normalize: undefined/empty values - builder ensures all properties are defined
                 expect(newField.validation || []).toEqual(oldField.validation || []);
-                expect(newField.tags).toEqual(oldField.tags);
+                expect(newField.tags || []).toEqual(oldField.tags || []);
 
                 // For object fields, compare nested fields
                 if (oldField.type === "object" && oldField.settings?.fields) {
@@ -149,10 +149,9 @@ describe("Model Builder Comparison - Old vs New API", () => {
                 }
             }
 
-            // Note: Full JSON comparison skipped because the simple test creates models differently
-            // The old way adds default fields (helpText, listValidation, etc.) via createModelField
-            // The new way normalizes these away in PrivateModelProvider to match production models
-            // Field-by-field comparison above validates the essential properties match
+            // Note: Field-by-field comparison validates the essential properties match
+            // The builder API ensures all field properties are defined with sensible defaults
+            // This is correct behavior per FieldBuilder.build() - fields should be complete
         });
     });
 });
