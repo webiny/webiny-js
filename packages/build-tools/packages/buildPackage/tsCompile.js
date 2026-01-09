@@ -31,7 +31,16 @@ export const tsCompile = async ({ cwd = "", overrides, debug }) => {
         configFileParsingDiagnostics: errors
     });
 
-    const { diagnostics, emitSkipped } = program.emit();
+    const { diagnostics, emitSkipped } = program.emit(
+        undefined, // targetSourceFile
+        (fileName, data, writeByteOrderMark, onError, sourceFiles) => {
+            // Only emit files within the current package directory
+            const relativePath = fileName.replace(cwd, "");
+            if (fileName.startsWith(cwd) && !relativePath.includes("../")) {
+                ts.sys.writeFile(fileName, data, writeByteOrderMark);
+            }
+        }
+    );
 
     const allDiagnostics = ts.getPreEmitDiagnostics(program).concat(diagnostics, errors);
 
