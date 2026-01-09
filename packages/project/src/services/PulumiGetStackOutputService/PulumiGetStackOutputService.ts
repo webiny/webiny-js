@@ -115,7 +115,7 @@ export class DefaultPulumiGetStackOutputService implements PulumiGetStackOutputS
         try {
             const content = await fs.readFile(cachePath, "utf-8");
             return JSON.parse(content);
-        } catch (error) {
+        } catch {
             // File doesn't exist or couldn't be read/parsed - this is expected on first run
             return null;
         }
