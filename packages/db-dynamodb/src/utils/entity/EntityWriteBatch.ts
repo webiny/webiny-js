@@ -20,7 +20,7 @@ export interface IEntityWriteBatchParams<T = GenericRecord> {
     delete?: IDeleteBatchItem[];
 }
 
-export class EntityWriteBatch implements IEntityWriteBatch {
+export class EntityWriteBatch<T> implements IEntityWriteBatch<T> {
     private readonly entity: ToolboxEntity;
     private readonly _items: BatchWriteItem[] = [];
     private readonly builder: IEntityWriteBatchBuilder;
@@ -44,7 +44,7 @@ export class EntityWriteBatch implements IEntityWriteBatch {
         }
     }
 
-    public put<T extends Record<string, any>>(item: IPutBatchItem<T>): void {
+    public put(item: IPutBatchItem<T>): void {
         this._items.push(this.builder.put(item));
     }
 

@@ -1,6 +1,5 @@
 import WebinyError from "@webiny/error";
 import type {
-    CmsModel,
     CmsModelStorageOperations,
     CmsModelStorageOperationsCreateParams,
     CmsModelStorageOperationsDeleteParams,

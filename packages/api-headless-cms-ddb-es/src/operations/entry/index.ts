@@ -48,7 +48,6 @@ import {
 } from "@webiny/api-headless-cms/constants.js";
 import type { IEntryEntity } from "~/definitions/types.js";
 
-
 interface IDynamoDbTableKeys {
     PK: string;
     SK: string;
@@ -177,7 +176,7 @@ export const createEntriesStorageOperations = (
             entityBatch.put({
                 ...storageEntry,
                 locked,
-                ...publishedKeys,
+                ...publishedKeys
             });
         }
 
@@ -451,7 +450,7 @@ export const createEntriesStorageOperations = (
             entityBatch.put({
                 ...storageEntry,
                 locked,
-                ...publishedKeys,
+                ...publishedKeys
             });
         }
 
@@ -472,7 +471,7 @@ export const createEntriesStorageOperations = (
                  */
                 entityBatch.put({
                     ...storageEntry,
-                    ...latestKeys,
+                    ...latestKeys
                 });
 
                 /**
@@ -516,7 +515,7 @@ export const createEntriesStorageOperations = (
                 });
 
                 entityBatch.put({
-                    ...updatedLatestStorageEntry,
+                    ...updatedLatestStorageEntry
                 });
 
                 /**

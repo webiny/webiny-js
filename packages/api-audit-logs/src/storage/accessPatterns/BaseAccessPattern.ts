@@ -87,7 +87,7 @@ export abstract class BaseAccessPattern<T> implements IAccessPattern<T> {
     protected async populateResult(
         input: IQueryPageResponse<IIndexStorageItem>
     ): Promise<IQueryPageResponse<IStorageItem>> {
-        const reader = createEntityReadBatch({
+        const reader = createEntityReadBatch<IStorageItem>({
             entity: this.entity,
             read: input.items.map(item => {
                 return {
@@ -96,7 +96,7 @@ export abstract class BaseAccessPattern<T> implements IAccessPattern<T> {
                 };
             })
         });
-        const result = await reader.execute<IStorageItem>();
+        const result = await reader.execute();
 
         return {
             ...input,
