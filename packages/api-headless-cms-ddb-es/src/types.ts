@@ -13,7 +13,8 @@ import type { AttributeDefinition, Table } from "@webiny/db-dynamodb/toolbox.js"
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import type { Client } from "@elastic/elasticsearch";
 import type { PluginsContainer } from "@webiny/plugins";
-import type { IEntity } from "@webiny/db-dynamodb";
+import type { IEntryEntity, IGroupEntity, IModelEntity } from "~/definitions/types.js";
+import type { IElasticsearchEntity } from "@webiny/api-elasticsearch";
 
 /**
  * A definition of the entry that is being prepared for the Elasticsearch.
@@ -165,10 +166,10 @@ export interface CmsContext extends BaseCmsContext {
 }
 
 export interface IGetEntitiesResponse {
-    groups: IEntity;
-    models: IEntity;
-    entries: IEntity;
-    entriesEs: IEntity;
+    groups: IGroupEntity;
+    models: IModelEntity;
+    entries: IEntryEntity;
+    entriesEs: IElasticsearchEntity;
 }
 
 export interface HeadlessCmsStorageOperations extends BaseHeadlessCmsStorageOperations<CmsContext> {

@@ -44,7 +44,7 @@ export interface IEntity<T extends GenericRecord = GenericRecord> {
     readonly entity: BaseEntity;
     readonly name: string;
     readonly table: TableDef;
-    createEntityReader(params?: IEntityCreateEntityReaderParams): IEntityReadBatch;
+    createEntityReader(params?: IEntityCreateEntityReaderParams): IEntityReadBatch<T>;
     createEntityWriter(params?: IEntityCreateEntityWriterParams<T>): IEntityWriteBatch<T>;
     createTableWriter(): ITableWriteBatch;
     put(item: IPutParamsItem<T>): IEntityPutResult;
@@ -78,11 +78,11 @@ export interface IEntityReadBatchKey {
     SK: string;
 }
 
-export interface IEntityReadBatch {
+export interface IEntityReadBatch<T = GenericRecord> {
     readonly total: number;
     readonly items: BatchReadItem[];
     get(input: IEntityReadBatchKey | IEntityReadBatchKey[]): void;
-    execute<T = GenericRecord>(): ReturnType<typeof batchReadAll<T>>;
+    execute(): ReturnType<typeof batchReadAll<T>>;
 }
 
 export interface IEntityReadBatchBuilderGetResponse {

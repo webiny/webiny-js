@@ -1,13 +1,14 @@
 import type { Table } from "@webiny/db-dynamodb/toolbox.js";
 import { createEntity, standardEntityAttributes } from "@webiny/db-dynamodb";
+import type { IEntryEntity, IEntryEntityAttributes } from "~/definitions/types.js";
 
 export interface CreateEntryEntityParams {
     table: Table<string, string, string>;
     entityName: string;
 }
-export const createEntryEntity = (params: CreateEntryEntityParams) => {
+export const createEntryEntity = (params: CreateEntryEntityParams): IEntryEntity => {
     const { table, entityName } = params;
-    return createEntity({
+    return createEntity<IEntryEntityAttributes>({
         name: entityName,
         table,
         attributes: {
@@ -23,9 +24,6 @@ export const createEntryEntity = (params: CreateEntryEntityParams) => {
             // TYPE: {
             //     type: "string"
             // },
-            __type: {
-                type: "string"
-            },
             tenant: {
                 type: "string"
             },

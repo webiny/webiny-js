@@ -1,13 +1,19 @@
 import type { Table } from "@webiny/db-dynamodb/toolbox.js";
-import { createEntity, type IEntity, standardEntityAttributes } from "@webiny/db-dynamodb";
+import {
+    createEntity,
+    type IStandardEntityAttributes,
+    standardEntityAttributes
+} from "@webiny/db-dynamodb";
+import type { IGroupEntity } from "~/definitions/types.js";
+import type { CmsGroup } from "@webiny/api-headless-cms/types/index.js";
 
 interface Params {
     table: Table<string, string, string>;
     entityName: string;
 }
-export const createGroupEntity = (params: Params): IEntity => {
+export const createGroupEntity = (params: Params): IGroupEntity => {
     const { table, entityName } = params;
-    return createEntity({
+    return createEntity<IStandardEntityAttributes<CmsGroup>>({
         table,
         name: entityName,
         attributes: standardEntityAttributes

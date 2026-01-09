@@ -10,7 +10,7 @@ import type {
 } from "@webiny/api-headless-cms/types/index.js";
 import { configurations } from "~/configurations.js";
 import type { Client } from "@elastic/elasticsearch";
-import type { IEntity } from "@webiny/db-dynamodb";
+import type { IModelEntity } from "~/definitions/types.js";
 
 interface PartitionKeysParams {
     tenant: string;
@@ -51,7 +51,7 @@ const createType = (): string => {
 };
 
 export interface CreateModelsStorageOperationsParams {
-    entity: IEntity;
+    entity: IModelEntity;
     elasticsearch: Client;
 }
 
@@ -174,7 +174,7 @@ export const createModelsStorageOperations = (
         const keys = createKeys(params);
 
         try {
-            const result = await entity.get<{ data: CmsModel }>(keys);
+            const result = await entity.get(keys);
 
             return result ? result.data : null;
         } catch (ex) {
@@ -193,7 +193,7 @@ export const createModelsStorageOperations = (
         const { where } = params;
         const partitionKey = createPartitionKey(where);
         try {
-            const result = await entity.queryAll<{ data: CmsModel }>({
+            const result = await entity.queryAll({
                 partitionKey,
                 options: {
                     gte: " "

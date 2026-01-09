@@ -8,9 +8,9 @@ import type {
     CmsGroupStorageOperationsUpdateParams
 } from "@webiny/api-headless-cms/types/index.js";
 import WebinyError from "@webiny/error";
-import type { IEntity } from "@webiny/db-dynamodb";
 import { filterItems, sortItems, ValueFilterPlugin } from "@webiny/db-dynamodb";
 import type { PluginsContainer } from "@webiny/plugins";
+import { IGroupEntity } from "~/definitions/types.js";
 
 interface PartitionKeyParams {
     tenant: string;
@@ -46,7 +46,7 @@ const createType = (): string => {
 };
 
 interface CreateGroupsStorageOperationsParams {
-    entity: IEntity;
+    entity: IGroupEntity;
     plugins: PluginsContainer;
 }
 export const createGroupsStorageOperations = (
@@ -125,7 +125,7 @@ export const createGroupsStorageOperations = (
         const keys = createKeys(params);
 
         try {
-            const result = await entity.get<{ data: CmsGroup }>(keys);
+            const result = await entity.get(keys);
 
             return result ? result.data : null;
         } catch (ex) {
@@ -145,7 +145,7 @@ export const createGroupsStorageOperations = (
 
         let records: CmsGroup[] = [];
         try {
-            const ddbRecords = await entity.queryAll<{ data: CmsGroup }>({
+            const ddbRecords = await entity.queryAll({
                 partitionKey: createPartitionKey(where),
                 options: {
                     gte: " "

@@ -68,14 +68,14 @@ export class Entity<T extends GenericRecord = GenericRecord> implements IEntity<
         this.entity = new BaseEntity(params);
     }
 
-    public createEntityReader(params?: IEntityCreateEntityReaderParams): IEntityReadBatch {
+    public createEntityReader(params?: IEntityCreateEntityReaderParams): IEntityReadBatch<T> {
         return createEntityReadBatch({
             entity: this.entity,
             read: params?.read
         });
     }
 
-    public createEntityWriter(params?: IEntityCreateEntityWriterParams): IEntityWriteBatch {
+    public createEntityWriter(params?: IEntityCreateEntityWriterParams): IEntityWriteBatch<T> {
         return createEntityWriteBatch({
             entity: this.entity,
             put: params?.put,

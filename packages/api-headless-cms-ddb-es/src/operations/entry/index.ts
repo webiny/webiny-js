@@ -10,7 +10,7 @@ import { extractEntriesFromIndex } from "~/helpers/index.js";
 import { configurations } from "~/configurations.js";
 import type { Client } from "@elastic/elasticsearch";
 import type { PluginsContainer } from "@webiny/plugins";
-import type { IEntity, IEntityQueryAllParams, IEntityQueryOneParams } from "@webiny/db-dynamodb";
+import type { IEntityQueryAllParams, IEntityQueryOneParams } from "@webiny/db-dynamodb";
 import { DataLoadersHandler } from "./dataLoaders.js";
 import {
     createLatestSortKey,
@@ -23,7 +23,9 @@ import {
     createLimit,
     decodeCursor,
     decompress,
-    encodeCursor
+    encodeCursor,
+    type IElasticsearchEntity,
+    type IElasticsearchEntityAttributes
 } from "@webiny/api-elasticsearch";
 import { zeroPad } from "@webiny/utils";
 import type {
@@ -34,11 +36,7 @@ import type { CmsEntryStorageOperations, CmsIndexEntry } from "~/types.js";
 import { createElasticsearchBody } from "./elasticsearch/body.js";
 import { logIgnoredEsResponseError } from "./elasticsearch/logIgnoredEsResponseError.js";
 import { shouldIgnoreEsResponseError } from "./elasticsearch/shouldIgnoreEsResponseError.js";
-import {
-    createLatestRecordType,
-    createPublishedRecordType,
-    createRecordType
-} from "./recordType.js";
+import { createRecordType } from "./recordType.js";
 import { StorageOperationsCmsModelPlugin } from "@webiny/api-headless-cms";
 import { createTransformer } from "./transformations/index.js";
 import { convertEntryKeysFromStorage } from "./transformations/convertEntryKeys.js";
@@ -48,15 +46,8 @@ import {
     isRestoredEntryMetaField,
     pickEntryMetaFields
 } from "@webiny/api-headless-cms/constants.js";
+import type { IEntryEntity } from "~/definitions/types.js";
 
-interface ElasticsearchDbRecord {
-    PK: string;
-    SK: string;
-    GSI_TENANT: string;
-    TYPE: string;
-    index: string;
-    data: Record<string, any>;
-}
 
 interface IDynamoDbTableKeys {
     PK: string;
@@ -65,8 +56,8 @@ interface IDynamoDbTableKeys {
 }
 
 export interface CreateEntriesStorageOperationsParams {
-    entity: IEntity;
-    esEntity: IEntity;
+    entity: IEntryEntity;
+    esEntity: IElasticsearchEntity;
     elasticsearch: Client;
     plugins: PluginsContainer;
 }
@@ -172,14 +163,12 @@ export const createEntriesStorageOperations = (
                 {
                     ...storageEntry,
                     locked,
-                    ...revisionKeys,
-                    TYPE: createRecordType()
+                    ...revisionKeys
                 },
                 {
                     ...storageEntry,
                     locked,
-                    ...latestKeys,
-                    TYPE: createLatestRecordType()
+                    ...latestKeys
                 }
             ]
         });
@@ -189,7 +178,6 @@ export const createEntriesStorageOperations = (
                 ...storageEntry,
                 locked,
                 ...publishedKeys,
-                TYPE: createPublishedRecordType()
             });
         }
 
@@ -298,12 +286,10 @@ export const createEntriesStorageOperations = (
             put: [
                 {
                     ...storageEntry,
-                    TYPE: createRecordType(),
                     ...revisionKeys
                 },
                 {
                     ...storageEntry,
-                    TYPE: createLatestRecordType(),
                     ...latestKeys
                 }
             ]
@@ -312,7 +298,6 @@ export const createEntriesStorageOperations = (
         if (isPublished) {
             entityBatch.put({
                 ...storageEntry,
-                TYPE: createPublishedRecordType(),
                 ...publishedKeys
             });
 
@@ -333,7 +318,6 @@ export const createEntriesStorageOperations = (
                     }),
                     SK: createRevisionSortKey(publishedRevisionStorageEntry),
                     GSI_TENANT: model.tenant,
-                    TYPE: createRecordType(),
                     status: CONTENT_ENTRY_STATUS.UNPUBLISHED
                 });
             }
@@ -458,8 +442,7 @@ export const createEntriesStorageOperations = (
                 {
                     ...storageEntry,
                     locked,
-                    ...revisionKeys,
-                    TYPE: createRecordType()
+                    ...revisionKeys
                 }
             ]
         });
@@ -469,7 +452,6 @@ export const createEntriesStorageOperations = (
                 ...storageEntry,
                 locked,
                 ...publishedKeys,
-                TYPE: createPublishedRecordType()
             });
         }
 
@@ -491,7 +473,6 @@ export const createEntriesStorageOperations = (
                 entityBatch.put({
                     ...storageEntry,
                     ...latestKeys,
-                    TYPE: createLatestRecordType()
                 });
 
                 /**
@@ -531,19 +512,17 @@ export const createEntriesStorageOperations = (
                         id: latestStorageEntry.id,
                         tenant: model.tenant
                     }),
-                    SK: createRevisionSortKey(latestStorageEntry),
-                    TYPE: createRecordType()
+                    SK: createRevisionSortKey(latestStorageEntry)
                 });
 
                 entityBatch.put({
                     ...updatedLatestStorageEntry,
-                    TYPE: createLatestRecordType()
                 });
 
                 /**
                  * Update the Elasticsearch table to propagate changes to the Elasticsearch.
                  */
-                const latestEsEntry = await esEntity.getClean<ElasticsearchDbRecord>(latestKeys);
+                const latestEsEntry = await esEntity.getClean(latestKeys);
 
                 if (latestEsEntry) {
                     const latestEsEntryDataDecompressed = (await decompress(
@@ -624,7 +603,7 @@ export const createEntriesStorageOperations = (
         };
         const latestSortKey = createLatestSortKey();
         const publishedSortKey = createPublishedSortKey();
-        const records = await entity.queryAll<CmsEntry>(queryAllParams);
+        const records = await entity.queryAll(queryAllParams);
         /**
          * Then update the folderId in each record and prepare it to be stored.
          */
@@ -683,7 +662,7 @@ export const createEntriesStorageOperations = (
         if (esEntityReader.total === 0) {
             return;
         }
-        const esRecords = await esEntityReader.execute<ElasticsearchDbRecord>();
+        const esRecords = await esEntityReader.execute();
 
         const esItems = (
             await Promise.all(
@@ -697,7 +676,7 @@ export const createEntriesStorageOperations = (
                     };
                 })
             )
-        ).filter(Boolean) as ElasticsearchDbRecord[];
+        ).filter((item): item is IElasticsearchEntityAttributes => !!item);
 
         if (esItems.length === 0) {
             return;
@@ -763,7 +742,7 @@ export const createEntriesStorageOperations = (
 
         const latestSortKey = createLatestSortKey();
         const publishedSortKey = createPublishedSortKey();
-        const records = await entity.queryAll<CmsEntry>(queryAllParams);
+        const records = await entity.queryAll(queryAllParams);
 
         /**
          * Let's pick the `deleted` meta fields from the entry.
@@ -838,7 +817,7 @@ export const createEntriesStorageOperations = (
             return;
         }
 
-        const esRecords = await esEntityReader.execute<ElasticsearchDbRecord>();
+        const esRecords = await esEntityReader.execute();
 
         const esItems = (
             await Promise.all(
@@ -852,7 +831,7 @@ export const createEntriesStorageOperations = (
                     };
                 })
             )
-        ).filter(Boolean) as ElasticsearchDbRecord[];
+        ).filter((item): item is IElasticsearchEntityAttributes => !!item);
 
         if (esItems.length === 0) {
             return;
@@ -933,7 +912,7 @@ export const createEntriesStorageOperations = (
 
         const latestSortKey = createLatestSortKey();
         const publishedSortKey = createPublishedSortKey();
-        const records = await entity.queryAll<CmsEntry>(queryAllParams);
+        const records = await entity.queryAll(queryAllParams);
 
         /**
          * Then update all the records with data received.
@@ -1000,7 +979,7 @@ export const createEntriesStorageOperations = (
             });
         }
 
-        const esRecords = await esEntityReader.execute<ElasticsearchDbRecord>();
+        const esRecords = await esEntityReader.execute();
 
         const esItems = (
             await Promise.all(
@@ -1014,7 +993,7 @@ export const createEntriesStorageOperations = (
                     };
                 })
             )
-        ).filter(Boolean) as ElasticsearchDbRecord[];
+        ).filter((item): item is IElasticsearchEntityAttributes => !!item);
 
         if (esItems.length === 0) {
             return initialStorageEntry;
@@ -1067,14 +1046,14 @@ export const createEntriesStorageOperations = (
             tenant: model.tenant
         });
 
-        const items = await entity.queryAll<CmsEntry>({
+        const items = await entity.queryAll({
             partitionKey,
             options: {
                 gte: " "
             }
         });
 
-        const esItems = await esEntity.queryAll<CmsEntry>({
+        const esItems = await esEntity.queryAll({
             partitionKey,
             options: {
                 gte: " "
@@ -1194,7 +1173,6 @@ export const createEntriesStorageOperations = (
                 ...latestStorageEntry,
                 PK: partitionKey,
                 SK: createLatestSortKey(),
-                TYPE: createLatestRecordType(),
                 GSI_TENANT: model.tenant
             });
 
@@ -1209,7 +1187,6 @@ export const createEntriesStorageOperations = (
                     tenant: model.tenant
                 }),
                 SK: createRevisionSortKey(initialLatestStorageEntry),
-                TYPE: createRecordType(),
                 GSI_TENANT: model.tenant
             });
 
@@ -1476,9 +1453,9 @@ export const createEntriesStorageOperations = (
             GSI_TENANT: model.tenant
         };
 
-        let latestEsEntry: ElasticsearchDbRecord | null = null;
+        let latestEsEntry: IElasticsearchEntityAttributes | null = null;
         try {
-            latestEsEntry = await esEntity.getClean<ElasticsearchDbRecord>(latestKeys);
+            latestEsEntry = await esEntity.getClean(latestKeys);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not read Elasticsearch latest data.",
@@ -1528,13 +1505,11 @@ export const createEntriesStorageOperations = (
             put: [
                 {
                     ...storageEntry,
-                    ...revisionKeys,
-                    TYPE: createRecordType()
+                    ...revisionKeys
                 },
                 {
                     ...storageEntry,
-                    ...publishedKeys,
-                    TYPE: createPublishedRecordType()
+                    ...publishedKeys
                 }
             ]
         });
@@ -1570,7 +1545,6 @@ export const createEntriesStorageOperations = (
                     entityBatch.put({
                         ...publishedStorageEntry,
                         status: CONTENT_ENTRY_STATUS.UNPUBLISHED,
-                        TYPE: createRecordType(),
                         PK: createPartitionKey(publishedStorageEntry),
                         SK: createRevisionSortKey(publishedStorageEntry),
                         GSI_TENANT: model.tenant
@@ -1603,7 +1577,6 @@ export const createEntriesStorageOperations = (
                 ...latestStorageEntryFields,
                 PK: createPartitionKey(latestStorageEntry),
                 SK: createLatestSortKey(),
-                TYPE: createLatestRecordType(),
                 GSI_TENANT: model.tenant
             });
 
@@ -1612,7 +1585,6 @@ export const createEntriesStorageOperations = (
                 ...latestStorageEntryFields,
                 PK: createPartitionKey(latestStorageEntry),
                 SK: createRevisionSortKey(latestStorageEntry),
-                TYPE: createRecordType(),
                 GSI_TENANT: model.tenant
             });
 
@@ -1630,7 +1602,6 @@ export const createEntriesStorageOperations = (
                         ...publishedStorageEntry,
                         PK: createPartitionKey(publishedStorageEntry),
                         SK: createRevisionSortKey(publishedStorageEntry),
-                        TYPE: createRecordType(),
                         status: CONTENT_ENTRY_STATUS.UNPUBLISHED,
                         GSI_TENANT: model.tenant
                     });
@@ -1691,7 +1662,7 @@ export const createEntriesStorageOperations = (
             /**
              * Update the Elasticsearch table to propagate changes to the Elasticsearch.
              */
-            const latestEsEntry = await esEntity.getClean<ElasticsearchDbRecord>(latestKeys);
+            const latestEsEntry = await esEntity.getClean(latestKeys);
 
             if (latestEsEntry) {
                 const latestEsEntryDataDecompressed = (await decompress(
@@ -1791,7 +1762,6 @@ export const createEntriesStorageOperations = (
                     ...storageEntry,
                     PK: partitionKey,
                     SK: createRevisionSortKey(entry),
-                    TYPE: createRecordType(),
                     GSI_TENANT: model.tenant
                 }
             ],
@@ -1824,7 +1794,6 @@ export const createEntriesStorageOperations = (
                 ...storageEntry,
                 PK: partitionKey,
                 SK: createLatestSortKey(),
-                TYPE: createLatestRecordType(),
                 GSI_TENANT: model.tenant
             });
 
@@ -2034,7 +2003,7 @@ export const createEntriesStorageOperations = (
         };
 
         try {
-            const entry = await entity.queryOneClean<CmsEntry>(queryParams);
+            const entry = await entity.queryOneClean(queryParams);
 
             if (!entry) {
                 return null;
