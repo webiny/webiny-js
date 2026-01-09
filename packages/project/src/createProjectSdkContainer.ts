@@ -63,6 +63,7 @@ import {
     getPulumiService,
     getPulumiVersionService,
     getYarnVersionService,
+    isRemotePulumiBackendService,
     listAppLambdaFunctionsService,
     listDeployedEnvironmentsService,
     listPackagesInAppWorkspaceService,
@@ -151,6 +152,7 @@ export const createProjectSdkContainer = async (
     container.register(getPulumiService).inSingletonScope();
     container.register(getPulumiVersionService).inSingletonScope();
     container.register(getYarnVersionService).inSingletonScope();
+    container.register(isRemotePulumiBackendService).inSingletonScope();
     container.register(listAppLambdaFunctionsService).inSingletonScope();
     container.register(listDeployedEnvironmentsService).inSingletonScope();
     container.register(listPackagesInAppWorkspaceService).inSingletonScope();

@@ -9,7 +9,8 @@ import {
     ApiBeforeWatch,
     BeforeBuild,
     BeforeDeploy,
-    BeforeWatch
+    BeforeWatch,
+    CoreBeforeDeploy
 } from "~/extensions/index.js";
 
 const p = createPathResolver(import.meta.dirname, "Project");
@@ -28,6 +29,7 @@ export const Project = () => {
             <BeforeBuild src={p("WcpSetEnvVarsBeforeBuild.js")} />
             <BeforeWatch src={p("WcpSetEnvVarsBeforeWatch.js")} />
             <BeforeDeploy src={p("EnsureTelemetryEnabledForOss.js")} />
+            <CoreBeforeDeploy src={p("ValidateProductionPulumiState.js")} />
         </>
     );
 };

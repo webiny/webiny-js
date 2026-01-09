@@ -19,6 +19,7 @@ export interface IDeployCommandParams {
     deploymentLogs?: boolean;
     build?: boolean;
     preview?: boolean;
+    allowLocalStateFiles?: boolean;
 }
 
 export interface IDeploySingleAppParams {
@@ -82,6 +83,12 @@ export class DeployCommand implements CliCommand.Interface<IDeployCommandParams>
                     description: "Print deployment logs (automatically enabled in CI environments)",
                     type: "boolean",
                     default: false
+                },
+                {
+                    name: "allow-local-state-files",
+                    description:
+                        "Allow using local Pulumi state files with production environment deployment (not recommended).",
+                    type: "boolean"
                 }
             ],
             handler: async (params: IDeployCommandParams) => {
