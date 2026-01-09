@@ -30,25 +30,18 @@ export class ExtensionInstanceModel<TParamsSchema extends ParamsSchemaDefinition
             return;
         }
 
+        // Call paramsSchema with context that includes z
+        const contextWithZ = { ...this.context, z };
+        const result = this.definition.paramsSchema(contextWithZ);
+        
+        // Check if the result is already a Zod object or a plain object
         let paramsSchema: z.ZodObject<any>;
-
-        // Try the new pattern first: (z) => ({...})
-        // This returns a plain object, which we need to wrap with z.object()
-        try {
-            const result = this.definition.paramsSchema(z as any);
-            
-            // Check if the result is already a Zod object (legacy pattern)
-            // or a plain object (new pattern)
-            if (result && typeof result === 'object' && 'safeParse' in result) {
-                // Legacy pattern: result is already a ZodObject with validation methods
-                paramsSchema = result as z.ZodObject<any>;
-            } else {
-                // New pattern: result is a plain object, wrap it
-                paramsSchema = z.object(result as any);
-            }
-        } catch (error) {
-            // If calling with z fails, try the legacy pattern with context
-            paramsSchema = this.definition.paramsSchema(this.context as any) as z.ZodObject<any>;
+        if (result && typeof result === 'object' && 'safeParse' in result) {
+            // Result is already a ZodObject (e.g., z.object({...}))
+            paramsSchema = result as z.ZodObject<any>;
+        } else {
+            // Result is a plain object, wrap it
+            paramsSchema = z.object(result as any);
         }
 
         const validationResult = await paramsSchema.safeParseAsync(this.params);

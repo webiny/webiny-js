@@ -5,7 +5,7 @@ export const ExtensionDefinitions = defineExtension({
     tags: { runtimeContext: "project" },
     description: "Register additional extension definitions.",
     multiple: true,
-    paramsSchema: (z: typeof import('zod').z) => ({
+    paramsSchema: ({ z }) => ({
         src: z.string()
     })
 });

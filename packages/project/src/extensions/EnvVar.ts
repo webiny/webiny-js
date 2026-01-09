@@ -5,7 +5,7 @@ export const EnvVar = defineExtension({
     tags: { runtimeContext: "project" },
     description: "Set an environment variable in the project context.",
     multiple: true,
-    paramsSchema: (z: typeof import('zod').z) => ({
+    paramsSchema: ({ z }) => ({
         // TODO: enable using `name` instead of `varName` for better consistency.
         varName: z.string().describe("The environment variable name."),
         value: z.string().describe("The environment variable value.")

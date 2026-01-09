@@ -5,7 +5,7 @@ export const AdminStackOutputValue = defineExtension({
     tags: { runtimeContext: "project", appName: "admin" },
     description: "Add custom output values to the Admin stack.",
     multiple: true,
-    paramsSchema: (z: typeof import('zod').z) => ({
+    paramsSchema: ({ z }) => ({
         key: z.string().describe("The key for the output value"),
         value: z.any().describe("The value to output")
     })

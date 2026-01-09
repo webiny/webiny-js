@@ -1,11 +1,11 @@
-import { type ExtensionTags, type ParamsSchemaDefinition, type ParamsSchemaInfer, type ParamsSchemaFunction, type ParamsSchemaContextFunction } from "~/defineExtension/types.js";
+import { type ExtensionTags, type ParamsSchemaDefinition, type ParamsSchemaInfer, type ParamsSchemaFunction } from "~/defineExtension/types.js";
 
 export interface ExtensionDefinitionModelParams<TParamsSchema extends ParamsSchemaDefinition | undefined> {
     type: string;
     tags?: ExtensionTags;
     description: string;
     array?: boolean;
-    paramsSchema?: ParamsSchemaFunction<TParamsSchema> | ParamsSchemaContextFunction;
+    paramsSchema?: ParamsSchemaFunction<TParamsSchema>;
 
     build?(
         params: TParamsSchema extends ParamsSchemaDefinition ? ParamsSchemaInfer<TParamsSchema> : any,
@@ -22,7 +22,7 @@ export class ExtensionDefinitionModel<TParamsSchema extends ParamsSchemaDefiniti
     description: string;
     tags: ExtensionTags;
     multiple?: boolean;
-    paramsSchema?: ParamsSchemaFunction<TParamsSchema> | ParamsSchemaContextFunction;
+    paramsSchema?: ParamsSchemaFunction<TParamsSchema>;
 
     build?(
         params: TParamsSchema extends ParamsSchemaDefinition ? ParamsSchemaInfer<TParamsSchema> : any,

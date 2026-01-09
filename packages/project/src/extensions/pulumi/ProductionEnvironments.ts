@@ -5,7 +5,7 @@ export const ProductionEnvironments = defineExtension({
     tags: { runtimeContext: "project" },
     description: "Provide names for environments that are considered production environments.",
     multiple: true,
-    paramsSchema: (z: typeof import('zod').z) => ({
+    paramsSchema: ({ z }) => ({
         environments: z.array(
             z.string().superRefine((value, ctx) => {
                 if (!value) {

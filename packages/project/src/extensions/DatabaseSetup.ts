@@ -4,7 +4,7 @@ export const DatabaseSetup = defineExtension({
     type: "Project/DatabaseSetup",
     tags: { runtimeContext: "project" },
     description: "Define the database setup configuration (ddb, ddb+es, or ddb+os).",
-    paramsSchema: (z: typeof import('zod').z) => ({
+    paramsSchema: ({ z }) => ({
         setupName: z
             .enum(["ddb", "ddb+es", "ddb+os"])
             .describe(

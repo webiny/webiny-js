@@ -5,7 +5,7 @@ export const ApiStackOutputValue = defineExtension({
     tags: { runtimeContext: "project", appName: "api" },
     description: "Add custom output values to the Api stack.",
     multiple: true,
-    paramsSchema: (z: typeof import('zod').z) => ({
+    paramsSchema: ({ z }) => ({
         key: z.string().describe("The key for the output value"),
         value: z.any().describe("The value to output")
     })

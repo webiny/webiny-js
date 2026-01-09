@@ -13,19 +13,19 @@ export type ParamsSchemaDefinition = Record<string, z.ZodTypeAny>;
 export type ParamsSchemaInfer<T extends ParamsSchemaDefinition | undefined> =
     T extends ParamsSchemaDefinition ? z.infer<z.ZodObject<T> & { [k: string]: any }> : never;
 
-// Type for the new pattern: (z) => ({...})
-export type ParamsSchemaFunction<TParamsSchema extends ParamsSchemaDefinition | undefined> = 
-    (zod: typeof z) => TParamsSchema;
+// Context with z included for the new pattern
+export type ParamsSchemaContext = ExtensionInstanceModelContext & { z: typeof z };
 
-// Type for the old pattern: ({project}) => z.object({...})
-export type ParamsSchemaContextFunction = (ctx: ExtensionInstanceModelContext) => z.ZodObject<any>;
+// Type for the new unified pattern: ({ z, project, ... }) => ({...}) or z.object({...})
+export type ParamsSchemaFunction<TParamsSchema extends ParamsSchemaDefinition | undefined> = 
+    (ctx: ParamsSchemaContext) => TParamsSchema | z.ZodObject<any>;
 
 export interface DefineExtensionParams<TParamsSchema extends ParamsSchemaDefinition | undefined> {
     type: string;
     tags: ExtensionTags;
     description?: string;
     multiple?: boolean;
-    paramsSchema?: ParamsSchemaFunction<TParamsSchema> | ParamsSchemaContextFunction;
+    paramsSchema?: ParamsSchemaFunction<TParamsSchema>;
     build?: (
         params: TParamsSchema extends ParamsSchemaDefinition ? ParamsSchemaInfer<TParamsSchema> : any,
         ctx: ExtensionInstanceModelContext
