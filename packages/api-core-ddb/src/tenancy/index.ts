@@ -82,7 +82,8 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
                 PK: `T#${data.id}`,
                 SK: "A",
                 GSI1_PK: "TENANTS",
-                GSI1_SK: `T#${data.parent}#${data.createdOn}`
+                GSI1_SK: `T#${data.parent}#${data.createdOn}`,
+                GSI_TENANT: data.id
             };
 
             try {
@@ -115,7 +116,8 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
                 PK: tenantPK,
                 SK: "A",
                 GSI1_PK: "TENANTS",
-                GSI1_SK: `T#${data.parent}#${data.createdOn}`
+                GSI1_SK: `T#${data.parent}#${data.createdOn}`,
+                GSI_TENANT: data.id
             };
 
             const tableWrite = createTableWriteBatch({
