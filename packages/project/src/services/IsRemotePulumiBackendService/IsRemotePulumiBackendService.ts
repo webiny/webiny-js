@@ -3,15 +3,13 @@ import { IsRemotePulumiBackendService } from "~/abstractions/index.js";
 
 /**
  * Service to check if a remote Pulumi backend is configured via environment variables.
- * 
+ *
  * Checks for the following environment variables in order:
  * - WEBINY_CLI_PULUMI_BACKEND
  * - WEBINY_CLI_PULUMI_BACKEND_URL
  * - PULUMI_LOGIN (fallback for standard Pulumi configuration)
  */
-export class DefaultIsRemotePulumiBackendService
-    implements IsRemotePulumiBackendService.Interface
-{
+export class DefaultIsRemotePulumiBackendService implements IsRemotePulumiBackendService.Interface {
     execute(): boolean {
         return !!(
             process.env.WEBINY_CLI_PULUMI_BACKEND ||
