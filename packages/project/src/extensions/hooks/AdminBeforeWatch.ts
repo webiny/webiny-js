@@ -8,8 +8,8 @@ export const AdminBeforeWatch = defineExtension({
     description: "Add custom logic to be executed before the Admin watch process.",
     multiple: true,
     paramsSchema: ({ project, z }) => {
-        return z.object({
+        return {
             src: zodPathToAbstraction(AdminBeforeWatchAbstraction, project)
-        });
+        };
     }
 });

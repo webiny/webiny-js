@@ -8,8 +8,8 @@ export const ApiAfterBuild = defineExtension({
     description: "Add custom logic to be executed after the API build process.",
     multiple: true,
     paramsSchema: ({ project, z }) => {
-        return z.object({
+        return {
             src: zodPathToAbstraction(ApiAfterBuildAbstraction, project)
-        });
+        };
     }
 });

@@ -1,4 +1,3 @@
-import { z } from "zod";
 import { Node, Project, ArrayLiteralExpression } from "ts-morph";
 import { Abstraction } from "@webiny/di";
 import { defineExtension } from "~/defineExtension/index.js";
@@ -20,16 +19,16 @@ export const defineApiExtension = (params: DefineApiExtensionParams) =>
         multiple: true,
         paramsSchema: ({ project, z }) => {
             if (!params.abstraction) {
-                return z.object({
+                return {
                     src: z.string(),
                     exportName: z.string().optional()
-                });
+                };
             }
 
-            return z.object({
+            return {
                 src: zodPathToAbstraction(params.abstraction, project),
                 exportName: z.string().optional()
-            });
+            };
         },
         async build(params, ctx) {
             const extensionsTsFilePath = ctx.project.paths.workspaceFolder

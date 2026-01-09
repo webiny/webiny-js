@@ -8,8 +8,8 @@ export const BeforeDeploy = defineExtension({
     description: "Add custom logic to be executed before the PROJECT deploy process.",
     multiple: true,
     paramsSchema: ({ project, z }) => {
-        return z.object({
+        return {
             src: zodPathToAbstraction(BeforeDeployAbstraction, project)
-        });
+        };
     }
 });

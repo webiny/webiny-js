@@ -8,8 +8,8 @@ export const AdminPulumi = defineExtension({
     description: "Modify Admin app's cloud infrastructure using Pulumi.",
     multiple: true,
     paramsSchema: ({ project, z }) => {
-        return z.object({
+        return {
             src: zodPathToAbstraction(AdminPulumiAbstraction, project)
-        });
+        };
     }
 });

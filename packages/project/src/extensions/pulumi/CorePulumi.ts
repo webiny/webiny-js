@@ -8,8 +8,8 @@ export const CorePulumi = defineExtension({
     description: "Modify Core app's cloud infrastructure using Pulumi.",
     multiple: true,
     paramsSchema: ({ project, z }) => {
-        return z.object({
+        return {
             src: zodPathToAbstraction(CorePulumiAbstraction, project)
-        });
+        };
     }
 });

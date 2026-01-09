@@ -8,8 +8,8 @@ export const AdminBeforeDeploy = defineExtension({
     description: "Add custom logic to be executed before the ADMIN deployment process.",
     multiple: true,
     paramsSchema: ({ project, z }) => {
-        return z.object({
+        return {
             src: zodPathToAbstraction(AdminBeforeDeployAbstraction, project)
-        });
+        };
     }
 });

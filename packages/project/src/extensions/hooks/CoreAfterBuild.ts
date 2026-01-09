@@ -8,8 +8,8 @@ export const CoreAfterBuild = defineExtension({
     description: "Add custom logic to be executed after the CORE build process.",
     multiple: true,
     paramsSchema: ({ project, z }) => {
-        return z.object({
+        return {
             src: zodPathToAbstraction(CoreAfterBuildAbstraction, project)
-        });
+        };
     }
 });

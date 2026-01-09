@@ -8,8 +8,8 @@ export const BeforeWatch = defineExtension({
     description: "Add custom logic to be executed before the project watch process.",
     multiple: true,
     paramsSchema: ({ project, z }) => {
-        return z.object({
+        return {
             src: zodPathToAbstraction(BeforeWatchAbstraction, project)
-        });
+        };
     }
 });

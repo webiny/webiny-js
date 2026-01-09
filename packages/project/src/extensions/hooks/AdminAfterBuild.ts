@@ -8,8 +8,8 @@ export const AdminAfterBuild = defineExtension({
     description: "Add custom logic to be executed after the ADMIN build process.",
     multiple: true,
     paramsSchema: ({ project, z }) => {
-        return z.object({
+        return {
             src: zodPathToAbstraction(AdminAfterBuildAbstraction, project)
-        });
+        };
     }
 });

@@ -7,9 +7,9 @@ export const ProjectImplementation = defineExtension({
     multiple: true,
     description: "Define a custom implementation or replace an existing one.",
     paramsSchema: ({ project, z }) => {
-        return z.object({
+        return {
             src: zodPathToFile(project),
             singleton: z.boolean().optional().default(true)
-        });
+        };
     }
 });

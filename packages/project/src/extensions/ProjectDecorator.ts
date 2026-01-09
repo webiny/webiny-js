@@ -7,8 +7,8 @@ export const ProjectDecorator = defineExtension({
     multiple: true,
     description: "Decorate an existing implementation with additional functionality.",
     paramsSchema: ({ project, z }) => {
-        return z.object({
+        return {
             src: zodPathToFile(project)
-        });
+        };
     }
 });
