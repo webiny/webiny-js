@@ -20,7 +20,7 @@ import {
 import { ValueFilterPlugin } from "@webiny/db-dynamodb/plugins/definitions/ValueFilterPlugin.js";
 import { StorageOperationsCmsModelPlugin, StorageTransformPlugin } from "@webiny/api-headless-cms";
 import { CompressorPlugin } from "@webiny/api";
-import { createTable } from "@webiny/db-dynamodb";
+import { createTable } from "~/definitions/table.js";
 
 export * from "./plugins/index.js";
 

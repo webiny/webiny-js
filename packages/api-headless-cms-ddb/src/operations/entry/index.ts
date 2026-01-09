@@ -18,7 +18,7 @@ import {
     createRevisionSortKey
 } from "~/operations/entry/keys.js";
 import type { PluginsContainer } from "@webiny/plugins";
-import { decodeCursor, encodeCursor, zeroPad } from "@webiny/utils";
+import { decodeCursor, encodeCursor } from "@webiny/utils";
 import { StorageOperationsCmsModelPlugin, StorageTransformPlugin } from "@webiny/api-headless-cms";
 import type { FilterItemFromStorage } from "./filtering/types.js";
 import { createFields } from "~/operations/entry/filtering/createFields.js";
@@ -966,7 +966,7 @@ export const createEntriesStorageOperations = (
         const unfilteredRevisions = await entity.queryAllClean({
             partitionKey,
             options: {
-                lt: `REV#${zeroPad(version)}`,
+                beginsWith: `REV#`,
                 reverse: true
             }
         });

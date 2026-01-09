@@ -10,7 +10,7 @@ import { extractEntriesFromIndex } from "~/helpers/index.js";
 import { configurations } from "~/configurations.js";
 import type { Client } from "@elastic/elasticsearch";
 import type { PluginsContainer } from "@webiny/plugins";
-import type { IEntityQueryAllParams, IEntityQueryOneParams } from "@webiny/db-dynamodb";
+import type { IEntityQueryAllParams } from "@webiny/db-dynamodb";
 import { DataLoadersHandler } from "./dataLoaders.js";
 import {
     createLatestSortKey,
@@ -27,7 +27,6 @@ import {
     type IElasticsearchEntity,
     type IElasticsearchEntityAttributes
 } from "@webiny/api-elasticsearch";
-import { zeroPad } from "@webiny/utils";
 import type {
     ElasticsearchSearchResponse,
     SearchBody as ElasticsearchSearchBody
@@ -36,7 +35,6 @@ import type { CmsEntryStorageOperations, CmsIndexEntry } from "~/types.js";
 import { createElasticsearchBody } from "./elasticsearch/body.js";
 import { logIgnoredEsResponseError } from "./elasticsearch/logIgnoredEsResponseError.js";
 import { shouldIgnoreEsResponseError } from "./elasticsearch/shouldIgnoreEsResponseError.js";
-import { createRecordType } from "./recordType.js";
 import { StorageOperationsCmsModelPlugin } from "@webiny/api-headless-cms";
 import { createTransformer } from "./transformations/index.js";
 import { convertEntryKeysFromStorage } from "./transformations/convertEntryKeys.js";
@@ -1977,32 +1975,26 @@ export const createEntriesStorageOperations = (
 
         const { tenant } = model;
         const { entryId, version } = params;
-        const queryParams: IEntityQueryOneParams = {
-            partitionKey: createPartitionKey({
-                tenant,
-                id: entryId
-            }),
-            options: {
-                lt: `REV#${zeroPad(version)}`,
-                /**
-                 * We need to have extra checks because DynamoDB will return published or latest record if there is no REV# record.
-                 */
-                filters: [
-                    {
-                        attr: "TYPE",
-                        eq: createRecordType()
-                    },
-                    {
-                        attr: "version",
-                        lt: version
-                    }
-                ],
-                reverse: true
-            }
+
+        const partitionKey = createPartitionKey({
+            tenant,
+            id: entryId
+        });
+        const options: IEntityQueryAllParams["options"] = {
+            beginsWith: `REV#`,
+            reverse: true
         };
 
         try {
-            const entry = await entity.queryOneClean(queryParams);
+            const unfilteredEntries = await entity.queryAll({
+                partitionKey,
+                options
+            });
+            const entries = unfilteredEntries.filter(item => {
+                return item.version < version;
+            });
+
+            const entry = entries[0];
 
             if (!entry) {
                 return null;
@@ -2018,8 +2010,8 @@ export const createEntriesStorageOperations = (
                 {
                     ...params,
                     error: ex,
-                    partitionKey: queryParams.partitionKey,
-                    options: queryParams.options,
+                    partitionKey,
+                    options,
                     model
                 }
             );
