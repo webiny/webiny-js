@@ -13,6 +13,7 @@ export interface IProjectSdkParams {
     env: string;
     variant?: string;
     region?: string;
+    allowLocalStateFiles?: boolean;
 }
 
 export interface IProjectSdkParamsService {

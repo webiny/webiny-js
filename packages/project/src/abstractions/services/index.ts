@@ -9,6 +9,7 @@ export { GetProjectIdService } from "./GetProjectIdService.js";
 export { GetProjectService } from "./GetProjectService.js";
 export { GetProjectVersionService } from "./GetProjectVersionService.js";
 export { GetPulumiService } from "./GetPulumiService.js";
+export { IsRemotePulumiBackendService } from "./IsRemotePulumiBackendService.js";
 export { ListAppLambdaFunctionsService } from "./ListAppLambdaFunctionsService.js";
 export { ListDeployedEnvironmentsService } from "./ListDeployedEnvironmentsService.js";
 export { ListPackagesInAppWorkspaceService } from "./ListPackagesInAppWorkspaceService.js";
