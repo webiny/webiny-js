@@ -29,7 +29,10 @@ class ObjectFieldBuilder extends FieldBuilder<"object"> implements IObjectFieldB
     ): this {
         const fieldBuilders = builder(this.registry);
         const fields: any[] = [];
-        for (const [, fieldBuilder] of Object.entries(fieldBuilders)) {
+        for (const [key, fieldBuilder] of Object.entries(fieldBuilders)) {
+            // Automatically set the fieldId from the object key
+            // This ensures the key and fieldId are always in sync
+            fieldBuilder.fieldId(key);
             fields.push((fieldBuilder as any).build());
         }
         this.config.settings = this.config.settings || {};

@@ -37,7 +37,10 @@ export class PrivateModelBuilder implements IPrivateModelBuilder {
         const fieldBuilders = builder(this.registry);
         const fields: CmsModelField[] = [];
 
-        for (const [, fieldBuilder] of Object.entries(fieldBuilders)) {
+        for (const [key, fieldBuilder] of Object.entries(fieldBuilders)) {
+            // Automatically set the fieldId from the object key
+            // This ensures the key and fieldId are always in sync
+            fieldBuilder.fieldId(key);
             fields.push(fieldBuilder.build());
         }
 
