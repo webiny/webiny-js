@@ -3,6 +3,7 @@ import { Node, Project, ArrayLiteralExpression } from "ts-morph";
 import { Abstraction } from "@webiny/di";
 import { defineExtension } from "~/defineExtension/index.js";
 import { zodPathToAbstraction } from "~/defineExtension/zodTypes/zodPathToAbstraction.js";
+import { type ExtensionInstanceModelContext } from "~/defineExtension/index.js";
 import path from "path";
 import crypto from "crypto";
 
@@ -18,7 +19,7 @@ export const defineApiExtension = (params: DefineApiExtensionParams) =>
         tags: { runtimeContext: "app-build", appName: "api" },
         description: params.description,
         multiple: true,
-        paramsSchema: ({ project }) => {
+        paramsSchema: ({ project }: ExtensionInstanceModelContext) => {
             if (!params.abstraction) {
                 return z.object({
                     src: z.string(),

@@ -1,4 +1,5 @@
 import { defineExtension } from "~/defineExtension/index.js";
+import { type ExtensionInstanceModelContext } from "~/defineExtension/index.js";
 import { zodPathToAbstraction } from "~/defineExtension/zodTypes/zodPathToAbstraction.js";
 import { AdminBeforeWatch as AdminBeforeWatchAbstraction } from "~/abstractions/index.js";
 import { z } from "zod";
@@ -8,7 +9,7 @@ export const AdminBeforeWatch = defineExtension({
     tags: { runtimeContext: "project", application: "admin" },
     description: "Add custom logic to be executed before the Admin watch process.",
     multiple: true,
-    paramsSchema: ({ project }) => {
+    paramsSchema: ({ project }: ExtensionInstanceModelContext) => {
         return z.object({
             src: zodPathToAbstraction(AdminBeforeWatchAbstraction, project)
         });

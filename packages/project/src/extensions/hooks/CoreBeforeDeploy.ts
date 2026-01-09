@@ -1,4 +1,5 @@
 import { defineExtension } from "~/defineExtension/index.js";
+import { type ExtensionInstanceModelContext } from "~/defineExtension/index.js";
 import { zodPathToAbstraction } from "~/defineExtension/zodTypes/zodPathToAbstraction.js";
 import { CoreBeforeDeploy as CoreBeforeDeployAbstraction } from "~/abstractions/index.js";
 import { z } from "zod";
@@ -8,7 +9,7 @@ export const CoreBeforeDeploy = defineExtension({
     tags: { runtimeContext: "project", application: "core" },
     description: "Add custom logic to be executed before the CORE deployment process.",
     multiple: true,
-    paramsSchema: ({ project }) => {
+    paramsSchema: ({ project }: ExtensionInstanceModelContext) => {
         return z.object({
             src: zodPathToAbstraction(CoreBeforeDeployAbstraction, project)
         });

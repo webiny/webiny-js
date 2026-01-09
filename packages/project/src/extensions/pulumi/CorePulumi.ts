@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { type ExtensionInstanceModelContext } from "~/defineExtension/index.js";
 import { defineExtension } from "~/defineExtension/index.js";
 import { zodPathToAbstraction } from "~/defineExtension/zodTypes/zodPathToAbstraction.js";
 import { CorePulumi as CorePulumiAbstraction } from "~/abstractions/features/pulumi/index.js";
@@ -8,7 +9,7 @@ export const CorePulumi = defineExtension({
     tags: { runtimeContext: "project", appName: "core" },
     description: "Modify Core app's cloud infrastructure using Pulumi.",
     multiple: true,
-    paramsSchema: ({ project }) => {
+    paramsSchema: ({ project }: ExtensionInstanceModelContext) => {
         return z.object({
             src: zodPathToAbstraction(CorePulumiAbstraction, project)
         });

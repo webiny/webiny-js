@@ -1,11 +1,10 @@
-import { z } from "zod";
 import { defineExtension } from "../defineExtension/index.js";
 
 export const DatabaseSetup = defineExtension({
     type: "Project/DatabaseSetup",
     tags: { runtimeContext: "project" },
     description: "Define the database setup configuration (ddb, ddb+es, or ddb+os).",
-    paramsSchema: z.object({
+    paramsSchema: (z: typeof import('zod').z) => ({
         setupName: z
             .enum(["ddb", "ddb+es", "ddb+os"])
             .describe(

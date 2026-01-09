@@ -1,4 +1,3 @@
-import { z } from "zod";
 import { defineExtension } from "~/defineExtension/index.js";
 
 export const ProductionEnvironments = defineExtension({
@@ -6,7 +5,7 @@ export const ProductionEnvironments = defineExtension({
     tags: { runtimeContext: "project" },
     description: "Provide names for environments that are considered production environments.",
     multiple: true,
-    paramsSchema: z.object({
+    paramsSchema: (z: typeof import('zod').z) => ({
         environments: z.array(
             z.string().superRefine((value, ctx) => {
                 if (!value) {

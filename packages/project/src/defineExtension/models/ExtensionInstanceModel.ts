@@ -1,7 +1,8 @@
 import { type ExtensionDefinitionModel } from "./ExtensionDefinitionModel.js";
-import { type z } from "zod";
+import { z } from "zod";
 import { type ProjectModel } from "~/models/index.js";
 import { ProjectError } from "~/ProjectError.js";
+import { type ParamsSchemaDefinition, type ParamsSchemaInfer } from "~/defineExtension/types.js";
 
 export interface ExtensionInstanceModelContext {
     [key: string]: any;
@@ -9,10 +10,10 @@ export interface ExtensionInstanceModelContext {
     project: ProjectModel;
 }
 
-export class ExtensionInstanceModel<TParamsSchema extends z.ZodTypeAny> {
+export class ExtensionInstanceModel<TParamsSchema extends ParamsSchemaDefinition | undefined> {
     constructor(
         public definition: ExtensionDefinitionModel<TParamsSchema>,
-        public params: z.infer<TParamsSchema>,
+        public params: TParamsSchema extends ParamsSchemaDefinition ? ParamsSchemaInfer<TParamsSchema> : any,
         public context: ExtensionInstanceModelContext
     ) {}
 
@@ -29,10 +30,19 @@ export class ExtensionInstanceModel<TParamsSchema extends z.ZodTypeAny> {
             return;
         }
 
-        const paramsSchema =
-            typeof this.definition.paramsSchema === "function"
-                ? this.definition.paramsSchema(this.context)
-                : this.definition.paramsSchema;
+        let paramsSchema: z.ZodObject<any>;
+
+        // Try to detect which pattern we're using
+        // If it takes 'project' as a parameter, it's the old pattern
+        const funcStr = this.definition.paramsSchema.toString();
+        if (funcStr.includes('project') || funcStr.includes('ctx')) {
+            // Old pattern: ({ project }) => z.object({...})
+            paramsSchema = (this.definition.paramsSchema as any)(this.context);
+        } else {
+            // New pattern: z => ({...})
+            const paramsSchemaDefinition = (this.definition.paramsSchema as any)(z);
+            paramsSchema = z.object(paramsSchemaDefinition);
+        }
 
         const validationResult = await paramsSchema.safeParseAsync(this.params);
         if (!validationResult.success) {

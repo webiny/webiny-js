@@ -1,29 +1,37 @@
-import { type ExtensionTags } from "~/defineExtension/types.js";
-import { type z } from "zod";
-import { type ExtensionInstanceModelContext } from "~/defineExtension/index.js";
+import { type ExtensionTags, type ParamsSchemaDefinition, type ParamsSchemaInfer, type ParamsSchemaFunction, type ParamsSchemaContextFunction } from "~/defineExtension/types.js";
 
-export interface ExtensionDefinitionModelParams<TParamsSchema extends z.ZodTypeAny> {
+export interface ExtensionDefinitionModelParams<TParamsSchema extends ParamsSchemaDefinition | undefined> {
     type: string;
     tags?: ExtensionTags;
     description: string;
     array?: boolean;
-    paramsSchema?: TParamsSchema | ((ctx: ExtensionInstanceModelContext) => TParamsSchema);
+    paramsSchema?: ParamsSchemaFunction<TParamsSchema> | ParamsSchemaContextFunction;
 
-    build?(params: TParamsSchema, ctx: ExtensionInstanceModelContext): Promise<void> | void;
+    build?(
+        params: TParamsSchema extends ParamsSchemaDefinition ? ParamsSchemaInfer<TParamsSchema> : any,
+        ctx: any
+    ): Promise<void> | void;
 
-    validate?(params: TParamsSchema): Promise<void> | void;
+    validate?(
+        params: TParamsSchema extends ParamsSchemaDefinition ? ParamsSchemaInfer<TParamsSchema> : any
+    ): Promise<void> | void;
 }
 
-export class ExtensionDefinitionModel<TParamsSchema extends z.ZodTypeAny> {
+export class ExtensionDefinitionModel<TParamsSchema extends ParamsSchemaDefinition | undefined> {
     type: string;
     description: string;
     tags: ExtensionTags;
     multiple?: boolean;
-    paramsSchema?: TParamsSchema | ((ctx: ExtensionInstanceModelContext) => TParamsSchema);
+    paramsSchema?: ParamsSchemaFunction<TParamsSchema> | ParamsSchemaContextFunction;
 
-    build?(params: TParamsSchema, ctx: ExtensionInstanceModelContext): Promise<void> | void;
+    build?(
+        params: TParamsSchema extends ParamsSchemaDefinition ? ParamsSchemaInfer<TParamsSchema> : any,
+        ctx: any
+    ): Promise<void> | void;
 
-    validate?(params: TParamsSchema): Promise<void> | void;
+    validate?(
+        params: TParamsSchema extends ParamsSchemaDefinition ? ParamsSchemaInfer<TParamsSchema> : any
+    ): Promise<void> | void;
 
     constructor(params: ExtensionDefinitionModelParams<TParamsSchema>) {
         this.type = params.type;

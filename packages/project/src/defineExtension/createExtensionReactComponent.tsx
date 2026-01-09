@@ -1,7 +1,6 @@
 import React, { useMemo } from "react";
 import { Property, useIdGenerator } from "@webiny/react-properties";
-import { type DefineExtensionParams } from "./types.js";
-import { type z } from "zod";
+import { type DefineExtensionParams, type ParamsSchemaDefinition, type ParamsSchemaInfer } from "./types.js";
 
 const KeyValues = (props: Record<string, any>) => {
     const getId = useIdGenerator("");
@@ -10,14 +9,15 @@ const KeyValues = (props: Record<string, any>) => {
     });
 };
 
-type ExtensionReactComponentProps<TParamsSchema extends z.ZodTypeAny> = z.infer<TParamsSchema> & {
+type ExtensionReactComponentProps<TParamsSchema extends ParamsSchemaDefinition | undefined> = 
+    (TParamsSchema extends ParamsSchemaDefinition ? ParamsSchemaInfer<TParamsSchema> : {}) & {
     remove?: boolean;
     before?: string;
     after?: string;
     name?: string;
 };
 
-export function createExtensionReactComponent<TParamsSchema extends z.ZodTypeAny>(
+export function createExtensionReactComponent<TParamsSchema extends ParamsSchemaDefinition | undefined>(
     extensionParams: DefineExtensionParams<TParamsSchema>
 ) {
     const ExtensionReactComponent: React.FC<

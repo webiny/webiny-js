@@ -1,13 +1,14 @@
 import { z } from "zod";
 import { defineExtension } from "../defineExtension/index.js";
 import { zodPathToFile } from "../defineExtension/zodTypes/zodPathToFile.js";
+import { type ExtensionInstanceModelContext } from "~/defineExtension/index.js";
 
 export const ProjectImplementation = defineExtension({
     type: "Project/Implementation",
     tags: { runtimeContext: "project" },
     multiple: true,
     description: "Define a custom implementation or replace an existing one.",
-    paramsSchema: ({ project }) => {
+    paramsSchema: ({ project }: ExtensionInstanceModelContext) => {
         return z.object({
             src: zodPathToFile(project),
             singleton: z.boolean().optional().default(true)

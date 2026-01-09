@@ -1,13 +1,14 @@
 import { z } from "zod";
 import { defineExtension } from "../defineExtension/index.js";
 import { zodPathToFile } from "../defineExtension/zodTypes/zodPathToFile.js";
+import { type ExtensionInstanceModelContext } from "~/defineExtension/index.js";
 
 export const ProjectDecorator = defineExtension({
     type: "Project/Decorator",
     tags: { runtimeContext: "project" },
     multiple: true,
     description: "Decorate an existing implementation with additional functionality.",
-    paramsSchema: ({ project }) => {
+    paramsSchema: ({ project }: ExtensionInstanceModelContext) => {
         return z.object({
             src: zodPathToFile(project)
         });

@@ -1,4 +1,3 @@
-import { z } from "zod";
 import { defineExtension } from "~/defineExtension/index.js";
 
 export const ApiStackOutputValue = defineExtension({
@@ -6,7 +5,7 @@ export const ApiStackOutputValue = defineExtension({
     tags: { runtimeContext: "project", appName: "api" },
     description: "Add custom output values to the Api stack.",
     multiple: true,
-    paramsSchema: z.object({
+    paramsSchema: (z: typeof import('zod').z) => ({
         key: z.string().describe("The key for the output value"),
         value: z.any().describe("The value to output")
     })

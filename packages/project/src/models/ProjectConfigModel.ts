@@ -3,7 +3,7 @@ import {
     type IProjectConfigModel
 } from "~/abstractions/models/index.js";
 import { type ExtensionInstanceModel } from "~/defineExtension/models/index.js";
-import { type z } from "zod";
+import { type ParamsSchemaDefinition } from "~/defineExtension/types.js";
 import { type ExtensionComponent } from "~/defineExtension/index.js";
 
 export class ProjectConfigModel implements IProjectConfigModel {
@@ -17,7 +17,7 @@ export class ProjectConfigModel implements IProjectConfigModel {
         return new ProjectConfigModel(config);
     }
 
-    extensionsByType<TParamsSchema extends z.ZodTypeAny>(
+    extensionsByType<TParamsSchema extends ParamsSchemaDefinition | undefined>(
         type: string | ExtensionComponent<TParamsSchema>
     ): Array<ExtensionInstanceModel<TParamsSchema>> {
         let extensionType: string;
