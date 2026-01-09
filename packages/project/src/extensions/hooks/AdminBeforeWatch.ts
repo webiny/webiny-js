@@ -7,7 +7,7 @@ export const AdminBeforeWatch = defineExtension({
     tags: { runtimeContext: "project", application: "admin" },
     description: "Add custom logic to be executed before the Admin watch process.",
     multiple: true,
-    paramsSchema: ({ project, z }) => {
+    paramsSchema: ({ project }) => {
         return {
             src: zodPathToAbstraction(AdminBeforeWatchAbstraction, project)
         };

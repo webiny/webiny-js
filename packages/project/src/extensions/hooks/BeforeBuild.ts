@@ -7,7 +7,7 @@ export const BeforeBuild = defineExtension({
     tags: { runtimeContext: "project" },
     description: "Add custom logic to be executed before the PROJECT build process.",
     multiple: true,
-    paramsSchema: ({ project, z }) => {
+    paramsSchema: ({ project }) => {
         return {
             src: zodPathToAbstraction(BeforeBuildAbstraction, project)
         };

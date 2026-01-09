@@ -7,7 +7,7 @@ export const AdminAfterDeploy = defineExtension({
     tags: { runtimeContext: "project", application: "admin" },
     description: "Add custom logic to be executed after the ADMIN deployment process.",
     multiple: true,
-    paramsSchema: ({ project, z }) => {
+    paramsSchema: ({ project }) => {
         return {
             src: zodPathToAbstraction(AdminAfterDeployAbstraction, project)
         };

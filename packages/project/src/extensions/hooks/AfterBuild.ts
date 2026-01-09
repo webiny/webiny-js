@@ -7,7 +7,7 @@ export const AfterBuild = defineExtension({
     tags: { runtimeContext: "project" },
     description: "Add custom logic to be executed after the PROJECT build process.",
     multiple: true,
-    paramsSchema: ({ project, z }) => {
+    paramsSchema: ({ project }) => {
         return {
             src: zodPathToAbstraction(AfterBuildAbstraction, project)
         };

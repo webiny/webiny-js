@@ -7,7 +7,7 @@ export const ApiBeforeWatch = defineExtension({
     tags: { runtimeContext: "project", application: "api" },
     description: "Add custom logic to be executed before the API watch process.",
     multiple: true,
-    paramsSchema: ({ project, z }) => {
+    paramsSchema: ({ project }) => {
         return {
             src: zodPathToAbstraction(ApiBeforeWatchAbstraction, project)
         };

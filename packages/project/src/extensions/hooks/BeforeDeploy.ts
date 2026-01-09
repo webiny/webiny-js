@@ -7,7 +7,7 @@ export const BeforeDeploy = defineExtension({
     tags: { runtimeContext: "project" },
     description: "Add custom logic to be executed before the PROJECT deploy process.",
     multiple: true,
-    paramsSchema: ({ project, z }) => {
+    paramsSchema: ({ project }) => {
         return {
             src: zodPathToAbstraction(BeforeDeployAbstraction, project)
         };

@@ -7,7 +7,7 @@ export const CoreBeforeWatch = defineExtension({
     tags: { runtimeContext: "project", application: "core" },
     description: "Add custom logic to be executed before the CORE watch process.",
     multiple: true,
-    paramsSchema: ({ project, z }) => {
+    paramsSchema: ({ project }) => {
         return {
             src: zodPathToAbstraction(CoreBeforeWatchAbstraction, project)
         };

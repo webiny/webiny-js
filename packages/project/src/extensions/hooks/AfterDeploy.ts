@@ -7,7 +7,7 @@ export const AfterDeploy = defineExtension({
     tags: { runtimeContext: "project" },
     description: "Add custom logic to be executed after the PROJECT deploy process.",
     multiple: true,
-    paramsSchema: ({ project, z }) => {
+    paramsSchema: ({ project }) => {
         return {
             src: zodPathToAbstraction(AfterDeployAbstraction, project)
         };

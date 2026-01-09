@@ -7,7 +7,7 @@ export const BeforeWatch = defineExtension({
     tags: { runtimeContext: "project" },
     description: "Add custom logic to be executed before the project watch process.",
     multiple: true,
-    paramsSchema: ({ project, z }) => {
+    paramsSchema: ({ project }) => {
         return {
             src: zodPathToAbstraction(BeforeWatchAbstraction, project)
         };

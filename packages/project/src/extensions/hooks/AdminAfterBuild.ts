@@ -7,7 +7,7 @@ export const AdminAfterBuild = defineExtension({
     tags: { runtimeContext: "project", application: "admin" },
     description: "Add custom logic to be executed after the ADMIN build process.",
     multiple: true,
-    paramsSchema: ({ project, z }) => {
+    paramsSchema: ({ project }) => {
         return {
             src: zodPathToAbstraction(AdminAfterBuildAbstraction, project)
         };

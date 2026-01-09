@@ -7,7 +7,7 @@ export const AdminPulumi = defineExtension({
     tags: { runtimeContext: "project", appName: "admin" },
     description: "Modify Admin app's cloud infrastructure using Pulumi.",
     multiple: true,
-    paramsSchema: ({ project, z }) => {
+    paramsSchema: ({ project }) => {
         return {
             src: zodPathToAbstraction(AdminPulumiAbstraction, project)
         };

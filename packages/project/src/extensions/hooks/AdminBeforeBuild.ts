@@ -7,7 +7,7 @@ export const AdminBeforeBuild = defineExtension({
     tags: { runtimeContext: "project", application: "admin" },
     description: "Add custom logic to be executed before the ADMIN build process.",
     multiple: true,
-    paramsSchema: ({ project, z }) => {
+    paramsSchema: ({ project }) => {
         return {
             src: zodPathToAbstraction(AdminBeforeBuildAbstraction, project)
         };
