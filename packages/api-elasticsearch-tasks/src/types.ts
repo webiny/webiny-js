@@ -44,6 +44,7 @@ export interface AugmentedError extends Error {
 export interface IDynamoDbElasticsearchRecord {
     PK: string;
     SK: string;
+    GSI_TENANT: string;
     TYPE?: string;
     index: string;
     _et?: string;

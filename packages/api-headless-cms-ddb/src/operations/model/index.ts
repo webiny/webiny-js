@@ -1,6 +1,5 @@
 import WebinyError from "@webiny/error";
 import type {
-    CmsModel,
     CmsModelStorageOperations,
     CmsModelStorageOperationsCreateParams,
     CmsModelStorageOperationsDeleteParams,
@@ -8,10 +7,8 @@ import type {
     CmsModelStorageOperationsListParams,
     CmsModelStorageOperationsUpdateParams
 } from "@webiny/api-headless-cms/types/index.js";
-import type { Entity } from "@webiny/db-dynamodb/toolbox.js";
-import { queryAll, type QueryAllParams } from "@webiny/db-dynamodb/utils/query.js";
-import { deleteItem, put, get as getOne } from "@webiny/db-dynamodb";
 import { convertException } from "@webiny/utils";
+import type { IModelEntity } from "~/definitions/types.js";
 
 interface PartitionKeysParams {
     tenant: string;
@@ -34,11 +31,13 @@ const createSortKey = (params: SortKeyParams): string => {
 interface Keys {
     PK: string;
     SK: string;
+    GSI_TENANT: string;
 }
 const createKeys = (params: PartitionKeysParams & SortKeyParams): Keys => {
     return {
         PK: createPartitionKey(params),
-        SK: createSortKey(params)
+        SK: createSortKey(params),
+        GSI_TENANT: params.tenant
     };
 };
 
@@ -47,7 +46,7 @@ const createType = (): string => {
 };
 
 interface CreateModelsStorageOperationsParams {
-    entity: Entity<any>;
+    entity: IModelEntity;
 }
 export const createModelsStorageOperations = (
     params: CreateModelsStorageOperationsParams
@@ -60,13 +59,10 @@ export const createModelsStorageOperations = (
         const keys = createKeys(model);
 
         try {
-            await put({
-                entity,
-                item: {
-                    data: model,
-                    ...keys,
-                    TYPE: createType()
-                }
+            await entity.put({
+                data: model,
+                ...keys,
+                TYPE: createType()
             });
             return model;
         } catch (ex) {
@@ -84,13 +80,10 @@ export const createModelsStorageOperations = (
         const keys = createKeys(model);
 
         try {
-            await put({
-                entity,
-                item: {
-                    data: model,
-                    ...keys,
-                    TYPE: createType()
-                }
+            await entity.put({
+                data: model,
+                ...keys,
+                TYPE: createType()
             });
             return model;
         } catch (ex) {
@@ -111,10 +104,7 @@ export const createModelsStorageOperations = (
         const keys = createKeys(model);
 
         try {
-            await deleteItem({
-                entity,
-                keys
-            });
+            await entity.delete(keys);
             return model;
         } catch (ex) {
             throw new WebinyError(
@@ -133,12 +123,8 @@ export const createModelsStorageOperations = (
         const keys = createKeys(params);
 
         try {
-            const result = await getOne<{ data: CmsModel }>({
-                entity,
-                keys
-            });
-
-            return result ? result.data : null;
+            const result = await entity.get(keys);
+            return result?.data || null;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not get model.",
@@ -153,23 +139,26 @@ export const createModelsStorageOperations = (
 
     const list = async (params: CmsModelStorageOperationsListParams) => {
         const { where } = params;
-        const queryAllParams: QueryAllParams = {
-            entity,
-            partitionKey: createPartitionKey(where),
-            options: {
-                gte: " "
-            }
-        };
+
+        const partitionKey = createPartitionKey(where);
+
         try {
-            const result = await queryAll<{ data: CmsModel }>(queryAllParams);
-            return result ? result.map(item => item.data) : [];
+            const result = await entity.queryAll({
+                partitionKey,
+                options: {
+                    gte: " "
+                }
+            });
+            return result.map(item => {
+                return item.data;
+            });
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not list models.",
                 ex.code || "MODEL_LIST_ERROR",
                 {
                     error: ex,
-                    partitionKey: queryAllParams.partitionKey
+                    partitionKey
                 }
             );
         }

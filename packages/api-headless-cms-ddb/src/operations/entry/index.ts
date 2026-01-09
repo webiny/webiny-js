@@ -9,7 +9,6 @@ import type {
     StorageOperationsCmsModel
 } from "@webiny/api-headless-cms/types/index.js";
 import { CONTENT_ENTRY_STATUS } from "@webiny/api-headless-cms/types/index.js";
-import type { Entity } from "@webiny/db-dynamodb/toolbox.js";
 import {
     createGSIPartitionKey,
     createGSISortKey,
@@ -18,22 +17,13 @@ import {
     createPublishedSortKey,
     createRevisionSortKey
 } from "~/operations/entry/keys.js";
-import type { QueryAllParams, QueryOneParams } from "@webiny/db-dynamodb";
-import {
-    cleanupItem,
-    cleanupItems,
-    createEntityWriteBatch,
-    queryAll,
-    queryOne
-} from "@webiny/db-dynamodb";
 import type { PluginsContainer } from "@webiny/plugins";
-import { decodeCursor, encodeCursor } from "@webiny/utils/cursor.js";
-import { zeroPad } from "@webiny/utils/zeroPad.js";
+import { decodeCursor, encodeCursor, zeroPad } from "@webiny/utils";
 import { StorageOperationsCmsModelPlugin, StorageTransformPlugin } from "@webiny/api-headless-cms";
 import type { FilterItemFromStorage } from "./filtering/types.js";
 import { createFields } from "~/operations/entry/filtering/createFields.js";
 import { filter, sort } from "~/operations/entry/filtering/index.js";
-import type { CmsEntryStorageOperations } from "~/types.js";
+import type { CmsEntryStorageOperations, IEntryEntity } from "~/types.js";
 import {
     isDeletedEntryMetaField,
     isEntryLevelEntryMetaField,
@@ -41,16 +31,7 @@ import {
     pickEntryMetaFields
 } from "@webiny/api-headless-cms/constants.js";
 import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldType.js";
-
-const createType = (): string => {
-    return "cms.entry";
-};
-const createLatestType = (): string => {
-    return `${createType()}.l`;
-};
-const createPublishedType = (): string => {
-    return `${createType()}.p`;
-};
+import { cleanupItems } from "@webiny/db-dynamodb";
 
 interface ConvertStorageEntryParams {
     storageEntry: CmsStorageEntry;
@@ -86,7 +67,7 @@ const convertFromStorageEntry = (params: ConvertStorageEntryParams): CmsStorageE
 const MAX_LIST_LIMIT = 1000000;
 
 export interface CreateEntriesStorageOperationsParams {
-    entity: Entity<any>;
+    entity: IEntryEntity;
     plugins: PluginsContainer;
 }
 
@@ -112,7 +93,7 @@ export const createEntriesStorageOperations = (
     };
 
     const dataLoaders = new DataLoadersHandler({
-        entity
+        entity: entity.entity
     });
 
     const createStorageTransformCallable = (
@@ -170,26 +151,25 @@ export const createEntriesStorageOperations = (
          *  - create new main entry item
          *  - create new or update the latest entry item
          */
-        const entityBatch = createEntityWriteBatch({
-            entity,
+        const entityBatch = entity.createEntityWriter({
             put: [
                 {
                     ...storageEntry,
                     locked,
                     PK: partitionKey,
                     SK: createRevisionSortKey(entry),
-                    TYPE: createType(),
                     GSI1_PK: createGSIPartitionKey(model, "A"),
-                    GSI1_SK: createGSISortKey(storageEntry)
+                    GSI1_SK: createGSISortKey(storageEntry),
+                    GSI_TENANT: model.tenant
                 },
                 {
                     ...storageEntry,
                     locked,
                     PK: partitionKey,
                     SK: createLatestSortKey(),
-                    TYPE: createLatestType(),
                     GSI1_PK: createGSIPartitionKey(model, "L"),
-                    GSI1_SK: createGSISortKey(storageEntry)
+                    GSI1_SK: createGSISortKey(storageEntry),
+                    GSI_TENANT: model.tenant
                 }
             ]
         });
@@ -203,9 +183,9 @@ export const createEntriesStorageOperations = (
                 locked,
                 PK: partitionKey,
                 SK: createPublishedSortKey(),
-                TYPE: createLatestType(),
                 GSI1_PK: createGSIPartitionKey(model, "P"),
-                GSI1_SK: createGSISortKey(storageEntry)
+                GSI1_SK: createGSISortKey(storageEntry),
+                GSI_TENANT: model.tenant
             });
         }
 
@@ -253,24 +233,23 @@ export const createEntriesStorageOperations = (
          *      - update the published entry item to the current one
          *      - unpublish previously published revision (if any)
          */
-        const entityBatch = createEntityWriteBatch({
-            entity,
+        const entityBatch = entity.createEntityWriter({
             put: [
                 {
                     ...storageEntry,
                     PK: partitionKey,
                     SK: createRevisionSortKey(storageEntry),
-                    TYPE: createType(),
                     GSI1_PK: createGSIPartitionKey(model, "A"),
-                    GSI1_SK: createGSISortKey(storageEntry)
+                    GSI1_SK: createGSISortKey(storageEntry),
+                    GSI_TENANT: model.tenant
                 },
                 {
                     ...storageEntry,
                     PK: partitionKey,
                     SK: createLatestSortKey(),
-                    TYPE: createLatestType(),
                     GSI1_PK: createGSIPartitionKey(model, "L"),
-                    GSI1_SK: createGSISortKey(storageEntry)
+                    GSI1_SK: createGSISortKey(storageEntry),
+                    GSI_TENANT: model.tenant
                 }
             ]
         });
@@ -281,9 +260,9 @@ export const createEntriesStorageOperations = (
                 ...storageEntry,
                 PK: partitionKey,
                 SK: createPublishedSortKey(),
-                TYPE: createPublishedType(),
                 GSI1_PK: createGSIPartitionKey(model, "P"),
-                GSI1_SK: createGSISortKey(storageEntry)
+                GSI1_SK: createGSISortKey(storageEntry),
+                GSI_TENANT: model.tenant
             });
 
             // Unpublish previously published revision (if any).
@@ -299,10 +278,10 @@ export const createEntriesStorageOperations = (
                     ...publishedRevisionStorageEntry,
                     PK: partitionKey,
                     SK: createRevisionSortKey(publishedRevisionStorageEntry),
-                    TYPE: createType(),
                     status: CONTENT_ENTRY_STATUS.UNPUBLISHED,
                     GSI1_PK: createGSIPartitionKey(model, "A"),
-                    GSI1_SK: createGSISortKey(publishedRevisionStorageEntry)
+                    GSI1_SK: createGSISortKey(publishedRevisionStorageEntry),
+                    GSI_TENANT: model.tenant
                 });
             }
         }
@@ -351,17 +330,16 @@ export const createEntriesStorageOperations = (
          *  - update the latest entry if the current entry is the latest one
          */
 
-        const entityBatch = createEntityWriteBatch({
-            entity,
+        const entityBatch = entity.createEntityWriter({
             put: [
                 {
                     ...storageEntry,
                     locked,
                     PK: partitionKey,
                     SK: createRevisionSortKey(storageEntry),
-                    TYPE: createType(),
                     GSI1_PK: createGSIPartitionKey(model, "A"),
-                    GSI1_SK: createGSISortKey(storageEntry)
+                    GSI1_SK: createGSISortKey(storageEntry),
+                    GSI_TENANT: model.tenant
                 }
             ]
         });
@@ -372,9 +350,9 @@ export const createEntriesStorageOperations = (
                 locked,
                 PK: partitionKey,
                 SK: createPublishedSortKey(),
-                TYPE: createPublishedType(),
                 GSI1_PK: createGSIPartitionKey(model, "P"),
-                GSI1_SK: createGSISortKey(storageEntry)
+                GSI1_SK: createGSISortKey(storageEntry),
+                GSI_TENANT: model.tenant
             });
         }
 
@@ -391,9 +369,9 @@ export const createEntriesStorageOperations = (
                     locked,
                     PK: partitionKey,
                     SK: createLatestSortKey(),
-                    TYPE: createLatestType(),
                     GSI1_PK: createGSIPartitionKey(model, "L"),
-                    GSI1_SK: createGSISortKey(entry)
+                    GSI1_SK: createGSISortKey(entry),
+                    GSI_TENANT: model.tenant
                 });
             } else {
                 /**
@@ -415,9 +393,9 @@ export const createEntriesStorageOperations = (
                     ...updatedEntryLevelMetaFields,
                     PK: partitionKey,
                     SK: createRevisionSortKey(latestStorageEntry),
-                    TYPE: createType(),
                     GSI1_PK: createGSIPartitionKey(model, "A"),
-                    GSI1_SK: createGSISortKey(latestStorageEntry)
+                    GSI1_SK: createGSISortKey(latestStorageEntry),
+                    GSI_TENANT: model.tenant
                 });
 
                 entityBatch.put({
@@ -425,9 +403,9 @@ export const createEntriesStorageOperations = (
                     ...updatedEntryLevelMetaFields,
                     PK: partitionKey,
                     SK: createLatestSortKey(),
-                    TYPE: createLatestType(),
                     GSI1_PK: createGSIPartitionKey(model, "L"),
-                    GSI1_SK: createGSISortKey(latestStorageEntry)
+                    GSI1_SK: createGSISortKey(latestStorageEntry),
+                    GSI_TENANT: model.tenant
                 });
             }
         }
@@ -461,22 +439,20 @@ export const createEntriesStorageOperations = (
         /**
          * First we need to load all the revisions and published / latest entry.
          */
-        const queryAllParams: QueryAllParams = {
-            entity,
-            partitionKey: createPartitionKey({
-                id,
-                tenant: model.tenant
-            }),
+        const partitionKey = createPartitionKey({
+            id,
+            tenant: model.tenant
+        });
+        const records = await entity.queryAll({
+            partitionKey,
             options: {
                 gte: " "
             }
-        };
-        const records = await queryAll<CmsEntry>(queryAllParams);
+        });
         /**
          * Then create the batch writes for the DynamoDB, with the updated folderId.
          */
-        const entityBatch = createEntityWriteBatch({
-            entity,
+        const entityBatch = entity.createEntityWriter({
             put: records.map(item => {
                 return {
                     ...item,
@@ -514,20 +490,18 @@ export const createEntriesStorageOperations = (
         /**
          * First we need to load all the revisions and published / latest entries.
          */
-        const queryAllParams: QueryAllParams = {
-            entity,
-            partitionKey: createPartitionKey({
-                id: entry.id,
-                tenant: model.tenant
-            }),
-            options: {
-                gte: " "
-            }
-        };
 
-        let records: Awaited<ReturnType<typeof queryAll<CmsEntry>>> = [];
+        let records: Awaited<ReturnType<typeof entity.queryAll>> = [];
         try {
-            records = await queryAll<CmsEntry>(queryAllParams);
+            records = await entity.queryAll({
+                partitionKey: createPartitionKey({
+                    id: entry.id,
+                    tenant: model.tenant
+                }),
+                options: {
+                    gte: " "
+                }
+            });
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not load all records.",
@@ -555,8 +529,7 @@ export const createEntriesStorageOperations = (
         /**
          * Then create the batch writes for the DynamoDB, with the updated data.
          */
-        const entityBatch = createEntityWriteBatch({
-            entity,
+        const entityBatch = entity.createEntityWriter({
             put: records.map(record => {
                 return {
                     ...record,
@@ -590,20 +563,19 @@ export const createEntriesStorageOperations = (
         const id = entry.id || entry.entryId;
         const model = getStorageOperationsModel(initialModel);
 
-        const queryAllParams: QueryAllParams = {
-            entity,
-            partitionKey: createPartitionKey({
-                id,
-                tenant: model.tenant
-            }),
-            options: {
-                gte: " "
-            }
-        };
+        const partitionKey = createPartitionKey({
+            id,
+            tenant: model.tenant
+        });
 
-        let records: Awaited<ReturnType<typeof queryAll<CmsEntry>>> = [];
+        let records: Awaited<ReturnType<typeof entity.queryAll>> = [];
         try {
-            records = await queryAll(queryAllParams);
+            records = await entity.queryAll({
+                partitionKey,
+                options: {
+                    gte: " "
+                }
+            });
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not load all records.",
@@ -615,8 +587,7 @@ export const createEntriesStorageOperations = (
             );
         }
 
-        const entityBatch = createEntityWriteBatch({
-            entity,
+        const entityBatch = entity.createEntityWriter({
             delete: records.map(item => {
                 return {
                     PK: item.PK,
@@ -636,7 +607,7 @@ export const createEntriesStorageOperations = (
                 ex.code || "DELETE_ENTRY_ERROR",
                 {
                     error: ex,
-                    partitionKey: queryAllParams.partitionKey,
+                    partitionKey,
                     id
                 }
             );
@@ -653,20 +624,17 @@ export const createEntriesStorageOperations = (
         /**
          * First we need to load all the revisions and published / latest entries.
          */
-        const queryAllParams: QueryAllParams = {
-            entity,
-            partitionKey: createPartitionKey({
-                id: entry.id,
-                tenant: model.tenant
-            }),
-            options: {
-                gte: " "
-            }
-        };
-
-        let records: Awaited<ReturnType<typeof queryAll<CmsEntry>>> = [];
+        let records: Awaited<ReturnType<typeof entity.queryAll>> = [];
         try {
-            records = await queryAll<CmsEntry>(queryAllParams);
+            records = await entity.queryAll({
+                partitionKey: createPartitionKey({
+                    id: entry.id,
+                    tenant: model.tenant
+                }),
+                options: {
+                    gte: " "
+                }
+            });
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not load all records.",
@@ -694,8 +662,7 @@ export const createEntriesStorageOperations = (
             isRestoredEntryMetaField
         );
 
-        const entityBatch = createEntityWriteBatch({
-            entity,
+        const entityBatch = entity.createEntityWriter({
             put: records.map(record => {
                 return {
                     ...record,
@@ -744,8 +711,7 @@ export const createEntriesStorageOperations = (
             tenant: model.tenant
         });
 
-        const entityBatch = createEntityWriteBatch({
-            entity,
+        const entityBatch = entity.createEntityWriter({
             delete: [
                 {
                     PK: partitionKey,
@@ -775,9 +741,9 @@ export const createEntriesStorageOperations = (
                 ...latestStorageEntry,
                 PK: partitionKey,
                 SK: createLatestSortKey(),
-                TYPE: createLatestType(),
                 GSI1_PK: createGSIPartitionKey(model, "L"),
-                GSI1_SK: createGSISortKey(latestStorageEntry)
+                GSI1_SK: createGSISortKey(latestStorageEntry),
+                GSI_TENANT: model.tenant
             });
 
             // Do an update on the latest revision. We need to update the latest revision's
@@ -786,9 +752,9 @@ export const createEntriesStorageOperations = (
                 ...latestStorageEntry,
                 PK: partitionKey,
                 SK: createRevisionSortKey(initialLatestStorageEntry),
-                TYPE: createType(),
                 GSI1_PK: createGSIPartitionKey(model, "A"),
-                GSI1_SK: createGSISortKey(initialLatestStorageEntry)
+                GSI1_SK: createGSISortKey(initialLatestStorageEntry),
+                GSI_TENANT: model.tenant
             });
         }
         try {
@@ -823,9 +789,7 @@ export const createEntriesStorageOperations = (
          * Then we need to construct the queries for all the revisions and entries.
          */
 
-        const entityBatch = createEntityWriteBatch({
-            entity
-        });
+        const entityBatch = entity.createEntityWriter();
 
         for (const id of entries) {
             const partitionKey = createPartitionKey({
@@ -994,38 +958,27 @@ export const createEntriesStorageOperations = (
         const model = getStorageOperationsModel(initialModel);
 
         const { entryId, version } = params;
-        const queryParams: QueryOneParams = {
-            entity,
-            partitionKey: createPartitionKey({
-                tenant: model.tenant,
-                id: entryId
-            }),
+        const partitionKey = createPartitionKey({
+            tenant: model.tenant,
+            id: entryId
+        });
+
+        const unfilteredRevisions = await entity.queryAllClean({
+            partitionKey,
             options: {
                 lt: `REV#${zeroPad(version)}`,
-                /**
-                 * We need to have extra checks because DynamoDB will return published or latest record if there is no REV# record.
-                 */
-                filters: [
-                    {
-                        attr: "TYPE",
-                        eq: createType()
-                    },
-                    {
-                        attr: "version",
-                        lt: version
-                    }
-                ],
                 reverse: true
             }
-        };
+        });
+        const filteredRevisions = unfilteredRevisions.filter(item => {
+            return item.version < version;
+        });
+        const storageEntry = filteredRevisions[0];
+        if (!storageEntry) {
+            return null;
+        }
 
         try {
-            const result = await queryOne<CmsEntry>(queryParams);
-
-            const storageEntry = cleanupItem(entity, result);
-            if (!storageEntry) {
-                return null;
-            }
             return convertFromStorageEntry({
                 storageEntry,
                 model
@@ -1037,8 +990,7 @@ export const createEntriesStorageOperations = (
                 {
                     ...params,
                     error: ex,
-                    partitionKey: queryParams.partitionKey,
-                    options: queryParams.options,
+                    partitionKey,
                     model
                 }
             );
@@ -1061,22 +1013,23 @@ export const createEntriesStorageOperations = (
 
         const type = initialWhere.published ? "P" : "L";
 
-        const queryAllParams: QueryAllParams = {
-            entity,
-            partitionKey: createGSIPartitionKey(model, type),
-            options: {
-                index: "GSI1",
-                gte: " "
-            }
+        const partitionKey = createGSIPartitionKey(model, type);
+        const options = {
+            index: "GSI1",
+            gte: " "
         };
-        let storageEntries: CmsStorageEntry[] = [];
+
+        let storageEntries: Awaited<ReturnType<typeof entity.queryAll>> = [];
         try {
-            storageEntries = await queryAll<CmsStorageEntry>(queryAllParams);
+            storageEntries = await entity.queryAll({
+                partitionKey,
+                options
+            });
         } catch (ex) {
             throw new WebinyError(ex.message, "QUERY_ENTRIES_ERROR", {
                 error: ex,
-                partitionKey: queryAllParams.partitionKey,
-                options: queryAllParams.options
+                partitionKey,
+                options
             });
         }
         if (storageEntries.length === 0) {
@@ -1166,7 +1119,7 @@ export const createEntriesStorageOperations = (
             hasMoreItems,
             totalCount,
             cursor,
-            items: cleanupItems(entity, slicedItems)
+            items: cleanupItems(entity.entity, slicedItems)
         };
     };
 
@@ -1209,24 +1162,23 @@ export const createEntriesStorageOperations = (
         });
 
         // 1. Update REV# and P records with new data.
-        const entityBatch = createEntityWriteBatch({
-            entity,
+        const entityBatch = entity.createEntityWriter({
             put: [
                 {
                     ...storageEntry,
                     PK: partitionKey,
                     SK: createRevisionSortKey(entry),
-                    TYPE: createType(),
                     GSI1_PK: createGSIPartitionKey(model, "A"),
-                    GSI1_SK: createGSISortKey(entry)
+                    GSI1_SK: createGSISortKey(entry),
+                    GSI_TENANT: model.tenant
                 },
                 {
                     ...storageEntry,
                     PK: partitionKey,
                     SK: createPublishedSortKey(),
-                    TYPE: createPublishedType(),
                     GSI1_PK: createGSIPartitionKey(model, "P"),
-                    GSI1_SK: createGSISortKey(entry)
+                    GSI1_SK: createGSISortKey(entry),
+                    GSI_TENANT: model.tenant
                 }
             ]
         });
@@ -1242,9 +1194,9 @@ export const createEntriesStorageOperations = (
                 ...storageEntry,
                 PK: partitionKey,
                 SK: createLatestSortKey(),
-                TYPE: createLatestType(),
                 GSI1_PK: createGSIPartitionKey(model, "L"),
-                GSI1_SK: createGSISortKey(entry)
+                GSI1_SK: createGSISortKey(entry),
+                GSI_TENANT: model.tenant
             });
 
             // 2.2 Additionally, if we have a previously published entry, we need to mark it as unpublished.
@@ -1258,10 +1210,10 @@ export const createEntriesStorageOperations = (
                     ...publishedStorageEntry,
                     PK: partitionKey,
                     SK: createRevisionSortKey(publishedStorageEntry),
-                    TYPE: createType(),
                     status: CONTENT_ENTRY_STATUS.UNPUBLISHED,
                     GSI1_PK: createGSIPartitionKey(model, "A"),
-                    GSI1_SK: createGSISortKey(publishedStorageEntry)
+                    GSI1_SK: createGSISortKey(publishedStorageEntry),
+                    GSI_TENANT: model.tenant
                 });
             }
         } else {
@@ -1295,9 +1247,9 @@ export const createEntriesStorageOperations = (
                 ...latestStorageEntryFields,
                 PK: partitionKey,
                 SK: createLatestSortKey(),
-                TYPE: createLatestType(),
                 GSI1_PK: createGSIPartitionKey(model, "L"),
-                GSI1_SK: createGSISortKey(latestStorageEntry)
+                GSI1_SK: createGSISortKey(latestStorageEntry),
+                GSI_TENANT: model.tenant
             });
 
             // 2.3.2 Update REV# record.
@@ -1305,9 +1257,9 @@ export const createEntriesStorageOperations = (
                 ...latestStorageEntryFields,
                 PK: partitionKey,
                 SK: createRevisionSortKey(latestStorageEntry),
-                TYPE: createType(),
                 GSI1_PK: createGSIPartitionKey(model, "A"),
-                GSI1_SK: createGSISortKey(latestStorageEntry)
+                GSI1_SK: createGSISortKey(latestStorageEntry),
+                GSI_TENANT: model.tenant
             });
 
             // 2.3.3 Finally, if we got a published entry, but it wasn't the latest one, we need to take
@@ -1324,10 +1276,10 @@ export const createEntriesStorageOperations = (
                     ...publishedStorageEntry,
                     PK: partitionKey,
                     SK: createRevisionSortKey(publishedStorageEntry),
-                    TYPE: createType(),
                     status: CONTENT_ENTRY_STATUS.UNPUBLISHED,
                     GSI1_PK: createGSIPartitionKey(model, "A"),
-                    GSI1_SK: createGSISortKey(publishedStorageEntry)
+                    GSI1_SK: createGSISortKey(publishedStorageEntry),
+                    GSI_TENANT: model.tenant
                 });
             }
         }
@@ -1370,8 +1322,7 @@ export const createEntriesStorageOperations = (
          *  - update current entry revision with new data
          *  - update the latest entry status - if entry being unpublished is latest
          */
-        const entityBatch = createEntityWriteBatch({
-            entity,
+        const entityBatch = entity.createEntityWriter({
             delete: [
                 {
                     PK: partitionKey,
@@ -1383,9 +1334,9 @@ export const createEntriesStorageOperations = (
                     ...storageEntry,
                     PK: partitionKey,
                     SK: createRevisionSortKey(entry),
-                    TYPE: createType(),
                     GSI1_PK: createGSIPartitionKey(model, "A"),
-                    GSI1_SK: createGSISortKey(entry)
+                    GSI1_SK: createGSISortKey(entry),
+                    GSI_TENANT: model.tenant
                 }
             ]
         });
@@ -1402,9 +1353,9 @@ export const createEntriesStorageOperations = (
                     ...storageEntry,
                     PK: partitionKey,
                     SK: createLatestSortKey(),
-                    TYPE: createLatestType(),
                     GSI1_PK: createGSIPartitionKey(model, "L"),
-                    GSI1_SK: createGSISortKey(entry)
+                    GSI1_SK: createGSISortKey(entry),
+                    GSI_TENANT: model.tenant
                 });
             } else {
                 const latestStorageEntry = convertToStorageEntry({
@@ -1425,9 +1376,9 @@ export const createEntriesStorageOperations = (
                     ...updatedEntryLevelMetaFields,
                     PK: partitionKey,
                     SK: createRevisionSortKey(latestStorageEntry),
-                    TYPE: createType(),
                     GSI1_PK: createGSIPartitionKey(model, "A"),
-                    GSI1_SK: createGSISortKey(latestStorageEntry)
+                    GSI1_SK: createGSISortKey(latestStorageEntry),
+                    GSI_TENANT: model.tenant
                 });
 
                 // 2. Update latest record.
@@ -1436,9 +1387,9 @@ export const createEntriesStorageOperations = (
                     ...updatedEntryLevelMetaFields,
                     PK: partitionKey,
                     SK: createLatestSortKey(),
-                    TYPE: createLatestType(),
                     GSI1_PK: createGSIPartitionKey(model, "L"),
-                    GSI1_SK: createGSISortKey(latestStorageEntry)
+                    GSI1_SK: createGSISortKey(latestStorageEntry),
+                    GSI_TENANT: model.tenant
                 });
             }
         }

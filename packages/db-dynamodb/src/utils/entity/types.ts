@@ -27,7 +27,8 @@ export type IEntityQueryOneParams = Omit<QueryOneParams, "entity">;
 
 export type IEntityQueryAllParams = Omit<QueryAllParams, "entity">;
 
-export interface IEntityCreateEntityWriterParams extends Omit<IEntityWriteBatchParams, "entity"> {}
+export interface IEntityCreateEntityWriterParams<T = GenericRecord>
+    extends Omit<IEntityWriteBatchParams<T>, "entity"> {}
 export interface IEntityCreateEntityReaderParams extends Omit<IEntityReadBatchParams, "entity"> {}
 
 export type IEntityPutResult = ReturnType<typeof put>;
@@ -39,21 +40,21 @@ export type IEntityQueryOneCleanResult<T> = ReturnType<typeof queryOneClean<T>>;
 export type IEntityQueryAllResult<T> = ReturnType<typeof queryAll<T>>;
 export type IEntityQueryAllCleanResult<T> = ReturnType<typeof queryAllClean<T>>;
 
-export interface IEntity {
+export interface IEntity<T extends GenericRecord = GenericRecord> {
     readonly entity: BaseEntity;
     readonly name: string;
     readonly table: TableDef;
     createEntityReader(params?: IEntityCreateEntityReaderParams): IEntityReadBatch;
-    createEntityWriter(params?: IEntityCreateEntityWriterParams): IEntityWriteBatch;
+    createEntityWriter(params?: IEntityCreateEntityWriterParams<T>): IEntityWriteBatch<T>;
     createTableWriter(): ITableWriteBatch;
-    put<T extends GenericRecord = GenericRecord>(item: IPutParamsItem<T>): IEntityPutResult;
-    get<T>(keys: GetRecordParamsKeys): IEntityGetResult<T>;
-    getClean<T>(keys: GetRecordParamsKeys): IEntityGetCleanResult<T>;
+    put(item: IPutParamsItem<T>): IEntityPutResult;
+    get(keys: GetRecordParamsKeys): IEntityGetResult<T>;
+    getClean(keys: GetRecordParamsKeys): IEntityGetCleanResult<T>;
     delete(keys: IDeleteItemKeys): IEntityDeleteResult;
-    queryOne<T>(params: IEntityQueryOneParams): IEntityQueryOneResult<T>;
-    queryOneClean<T>(params: IEntityQueryOneParams): IEntityQueryOneCleanResult<T>;
-    queryAll<T>(params: IEntityQueryAllParams): IEntityQueryAllResult<T>;
-    queryAllClean<T>(params: IEntityQueryAllParams): IEntityQueryAllCleanResult<T>;
+    queryOne(params: IEntityQueryOneParams): IEntityQueryOneResult<T>;
+    queryOneClean(params: IEntityQueryOneParams): IEntityQueryOneCleanResult<T>;
+    queryAll(params: IEntityQueryAllParams): IEntityQueryAllResult<T>;
+    queryAllClean(params: IEntityQueryAllParams): IEntityQueryAllCleanResult<T>;
 }
 
 export interface IEntityWriteBatchBuilder {
@@ -62,11 +63,11 @@ export interface IEntityWriteBatchBuilder {
     delete(item: IDeleteBatchItem): BatchWriteItem;
 }
 
-export interface IEntityWriteBatch {
+export interface IEntityWriteBatch<T = GenericRecord> {
     readonly total: number;
     readonly items: BatchWriteItem[];
 
-    put(item: IPutBatchItem): void;
+    put(item: IPutBatchItem<T>): void;
     delete(item: IDeleteBatchItem): void;
     execute(): Promise<BatchWriteResult>;
     combine(items: BatchWriteItem[]): ITableWriteBatch;

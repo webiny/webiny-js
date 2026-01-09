@@ -50,7 +50,7 @@ export type EntityConstructor<
     T
 >;
 
-export class Entity implements IEntity {
+export class Entity<T extends GenericRecord = GenericRecord> implements IEntity<T> {
     public readonly entity;
 
     public get name(): string {
@@ -148,6 +148,8 @@ export class Entity implements IEntity {
     }
 }
 
-export const createEntity = (params: EntityConstructor): IEntity => {
-    return new Entity(params);
+export const createEntity = <T extends GenericRecord = GenericRecord>(
+    params: EntityConstructor
+): IEntity<T> => {
+    return new Entity<T>(params);
 };

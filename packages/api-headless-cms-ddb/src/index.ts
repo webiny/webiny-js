@@ -2,7 +2,6 @@ import dynamoDbValueFilters from "@webiny/db-dynamodb/plugins/filters/index.js";
 import dynamoDbPlugins from "./dynamoDb/index.js";
 import type { StorageOperationsFactory } from "~/types.js";
 import { ENTITIES } from "~/types.js";
-import { createTable } from "~/definitions/table.js";
 import { createGroupEntity } from "~/definitions/group.js";
 import { createModelEntity } from "~/definitions/model.js";
 import { createEntryEntity } from "~/definitions/entry.js";
@@ -21,6 +20,7 @@ import {
 import { ValueFilterPlugin } from "@webiny/db-dynamodb/plugins/definitions/ValueFilterPlugin.js";
 import { StorageOperationsCmsModelPlugin, StorageTransformPlugin } from "@webiny/api-headless-cms";
 import { CompressorPlugin } from "@webiny/api";
+import { createTable } from "@webiny/db-dynamodb";
 
 export * from "./plugins/index.js";
 
@@ -28,7 +28,7 @@ export const createStorageOperations: StorageOperationsFactory = params => {
     const { table, documentClient, plugins: userPlugins } = params;
 
     const tableInstance = createTable({
-        table,
+        name: table,
         documentClient
     });
 

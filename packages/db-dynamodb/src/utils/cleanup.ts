@@ -23,6 +23,7 @@ const attributesToRemove = [
     "GSI4_SK",
     "GSI5_PK",
     "GSI5_SK",
+    "GSI_TENANT",
     "TYPE"
 ];
 

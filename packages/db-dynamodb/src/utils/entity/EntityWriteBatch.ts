@@ -1,5 +1,4 @@
-import type { TableDef } from "~/toolbox.js";
-import type { Entity as ToolboxEntity } from "~/toolbox.js";
+import type { Entity as ToolboxEntity, TableDef } from "~/toolbox.js";
 import { batchWriteAll } from "~/utils/batch/batchWrite.js";
 import type {
     BatchWriteItem,
@@ -13,10 +12,11 @@ import { createTableWriteBatch } from "~/utils/table/TableWriteBatch.js";
 import { createEntityWriteBatchBuilder } from "./EntityWriteBatchBuilder.js";
 import type { EntityOption } from "./getEntity.js";
 import { getEntity } from "./getEntity.js";
+import type { GenericRecord } from "@webiny/api/types.js";
 
-export interface IEntityWriteBatchParams {
+export interface IEntityWriteBatchParams<T = GenericRecord> {
     entity: EntityOption;
-    put?: IPutBatchItem[];
+    put?: IPutBatchItem<T>[];
     delete?: IDeleteBatchItem[];
 }
 

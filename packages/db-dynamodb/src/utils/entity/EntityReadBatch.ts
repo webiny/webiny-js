@@ -1,4 +1,4 @@
-import type { IPutBatchItem } from "~/utils/batch/types.js";
+import type { IReadBatchItem } from "~/utils/batch/types.js";
 import type {
     IEntityReadBatch,
     IEntityReadBatchBuilder,
@@ -14,7 +14,7 @@ import { getEntity } from "./getEntity.js";
 
 export interface IEntityReadBatchParams {
     entity: EntityOption;
-    read?: IPutBatchItem[];
+    read?: IReadBatchItem[];
 }
 
 export class EntityReadBatch implements IEntityReadBatch {

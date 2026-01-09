@@ -7,6 +7,17 @@ export interface ICreateStandardEntityParams {
     attributes?: AttributeDefinitions;
 }
 
+export type IStandardEntityAttributes<T = undefined> = {
+    PK: string;
+    SK: string;
+    GSI_TENANT: string;
+    GSI1_PK?: string;
+    GSI1_SK?: string;
+    GSI2_PK?: string;
+    GSI2_SK?: string;
+    expiresAt?: string | null;
+} & (T extends undefined ? { data?: undefined } : { data: T });
+
 export const standardEntityAttributes: AttributeDefinitions = {
     PK: {
         partitionKey: true
