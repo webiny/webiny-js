@@ -34,7 +34,6 @@ export const release = createWorkflow({
     jobs: {
         constants: createJob({
             name: "Create constants",
-            if: "github.event.inputs.branch == 'next'",
             outputs: {
                 "global-cache-key": "${{ steps.global-cache-key.outputs.global-cache-key }}",
                 "run-cache-key": "${{ steps.run-cache-key.outputs.run-cache-key }}"
