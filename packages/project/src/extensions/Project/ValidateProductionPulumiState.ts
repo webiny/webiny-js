@@ -14,7 +14,8 @@ class ValidateProductionPulumiStateImpl implements CoreBeforeDeploy.Interface {
 
     async execute(params: CoreBeforeDeploy.Params) {
         const sdkParams = this.projectSdkParamsService.get();
-        const { env, allowLocalStateFiles } = sdkParams;
+        const { env } = sdkParams;
+        const { allowLocalStateFiles } = params;
 
         const prodEnvs = ["prod", "production"];
         const isProdEnv = prodEnvs.includes(env);
