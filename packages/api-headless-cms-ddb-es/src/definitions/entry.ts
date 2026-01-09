@@ -1,27 +1,28 @@
 import type { Table } from "@webiny/db-dynamodb/toolbox.js";
-import { Entity } from "@webiny/db-dynamodb/toolbox.js";
+import { createEntity, standardEntityAttributes } from "@webiny/db-dynamodb";
 
 export interface CreateEntryEntityParams {
     table: Table<string, string, string>;
     entityName: string;
 }
-export const createEntryEntity = (params: CreateEntryEntityParams): Entity<any> => {
+export const createEntryEntity = (params: CreateEntryEntityParams) => {
     const { table, entityName } = params;
-    return new Entity({
+    return createEntity({
         name: entityName,
         table,
         attributes: {
-            PK: {
-                type: "string",
-                partitionKey: true
-            },
-            SK: {
-                type: "string",
-                sortKey: true
-            },
-            TYPE: {
-                type: "string"
-            },
+            ...standardEntityAttributes,
+            // PK: {
+            //     type: "string",
+            //     partitionKey: true
+            // },
+            // SK: {
+            //     type: "string",
+            //     sortKey: true
+            // },
+            // TYPE: {
+            //     type: "string"
+            // },
             __type: {
                 type: "string"
             },

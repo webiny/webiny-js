@@ -9,10 +9,11 @@ import type {
     CmsModelFieldType,
     HeadlessCmsStorageOperations as BaseHeadlessCmsStorageOperations
 } from "@webiny/api-headless-cms/types/index.js";
-import type { AttributeDefinition, Entity, Table } from "@webiny/db-dynamodb/toolbox.js";
+import type { AttributeDefinition, Table } from "@webiny/db-dynamodb/toolbox.js";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import type { Client } from "@elastic/elasticsearch";
 import type { PluginsContainer } from "@webiny/plugins";
+import type { IEntity } from "@webiny/db-dynamodb";
 
 /**
  * A definition of the entry that is being prepared for the Elasticsearch.
@@ -151,7 +152,6 @@ export enum ENTITIES {
     ENTRIES_ES = "CmsEntriesElasticsearch"
 }
 
-
 export interface StorageOperationsFactoryParams {
     documentClient: DynamoDBDocument;
     elasticsearch: Client;
@@ -164,10 +164,17 @@ export interface CmsContext extends BaseCmsContext {
     [key: string]: any;
 }
 
+export interface IGetEntitiesResponse {
+    groups: IEntity;
+    models: IEntity;
+    entries: IEntity;
+    entriesEs: IEntity;
+}
+
 export interface HeadlessCmsStorageOperations extends BaseHeadlessCmsStorageOperations<CmsContext> {
     getTable: () => Table<string, string, string>;
     getEsTable: () => Table<string, string, string>;
-    getEntities: () => Record<"groups" | "models" | "entries" | "entriesEs", Entity<any>>;
+    getEntities: () => IGetEntitiesResponse;
 }
 
 export interface StorageOperationsFactory {

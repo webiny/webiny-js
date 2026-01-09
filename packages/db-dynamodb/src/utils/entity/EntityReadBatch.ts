@@ -5,8 +5,7 @@ import type {
     IEntityReadBatchBuilderGetResponse,
     IEntityReadBatchKey
 } from "./types.js";
-import type { TableDef } from "~/toolbox.js";
-import type { Entity as ToolboxEntity } from "~/toolbox.js";
+import type { Entity as ToolboxEntity, TableDef } from "~/toolbox.js";
 import { batchReadAll } from "~/utils/batch/batchRead.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import { createEntityReadBatchBuilder } from "./EntityReadBatchBuilder.js";
@@ -23,6 +22,14 @@ export class EntityReadBatch implements IEntityReadBatch {
     private readonly builder: IEntityReadBatchBuilder;
     private readonly _items: IEntityReadBatchBuilderGetResponse[] = [];
 
+    public get total(): number {
+        return this._items.length;
+    }
+
+    public get items(): IEntityReadBatchBuilderGetResponse[] {
+        return Array.from(this._items);
+    }
+
     public constructor(params: IEntityReadBatchParams) {
         this.entity = getEntity(params.entity);
         this.builder = createEntityReadBatchBuilder(this.entity);
@@ -30,6 +37,7 @@ export class EntityReadBatch implements IEntityReadBatch {
             this.get(item);
         }
     }
+
     public get(input: IEntityReadBatchKey | IEntityReadBatchKey[]): void {
         if (Array.isArray(input)) {
             this._items.push(

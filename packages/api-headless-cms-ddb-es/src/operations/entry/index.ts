@@ -8,18 +8,9 @@ import type {
 import { CONTENT_ENTRY_STATUS } from "@webiny/api-headless-cms/types/index.js";
 import { extractEntriesFromIndex } from "~/helpers/index.js";
 import { configurations } from "~/configurations.js";
-import type { Entity } from "@webiny/db-dynamodb/toolbox.js";
 import type { Client } from "@elastic/elasticsearch";
 import type { PluginsContainer } from "@webiny/plugins";
-import type { BatchReadItem, QueryAllParams, QueryOneParams } from "@webiny/db-dynamodb";
-import {
-    batchReadAll,
-    cleanupItem,
-    createEntityWriteBatch,
-    getClean,
-    queryAll,
-    queryOne
-} from "@webiny/db-dynamodb";
+import type { IEntity, IEntityQueryAllParams, IEntityQueryOneParams } from "@webiny/db-dynamodb";
 import { DataLoadersHandler } from "./dataLoaders.js";
 import {
     createLatestSortKey,
@@ -61,14 +52,21 @@ import {
 interface ElasticsearchDbRecord {
     PK: string;
     SK: string;
+    GSI_TENANT: string;
     TYPE: string;
     index: string;
     data: Record<string, any>;
 }
 
+interface IDynamoDbTableKeys {
+    PK: string;
+    SK: string;
+    GSI_TENANT: string;
+}
+
 export interface CreateEntriesStorageOperationsParams {
-    entity: Entity<any>;
-    esEntity: Entity<any>;
+    entity: IEntity;
+    esEntity: IEntity;
     elasticsearch: Client;
     plugins: PluginsContainer;
 }
@@ -113,7 +111,7 @@ export const createEntriesStorageOperations = (
     };
 
     const dataLoaders = new DataLoadersHandler({
-        entity
+        entity: entity.entity
     });
 
     const create: CmsEntryStorageOperations["create"] = async (initialModel, params) => {
@@ -142,32 +140,34 @@ export const createEntriesStorageOperations = (
             model
         });
 
-        const revisionKeys = {
+        const revisionKeys: IDynamoDbTableKeys = {
             PK: createPartitionKey({
                 id: entry.id,
                 tenant: model.tenant
             }),
-            SK: createRevisionSortKey(entry)
+            SK: createRevisionSortKey(entry),
+            GSI_TENANT: model.tenant
         };
 
-        const latestKeys = {
+        const latestKeys: IDynamoDbTableKeys = {
             PK: createPartitionKey({
                 id: entry.id,
                 tenant: model.tenant
             }),
-            SK: createLatestSortKey()
+            SK: createLatestSortKey(),
+            GSI_TENANT: model.tenant
         };
 
-        const publishedKeys = {
+        const publishedKeys: IDynamoDbTableKeys = {
             PK: createPartitionKey({
                 id: entry.id,
                 tenant: model.tenant
             }),
-            SK: createPublishedSortKey()
+            SK: createPublishedSortKey(),
+            GSI_TENANT: model.tenant
         };
 
-        const entityBatch = createEntityWriteBatch({
-            entity,
+        const entityBatch = entity.createEntityWriter({
             put: [
                 {
                     ...storageEntry,
@@ -212,8 +212,7 @@ export const createEntriesStorageOperations = (
 
         const esLatestData = await transformer.getElasticsearchLatestEntryData();
 
-        const elasticsearchEntityBatch = createEntityWriteBatch({
-            entity: esEntity,
+        const elasticsearchEntityBatch = esEntity.createEntityWriter({
             put: [
                 {
                     ...latestKeys,
@@ -264,27 +263,30 @@ export const createEntriesStorageOperations = (
         });
         const { entry, storageEntry } = transformer.transformEntryKeys();
 
-        const revisionKeys = {
+        const revisionKeys: IDynamoDbTableKeys = {
             PK: createPartitionKey({
                 id: entry.id,
                 tenant: model.tenant
             }),
-            SK: createRevisionSortKey(entry)
+            SK: createRevisionSortKey(entry),
+            GSI_TENANT: model.tenant
         };
-        const latestKeys = {
+        const latestKeys: IDynamoDbTableKeys = {
             PK: createPartitionKey({
                 id: entry.id,
                 tenant: model.tenant
             }),
-            SK: createLatestSortKey()
+            SK: createLatestSortKey(),
+            GSI_TENANT: model.tenant
         };
 
-        const publishedKeys = {
+        const publishedKeys: IDynamoDbTableKeys = {
             PK: createPartitionKey({
                 id: entry.id,
                 tenant: model.tenant
             }),
-            SK: createPublishedSortKey()
+            SK: createPublishedSortKey(),
+            GSI_TENANT: model.tenant
         };
 
         // We'll need this flag below.
@@ -292,8 +294,7 @@ export const createEntriesStorageOperations = (
 
         const esLatestData = await transformer.getElasticsearchLatestEntryData();
 
-        const entityBatch = createEntityWriteBatch({
-            entity,
+        const entityBatch = entity.createEntityWriter({
             put: [
                 {
                     ...storageEntry,
@@ -331,6 +332,7 @@ export const createEntriesStorageOperations = (
                         tenant: model.tenant
                     }),
                     SK: createRevisionSortKey(publishedRevisionStorageEntry),
+                    GSI_TENANT: model.tenant,
                     TYPE: createRecordType(),
                     status: CONTENT_ENTRY_STATUS.UNPUBLISHED
                 });
@@ -359,8 +361,7 @@ export const createEntriesStorageOperations = (
             model
         });
 
-        const elasticsearchEntityBatch = createEntityWriteBatch({
-            entity: esEntity,
+        const elasticsearchEntityBatch = esEntity.createEntityWriter({
             put: [
                 {
                     ...latestKeys,
@@ -413,27 +414,30 @@ export const createEntriesStorageOperations = (
         const isPublished = entry.status === "published";
         const locked = isPublished ? true : entry.locked;
 
-        const revisionKeys = {
+        const revisionKeys: IDynamoDbTableKeys = {
             PK: createPartitionKey({
                 id: entry.id,
                 tenant: model.tenant
             }),
-            SK: createRevisionSortKey(entry)
+            SK: createRevisionSortKey(entry),
+            GSI_TENANT: model.tenant
         };
-        const latestKeys = {
+        const latestKeys: IDynamoDbTableKeys = {
             PK: createPartitionKey({
                 id: entry.id,
                 tenant: model.tenant
             }),
-            SK: createLatestSortKey()
+            SK: createLatestSortKey(),
+            GSI_TENANT: model.tenant
         };
 
-        const publishedKeys = {
+        const publishedKeys: IDynamoDbTableKeys = {
             PK: createPartitionKey({
                 id: entry.id,
                 tenant: model.tenant
             }),
-            SK: createPublishedSortKey()
+            SK: createPublishedSortKey(),
+            GSI_TENANT: model.tenant
         };
 
         /**
@@ -449,8 +453,7 @@ export const createEntriesStorageOperations = (
             ids: [entry.id]
         });
 
-        const entityBatch = createEntityWriteBatch({
-            entity,
+        const entityBatch = entity.createEntityWriter({
             put: [
                 {
                     ...storageEntry,
@@ -470,9 +473,7 @@ export const createEntriesStorageOperations = (
             });
         }
 
-        const elasticsearchEntityBatch = createEntityWriteBatch({
-            entity: esEntity
-        });
+        const elasticsearchEntityBatch = esEntity.createEntityWriter();
 
         const { index: esIndex } = configurations.es({
             model
@@ -542,10 +543,7 @@ export const createEntriesStorageOperations = (
                 /**
                  * Update the Elasticsearch table to propagate changes to the Elasticsearch.
                  */
-                const latestEsEntry = await getClean<ElasticsearchDbRecord>({
-                    entity: esEntity,
-                    keys: latestKeys
-                });
+                const latestEsEntry = await esEntity.getClean<ElasticsearchDbRecord>(latestKeys);
 
                 if (latestEsEntry) {
                     const latestEsEntryDataDecompressed = (await decompress(
@@ -618,8 +616,7 @@ export const createEntriesStorageOperations = (
         /**
          * First we need to fetch all the records in the regular DynamoDB table.
          */
-        const queryAllParams: QueryAllParams = {
-            entity,
+        const queryAllParams: IEntityQueryAllParams = {
             partitionKey,
             options: {
                 gte: " "
@@ -627,15 +624,13 @@ export const createEntriesStorageOperations = (
         };
         const latestSortKey = createLatestSortKey();
         const publishedSortKey = createPublishedSortKey();
-        const records = await queryAll<CmsEntry>(queryAllParams);
+        const records = await entity.queryAll<CmsEntry>(queryAllParams);
         /**
          * Then update the folderId in each record and prepare it to be stored.
          */
         let latestRecord: CmsEntry | undefined = undefined;
         let publishedRecord: CmsEntry | undefined = undefined;
-        const entityBatch = createEntityWriteBatch({
-            entity
-        });
+        const entityBatch = entity.createEntityWriter();
 
         for (const record of records) {
             entityBatch.put({
@@ -670,30 +665,26 @@ export const createEntriesStorageOperations = (
                 }
             );
         }
-        const esGetItems: BatchReadItem[] = [];
+
+        const esEntityReader = esEntity.createEntityReader();
+
         if (publishedRecord) {
-            esGetItems.push(
-                esEntity.getBatch({
-                    PK: partitionKey,
-                    SK: publishedSortKey
-                })
-            );
+            esEntityReader.get({
+                PK: partitionKey,
+                SK: publishedSortKey
+            });
         }
         if (latestRecord) {
-            esGetItems.push(
-                esEntity.getBatch({
-                    PK: partitionKey,
-                    SK: latestSortKey
-                })
-            );
+            esEntityReader.get({
+                PK: partitionKey,
+                SK: latestSortKey
+            });
         }
-        if (esGetItems.length === 0) {
+        if (esEntityReader.total === 0) {
             return;
         }
-        const esRecords = await batchReadAll<ElasticsearchDbRecord>({
-            table: esEntity.table,
-            items: esGetItems
-        });
+        const esRecords = await esEntityReader.execute<ElasticsearchDbRecord>();
+
         const esItems = (
             await Promise.all(
                 esRecords.map(async record => {
@@ -712,25 +703,23 @@ export const createEntriesStorageOperations = (
             return;
         }
 
-        const elasticsearchEntityBatch = createEntityWriteBatch({
-            entity: esEntity,
-            put: await Promise.all(
-                esItems.map(async item => {
-                    return {
-                        ...item,
-                        data: await compress(plugins, {
-                            ...item.data,
-                            location: {
-                                ...item.data?.location,
-                                folderId
-                            }
-                        })
-                    };
-                })
-            )
-        });
-
         try {
+            const elasticsearchEntityBatch = esEntity.createEntityWriter({
+                put: await Promise.all(
+                    esItems.map(async item => {
+                        return {
+                            ...item,
+                            data: await compress(plugins, {
+                                ...item.data,
+                                location: {
+                                    ...item.data?.location,
+                                    folderId
+                                }
+                            })
+                        };
+                    })
+                )
+            });
             await elasticsearchEntityBatch.execute();
         } catch (ex) {
             throw new WebinyError(
@@ -765,8 +754,7 @@ export const createEntriesStorageOperations = (
         /**
          * First we need to fetch all the records in the regular DynamoDB table.
          */
-        const queryAllParams: QueryAllParams = {
-            entity,
+        const queryAllParams: IEntityQueryAllParams = {
             partitionKey,
             options: {
                 gte: " "
@@ -775,7 +763,7 @@ export const createEntriesStorageOperations = (
 
         const latestSortKey = createLatestSortKey();
         const publishedSortKey = createPublishedSortKey();
-        const records = await queryAll<CmsEntry>(queryAllParams);
+        const records = await entity.queryAll<CmsEntry>(queryAllParams);
 
         /**
          * Let's pick the `deleted` meta fields from the entry.
@@ -788,9 +776,7 @@ export const createEntriesStorageOperations = (
         let latestRecord: CmsEntry | undefined = undefined;
         let publishedRecord: CmsEntry | undefined = undefined;
 
-        const entityBatch = createEntityWriteBatch({
-            entity
-        });
+        const entityBatch = entity.createEntityWriter();
 
         for (const record of records) {
             entityBatch.put({
@@ -835,31 +821,24 @@ export const createEntriesStorageOperations = (
         /**
          * We need to get the published and latest records from Elasticsearch.
          */
-        const esGetItems: BatchReadItem[] = [];
+        const esEntityReader = esEntity.createEntityReader();
         if (publishedRecord) {
-            esGetItems.push(
-                esEntity.getBatch({
-                    PK: partitionKey,
-                    SK: publishedSortKey
-                })
-            );
+            esEntityReader.get({
+                PK: partitionKey,
+                SK: publishedSortKey
+            });
         }
         if (latestRecord) {
-            esGetItems.push(
-                esEntity.getBatch({
-                    PK: partitionKey,
-                    SK: latestSortKey
-                })
-            );
+            esEntityReader.get({
+                PK: partitionKey,
+                SK: latestSortKey
+            });
         }
-        if (esGetItems.length === 0) {
+        if (esEntityReader.total === 0) {
             return;
         }
 
-        const esRecords = await batchReadAll<ElasticsearchDbRecord>({
-            table: esEntity.table,
-            items: esGetItems
-        });
+        const esRecords = await esEntityReader.execute<ElasticsearchDbRecord>();
 
         const esItems = (
             await Promise.all(
@@ -882,9 +861,7 @@ export const createEntriesStorageOperations = (
         /**
          * We update all ES records with data received.
          */
-        const elasticsearchEntityBatch = createEntityWriteBatch({
-            entity: esEntity
-        });
+        const elasticsearchEntityBatch = esEntity.createEntityWriter();
 
         for (const item of esItems) {
             elasticsearchEntityBatch.put({
@@ -947,8 +924,7 @@ export const createEntriesStorageOperations = (
         /**
          * First we need to fetch all the records in the regular DynamoDB table.
          */
-        const queryAllParams: QueryAllParams = {
-            entity,
+        const queryAllParams: IEntityQueryAllParams = {
             partitionKey,
             options: {
                 gte: " "
@@ -957,7 +933,7 @@ export const createEntriesStorageOperations = (
 
         const latestSortKey = createLatestSortKey();
         const publishedSortKey = createPublishedSortKey();
-        const records = await queryAll<CmsEntry>(queryAllParams);
+        const records = await entity.queryAll<CmsEntry>(queryAllParams);
 
         /**
          * Then update all the records with data received.
@@ -965,9 +941,7 @@ export const createEntriesStorageOperations = (
         let latestRecord: CmsEntry | undefined = undefined;
         let publishedRecord: CmsEntry | undefined = undefined;
 
-        const entityBatch = createEntityWriteBatch({
-            entity
-        });
+        const entityBatch = entity.createEntityWriter();
 
         for (const record of records) {
             entityBatch.put({
@@ -1012,28 +986,21 @@ export const createEntriesStorageOperations = (
         /**
          * We need to get the published and latest records from Elasticsearch.
          */
-        const esGetItems: BatchReadItem[] = [];
+        const esEntityReader = esEntity.createEntityReader();
         if (publishedRecord) {
-            esGetItems.push(
-                esEntity.getBatch({
-                    PK: partitionKey,
-                    SK: publishedSortKey
-                })
-            );
+            esEntityReader.get({
+                PK: partitionKey,
+                SK: publishedSortKey
+            });
         }
         if (latestRecord) {
-            esGetItems.push(
-                esEntity.getBatch({
-                    PK: partitionKey,
-                    SK: latestSortKey
-                })
-            );
+            esEntityReader.get({
+                PK: partitionKey,
+                SK: latestSortKey
+            });
         }
 
-        const esRecords = await batchReadAll<ElasticsearchDbRecord>({
-            table: esEntity.table,
-            items: esGetItems
-        });
+        const esRecords = await esEntityReader.execute<ElasticsearchDbRecord>();
 
         const esItems = (
             await Promise.all(
@@ -1056,9 +1023,7 @@ export const createEntriesStorageOperations = (
         /**
          * We update all ES records with data received.
          */
-        const elasticsearchEntityBatch = createEntityWriteBatch({
-            entity: esEntity
-        });
+        const elasticsearchEntityBatch = esEntity.createEntityWriter();
         for (const item of esItems) {
             elasticsearchEntityBatch.put({
                 ...item,
@@ -1102,24 +1067,21 @@ export const createEntriesStorageOperations = (
             tenant: model.tenant
         });
 
-        const items = await queryAll<CmsEntry>({
-            entity,
+        const items = await entity.queryAll<CmsEntry>({
             partitionKey,
             options: {
                 gte: " "
             }
         });
 
-        const esItems = await queryAll<CmsEntry>({
-            entity: esEntity,
+        const esItems = await esEntity.queryAll<CmsEntry>({
             partitionKey,
             options: {
                 gte: " "
             }
         });
 
-        const entityBatch = createEntityWriteBatch({
-            entity,
+        const entityBatch = entity.createEntityWriter({
             delete: items.map(item => {
                 return {
                     PK: item.PK,
@@ -1128,8 +1090,7 @@ export const createEntriesStorageOperations = (
             })
         });
 
-        const elasticsearchEntityBatch = createEntityWriteBatch({
-            entity: esEntity,
+        const elasticsearchEntityBatch = esEntity.createEntityWriter({
             delete: esItems.map(item => {
                 return {
                     PK: item.PK,
@@ -1194,8 +1155,7 @@ export const createEntriesStorageOperations = (
         /**
          * We need to delete all existing records of the given entry revision.
          */
-        const entityBatch = createEntityWriteBatch({
-            entity,
+        const entityBatch = entity.createEntityWriter({
             delete: [
                 {
                     PK: partitionKey,
@@ -1204,9 +1164,7 @@ export const createEntriesStorageOperations = (
             ]
         });
 
-        const elasticsearchEntityBatch = createEntityWriteBatch({
-            entity: esEntity
-        });
+        const elasticsearchEntityBatch = esEntity.createEntityWriter();
 
         /**
          * If revision we are deleting is the published one as well, we need to delete those records as well.
@@ -1236,7 +1194,8 @@ export const createEntriesStorageOperations = (
                 ...latestStorageEntry,
                 PK: partitionKey,
                 SK: createLatestSortKey(),
-                TYPE: createLatestRecordType()
+                TYPE: createLatestRecordType(),
+                GSI_TENANT: model.tenant
             });
 
             /**
@@ -1250,7 +1209,8 @@ export const createEntriesStorageOperations = (
                     tenant: model.tenant
                 }),
                 SK: createRevisionSortKey(initialLatestStorageEntry),
-                TYPE: createRecordType()
+                TYPE: createRecordType(),
+                GSI_TENANT: model.tenant
             });
 
             const latestTransformer = createTransformer({
@@ -1265,7 +1225,8 @@ export const createEntriesStorageOperations = (
                 PK: partitionKey,
                 SK: createLatestSortKey(),
                 index,
-                data: esLatestData
+                data: esLatestData,
+                GSI_TENANT: model.tenant
             });
         }
 
@@ -1322,12 +1283,8 @@ export const createEntriesStorageOperations = (
          * Then we need to construct the queries for all the revisions and entries.
          */
 
-        const entityBatch = createEntityWriteBatch({
-            entity
-        });
-        const elasticsearchEntityBatch = createEntityWriteBatch({
-            entity: esEntity
-        });
+        const entityBatch = entity.createEntityWriter();
+        const elasticsearchEntityBatch = esEntity.createEntityWriter();
         for (const id of entries) {
             /**
              * Latest item.
@@ -1494,34 +1451,34 @@ export const createEntriesStorageOperations = (
 
         const { entry, storageEntry } = transformer.transformEntryKeys();
 
-        const revisionKeys = {
+        const revisionKeys: IDynamoDbTableKeys = {
             PK: createPartitionKey({
                 id: entry.id,
                 tenant: model.tenant
             }),
-            SK: createRevisionSortKey(entry)
+            SK: createRevisionSortKey(entry),
+            GSI_TENANT: model.tenant
         };
-        const latestKeys = {
+        const latestKeys: IDynamoDbTableKeys = {
             PK: createPartitionKey({
                 id: entry.id,
                 tenant: model.tenant
             }),
-            SK: createLatestSortKey()
+            SK: createLatestSortKey(),
+            GSI_TENANT: model.tenant
         };
-        const publishedKeys = {
+        const publishedKeys: IDynamoDbTableKeys = {
             PK: createPartitionKey({
                 id: entry.id,
                 tenant: model.tenant
             }),
-            SK: createPublishedSortKey()
+            SK: createPublishedSortKey(),
+            GSI_TENANT: model.tenant
         };
 
         let latestEsEntry: ElasticsearchDbRecord | null = null;
         try {
-            latestEsEntry = await getClean<ElasticsearchDbRecord>({
-                entity: esEntity,
-                keys: latestKeys
-            });
+            latestEsEntry = await esEntity.getClean<ElasticsearchDbRecord>(latestKeys);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not read Elasticsearch latest data.",
@@ -1567,8 +1524,7 @@ export const createEntriesStorageOperations = (
         });
 
         // 1. Update REV# and P records with new data.
-        const entityBatch = createEntityWriteBatch({
-            entity,
+        const entityBatch = entity.createEntityWriter({
             put: [
                 {
                     ...storageEntry,
@@ -1583,9 +1539,7 @@ export const createEntriesStorageOperations = (
             ]
         });
 
-        const elasticsearchEntityBatch = createEntityWriteBatch({
-            entity: esEntity
-        });
+        const elasticsearchEntityWriter = esEntity.createEntityWriter();
 
         const { index: esIndex } = configurations.es({
             model
@@ -1618,7 +1572,8 @@ export const createEntriesStorageOperations = (
                         status: CONTENT_ENTRY_STATUS.UNPUBLISHED,
                         TYPE: createRecordType(),
                         PK: createPartitionKey(publishedStorageEntry),
-                        SK: createRevisionSortKey(publishedStorageEntry)
+                        SK: createRevisionSortKey(publishedStorageEntry),
+                        GSI_TENANT: model.tenant
                     });
                 }
             }
@@ -1648,7 +1603,8 @@ export const createEntriesStorageOperations = (
                 ...latestStorageEntryFields,
                 PK: createPartitionKey(latestStorageEntry),
                 SK: createLatestSortKey(),
-                TYPE: createLatestRecordType()
+                TYPE: createLatestRecordType(),
+                GSI_TENANT: model.tenant
             });
 
             // 2.5 Update REV# record.
@@ -1656,7 +1612,8 @@ export const createEntriesStorageOperations = (
                 ...latestStorageEntryFields,
                 PK: createPartitionKey(latestStorageEntry),
                 SK: createRevisionSortKey(latestStorageEntry),
-                TYPE: createRecordType()
+                TYPE: createRecordType(),
+                GSI_TENANT: model.tenant
             });
 
             // 2.6 Additionally, if we have a previously published entry, we need to mark it as unpublished.
@@ -1674,7 +1631,8 @@ export const createEntriesStorageOperations = (
                         PK: createPartitionKey(publishedStorageEntry),
                         SK: createRevisionSortKey(publishedStorageEntry),
                         TYPE: createRecordType(),
-                        status: CONTENT_ENTRY_STATUS.UNPUBLISHED
+                        status: CONTENT_ENTRY_STATUS.UNPUBLISHED,
+                        GSI_TENANT: model.tenant
                     });
                 }
             }
@@ -1686,7 +1644,7 @@ export const createEntriesStorageOperations = (
          * Update the published revision entry in ES.
          */
         const esPublishedData = await transformer.getElasticsearchPublishedEntryData();
-        elasticsearchEntityBatch.put({
+        elasticsearchEntityWriter.put({
             ...publishedKeys,
             index: esIndex,
             data: esPublishedData
@@ -1717,11 +1675,12 @@ export const createEntriesStorageOperations = (
                 }
             });
 
-            elasticsearchEntityBatch.put({
+            elasticsearchEntityWriter.put({
                 index: esIndex,
                 PK: createPartitionKey(latestEsEntryDataDecompressed),
                 SK: createLatestSortKey(),
-                data: await latestTransformer.getElasticsearchLatestEntryData()
+                data: await latestTransformer.getElasticsearchLatestEntryData(),
+                GSI_TENANT: model.tenant
             });
         } else {
             const updatedEntryLevelMetaFields = pickEntryMetaFields(
@@ -1732,10 +1691,7 @@ export const createEntriesStorageOperations = (
             /**
              * Update the Elasticsearch table to propagate changes to the Elasticsearch.
              */
-            const latestEsEntry = await getClean<ElasticsearchDbRecord>({
-                entity: esEntity,
-                keys: latestKeys
-            });
+            const latestEsEntry = await esEntity.getClean<ElasticsearchDbRecord>(latestKeys);
 
             if (latestEsEntry) {
                 const latestEsEntryDataDecompressed = (await decompress(
@@ -1754,7 +1710,7 @@ export const createEntriesStorageOperations = (
                     status: latestRevisionStatus
                 });
 
-                elasticsearchEntityBatch.put({
+                elasticsearchEntityWriter.put({
                     ...latestKeys,
                     index: esIndex,
                     data: updatedLatestEntry
@@ -1787,7 +1743,7 @@ export const createEntriesStorageOperations = (
          * And Elasticsearch table batch.
          */
         try {
-            await elasticsearchEntityBatch.execute();
+            await elasticsearchEntityWriter.execute();
         } catch (ex) {
             throw new WebinyError(
                 ex.message ||
@@ -1829,14 +1785,14 @@ export const createEntriesStorageOperations = (
             tenant: model.tenant
         });
 
-        const entityBatch = createEntityWriteBatch({
-            entity,
+        const entityBatch = entity.createEntityWriter({
             put: [
                 {
                     ...storageEntry,
                     PK: partitionKey,
                     SK: createRevisionSortKey(entry),
-                    TYPE: createRecordType()
+                    TYPE: createRecordType(),
+                    GSI_TENANT: model.tenant
                 }
             ],
             delete: [
@@ -1847,8 +1803,7 @@ export const createEntriesStorageOperations = (
             ]
         });
 
-        const elasticsearchEntityBatch = createEntityWriteBatch({
-            entity: esEntity,
+        const elasticsearchEntityBatch = esEntity.createEntityWriter({
             delete: [
                 {
                     PK: partitionKey,
@@ -1869,7 +1824,8 @@ export const createEntriesStorageOperations = (
                 ...storageEntry,
                 PK: partitionKey,
                 SK: createLatestSortKey(),
-                TYPE: createLatestRecordType()
+                TYPE: createLatestRecordType(),
+                GSI_TENANT: model.tenant
             });
 
             const esLatestData = await transformer.getElasticsearchLatestEntryData();
@@ -1877,7 +1833,8 @@ export const createEntriesStorageOperations = (
                 PK: partitionKey,
                 SK: createLatestSortKey(),
                 index,
-                data: esLatestData
+                data: esLatestData,
+                GSI_TENANT: model.tenant
             });
         }
 
@@ -2052,8 +2009,7 @@ export const createEntriesStorageOperations = (
 
         const { tenant } = model;
         const { entryId, version } = params;
-        const queryParams: QueryOneParams = {
-            entity,
+        const queryParams: IEntityQueryOneParams = {
             partitionKey: createPartitionKey({
                 tenant,
                 id: entryId
@@ -2078,9 +2034,7 @@ export const createEntriesStorageOperations = (
         };
 
         try {
-            const result = await queryOne<CmsEntry>(queryParams);
-
-            const entry = cleanupItem(entity, result);
+            const entry = await entity.queryOneClean<CmsEntry>(queryParams);
 
             if (!entry) {
                 return null;

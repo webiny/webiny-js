@@ -1,5 +1,5 @@
 import type { TableDef } from "@webiny/db-dynamodb/toolbox.js";
-import { createStandardEntity } from "@webiny/db-dynamodb";
+import { createEntity, standardEntityAttributes } from "@webiny/db-dynamodb";
 
 export interface ICreateElasticsearchEntityParams {
     table: TableDef;
@@ -8,31 +8,12 @@ export interface ICreateElasticsearchEntityParams {
 
 export const createElasticsearchEntity = (params: ICreateElasticsearchEntityParams) => {
     const { table, entityName } = params;
-    return createStandardEntity({
+    return createEntity({
         name: entityName,
         table,
         attributes: {
-            PK: {
-                type: "string",
-                partitionKey: true
-            },
-            SK: {
-                type: "string",
-                sortKey: true
-            },
+            ...standardEntityAttributes,
             index: {
-                type: "string",
-                required: true
-            },
-            TYPE: {
-                type: "string",
-                required: true
-            },
-            data: {
-                type: "map",
-                required: true
-            },
-            GSI_TENANT: {
                 type: "string",
                 required: true
             }

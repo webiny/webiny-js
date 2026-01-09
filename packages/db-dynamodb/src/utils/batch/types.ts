@@ -23,6 +23,8 @@ export interface IDeleteBatchItem {
 export type IPutBatchItem<T extends Record<string, any> = Record<string, any>> = {
     PK: string;
     SK: string;
+    // TODO always must be present
+    GSI_TENANT: string;
 } & T;
 
 export interface BatchWriteItem {

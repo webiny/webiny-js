@@ -41,13 +41,7 @@ import { createTable } from "@webiny/db-dynamodb";
 export * from "./plugins/index.js";
 
 export const createStorageOperations: StorageOperationsFactory = params => {
-    const {
-        table,
-        esTable,
-        documentClient,
-        elasticsearch,
-        plugins: userPlugins
-    } = params;
+    const { table, esTable, documentClient, elasticsearch, plugins: userPlugins } = params;
 
     const tableInstance = createTable({
         name: table,

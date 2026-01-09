@@ -1,12 +1,15 @@
 import type { Table } from "@webiny/db-dynamodb/toolbox.js";
-import { Entity } from "@webiny/db-dynamodb/toolbox.js";
-import { createStandardEntity } from "@webiny/db-dynamodb";
+import { createEntity, type IEntity, standardEntityAttributes } from "@webiny/db-dynamodb";
 
 interface Params {
     table: Table<string, string, string>;
     entityName: string;
 }
-export const createGroupEntity = (params: Params): Entity<any> => {
+export const createGroupEntity = (params: Params): IEntity => {
     const { table, entityName } = params;
-    return createStandardEntity({ table, name: entityName });
+    return createEntity({
+        table,
+        name: entityName,
+        attributes: standardEntityAttributes
+    });
 };

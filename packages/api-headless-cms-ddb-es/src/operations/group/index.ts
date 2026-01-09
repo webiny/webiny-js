@@ -7,16 +7,10 @@ import type {
     CmsGroupStorageOperationsListParams,
     CmsGroupStorageOperationsUpdateParams
 } from "@webiny/api-headless-cms/types/index.js";
-import type { Entity } from "@webiny/db-dynamodb/toolbox.js";
 import WebinyError from "@webiny/error";
-import { get as getOne } from "@webiny/db-dynamodb/utils/get.js";
-import type { QueryAllParams } from "@webiny/db-dynamodb/utils/query.js";
-import { queryAll } from "@webiny/db-dynamodb/utils/query.js";
-import { filterItems } from "@webiny/db-dynamodb/utils/filter.js";
+import type { IEntity } from "@webiny/db-dynamodb";
+import { filterItems, sortItems, ValueFilterPlugin } from "@webiny/db-dynamodb";
 import type { PluginsContainer } from "@webiny/plugins";
-import { ValueFilterPlugin } from "@webiny/db-dynamodb/plugins/definitions/ValueFilterPlugin.js";
-import { sortItems } from "@webiny/db-dynamodb/utils/sort.js";
-import { deleteItem, put } from "@webiny/db-dynamodb";
 
 interface PartitionKeyParams {
     tenant: string;
@@ -52,7 +46,7 @@ const createType = (): string => {
 };
 
 interface CreateGroupsStorageOperationsParams {
-    entity: Entity<any>;
+    entity: IEntity;
     plugins: PluginsContainer;
 }
 export const createGroupsStorageOperations = (
@@ -72,13 +66,10 @@ export const createGroupsStorageOperations = (
         const { group } = params;
         const keys = createKeys(group);
         try {
-            await put({
-                entity,
-                item: {
-                    data: group,
-                    TYPE: createType(),
-                    ...keys
-                }
+            await entity.put({
+                data: group,
+                TYPE: createType(),
+                ...keys
             });
         } catch (ex) {
             throw new WebinyError(
@@ -96,13 +87,10 @@ export const createGroupsStorageOperations = (
         const { group } = params;
         const keys = createKeys(group);
         try {
-            await put({
-                entity,
-                item: {
-                    data: group,
-                    TYPE: createType(),
-                    ...keys
-                }
+            await entity.put({
+                data: group,
+                TYPE: createType(),
+                ...keys
             });
         } catch (ex) {
             throw new WebinyError(
@@ -120,10 +108,7 @@ export const createGroupsStorageOperations = (
         const { group } = params;
         const keys = createKeys(group);
         try {
-            await deleteItem({
-                entity,
-                keys
-            });
+            await entity.delete(keys);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not delete group.",
@@ -140,10 +125,7 @@ export const createGroupsStorageOperations = (
         const keys = createKeys(params);
 
         try {
-            const result = await getOne<{ data: CmsGroup }>({
-                entity,
-                keys
-            });
+            const result = await entity.get<{ data: CmsGroup }>(keys);
 
             return result ? result.data : null;
         } catch (ex) {
@@ -161,17 +143,14 @@ export const createGroupsStorageOperations = (
     const list = async (params: CmsGroupStorageOperationsListParams) => {
         const { sort, where } = params;
 
-        const queryAllParams: QueryAllParams = {
-            entity,
-            partitionKey: createPartitionKey(where),
-            options: {
-                gte: " "
-            }
-        };
-
         let records: CmsGroup[] = [];
         try {
-            const ddbRecords = await queryAll<{ data: CmsGroup }>(queryAllParams);
+            const ddbRecords = await entity.queryAll<{ data: CmsGroup }>({
+                partitionKey: createPartitionKey(where),
+                options: {
+                    gte: " "
+                }
+            });
             records = ddbRecords.map(item => item.data);
         } catch (ex) {
             throw new WebinyError(

@@ -8,11 +8,9 @@ import type {
     CmsModelStorageOperationsListParams,
     CmsModelStorageOperationsUpdateParams
 } from "@webiny/api-headless-cms/types/index.js";
-import type { Entity } from "@webiny/db-dynamodb/toolbox.js";
 import { configurations } from "~/configurations.js";
 import type { Client } from "@elastic/elasticsearch";
-import type { QueryAllParams } from "@webiny/db-dynamodb/utils/query.js";
-import { deleteItem, get as getOne, put, queryAll } from "@webiny/db-dynamodb";
+import type { IEntity } from "@webiny/db-dynamodb";
 
 interface PartitionKeysParams {
     tenant: string;
@@ -53,7 +51,7 @@ const createType = (): string => {
 };
 
 export interface CreateModelsStorageOperationsParams {
-    entity: Entity<any>;
+    entity: IEntity;
     elasticsearch: Client;
 }
 
@@ -73,13 +71,10 @@ export const createModelsStorageOperations = (
 
         let error;
         try {
-            await put({
-                entity,
-                item: {
-                    data: model,
-                    ...keys,
-                    TYPE: createType()
-                }
+            await entity.put({
+                data: model,
+                ...keys,
+                TYPE: createType()
             });
             return model;
         } catch (ex) {
@@ -112,13 +107,10 @@ export const createModelsStorageOperations = (
         const keys = createKeys(model);
 
         try {
-            await put({
-                entity,
-                item: {
-                    data: model,
-                    ...keys,
-                    TYPE: createType()
-                }
+            await entity.put({
+                data: model,
+                ...keys,
+                TYPE: createType()
             });
             return model;
         } catch (ex) {
@@ -143,10 +135,7 @@ export const createModelsStorageOperations = (
         });
 
         try {
-            await deleteItem({
-                entity,
-                keys
-            });
+            await entity.delete(keys);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not delete model.",
@@ -185,10 +174,7 @@ export const createModelsStorageOperations = (
         const keys = createKeys(params);
 
         try {
-            const result = await getOne<{ data: CmsModel }>({
-                entity,
-                keys
-            });
+            const result = await entity.get<{ data: CmsModel }>(keys);
 
             return result ? result.data : null;
         } catch (ex) {
@@ -205,15 +191,14 @@ export const createModelsStorageOperations = (
 
     const list = async (params: CmsModelStorageOperationsListParams) => {
         const { where } = params;
-        const queryAllParams: QueryAllParams = {
-            entity,
-            partitionKey: createPartitionKey(where),
-            options: {
-                gte: " "
-            }
-        };
+        const partitionKey = createPartitionKey(where);
         try {
-            const result = await queryAll<{ data: CmsModel }>(queryAllParams);
+            const result = await entity.queryAll<{ data: CmsModel }>({
+                partitionKey,
+                options: {
+                    gte: " "
+                }
+            });
             return result ? result.map(item => item.data) : [];
         } catch (ex) {
             throw new WebinyError(
@@ -221,7 +206,7 @@ export const createModelsStorageOperations = (
                 ex.code || "MODEL_LIST_ERROR",
                 {
                     error: ex,
-                    partitionKey: queryAllParams.partitionKey
+                    partitionKey
                 }
             );
         }
