@@ -1,4 +1,3 @@
-import { z } from "zod";
 import { defineExtension } from "../defineExtension/index.js";
 import { zodPathToFile } from "../defineExtension/zodTypes/zodPathToFile.js";
 

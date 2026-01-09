@@ -1,4 +1,3 @@
-import { z } from "zod";
 import { defineExtension } from "~/defineExtension/index.js";
 import { zodPathToAbstraction } from "~/defineExtension/zodTypes/zodPathToAbstraction.js";
 import { CorePulumi as CorePulumiAbstraction } from "~/abstractions/features/pulumi/index.js";

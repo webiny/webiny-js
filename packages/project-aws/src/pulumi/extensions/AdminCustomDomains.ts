@@ -1,11 +1,10 @@
-import { z } from "zod";
 import { defineExtension } from "@webiny/project/defineExtension/index.js";
 
 export const AdminCustomDomains = defineExtension({
     type: "Infra/Admin/CustomDomains",
     tags: { runtimeContext: "project" },
     description: "Configure custom domains for the Admin app.",
-    paramsSchema: z.object({
+    paramsSchema: ({ z }) => ({
         domains: z.array(z.string()).describe("List of custom domains.").min(1),
         sslMethod: z
             .enum(["sni-only", "vip"])

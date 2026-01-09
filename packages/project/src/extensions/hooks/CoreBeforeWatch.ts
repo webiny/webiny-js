@@ -1,7 +1,6 @@
 import { defineExtension } from "~/defineExtension/index.js";
 import { zodPathToAbstraction } from "~/defineExtension/zodTypes/zodPathToAbstraction.js";
 import { CoreBeforeWatch as CoreBeforeWatchAbstraction } from "~/abstractions/index.js";
-import { z } from "zod";
 
 export const CoreBeforeWatch = defineExtension({
     type: "Core/BeforeWatch",

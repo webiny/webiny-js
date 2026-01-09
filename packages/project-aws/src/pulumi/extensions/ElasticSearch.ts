@@ -1,11 +1,10 @@
 import { defineExtension } from "@webiny/project/defineExtension/index.js";
-import { z } from "zod";
 
 export const ElasticSearch = defineExtension({
     type: "Infra/ElasticSearch",
     tags: { runtimeContext: "project" },
     description: "Enable and configure Elasticsearch integration.",
-    paramsSchema: z.object({
+    paramsSchema: ({ z }) => ({
         enabled: z.boolean().describe("Whether to enable ElasticSearch.").default(false).optional(),
         domainName: z.string().describe("The name of the Elasticsearch domain.").optional(),
         indexPrefix: z

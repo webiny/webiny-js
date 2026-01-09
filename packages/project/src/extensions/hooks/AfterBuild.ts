@@ -1,7 +1,6 @@
 import { defineExtension } from "~/defineExtension/index.js";
 import { zodPathToAbstraction } from "~/defineExtension/zodTypes/zodPathToAbstraction.js";
 import { AfterBuild as AfterBuildAbstraction } from "~/abstractions/index.js";
-import { z } from "zod";
 
 export const AfterBuild = defineExtension({
     type: "Project/AfterBuild",

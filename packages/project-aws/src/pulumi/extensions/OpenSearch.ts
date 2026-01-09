@@ -1,11 +1,10 @@
 import { defineExtension } from "@webiny/project/defineExtension/index.js";
-import { z } from "zod";
 
 export const OpenSearch = defineExtension({
     type: "Infra/OpenSearch",
     tags: { runtimeContext: "project" },
     description: "Enable and configure Opensearch integration.",
-    paramsSchema: z.object({
+    paramsSchema: ({ z }) => ({
         enabled: z.boolean().describe("Whether to enable OpenSearch.").default(false).optional(),
         domainName: z.string().describe("The name of the Opensearch domain.").optional(),
         indexPrefix: z

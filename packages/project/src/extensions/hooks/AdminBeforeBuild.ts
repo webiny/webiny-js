@@ -1,7 +1,6 @@
 import { defineExtension } from "~/defineExtension/index.js";
 import { zodPathToAbstraction } from "~/defineExtension/zodTypes/zodPathToAbstraction.js";
 import { AdminBeforeBuild as AdminBeforeBuildAbstraction } from "~/abstractions/index.js";
-import { z } from "zod";
 
 export const AdminBeforeBuild = defineExtension({
     type: "Admin/BeforeBuild",

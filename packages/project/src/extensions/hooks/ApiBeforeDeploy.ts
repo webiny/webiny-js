@@ -1,7 +1,6 @@
 import { defineExtension } from "~/defineExtension/index.js";
 import { zodPathToAbstraction } from "~/defineExtension/zodTypes/zodPathToAbstraction.js";
 import { ApiBeforeDeploy as ApiBeforeDeployAbstraction } from "~/abstractions/index.js";
-import { z } from "zod";
 
 export const ApiBeforeDeploy = defineExtension({
     type: "Api/BeforeDeploy",
