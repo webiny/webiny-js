@@ -12,7 +12,7 @@ class ValidateProductionPulumiStateImpl implements CoreBeforeDeploy.Interface {
         private projectSdkParamsService: ProjectSdkParamsService.Interface
     ) {}
 
-    async execute() {
+    async execute(params: CoreBeforeDeploy.Params) {
         const sdkParams = this.projectSdkParamsService.get();
         const { env, allowLocalStateFiles } = sdkParams;
 
