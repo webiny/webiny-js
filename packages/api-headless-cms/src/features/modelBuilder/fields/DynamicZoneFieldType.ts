@@ -9,6 +9,7 @@ export interface IDynamicZoneTemplate {
     icon?: string;
     description?: string;
     fields: any[];
+    layout?: string[][];
 }
 
 export interface IDynamicZoneFieldBuilder extends FieldBuilder<"dynamicZone"> {
@@ -21,6 +22,7 @@ export interface IDynamicZoneFieldBuilder extends FieldBuilder<"dynamicZone"> {
             icon?: string;
             description?: string;
             fields: (registry: IFieldBuilderRegistry) => Record<string, FieldBuilder<any>>;
+            layout?: string[][];
         }
     ): this;
 }
@@ -51,6 +53,7 @@ class DynamicZoneFieldBuilder
             icon?: string;
             description?: string;
             fields: (registry: IFieldBuilderRegistry) => Record<string, FieldBuilder<any>>;
+            layout?: string[][];
         }
     ): this {
         const fieldBuilders = config.fields(this.registry);
@@ -69,7 +72,8 @@ class DynamicZoneFieldBuilder
             gqlTypeName: config.gqlTypeName,
             icon: config.icon,
             description: config.description,
-            fields
+            fields,
+            layout: config.layout
         });
 
         return this;

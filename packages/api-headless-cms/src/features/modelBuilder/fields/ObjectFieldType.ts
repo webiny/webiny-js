@@ -7,6 +7,7 @@ export interface IObjectFieldBuilder extends FieldBuilder<"object"> {
     fields(
         builder: (registry: FieldBuilderRegistry.Interface) => Record<string, FieldBuilder<any>>
     ): this;
+    layout(layout: string[][]): this;
 }
 
 class ObjectFieldBuilder extends FieldBuilder<"object"> implements IObjectFieldBuilder {
@@ -37,6 +38,12 @@ class ObjectFieldBuilder extends FieldBuilder<"object"> implements IObjectFieldB
         }
         this.config.settings = this.config.settings || {};
         this.config.settings.fields = fields;
+        return this;
+    }
+
+    layout(layout: string[][]): this {
+        this.config.settings = this.config.settings || {};
+        this.config.settings.layout = layout;
         return this;
     }
 }

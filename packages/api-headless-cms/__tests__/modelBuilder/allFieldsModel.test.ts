@@ -92,7 +92,8 @@ describe("All Field Types Model", () => {
                                     .datetime()
                                     .label("Published At")
                                     .withTimezone()
-                            })),
+                            }))
+                            .layout([["source"], ["publishedAt"]]),
 
                         // Object field - multiple (repeatable)
                         sections: fields
@@ -103,7 +104,8 @@ describe("All Field Types Model", () => {
                                 title: objFields.text().label("Section Title"),
                                 content: objFields.richText().label("Section Content"),
                                 order: objFields.number().label("Order")
-                            })),
+                            }))
+                            .layout([["title"], ["content"], ["order"]]),
 
                         // Dynamic Zone field
                         dynamicContent: fields
@@ -118,7 +120,8 @@ describe("All Field Types Model", () => {
                                 fields: f => ({
                                     heading: f.text().label("Heading"),
                                     body: f.longText().label("Body")
-                                })
+                                }),
+                                layout: [["heading"], ["body"]]
                             })
                             .template("imageBlock", {
                                 name: "Image Block",
@@ -129,7 +132,8 @@ describe("All Field Types Model", () => {
                                     image: f.file().label("Image").imagesOnly(),
                                     caption: f.text().label("Caption"),
                                     altText: f.text().label("Alt Text")
-                                })
+                                }),
+                                layout: [["image"], ["caption"], ["altText"]]
                             })
                             .template("statsBlock", {
                                 name: "Stats Block",
@@ -168,7 +172,9 @@ describe("All Field Types Model", () => {
                                                     ]
                                                 })
                                         }))
-                                })
+                                        .layout([["label"], ["value"], ["trend"]])
+                                }),
+                                layout: [["stats"]]
                             })
                     }));
             }
@@ -230,19 +236,28 @@ describe("All Field Types Model", () => {
         expect(metadataField?.type).toBe("object");
         expect(metadataField?.settings?.fields).toBeDefined();
         expect(metadataField?.settings?.fields?.length).toBe(2);
+        expect(metadataField?.settings?.layout).toEqual([["source"], ["publishedAt"]]);
 
         const sectionsField = model!.fields.find(f => f.fieldId === "sections");
         expect(sectionsField?.type).toBe("object");
         expect(sectionsField?.multipleValues).toBe(true);
         expect(sectionsField?.settings?.fields?.length).toBe(3);
+        expect(sectionsField?.settings?.layout).toEqual([["title"], ["content"], ["order"]]);
 
         const dynamicContentField = model!.fields.find(f => f.fieldId === "dynamicContent");
         expect(dynamicContentField?.type).toBe("dynamicZone");
         expect(dynamicContentField?.multipleValues).toBe(true);
         expect(dynamicContentField?.settings?.templates).toHaveLength(3);
         expect(dynamicContentField?.settings?.templates[0].gqlTypeName).toBe("TextBlock");
+        expect(dynamicContentField?.settings?.templates[0].layout).toEqual([["heading"], ["body"]]);
         expect(dynamicContentField?.settings?.templates[1].gqlTypeName).toBe("ImageBlock");
+        expect(dynamicContentField?.settings?.templates[1].layout).toEqual([
+            ["image"],
+            ["caption"],
+            ["altText"]
+        ]);
         expect(dynamicContentField?.settings?.templates[2].gqlTypeName).toBe("StatsBlock");
+        expect(dynamicContentField?.settings?.templates[2].layout).toEqual([["stats"]]);
 
         // Verify nested object in dynamic zone template has stats with predefined values
         const statsTemplate = dynamicContentField?.settings?.templates[2];
@@ -251,6 +266,7 @@ describe("All Field Types Model", () => {
         expect(statsField.fieldId).toBe("stats");
         expect(statsField.type).toBe("object");
         expect(statsField.multipleValues).toBe(true);
+        expect(statsField.settings.layout).toEqual([["label"], ["value"], ["trend"]]);
         expect(statsField.settings.fields).toHaveLength(3);
         const trendField = statsField.settings.fields.find((f: any) => f.fieldId === "trend");
         expect(trendField.predefinedValues.enabled).toBe(true);
