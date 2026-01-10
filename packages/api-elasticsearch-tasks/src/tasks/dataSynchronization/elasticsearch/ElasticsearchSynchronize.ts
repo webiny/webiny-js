@@ -44,7 +44,7 @@ export class ElasticsearchSynchronize implements IElasticsearchSynchronize {
 
         const readableItems = items.map(item => {
             const entity = this.getEntity(item);
-            return entity.item.getBatch({
+            return entity.item.entity.getBatch({
                 PK: item.PK,
                 SK: item.SK
             });
