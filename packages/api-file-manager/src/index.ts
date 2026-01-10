@@ -8,11 +8,10 @@ import { FileManagerFeature } from "~/features/FileManagerFeature.js";
 import { FilesPermissions as FilePermissionsImpl } from "~/permissions/FilesPermissions.js";
 import { SettingsPermissions as SettingsPermissionsImpl } from "~/permissions/SettingsPermissions.js";
 import { FilePermissions, SettingsPermissions } from "~/features/shared/abstractions.js";
-import { createFileModel, FILE_MODEL_ID } from "~/domain/file/fileModel.js";
-import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { FileModel } from "~/domain/file/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { FilePrivateModel, FILE_MODEL_ID } from "~/domain/file/FilePrivateModel.js";
 
 export * from "./modelModifier/CmsModelModifier.js";
 export * from "./delivery/index.js";
@@ -21,15 +20,12 @@ export const createFileManagerContext = () => {
     const plugin = new ContextPlugin<ApiCoreContext>(async context => {
         const tenantContext = context.container.resolve(TenantContext);
         const getModel = context.container.resolve(GetModelUseCase);
-        const wcpContext = context.container.resolve(WcpContext);
-        const withPrivateFiles = wcpContext.canUsePrivateFiles();
 
         if (!tenantContext.getTenant()) {
             return;
         }
 
-        const fileModelDefinition = createFileModel({ withPrivateFiles });
-        context.plugins.register(fileModelDefinition);
+        context.container.register(FilePrivateModel);
 
         await context.security.withoutAuthorization(async () => {
             const fileModel = await getModel.execute(FILE_MODEL_ID);

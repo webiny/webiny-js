@@ -28,12 +28,11 @@ import { ListFolderLevelPermissionsTargetsFeature } from "~/features/folder/List
 import { Tenant } from "@webiny/api-core/types/tenancy";
 import { getLocale } from "@webiny/api-core/legacy/i18n/getLocale.js";
 import { CmsFlpFeature } from "~/features/cms/index.js";
-import { createFolderModel, FOLDER_MODEL_ID } from "~/domain/folder/folder.model.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { FolderModel } from "~/domain/folder/abstractions.js";
-import { createModelPlugin } from "@webiny/api-headless-cms/plugins/index.js";
 import { CreateFlpOnFolderCreatedFeature } from "~/features/flp/CreateFlpOnFolderCreated/index.js";
 import { EnsureFolderIsEmptyFeature } from "~/features/folder/EnsureFolderIsEmpty/feature.js";
+import { FOLDER_MODEL_ID, FolderPrivateModel } from "~/domain/folder/FolderPrivateModel.js";
 
 interface CreateAcoContextParams {
     useFolderLevelPermissions?: boolean;
@@ -46,8 +45,7 @@ const setupAcoContext = async (
 ): Promise<void> => {
     const { tenancy, security } = context;
 
-    const folderModelDefinition = createFolderModel();
-    context.plugins.register(createModelPlugin(folderModelDefinition));
+    context.container.register(FolderPrivateModel);
 
     const getModel = context.container.resolve(GetModelUseCase);
 

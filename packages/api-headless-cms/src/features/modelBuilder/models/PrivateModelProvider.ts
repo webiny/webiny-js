@@ -4,16 +4,17 @@ import type { CmsModel } from "~/types/index.js";
 import { createPrivateModelPlugin } from "~/plugins/CmsModelPlugin.js";
 import { PrivateModelBuilder } from "./PrivateModelBuilder.js";
 
-class PrivateModelProviderImpl implements ProviderAbstraction.Interface {
+export class PrivateModelProvider implements ProviderAbstraction.Interface {
     constructor(
-        private models: PrivateModel.Interface[],
+        private getPrivateModels: () => PrivateModel.Interface[],
         private fieldsRegistry: FieldBuilderRegistry.Interface
     ) {}
 
     async getModels(): Promise<CmsModel[]> {
         const models: CmsModel[] = [];
+        const privateModels = this.getPrivateModels();
 
-        for (const model of this.models) {
+        for (const model of privateModels) {
             const builder = new PrivateModelBuilder(this.fieldsRegistry);
 
             const modelBuilder = await model.buildModel(builder);
@@ -27,8 +28,3 @@ class PrivateModelProviderImpl implements ProviderAbstraction.Interface {
         return models;
     }
 }
-
-export const PrivateModelProvider = ProviderAbstraction.createImplementation({
-    implementation: PrivateModelProviderImpl,
-    dependencies: [[PrivateModel, { multiple: true }], FieldBuilderRegistry]
-});

@@ -1,21 +1,20 @@
-import {
-    PublicModelProvider as ProviderAbstraction,
-} from "./abstractions.js";
+import { PublicModelProvider as ProviderAbstraction } from "./abstractions.js";
 import type { CmsModel } from "~/types/index.js";
 import { createModelPlugin } from "~/plugins/CmsModelPlugin.js";
 import { FieldBuilderRegistry, PublicModel } from "~/features/modelBuilder/index.js";
 import { PublicModelBuilder } from "~/features/modelBuilder/models/PublicModelBuilder.js";
 
-class PublicModelProviderImpl implements ProviderAbstraction.Interface {
+export class PublicModelProvider implements ProviderAbstraction.Interface {
     constructor(
-        private models: PublicModel.Interface[],
+        private getPublicModels: () => PublicModel.Interface[],
         private fieldsRegistry: FieldBuilderRegistry.Interface
     ) {}
 
     async getModels(): Promise<CmsModel[]> {
         const models: CmsModel[] = [];
+        const publicModels = this.getPublicModels();
 
-        for (const model of this.models) {
+        for (const model of publicModels) {
             const builder = new PublicModelBuilder(this.fieldsRegistry);
 
             const modelBuilder = await model.buildModel(builder);
@@ -29,8 +28,3 @@ class PublicModelProviderImpl implements ProviderAbstraction.Interface {
         return models;
     }
 }
-
-export const PublicModelProvider = ProviderAbstraction.createImplementation({
-    implementation: PublicModelProviderImpl,
-    dependencies: [[PublicModel, { multiple: true }], FieldBuilderRegistry]
-});

@@ -1,29 +1,15 @@
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { createFilterModel } from "~/filter/filter.model.js";
-import { modelFactory } from "~/utils/modelFactory.js";
-import { FolderCmsModelModifierPlugin } from "~/folder/createFolderModelModifier.js";
-import { createFolderModel } from "~/domain/folder/folder.model.js";
+import { createCmsModel } from "@webiny/api-headless-cms";
 
 // TODO: revisit this when we get to model extensions
 export const createAcoModels = async (context: CmsContext) => {
     /**
      * Create CmsModel plugins.
      */
-    const folderModel = createFolderModel();
-
-    const modelModifiers = context.plugins.byType<FolderCmsModelModifierPlugin>(
-        FolderCmsModelModifierPlugin.type
-    );
-
-    for (const modifier of modelModifiers) {
-        await modifier.modifyModel(folderModel);
-    }
-
-    const modelDefinitions = [folderModel, createFilterModel()];
+    const modelDefinitions = [createFilterModel()];
     const cmsModelPlugins = modelDefinitions.map(modelDefinition => {
-        return modelFactory({
-            modelDefinition
-        });
+        return createCmsModel(modelDefinition);
     });
 
     /**

@@ -1,5 +1,5 @@
-import { createModelField } from "~/utils/createModelField.js";
-import { createPrivateModel } from "@webiny/api-headless-cms";
+// @ts-nocheck this file is being removed
+import { createModelField, createPrivateModel } from "@webiny/api-headless-cms";
 
 const titleField = () =>
     createModelField({
