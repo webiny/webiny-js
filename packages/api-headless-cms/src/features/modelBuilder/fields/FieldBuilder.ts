@@ -73,13 +73,23 @@ export class FieldBuilder<TType extends string = string> {
         return this;
     }
 
-    validation(validation: CmsModelFieldValidation): this {
+    /**
+     * Add a validation rule to this field.
+     * This method is protected and should only be used by field-specific validator methods.
+     * @internal
+     */
+    protected validation(validation: CmsModelFieldValidation): this {
         this.config.validation = this.config.validation || [];
         this.config.validation.push(validation);
         return this;
     }
 
-    listValidation(validation: CmsModelFieldValidation): this {
+    /**
+     * Add a list validation rule to this field (for multipleValues fields).
+     * This method is protected and should only be used by field-specific validator methods.
+     * @internal
+     */
+    protected listValidation(validation: CmsModelFieldValidation): this {
         this.config.listValidation = this.config.listValidation || [];
         this.config.listValidation.push(validation);
         return this;

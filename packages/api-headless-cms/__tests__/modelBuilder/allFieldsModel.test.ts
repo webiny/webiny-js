@@ -4,8 +4,12 @@ import { ModelBuilderFeature } from "~/features/modelBuilder/feature.js";
 import {
     PrivateModel,
     PrivateModelProvider,
-    type IPrivateModelBuilder
+    PublicModel,
+    PublicModelProvider,
+    type IPrivateModelBuilder,
+    type IPublicModelBuilder
 } from "~/features/modelBuilder/index.js";
+import type { CmsModelGroup } from "~/types/index.js";
 
 describe("All Field Types Model", () => {
     let container: Container;
@@ -23,10 +27,7 @@ describe("All Field Types Model", () => {
                     .name("All Fields Model")
                     .fields(fields => ({
                         // Text field - basic
-                        title: fields
-                            .text()
-                            .label("Title")
-                            .validation({ name: "required", message: "Title is required." }),
+                        title: fields.text().label("Title").required("Title is required."),
 
                         // Long text field
                         description: fields.longText().label("Description"),
@@ -41,8 +42,8 @@ describe("All Field Types Model", () => {
                         rating: fields
                             .number()
                             .label("Rating")
-                            .min(1, "Must be at least 1")
-                            .max(5, "Must be at most 5"),
+                            .gte(1, "Must be at least 1")
+                            .lte(5, "Must be at most 5"),
 
                         // Boolean field with default
                         isPublished: fields.boolean().label("Is Published").defaultValue(false),
@@ -185,7 +186,6 @@ describe("All Field Types Model", () => {
         expect(model).toBeDefined();
         expect(model!.modelId).toBe("allFieldsModel");
         expect(model!.name).toBe("All Fields Model");
-        expect(model!.titleFieldId).toBe("title");
 
         // Verify all field types are present
         const fieldTypes = model!.fields.map(f => f.type);
@@ -255,5 +255,159 @@ describe("All Field Types Model", () => {
         const trendField = statsField.settings.fields.find((f: any) => f.fieldId === "trend");
         expect(trendField.predefinedValues.enabled).toBe(true);
         expect(trendField.predefinedValues.values).toHaveLength(3);
+    });
+
+    it("should support all public-model-specific methods", async () => {
+        const testGroup: CmsModelGroup = {
+            id: "test-group-id",
+            name: "Test Group"
+        };
+
+        class FullPublicModelImpl implements PublicModel.Interface {
+            buildModel(builder: IPublicModelBuilder): IPublicModelBuilder {
+                return builder
+                    .modelId("fullPublicModel")
+                    .name("Full Public Model")
+                    .singularApiName("FullPublicModel")
+                    .pluralApiName("FullPublicModels")
+                    .group(testGroup)
+                    .icon("fas/database")
+                    .description("A complete public model with all fields")
+                    .titleFieldId("title")
+                    .descriptionFieldId("description")
+                    .imageFieldId("image")
+                    .tags(["type:content", "category:article"])
+                    .fields(fields => ({
+                        title: fields.text().label("Title").required("Title is required."),
+                        description: fields.longText().label("Description"),
+                        image: fields.file().label("Image").imagesOnly(),
+                        publishedAt: fields.datetime().label("Published At").withTimezone()
+                    }))
+                    .layout([["title"], ["description", "image"], ["publishedAt"]]);
+            }
+        }
+
+        container.registerInstance(PublicModel, new FullPublicModelImpl());
+        const publicModelProvider = container.resolve(PublicModelProvider);
+        const models = await publicModelProvider.getModels();
+        const model = models.find(m => m.modelId === "fullPublicModel");
+
+        expect(model).toBeDefined();
+
+        // Verify basic properties
+        expect(model!.modelId).toBe("fullPublicModel");
+        expect(model!.name).toBe("Full Public Model");
+
+        // Verify public-model-specific API names
+        expect(model!.singularApiName).toBe("FullPublicModel");
+        expect(model!.pluralApiName).toBe("FullPublicModels");
+
+        // Verify group
+        expect(model!.group).toEqual(testGroup);
+
+        // Verify icon
+        expect(model!.icon).toBe("fas/database");
+
+        // Verify description
+        expect(model!.description).toBe("A complete public model with all fields");
+
+        // Verify field references
+        expect(model!.titleFieldId).toBe("title");
+        expect(model!.descriptionFieldId).toBe("description");
+        expect(model!.imageFieldId).toBe("image");
+
+        // Verify tags - "type:model" is always included along with user tags
+        expect(model!.tags).toContain("type:model");
+        expect(model!.tags).toContain("type:content");
+        expect(model!.tags).toContain("category:article");
+        expect(model!.tags).toHaveLength(3);
+
+        // Verify layout
+        expect(model!.layout).toEqual([["title"], ["description", "image"], ["publishedAt"]]);
+
+        // Verify fields
+        expect(model!.fields).toHaveLength(4);
+        const fieldIds = model!.fields.map(f => f.fieldId);
+        expect(fieldIds).toEqual(["title", "description", "image", "publishedAt"]);
+    });
+
+    it("should ensure tags are unique and always include type:model", async () => {
+        const testGroup: CmsModelGroup = {
+            id: "test-group-id",
+            name: "Test Group"
+        };
+
+        // Test public model with duplicate tags including "type:model"
+        class DuplicateTagsPublicModel implements PublicModel.Interface {
+            buildModel(builder: IPublicModelBuilder): IPublicModelBuilder {
+                return builder
+                    .modelId("duplicateTagsPublic")
+                    .name("Duplicate Tags Public")
+                    .group(testGroup)
+                    .tags(["type:model", "custom:tag", "type:model", "custom:tag"])
+                    .fields(fields => ({
+                        title: fields.text().label("Title")
+                    }))
+                    .layout([["title"]]);
+            }
+        }
+
+        container.registerInstance(PublicModel, new DuplicateTagsPublicModel());
+        const publicProvider = container.resolve(PublicModelProvider);
+        const publicModels = await publicProvider.getModels();
+        const publicModel = publicModels.find(m => m.modelId === "duplicateTagsPublic");
+
+        // Should have unique tags only
+        expect(publicModel!.tags).toEqual(["type:model", "custom:tag"]);
+        expect(publicModel!.tags).toHaveLength(2);
+
+        // Test private model with duplicate tags
+        class DuplicateTagsPrivateModel implements PrivateModel.Interface {
+            buildModel(builder: IPrivateModelBuilder): IPrivateModelBuilder {
+                return builder
+                    .modelId("duplicateTagsPrivate")
+                    .name("Duplicate Tags Private")
+                    .tags(["type:model", "custom:tag", "type:model", "custom:tag"])
+                    .fields(fields => ({
+                        title: fields.text().label("Title")
+                    }));
+            }
+        }
+
+        const container2 = new Container();
+        ModelBuilderFeature.register(container2);
+        container2.registerInstance(PrivateModel, new DuplicateTagsPrivateModel());
+        const privateProvider = container2.resolve(PrivateModelProvider);
+        const privateModels = await privateProvider.getModels();
+        const privateModel = privateModels.find(m => m.modelId === "duplicateTagsPrivate");
+
+        // Should have unique tags only
+        expect(privateModel!.tags).toEqual(["type:model", "custom:tag"]);
+        expect(privateModel!.tags).toHaveLength(2);
+
+        // Test model without tags still gets type:model
+        class NoTagsModel implements PublicModel.Interface {
+            buildModel(builder: IPublicModelBuilder): IPublicModelBuilder {
+                return builder
+                    .modelId("noTagsModel")
+                    .name("No Tags Model")
+                    .group(testGroup)
+                    .fields(fields => ({
+                        title: fields.text().label("Title")
+                    }))
+                    .layout([["title"]]);
+            }
+        }
+
+        const container3 = new Container();
+        ModelBuilderFeature.register(container3);
+        container3.registerInstance(PublicModel, new NoTagsModel());
+        const noTagsProvider = container3.resolve(PublicModelProvider);
+        const noTagsModels = await noTagsProvider.getModels();
+        const noTagsModel = noTagsModels.find(m => m.modelId === "noTagsModel");
+
+        // Should have only type:model tag
+        expect(noTagsModel!.tags).toEqual(["type:model"]);
+        expect(noTagsModel!.tags).toHaveLength(1);
     });
 });

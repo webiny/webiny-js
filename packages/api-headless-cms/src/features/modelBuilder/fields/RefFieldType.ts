@@ -1,9 +1,13 @@
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
 import { FieldBuilder } from "./FieldBuilder.js";
 import type { FieldBuilderRegistry } from "../abstractions.js";
+import { RequiredValidator, ListMinLengthValidator, ListMaxLengthValidator } from "./validators.js";
 
-export interface IRefFieldBuilder extends FieldBuilder<"ref"> {
-    required(message?: string): this;
+export interface IRefFieldBuilder
+    extends FieldBuilder<"ref">,
+        RequiredValidator,
+        ListMinLengthValidator,
+        ListMaxLengthValidator {
     models(models: Array<{ modelId: string }>): this;
 }
 
@@ -15,7 +19,7 @@ class RefFieldBuilder extends FieldBuilder<"ref"> implements IRefFieldBuilder {
     required(message?: string): this {
         return this.validation({
             name: "required",
-            message: message || "Field is required",
+            message: message || "Value is required.",
             settings: {}
         });
     }
@@ -24,6 +28,22 @@ class RefFieldBuilder extends FieldBuilder<"ref"> implements IRefFieldBuilder {
         this.config.settings = this.config.settings || {};
         this.config.settings.models = models;
         return this;
+    }
+
+    listMinLength(value: number, message?: string): this {
+        return this.listValidation({
+            name: "minLength",
+            message: message || "Too few items.",
+            settings: { value: String(value) }
+        });
+    }
+
+    listMaxLength(value: number, message?: string): this {
+        return this.listValidation({
+            name: "maxLength",
+            message: message || "Too many items.",
+            settings: { value: String(value) }
+        });
     }
 }
 

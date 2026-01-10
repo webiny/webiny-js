@@ -1,14 +1,13 @@
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
 import { FieldBuilder } from "./FieldBuilder.js";
 import type { IFieldBuilderRegistry } from "../abstractions.js";
+import { RequiredValidator, GteValidator, LteValidator } from "./validators.js";
 
-export interface INumberFieldBuilder extends FieldBuilder<"number"> {
-    required(message?: string): this;
-    min(value: number, message?: string): this;
-    max(value: number, message?: string): this;
-    gte(value: number, message?: string): this;
-    lte(value: number, message?: string): this;
-}
+export interface INumberFieldBuilder
+    extends FieldBuilder<"number">,
+        RequiredValidator,
+        GteValidator,
+        LteValidator {}
 
 class NumberFieldBuilder extends FieldBuilder<"number"> implements INumberFieldBuilder {
     constructor() {
@@ -23,26 +22,10 @@ class NumberFieldBuilder extends FieldBuilder<"number"> implements INumberFieldB
         });
     }
 
-    min(value: number, message?: string): this {
-        return this.validation({
-            name: "gte",
-            message: message || `Value needs to be greater or equal to ${value}.`,
-            settings: { value: String(value) }
-        });
-    }
-
-    max(value: number, message?: string): this {
-        return this.validation({
-            name: "lte",
-            message: message || `Value needs to be lesser or equal to ${value}.`,
-            settings: { value: String(value) }
-        });
-    }
-
     gte(value: number, message?: string): this {
         return this.validation({
             name: "gte",
-            message: message || `Value needs to be greater or equal to ${value}.`,
+            message: message || "Value is too small.",
             settings: { value: String(value) }
         });
     }
@@ -50,7 +33,7 @@ class NumberFieldBuilder extends FieldBuilder<"number"> implements INumberFieldB
     lte(value: number, message?: string): this {
         return this.validation({
             name: "lte",
-            message: message || `Value needs to be lesser or equal to ${value}.`,
+            message: message || "Value is too large.",
             settings: { value: String(value) }
         });
     }

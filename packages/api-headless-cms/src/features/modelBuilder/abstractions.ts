@@ -59,6 +59,7 @@ export namespace PublicModel {
 export interface IPrivateModelBuilder {
     modelId(id: string): this;
     name(name: string): this;
+    tags(tags: string[]): this;
     fields(
         builder: (registry: FieldBuilderRegistry.Interface) => Record<string, FieldBuilder<any>>
     ): this;
@@ -77,4 +78,5 @@ export const PrivateModel = createAbstraction<IPrivateModel>("PrivateModel");
 export namespace PrivateModel {
     export type Interface = IPrivateModel;
     export type Builder = IPrivateModelBuilder;
+    export type FieldBuilder = FieldBuilderRegistry.Interface;
 }

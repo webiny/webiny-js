@@ -1,9 +1,14 @@
-import type { CmsModelField } from "@webiny/api-headless-cms/types/index.js";
+import type {
+    CmsModelField,
+    CmsModelFieldValidation
+} from "@webiny/api-headless-cms/types/index.js";
 import camelCase from "lodash/camelCase.js";
 
 export interface CreateModelFieldParams
-    extends Omit<CmsModelField, "id" | "storageId" | "fieldId"> {
+    extends Omit<CmsModelField, "id" | "storageId" | "fieldId" | "validation" | "listValidation"> {
     fieldId?: string;
+    validation?: CmsModelFieldValidation[];
+    listValidation?: CmsModelFieldValidation[];
 }
 
 export const createModelField = (params: CreateModelFieldParams): CmsModelField => {

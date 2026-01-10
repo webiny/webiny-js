@@ -1,11 +1,15 @@
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
 import { FieldBuilder } from "./FieldBuilder.js";
 import type { IFieldBuilderRegistry } from "../abstractions.js";
+import { RequiredValidator, DateGteValidator, DateLteValidator } from "./validators.js";
 
 export type DateTimeType = "date" | "time" | "dateTimeWithTimezone" | "dateTimeWithoutTimezone";
 
-export interface IDateTimeFieldBuilder extends FieldBuilder<"datetime"> {
-    required(message?: string): this;
+export interface IDateTimeFieldBuilder
+    extends FieldBuilder<"datetime">,
+        RequiredValidator,
+        DateGteValidator,
+        DateLteValidator {
     dateTimeType(type: DateTimeType): this;
     dateOnly(): this;
     timeOnly(): this;
@@ -46,6 +50,24 @@ class DateTimeFieldBuilder extends FieldBuilder<"datetime"> implements IDateTime
 
     withoutTimezone(): this {
         return this.dateTimeType("dateTimeWithoutTimezone");
+    }
+
+    dateGte(value: string, message?: string): this {
+        const type = this.config.settings?.type || "date";
+        return this.validation({
+            name: "dateGte",
+            message: message || "Date/time is earlier than the provided one.",
+            settings: { value, type }
+        });
+    }
+
+    dateLte(value: string, message?: string): this {
+        const type = this.config.settings?.type || "date";
+        return this.validation({
+            name: "dateLte",
+            message: message || "Date/time is later than the provided one.",
+            settings: { value, type }
+        });
     }
 }
 

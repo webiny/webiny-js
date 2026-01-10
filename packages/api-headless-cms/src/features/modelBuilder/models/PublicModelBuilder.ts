@@ -100,13 +100,21 @@ export class PublicModelBuilder implements IPublicModelBuilder {
         builder: (registry: FieldBuilderRegistry.Interface) => Record<string, FieldBuilder<any>>
     ): this {
         const fieldBuilders = builder(this.registry);
-        const fields: CmsModelField[] = [];
+        const newFields: CmsModelField[] = [];
 
-        for (const [, fieldBuilder] of Object.entries(fieldBuilders)) {
-            fields.push(fieldBuilder.build());
+        for (const [key, fieldBuilder] of Object.entries(fieldBuilders)) {
+            // Automatically set the fieldId from the object key
+            // This ensures the key and fieldId are always in sync
+            fieldBuilder.fieldId(key);
+            newFields.push(fieldBuilder.build());
         }
 
-        this.config.fields = fields;
+        // Append new fields to existing fields (if any)
+        // This allows calling .fields() multiple times to add fields incrementally
+        if (!this.config.fields) {
+            this.config.fields = [];
+        }
+        this.config.fields.push(...newFields);
         return this;
     }
 
@@ -124,6 +132,11 @@ export class PublicModelBuilder implements IPublicModelBuilder {
             throw new Error("group is required");
         }
 
+        // Always include "type:model" tag and ensure all tags are unique
+        const tagsSet = new Set(this.config.tags || []);
+        tagsSet.add("type:model");
+        const uniqueTags = Array.from(tagsSet);
+
         return {
             modelId: this.config.modelId,
             name: this.config.name,
@@ -137,7 +150,7 @@ export class PublicModelBuilder implements IPublicModelBuilder {
             imageFieldId: this.config.imageFieldId,
             layout: this.config.layout || [],
             fields: this.config.fields,
-            tags: this.config.tags
+            tags: uniqueTags
         };
     }
 }

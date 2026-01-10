@@ -12,6 +12,7 @@ export class PrivateModelBuilder implements IPrivateModelBuilder {
         name?: string;
         titleFieldId?: string;
         fields?: CmsModelField[];
+        tags?: string[];
     } = {};
 
     constructor(private registry: FieldBuilderRegistry.Interface) {}
@@ -31,20 +32,30 @@ export class PrivateModelBuilder implements IPrivateModelBuilder {
         return this;
     }
 
+    tags(tags: string[]): this {
+        this.config.tags = tags;
+        return this;
+    }
+
     fields(
         builder: (registry: FieldBuilderRegistry.Interface) => Record<string, FieldBuilder<any>>
     ): this {
         const fieldBuilders = builder(this.registry);
-        const fields: CmsModelField[] = [];
+        const newFields: CmsModelField[] = [];
 
         for (const [key, fieldBuilder] of Object.entries(fieldBuilders)) {
             // Automatically set the fieldId from the object key
             // This ensures the key and fieldId are always in sync
             fieldBuilder.fieldId(key);
-            fields.push(fieldBuilder.build());
+            newFields.push(fieldBuilder.build());
         }
 
-        this.config.fields = fields;
+        // Append new fields to existing fields (if any)
+        // This allows calling .fields() multiple times to add fields incrementally
+        if (!this.config.fields) {
+            this.config.fields = [];
+        }
+        this.config.fields.push(...newFields);
         return this;
     }
 
@@ -59,13 +70,19 @@ export class PrivateModelBuilder implements IPrivateModelBuilder {
             throw new Error("fields are required");
         }
 
+        // Always include "type:model" tag and ensure all tags are unique
+        const tagsSet = new Set(this.config.tags || []);
+        tagsSet.add("type:model");
+        const uniqueTags = Array.from(tagsSet);
+
         return {
             modelId: this.config.modelId,
             name: this.config.name,
             titleFieldId: this.config.titleFieldId,
             fields: this.config.fields,
             authorization: false,
-            noValidate: true
+            noValidate: true,
+            tags: uniqueTags
         };
     }
 }

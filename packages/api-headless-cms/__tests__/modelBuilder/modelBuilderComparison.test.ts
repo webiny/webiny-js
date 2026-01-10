@@ -6,7 +6,7 @@ import {
     PrivateModelProvider,
     type IPrivateModelBuilder
 } from "~/features/modelBuilder/index.js";
-import { createCmsModel, createPrivateModel, createModelField } from "@webiny/api-headless-cms";
+import { createCmsModel, createPrivateModel, createModelField } from "~/index.js";
 import { articleModel } from "~tests/contentTraverser/mocks/article.model.js";
 
 describe("Model Builder Comparison - Old vs New API", () => {
@@ -25,7 +25,8 @@ describe("Model Builder Comparison - Old vs New API", () => {
             const required = () => {
                 return {
                     name: "required",
-                    message: "Value is required."
+                    message: "Value is required.",
+                    settings: {}
                 };
             };
 
@@ -77,23 +78,21 @@ describe("Model Builder Comparison - Old vs New API", () => {
             // ============================================
             class TestModelImpl implements PrivateModel.Interface {
                 buildModel(builder: IPrivateModelBuilder): IPrivateModelBuilder {
-                    const required = () => ({
-                        name: "required",
-                        message: "Value is required."
-                    });
-
                     return builder
                         .modelId("testModel")
                         .name("TestModel")
                         .fields(fields => ({
-                            name: fields.text().label("Name").validation(required()),
+                            name: fields.text().label("Name").required("Value is required."),
                             description: fields.text().label("Description"),
                             metadata: fields
                                 .object()
                                 .label("Metadata")
                                 .fields(fields => ({
                                     author: fields.text().label("Author"),
-                                    version: fields.text().label("Version").validation(required())
+                                    version: fields
+                                        .text()
+                                        .label("Version")
+                                        .required("Value is required.")
                                 }))
                         }));
                 }
@@ -129,9 +128,10 @@ describe("Model Builder Comparison - Old vs New API", () => {
                 expect(newField.label).toBe(oldField.label);
                 expect(newField.storageId).toBe(oldField.storageId);
                 expect(newField.multipleValues).toBe(oldField.multipleValues);
-                // Normalize: undefined/empty values - builder ensures all properties are defined
-                expect(newField.validation || []).toEqual(oldField.validation || []);
-                expect(newField.tags || []).toEqual(oldField.tags || []);
+                // Builder ensures all properties are always defined (never undefined)
+                expect(newField.validation).toEqual(oldField.validation);
+                // Old model may have undefined tags, new builder always returns []
+                expect(newField.tags).toEqual(oldField.tags || []);
 
                 // For object fields, compare nested fields
                 if (oldField.type === "object" && oldField.settings?.fields) {
