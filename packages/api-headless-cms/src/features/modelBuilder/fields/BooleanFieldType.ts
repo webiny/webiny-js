@@ -1,6 +1,5 @@
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
 import { FieldBuilder } from "./FieldBuilder.js";
-import type { IFieldBuilderRegistry } from "../abstractions.js";
 
 export interface IBooleanFieldBuilder extends FieldBuilder<"boolean"> {
     defaultValue(value: boolean): this;
@@ -21,7 +20,7 @@ class BooleanFieldBuilder extends FieldBuilder<"boolean"> implements IBooleanFie
 class BooleanFieldTypeFactory implements IFieldTypeFactory {
     readonly type = "boolean";
 
-    create(_registry: IFieldBuilderRegistry): IBooleanFieldBuilder {
+    create(): IBooleanFieldBuilder {
         return new BooleanFieldBuilder();
     }
 }

@@ -6,21 +6,16 @@ export * from "./fields/FieldBuilder.js";
 export * from "./fields/abstractions.js";
 export * from "./models/abstractions.js";
 
-// Export field type interfaces
-export type { ITextFieldBuilder } from "./fields/TextFieldType.js";
-export type { ILongTextFieldBuilder } from "./fields/LongTextFieldType.js";
-export type { IRichTextFieldBuilder } from "./fields/RichTextFieldType.js";
-export type { IObjectFieldBuilder } from "./fields/ObjectFieldType.js";
-export type { IRefFieldBuilder } from "./fields/RefFieldType.js";
-export type {
-    IDynamicZoneFieldBuilder,
-    IDynamicZoneTemplate
-} from "./fields/DynamicZoneFieldType.js";
-
-// Export field types for plugin registration
-export { TextFieldType } from "./fields/TextFieldType.js";
-export { LongTextFieldType } from "./fields/LongTextFieldType.js";
-export { RichTextFieldType } from "./fields/RichTextFieldType.js";
-export { ObjectFieldType } from "./fields/ObjectFieldType.js";
-export { RefFieldType } from "./fields/RefFieldType.js";
-export { DynamicZoneFieldType } from "./fields/DynamicZoneFieldType.js";
+// Import all field types to ensure their module augmentations are applied
+// These imports have side effects that add methods to IFieldBuilderRegistry
+import "./fields/TextFieldType.js";
+import "./fields/LongTextFieldType.js";
+import "./fields/RichTextFieldType.js";
+import "./fields/NumberFieldType.js";
+import "./fields/BooleanFieldType.js";
+import "./fields/FileFieldType.js";
+import "./fields/DateTimeFieldType.js";
+import "./fields/ObjectFieldType.js";
+import "./fields/RefFieldType.js";
+import "./fields/DynamicZoneFieldType.js";
+import "./fields/LocationFieldType.js";

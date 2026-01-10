@@ -10,7 +10,7 @@ export interface IObjectFieldBuilder extends FieldBuilder<"object"> {
     layout(layout: string[][]): this;
 }
 
-class ObjectFieldBuilder extends FieldBuilder<"object"> implements IObjectFieldBuilder {
+export class ObjectFieldBuilder extends FieldBuilder<"object"> implements IObjectFieldBuilder {
     constructor(private registry: FieldBuilderRegistry.Interface) {
         super("object");
     }
@@ -29,15 +29,22 @@ class ObjectFieldBuilder extends FieldBuilder<"object"> implements IObjectFieldB
         builder: (registry: FieldBuilderRegistry.Interface) => Record<string, FieldBuilder<any>>
     ): this {
         const fieldBuilders = builder(this.registry);
-        const fields: any[] = [];
+        const newFields: any[] = [];
         for (const [key, fieldBuilder] of Object.entries(fieldBuilders)) {
             // Automatically set the fieldId from the object key
             // This ensures the key and fieldId are always in sync
             fieldBuilder.fieldId(key);
-            fields.push((fieldBuilder as any).build());
+            newFields.push((fieldBuilder as any).build());
         }
         this.config.settings = this.config.settings || {};
-        this.config.settings.fields = fields;
+
+        // Append new fields to existing fields (if any)
+        // This allows calling .fields() multiple times to add fields incrementally
+        if (!this.config.settings.fields) {
+            this.config.settings.fields = [];
+        }
+        this.config.settings.fields.push(...newFields);
+
         return this;
     }
 

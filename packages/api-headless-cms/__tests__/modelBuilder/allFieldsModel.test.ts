@@ -26,6 +26,7 @@ describe("All Field Types Model", () => {
                     .modelId("allFieldsModel")
                     .name("All Fields Model")
                     .fields(fields => ({
+                        location: fields.location(),
                         // Text field - basic
                         title: fields.text().label("Title").required("Title is required."),
 
@@ -207,6 +208,9 @@ describe("All Field Types Model", () => {
         expect(fieldTypes).toContain("dynamicZone");
 
         // Verify specific fields
+        const locationField = model!.fields.find(f => f.fieldId === "location");
+        expect(locationField?.type).toBe("object");
+
         const titleField = model!.fields.find(f => f.fieldId === "title");
         expect(titleField?.type).toBe("text");
         expect(titleField?.validation).toHaveLength(1);

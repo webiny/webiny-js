@@ -13,6 +13,7 @@ import { DateTimeFieldType } from "./fields/DateTimeFieldType.js";
 import { PublicModelProvider } from "./models/PublicModelProvider.js";
 import { PrivateModelProvider } from "./models/PrivateModelProvider.js";
 import { ModelsProvider } from "./models/ModelsProvider.js";
+import { LocationFieldType } from "~/features/modelBuilder/fields/LocationFieldType.js";
 
 export const ModelBuilderFeature = createFeature({
     name: "ModelBuilder",
@@ -28,6 +29,7 @@ export const ModelBuilderFeature = createFeature({
         container.register(BooleanFieldType);
         container.register(FileFieldType);
         container.register(DateTimeFieldType);
+        container.register(LocationFieldType);
 
         // Register field builder registry (will automatically get all FieldType implementations)
         container.register(FieldBuilderRegistry).inSingletonScope();

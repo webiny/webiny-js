@@ -13,15 +13,7 @@ class FilePrivateModelImpl implements PrivateModel.Interface {
             .modelId(FILE_MODEL_ID)
             .name("FmFile")
             .fields(fields => ({
-                location: fields
-                    .object()
-                    .label("Location")
-                    .fields(fields => ({
-                        folderId: fields
-                            .text()
-                            .label("Folder ID")
-                            .settings({ path: "location.folderId" })
-                    })),
+                location: fields.location(),
                 name: fields.text().label("Name").required("Value is required."),
                 key: fields.text().label("Key").required("Value is required."),
                 type: fields.text().label("Type").required("Value is required."),
