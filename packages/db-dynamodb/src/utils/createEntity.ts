@@ -16,6 +16,7 @@ export type IStandardEntityAttributes<T = undefined> = {
     GSI2_PK?: string;
     GSI2_SK?: string;
     expiresAt?: string | null;
+    TYPE?: string;
 } & (T extends undefined ? { data?: undefined } : { data: T });
 
 export const standardEntityAttributes: AttributeDefinitions = {

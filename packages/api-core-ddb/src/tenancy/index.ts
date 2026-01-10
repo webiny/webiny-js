@@ -1,11 +1,4 @@
-import {
-    batchReadAll,
-    createEntityWriteBatch,
-    createTable,
-    createTableWriteBatch
-} from "@webiny/db-dynamodb";
-import type { QueryAllParams } from "@webiny/db-dynamodb/utils/query.js";
-import { queryAll } from "@webiny/db-dynamodb/utils/query.js";
+import { createTable, type IEntityQueryAllParams } from "@webiny/db-dynamodb";
 import WebinyError from "@webiny/error";
 import { createTenantEntity } from "./definitions/tenantEntity.js";
 import type { CreateTenancyStorageOperations } from "./types.js";
@@ -48,17 +41,29 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
         },
 
         async getTenantsByIds(ids: string[]): Promise<Tenant[]> {
-            const items = ids.map(id => entities.tenants.getBatch({ PK: `T#${id}`, SK: "A" }));
+            const batchReader = entities.tenants.createEntityReader({
+                read: ids.map(id => {
+                    return {
+                        PK: `T#${id}`,
+                        SK: "A"
+                    };
+                })
+            });
+            const tenants = await batchReader.execute();
 
-            const tenants = await batchReadAll<{ data: Tenant }>({ table: tableInstance, items });
-
-            return tenants.map(item => item.data).map(item => setTenantDefaults(item) as Tenant);
+            return tenants
+                .map(item => {
+                    return item.data;
+                })
+                .map(item => {
+                    return setTenantDefaults(item);
+                });
         },
 
         async listTenants(params: ListTenantsParams = {}): Promise<Tenant[]> {
             const { parent } = params;
 
-            const options: QueryAllParams["options"] = {
+            const options: IEntityQueryAllParams["options"] = {
                 index: "GSI1"
             };
 
@@ -68,13 +73,18 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
                 options.gt = " ";
             }
 
-            const tenants = await queryAll<{ data: Tenant }>({
-                entity: entities.tenants,
+            const tenants = await entities.tenants.queryAll({
                 partitionKey: `TENANTS`,
                 options
             });
 
-            return tenants.map(item => item.data).map(item => setTenantDefaults(item) as Tenant);
+            return tenants
+                .map(item => {
+                    return item.data;
+                })
+                .map(item => {
+                    return setTenantDefaults(item);
+                });
         },
 
         async createTenant(data: Tenant): Promise<Tenant> {
@@ -87,24 +97,21 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
             };
 
             try {
-                const tableWrite = createTableWriteBatch({
-                    table: tableInstance
-                });
-
-                tableWrite.put(entities.tenants, {
+                await entities.tenants.put({
                     TYPE: "tenancy.tenant",
                     ...keys,
                     data
                 });
 
-                await tableWrite.execute();
-
-                return data as Tenant;
+                return data;
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not create tenant record.",
                     code: "CREATE_TENANT_ERROR",
-                    data: { keys, data }
+                    data: {
+                        keys,
+                        data
+                    }
                 });
             }
         },
@@ -117,18 +124,16 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
                 SK: "A",
                 GSI1_PK: "TENANTS",
                 GSI1_SK: `T#${data.parent}#${data.createdOn}`,
-                GSI_TENANT: data.id
+                GSI_TENANT: data.id,
+                TYPE: "tenancy.tenant"
             };
 
-            const tableWrite = createTableWriteBatch({
-                table: tableInstance
-            });
-
-            tableWrite.put(entities.tenants, { ...keys, data });
-
             try {
-                await tableWrite.execute();
-                return data as Tenant;
+                await entities.tenants.put({
+                    ...keys,
+                    data
+                });
+                return data;
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not update tenant record.",
@@ -139,18 +144,10 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
         },
 
         async deleteTenant(id: string): Promise<void> {
-            const batchWrite = createEntityWriteBatch({
-                entity: entities.tenants,
-                delete: [
-                    {
-                        PK: `T#${id}`,
-                        SK: "A"
-                    }
-                ]
+            await entities.tenants.delete({
+                PK: `T#${id}`,
+                SK: "A"
             });
-
-            // Delete tenant and domain items
-            await batchWrite.execute();
         }
     };
 };
