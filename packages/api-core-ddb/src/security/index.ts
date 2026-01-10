@@ -7,16 +7,7 @@ import type {
 } from "@webiny/api-core/types/security.js";
 import WebinyError from "@webiny/error";
 import { createApiKeyEntity, createRoleEntity, createTeamEntity } from "./definitions/entities.js";
-import {
-    createTable,
-    deleteItem,
-    get,
-    put,
-    queryAll,
-    queryOne,
-    type QueryOneParams,
-    sortItems
-} from "@webiny/db-dynamodb";
+import { createTable, type IEntityQueryOneParams, sortItems } from "@webiny/db-dynamodb";
 
 export const createStorageOperations = (
     params: SecurityStorageParams
@@ -36,7 +27,9 @@ export const createStorageOperations = (
 
     const createApiKeyKeys = ({ id, tenant }: Pick<ApiKey, "id" | "tenant">) => ({
         PK: `T#${tenant}#API_KEY#${id}`,
-        SK: `A`
+        SK: `A`,
+        GSI_TENANT: tenant,
+        TYPE: "security.apiKey"
     });
 
     const createRoleKeys = (role: Pick<Role, "tenant" | "id">) => ({
@@ -46,7 +39,9 @@ export const createStorageOperations = (
 
     const createRoleGsiKeys = (role: Pick<Role, "tenant" | "slug">) => ({
         GSI1_PK: `T#${role.tenant}#ROLES`,
-        GSI1_SK: role.slug
+        GSI1_SK: role.slug,
+        GSI_TENANT: role.tenant as string,
+        TYPE: "security.role"
     });
 
     const createTeamKeys = (team: Pick<Team, "tenant" | "id">) => ({
@@ -56,7 +51,9 @@ export const createStorageOperations = (
 
     const createTeamGsiKeys = (team: Pick<Team, "tenant" | "slug">) => ({
         GSI1_PK: `T#${team.tenant}#TEAMS`,
-        GSI1_SK: team.slug
+        GSI1_SK: team.slug,
+        GSI_TENANT: team.tenant as string,
+        TYPE: "security.team"
     });
 
     return {
@@ -68,13 +65,9 @@ export const createStorageOperations = (
             };
 
             try {
-                await put({
-                    entity: entities.apiKeys,
-                    item: {
-                        data: apiKey,
-                        TYPE: "security.apiKey",
-                        ...keys
-                    }
+                await entities.apiKeys.put({
+                    data: apiKey,
+                    ...keys
                 });
             } catch (err) {
                 throw WebinyError.from(err, {
@@ -91,13 +84,9 @@ export const createStorageOperations = (
             };
 
             try {
-                await put({
-                    entity: entities.roles,
-                    item: {
-                        data: role,
-                        TYPE: "security.role",
-                        ...keys
-                    }
+                await entities.roles.put({
+                    data: role,
+                    ...keys
                 });
             } catch (err) {
                 throw WebinyError.from(err, {
@@ -114,13 +103,9 @@ export const createStorageOperations = (
             };
 
             try {
-                await put({
-                    entity: entities.teams,
-                    item: {
-                        data: team,
-                        TYPE: "security.team",
-                        ...keys
-                    }
+                await entities.teams.put({
+                    data: team,
+                    ...keys
                 });
             } catch (err) {
                 throw WebinyError.from(err, {
@@ -134,10 +119,7 @@ export const createStorageOperations = (
             const keys = createApiKeyKeys(apiKey);
 
             try {
-                await deleteItem({
-                    entity: entities.apiKeys,
-                    keys
-                });
+                await entities.apiKeys.delete(keys);
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not update api key.",
@@ -150,10 +132,7 @@ export const createStorageOperations = (
             const keys = createRoleKeys(role);
 
             try {
-                await deleteItem({
-                    entity: entities.roles,
-                    keys
-                });
+                await entities.roles.delete(keys);
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not delete role.",
@@ -166,10 +145,7 @@ export const createStorageOperations = (
             const keys = createTeamKeys(team);
 
             try {
-                await deleteItem({
-                    entity: entities.teams,
-                    keys
-                });
+                await entities.teams.delete(keys);
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not delete team.",
@@ -182,12 +158,9 @@ export const createStorageOperations = (
             const keys = createApiKeyKeys({ id, tenant });
 
             try {
-                const response = await get<{ data: ApiKey }>({
-                    entity: entities.apiKeys,
-                    keys
-                });
+                const response = await entities.apiKeys.get(keys);
 
-                return response ? response.data : null;
+                return response?.data || null;
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not load api key.",
@@ -197,8 +170,7 @@ export const createStorageOperations = (
             }
         },
         async getApiKeyByToken({ tenant, token }) {
-            const queryParams: QueryOneParams = {
-                entity: entities.apiKeys,
+            const queryParams: IEntityQueryOneParams = {
                 partitionKey: `T#${tenant}#API_KEYS`,
                 options: {
                     eq: token,
@@ -207,8 +179,8 @@ export const createStorageOperations = (
             };
 
             try {
-                const result = await queryOne<{ data: ApiKey }>(queryParams);
-                return result ? result.data : null;
+                const result = await entities.apiKeys.queryOne(queryParams);
+                return result?.data || null;
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not load api key by token.",
@@ -220,15 +192,10 @@ export const createStorageOperations = (
         async getRole({ where: { tenant, id, slug } }) {
             try {
                 if (id) {
-                    const result = await get<{ data: Role }>({
-                        entity: entities.roles,
-                        keys: createRoleKeys({ tenant, id })
-                    });
-
-                    return result ? result.data : null;
+                    const result = await entities.roles.get(createRoleKeys({ tenant, id }));
+                    return result?.data || null;
                 }
-                const result = await queryOne<{ data: Role }>({
-                    entity: entities.roles,
+                const result = await entities.roles.queryOne({
                     partitionKey: `T#${tenant}#ROLES`,
                     options: {
                         index: "GSI1",
@@ -236,7 +203,7 @@ export const createStorageOperations = (
                     }
                 });
 
-                return result ? result.data : null;
+                return result?.data || null;
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not load role.",
@@ -248,16 +215,12 @@ export const createStorageOperations = (
         async getTeam({ where: { tenant, id, slug } }) {
             try {
                 if (id) {
-                    const result = await get<{ data: Team }>({
-                        entity: entities.teams,
-                        keys: createTeamKeys({ tenant, id })
-                    });
+                    const result = await entities.teams.get(createTeamKeys({ tenant, id }));
 
-                    return result ? result.data : null;
+                    return result?.data || null;
                 }
 
-                const result = await queryOne<{ data: Team }>({
-                    entity: entities.teams,
+                const result = await entities.teams.queryOne({
                     partitionKey: `T#${tenant}#TEAMS`,
                     options: {
                         index: "GSI1",
@@ -265,7 +228,7 @@ export const createStorageOperations = (
                     }
                 });
 
-                return result ? result.data : null;
+                return result?.data || null;
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not load team.",
@@ -277,8 +240,7 @@ export const createStorageOperations = (
         async listApiKeys({ where: { tenant }, sort }): Promise<ApiKey[]> {
             let items;
             try {
-                items = await queryAll<{ data: ApiKey }>({
-                    entity: entities.apiKeys,
+                items = await entities.apiKeys.queryAll({
                     partitionKey: `T#${tenant}#API_KEYS`,
                     options: {
                         index: "GSI1"
@@ -296,8 +258,7 @@ export const createStorageOperations = (
         async listRoles({ where: { tenant, id_in, slug_in }, sort }): Promise<Role[]> {
             let items: Role[];
             try {
-                const ddbItems = await queryAll<{ data: Role }>({
-                    entity: entities.roles,
+                const ddbItems = await entities.roles.queryAll({
                     partitionKey: `T#${tenant}#ROLES`,
                     options: {
                         index: "GSI1"
@@ -326,8 +287,7 @@ export const createStorageOperations = (
         async listTeams({ where: { tenant, id_in, slug_in }, sort }): Promise<Team[]> {
             let items: Team[];
             try {
-                const ddbRecords = await queryAll<{ data: Team }>({
-                    entity: entities.teams,
+                const ddbRecords = await entities.teams.queryAll({
                     partitionKey: `T#${tenant}#TEAMS`,
                     options: {
                         index: "GSI1"
@@ -361,13 +321,9 @@ export const createStorageOperations = (
             };
 
             try {
-                await put({
-                    entity: entities.apiKeys,
-                    item: {
-                        data: apiKey,
-                        TYPE: "security.apiKey",
-                        ...keys
-                    }
+                await entities.apiKeys.put({
+                    data: apiKey,
+                    ...keys
                 });
             } catch (err) {
                 throw WebinyError.from(err, {
@@ -381,13 +337,10 @@ export const createStorageOperations = (
             const keys = createRoleKeys(role);
 
             try {
-                await put({
-                    entity: entities.roles,
-                    item: {
-                        data: role,
-                        ...keys,
-                        ...createRoleGsiKeys(role)
-                    }
+                await entities.roles.put({
+                    data: role,
+                    ...keys,
+                    ...createRoleGsiKeys(role)
                 });
             } catch (err) {
                 throw WebinyError.from(err, {
@@ -401,13 +354,10 @@ export const createStorageOperations = (
             const keys = createTeamKeys(team);
 
             try {
-                await put({
-                    entity: entities.teams,
-                    item: {
-                        data: team,
-                        ...keys,
-                        ...createTeamGsiKeys(team)
-                    }
+                await entities.teams.put({
+                    data: team,
+                    ...keys,
+                    ...createTeamGsiKeys(team)
                 });
             } catch (err) {
                 throw WebinyError.from(err, {
