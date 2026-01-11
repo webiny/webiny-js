@@ -152,26 +152,23 @@ describe("All Field Types Model", () => {
                                             trend: statFields
                                                 .text()
                                                 .label("Trend")
-                                                .predefinedValues({
-                                                    enabled: true,
-                                                    values: [
-                                                        {
-                                                            value: "up",
-                                                            label: "Up",
-                                                            selected: false
-                                                        },
-                                                        {
-                                                            value: "down",
-                                                            label: "Down",
-                                                            selected: false
-                                                        },
-                                                        {
-                                                            value: "neutral",
-                                                            label: "Neutral",
-                                                            selected: true
-                                                        }
-                                                    ]
-                                                })
+                                                .predefinedValues([
+                                                    {
+                                                        value: "up",
+                                                        label: "Up",
+                                                        selected: false
+                                                    },
+                                                    {
+                                                        value: "down",
+                                                        label: "Down",
+                                                        selected: false
+                                                    },
+                                                    {
+                                                        value: "neutral",
+                                                        label: "Neutral",
+                                                        selected: true
+                                                    }
+                                                ])
                                         }))
                                         .layout([["label"], ["value"], ["trend"]])
                                 }),

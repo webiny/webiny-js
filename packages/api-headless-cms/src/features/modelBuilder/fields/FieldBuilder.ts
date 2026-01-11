@@ -63,6 +63,11 @@ export class FieldBuilder<TType extends string = string> {
         return this;
     }
 
+    defaultValue(value: any): this {
+        this.config.settings = { ...this.config.settings, defaultValue: value };
+        return this;
+    }
+
     multipleValues(enabled: boolean = true): this {
         this.config.multipleValues = enabled;
         return this;

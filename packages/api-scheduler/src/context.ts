@@ -10,10 +10,10 @@ import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js"
 import { ScheduledActionModel, SchedulerService } from "~/shared/abstractions.js";
 import { EventBridgeSchedulerService } from "~/features/SchedulerService/EventBridgeSchedulerService.js";
 import { VoidSchedulerService } from "~/features/SchedulerService/VoidSchedulerService.js";
-import { createSchedulerModel } from "~/domain/model.js";
+import { SchedulePrivateModel } from "~/domain/SchedulePrivateModel.js";
 import { SchedulerFeature } from "./features/SchedulerFeature.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 
 export interface ICreateHeadlessCmsSchedulerContextParams {
     getClient(config?: SchedulerClientConfig): Pick<SchedulerClient, "send">;
@@ -22,7 +22,7 @@ export interface ICreateHeadlessCmsSchedulerContextParams {
 export const createSchedulerContext = (params: ICreateHeadlessCmsSchedulerContextParams) => {
     return new ContextPlugin<CmsContext>(async context => {
         const tenantContext = context.container.resolve(TenantContext);
-        const identityContext = context.container.resolve(IdentityContext);
+        const getModel = context.container.resolve(GetModelUseCase);
 
         if (!tenantContext.getTenant()) {
             return;
@@ -45,13 +45,12 @@ export const createSchedulerContext = (params: ICreateHeadlessCmsSchedulerContex
             );
         }
 
-        context.plugins.register(createSchedulerModel());
-        const schedulerModel = await identityContext.withoutAuthorization(() => {
-            return context.cms.getModel(SCHEDULE_MODEL_ID);
-        });
+        context.container.register(SchedulePrivateModel);
 
-        // Register model via a dedicated abstraction
-        context.container.registerInstance(ScheduledActionModel, schedulerModel);
+        await context.security.withoutAuthorization(async () => {
+            const schedulerModel = await getModel.execute(SCHEDULE_MODEL_ID);
+            context.container.registerInstance(ScheduledActionModel, schedulerModel.value);
+        });
 
         // Register all features
         SchedulerFeature.register(context.container);
