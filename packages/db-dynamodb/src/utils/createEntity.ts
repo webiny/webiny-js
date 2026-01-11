@@ -1,11 +1,58 @@
 import type { AttributeDefinitions, Table } from "~/toolbox.js";
 import { Entity } from "~/toolbox.js";
+import { createEntity, type EntityConstructor } from "~/utils/entity/index.js";
+import type { GenericRecord } from "@webiny/api/types.js";
 
-export interface ICreateStandardEntityParams {
-    table: Table<string, string, string>;
-    name: string;
-    attributes?: AttributeDefinitions;
-}
+export type IGlobalEntityAttributes<T = undefined> = {
+    PK: string;
+    SK: string;
+    TYPE: string;
+    GSI1_PK?: string;
+    GSI1_SK?: string;
+    GSI2_PK?: string;
+    GSI2_SK?: string;
+    expiresAt?: string | null;
+} & (T extends undefined ? { data?: undefined } : { data: T });
+
+export const globalEntityAttributes: AttributeDefinitions = {
+    PK: {
+        partitionKey: true
+    },
+    SK: {
+        sortKey: true
+    },
+    GSI1_PK: {
+        type: "string"
+    },
+    GSI1_SK: {
+        type: "string"
+    },
+    GSI2_PK: {
+        type: "string"
+    },
+    GSI2_SK: {
+        type: "string"
+    },
+    TYPE: {
+        type: "string"
+    },
+    data: {
+        type: "map"
+        // TODO make required after all storage ops are updated to store in data
+        //required: true
+    }
+};
+
+export const createGlobalEntity = <T extends GenericRecord = GenericRecord>(
+    params: EntityConstructor
+) => {
+    return createEntity<IGlobalEntityAttributes<T>>({
+        ...params,
+        attributes: {
+            ...globalEntityAttributes
+        }
+    });
+};
 
 export type IStandardEntityAttributes<T = undefined> = {
     PK: string;
@@ -50,6 +97,17 @@ export const standardEntityAttributes: AttributeDefinitions = {
         // TODO make required after all storage ops are updated to store in data
         //required: true
     }
+};
+
+export const createStandardEntity = <T extends GenericRecord = GenericRecord>(
+    params: EntityConstructor
+) => {
+    return createEntity<IStandardEntityAttributes<T>>({
+        ...params,
+        attributes: {
+            ...standardEntityAttributes
+        }
+    });
 };
 
 interface CreateLegacyEntityParams {

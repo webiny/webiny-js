@@ -59,7 +59,6 @@ class DynamoDbDriver implements DbDriver<DynamoDBDocument> {
                 PK: createPartitionKey(),
                 SK: createSortKey({ key }),
                 TYPE: createType(),
-                GSI_TENANT: "webiny#unassigned",
                 data: {
                     key,
                     value
@@ -96,7 +95,6 @@ class DynamoDbDriver implements DbDriver<DynamoDBDocument> {
                     PK: createPartitionKey(),
                     SK: createSortKey({ key }),
                     TYPE: createType(),
-                    GSI_TENANT: "webiny#unassigned",
                     data: {
                         key,
                         value

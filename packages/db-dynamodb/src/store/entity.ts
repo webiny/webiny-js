@@ -1,12 +1,5 @@
-/**
- * TODO determine if GSIs are needed
- */
-import { createEntity as baseCreateEntity } from "~/utils/entity/index.js";
-import {
-    type IStandardEntityAttributes,
-    standardEntityAttributes,
-    type Table
-} from "~/utils/index.js";
+import type { Table } from "~/utils/index.js";
+import { createGlobalEntity as baseCreateEntity, globalEntityAttributes } from "~/utils/index.js";
 import type { IStoreEntity, IStoreEntityValue } from "~/store/types.js";
 
 export interface ICreateEntityParams {
@@ -14,11 +7,11 @@ export interface ICreateEntityParams {
 }
 
 export const createEntity = ({ table }: ICreateEntityParams): IStoreEntity => {
-    return baseCreateEntity<IStandardEntityAttributes<IStoreEntityValue>>({
+    return baseCreateEntity<IStoreEntityValue>({
         table,
         name: "WebinyKeyValue",
         attributes: {
-            ...standardEntityAttributes
+            ...globalEntityAttributes
         }
     });
 };

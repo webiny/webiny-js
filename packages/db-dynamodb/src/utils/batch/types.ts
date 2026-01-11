@@ -24,8 +24,6 @@ export interface IDeleteBatchItem {
 export type IPutBatchItem<T = GenericRecord> = {
     PK: string;
     SK: string;
-    // TODO always must be present
-    GSI_TENANT: string;
 } & T;
 
 export interface BatchWriteItem {

@@ -1,8 +1,8 @@
-import type { IEntity, IStandardEntityAttributes } from "~/utils/index.js";
+import type { IEntity, IGlobalEntityAttributes } from "~/utils/index.js";
 
 export interface IStoreEntityValue {
     key: string;
     value: string;
 }
 
-export type IStoreEntity = IEntity<IStandardEntityAttributes<IStoreEntityValue>>;
+export type IStoreEntity = IEntity<IGlobalEntityAttributes<IStoreEntityValue>>;
