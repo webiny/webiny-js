@@ -10,7 +10,7 @@ class BooleanFieldBuilder extends FieldBuilder<"boolean"> implements IBooleanFie
         super("boolean");
     }
 
-    defaultValue(value: boolean): this {
+    override defaultValue(value: boolean): this {
         this.config.settings = this.config.settings || {};
         this.config.settings.defaultValue = value;
         return this;
