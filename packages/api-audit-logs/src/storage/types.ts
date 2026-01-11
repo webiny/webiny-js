@@ -28,6 +28,7 @@ export interface IStorageAuditLog extends Omit<IAuditLog, "createdOn" | "content
 export interface IStorageItem {
     PK: string;
     SK: string;
+    TYPE: string;
     GSI_TENANT: string;
     GSI1_PK: string;
     GSI1_SK: number;
