@@ -49,7 +49,8 @@ export const createGlobalEntity = <T extends GenericRecord = GenericRecord>(
     return createEntity<IGlobalEntityAttributes<T>>({
         ...params,
         attributes: {
-            ...globalEntityAttributes
+            ...globalEntityAttributes,
+            ...params.attributes
         }
     });
 };
@@ -105,7 +106,8 @@ export const createStandardEntity = <T extends GenericRecord = GenericRecord>(
     return createEntity<IStandardEntityAttributes<T>>({
         ...params,
         attributes: {
-            ...standardEntityAttributes
+            ...standardEntityAttributes,
+            ...params.attributes
         }
     });
 };
