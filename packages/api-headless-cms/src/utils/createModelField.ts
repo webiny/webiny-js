@@ -33,7 +33,9 @@ export const createModelField = (params: CreateModelFieldParams): CmsModelField 
         renderer = null
     } = params;
 
-    const fieldId = initialFieldId ? camelCase(initialFieldId) : camelCase(label);
+    // TODO: ideally, initialFieldId should also be passed through `camelCase` but currently this would break `wbyAco_location` field.
+    // TODO: Once this legacy field is removed, we can enable camelCase on the initialFieldId.
+    const fieldId = initialFieldId ? initialFieldId : camelCase(label);
 
     return {
         id: id ?? fieldId,

@@ -1,5 +1,4 @@
-import type { CmsApiModel } from "~/plugins";
-import { createCmsGroup, createCmsModel } from "~/plugins";
+import { type CmsApiModel, createModelPlugin, createCmsGroup } from "~/plugins";
 import type { CmsModel } from "~/types";
 import { createFields, createLayout } from "./fields";
 
@@ -31,7 +30,7 @@ export const createValidationStructure = (input: Partial<Omit<CmsModel, "group">
         ...input,
         group
     });
-    const cmsModelPlugin = createCmsModel(model);
+    const cmsModelPlugin = createModelPlugin(model);
     return {
         plugins: [cmsGroupPlugin, cmsModelPlugin],
         model,

@@ -56,7 +56,7 @@ describe("All Field Types Model", () => {
                         coverImage: fields.file().label("Cover Image").imagesOnly(),
 
                         // File field - multiple
-                        gallery: fields.file().label("Gallery").imagesOnly().multipleValues(true),
+                        gallery: fields.file().label("Gallery").imagesOnly().list(),
 
                         // DateTime field - date only
                         publishDate: fields.datetime().label("Publish Date").dateOnly(),
@@ -80,7 +80,7 @@ describe("All Field Types Model", () => {
                         tags: fields
                             .ref()
                             .label("Tags")
-                            .multipleValues(true)
+                            .list()
                             .models([{ modelId: "tag" }]),
 
                         // Object field
@@ -100,7 +100,7 @@ describe("All Field Types Model", () => {
                         sections: fields
                             .object()
                             .label("Sections")
-                            .multipleValues(true)
+                            .list()
                             .fields(objFields => ({
                                 title: objFields.text().label("Section Title"),
                                 content: objFields.richText().label("Section Content"),
@@ -112,7 +112,7 @@ describe("All Field Types Model", () => {
                         dynamicContent: fields
                             .dynamicZone()
                             .label("Dynamic Content")
-                            .multipleValues(true)
+                            .list()
                             .template("textBlock", {
                                 name: "Text Block",
                                 gqlTypeName: "TextBlock",
@@ -145,7 +145,7 @@ describe("All Field Types Model", () => {
                                     stats: f
                                         .object()
                                         .label("Stats")
-                                        .multipleValues(true)
+                                        .list()
                                         .fields(statFields => ({
                                             label: statFields.text().label("Label"),
                                             value: statFields.number().label("Value"),

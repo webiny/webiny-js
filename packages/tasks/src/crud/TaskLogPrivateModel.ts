@@ -15,7 +15,7 @@ class TaskLogPrivateModelImpl implements PrivateModel.Interface {
                 items: fields
                     .object()
                     .label("Items")
-                    .multipleValues(true)
+                    .list()
                     .required("Items is required.")
                     .fields((itemFields: PrivateModel.FieldBuilder) => ({
                         message: itemFields

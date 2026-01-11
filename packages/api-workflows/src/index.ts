@@ -3,9 +3,12 @@ import { TenantContext } from "@webiny/api-core/features/TenantContext";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { createWorkflowModel, WORKFLOW_MODEL_ID } from "./domain/workflow/workflowModel.js";
 import {
-    createWorkflowStateModel,
+    WorkflowModel as WorkflowPrivateModel,
+    WORKFLOW_MODEL_ID
+} from "./domain/workflow/workflowModel.js";
+import {
+    WorkflowStateModel as WorkflowStatePrivateModel,
     WORKFLOW_STATE_MODEL_ID
 } from "./domain/workflowState/stateModel.js";
 import { createWorkflowsSchema } from "~/graphql/workflows.js";
@@ -53,10 +56,9 @@ export const createWorkflows = () => {
             return;
         }
 
-        // Register CMS model plugins
-        const workflowModelDefinition = createWorkflowModel();
-        const workflowStateModelDefinition = createWorkflowStateModel();
-        context.plugins.register(workflowModelDefinition, workflowStateModelDefinition);
+        // Register private models
+        context.container.register(WorkflowPrivateModel);
+        context.container.register(WorkflowStatePrivateModel);
 
         // Fetch and register CMS models
         const getModel = context.container.resolve(GetModelUseCase);

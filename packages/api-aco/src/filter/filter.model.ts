@@ -1,160 +1,66 @@
-import { createModelField, createPrivateModel } from "@webiny/api-headless-cms";
-import type { CmsModelField } from "@webiny/api-headless-cms/types/index.js";
-
-const name = () =>
-    createModelField({
-        label: "Name",
-        fieldId: "name",
-        type: "text",
-        validation: [
-            {
-                name: "required",
-                message: "Value is required."
-            }
-        ]
-    });
-
-const description = () =>
-    createModelField({
-        label: "Description",
-        fieldId: "description",
-        type: "text"
-    });
-
-const namespace = () =>
-    createModelField({
-        label: "Model Id",
-        fieldId: "namespace",
-        type: "text",
-        validation: [
-            {
-                name: "required",
-                message: "Value is required."
-            }
-        ]
-    });
-
-const operation = () =>
-    createModelField({
-        label: "Operation",
-        fieldId: "operation",
-        type: "text",
-        predefinedValues: {
-            enabled: true,
-            values: [
-                {
-                    label: "AND",
-                    value: "AND"
-                },
-                {
-                    label: "OR",
-                    value: "OR"
-                }
-            ]
-        },
-        multipleValues: false,
-        validation: [
-            {
-                name: "required",
-                message: "Value is required."
-            }
-        ]
-    });
-
-const groups = (fields: CmsModelField[]) =>
-    createModelField({
-        label: "Groups",
-        fieldId: "groups",
-        type: "object",
-        multipleValues: true,
-        settings: {
-            fields,
-            layout: fields.map(field => [field.storageId])
-        },
-        listValidation: [
-            {
-                name: "minLength",
-                message: "At least one group is required.",
-                settings: {
-                    value: "1"
-                }
-            }
-        ]
-    });
-
-const filters = (fields: CmsModelField[]) =>
-    createModelField({
-        label: "Filters",
-        fieldId: "filters",
-        type: "object",
-        multipleValues: true,
-        settings: {
-            fields,
-            layout: fields.map(field => [field.storageId])
-        },
-        listValidation: [
-            {
-                name: "minLength",
-                message: "At least one filter is required.",
-                settings: {
-                    value: "1"
-                }
-            }
-        ]
-    });
-
-const field = () =>
-    createModelField({
-        label: "Field",
-        fieldId: "field",
-        type: "text",
-        validation: [
-            {
-                name: "required",
-                message: "Value is required."
-            }
-        ]
-    });
-
-const condition = () =>
-    createModelField({
-        label: "Condition",
-        fieldId: "condition",
-        type: "text",
-        validation: [
-            {
-                name: "required",
-                message: "Value is required."
-            }
-        ]
-    });
-
-const value = () =>
-    createModelField({
-        label: "Value",
-        fieldId: "value",
-        type: "text",
-        validation: [
-            {
-                name: "required",
-                message: "Value is required."
-            }
-        ]
-    });
+import { PrivateModel } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
 
 export const FILTER_MODEL_ID = "acoFilter";
 
-export const createFilterModel = () => {
-    return createPrivateModel({
-        name: "ACO - Filter",
-        modelId: FILTER_MODEL_ID,
-        titleFieldId: "name",
-        fields: [
-            name(),
-            description(),
-            namespace(),
-            operation(),
-            groups([operation(), filters([field(), condition(), value()])])
-        ]
-    });
-};
+class FilterPrivateModelImpl implements PrivateModel.Interface {
+    buildModel(builder: PrivateModel.Builder): PrivateModel.Builder {
+        return builder
+            .modelId(FILTER_MODEL_ID)
+            .name("ACO - Filter")
+            .fields(fields => ({
+                name: fields.text().label("Name").required(),
+                description: fields.text().label("Description"),
+                namespace: fields.text().label("Model Id").required(),
+                operation: fields
+                    .text()
+                    .label("Operation")
+                    .required()
+                    .predefinedValues([
+                        {
+                            label: "AND",
+                            value: "AND"
+                        },
+                        {
+                            label: "OR",
+                            value: "OR"
+                        }
+                    ]),
+                groups: fields
+                    .object()
+                    .label("Groups")
+                    .list()
+                    .listMinLength(1, "At least one group is required.")
+                    .fields(fields => ({
+                        operation: fields
+                            .text()
+                            .label("Operation")
+                            .required()
+                            .predefinedValues([
+                                {
+                                    label: "AND",
+                                    value: "AND"
+                                },
+                                {
+                                    label: "OR",
+                                    value: "OR"
+                                }
+                            ]),
+                        filters: fields
+                            .object()
+                            .label("Filters")
+                            .list()
+                            .listMinLength(1, "At least one filter is required.")
+                            .fields(filterFields => ({
+                                field: filterFields.text().label("Field").required(),
+                                condition: filterFields.text().label("Condition").required(),
+                                value: filterFields.text().label("Value").required()
+                            }))
+                    }))
+            }));
+    }
+}
+
+export const FilterPrivateModel = PrivateModel.createImplementation({
+    implementation: FilterPrivateModelImpl,
+    dependencies: []
+});

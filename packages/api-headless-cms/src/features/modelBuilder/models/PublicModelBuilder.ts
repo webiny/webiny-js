@@ -18,6 +18,8 @@ const createPluralApiName = (name: string) => {
 };
 
 export class PublicModelBuilder implements IPublicModelBuilder {
+    private isSingleEntry = false;
+
     private config: {
         modelId?: string;
         name?: string;
@@ -44,6 +46,10 @@ export class PublicModelBuilder implements IPublicModelBuilder {
     name(name: string): this {
         this.config.name = name;
         return this;
+    }
+
+    singleEntry() {
+        this.isSingleEntry = true;
     }
 
     singularApiName(name: string): this {
@@ -135,6 +141,9 @@ export class PublicModelBuilder implements IPublicModelBuilder {
         // Always include "type:model" tag and ensure all tags are unique
         const tagsSet = new Set(this.config.tags || []);
         tagsSet.add("type:model");
+        if (this.isSingleEntry) {
+            tagsSet.add("singleEntry");
+        }
         const uniqueTags = Array.from(tagsSet);
 
         return {

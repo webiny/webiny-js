@@ -11,7 +11,6 @@ import type {
 } from "~/types/index.js";
 import { createFieldStorageId } from "~/crud/contentModel/createFieldStorageId.js";
 import { validateStorageId } from "~/crud/contentModel/validateStorageId.js";
-import { CMS_MODEL_SINGLETON_TAG } from "~/constants.js";
 
 const createApiName = (name: string) => {
     return upperFirst(camelCase(name));
@@ -326,25 +325,9 @@ export class CmsModelPlugin extends Plugin {
 }
 
 /**
- * @deprecated Use `createCmsModelPlugin` instead.
+ * IMPORTANT! This function should NOT be used outside the `api-headless-cms` package!
+ * @internal
  */
-export const createCmsModel = (
-    model: CmsModelInput,
-    options?: CmsModelPluginOptions
-): CmsModelPlugin => {
-    return new CmsModelPlugin(model, options);
-};
-
-/**
- * @deprecated Use `createModelPlugin` instead.
- */
-export const createCmsModelPlugin = (
-    model: CmsModelInput,
-    options?: CmsModelPluginOptions
-): CmsModelPlugin => {
-    return new CmsModelPlugin(model, options);
-};
-
 export const createModelPlugin = (
     model: CmsModelInput,
     options?: CmsModelPluginOptions
@@ -353,23 +336,9 @@ export const createModelPlugin = (
 };
 
 /**
- * @deprecated Use `createPrivateModelPlugin` instead.
+ * IMPORTANT! This function should NOT be used outside the `api-headless-cms` package!
+ * @internal
  */
-export const createPrivateModel = (
-    input: Omit<CmsPrivateModelFull, "group" | "isPrivate">
-): CmsPrivateModelFull => {
-    return {
-        authorization: false,
-        noValidate: true,
-        isPrivate: true,
-        group: {
-            id: "private",
-            name: "Private Models"
-        },
-        ...input
-    };
-};
-
 export const createPrivateModelPlugin = (
     input: Omit<CmsPrivateModelFull, "group" | "isPrivate">
 ): CmsModelPlugin => {
@@ -388,56 +357,4 @@ export const createPrivateModelPlugin = (
             validateLayout: false
         }
     );
-};
-
-const ensureSingletonTag = (input?: string[]) => {
-    const tags = input || [];
-    return tags.includes(CMS_MODEL_SINGLETON_TAG) ? tags : [...tags, CMS_MODEL_SINGLETON_TAG];
-};
-
-/**
- * @deprecated Use `createSingleEntryModelPlugin` instead.
- */
-export const createSingleEntryModel = (input: CmsModelInput, options?: CmsModelPluginOptions) => {
-    return createCmsModelPlugin(
-        {
-            ...input,
-            tags: ensureSingletonTag(input.tags)
-        },
-        options
-    );
-};
-
-export const createSingleEntryModelPlugin = (
-    input: CmsModelInput,
-    options?: CmsModelPluginOptions
-) => {
-    return createModelPlugin(
-        {
-            ...input,
-            tags: ensureSingletonTag(input.tags)
-        },
-        options
-    );
-};
-
-/**
- * @deprecated Use `createSingleEntryPrivateModelPlugin` instead.
- */
-export const createSingleEntryPrivateModel = (
-    input: Omit<CmsPrivateModelFull, "group" | "isPrivate">
-) => {
-    return createPrivateModel({
-        ...input,
-        tags: ensureSingletonTag(input.tags)
-    });
-};
-
-export const createPrivateSingleEntryModelPlugin = (
-    input: Omit<CmsPrivateModelFull, "group" | "isPrivate">
-) => {
-    return createPrivateModelPlugin({
-        ...input,
-        tags: ensureSingletonTag(input.tags)
-    });
 };

@@ -1,6 +1,5 @@
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
 import { FieldBuilder } from "./FieldBuilder.js";
-import type { IFieldBuilderRegistry } from "../abstractions.js";
 import { RequiredValidator } from "./validators.js";
 
 export interface IFileFieldBuilder extends FieldBuilder<"file">, RequiredValidator {
@@ -30,7 +29,7 @@ class FileFieldBuilder extends FieldBuilder<"file"> implements IFileFieldBuilder
 class FileFieldTypeFactory implements IFieldTypeFactory {
     readonly type = "file";
 
-    create(_registry: IFieldBuilderRegistry): IFileFieldBuilder {
+    create(): IFileFieldBuilder {
         return new FileFieldBuilder();
     }
 }

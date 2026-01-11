@@ -31,7 +31,7 @@ class FilePrivateModelImpl implements PrivateModel.Interface {
                     .text()
                     .label("Tags")
                     .tags(["$bulk-edit"])
-                    .multipleValues(true)
+                    .list()
                     .required("Value is required.")
             }));
 
@@ -65,7 +65,7 @@ class FilePrivateModelImpl implements PrivateModel.Interface {
     }
 }
 
-export const FilePrivateModel = PrivateModel.createImplementation({
+export const FileModel = PrivateModel.createImplementation({
     implementation: FilePrivateModelImpl,
     dependencies: [WcpContext]
 });

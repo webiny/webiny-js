@@ -84,7 +84,7 @@ describe("Object Field Multiple .fields() Calls", () => {
                     if (this.includeExtendedMetadata) {
                         objField.fields(objFields => ({
                             source: objFields.text().label("Source"),
-                            tags: objFields.text().label("Tags").multipleValues(true)
+                            tags: objFields.text().label("Tags").list()
                         }));
                     }
 

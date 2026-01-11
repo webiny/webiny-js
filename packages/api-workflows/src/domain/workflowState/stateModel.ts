@@ -1,60 +1,111 @@
-import { createPrivateModelPlugin } from "@webiny/api-headless-cms";
-import {
-    createAppField,
-    createCommentField,
-    createSavedByField,
-    createStateField,
-    createStepsField,
-    createTitleField
-} from "~/domain/shared/fields/index.js";
+import { PrivateModel } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
+import { WorkflowStateRecordState } from "~/domain/workflowState/abstractions.js";
 
 export const WORKFLOW_STATE_MODEL_ID = "workflowState";
 
-export const createWorkflowStateModel = () => {
-    return createPrivateModelPlugin({
-        modelId: WORKFLOW_STATE_MODEL_ID,
-        name: "RecordWorkflow State",
-        fields: [
-            {
-                fieldId: "workflowId",
-                id: "workflowId",
-                storageId: "text@workflowId",
-                type: "text",
-                label: "Workflow ID"
-            },
-            createAppField(),
-            createTitleField(),
-            {
-                fieldId: "targetRevisionId",
-                id: "targetRevisionId",
-                storageId: "text@targetRevisionId",
-                type: "text",
-                label: "Target Revision ID"
-            },
-            {
-                fieldId: "targetId",
-                id: "targetId",
-                storageId: "text@targetId",
-                type: "text",
-                label: "Target ID"
-            },
-            {
-                fieldId: "isActive",
-                type: "boolean",
-                id: "isActive",
-                storageId: "boolean@isActive",
-                label: "Is Active"
-            },
-            createCommentField(),
-            createStateField(),
-            /**
-             * We need to extend the base steps field with additional fields required for workflow state.
-             */
-            createStepsField({
-                settings: {
-                    fields: [createStateField(), createSavedByField(), createCommentField()]
-                }
-            })
-        ]
-    });
-};
+class WorkflowStateModelImpl implements PrivateModel.Interface {
+    buildModel(builder: PrivateModel.Builder): PrivateModel.Builder {
+        return builder
+            .modelId(WORKFLOW_STATE_MODEL_ID)
+            .name("RecordWorkflow State")
+            .fields(fields => ({
+                workflowId: fields.text().label("Workflow ID"),
+                app: fields.text().label("App").required("App is required."),
+                title: fields.text().label("Title").required("Title is required."),
+                targetRevisionId: fields.text().label("Target Revision ID"),
+                targetId: fields.text().label("Target ID"),
+                isActive: fields.boolean().label("Is Active"),
+                comment: fields.text().label("Comment"),
+                state: fields
+                    .text()
+                    .label("State")
+                    .predefinedValues([
+                        {
+                            label: "Pending",
+                            value: WorkflowStateRecordState.pending
+                        },
+                        {
+                            label: "In Review",
+                            value: WorkflowStateRecordState.inReview
+                        },
+                        {
+                            label: "Approved",
+                            value: WorkflowStateRecordState.approved
+                        },
+                        {
+                            label: "Rejected",
+                            value: WorkflowStateRecordState.rejected
+                        }
+                    ]),
+                steps: fields
+                    .object()
+                    .label("Steps")
+                    .list()
+                    .required("Steps are required.")
+                    .listMinLength(1, "At least one step is required.")
+                    .fields(stepFields => ({
+                        id: stepFields.text().label("ID").required("ID is required."),
+                        title: stepFields.text().label("Title").required("Title is required."),
+                        color: stepFields.text().label("Color").required("Color is required."),
+                        description: stepFields.text().label("Description"),
+                        teams: stepFields
+                            .object()
+                            .label("Teams")
+                            .list()
+                            .required("At least one team is required.")
+                            .listMinLength(1, "At least one team is required.")
+                            .fields(teamFields => ({
+                                id: teamFields.text().label("ID").required("ID is required.")
+                            })),
+                        notifications: stepFields
+                            .object()
+                            .label("Notifications")
+                            .list()
+                            .fields(notificationFields => ({
+                                id: notificationFields
+                                    .text()
+                                    .label("ID")
+                                    .required("ID is required.")
+                            })),
+                        state: stepFields
+                            .text()
+                            .label("State")
+                            .predefinedValues([
+                                {
+                                    label: "Pending",
+                                    value: WorkflowStateRecordState.pending
+                                },
+                                {
+                                    label: "In Review",
+                                    value: WorkflowStateRecordState.inReview
+                                },
+                                {
+                                    label: "Approved",
+                                    value: WorkflowStateRecordState.approved
+                                },
+                                {
+                                    label: "Rejected",
+                                    value: WorkflowStateRecordState.rejected
+                                }
+                            ]),
+                        savedBy: stepFields
+                            .object()
+                            .label("User")
+                            .fields(userFields => ({
+                                id: userFields.text().label("ID").required("ID is required."),
+                                displayName: userFields
+                                    .text()
+                                    .label("Display Name")
+                                    .required("Display name is required."),
+                                type: userFields.text().label("Type").required("Type is required.")
+                            })),
+                        comment: stepFields.text().label("Comment")
+                    }))
+            }));
+    }
+}
+
+export const WorkflowStateModel = PrivateModel.createImplementation({
+    implementation: WorkflowStateModelImpl,
+    dependencies: []
+});

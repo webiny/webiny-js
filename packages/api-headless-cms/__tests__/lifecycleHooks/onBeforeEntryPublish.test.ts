@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import { ContextPlugin } from "@webiny/handler";
 import { useHandler } from "~tests/testHelpers/useHandler";
 import { articleModel } from "./mocks/article.model";
-import { CmsModelPlugin } from "~/plugins";
 import type { CmsContext } from "~/types";
 import { EntryBeforePublishHandler } from "~/features/contentEntry/PublishEntry/index.js";
 
@@ -10,7 +9,7 @@ describe("onEntryBeforePublish", () => {
     it("should update values before publishing", async () => {
         const { handler, tenant } = useHandler({
             plugins: [
-                new CmsModelPlugin(articleModel),
+                articleModel,
                 new ContextPlugin<CmsContext>(context => {
                     context.container.registerFactory(EntryBeforePublishHandler, () => ({
                         async handle(event) {

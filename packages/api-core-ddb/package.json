@@ -24,6 +24,7 @@
     "@webiny/error": "0.0.0"
   },
   "devDependencies": {
+    "@webiny/api": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "jest-dynalite": "^3.6.1",

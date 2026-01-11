@@ -68,14 +68,33 @@ export class FieldBuilder<TType extends string = string> {
         return this;
     }
 
-    multipleValues(enabled: boolean = true): this {
-        this.config.multipleValues = enabled;
-        return this;
+    list(): this {
+        this.config.multipleValues = true;
+        return this as this;
     }
 
     tags(tags: string[]): this {
         this.config.tags = tags;
         return this;
+    }
+
+    /**
+     * List validators - these methods are available after calling multipleValues()
+     */
+    listMinLength(value: number, message?: string): this {
+        return this.listValidation({
+            name: "minLength",
+            message: message || `At least ${value} item(s) required.`,
+            settings: { value }
+        });
+    }
+
+    listMaxLength(value: number, message?: string): this {
+        return this.listValidation({
+            name: "maxLength",
+            message: message || `At most ${value} item(s) allowed.`,
+            settings: { value }
+        });
     }
 
     /**

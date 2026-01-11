@@ -9,9 +9,9 @@ import { FilesPermissions as FilePermissionsImpl } from "~/permissions/FilesPerm
 import { SettingsPermissions as SettingsPermissionsImpl } from "~/permissions/SettingsPermissions.js";
 import { FilePermissions, SettingsPermissions } from "~/features/shared/abstractions.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { FileModel } from "~/domain/file/abstractions.js";
+import { FileModel as FileModelAbstraction } from "~/domain/file/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { FilePrivateModel, FILE_MODEL_ID } from "~/domain/file/FilePrivateModel.js";
+import { FileModel, FILE_MODEL_ID } from "~/domain/file/file.model.js";
 
 export * from "./modelModifier/CmsModelModifier.js";
 export * from "./delivery/index.js";
@@ -25,11 +25,11 @@ export const createFileManagerContext = () => {
             return;
         }
 
-        context.container.register(FilePrivateModel);
+        context.container.register(FileModel);
 
         await context.security.withoutAuthorization(async () => {
             const fileModel = await getModel.execute(FILE_MODEL_ID);
-            context.container.registerInstance(FileModel, fileModel.value);
+            context.container.registerInstance(FileModelAbstraction, fileModel.value);
         });
 
         const identityContext = context.container.resolve(IdentityContext);

@@ -1,6 +1,5 @@
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
 import { FieldBuilder } from "./FieldBuilder.js";
-import type { IFieldBuilderRegistry } from "../abstractions.js";
 import { RequiredValidator, DateGteValidator, DateLteValidator } from "./validators.js";
 
 export type DateTimeType = "date" | "time" | "dateTimeWithTimezone" | "dateTimeWithoutTimezone";
@@ -74,7 +73,7 @@ class DateTimeFieldBuilder extends FieldBuilder<"datetime"> implements IDateTime
 class DateTimeFieldTypeFactory implements IFieldTypeFactory {
     readonly type = "datetime";
 
-    create(_registry: IFieldBuilderRegistry): IDateTimeFieldBuilder {
+    create(): IDateTimeFieldBuilder {
         return new DateTimeFieldBuilder();
     }
 }

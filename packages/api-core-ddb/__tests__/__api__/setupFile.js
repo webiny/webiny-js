@@ -1,6 +1,6 @@
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { setStorageOps } from "@webiny/project-utils/testing/environment/index.js";
-import { ServiceDiscovery } from "packages/api/src/index.js";
+import { ServiceDiscovery } from "@webiny/api";
 import { createApiCoreDdb } from "~/createApiCoreDdb.js";
 
 setStorageOps("apiCore", () => {

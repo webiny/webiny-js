@@ -1,6 +1,5 @@
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
 import { FieldBuilder } from "./FieldBuilder.js";
-import type { FieldBuilderRegistry } from "../abstractions.js";
 import {
     RequiredValidator,
     MinLengthValidator,

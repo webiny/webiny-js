@@ -80,7 +80,7 @@ describe("Private Models", () => {
                 if (this.includeOptionalFields) {
                     builder.fields(fields => ({
                         description: fields.longText().label("Description"),
-                        tags: fields.text().label("Tags").multipleValues(true)
+                        tags: fields.text().label("Tags").list()
                     }));
                 }
 
@@ -145,7 +145,7 @@ describe("Public Models", () => {
                 // Second call - add more fields
                 builder.fields(fields => ({
                     image: fields.file().label("Image").imagesOnly(),
-                    tags: fields.text().label("Tags").multipleValues(true)
+                    tags: fields.text().label("Tags").list()
                 }));
 
                 // Add layout for all fields

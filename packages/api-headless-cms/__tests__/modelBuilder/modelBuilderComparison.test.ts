@@ -6,7 +6,7 @@ import {
     PrivateModelProvider,
     type IPrivateModelBuilder
 } from "~/features/modelBuilder/index.js";
-import { createCmsModel, createPrivateModel, createModelField } from "~/index.js";
+import { createPrivateModelPlugin, createModelField } from "~/index.js";
 import { articleModel } from "~tests/contentTraverser/mocks/article.model.js";
 
 describe("Model Builder Comparison - Old vs New API", () => {
@@ -65,13 +65,11 @@ describe("Model Builder Comparison - Old vs New API", () => {
                 });
             };
 
-            const oldModel = createCmsModel(
-                createPrivateModel({
-                    name: "TestModel",
-                    modelId: "testModel",
-                    fields: [nameField(), descriptionField(), metadataField()]
-                })
-            );
+            const oldModel = createPrivateModelPlugin({
+                name: "TestModel",
+                modelId: "testModel",
+                fields: [nameField(), descriptionField(), metadataField()]
+            });
 
             // ============================================
             // NEW WAY - Using builder API via DI
@@ -161,7 +159,7 @@ describe("Model Builder Comparison - Old vs New API", () => {
             // ============================================
             // OLD WAY - imported from existing test mocks
             // ============================================
-            const oldModel = createCmsModel(articleModel).contentModel;
+            const oldModel = articleModel.contentModel;
 
             // ============================================
             // NEW WAY - Using builder API via DI
@@ -178,13 +176,13 @@ describe("Model Builder Comparison - Old vs New API", () => {
                                 .ref()
                                 .storageId("ref@categories")
                                 .label("Categories")
-                                .multipleValues(true)
+                                .list()
                                 .models([{ modelId: "category" }]),
                             content: fields
                                 .dynamicZone()
                                 .storageId("dynamicZone@content")
                                 .label("Content")
-                                .multipleValues(true)
+                                .list()
                                 .template("cv2zf965v324ivdc7e1vt", {
                                     name: "Hero #1",
                                     gqlTypeName: "Hero",
@@ -217,7 +215,7 @@ describe("Model Builder Comparison - Old vs New API", () => {
                                                 seo: objFields
                                                     .object()
                                                     .label("SEO")
-                                                    .multipleValues(true)
+                                                    .list()
                                                     .fields(seoFields => ({
                                                         title: seoFields.text().label("Title")
                                                     }))
@@ -234,7 +232,7 @@ describe("Model Builder Comparison - Old vs New API", () => {
                                                     authors: adFields
                                                         .ref()
                                                         .label("Authors")
-                                                        .multipleValues(true)
+                                                        .list()
                                                         .models([{ modelId: "author" }])
                                                 })
                                             }),

@@ -1,12 +1,13 @@
-import { createPrivateModel } from "~/plugins";
+import { createModelField } from "~/index";
+import { createPrivateModelPlugin } from "~/plugins";
 
-export const pageModel = createPrivateModel({
+export const pageModel = createPrivateModelPlugin({
     modelId: "page",
     name: "Page",
     titleFieldId: "pageTitle",
     tags: ["type:model"],
     fields: [
-        {
+        createModelField({
             id: "pageTitle",
             fieldId: "pageTitle",
             type: "text",
@@ -29,8 +30,8 @@ export const pageModel = createPrivateModel({
                 }
             ],
             storageId: "text@pageTitle"
-        },
-        {
+        }),
+        createModelField({
             id: "pageType",
             fieldId: "pageType",
             type: "text",
@@ -40,8 +41,8 @@ export const pageModel = createPrivateModel({
                 name: "disabled-text-input"
             },
             storageId: "text@pageType"
-        },
-        {
+        }),
+        createModelField({
             id: "pageSettings",
             fieldId: "pageSettings",
             multipleValues: false,
@@ -52,7 +53,7 @@ export const pageModel = createPrivateModel({
             },
             settings: {
                 fields: [
-                    {
+                    createModelField({
                         id: "generalPageSettings",
                         fieldId: "generalPageSettings",
                         multipleValues: false,
@@ -63,7 +64,7 @@ export const pageModel = createPrivateModel({
                         },
                         settings: {
                             fields: [
-                                {
+                                createModelField({
                                     id: "pageSlug",
                                     fieldId: "pageSlug",
                                     type: "text",
@@ -97,8 +98,8 @@ export const pageModel = createPrivateModel({
                                         }
                                     ],
                                     storageId: "text@pageSlug"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "deliveryDomain",
                                     fieldId: "deliveryDomain",
                                     type: "text",
@@ -130,8 +131,8 @@ export const pageModel = createPrivateModel({
                                         defaultValue: "inherited"
                                     },
                                     storageId: "text@deliveryDomain"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "layout",
                                     fieldId: "layout",
                                     type: "text",
@@ -159,8 +160,8 @@ export const pageModel = createPrivateModel({
                                         defaultValue: "dark"
                                     },
                                     storageId: "text@layout"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "pageClass",
                                     fieldId: "pageClass",
                                     type: "text",
@@ -198,8 +199,8 @@ export const pageModel = createPrivateModel({
                                         }
                                     ],
                                     storageId: "text@pageClass"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "pageCategory",
                                     fieldId: "pageCategory",
                                     type: "text",
@@ -249,8 +250,8 @@ export const pageModel = createPrivateModel({
                                         }
                                     ],
                                     storageId: "text@pageCategory"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "redirectUrl",
                                     fieldId: "redirectUrl",
                                     type: "text",
@@ -272,8 +273,8 @@ export const pageModel = createPrivateModel({
                                         }
                                     ],
                                     storageId: "text@redirectUrl"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "browserTabTitle",
                                     fieldId: "browserTabTitle",
                                     type: "text",
@@ -291,8 +292,8 @@ export const pageModel = createPrivateModel({
                                         }
                                     ],
                                     storageId: "text@browserTabTitle"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "description",
                                     fieldId: "description",
                                     type: "text",
@@ -310,8 +311,8 @@ export const pageModel = createPrivateModel({
                                         }
                                     ],
                                     storageId: "text@description"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "customCanonicalUrl",
                                     fieldId: "customCanonicalUrl",
                                     type: "text",
@@ -333,8 +334,8 @@ export const pageModel = createPrivateModel({
                                         }
                                     ],
                                     storageId: "text@customCanonicalUrl"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "contentOwner",
                                     fieldId: "contentOwner",
                                     type: "text",
@@ -361,8 +362,8 @@ export const pageModel = createPrivateModel({
                                         }
                                     ],
                                     storageId: "text@contentOwner"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "organisation",
                                     fieldId: "organisation",
                                     type: "text",
@@ -380,8 +381,8 @@ export const pageModel = createPrivateModel({
                                         }
                                     ],
                                     storageId: "text@organisation"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "navTitle",
                                     fieldId: "navTitle",
                                     type: "text",
@@ -401,8 +402,8 @@ export const pageModel = createPrivateModel({
                                         }
                                     ],
                                     storageId: "text@navTitle"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "hideInNavigation",
                                     fieldId: "hideInNavigation",
                                     type: "boolean",
@@ -414,8 +415,8 @@ export const pageModel = createPrivateModel({
                                         defaultValue: false
                                     },
                                     storageId: "boolean@hideInNavigation"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "hideInBreadcrumb",
                                     fieldId: "hideInBreadcrumb",
                                     type: "boolean",
@@ -427,8 +428,8 @@ export const pageModel = createPrivateModel({
                                         defaultValue: false
                                     },
                                     storageId: "boolean@hideInBreadcrumb"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "noFollow",
                                     fieldId: "noFollow",
                                     type: "text",
@@ -460,8 +461,8 @@ export const pageModel = createPrivateModel({
                                         defaultValue: "inherited"
                                     },
                                     storageId: "text@noFollow"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "noIndex",
                                     fieldId: "noIndex",
                                     type: "text",
@@ -493,8 +494,8 @@ export const pageModel = createPrivateModel({
                                         defaultValue: "inherited"
                                     },
                                     storageId: "text@noIndex"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "publishTime",
                                     fieldId: "publishTime",
                                     type: "datetime",
@@ -508,8 +509,8 @@ export const pageModel = createPrivateModel({
                                         type: "dateTimeWithoutTimezone"
                                     },
                                     storageId: "datetime@publishTime"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "unPublishTime",
                                     fieldId: "unPublishTime",
                                     type: "datetime",
@@ -523,8 +524,8 @@ export const pageModel = createPrivateModel({
                                         type: "dateTimeWithoutTimezone"
                                     },
                                     storageId: "datetime@unPublishTime"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "headerContactLink",
                                     fieldId: "headerContactLink",
                                     label: "Header contact link",
@@ -547,8 +548,8 @@ export const pageModel = createPrivateModel({
                                         }
                                     ],
                                     storageId: "text@headerContactLink"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "copyRightText",
                                     fieldId: "copyRightText",
                                     label: "Copyright text",
@@ -558,8 +559,8 @@ export const pageModel = createPrivateModel({
                                         name: "text-input"
                                     },
                                     storageId: "text@copyRightText"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "inheritFooterLinks",
                                     fieldId: "inheritFooterLinks",
                                     label: "Inherit Footer links",
@@ -576,8 +577,8 @@ export const pageModel = createPrivateModel({
                                         values: []
                                     },
                                     storageId: "boolean@inheritFooterLinks"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "footerLinkList",
                                     fieldId: "footerLinkList",
                                     label: "Footer Links",
@@ -588,7 +589,7 @@ export const pageModel = createPrivateModel({
                                     },
                                     settings: {
                                         fields: [
-                                            {
+                                            createModelField({
                                                 type: "text",
                                                 validation: [
                                                     {
@@ -605,8 +606,8 @@ export const pageModel = createPrivateModel({
                                                 fieldId: "footerLinkText",
                                                 id: "footerLinkText",
                                                 storageId: "text@footerLinkText"
-                                            },
-                                            {
+                                            }),
+                                            createModelField({
                                                 type: "text",
                                                 validation: [
                                                     {
@@ -630,13 +631,13 @@ export const pageModel = createPrivateModel({
                                                 fieldId: "footerLinkLink",
                                                 id: "footerLinkLink",
                                                 storageId: "text@footerLinkLink"
-                                            }
+                                            })
                                         ],
                                         layout: [["footerLinkText"], ["footerLinkLink"]]
                                     },
                                     storageId: "object@footerLinkList"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "inheritSocialMediaLinks",
                                     fieldId: "inheritSocialMediaLinks",
                                     label: "Inherit Social Media links",
@@ -653,8 +654,8 @@ export const pageModel = createPrivateModel({
                                         values: []
                                     },
                                     storageId: "boolean@inheritSocialMediaLinks"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "socialMediaLinkList",
                                     fieldId: "socialMediaLinkList",
                                     label: "Social Media Links",
@@ -665,7 +666,7 @@ export const pageModel = createPrivateModel({
                                     },
                                     settings: {
                                         fields: [
-                                            {
+                                            createModelField({
                                                 type: "text",
                                                 validation: [],
                                                 renderer: {
@@ -677,13 +678,13 @@ export const pageModel = createPrivateModel({
                                                 fieldId: "socialMediaLinkLink",
                                                 id: "socialMediaLinkLink",
                                                 storageId: "text@socialMediaLinkLink"
-                                            }
+                                            })
                                         ],
                                         layout: [["socialMediaLinkLink"]]
                                     },
                                     storageId: "object@socialMediaLinkList"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     type: "text",
                                     validation: [],
                                     renderer: {
@@ -694,7 +695,7 @@ export const pageModel = createPrivateModel({
                                     fieldId: "uuid",
                                     id: "pageUuid",
                                     storageId: "text@pageUuid"
-                                }
+                                })
                             ],
                             layout: [
                                 ["pageSlug", "deliveryDomain", "layout"],
@@ -714,8 +715,8 @@ export const pageModel = createPrivateModel({
                             ]
                         },
                         storageId: "object@generalPageSettings"
-                    },
-                    {
+                    }),
+                    createModelField({
                         id: "pageTeaserSettings",
                         fieldId: "pageTeaserSettings",
                         multipleValues: false,
@@ -726,7 +727,7 @@ export const pageModel = createPrivateModel({
                         },
                         settings: {
                             fields: [
-                                {
+                                createModelField({
                                     type: "object",
                                     validation: [],
                                     multipleValues: false,
@@ -739,7 +740,7 @@ export const pageModel = createPrivateModel({
                                     storageId: "object@pageTeaserMedia",
                                     settings: {
                                         fields: [
-                                            {
+                                            createModelField({
                                                 type: "file",
                                                 multipleValues: false,
                                                 label: "File",
@@ -748,8 +749,8 @@ export const pageModel = createPrivateModel({
                                                 fieldId: "file",
                                                 id: "pageTeaserMediaFile",
                                                 storageId: "file@pageTeaserMediaFile"
-                                            },
-                                            {
+                                            }),
+                                            createModelField({
                                                 type: "text",
                                                 multipleValues: false,
                                                 renderer: {
@@ -761,8 +762,8 @@ export const pageModel = createPrivateModel({
                                                 fieldId: "altText",
                                                 id: "pageTeaserMediaAltText",
                                                 storageId: "text@pageTeaserMediaAltText"
-                                            },
-                                            {
+                                            }),
+                                            createModelField({
                                                 type: "text",
                                                 multipleValues: false,
                                                 renderer: {
@@ -774,8 +775,8 @@ export const pageModel = createPrivateModel({
                                                 fieldId: "seoName",
                                                 id: "pageTeaserMediaSeoName",
                                                 storageId: "text@pageTeaserMediaSeoName"
-                                            },
-                                            {
+                                            }),
+                                            createModelField({
                                                 type: "text",
                                                 validation: [],
                                                 renderer: {
@@ -789,7 +790,7 @@ export const pageModel = createPrivateModel({
                                                 settings: {
                                                     disabled: true
                                                 }
-                                            }
+                                            })
                                         ],
                                         layout: [
                                             ["pageTeaserMediaFile"],
@@ -798,8 +799,8 @@ export const pageModel = createPrivateModel({
                                             ["pageTeaserMediaCrop"]
                                         ]
                                     }
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "pageTeaserTitle",
                                     fieldId: "pageTeaserTitle",
                                     type: "text",
@@ -819,8 +820,8 @@ export const pageModel = createPrivateModel({
                                         }
                                     ],
                                     storageId: "text@pageTeaserTitle"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "pageTeaserText",
                                     fieldId: "pageTeaserText",
                                     type: "long-text",
@@ -831,8 +832,8 @@ export const pageModel = createPrivateModel({
                                         name: "long-text-text-area"
                                     },
                                     storageId: "long-text@pageTeaserText"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "pageTeaserSocialMediaTitle",
                                     fieldId: "pageTeaserSocialMediaTitle",
                                     type: "text",
@@ -851,8 +852,8 @@ export const pageModel = createPrivateModel({
                                         }
                                     ],
                                     storageId: "text@pageTeaserSocialMediaTitle"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "pageTeaserSocialMediaText",
                                     fieldId: "pageTeaserSocialMediaText",
                                     type: "long-text",
@@ -862,8 +863,8 @@ export const pageModel = createPrivateModel({
                                         name: "long-text-text-area"
                                     },
                                     storageId: "long-text@pageTeaserSocialMediaText"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "pageTeaserFakePublishDate",
                                     fieldId: "pageTeaserFakePublishDate",
                                     type: "datetime",
@@ -877,8 +878,8 @@ export const pageModel = createPrivateModel({
                                         type: "dateTimeWithoutTimezone"
                                     },
                                     storageId: "datetime@pageTeaserFakePublishDate"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "pageTeaserExpiryDate",
                                     fieldId: "pageTeaserExpiryDate",
                                     type: "datetime",
@@ -892,8 +893,8 @@ export const pageModel = createPrivateModel({
                                         type: "dateTimeWithoutTimezone"
                                     },
                                     storageId: "datetime@pageTeaserExpiryDate"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "pageTeaserFilterTags",
                                     fieldId: "pageTeaserFilterTags",
                                     type: "text",
@@ -904,8 +905,8 @@ export const pageModel = createPrivateModel({
                                         name: "text-input"
                                     },
                                     storageId: "text@pageTeaserFilterTags"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "pageTeaserVisualTag1",
                                     fieldId: "pageTeaserVisualTag1",
                                     type: "text",
@@ -916,8 +917,8 @@ export const pageModel = createPrivateModel({
                                         name: "text-input"
                                     },
                                     storageId: "text@pageTeaserVisualTag1"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "pageTeaserVisualTag2",
                                     fieldId: "pageTeaserVisualTag2",
                                     type: "text",
@@ -926,8 +927,8 @@ export const pageModel = createPrivateModel({
                                         name: "text-input"
                                     },
                                     storageId: "text@pageTeaserVisualTag2"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "pageTeaserEventLocation",
                                     fieldId: "pageTeaserEventLocation",
                                     type: "text",
@@ -937,8 +938,8 @@ export const pageModel = createPrivateModel({
                                         name: "text-input"
                                     },
                                     storageId: "text@pageTeaserEventLocation"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "pageTeaserEventStartDate",
                                     fieldId: "pageTeaserEventStartDate",
                                     type: "datetime",
@@ -950,8 +951,8 @@ export const pageModel = createPrivateModel({
                                         type: "dateTimeWithoutTimezone"
                                     },
                                     storageId: "datetime@pageTeaserEventStartDate"
-                                },
-                                {
+                                }),
+                                createModelField({
                                     id: "pageTeaserEventEndDate",
                                     fieldId: "pageTeaserEventEndDate",
                                     type: "datetime",
@@ -963,7 +964,7 @@ export const pageModel = createPrivateModel({
                                         type: "dateTimeWithoutTimezone"
                                     },
                                     storageId: "datetime@pageTeaserEventEndDate"
-                                }
+                                })
                             ],
                             layout: [
                                 ["pageTeaserMedia"],
@@ -982,13 +983,13 @@ export const pageModel = createPrivateModel({
                             ]
                         },
                         storageId: "object@pageTeaserSettings"
-                    }
+                    })
                 ],
                 layout: [["generalPageSettings"], ["pageTeaserSettings"]]
             },
             storageId: "object@pageSettings"
-        },
-        {
+        }),
+        createModelField({
             id: "pageTemplate",
             fieldId: "pageTemplate",
             type: "dynamicZone",
@@ -1007,7 +1008,7 @@ export const pageModel = createPrivateModel({
                         description: "Basic Page",
                         id: "basicPageTemplate",
                         fields: [
-                            {
+                            createModelField({
                                 id: "introZone",
                                 fieldId: "introZone",
                                 label: "Introduction Zone",
@@ -1328,8 +1329,8 @@ export const pageModel = createPrivateModel({
                                     ]
                                 },
                                 storageId: "dynamicZone@introZone"
-                            },
-                            {
+                            }),
+                            createModelField({
                                 id: "mainZone",
                                 fieldId: "mainZone",
                                 label: "Main Zone",
@@ -6001,7 +6002,7 @@ export const pageModel = createPrivateModel({
                                     ]
                                 },
                                 storageId: "dynamicZone@mainZone"
-                            }
+                            })
                         ],
                         layout: [["introZone"], ["mainZone"]]
                     },
@@ -6021,6 +6022,6 @@ export const pageModel = createPrivateModel({
                 values: []
             },
             storageId: "dynamicZone@pageTemplate"
-        }
+        })
     ]
 });

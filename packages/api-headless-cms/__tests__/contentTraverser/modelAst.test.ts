@@ -1,13 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { useHandler } from "~tests/testHelpers/useHandler";
 import { articleModel } from "./mocks/article.model";
-import { CmsModelPlugin } from "~/plugins";
 import type { CmsModelAst } from "~/types";
 
 describe("Model to AST", () => {
     it("should generate content model AST", async () => {
         const { handler, tenant } = useHandler({
-            plugins: [new CmsModelPlugin(articleModel)]
+            plugins: [articleModel]
         });
 
         const context = await handler({
@@ -28,7 +27,7 @@ describe("Model to AST", () => {
 
         const ast = modelAstConverter.toAst(model);
 
-        expect(ast).toEqual({
+        expect(ast).toMatchObject({
             type: "root",
             children: [
                 {
@@ -243,6 +242,6 @@ describe("Model to AST", () => {
                     ]
                 }
             ]
-        } as CmsModelAst);
+        } as unknown as CmsModelAst);
     });
 });

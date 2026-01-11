@@ -13,7 +13,7 @@ class RecordLockingPrivateModelImpl implements PrivateModel.Interface {
                 actions: fields
                     .object()
                     .label("Actions")
-                    .multipleValues(true)
+                    .list()
                     .fields(fields => ({
                         type: fields
                             .text()
