@@ -45,21 +45,18 @@ class FilePrivateModelImpl implements PrivateModel.Interface {
                         type: fields
                             .text()
                             .label("Type")
-                            .predefinedValues({
-                                enabled: true,
-                                values: [
-                                    {
-                                        label: "Public",
-                                        value: "public",
-                                        selected: true
-                                    },
-                                    {
-                                        label: "Private",
-                                        value: "private-authenticated",
-                                        selected: false
-                                    }
-                                ]
-                            })
+                            .predefinedValues([
+                                {
+                                    label: "Public",
+                                    value: "public",
+                                    selected: true
+                                },
+                                {
+                                    label: "Private",
+                                    value: "private-authenticated",
+                                    selected: false
+                                }
+                            ])
                     }))
             }));
         }

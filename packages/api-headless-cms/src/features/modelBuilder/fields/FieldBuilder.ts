@@ -95,8 +95,11 @@ export class FieldBuilder<TType extends string = string> {
         return this;
     }
 
-    predefinedValues(values: CmsModelFieldPredefinedValues): this {
-        this.config.predefinedValues = values;
+    predefinedValues(values: CmsModelFieldPredefinedValues["values"]): this {
+        this.config.predefinedValues = {
+            enabled: true,
+            values
+        };
         return this;
     }
 

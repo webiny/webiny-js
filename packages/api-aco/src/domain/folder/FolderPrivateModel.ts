@@ -31,31 +31,28 @@ class FolderPrivateModelImpl implements PrivateModel.Interface {
                             .text()
                             .label("Level")
                             .required("Value is required.")
-                            .predefinedValues({
-                                enabled: true,
-                                values: [
-                                    {
-                                        label: "Viewer",
-                                        value: "viewer"
-                                    },
-                                    {
-                                        label: "Editor",
-                                        value: "editor"
-                                    },
-                                    {
-                                        label: "Owner",
-                                        value: "owner"
-                                    },
-                                    {
-                                        label: "Public",
-                                        value: "public"
-                                    },
-                                    {
-                                        label: "No Access",
-                                        value: "no-access"
-                                    }
-                                ]
-                            })
+                            .predefinedValues([
+                                {
+                                    label: "Viewer",
+                                    value: "viewer"
+                                },
+                                {
+                                    label: "Editor",
+                                    value: "editor"
+                                },
+                                {
+                                    label: "Owner",
+                                    value: "owner"
+                                },
+                                {
+                                    label: "Public",
+                                    value: "public"
+                                },
+                                {
+                                    label: "No Access",
+                                    value: "no-access"
+                                }
+                            ])
                     }))
                     .layout([["target"], ["level"]]),
                 extensions: fields
