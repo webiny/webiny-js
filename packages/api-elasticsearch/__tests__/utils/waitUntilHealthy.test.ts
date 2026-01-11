@@ -42,7 +42,7 @@ describe("wait until healthy", () => {
         const waitUntilHealthy = createWaitUntilHealthy(client, {
             minClusterHealthStatus: ElasticsearchCatClusterHealthStatus.Yellow,
             maxProcessorPercent: 1,
-            maxRamPercent: 99,
+            maxRamPercent: 1,
             maxWaitingTime: 3,
             waitingTimeStep: 1
         });
