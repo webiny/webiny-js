@@ -3,14 +3,11 @@ import WebinyError from "@webiny/error";
 import type { CmsModel, CmsStorageEntry } from "@webiny/api-headless-cms/types/index.js";
 import type { CacheKeyParams } from "~/operations/entry/dataLoader/DataLoaderCache.js";
 import { DataLoaderCache } from "~/operations/entry/dataLoader/DataLoaderCache.js";
-import type { Entity } from "@webiny/db-dynamodb/toolbox.js";
 import type { DataLoaders } from "~/operations/entry/dataLoader/index.js";
 import { getDataLoaderFactory } from "~/operations/entry/dataLoader/index.js";
 import { parseIdentifier } from "@webiny/utils";
-import type {
-    DataLoadersHandlerInterface,
-    DataLoadersHandlerInterfaceClearAllParams
-} from "~/types.js";
+import type { IDataLoadersHandler, DataLoadersHandlerInterfaceClearAllParams } from "~/types.js";
+import type { IEntryEntity } from "~/definitions/types.js";
 
 interface DataLoaderParams {
     model: Pick<CmsModel, "tenant" | "modelId">;
@@ -21,19 +18,19 @@ interface GetLoaderParams {
     model: Pick<CmsModel, "tenant" | "modelId">;
 }
 
-interface DataLoadersHandlerParams {
-    entity: Entity<any>;
+interface IDataLoadersHandlerParams {
+    entity: IEntryEntity;
 }
 
 export interface ClearAllParams {
     model: Pick<CmsModel, "tenant" | "modelId">;
 }
 
-export class DataLoadersHandler implements DataLoadersHandlerInterface {
-    private readonly entity: Entity<any>;
-    private readonly cache: DataLoaderCache = new DataLoaderCache();
+export class DataLoadersHandler implements IDataLoadersHandler {
+    private readonly entity;
+    private readonly cache = new DataLoaderCache();
 
-    public constructor(params: DataLoadersHandlerParams) {
+    public constructor(params: IDataLoadersHandlerParams) {
         this.entity = params.entity;
     }
 

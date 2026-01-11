@@ -36,7 +36,7 @@ export class Storage implements IStorage {
         this.entity = entity;
 
         const patterns = createAccessPatterns({
-            entity: this.entity.entity
+            entity
         });
         this.patternHandler = new AccessPatternHandler({
             patterns

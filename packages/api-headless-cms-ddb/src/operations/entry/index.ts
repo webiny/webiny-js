@@ -94,7 +94,7 @@ export const createEntriesStorageOperations = (
     };
 
     const dataLoaders = new DataLoadersHandler({
-        entity: entity.entity
+        entity
     });
 
     const createStorageTransformCallable = (

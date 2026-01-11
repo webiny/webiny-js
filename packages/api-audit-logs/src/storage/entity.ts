@@ -27,6 +27,8 @@ export interface IAuditLogsEntityAttributes
     expiresAt: number;
 }
 
+export type AuditLogsEntity = IEntity<IAuditLogsEntityAttributes>;
+
 export interface ICreateEntityParams {
     client: DynamoDBDocument;
     gsiAmount: number;
@@ -34,7 +36,7 @@ export interface ICreateEntityParams {
 }
 
 export interface ICreateEntityResult {
-    entity: IEntity<IAuditLogsEntityAttributes>;
+    entity: AuditLogsEntity;
     table: ReturnType<typeof createTable>;
 }
 

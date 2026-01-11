@@ -20,6 +20,7 @@ import type {
     IEntityQueryOneCleanResult,
     IEntityQueryOneParams,
     IEntityQueryOneResult,
+    IEntityQueryPerPageParams,
     IEntityReadBatch,
     IEntityWriteBatch
 } from "./types.js";
@@ -32,7 +33,7 @@ import { deleteItem } from "../delete.js";
 import { createEntityReadBatch } from "./EntityReadBatch.js";
 import { createEntityWriteBatch } from "./EntityWriteBatch.js";
 import { createTableWriteBatch } from "~/utils/table/TableWriteBatch.js";
-import { queryAll, queryAllClean, queryOne, queryOneClean } from "../query.js";
+import { queryAll, queryAllClean, queryOne, queryOneClean, queryPerPage } from "../query.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 
 export type EntityConstructor<
@@ -142,6 +143,13 @@ export class Entity<T extends GenericRecord = GenericRecord> implements IEntity<
 
     public async queryAllClean<T>(params: IEntityQueryAllParams): IEntityQueryAllCleanResult<T> {
         return queryAllClean<T>({
+            ...params,
+            entity: this.entity
+        });
+    }
+
+    public async queryPerPage<T>(params: IEntityQueryPerPageParams) {
+        return queryPerPage<T>({
             ...params,
             entity: this.entity
         });
