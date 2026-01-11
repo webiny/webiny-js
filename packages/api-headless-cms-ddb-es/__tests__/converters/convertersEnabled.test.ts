@@ -9,7 +9,6 @@ import {
 } from "./mocks/data";
 import { configurations } from "~/configurations";
 import type { CmsEntry } from "@webiny/api-headless-cms/types";
-import { get } from "@webiny/db-dynamodb";
 import { createPartitionKey } from "~/operations/entry/keys";
 import lodashMerge from "lodash/merge";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
@@ -117,15 +116,12 @@ describe("storage field path converters enabled", () => {
         /**
          * Load the DynamoDB record directly and check the structure.
          */
-        const dbResponse = await get<CmsEntry>({
-            entity: entryEntity,
-            keys: {
-                PK: createPartitionKey({
-                    ...model,
-                    id: entry.id
-                }),
-                SK: "L"
-            }
+        const dbResponse = await entryEntity.get<CmsEntry>({
+            PK: createPartitionKey({
+                ...model,
+                id: entry.id
+            }),
+            SK: "L"
         });
 
         const expectedDynamoDbRecord = lodashMerge(

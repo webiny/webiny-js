@@ -1,27 +1,33 @@
-import type { IPutBatchItem } from "~/utils/batch/types.js";
+import type { IReadBatchItem } from "~/utils/batch/types.js";
 import type {
     IEntityReadBatch,
     IEntityReadBatchBuilder,
     IEntityReadBatchBuilderGetResponse,
     IEntityReadBatchKey
 } from "./types.js";
-import type { TableDef } from "~/toolbox.js";
-import type { Entity as ToolboxEntity } from "~/toolbox.js";
+import type { Entity as ToolboxEntity, TableDef } from "~/toolbox.js";
 import { batchReadAll } from "~/utils/batch/batchRead.js";
-import type { GenericRecord } from "@webiny/api/types.js";
 import { createEntityReadBatchBuilder } from "./EntityReadBatchBuilder.js";
 import type { EntityOption } from "./getEntity.js";
 import { getEntity } from "./getEntity.js";
 
 export interface IEntityReadBatchParams {
     entity: EntityOption;
-    read?: IPutBatchItem[];
+    read?: IReadBatchItem[];
 }
 
-export class EntityReadBatch implements IEntityReadBatch {
+export class EntityReadBatch<T> implements IEntityReadBatch<T> {
     private readonly entity: ToolboxEntity;
     private readonly builder: IEntityReadBatchBuilder;
     private readonly _items: IEntityReadBatchBuilderGetResponse[] = [];
+
+    public get total(): number {
+        return this._items.length;
+    }
+
+    public get items(): IEntityReadBatchBuilderGetResponse[] {
+        return Array.from(this._items);
+    }
 
     public constructor(params: IEntityReadBatchParams) {
         this.entity = getEntity(params.entity);
@@ -30,6 +36,7 @@ export class EntityReadBatch implements IEntityReadBatch {
             this.get(item);
         }
     }
+
     public get(input: IEntityReadBatchKey | IEntityReadBatchKey[]): void {
         if (Array.isArray(input)) {
             this._items.push(
@@ -42,7 +49,7 @@ export class EntityReadBatch implements IEntityReadBatch {
         this._items.push(this.builder.get(input));
     }
 
-    public async execute<T = GenericRecord>() {
+    public async execute() {
         return await batchReadAll<T>({
             table: this.entity.table as TableDef,
             items: this._items
@@ -50,6 +57,6 @@ export class EntityReadBatch implements IEntityReadBatch {
     }
 }
 
-export const createEntityReadBatch = (params: IEntityReadBatchParams): IEntityReadBatch => {
-    return new EntityReadBatch(params);
+export const createEntityReadBatch = <T>(params: IEntityReadBatchParams): IEntityReadBatch<T> => {
+    return new EntityReadBatch<T>(params);
 };

@@ -57,6 +57,7 @@ export const createHandlerCore = (params?: CreateHandlerCoreParams) => {
     return {
         storageOperations: cmsStorage.storageOperations,
         tenant,
+        documentClient,
         plugins: [
             topPlugins,
             createApiCore({

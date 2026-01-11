@@ -65,17 +65,19 @@ describe("Content entries - Entry Meta Fields Overrides", () => {
             }
         });
 
-        const { data: publishedRevWithCustomLastPublishedValues } =
-            await manageIdentityA.createTestEntryFrom({
-                revision: rev.id,
-                data: {
-                    status: "published",
-                    revisionLastPublishedOn: testDate2,
-                    revisionLastPublishedBy: identityC,
-                    lastPublishedOn: testDate2,
-                    lastPublishedBy: identityC
-                }
-            });
+        const result = await manageIdentityA.createTestEntryFrom({
+            revision: rev.id,
+            data: {
+                status: "published",
+                revisionLastPublishedOn: testDate2,
+                revisionLastPublishedBy: identityC,
+                lastPublishedOn: testDate2,
+                lastPublishedBy: identityC
+            }
+        });
+        const { data: publishedRevWithCustomLastPublishedValues, error } = result;
+
+        expect(error).toBeNull();
 
         // Should not see changes in firstPublished-related fields.
         expect(publishedRevWithCustomLastPublishedValues).toMatchObject({

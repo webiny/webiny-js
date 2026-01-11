@@ -1,6 +1,5 @@
 import WebinyError from "@webiny/error";
 import type {
-    CmsModel,
     CmsModelStorageOperations,
     CmsModelStorageOperationsCreateParams,
     CmsModelStorageOperationsDeleteParams,
@@ -8,11 +7,9 @@ import type {
     CmsModelStorageOperationsListParams,
     CmsModelStorageOperationsUpdateParams
 } from "@webiny/api-headless-cms/types/index.js";
-import type { Entity } from "@webiny/db-dynamodb/toolbox.js";
 import { configurations } from "~/configurations.js";
 import type { Client } from "@elastic/elasticsearch";
-import type { QueryAllParams } from "@webiny/db-dynamodb/utils/query.js";
-import { deleteItem, put, queryAll, get as getOne } from "@webiny/db-dynamodb";
+import type { IModelEntity } from "~/definitions/types.js";
 
 interface PartitionKeysParams {
     tenant: string;
@@ -31,15 +28,20 @@ const createSortKey = (params: SortKeyParams): string => {
     return params.modelId;
 };
 
-interface Keys {
+interface IDynamoDbTableKeys {
     PK: string;
     SK: string;
+    GSI_TENANT: string;
 }
 
-const createKeys = (params: PartitionKeysParams & SortKeyParams): Keys => {
+const createKeys = (params: PartitionKeysParams & SortKeyParams): IDynamoDbTableKeys => {
+    if (!params.tenant) {
+        throw new Error("Missing tenant when creating model keys!");
+    }
     return {
         PK: createPartitionKey(params),
-        SK: createSortKey(params)
+        SK: createSortKey(params),
+        GSI_TENANT: params.tenant
     };
 };
 
@@ -48,7 +50,7 @@ const createType = (): string => {
 };
 
 export interface CreateModelsStorageOperationsParams {
-    entity: Entity<any>;
+    entity: IModelEntity;
     elasticsearch: Client;
 }
 
@@ -68,13 +70,10 @@ export const createModelsStorageOperations = (
 
         let error;
         try {
-            await put({
-                entity,
-                item: {
-                    data: model,
-                    ...keys,
-                    TYPE: createType()
-                }
+            await entity.put({
+                data: model,
+                ...keys,
+                TYPE: createType()
             });
             return model;
         } catch (ex) {
@@ -107,13 +106,10 @@ export const createModelsStorageOperations = (
         const keys = createKeys(model);
 
         try {
-            await put({
-                entity,
-                item: {
-                    data: model,
-                    ...keys,
-                    TYPE: createType()
-                }
+            await entity.put({
+                data: model,
+                ...keys,
+                TYPE: createType()
             });
             return model;
         } catch (ex) {
@@ -138,10 +134,7 @@ export const createModelsStorageOperations = (
         });
 
         try {
-            await deleteItem({
-                entity,
-                keys
-            });
+            await entity.delete(keys);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not delete model.",
@@ -180,10 +173,7 @@ export const createModelsStorageOperations = (
         const keys = createKeys(params);
 
         try {
-            const result = await getOne<{ data: CmsModel }>({
-                entity,
-                keys
-            });
+            const result = await entity.get(keys);
 
             return result ? result.data : null;
         } catch (ex) {
@@ -200,15 +190,14 @@ export const createModelsStorageOperations = (
 
     const list = async (params: CmsModelStorageOperationsListParams) => {
         const { where } = params;
-        const queryAllParams: QueryAllParams = {
-            entity,
-            partitionKey: createPartitionKey(where),
-            options: {
-                gte: " "
-            }
-        };
+        const partitionKey = createPartitionKey(where);
         try {
-            const result = await queryAll<{ data: CmsModel }>(queryAllParams);
+            const result = await entity.queryAll({
+                partitionKey,
+                options: {
+                    gte: " "
+                }
+            });
             return result ? result.map(item => item.data) : [];
         } catch (ex) {
             throw new WebinyError(
@@ -216,7 +205,7 @@ export const createModelsStorageOperations = (
                 ex.code || "MODEL_LIST_ERROR",
                 {
                     error: ex,
-                    partitionKey: queryAllParams.partitionKey
+                    partitionKey
                 }
             );
         }

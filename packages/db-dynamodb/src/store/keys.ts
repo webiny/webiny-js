@@ -1,5 +1,5 @@
 export interface IParams {
-    key: string;
+    key: string | number | symbol;
 }
 
 export const createPartitionKey = () => {
@@ -7,7 +7,10 @@ export const createPartitionKey = () => {
 };
 
 export const createSortKey = ({ key }: IParams) => {
-    return key;
+    if (typeof key === "symbol") {
+        return key.toString();
+    }
+    return String(key);
 };
 
 export const createType = () => {
