@@ -259,9 +259,7 @@ export const createEntriesStorageOperations = (
             );
 
             if (publishedRevisionStorageEntry) {
-                const publishedRevisionKey = createEntryPublishedKeys(
-                    publishedRevisionStorageEntry
-                );
+                const publishedRevisionKey = createEntryRevisionKeys(publishedRevisionStorageEntry);
                 entityBatch.put({
                     ...publishedRevisionStorageEntry,
                     ...publishedRevisionKey,
