@@ -35,7 +35,11 @@ export const SyncSystemDynamoDb = createAppModule({
                         rangeKey: "GSI2_SK",
                         projectionType: "ALL"
                     }
-                ]
+                ],
+                ttl: {
+                    attributeName: "expiresAt",
+                    enabled: true
+                }
             }
         });
     }

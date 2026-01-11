@@ -150,7 +150,11 @@ export const ElasticSearch = createAppModule({
                         hashKey: "GSI_TENANT",
                         projectionType: "KEYS_ONLY"
                     }
-                ]
+                ],
+                ttl: {
+                    attributeName: "expiresAt",
+                    enabled: true
+                }
             },
             opts: { protect: params.protect }
         });
