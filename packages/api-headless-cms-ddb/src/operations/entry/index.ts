@@ -10,9 +10,10 @@ import type {
 } from "@webiny/api-headless-cms/types/index.js";
 import { CONTENT_ENTRY_STATUS } from "@webiny/api-headless-cms/types/index.js";
 import {
+    createEntryLatestKeys,
+    createEntryPublishedKeys,
+    createEntryRevisionKeys,
     createGSIPartitionKey,
-    createGSISortKey,
-    createLatestSortKey,
     createPartitionKey,
     createPublishedSortKey,
     createRevisionSortKey
@@ -133,11 +134,6 @@ export const createEntriesStorageOperations = (
         const { entry, storageEntry: initialStorageEntry } = params;
         const model = getStorageOperationsModel(initialModel);
 
-        const partitionKey = createPartitionKey({
-            id: entry.id,
-            tenant: model.tenant
-        });
-
         const isPublished = entry.status === "published";
 
         const locked = isPublished ? true : entry.locked;
@@ -146,6 +142,9 @@ export const createEntriesStorageOperations = (
             model,
             storageEntry: initialStorageEntry
         });
+
+        const storageEntryRevisionKeys = createEntryRevisionKeys(entry);
+        const storageEntryLatestKeys = createEntryLatestKeys(entry);
         /**
          * We need to:
          *  - create new main entry item
@@ -155,21 +154,13 @@ export const createEntriesStorageOperations = (
             put: [
                 {
                     ...storageEntry,
-                    locked,
-                    PK: partitionKey,
-                    SK: createRevisionSortKey(entry),
-                    GSI1_PK: createGSIPartitionKey(model, "A"),
-                    GSI1_SK: createGSISortKey(storageEntry),
-                    GSI_TENANT: model.tenant
+                    ...storageEntryRevisionKeys,
+                    locked
                 },
                 {
                     ...storageEntry,
-                    locked,
-                    PK: partitionKey,
-                    SK: createLatestSortKey(),
-                    GSI1_PK: createGSIPartitionKey(model, "L"),
-                    GSI1_SK: createGSISortKey(storageEntry),
-                    GSI_TENANT: model.tenant
+                    ...storageEntryLatestKeys,
+                    locked
                 }
             ]
         });
@@ -178,14 +169,11 @@ export const createEntriesStorageOperations = (
          * We need to create published entry if
          */
         if (isPublished) {
+            const storageEntryPublishedKeys = createEntryPublishedKeys(storageEntry);
             entityBatch.put({
                 ...storageEntry,
-                locked,
-                PK: partitionKey,
-                SK: createPublishedSortKey(),
-                GSI1_PK: createGSIPartitionKey(model, "P"),
-                GSI1_SK: createGSISortKey(storageEntry),
-                GSI_TENANT: model.tenant
+                ...storageEntryPublishedKeys,
+                locked
             });
         }
 
@@ -215,11 +203,6 @@ export const createEntriesStorageOperations = (
         const { entry, storageEntry: initialStorageEntry } = params;
         const model = getStorageOperationsModel(initialModel);
 
-        const partitionKey = createPartitionKey({
-            id: entry.id,
-            tenant: model.tenant
-        });
-
         const storageEntry = convertToStorageEntry({
             storageEntry: initialStorageEntry,
             model
@@ -237,19 +220,11 @@ export const createEntriesStorageOperations = (
             put: [
                 {
                     ...storageEntry,
-                    PK: partitionKey,
-                    SK: createRevisionSortKey(storageEntry),
-                    GSI1_PK: createGSIPartitionKey(model, "A"),
-                    GSI1_SK: createGSISortKey(storageEntry),
-                    GSI_TENANT: model.tenant
+                    ...createEntryRevisionKeys(storageEntry)
                 },
                 {
                     ...storageEntry,
-                    PK: partitionKey,
-                    SK: createLatestSortKey(),
-                    GSI1_PK: createGSIPartitionKey(model, "L"),
-                    GSI1_SK: createGSISortKey(storageEntry),
-                    GSI_TENANT: model.tenant
+                    ...createEntryLatestKeys(storageEntry)
                 }
             ]
         });
@@ -258,11 +233,7 @@ export const createEntriesStorageOperations = (
         if (isPublished) {
             entityBatch.put({
                 ...storageEntry,
-                PK: partitionKey,
-                SK: createPublishedSortKey(),
-                GSI1_PK: createGSIPartitionKey(model, "P"),
-                GSI1_SK: createGSISortKey(storageEntry),
-                GSI_TENANT: model.tenant
+                ...createEntryPublishedKeys(storageEntry)
             });
 
             // Unpublish previously published revision (if any).
@@ -276,12 +247,8 @@ export const createEntriesStorageOperations = (
             if (publishedRevisionStorageEntry) {
                 entityBatch.put({
                     ...publishedRevisionStorageEntry,
-                    PK: partitionKey,
-                    SK: createRevisionSortKey(publishedRevisionStorageEntry),
-                    status: CONTENT_ENTRY_STATUS.UNPUBLISHED,
-                    GSI1_PK: createGSIPartitionKey(model, "A"),
-                    GSI1_SK: createGSISortKey(publishedRevisionStorageEntry),
-                    GSI_TENANT: model.tenant
+                    ...createEntryRevisionKeys(publishedRevisionStorageEntry),
+                    status: CONTENT_ENTRY_STATUS.UNPUBLISHED
                 });
             }
         }
@@ -312,11 +279,6 @@ export const createEntriesStorageOperations = (
         const { entry, storageEntry: initialStorageEntry } = params;
         const model = getStorageOperationsModel(initialModel);
 
-        const partitionKey = createPartitionKey({
-            id: entry.id,
-            tenant: model.tenant
-        });
-
         const isPublished = entry.status === "published";
         const locked = isPublished ? true : entry.locked;
 
@@ -335,11 +297,7 @@ export const createEntriesStorageOperations = (
                 {
                     ...storageEntry,
                     locked,
-                    PK: partitionKey,
-                    SK: createRevisionSortKey(storageEntry),
-                    GSI1_PK: createGSIPartitionKey(model, "A"),
-                    GSI1_SK: createGSISortKey(storageEntry),
-                    GSI_TENANT: model.tenant
+                    ...createEntryRevisionKeys(storageEntry)
                 }
             ]
         });
@@ -348,11 +306,7 @@ export const createEntriesStorageOperations = (
             entityBatch.put({
                 ...storageEntry,
                 locked,
-                PK: partitionKey,
-                SK: createPublishedSortKey(),
-                GSI1_PK: createGSIPartitionKey(model, "P"),
-                GSI1_SK: createGSISortKey(storageEntry),
-                GSI_TENANT: model.tenant
+                ...createEntryLatestKeys(storageEntry)
             });
         }
 
@@ -367,11 +321,7 @@ export const createEntriesStorageOperations = (
                 entityBatch.put({
                     ...storageEntry,
                     locked,
-                    PK: partitionKey,
-                    SK: createLatestSortKey(),
-                    GSI1_PK: createGSIPartitionKey(model, "L"),
-                    GSI1_SK: createGSISortKey(entry),
-                    GSI_TENANT: model.tenant
+                    ...createEntryLatestKeys(storageEntry)
                 });
             } else {
                 /**
@@ -391,21 +341,13 @@ export const createEntriesStorageOperations = (
                 entityBatch.put({
                     ...latestStorageEntry,
                     ...updatedEntryLevelMetaFields,
-                    PK: partitionKey,
-                    SK: createRevisionSortKey(latestStorageEntry),
-                    GSI1_PK: createGSIPartitionKey(model, "A"),
-                    GSI1_SK: createGSISortKey(latestStorageEntry),
-                    GSI_TENANT: model.tenant
+                    ...createEntryRevisionKeys(latestStorageEntry)
                 });
 
                 entityBatch.put({
                     ...latestStorageEntry,
                     ...updatedEntryLevelMetaFields,
-                    PK: partitionKey,
-                    SK: createLatestSortKey(),
-                    GSI1_PK: createGSIPartitionKey(model, "L"),
-                    GSI1_SK: createGSISortKey(latestStorageEntry),
-                    GSI_TENANT: model.tenant
+                    ...createEntryLatestKeys(latestStorageEntry)
                 });
             }
         }
@@ -739,22 +681,14 @@ export const createEntriesStorageOperations = (
             });
             entityBatch.put({
                 ...latestStorageEntry,
-                PK: partitionKey,
-                SK: createLatestSortKey(),
-                GSI1_PK: createGSIPartitionKey(model, "L"),
-                GSI1_SK: createGSISortKey(latestStorageEntry),
-                GSI_TENANT: model.tenant
+                ...createEntryLatestKeys(latestStorageEntry)
             });
 
             // Do an update on the latest revision. We need to update the latest revision's
             // entry-level meta fields to match the previous revision's entry-level meta fields.
             entityBatch.put({
                 ...latestStorageEntry,
-                PK: partitionKey,
-                SK: createRevisionSortKey(initialLatestStorageEntry),
-                GSI1_PK: createGSIPartitionKey(model, "A"),
-                GSI1_SK: createGSISortKey(initialLatestStorageEntry),
-                GSI_TENANT: model.tenant
+                ...createEntryRevisionKeys(latestStorageEntry)
             });
         }
         try {
@@ -1137,11 +1071,6 @@ export const createEntriesStorageOperations = (
         const { entry, storageEntry: initialStorageEntry } = params;
         const model = getStorageOperationsModel(initialModel);
 
-        const partitionKey = createPartitionKey({
-            id: entry.id,
-            tenant: model.tenant
-        });
-
         /**
          * We need the latest and published entries to see if something needs to be updated alongside the publishing one.
          */
@@ -1166,19 +1095,11 @@ export const createEntriesStorageOperations = (
             put: [
                 {
                     ...storageEntry,
-                    PK: partitionKey,
-                    SK: createRevisionSortKey(entry),
-                    GSI1_PK: createGSIPartitionKey(model, "A"),
-                    GSI1_SK: createGSISortKey(entry),
-                    GSI_TENANT: model.tenant
+                    ...createEntryRevisionKeys(storageEntry)
                 },
                 {
                     ...storageEntry,
-                    PK: partitionKey,
-                    SK: createPublishedSortKey(),
-                    GSI1_PK: createGSIPartitionKey(model, "P"),
-                    GSI1_SK: createGSISortKey(entry),
-                    GSI_TENANT: model.tenant
+                    ...createEntryPublishedKeys(storageEntry)
                 }
             ]
         });
@@ -1192,11 +1113,7 @@ export const createEntriesStorageOperations = (
             // 2.1 If we're publishing the latest revision, we first need to update the L record.
             entityBatch.put({
                 ...storageEntry,
-                PK: partitionKey,
-                SK: createLatestSortKey(),
-                GSI1_PK: createGSIPartitionKey(model, "L"),
-                GSI1_SK: createGSISortKey(entry),
-                GSI_TENANT: model.tenant
+                ...createEntryLatestKeys(storageEntry)
             });
 
             // 2.2 Additionally, if we have a previously published entry, we need to mark it as unpublished.
@@ -1208,12 +1125,8 @@ export const createEntriesStorageOperations = (
 
                 entityBatch.put({
                     ...publishedStorageEntry,
-                    PK: partitionKey,
-                    SK: createRevisionSortKey(publishedStorageEntry),
                     status: CONTENT_ENTRY_STATUS.UNPUBLISHED,
-                    GSI1_PK: createGSIPartitionKey(model, "A"),
-                    GSI1_SK: createGSISortKey(publishedStorageEntry),
-                    GSI_TENANT: model.tenant
+                    ...createEntryRevisionKeys(publishedStorageEntry)
                 });
             }
         } else {
@@ -1245,21 +1158,13 @@ export const createEntriesStorageOperations = (
 
             entityBatch.put({
                 ...latestStorageEntryFields,
-                PK: partitionKey,
-                SK: createLatestSortKey(),
-                GSI1_PK: createGSIPartitionKey(model, "L"),
-                GSI1_SK: createGSISortKey(latestStorageEntry),
-                GSI_TENANT: model.tenant
+                ...createEntryLatestKeys(latestStorageEntryFields)
             });
 
             // 2.3.2 Update REV# record.
             entityBatch.put({
                 ...latestStorageEntryFields,
-                PK: partitionKey,
-                SK: createRevisionSortKey(latestStorageEntry),
-                GSI1_PK: createGSIPartitionKey(model, "A"),
-                GSI1_SK: createGSISortKey(latestStorageEntry),
-                GSI_TENANT: model.tenant
+                ...createEntryRevisionKeys(latestStorageEntryFields)
             });
 
             // 2.3.3 Finally, if we got a published entry, but it wasn't the latest one, we need to take
@@ -1274,12 +1179,8 @@ export const createEntriesStorageOperations = (
 
                 entityBatch.put({
                     ...publishedStorageEntry,
-                    PK: partitionKey,
-                    SK: createRevisionSortKey(publishedStorageEntry),
                     status: CONTENT_ENTRY_STATUS.UNPUBLISHED,
-                    GSI1_PK: createGSIPartitionKey(model, "A"),
-                    GSI1_SK: createGSISortKey(publishedStorageEntry),
-                    GSI_TENANT: model.tenant
+                    ...createEntryRevisionKeys(publishedStorageEntry)
                 });
             }
         }
@@ -1332,11 +1233,7 @@ export const createEntriesStorageOperations = (
             put: [
                 {
                     ...storageEntry,
-                    PK: partitionKey,
-                    SK: createRevisionSortKey(entry),
-                    GSI1_PK: createGSIPartitionKey(model, "A"),
-                    GSI1_SK: createGSISortKey(entry),
-                    GSI_TENANT: model.tenant
+                    ...createEntryRevisionKeys(storageEntry)
                 }
             ]
         });
@@ -1351,11 +1248,7 @@ export const createEntriesStorageOperations = (
             if (unpublishingLatestRevision) {
                 entityBatch.put({
                     ...storageEntry,
-                    PK: partitionKey,
-                    SK: createLatestSortKey(),
-                    GSI1_PK: createGSIPartitionKey(model, "L"),
-                    GSI1_SK: createGSISortKey(entry),
-                    GSI_TENANT: model.tenant
+                    ...createEntryLatestKeys(storageEntry)
                 });
             } else {
                 const latestStorageEntry = convertToStorageEntry({
@@ -1374,22 +1267,14 @@ export const createEntriesStorageOperations = (
                 entityBatch.put({
                     ...latestStorageEntry,
                     ...updatedEntryLevelMetaFields,
-                    PK: partitionKey,
-                    SK: createRevisionSortKey(latestStorageEntry),
-                    GSI1_PK: createGSIPartitionKey(model, "A"),
-                    GSI1_SK: createGSISortKey(latestStorageEntry),
-                    GSI_TENANT: model.tenant
+                    ...createEntryRevisionKeys(latestStorageEntry)
                 });
 
                 // 2. Update latest record.
                 entityBatch.put({
                     ...latestStorageEntry,
                     ...updatedEntryLevelMetaFields,
-                    PK: partitionKey,
-                    SK: createLatestSortKey(),
-                    GSI1_PK: createGSIPartitionKey(model, "L"),
-                    GSI1_SK: createGSISortKey(latestStorageEntry),
-                    GSI_TENANT: model.tenant
+                    ...createEntryLatestKeys(latestStorageEntry)
                 });
             }
         }

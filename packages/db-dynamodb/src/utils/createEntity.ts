@@ -11,6 +11,7 @@ export type IStandardEntityAttributes<T = undefined> = {
     PK: string;
     SK: string;
     GSI_TENANT: string;
+    TYPE: string;
     GSI1_PK?: string;
     GSI1_SK?: string;
     GSI2_PK?: string;
@@ -49,18 +50,6 @@ export const standardEntityAttributes: AttributeDefinitions = {
         // TODO make required after all storage ops are updated to store in data
         //required: true
     }
-};
-
-export const createStandardEntity = (params: ICreateStandardEntityParams): Entity<any> => {
-    const { name, table, attributes = {} } = params;
-    return new Entity({
-        name,
-        table,
-        attributes: {
-            ...standardEntityAttributes,
-            ...attributes
-        }
-    });
 };
 
 interface CreateLegacyEntityParams {

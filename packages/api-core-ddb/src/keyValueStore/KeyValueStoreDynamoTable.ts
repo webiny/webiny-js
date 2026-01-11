@@ -36,7 +36,7 @@ export class KeyValueStoreDynamoTable<T> {
             GSI1_PK: `KV#${scope}`,
             GSI1_SK: `KEY#${scopedKey}`,
             // TODO @pavel check if we need this
-            GSI_TENANT: "webinyUnassigned"
+            GSI_TENANT: "webiny#unassigned"
         };
     }
 

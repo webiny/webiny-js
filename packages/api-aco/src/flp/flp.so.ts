@@ -1,14 +1,10 @@
-import { Entity, Table } from "@webiny/db-dynamodb/toolbox.js";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import {
-    createStandardEntity,
+    createEntity,
     createTable,
-    deleteItem,
-    getClean,
-    put,
-    queryAllClean
+    type IStandardEntityAttributes,
+    standardEntityAttributes
 } from "@webiny/db-dynamodb";
-import { createEntityWriteBatch } from "@webiny/db-dynamodb/utils/entity/EntityWriteBatch.js";
 
 import { WebinyError } from "@webiny/error";
 import type {
@@ -45,17 +41,20 @@ interface CreateGsiKeysParams {
 class FolderLevelPermissionsStorageOperations
     implements IAcoFolderLevelPermissionsStorageOperations
 {
-    private readonly entity: Entity<any>;
-    private readonly table: Table<string, string, string>;
+    private readonly entity;
+    private readonly table;
 
     constructor({ documentClient }: StorageOperationsConfig) {
         this.table = createTable({
             documentClient
         });
 
-        this.entity = createStandardEntity({
+        this.entity = createEntity<IStandardEntityAttributes<FolderLevelPermission>>({
             table: this.table,
-            name: "ACO.flp"
+            name: "ACO.flp",
+            attributes: {
+                ...standardEntityAttributes
+            }
         });
     }
 
@@ -64,8 +63,7 @@ class FolderLevelPermissionsStorageOperations
     }: StorageOperationsListFlpsParams): Promise<FolderLevelPermission[]> {
         try {
             if (parentId) {
-                const entries = await queryAllClean<{ data: FolderLevelPermission }>({
-                    entity: this.entity,
+                const entries = await this.entity.queryAll({
                     partitionKey: `T#${tenant}#L#${locale}#FLP`,
                     options: {
                         index: "GSI2",
@@ -76,8 +74,7 @@ class FolderLevelPermissionsStorageOperations
             }
 
             if (path_startsWith) {
-                const entries = await queryAllClean<{ data: FolderLevelPermission }>({
-                    entity: this.entity,
+                const entries = await this.entity.queryAll({
                     partitionKey: `T#${tenant}#L#${locale}#AT#${type}#FLP`,
                     options: {
                         index: "GSI1",
@@ -108,10 +105,7 @@ class FolderLevelPermissionsStorageOperations
         id
     }: StorageOperationsGetFlpParams): Promise<FolderLevelPermission | null> {
         try {
-            const entry = await getClean<{ data: FolderLevelPermission }>({
-                entity: this.entity,
-                keys: this.createKeys({ tenant, locale, id })
-            });
+            const entry = await this.entity.get(this.createKeys({ tenant, locale, id }));
 
             if (!entry) {
                 return null;
@@ -136,12 +130,9 @@ class FolderLevelPermissionsStorageOperations
         };
 
         try {
-            await put({
-                entity: this.entity,
-                item: {
-                    ...keys,
-                    data
-                }
+            await this.entity.put({
+                ...keys,
+                data
             });
 
             return data;
@@ -169,12 +160,9 @@ class FolderLevelPermissionsStorageOperations
                 ...this.createGsiKeys(data)
             };
 
-            await put({
-                entity: this.entity,
-                item: {
-                    ...keys,
-                    data
-                }
+            await this.entity.put({
+                ...keys,
+                data
             });
 
             return data;
@@ -191,15 +179,15 @@ class FolderLevelPermissionsStorageOperations
         const keys = this.createKeys(flp);
 
         try {
-            await deleteItem({
-                entity: this.entity,
-                keys
-            });
+            await this.entity.delete(keys);
         } catch (err) {
             throw WebinyError.from(err, {
                 message: "Could not delete folder level permission.",
                 code: "DELETE_FLP_ERROR",
-                data: { keys, flp }
+                data: {
+                    keys,
+                    flp
+                }
             });
         }
     }
@@ -208,9 +196,7 @@ class FolderLevelPermissionsStorageOperations
         items
     }: StorageOperationsBatchUpdateFlpParams): Promise<FolderLevelPermission[]> {
         try {
-            const batch = createEntityWriteBatch({
-                entity: this.entity
-            });
+            const batch = this.entity.createEntityWriter();
 
             const updatedItems: FolderLevelPermission[] = [];
 
@@ -250,7 +236,8 @@ class FolderLevelPermissionsStorageOperations
     private createKeys({ id, tenant, locale }: CreateKeysParams) {
         return {
             PK: `T#${tenant}#L#${locale}#FLP#${id}`,
-            SK: `A`
+            SK: `A`,
+            TYPE: "aco.flp"
         };
     }
 

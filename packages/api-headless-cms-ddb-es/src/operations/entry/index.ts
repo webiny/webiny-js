@@ -13,6 +13,9 @@ import type { PluginsContainer } from "@webiny/plugins";
 import type { IEntityQueryAllParams } from "@webiny/db-dynamodb";
 import { DataLoadersHandler } from "./dataLoaders.js";
 import {
+    createEntryLatestKeys,
+    createEntryPublishedKeys,
+    createEntryRevisionKeys,
     createLatestSortKey,
     createPartitionKey,
     createPublishedSortKey,
@@ -128,32 +131,9 @@ export const createEntriesStorageOperations = (
             model
         });
 
-        const revisionKeys: IDynamoDbTableKeys = {
-            PK: createPartitionKey({
-                id: entry.id,
-                tenant: model.tenant
-            }),
-            SK: createRevisionSortKey(entry),
-            GSI_TENANT: model.tenant
-        };
-
-        const latestKeys: IDynamoDbTableKeys = {
-            PK: createPartitionKey({
-                id: entry.id,
-                tenant: model.tenant
-            }),
-            SK: createLatestSortKey(),
-            GSI_TENANT: model.tenant
-        };
-
-        const publishedKeys: IDynamoDbTableKeys = {
-            PK: createPartitionKey({
-                id: entry.id,
-                tenant: model.tenant
-            }),
-            SK: createPublishedSortKey(),
-            GSI_TENANT: model.tenant
-        };
+        const revisionKeys = createEntryRevisionKeys(entry);
+        const latestKeys = createEntryLatestKeys(entry);
+        const publishedKeys = createEntryPublishedKeys(entry);
 
         const entityBatch = entity.createEntityWriter({
             put: [
@@ -248,31 +228,9 @@ export const createEntriesStorageOperations = (
         });
         const { entry, storageEntry } = transformer.transformEntryKeys();
 
-        const revisionKeys: IDynamoDbTableKeys = {
-            PK: createPartitionKey({
-                id: entry.id,
-                tenant: model.tenant
-            }),
-            SK: createRevisionSortKey(entry),
-            GSI_TENANT: model.tenant
-        };
-        const latestKeys: IDynamoDbTableKeys = {
-            PK: createPartitionKey({
-                id: entry.id,
-                tenant: model.tenant
-            }),
-            SK: createLatestSortKey(),
-            GSI_TENANT: model.tenant
-        };
-
-        const publishedKeys: IDynamoDbTableKeys = {
-            PK: createPartitionKey({
-                id: entry.id,
-                tenant: model.tenant
-            }),
-            SK: createPublishedSortKey(),
-            GSI_TENANT: model.tenant
-        };
+        const revisionKeys = createEntryRevisionKeys(entry);
+        const latestKeys = createEntryLatestKeys(entry);
+        const publishedKeys = createEntryPublishedKeys(entry);
 
         // We'll need this flag below.
         const isPublished = entry.status === "published";
@@ -307,14 +265,12 @@ export const createEntriesStorageOperations = (
             );
 
             if (publishedRevisionStorageEntry) {
+                const publishedRevisionKey = createEntryPublishedKeys(
+                    publishedRevisionStorageEntry
+                );
                 entityBatch.put({
                     ...publishedRevisionStorageEntry,
-                    PK: createPartitionKey({
-                        id: publishedRevisionStorageEntry.id,
-                        tenant: model.tenant
-                    }),
-                    SK: createRevisionSortKey(publishedRevisionStorageEntry),
-                    GSI_TENANT: model.tenant,
+                    ...publishedRevisionKey,
                     status: CONTENT_ENTRY_STATUS.UNPUBLISHED
                 });
             }
@@ -395,31 +351,9 @@ export const createEntriesStorageOperations = (
         const isPublished = entry.status === "published";
         const locked = isPublished ? true : entry.locked;
 
-        const revisionKeys: IDynamoDbTableKeys = {
-            PK: createPartitionKey({
-                id: entry.id,
-                tenant: model.tenant
-            }),
-            SK: createRevisionSortKey(entry),
-            GSI_TENANT: model.tenant
-        };
-        const latestKeys: IDynamoDbTableKeys = {
-            PK: createPartitionKey({
-                id: entry.id,
-                tenant: model.tenant
-            }),
-            SK: createLatestSortKey(),
-            GSI_TENANT: model.tenant
-        };
-
-        const publishedKeys: IDynamoDbTableKeys = {
-            PK: createPartitionKey({
-                id: entry.id,
-                tenant: model.tenant
-            }),
-            SK: createPublishedSortKey(),
-            GSI_TENANT: model.tenant
-        };
+        const revisionKeys = createEntryRevisionKeys(entry);
+        const latestKeys = createEntryLatestKeys(entry);
+        const publishedKeys = createEntryPublishedKeys(entry);
 
         /**
          * We need the latest entry to check if it needs to be updated.
@@ -1166,25 +1100,20 @@ export const createEntriesStorageOperations = (
             /**
              * In the end we need to set the new latest entry.
              */
+            const latestStorageEntryLatestKey = createEntryLatestKeys(latestStorageEntry);
             entityBatch.put({
                 ...latestStorageEntry,
-                PK: partitionKey,
-                SK: createLatestSortKey(),
-                GSI_TENANT: model.tenant
+                ...latestStorageEntryLatestKey
             });
 
             /**
              * Also perform an update on the actual revision. This is needed
              * because of updates on the entry-level meta fields.
              */
+            const actualRevisionEntryKey = createEntryRevisionKeys(initialLatestStorageEntry);
             entityBatch.put({
                 ...latestStorageEntry,
-                PK: createPartitionKey({
-                    id: initialLatestStorageEntry.id,
-                    tenant: model.tenant
-                }),
-                SK: createRevisionSortKey(initialLatestStorageEntry),
-                GSI_TENANT: model.tenant
+                ...actualRevisionEntryKey
             });
 
             const latestTransformer = createTransformer({
@@ -1195,12 +1124,12 @@ export const createEntriesStorageOperations = (
             });
 
             const esLatestData = await latestTransformer.getElasticsearchLatestEntryData();
+
+            const esLatestKeys = createEntryLatestKeys(latestEntry);
             elasticsearchEntityBatch.put({
-                PK: partitionKey,
-                SK: createLatestSortKey(),
+                ...esLatestKeys,
                 index,
-                data: esLatestData,
-                GSI_TENANT: model.tenant
+                data: esLatestData
             });
         }
 
@@ -1425,30 +1354,9 @@ export const createEntriesStorageOperations = (
 
         const { entry, storageEntry } = transformer.transformEntryKeys();
 
-        const revisionKeys: IDynamoDbTableKeys = {
-            PK: createPartitionKey({
-                id: entry.id,
-                tenant: model.tenant
-            }),
-            SK: createRevisionSortKey(entry),
-            GSI_TENANT: model.tenant
-        };
-        const latestKeys: IDynamoDbTableKeys = {
-            PK: createPartitionKey({
-                id: entry.id,
-                tenant: model.tenant
-            }),
-            SK: createLatestSortKey(),
-            GSI_TENANT: model.tenant
-        };
-        const publishedKeys: IDynamoDbTableKeys = {
-            PK: createPartitionKey({
-                id: entry.id,
-                tenant: model.tenant
-            }),
-            SK: createPublishedSortKey(),
-            GSI_TENANT: model.tenant
-        };
+        const revisionKeys = createEntryRevisionKeys(entry);
+        const latestKeys = createEntryLatestKeys(entry);
+        const publishedKeys = createEntryPublishedKeys(entry);
 
         let latestEsEntry: IElasticsearchEntityAttributes | null = null;
         try {
@@ -1539,12 +1447,12 @@ export const createEntriesStorageOperations = (
                     /**
                      * Update currently published entry (unpublish it)
                      */
+                    const publishedStorageEntryKeys =
+                        createEntryRevisionKeys(publishedStorageEntry);
                     entityBatch.put({
                         ...publishedStorageEntry,
-                        status: CONTENT_ENTRY_STATUS.UNPUBLISHED,
-                        PK: createPartitionKey(publishedStorageEntry),
-                        SK: createRevisionSortKey(publishedStorageEntry),
-                        GSI_TENANT: model.tenant
+                        ...publishedStorageEntryKeys,
+                        status: CONTENT_ENTRY_STATUS.UNPUBLISHED
                     });
                 }
             }
@@ -1570,19 +1478,17 @@ export const createEntriesStorageOperations = (
                 status: latestRevisionStatus
             };
 
+            const latestStorageEntryLatestKeys = createEntryLatestKeys(latestStorageEntry);
             entityBatch.put({
                 ...latestStorageEntryFields,
-                PK: createPartitionKey(latestStorageEntry),
-                SK: createLatestSortKey(),
-                GSI_TENANT: model.tenant
+                ...latestStorageEntryLatestKeys
             });
 
             // 2.5 Update REV# record.
+            const latestStorageEntryRevisionKeys = createEntryRevisionKeys(latestStorageEntry);
             entityBatch.put({
                 ...latestStorageEntryFields,
-                PK: createPartitionKey(latestStorageEntry),
-                SK: createRevisionSortKey(latestStorageEntry),
-                GSI_TENANT: model.tenant
+                ...latestStorageEntryRevisionKeys
             });
 
             // 2.6 Additionally, if we have a previously published entry, we need to mark it as unpublished.
@@ -1595,12 +1501,12 @@ export const createEntriesStorageOperations = (
                     publishedRevisionId !== latestStorageEntry.id;
 
                 if (!isRepublishing && publishedRevisionDifferentFromLatest) {
+                    const publishedStorageEntryRevisionKeys =
+                        createEntryRevisionKeys(publishedStorageEntry);
                     entityBatch.put({
                         ...publishedStorageEntry,
-                        PK: createPartitionKey(publishedStorageEntry),
-                        SK: createRevisionSortKey(publishedStorageEntry),
-                        status: CONTENT_ENTRY_STATUS.UNPUBLISHED,
-                        GSI_TENANT: model.tenant
+                        ...publishedStorageEntryRevisionKeys,
+                        status: CONTENT_ENTRY_STATUS.UNPUBLISHED
                     });
                 }
             }
@@ -1643,12 +1549,11 @@ export const createEntriesStorageOperations = (
                 }
             });
 
+            const esEntryLatestKeys = createEntryLatestKeys(latestEsEntryDataDecompressed);
             elasticsearchEntityWriter.put({
                 index: esIndex,
-                PK: createPartitionKey(latestEsEntryDataDecompressed),
-                SK: createLatestSortKey(),
                 data: await latestTransformer.getElasticsearchLatestEntryData(),
-                GSI_TENANT: model.tenant
+                ...esEntryLatestKeys
             });
         } else {
             const updatedEntryLevelMetaFields = pickEntryMetaFields(
@@ -1753,13 +1658,13 @@ export const createEntriesStorageOperations = (
             tenant: model.tenant
         });
 
+        const entryRevisionKeys = createEntryRevisionKeys(entry);
+
         const entityBatch = entity.createEntityWriter({
             put: [
                 {
                     ...storageEntry,
-                    PK: partitionKey,
-                    SK: createRevisionSortKey(entry),
-                    GSI_TENANT: model.tenant
+                    ...entryRevisionKeys
                 }
             ],
             delete: [
@@ -1787,20 +1692,18 @@ export const createEntriesStorageOperations = (
                 model
             });
 
+            const entryLatestKeys = createEntryLatestKeys(storageEntry);
             entityBatch.put({
                 ...storageEntry,
-                PK: partitionKey,
-                SK: createLatestSortKey(),
-                GSI_TENANT: model.tenant
+                ...entryLatestKeys
             });
 
             const esLatestData = await transformer.getElasticsearchLatestEntryData();
+
             elasticsearchEntityBatch.put({
-                PK: partitionKey,
-                SK: createLatestSortKey(),
                 index,
                 data: esLatestData,
-                GSI_TENANT: model.tenant
+                ...entryLatestKeys
             });
         }
 
