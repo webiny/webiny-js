@@ -306,7 +306,7 @@ export const createEntriesStorageOperations = (
             entityBatch.put({
                 ...storageEntry,
                 locked,
-                ...createEntryLatestKeys(storageEntry)
+                ...createEntryPublishedKeys(storageEntry)
             });
         }
 
