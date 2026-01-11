@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
   "references": [
+    { "path": "../api" },
     { "path": "../api-core" },
     { "path": "../aws-sdk" },
     { "path": "../db-dynamodb" },
@@ -15,6 +16,8 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
+      "@webiny/api/*": ["../api/src/*"],
+      "@webiny/api": ["../api/src"],
       "@webiny/api-core/features/EventPublisher": [
         "../api-core/src/features/eventPublisher/index.js"
       ],

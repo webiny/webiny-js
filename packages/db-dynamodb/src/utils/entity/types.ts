@@ -9,26 +9,52 @@ import type { GenericRecord } from "@webiny/api/types.js";
 import type { TableDef } from "~/toolbox.js";
 import type { ITableWriteBatch } from "~/utils/table/types.js";
 import type { IPutParamsItem, put } from "~/utils/put.js";
-import type { QueryAllParams, QueryOneParams } from "~/utils/query.js";
+import {
+    queryAll,
+    queryAllClean,
+    type QueryAllParams,
+    queryOne,
+    queryOneClean,
+    type QueryOneParams
+} from "~/utils/query.js";
 import type { get, getClean, GetRecordParamsKeys } from "~/utils/get.js";
 import type { deleteItem, IDeleteItemKeys } from "~/utils/delete.js";
-import type { batchReadAll } from "~/utils/batch/batchRead.js";
+import type { batchReadAll, BatchReadItem } from "~/utils/batch/batchRead.js";
+import type { IEntityWriteBatchParams } from "./EntityWriteBatch.js";
+import type { IEntityReadBatchParams } from "./EntityReadBatch.js";
 
 export type IEntityQueryOneParams = Omit<QueryOneParams, "entity">;
 
 export type IEntityQueryAllParams = Omit<QueryAllParams, "entity">;
 
-export interface IEntity {
+export interface IEntityCreateEntityWriterParams<T = GenericRecord>
+    extends Omit<IEntityWriteBatchParams<T>, "entity"> {}
+export interface IEntityCreateEntityReaderParams extends Omit<IEntityReadBatchParams, "entity"> {}
+
+export type IEntityPutResult = ReturnType<typeof put>;
+export type IEntityGetResult<T> = ReturnType<typeof get<T>>;
+export type IEntityGetCleanResult<T> = ReturnType<typeof getClean<T>>;
+export type IEntityDeleteResult = ReturnType<typeof deleteItem>;
+export type IEntityQueryOneResult<T> = ReturnType<typeof queryOne<T>>;
+export type IEntityQueryOneCleanResult<T> = ReturnType<typeof queryOneClean<T>>;
+export type IEntityQueryAllResult<T> = ReturnType<typeof queryAll<T>>;
+export type IEntityQueryAllCleanResult<T> = ReturnType<typeof queryAllClean<T>>;
+
+export interface IEntity<T extends GenericRecord = GenericRecord> {
     readonly entity: BaseEntity;
-    createEntityReader(): IEntityReadBatch;
-    createEntityWriter(): IEntityWriteBatch;
+    readonly name: string;
+    readonly table: TableDef;
+    createEntityReader(params?: IEntityCreateEntityReaderParams): IEntityReadBatch<T>;
+    createEntityWriter(params?: IEntityCreateEntityWriterParams<T>): IEntityWriteBatch<T>;
     createTableWriter(): ITableWriteBatch;
-    put<T extends GenericRecord = GenericRecord>(item: IPutParamsItem<T>): ReturnType<typeof put>;
-    get<T>(keys: GetRecordParamsKeys): ReturnType<typeof get<T>>;
-    getClean<T>(keys: GetRecordParamsKeys): ReturnType<typeof getClean<T>>;
-    delete(keys: IDeleteItemKeys): ReturnType<typeof deleteItem>;
-    queryOne<T>(params: IEntityQueryOneParams): Promise<T | null>;
-    queryAll<T>(params: IEntityQueryAllParams): Promise<T[]>;
+    put(item: IPutParamsItem<T>): IEntityPutResult;
+    get<R extends T = T>(keys: GetRecordParamsKeys): IEntityGetResult<R>;
+    getClean<R extends T = T>(keys: GetRecordParamsKeys): IEntityGetCleanResult<R>;
+    delete(keys: IDeleteItemKeys): IEntityDeleteResult;
+    queryOne<R extends T = T>(params: IEntityQueryOneParams): IEntityQueryOneResult<R>;
+    queryOneClean<R extends T = T>(params: IEntityQueryOneParams): IEntityQueryOneCleanResult<R>;
+    queryAll<R extends T = T>(params: IEntityQueryAllParams): IEntityQueryAllResult<R>;
+    queryAllClean<R extends T = T>(params: IEntityQueryAllParams): IEntityQueryAllCleanResult<R>;
 }
 
 export interface IEntityWriteBatchBuilder {
@@ -37,13 +63,11 @@ export interface IEntityWriteBatchBuilder {
     delete(item: IDeleteBatchItem): BatchWriteItem;
 }
 
-export interface IEntityWriteBatch {
+export interface IEntityWriteBatch<T = GenericRecord> {
     readonly total: number;
-    // readonly entity: Entity;
     readonly items: BatchWriteItem[];
-    // readonly builder: IEntityWriteBatchBuilder;
 
-    put(item: IPutBatchItem): void;
+    put(item: IPutBatchItem<T>): void;
     delete(item: IDeleteBatchItem): void;
     execute(): Promise<BatchWriteResult>;
     combine(items: BatchWriteItem[]): ITableWriteBatch;
@@ -54,9 +78,11 @@ export interface IEntityReadBatchKey {
     SK: string;
 }
 
-export interface IEntityReadBatch {
+export interface IEntityReadBatch<T = GenericRecord> {
+    readonly total: number;
+    readonly items: BatchReadItem[];
     get(input: IEntityReadBatchKey | IEntityReadBatchKey[]): void;
-    execute<T = GenericRecord>(): ReturnType<typeof batchReadAll<T>>;
+    execute(): ReturnType<typeof batchReadAll<T>>;
 }
 
 export interface IEntityReadBatchBuilderGetResponse {

@@ -25,9 +25,12 @@ export interface QueryResult<T> {
 export type DbItem<T> = T & {
     PK: string;
     SK: string;
+    GSI_TENANT: string;
     TYPE: string;
     GSI1_PK?: string;
     GSI1_SK?: string;
+    GSI2_PK?: string;
+    GSI2_SK?: string;
 };
 
 /**

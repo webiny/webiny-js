@@ -1,35 +1,18 @@
 import type { AdminUsersStorageOperations, CreateAdminUsersStorageOperations } from "./types.js";
 import WebinyError from "@webiny/error";
-import { createTable } from "./definitions/table.js";
+import { createTable, type IStandardEntityAttributes, sortItems } from "@webiny/db-dynamodb";
 import { createUserEntity } from "./definitions/entities.js";
 import type {
     AdminUser,
     StorageOperationsGetUserParams,
     StorageOperationsListUsersParams
 } from "@webiny/api-core/types/users.js";
-import { deleteItem, get, put, queryAll, queryOne, sortItems } from "@webiny/db-dynamodb";
-
-const reservedFields = ["PK", "SK", "index", "data"];
-
-const isReserved = (name: string): void => {
-    if (reservedFields.includes(name)) {
-        throw new WebinyError(`Attribute name "${name}" is not allowed.`, "ATTRIBUTE_NOT_ALLOWED", {
-            name
-        });
-    }
-};
 
 export const createStorageOperations: CreateAdminUsersStorageOperations = params => {
-    const { table: tableName, documentClient, attributes } = params;
-
-    if (attributes) {
-        Object.values(attributes).forEach(attrs => {
-            Object.keys(attrs).forEach(isReserved);
-        });
-    }
+    const { table: tableName, documentClient } = params;
 
     const table = createTable({
-        table: tableName,
+        name: tableName,
         documentClient
     });
 
@@ -42,10 +25,13 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
         SK: `A`
     });
 
-    const createUserGSIKeys = (user: AdminUser) => ({
-        GSI1_PK: `T#${user.tenant}#ADMIN_USERS`,
-        GSI1_SK: user.email
-    });
+    const createUserGSIKeys = (user: AdminUser) => {
+        return {
+            GSI1_PK: `T#${user.tenant}#ADMIN_USERS`,
+            GSI1_SK: user.email,
+            GSI_TENANT: user.tenant
+        };
+    };
 
     const storageOperations: AdminUsersStorageOperations = {
         getTable() {
@@ -61,13 +47,10 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
             };
 
             try {
-                await put({
-                    entity: entities.users,
-                    item: {
-                        ...keys,
-                        TYPE: "adminUsers.user",
-                        data: user
-                    }
+                await entities.users.put({
+                    ...keys,
+                    TYPE: "adminUsers.user",
+                    data: user
                 });
 
                 return user;
@@ -83,10 +66,7 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
             const keys = createUserKeys(user);
 
             try {
-                await deleteItem({
-                    entity: entities.users,
-                    keys
-                });
+                await entities.users.delete(keys);
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not delete group.",
@@ -95,20 +75,21 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
                 });
             }
         },
-        async getUser<TUser extends AdminUser = AdminUser>({
-            where: { tenant, id, email }
-        }: StorageOperationsGetUserParams) {
+        async getUser<TUser extends AdminUser = AdminUser>(
+            params: StorageOperationsGetUserParams
+        ): Promise<TUser | null> {
+            const {
+                where: { tenant, id, email }
+            } = params;
             try {
                 if (id) {
-                    const response = await get<{ data: TUser }>({
-                        entity: entities.users,
-                        keys: createUserKeys({ tenant, id })
-                    });
-                    return response ? response.data : null;
+                    const response = await entities.users.get<IStandardEntityAttributes<TUser>>(
+                        createUserKeys({ tenant, id })
+                    );
+                    return (response?.data as TUser) || null;
                 }
 
-                const response = await queryOne<{ data: TUser }>({
-                    entity: entities.users,
+                const response = await entities.users.queryOne<IStandardEntityAttributes<TUser>>({
                     partitionKey: `T#${tenant}#ADMIN_USERS`,
                     options: {
                         index: "GSI1",
@@ -116,7 +97,7 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
                     }
                 });
 
-                return response ? response.data : null;
+                return (response?.data as TUser) || null;
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not load user.",
@@ -131,14 +112,15 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
         }: StorageOperationsListUsersParams) {
             let items: TUser[];
             try {
-                const ddbItems = await queryAll<{ data: TUser }>({
-                    entity: entities.users,
+                const ddbItems = await entities.users.queryAll<IStandardEntityAttributes<TUser>>({
                     partitionKey: `T#${where.tenant}#ADMIN_USERS`,
                     options: {
                         index: "GSI1"
                     }
                 });
-                items = ddbItems.map(item => item.data);
+                items = ddbItems.map(item => {
+                    return item.data as TUser;
+                });
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not list users.",
@@ -155,13 +137,10 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
             };
 
             try {
-                await put({
-                    entity: entities.users,
-                    item: {
-                        ...keys,
-                        TYPE: "adminUsers.user",
-                        data: user
-                    }
+                await entities.users.put({
+                    ...keys,
+                    TYPE: "adminUsers.user",
+                    data: user
                 });
                 return user;
             } catch (err) {

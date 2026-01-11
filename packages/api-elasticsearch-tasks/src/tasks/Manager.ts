@@ -1,9 +1,8 @@
 import { TaskController } from "@webiny/api-core/features/task/TaskController/index.js";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import type { Client } from "@webiny/api-elasticsearch";
-import { createTable } from "~/definitions/index.js";
+import { createElasticsearchEntity, createElasticsearchTable } from "@webiny/api-elasticsearch";
 import type { IManager } from "~/types.js";
-import { createEntry } from "~/definitions/entry.js";
 import type { BatchReadItem, IEntity } from "@webiny/db-dynamodb";
 import { batchReadAll } from "@webiny/db-dynamodb";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
@@ -25,7 +24,7 @@ export class Manager<
     public readonly controller: TaskController.Interface<T, O>;
     public readonly documentClient: DynamoDBDocument;
     public readonly elasticsearch: Client;
-    public readonly table: ReturnType<typeof createTable>;
+    public readonly table: ReturnType<typeof createElasticsearchTable>;
 
     private readonly entities: Record<string, IEntity> = {};
 
@@ -34,7 +33,7 @@ export class Manager<
         this.documentClient = params.documentClient;
         this.elasticsearch = params.elasticsearchClient;
 
-        this.table = createTable({
+        this.table = createElasticsearchTable({
             documentClient: this.documentClient
         });
     }
@@ -44,7 +43,7 @@ export class Manager<
             return this.entities[name];
         }
 
-        return (this.entities[name] = createEntry({
+        return (this.entities[name] = createElasticsearchEntity({
             table: this.table,
             entityName: name
         }));

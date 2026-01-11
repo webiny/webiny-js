@@ -11,47 +11,32 @@ import type {
     StoreValueResult,
     StoreValuesResult
 } from "@webiny/db";
-import type { Entity } from "dynamodb-toolbox";
-import type { Table } from "~/utils/createTable.js";
 import { createTable } from "~/utils/createTable.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import { createEntity } from "~/store/entity.js";
-import { batchReadAll, batchWriteAll, get, put, queryAll } from "~/utils/index.js";
 import { createPartitionKey, createSortKey, createType } from "~/store/keys.js";
-import type { IStoreItem } from "~/store/types.js";
 
 interface ConstructorArgs {
     documentClient: DynamoDBDocument;
 }
 
 class DynamoDbDriver implements DbDriver<DynamoDBDocument> {
-    public readonly documentClient: DynamoDBDocument;
+    public readonly documentClient;
 
-    private _table: Table | undefined = undefined;
-    private _entity: Entity | undefined = undefined;
-
-    public table(): Table {
-        if (this._table) {
-            return this._table;
-        }
-        this._table = createTable({
-            documentClient: this.documentClient
-        });
-        return this._table;
-    }
-
-    public entity(): Entity {
-        if (this._entity) {
-            return this._entity;
-        }
-        this._entity = createEntity({
-            table: this.table()
-        });
-        return this._entity;
-    }
+    public readonly table;
+    public readonly entity;
 
     constructor({ documentClient }: ConstructorArgs) {
         this.documentClient = documentClient;
+        this.table = createTable({
+            documentClient
+        });
+        this.table = createTable({
+            documentClient
+        });
+        this.entity = createEntity({
+            table: this.table
+        });
     }
 
     public getClient() {
@@ -70,12 +55,11 @@ class DynamoDbDriver implements DbDriver<DynamoDBDocument> {
         }
 
         try {
-            await put<IStoreItem>({
-                entity: this.entity(),
-                item: {
-                    PK: createPartitionKey(),
-                    SK: createSortKey({ key }),
-                    TYPE: createType(),
+            await this.entity.put({
+                PK: createPartitionKey(),
+                SK: createSortKey({ key }),
+                TYPE: createType(),
+                data: {
                     key,
                     value
                 }
@@ -96,8 +80,10 @@ class DynamoDbDriver implements DbDriver<DynamoDBDocument> {
         values: V
     ): Promise<StoreValuesResult<V>> {
         const keys = Object.keys(values);
+
+        const batchWrite = this.entity.createEntityWriter();
         try {
-            const batch = keys.map(key => {
+            for (const key of keys) {
                 const input = values[key];
                 let value: string | undefined;
                 try {
@@ -105,20 +91,18 @@ class DynamoDbDriver implements DbDriver<DynamoDBDocument> {
                 } catch (ex) {
                     throw ex;
                 }
-                const item: IStoreItem = {
+                batchWrite.put({
                     PK: createPartitionKey(),
                     SK: createSortKey({ key }),
                     TYPE: createType(),
-                    key,
-                    value
-                };
-                return this.entity().putBatch(item);
-            });
+                    data: {
+                        key,
+                        value
+                    }
+                });
+            }
 
-            await batchWriteAll({
-                table: this.table(),
-                items: batch
-            });
+            await batchWrite.execute();
             return {
                 keys,
                 data: values
@@ -132,16 +116,13 @@ class DynamoDbDriver implements DbDriver<DynamoDBDocument> {
     }
     public async getValue<V>(key: StorageKey): Promise<GetValueResult<V>> {
         try {
-            const result = await get<IStoreItem>({
-                entity: this.entity(),
-                keys: {
-                    PK: createPartitionKey(),
-                    SK: createSortKey({ key })
-                }
+            const result = await this.entity.get({
+                PK: createPartitionKey(),
+                SK: createSortKey({ key })
             });
             return {
                 key,
-                data: result ? JSON.parse(result.value) : null
+                data: result?.data?.value ? JSON.parse(result.data.value) : null
             };
         } catch (ex) {
             return {
@@ -154,37 +135,35 @@ class DynamoDbDriver implements DbDriver<DynamoDBDocument> {
         input: (keyof V)[]
     ): Promise<GetValuesResult<V>> {
         const keys = [...input] as string[];
-        const batch = keys.map(key => {
-            return this.entity().getBatch({
-                PK: createPartitionKey(),
-                SK: createSortKey({ key })
-            });
+
+        const batchRead = this.entity.createEntityReader({
+            read: keys.map(key => {
+                return {
+                    PK: createPartitionKey(),
+                    SK: createSortKey({ key })
+                };
+            })
         });
 
         try {
-            const results = await batchReadAll<IStoreItem>({
-                table: this.table(),
-                items: batch
-            });
-            const data = keys.reduce((collection, key) => {
+            const results = await batchRead.execute();
+            const data = keys.reduce((collection, initialKey) => {
+                const key = initialKey as keyof V;
                 const result = results.find(item => {
                     return item.PK === createPartitionKey() && item.SK === createSortKey({ key });
                 });
-                if (!result?.value) {
-                    // @ts-expect-error
+                if (!result?.data?.value) {
                     collection[key] = null;
                     return collection;
                 }
                 try {
-                    // @ts-expect-error
-                    collection[key] = JSON.parse(result.value);
+                    collection[key] = JSON.parse(result.data.value);
                 } catch {
-                    // @ts-expect-error
                     collection[key] = null;
                 }
 
                 return collection;
-            }, {} as V);
+            }, {} as GenericRecord);
             return {
                 keys,
                 data
@@ -204,23 +183,21 @@ class DynamoDbDriver implements DbDriver<DynamoDBDocument> {
             const options = {
                 ...params
             };
-            const results = await queryAll<IStoreItem>({
-                entity: this.entity(),
+            const results = await this.entity.queryAll({
                 partitionKey,
                 options
             });
 
             const data = results.reduce((collection, item) => {
+                const key = item.data.key as keyof V;
                 try {
-                    // @ts-expect-error
-                    collection[item.key] = JSON.parse(item.value);
+                    collection[key] = JSON.parse(item.data.value);
                 } catch {
-                    // @ts-expect-error
-                    collection[item.key] = null;
+                    collection[key] = null;
                 }
 
                 return collection;
-            }, {} as V);
+            }, {} as GenericRecord);
 
             return {
                 keys: Object.keys(data),
@@ -242,7 +219,7 @@ class DynamoDbDriver implements DbDriver<DynamoDBDocument> {
             };
         }
         try {
-            await this.entity().delete({
+            await this.entity.delete({
                 PK: createPartitionKey(),
                 SK: createSortKey({ key })
             });
@@ -262,18 +239,18 @@ class DynamoDbDriver implements DbDriver<DynamoDBDocument> {
         input: (keyof V)[]
     ): Promise<RemoveValuesResult<V>> {
         const keys = [...input] as string[];
-        const batch = keys.map(key => {
-            return this.entity().deleteBatch({
-                PK: createPartitionKey(),
-                SK: createSortKey({ key })
-            });
+
+        const batchDelete = this.entity.createEntityWriter({
+            delete: keys.map(key => {
+                return {
+                    PK: createPartitionKey(),
+                    SK: createSortKey({ key })
+                };
+            })
         });
 
         try {
-            await batchWriteAll({
-                table: this.table(),
-                items: batch
-            });
+            await batchDelete.execute();
             return {
                 keys
             };
