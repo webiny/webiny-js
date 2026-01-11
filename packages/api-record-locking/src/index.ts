@@ -3,7 +3,10 @@ import { ContextPlugin } from "@webiny/api";
 import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel";
-import { createLockingModel, RECORD_LOCKING_MODEL_ID } from "~/domain/model.js";
+import {
+    RecordLockingPrivateModel,
+    RECORD_LOCKING_MODEL_ID
+} from "~/domain/RecordLockingPrivateModel.js";
 import { getTimeout } from "~/utils/getTimeout.js";
 import { RecordLockingFeature } from "~/features/RecordLockingFeature.js";
 import { createGraphQLSchema } from "~/graphql/schema.js";
@@ -30,9 +33,8 @@ const createContextPlugin = (params?: ICreateContextPluginParams) => {
             return;
         }
 
-        // Register model plugin
-        const modelDefinition = createLockingModel();
-        context.plugins.register(modelDefinition);
+        // Register the private model
+        context.container.register(RecordLockingPrivateModel);
 
         // Determine timeout value
         const timeout = getTimeout(params?.timeout);

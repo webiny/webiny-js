@@ -7,7 +7,7 @@ class FolderPrivateModelImpl implements PrivateModel.Interface {
         return builder
             .modelId(FOLDER_MODEL_ID)
             .name("ACO - Folder")
-            .fields((fields: PrivateModel.FieldBuilder) => ({
+            .fields(fields => ({
                 title: fields.text().label("Title").required("Value is required."),
                 slug: fields
                     .text()
@@ -25,9 +25,9 @@ class FolderPrivateModelImpl implements PrivateModel.Interface {
                     .object()
                     .label("Permissions")
                     .multipleValues(true)
-                    .fields((permFields: PrivateModel.FieldBuilder) => ({
-                        target: permFields.text().label("Target").required("Value is required."),
-                        level: permFields
+                    .fields(fields => ({
+                        target: fields.text().label("Target").required("Value is required."),
+                        level: fields
                             .text()
                             .label("Level")
                             .required("Value is required.")
@@ -55,11 +55,7 @@ class FolderPrivateModelImpl implements PrivateModel.Interface {
                             ])
                     }))
                     .layout([["target"], ["level"]]),
-                extensions: fields
-                    .object()
-                    .label("Extensions")
-                    .fields(() => ({}))
-                    .layout([])
+                extensions: fields.object().label("Extensions")
             }));
     }
 }

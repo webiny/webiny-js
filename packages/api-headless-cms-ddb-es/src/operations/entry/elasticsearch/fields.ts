@@ -14,15 +14,16 @@ import {
     isIdentityEntryMetaField
 } from "@webiny/api-headless-cms/constants.js";
 import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldType.js";
+import { createModelField } from "@webiny/api-headless-cms";
 
 type PartialCmsModelField = Partial<CmsModelField> &
     Pick<CmsModelField, "storageId" | "fieldId" | "type">;
 const createSystemField = (field: PartialCmsModelField): CmsModelField => {
-    return {
+    return createModelField({
         ...field,
         id: field.fieldId,
         label: field.fieldId
-    };
+    });
 };
 
 const createSystemFields = (): ModelFields => {
@@ -115,13 +116,13 @@ const createSystemFields = (): ModelFields => {
                 type: "object",
                 settings: {
                     fields: [
-                        {
+                        createModelField({
                             id: "folderId",
                             fieldId: "folderId",
                             storageId: "folderId",
                             type: "text",
                             label: "Folder ID"
-                        }
+                        })
                     ]
                 }
             }),
@@ -214,27 +215,27 @@ const createSystemFields = (): ModelFields => {
                 type: "object",
                 settings: {
                     fields: [
-                        {
+                        createModelField({
                             id: "stepId",
                             fieldId: "stepId",
                             storageId: "text@stepId",
                             type: "text",
                             label: "Step ID"
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "stepName",
                             fieldId: "stepName",
                             storageId: "text@stepName",
                             type: "text",
                             label: "Step Name"
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "state",
                             fieldId: "state",
                             storageId: "text@state",
                             type: "text",
                             label: "State"
-                        }
+                        })
                     ]
                 }
             }),
