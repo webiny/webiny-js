@@ -49,12 +49,6 @@ import {
 } from "@webiny/api-headless-cms/constants.js";
 import type { IEntryEntity } from "~/definitions/types.js";
 
-interface IDynamoDbTableKeys {
-    PK: string;
-    SK: string;
-    GSI_TENANT: string;
-}
-
 export interface CreateEntriesStorageOperationsParams {
     entity: IEntryEntity;
     esEntity: IElasticsearchEntity;

@@ -1,15 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { CompressorPlugin, Context } from "~/index";
-import type { Context as ContextInterface } from "~/types";
 import { Benchmark } from "~/Benchmark";
 import { BenchmarkPlugin } from "~/plugins/BenchmarkPlugin";
 import { GzipCompression, JsonpackCompression } from "@webiny/utils/compression";
 import { PluginsContainer } from "@webiny/plugins";
-
-interface DummyContextInterface extends ContextInterface {
-    cms: any;
-    pageBuilder: any;
-}
 
 describe("Context", () => {
     it("should construct a base context", () => {
