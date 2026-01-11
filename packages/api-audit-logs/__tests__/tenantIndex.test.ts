@@ -62,31 +62,30 @@ describe("Audit Logs Tenant Index", () => {
             gsiAmount: 10
         });
 
-        const results = await entity.query(tenantId, {
-            index: "GSI_TENANT",
-            reverse: false
+        const results = await entity.queryAll({
+            partitionKey: tenantId,
+            options: {
+                index: "GSI_TENANT",
+                reverse: false
+            }
         });
 
-        expect(results).toMatchObject({
-            Count: 3,
-            Items: [
-                {
-                    GSI_TENANT: "root",
-                    PK: "T#root#AUDIT_LOG",
-                    SK: expect.any(String)
-                },
-                {
-                    GSI_TENANT: "root",
-                    PK: "T#root#AUDIT_LOG",
-                    SK: expect.any(String)
-                },
-                {
-                    GSI_TENANT: "root",
-                    PK: "T#root#AUDIT_LOG",
-                    SK: expect.any(String)
-                }
-            ],
-            ScannedCount: 3
-        });
+        expect(results).toMatchObject([
+            {
+                GSI_TENANT: "root",
+                PK: "T#root#AUDIT_LOG",
+                SK: expect.any(String)
+            },
+            {
+                GSI_TENANT: "root",
+                PK: "T#root#AUDIT_LOG",
+                SK: expect.any(String)
+            },
+            {
+                GSI_TENANT: "root",
+                PK: "T#root#AUDIT_LOG",
+                SK: expect.any(String)
+            }
+        ]);
     });
 });
