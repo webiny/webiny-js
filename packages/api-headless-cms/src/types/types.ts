@@ -486,9 +486,7 @@ export interface CmsEntry<T = CmsEntryValues> {
      *
      * Available only on the Manage API in entry GraphQL type `meta.data` property.
      */
-    meta?: {
-        [key: string]: any;
-    };
+    meta?: GenericRecord;
     /**
      * Is the entry in the bin?
      */

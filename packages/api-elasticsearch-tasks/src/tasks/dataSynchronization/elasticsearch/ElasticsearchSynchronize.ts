@@ -1,4 +1,4 @@
-import { batchReadAll } from "@webiny/db-dynamodb";
+import { batchReadAll } from "@webiny/db-dynamodb/utils/batch/batchRead.js";
 import { createSynchronizationBuilder } from "@webiny/api-dynamodb-to-elasticsearch";
 import type { IGetElasticsearchEntityTypeParams } from "~/tasks/dataSynchronization/entities/index.js";
 import {
@@ -44,7 +44,7 @@ export class ElasticsearchSynchronize implements IElasticsearchSynchronize {
 
         const readableItems = items.map(item => {
             const entity = this.getEntity(item);
-            return entity.item.getBatch({
+            return entity.item.entity.getBatch({
                 PK: item.PK,
                 SK: item.SK
             });

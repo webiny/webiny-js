@@ -1,39 +1,40 @@
 import DataLoader from "dataloader";
-import { batchReadAll } from "@webiny/db-dynamodb";
 import { cleanupItems } from "@webiny/db-dynamodb/utils/cleanup.js";
 import type { CmsStorageEntry } from "@webiny/api-headless-cms/types/index.js";
 import { createBatchScheduleFn } from "./createBatchScheduleFn.js";
 import { createLatestSortKey, createPartitionKey } from "~/operations/entry/keys.js";
-import type { DataLoaderParams } from "./types.js";
+import type { IDataLoaderParams } from "./types.js";
 import { parseIdentifier } from "@webiny/utils";
 
-export const createGetLatestRevisionByEntryId = (params: DataLoaderParams) => {
+export const createGetLatestRevisionByEntryId = (params: IDataLoaderParams) => {
     const { entity, tenant } = params;
 
     const latestKey = createLatestSortKey();
 
     return new DataLoader<string, CmsStorageEntry[]>(
-        async (ids: readonly string[]) => {
-            const queries = ids.reduce<Record<string, any>>((collection, id) => {
+        async ids => {
+            const reader = entity.createEntityReader();
+
+            const keys = new Set<string>();
+
+            for (const id of ids) {
                 const partitionKey = createPartitionKey({
                     tenant,
                     id
                 });
-                if (collection[partitionKey]) {
-                    return collection;
+                if (keys.has(partitionKey)) {
+                    continue;
                 }
-                collection[partitionKey] = entity.getBatch({
+                keys.add(partitionKey);
+
+                reader.get({
                     PK: partitionKey,
                     SK: latestKey
                 });
-                return collection;
-            }, {});
+            }
 
-            const records = await batchReadAll<CmsStorageEntry>({
-                table: entity.table,
-                items: Object.values(queries)
-            });
-            const items = cleanupItems(entity, records);
+            const records = await reader.execute();
+            const items = cleanupItems(entity.entity, records);
 
             return ids.map(id => {
                 const { id: entryId } = parseIdentifier(id);

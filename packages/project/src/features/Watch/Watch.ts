@@ -1,6 +1,7 @@
 import { createImplementation } from "@webiny/di";
 import {
     BuildAppWorkspaceService,
+    WatchedLambdaFunctionsService,
     GetApp,
     GetProductionEnvironments,
     GetProject,
@@ -9,7 +10,7 @@ import {
     ListPackagesService,
     LoggerService,
     ProjectSdkParamsService,
-    PulumiGetStackExportService,
+    PulumiExportService,
     PulumiGetStackOutputService,
     UiService,
     ValidateProjectConfigService,
@@ -36,7 +37,8 @@ export class DefaultWatch implements Watch.Interface {
         private getProductionEnvironments: GetProductionEnvironments.Interface,
         private ui: UiService.Interface,
         private pulumiGetStackOutputService: PulumiGetStackOutputService.Interface,
-        private pulumiGetStackExportService: PulumiGetStackOutputService.Interface,
+        private pulumiExportService: PulumiExportService.Interface,
+        private watchedLambdaFunctionsService: WatchedLambdaFunctionsService.Interface,
         private buildAppWorkspaceService: BuildAppWorkspaceService.Interface,
         private projectSdkParamsService: ProjectSdkParamsService.Interface
     ) {}
@@ -234,17 +236,14 @@ export class DefaultWatch implements Watch.Interface {
         const increaseTimeout = params.increaseTimeout;
         const localExecutionHandshakeTimeout = params.increaseHandshakeTimeout || 5; // Default to 5 seconds.
 
-        // TODO: we need a better solution for this.
-        // We want to ensure a Pulumi refresh is made before the next deploy.
-        // setMustRefreshBeforeDeploy(context);
-
         // Ignore promise, we don't need to wait for this to finish.
         replaceLambdaFunctions({
             app,
             dependencies: {
                 uiService: ui,
                 loggerService: logger,
-                pulumiGetStackExportService: this.pulumiGetStackExportService
+                pulumiExportService: this.pulumiExportService,
+                watchedLambdaFunctionsService: this.watchedLambdaFunctionsService
             },
             iotEndpoint,
             iotEndpointTopic,
@@ -291,7 +290,8 @@ export const watch = createImplementation({
         GetProductionEnvironments,
         UiService,
         PulumiGetStackOutputService,
-        PulumiGetStackExportService,
+        PulumiExportService,
+        WatchedLambdaFunctionsService,
         BuildAppWorkspaceService,
         ProjectSdkParamsService
     ]

@@ -5,10 +5,11 @@ import type {
     CmsModelField,
     HeadlessCmsStorageOperations as BaseHeadlessCmsStorageOperations
 } from "@webiny/api-headless-cms/types/index.js";
-import type { TableConstructor } from "@webiny/db-dynamodb/toolbox.js";
-import type { AttributeDefinition } from "@webiny/db-dynamodb/toolbox.js";
+import type { AttributeDefinition, Table } from "@webiny/db-dynamodb/toolbox.js";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import type { Entity, Table } from "@webiny/db-dynamodb/toolbox.js";
+import type { IEntryEntity, IGroupEntity, IModelEntity } from "~/definitions/types.js";
+
+export type { IGroupEntity, IModelEntity, IEntryEntity };
 
 interface CmsFieldFilterValueTransformParams {
     /**
@@ -42,19 +43,21 @@ export enum ENTITIES {
     ENTRIES = "CmsEntries"
 }
 
-export interface TableModifier {
-    (table: TableConstructor<string, string, string>): TableConstructor<string, string, string>;
-}
-
 export interface StorageOperationsFactoryParams {
     documentClient: DynamoDBDocument;
-    table?: TableModifier;
+    table?: string;
     plugins?: Plugin[] | Plugin[][];
+}
+
+export interface IHeadlessCmsStorageOperationsGetEntitiesResult {
+    groups: IGroupEntity;
+    models: IModelEntity;
+    entries: IEntryEntity;
 }
 
 export interface HeadlessCmsStorageOperations extends BaseHeadlessCmsStorageOperations {
     getTable: () => Table<string, string, string>;
-    getEntities: () => Record<"groups" | "models" | "entries", Entity<any>>;
+    getEntities: () => IHeadlessCmsStorageOperationsGetEntitiesResult;
 }
 
 export interface StorageOperationsFactory {
@@ -62,12 +65,12 @@ export interface StorageOperationsFactory {
 }
 
 export interface CmsEntryStorageOperations extends BaseCmsEntryStorageOperations {
-    dataLoaders: DataLoadersHandlerInterface;
+    dataLoaders: IDataLoadersHandler;
 }
 
 export interface DataLoadersHandlerInterfaceClearAllParams {
     model: Pick<CmsModel, "tenant">;
 }
-export interface DataLoadersHandlerInterface {
+export interface IDataLoadersHandler {
     clearAll: (params?: DataLoadersHandlerInterfaceClearAllParams) => void;
 }

@@ -1,32 +1,29 @@
 import type { Table } from "@webiny/db-dynamodb/toolbox.js";
-import { Entity } from "@webiny/db-dynamodb/toolbox.js";
-import type { Attributes } from "~/types.js";
+import { createEntity, standardEntityAttributes } from "@webiny/db-dynamodb";
+import type { IEntryEntity, IEntryEntityAttributes } from "~/definitions/types.js";
 
 export interface CreateEntryEntityParams {
     table: Table<string, string, string>;
     entityName: string;
-    attributes: Attributes;
 }
-export const createEntryEntity = (params: CreateEntryEntityParams): Entity<any> => {
-    const { table, entityName, attributes } = params;
-    return new Entity({
+export const createEntryEntity = (params: CreateEntryEntityParams): IEntryEntity => {
+    const { table, entityName } = params;
+    return createEntity<IEntryEntityAttributes>({
         name: entityName,
         table,
         attributes: {
-            PK: {
-                type: "string",
-                partitionKey: true
-            },
-            SK: {
-                type: "string",
-                sortKey: true
-            },
-            TYPE: {
-                type: "string"
-            },
-            __type: {
-                type: "string"
-            },
+            ...standardEntityAttributes,
+            // PK: {
+            //     type: "string",
+            //     partitionKey: true
+            // },
+            // SK: {
+            //     type: "string",
+            //     sortKey: true
+            // },
+            // TYPE: {
+            //     type: "string"
+            // },
             tenant: {
                 type: "string"
             },
@@ -115,8 +112,7 @@ export const createEntryEntity = (params: CreateEntryEntityParams): Entity<any> 
             },
             state: {
                 type: "map"
-            },
-            ...(attributes || {})
+            }
         }
     });
 };

@@ -57,3 +57,4 @@ packages/*/README.md
 nextjs
 .claude/
 CLAUDE.local.md
+packages/webiny/src/global.d.ts

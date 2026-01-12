@@ -1,9 +1,9 @@
 import type { ElasticsearchContext } from "@webiny/api-elasticsearch/types.js";
 import type { Context as TasksContext } from "@webiny/tasks/types.js";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import type { Client } from "@webiny/api-elasticsearch";
-import type { createTable } from "~/definitions/index.js";
-import type { BatchReadItem, IEntity } from "@webiny/db-dynamodb";
+import type { Client, createElasticsearchTable } from "@webiny/api-elasticsearch";
+import type { BatchReadItem } from "@webiny/db-dynamodb/utils/batch/batchRead.js";
+import type { IEntity } from "@webiny/db-dynamodb";
 import type { GenericRecord } from "@webiny/api/types.js";
 import { TaskController } from "@webiny/api-core/features/task/TaskController/index.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
@@ -45,6 +45,7 @@ export interface AugmentedError extends Error {
 export interface IDynamoDbElasticsearchRecord {
     PK: string;
     SK: string;
+    GSI_TENANT: string;
     TYPE?: string;
     index: string;
     _et?: string;
@@ -59,7 +60,7 @@ export interface IManager<
 > {
     readonly documentClient: DynamoDBDocument;
     readonly elasticsearch: Client;
-    readonly table: ReturnType<typeof createTable>;
+    readonly table: ReturnType<typeof createElasticsearchTable>;
     readonly controller: TaskController.Interface<I, O>;
     readonly dbRegistry?: DbRegistry.Interface;
     getEntity: (name: string) => IEntity;

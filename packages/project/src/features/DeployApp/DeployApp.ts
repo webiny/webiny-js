@@ -57,15 +57,17 @@ export class DefaultDeployApp implements DeployApp.Interface {
         });
 
         const secretsProvider = this.pulumiGetSecretsProviderService.execute();
+
         const pulumiProcess = params.preview
             ? pulumi.run({
                   command: "preview",
                   args: {
                       diff: true,
-                      debug: !!params.debug
 
                       // Preview command does not accept "--secrets-provider" argument.
-                      // secretsProvider: PULUMI_SECRETS_PROVIDER
+                      // secretsProvider: PULUMI_SECRETS_PROVIDER,
+
+                      ...params.pulumiArgs
                   },
                   execa: { env }
               })
@@ -75,7 +77,7 @@ export class DefaultDeployApp implements DeployApp.Interface {
                       yes: true,
                       skipPreview: true,
                       secretsProvider,
-                      debug: !!params.debug
+                      ...params.pulumiArgs
                   },
                   execa: { env }
               });

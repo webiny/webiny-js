@@ -5,13 +5,12 @@ import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
 import { CmsParametersPlugin, createHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { CmsContext } from "~/types";
 import { createSecurity } from "~tests/graphql/security";
-import { DynamoDbDriver } from "@webiny/db-dynamodb";
+import { createTable, DynamoDbDriver } from "@webiny/db-dynamodb";
 import { createIndexConfigurationPlugin } from "~tests/graphql/createIndexConfigurationPlugin";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/index.js";
-import { createTable } from "~/definitions/table";
 import { createEntryEntity } from "~/definitions/entry";
 import { LambdaContext } from "@webiny/handler-aws/types";
 import { createApiCore } from "@webiny/api-core";
@@ -38,8 +37,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
     });
     const entryEntity = createEntryEntity({
         table,
-        entityName: "CmsEntries",
-        attributes: {}
+        entityName: "CmsEntries"
     });
 
     const handler = createRawHandler<any, CmsContext>({

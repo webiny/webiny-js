@@ -24,6 +24,7 @@ export * from "./utils/index.js";
 export * from "./operations/index.js";
 export * from "./sharedIndex.js";
 export * from "./indexPrefix.js";
+export * from "./db/index.js";
 
 /**
  * We must accept either Elasticsearch client or options that create the client.
