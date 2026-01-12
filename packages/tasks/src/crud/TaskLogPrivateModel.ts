@@ -1,10 +1,10 @@
-import { Model } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
+import { ModelFactory } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
 import { TaskLogItemType } from "~/types.js";
 
 export const WEBINY_TASK_LOG_MODEL_ID = "webinyTaskLog";
 
-class TaskLogPrivateModelImpl implements Model.Interface {
-    buildModel(builder: Model.Builder) {
+class TaskLogPrivateModelImpl implements ModelFactory.Interface {
+    execute(builder: ModelFactory.Builder) {
         return builder
             .private()
             .modelId(WEBINY_TASK_LOG_MODEL_ID)
@@ -45,7 +45,7 @@ class TaskLogPrivateModelImpl implements Model.Interface {
     }
 }
 
-export const TaskLogPrivateModel = Model.createImplementation({
+export const TaskLogPrivateModel = ModelFactory.createImplementation({
     implementation: TaskLogPrivateModelImpl,
     dependencies: []
 });

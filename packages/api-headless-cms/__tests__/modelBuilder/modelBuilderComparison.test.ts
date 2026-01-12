@@ -1,11 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { Container } from "@webiny/di";
 import { ModelBuilderFeature } from "~/features/modelBuilder/feature.js";
-import {
-    PrivateModel,
-    PrivateModelProvider,
-    type IPrivateModelBuilder
-} from "~/features/modelBuilder/index.js";
+import { ModelFactory, ModelsProvider } from "~/features/modelBuilder/index.js";
 import { createPrivateModelPlugin, createModelField } from "~/index.js";
 import { articleModel } from "~tests/contentTraverser/mocks/article.model.js";
 
@@ -74,9 +70,10 @@ describe("Model Builder Comparison - Old vs New API", () => {
             // ============================================
             // NEW WAY - Using builder API via DI
             // ============================================
-            class TestModelImpl implements PrivateModel.Interface {
-                buildModel(builder: IPrivateModelBuilder): IPrivateModelBuilder {
+            class TestModelImpl implements ModelFactory.Interface {
+                execute(builder: ModelFactory.Builder) {
                     return builder
+                        .private()
                         .modelId("testModel")
                         .name("TestModel")
                         .fields(fields => ({
@@ -97,13 +94,13 @@ describe("Model Builder Comparison - Old vs New API", () => {
             }
 
             // Register the model implementation BEFORE resolving the provider
-            container.registerInstance(PrivateModel, new TestModelImpl());
+            container.registerInstance(ModelFactory, new TestModelImpl());
 
             // Resolve the provider AFTER registering the model
-            const privateModelProvider = container.resolve(PrivateModelProvider);
+            const modelsProvider = container.resolve(ModelsProvider);
 
             // Get models via provider
-            const models = await privateModelProvider.getModels();
+            const models = await modelsProvider.list("root");
             const newModel = models.find(m => m.modelId === "testModel");
 
             // ============================================
@@ -164,9 +161,10 @@ describe("Model Builder Comparison - Old vs New API", () => {
             // ============================================
             // NEW WAY - Using builder API via DI
             // ============================================
-            class ArticleModelImpl implements PrivateModel.Interface {
-                buildModel(builder: IPrivateModelBuilder): IPrivateModelBuilder {
+            class ArticleModelImpl implements ModelFactory.Interface {
+                execute(builder: ModelFactory.Builder) {
                     return builder
+                        .private()
                         .modelId("article")
                         .name("Article")
                         .fields(fields => ({
@@ -244,13 +242,13 @@ describe("Model Builder Comparison - Old vs New API", () => {
             }
 
             // Register the model implementation
-            container.registerInstance(PrivateModel, new ArticleModelImpl());
+            container.registerInstance(ModelFactory, new ArticleModelImpl());
 
             // Resolve the provider AFTER registering the model
-            const privateModelProvider = container.resolve(PrivateModelProvider);
+            const modelsProvider = container.resolve(ModelsProvider);
 
             // Get models via provider
-            const models = await privateModelProvider.getModels();
+            const models = await modelsProvider.list("root");
             const newModel = models.find(m => m.modelId === "article");
 
             // ============================================

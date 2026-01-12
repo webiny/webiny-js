@@ -14,7 +14,7 @@ import { JsonFieldType } from "./fields/JsonFieldType.js";
 import { SearchableJsonFieldType } from "./fields/SearchableJsonFieldType.js";
 import { LocationFieldType } from "~/features/modelBuilder/fields/LocationFieldType.js";
 import {
-    Model,
+    ModelFactory,
     FieldBuilderRegistry as FieldsRegistryAbstraction
 } from "~/features/modelBuilder/abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
@@ -44,10 +44,19 @@ export const ModelBuilderFeature = createFeature({
 
         // Register unified models provider
         container.registerFactory(ModelsProviderAbstraction, () => {
+            let accessControl: AccessControl.Interface | undefined = undefined;
+            try {
+                // TODO: add `container.resolveOptional`
+                accessControl = container.resolve(AccessControl);
+            } catch {
+                // It's an optional dependency!
+            }
+
             return new ModelsProvider(
-                () => container.resolveAll(Model),
+                // TODO: introduce a `lazy: true` dependency modifier, which will inject a getter.
+                () => container.resolveAll(ModelFactory),
                 container.resolve(FieldsRegistryAbstraction),
-                container.resolve(AccessControl)
+                accessControl
             );
         });
     }

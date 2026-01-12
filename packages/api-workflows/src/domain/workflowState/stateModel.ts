@@ -1,10 +1,10 @@
-import { Model } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
+import { ModelFactory } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
 import { WorkflowStateRecordState } from "~/domain/workflowState/abstractions.js";
 
 export const WORKFLOW_STATE_MODEL_ID = "workflowState";
 
-class WorkflowStateModelImpl implements Model.Interface {
-    buildModel(builder: Model.Builder) {
+class WorkflowStateModelImpl implements ModelFactory.Interface {
+    execute(builder: ModelFactory.Builder) {
         return builder
             .private()
             .modelId(WORKFLOW_STATE_MODEL_ID)
@@ -106,7 +106,7 @@ class WorkflowStateModelImpl implements Model.Interface {
     }
 }
 
-export const WorkflowStateModel = Model.createImplementation({
+export const WorkflowStateModel = ModelFactory.createImplementation({
     implementation: WorkflowStateModelImpl,
     dependencies: []
 });

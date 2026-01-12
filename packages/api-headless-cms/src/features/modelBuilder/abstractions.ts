@@ -28,15 +28,19 @@ export interface IModelBuilder {
     public(): PublicModelBuilder;
 }
 
-export interface IModel {
-    buildModel(
+export interface IModelFactory {
+    execute(
         builder: IModelBuilder
     ): Promise<PrivateModelBuilder | PublicModelBuilder> | PrivateModelBuilder | PublicModelBuilder;
 }
 
-export const Model = createAbstraction<IModel>("Model");
-export namespace Model {
-    export type Interface = IModel;
+export const ModelFactory = createAbstraction<IModelFactory>("ModelFactory");
+export namespace ModelFactory {
+    export type Interface = IModelFactory;
+    export type Return =
+        | Promise<PrivateModelBuilder | PublicModelBuilder>
+        | PrivateModelBuilder
+        | PublicModelBuilder;
     export type Builder = IModelBuilder;
     export type FieldBuilder = FieldBuilderRegistry.Interface;
 }

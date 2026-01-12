@@ -1,14 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { Container } from "@webiny/di";
 import { ModelBuilderFeature } from "~/features/modelBuilder/feature.js";
-import {
-    PrivateModel,
-    PrivateModelProvider,
-    PublicModel,
-    PublicModelProvider,
-    type IPrivateModelBuilder,
-    type IPublicModelBuilder
-} from "~/features/modelBuilder/index.js";
+import { ModelFactory, ModelsProvider } from "~/features/modelBuilder/index.js";
 import type { CmsModelGroup } from "~/types/index.js";
 
 describe("All Field Types Model", () => {
@@ -20,9 +13,10 @@ describe("All Field Types Model", () => {
     });
 
     it("should support all field types with various configurations", async () => {
-        class AllFieldsModelImpl implements PrivateModel.Interface {
-            buildModel(builder: IPrivateModelBuilder): IPrivateModelBuilder {
+        class AllFieldsModelImpl implements ModelFactory.Interface {
+            execute(builder: ModelFactory.Builder) {
                 return builder
+                    .private()
                     .modelId("allFieldsModel")
                     .name("All Fields Model")
                     .fields(fields => ({
@@ -179,11 +173,11 @@ describe("All Field Types Model", () => {
         }
 
         // Register the model
-        container.registerInstance(PrivateModel, new AllFieldsModelImpl());
+        container.registerInstance(ModelFactory, new AllFieldsModelImpl());
 
         // Get the model via provider
-        const privateModelProvider = container.resolve(PrivateModelProvider);
-        const models = await privateModelProvider.getModels();
+        const modelsProvider = container.resolve(ModelsProvider);
+        const models = await modelsProvider.list("root");
         const model = models.find(m => m.modelId === "allFieldsModel");
 
         // Verify model was created
@@ -280,9 +274,10 @@ describe("All Field Types Model", () => {
             name: "Test Group"
         };
 
-        class FullPublicModelImpl implements PublicModel.Interface {
-            buildModel(builder: IPublicModelBuilder): IPublicModelBuilder {
+        class FullPublicModelImpl implements ModelFactory.Interface {
+            execute(builder: ModelFactory.Builder) {
                 return builder
+                    .public()
                     .modelId("fullPublicModel")
                     .name("Full Public Model")
                     .singularApiName("FullPublicModel")
@@ -304,9 +299,9 @@ describe("All Field Types Model", () => {
             }
         }
 
-        container.registerInstance(PublicModel, new FullPublicModelImpl());
-        const publicModelProvider = container.resolve(PublicModelProvider);
-        const models = await publicModelProvider.getModels();
+        container.registerInstance(ModelFactory, new FullPublicModelImpl());
+        const modelsProvider = container.resolve(ModelsProvider);
+        const models = await modelsProvider.list("root");
         const model = models.find(m => m.modelId === "fullPublicModel");
 
         expect(model).toBeDefined();
@@ -355,9 +350,10 @@ describe("All Field Types Model", () => {
         };
 
         // Test public model with duplicate tags including "type:model"
-        class DuplicateTagsPublicModel implements PublicModel.Interface {
-            buildModel(builder: IPublicModelBuilder): IPublicModelBuilder {
+        class DuplicateTagsPublicModel implements ModelFactory.Interface {
+            execute(builder: ModelFactory.Builder) {
                 return builder
+                    .public()
                     .modelId("duplicateTagsPublic")
                     .name("Duplicate Tags Public")
                     .group(testGroup)
@@ -369,9 +365,9 @@ describe("All Field Types Model", () => {
             }
         }
 
-        container.registerInstance(PublicModel, new DuplicateTagsPublicModel());
-        const publicProvider = container.resolve(PublicModelProvider);
-        const publicModels = await publicProvider.getModels();
+        container.registerInstance(ModelFactory, new DuplicateTagsPublicModel());
+        const modelsProvider = container.resolve(ModelsProvider);
+        const publicModels = await modelsProvider.list("root");
         const publicModel = publicModels.find(m => m.modelId === "duplicateTagsPublic");
 
         // Should have unique tags only
@@ -379,9 +375,10 @@ describe("All Field Types Model", () => {
         expect(publicModel!.tags).toHaveLength(2);
 
         // Test private model with duplicate tags
-        class DuplicateTagsPrivateModel implements PrivateModel.Interface {
-            buildModel(builder: IPrivateModelBuilder): IPrivateModelBuilder {
+        class DuplicateTagsPrivateModel implements ModelFactory.Interface {
+            execute(builder: ModelFactory.Builder) {
                 return builder
+                    .private()
                     .modelId("duplicateTagsPrivate")
                     .name("Duplicate Tags Private")
                     .tags(["type:model", "custom:tag", "type:model", "custom:tag"])
@@ -393,9 +390,9 @@ describe("All Field Types Model", () => {
 
         const container2 = new Container();
         ModelBuilderFeature.register(container2);
-        container2.registerInstance(PrivateModel, new DuplicateTagsPrivateModel());
-        const privateProvider = container2.resolve(PrivateModelProvider);
-        const privateModels = await privateProvider.getModels();
+        container2.registerInstance(ModelFactory, new DuplicateTagsPrivateModel());
+        const privateProvider = container2.resolve(ModelsProvider);
+        const privateModels = await privateProvider.list("root");
         const privateModel = privateModels.find(m => m.modelId === "duplicateTagsPrivate");
 
         // Should have unique tags only
@@ -403,9 +400,10 @@ describe("All Field Types Model", () => {
         expect(privateModel!.tags).toHaveLength(2);
 
         // Test model without tags still gets type:model
-        class NoTagsModel implements PublicModel.Interface {
-            buildModel(builder: IPublicModelBuilder): IPublicModelBuilder {
+        class NoTagsModel implements ModelFactory.Interface {
+            execute(builder: ModelFactory.Builder) {
                 return builder
+                    .public()
                     .modelId("noTagsModel")
                     .name("No Tags Model")
                     .group(testGroup)
@@ -418,9 +416,9 @@ describe("All Field Types Model", () => {
 
         const container3 = new Container();
         ModelBuilderFeature.register(container3);
-        container3.registerInstance(PublicModel, new NoTagsModel());
-        const noTagsProvider = container3.resolve(PublicModelProvider);
-        const noTagsModels = await noTagsProvider.getModels();
+        container3.registerInstance(ModelFactory, new NoTagsModel());
+        const noTagsProvider = container3.resolve(ModelsProvider);
+        const noTagsModels = await noTagsProvider.list("root");
         const noTagsModel = noTagsModels.find(m => m.modelId === "noTagsModel");
 
         // Should have only type:model tag

@@ -1,11 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { Container } from "@webiny/di";
 import { ModelBuilderFeature } from "~/features/modelBuilder/feature.js";
-import {
-    PrivateModel,
-    PrivateModelProvider,
-    type IPrivateModelBuilder
-} from "~/features/modelBuilder/index.js";
+import { ModelFactory, ModelsProvider } from "~/features/modelBuilder/index.js";
 
 describe("Object Field Multiple .fields() Calls", () => {
     let container: Container;
@@ -16,9 +12,10 @@ describe("Object Field Multiple .fields() Calls", () => {
     });
 
     it("should append fields when .fields() is called multiple times on object field", async () => {
-        class TestModelImpl implements PrivateModel.Interface {
-            buildModel(builder: IPrivateModelBuilder): IPrivateModelBuilder {
+        class TestModelImpl implements ModelFactory.Interface {
+            execute(builder: ModelFactory.Builder) {
                 return builder
+                    .private()
                     .modelId("testObjectMultipleFields")
                     .name("Test Object Multiple Fields")
                     .fields(fields => ({
@@ -39,9 +36,9 @@ describe("Object Field Multiple .fields() Calls", () => {
             }
         }
 
-        container.registerInstance(PrivateModel, new TestModelImpl());
-        const privateModelProvider = container.resolve(PrivateModelProvider);
-        const models = await privateModelProvider.getModels();
+        container.registerInstance(ModelFactory, new TestModelImpl());
+        const modelsProvider = container.resolve(ModelsProvider);
+        const models = await modelsProvider.list("root");
         const model = models.find(m => m.modelId === "testObjectMultipleFields");
 
         expect(model).toBeDefined();
@@ -67,12 +64,12 @@ describe("Object Field Multiple .fields() Calls", () => {
     });
 
     it("should support conditional fields with multiple .fields() calls on object field", async () => {
-        class ConditionalObjectModelImpl implements PrivateModel.Interface {
+        class ConditionalObjectModelImpl implements ModelFactory.Interface {
             constructor(private includeExtendedMetadata: boolean) {}
 
-            buildModel(builder: IPrivateModelBuilder): IPrivateModelBuilder {
+            execute(builder: ModelFactory.Builder) {
                 // Create object field with base fields
-                const metadataBuilder = (fields: PrivateModel.FieldBuilder) => {
+                const metadataBuilder = (fields: ModelFactory.FieldBuilder) => {
                     const objField = fields
                         .object()
                         .label("Metadata")
@@ -92,6 +89,7 @@ describe("Object Field Multiple .fields() Calls", () => {
                 };
 
                 return builder
+                    .private()
                     .modelId("conditionalObjectModel")
                     .name("Conditional Object Model")
                     .fields(fields => ({
@@ -101,9 +99,9 @@ describe("Object Field Multiple .fields() Calls", () => {
         }
 
         // Test with extended metadata included
-        container.registerInstance(PrivateModel, new ConditionalObjectModelImpl(true));
-        const providerWithExtended = container.resolve(PrivateModelProvider);
-        const modelsWithExtended = await providerWithExtended.getModels();
+        container.registerInstance(ModelFactory, new ConditionalObjectModelImpl(true));
+        const providerWithExtended = container.resolve(ModelsProvider);
+        const modelsWithExtended = await providerWithExtended.list("root");
         const modelWithExtended = modelsWithExtended.find(
             m => m.modelId === "conditionalObjectModel"
         );
@@ -120,9 +118,9 @@ describe("Object Field Multiple .fields() Calls", () => {
         // Test without extended metadata
         const container2 = new Container();
         ModelBuilderFeature.register(container2);
-        container2.registerInstance(PrivateModel, new ConditionalObjectModelImpl(false));
-        const providerWithoutExtended = container2.resolve(PrivateModelProvider);
-        const modelsWithoutExtended = await providerWithoutExtended.getModels();
+        container2.registerInstance(ModelFactory, new ConditionalObjectModelImpl(false));
+        const providerWithoutExtended = container2.resolve(ModelsProvider);
+        const modelsWithoutExtended = await providerWithoutExtended.list("root");
         const modelWithoutExtended = modelsWithoutExtended.find(
             m => m.modelId === "conditionalObjectModel"
         );
@@ -134,9 +132,10 @@ describe("Object Field Multiple .fields() Calls", () => {
     });
 
     it("should support nested object fields with multiple .fields() calls", async () => {
-        class NestedObjectModelImpl implements PrivateModel.Interface {
-            buildModel(builder: IPrivateModelBuilder): IPrivateModelBuilder {
+        class NestedObjectModelImpl implements ModelFactory.Interface {
+            execute(builder: ModelFactory.Builder) {
                 return builder
+                    .private()
                     .modelId("nestedObjectModel")
                     .name("Nested Object Model")
                     .fields(fields => ({
@@ -166,9 +165,9 @@ describe("Object Field Multiple .fields() Calls", () => {
             }
         }
 
-        container.registerInstance(PrivateModel, new NestedObjectModelImpl());
-        const privateModelProvider = container.resolve(PrivateModelProvider);
-        const models = await privateModelProvider.getModels();
+        container.registerInstance(ModelFactory, new NestedObjectModelImpl());
+        const modelsProvider = container.resolve(ModelsProvider);
+        const models = await modelsProvider.list("root");
         const model = models.find(m => m.modelId === "nestedObjectModel");
 
         expect(model).toBeDefined();

@@ -1,12 +1,12 @@
-import { Model } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
+import { ModelFactory } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
 import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 
 export const FILE_MODEL_ID = "fmFile";
 
-class FilePrivateModelImpl implements Model.Interface {
+class FilePrivateModelImpl implements ModelFactory.Interface {
     constructor(private wcp: WcpContext.Interface) {}
 
-    buildModel(builder: Model.Builder) {
+    execute(builder: ModelFactory.Builder) {
         const model = builder.private().modelId(FILE_MODEL_ID).name("FmFile");
         const privateFiles = this.wcp.canUsePrivateFiles();
 
@@ -63,7 +63,7 @@ class FilePrivateModelImpl implements Model.Interface {
     }
 }
 
-export const FileModel = Model.createImplementation({
+export const FileModel = ModelFactory.createImplementation({
     implementation: FilePrivateModelImpl,
     dependencies: [WcpContext]
 });

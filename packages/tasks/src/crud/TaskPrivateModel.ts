@@ -1,10 +1,10 @@
-import { Model } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
+import { ModelFactory } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
 import { TaskDataStatus } from "~/types.js";
 
 export const WEBINY_TASK_MODEL_ID = "webinyTask";
 
-class TaskPrivateModelImpl implements Model.Interface {
-    buildModel(builder: Model.Builder) {
+class TaskPrivateModelImpl implements ModelFactory.Interface {
+    execute(builder: ModelFactory.Builder) {
         return builder
             .private()
             .modelId(WEBINY_TASK_MODEL_ID)
@@ -53,7 +53,7 @@ class TaskPrivateModelImpl implements Model.Interface {
     }
 }
 
-export const TaskPrivateModel = Model.createImplementation({
+export const TaskPrivateModel = ModelFactory.createImplementation({
     implementation: TaskPrivateModelImpl,
     dependencies: []
 });

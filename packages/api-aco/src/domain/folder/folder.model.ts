@@ -1,9 +1,9 @@
-import { Model } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
+import { ModelFactory } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
 
 export const FOLDER_MODEL_ID = "acoFolder";
 
-class FolderPrivateModelImpl implements Model.Interface {
-    buildModel(builder: Model.Builder) {
+class FolderPrivateModelImpl implements ModelFactory.Interface {
+    execute(builder: ModelFactory.Builder) {
         return builder
             .private()
             .modelId(FOLDER_MODEL_ID)
@@ -61,7 +61,7 @@ class FolderPrivateModelImpl implements Model.Interface {
     }
 }
 
-export const FolderModel = Model.createImplementation({
+export const FolderModel = ModelFactory.createImplementation({
     implementation: FolderPrivateModelImpl,
     dependencies: []
 });

@@ -1,9 +1,9 @@
-import { Model } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
+import { ModelFactory } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
 
 export const RECORD_LOCKING_MODEL_ID = "wby_recordLocking";
 
-class RecordLockingPrivateModelImpl implements Model.Interface {
-    buildModel(builder: Model.Builder) {
+class RecordLockingPrivateModelImpl implements ModelFactory.Interface {
+    execute(builder: ModelFactory.Builder) {
         return builder
             .private()
             .modelId(RECORD_LOCKING_MODEL_ID)
@@ -43,7 +43,7 @@ class RecordLockingPrivateModelImpl implements Model.Interface {
     }
 }
 
-export const RecordLockingModel = Model.createImplementation({
+export const RecordLockingModel = ModelFactory.createImplementation({
     implementation: RecordLockingPrivateModelImpl,
     dependencies: []
 });

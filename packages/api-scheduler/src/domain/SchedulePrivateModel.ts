@@ -1,8 +1,8 @@
-import { Model } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
+import { ModelFactory } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
 import { SCHEDULE_MODEL_ID } from "~/constants.js";
 
-class SchedulePrivateModelImpl implements Model.Interface {
-    buildModel(builder: Model.Builder) {
+class SchedulePrivateModelImpl implements ModelFactory.Interface {
+    execute(builder: ModelFactory.Builder) {
         return builder
             .private()
             .modelId(SCHEDULE_MODEL_ID)
@@ -28,7 +28,7 @@ class SchedulePrivateModelImpl implements Model.Interface {
     }
 }
 
-export const SchedulePrivateModel = Model.createImplementation({
+export const SchedulePrivateModel = ModelFactory.createImplementation({
     implementation: SchedulePrivateModelImpl,
     dependencies: []
 });

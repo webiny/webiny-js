@@ -1,14 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { Container } from "@webiny/di";
 import { ModelBuilderFeature } from "~/features/modelBuilder/feature.js";
-import {
-    PrivateModel,
-    PrivateModelProvider,
-    PublicModel,
-    PublicModelProvider,
-    type IPrivateModelBuilder,
-    type IPublicModelBuilder
-} from "~/features/modelBuilder/index.js";
+import { ModelFactory, ModelsProvider } from "~/features/modelBuilder/index.js";
 import type { CmsModelGroup } from "~/types/index.js";
 
 describe("Private Models", () => {
@@ -20,10 +13,11 @@ describe("Private Models", () => {
     });
 
     it("should append fields when .fields() is called multiple times", async () => {
-        class TestModelImpl implements PrivateModel.Interface {
-            buildModel(builder: IPrivateModelBuilder): IPrivateModelBuilder {
+        class TestModelImpl implements ModelFactory.Interface {
+            execute(builder: ModelFactory.Builder) {
                 // First call - add base fields
-                builder
+                const model = builder
+                    .private()
                     .modelId("testModel")
                     .name("Test Model")
                     .fields(fields => ({
@@ -32,18 +26,18 @@ describe("Private Models", () => {
                     }));
 
                 // Second call - add more fields
-                builder.fields(fields => ({
+                model.fields(fields => ({
                     age: fields.number().label("Age").gte(0),
                     isActive: fields.boolean().label("Is Active")
                 }));
 
-                return builder;
+                return model;
             }
         }
 
-        container.registerInstance(PrivateModel, new TestModelImpl());
-        const privateModelProvider = container.resolve(PrivateModelProvider);
-        const models = await privateModelProvider.getModels();
+        container.registerInstance(ModelFactory, new TestModelImpl());
+        const modelsProvider = container.resolve(ModelsProvider);
+        const models = await modelsProvider.list("root");
         const model = models.find(m => m.modelId === "testModel");
 
         expect(model).toBeDefined();
@@ -64,12 +58,13 @@ describe("Private Models", () => {
     });
 
     it("should support conditional fields with multiple .fields() calls", async () => {
-        class ConditionalModelImpl implements PrivateModel.Interface {
+        class ConditionalModelImpl implements ModelFactory.Interface {
             constructor(private includeOptionalFields: boolean) {}
 
-            buildModel(builder: IPrivateModelBuilder): IPrivateModelBuilder {
+            execute(builder: ModelFactory.Builder) {
                 // Always add base fields
-                builder
+                const model = builder
+                    .private()
                     .modelId("conditionalModel")
                     .name("Conditional Model")
                     .fields(fields => ({
@@ -78,20 +73,20 @@ describe("Private Models", () => {
 
                 // Conditionally add more fields
                 if (this.includeOptionalFields) {
-                    builder.fields(fields => ({
+                    model.fields(fields => ({
                         description: fields.longText().label("Description"),
                         tags: fields.text().label("Tags").list()
                     }));
                 }
 
-                return builder;
+                return model;
             }
         }
 
         // Test with optional fields included
-        container.registerInstance(PrivateModel, new ConditionalModelImpl(true));
-        const providerWithOptional = container.resolve(PrivateModelProvider);
-        const modelsWithOptional = await providerWithOptional.getModels();
+        container.registerInstance(ModelFactory, new ConditionalModelImpl(true));
+        const modelsProvider = container.resolve(ModelsProvider);
+        const modelsWithOptional = await modelsProvider.list("root");
         const modelWithOptional = modelsWithOptional.find(m => m.modelId === "conditionalModel");
 
         expect(modelWithOptional!.fields).toHaveLength(3);
@@ -104,9 +99,9 @@ describe("Private Models", () => {
         // Test without optional fields
         const container2 = new Container();
         ModelBuilderFeature.register(container2);
-        container2.registerInstance(PrivateModel, new ConditionalModelImpl(false));
-        const providerWithoutOptional = container2.resolve(PrivateModelProvider);
-        const modelsWithoutOptional = await providerWithoutOptional.getModels();
+        container2.registerInstance(ModelFactory, new ConditionalModelImpl(false));
+        const providerWithoutOptional = container2.resolve(ModelsProvider);
+        const modelsWithoutOptional = await providerWithoutOptional.list("root");
         const modelWithoutOptional = modelsWithoutOptional.find(
             m => m.modelId === "conditionalModel"
         );
@@ -130,10 +125,11 @@ describe("Public Models", () => {
     };
 
     it("should append fields when .fields() is called multiple times on public models", async () => {
-        class TestPublicModelImpl implements PublicModel.Interface {
-            buildModel(builder: IPublicModelBuilder): IPublicModelBuilder {
+        class TestPublicModelImpl implements ModelFactory.Interface {
+            execute(builder: ModelFactory.Builder) {
                 // First call - add base fields
-                builder
+                const model = builder
+                    .public()
                     .modelId("publicTestModel")
                     .name("Public Test Model")
                     .group(testGroup)
@@ -143,21 +139,21 @@ describe("Public Models", () => {
                     }));
 
                 // Second call - add more fields
-                builder.fields(fields => ({
+                model.fields(fields => ({
                     image: fields.file().label("Image").imagesOnly(),
                     tags: fields.text().label("Tags").list()
                 }));
 
                 // Add layout for all fields
-                builder.layout([["title"], ["description"], ["image"], ["tags"]]);
+                model.layout([["title"], ["description"], ["image"], ["tags"]]);
 
-                return builder;
+                return model;
             }
         }
 
-        container.registerInstance(PublicModel, new TestPublicModelImpl());
-        const publicModelProvider = container.resolve(PublicModelProvider);
-        const models = await publicModelProvider.getModels();
+        container.registerInstance(ModelFactory, new TestPublicModelImpl());
+        const modelsProvider = container.resolve(ModelsProvider);
+        const models = await modelsProvider.list("root");
         const model = models.find(m => m.modelId === "publicTestModel");
 
         expect(model).toBeDefined();
@@ -178,12 +174,13 @@ describe("Public Models", () => {
     });
 
     it("should support conditional fields with multiple .fields() calls on public models", async () => {
-        class ConditionalPublicModelImpl implements PublicModel.Interface {
+        class ConditionalPublicModelImpl implements ModelFactory.Interface {
             constructor(private includeValidators: boolean) {}
 
-            buildModel(builder: IPublicModelBuilder): IPublicModelBuilder {
+            execute(builder: ModelFactory.Builder) {
                 // Always add base fields
-                builder
+                const model = builder
+                    .public()
                     .modelId("conditionalPublicModel")
                     .name("Conditional Public Model")
                     .group(testGroup)
@@ -193,7 +190,7 @@ describe("Public Models", () => {
 
                 // Conditionally add more fields with validators
                 if (this.includeValidators) {
-                    builder.fields(fields => ({
+                    model.fields(fields => ({
                         email: fields.text().label("Email").email(),
                         url: fields.text().label("URL").url(),
                         rating: fields
@@ -202,19 +199,19 @@ describe("Public Models", () => {
                             .gte(1, "Must be at least 1")
                             .lte(5, "Must be at most 5")
                     }));
-                    builder.layout([["title"], ["email"], ["url"], ["rating"]]);
+                    model.layout([["title"], ["email"], ["url"], ["rating"]]);
                 } else {
-                    builder.layout([["title"]]);
+                    model.layout([["title"]]);
                 }
 
-                return builder;
+                return model;
             }
         }
 
         // Test with validators included
-        container.registerInstance(PublicModel, new ConditionalPublicModelImpl(true));
-        const providerWithValidators = container.resolve(PublicModelProvider);
-        const modelsWithValidators = await providerWithValidators.getModels();
+        container.registerInstance(ModelFactory, new ConditionalPublicModelImpl(true));
+        const providerWithValidators = container.resolve(ModelsProvider);
+        const modelsWithValidators = await providerWithValidators.list("root");
         const modelWithValidators = modelsWithValidators.find(
             m => m.modelId === "conditionalPublicModel"
         );
@@ -241,9 +238,9 @@ describe("Public Models", () => {
         // Test without validators
         const container2 = new Container();
         ModelBuilderFeature.register(container2);
-        container2.registerInstance(PublicModel, new ConditionalPublicModelImpl(false));
-        const providerWithoutValidators = container2.resolve(PublicModelProvider);
-        const modelsWithoutValidators = await providerWithoutValidators.getModels();
+        container2.registerInstance(ModelFactory, new ConditionalPublicModelImpl(false));
+        const providerWithoutValidators = container2.resolve(ModelsProvider);
+        const modelsWithoutValidators = await providerWithoutValidators.list("root");
         const modelWithoutValidators = modelsWithoutValidators.find(
             m => m.modelId === "conditionalPublicModel"
         );

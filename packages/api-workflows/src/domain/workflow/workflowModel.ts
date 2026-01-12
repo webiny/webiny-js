@@ -1,10 +1,10 @@
-import { Model } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
+import { ModelFactory } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
 import { WORKFLOW_MODEL_ID } from "~/constants.js";
 
 export { WORKFLOW_MODEL_ID };
 
-class WorkflowModelImpl implements Model.Interface {
-    buildModel(builder: Model.Builder) {
+class WorkflowModelImpl implements ModelFactory.Interface {
+    execute(builder: ModelFactory.Builder) {
         return builder
             .private()
             .modelId(WORKFLOW_MODEL_ID)
@@ -18,30 +18,31 @@ class WorkflowModelImpl implements Model.Interface {
                     .list()
                     .required("Steps are required.")
                     .listMinLength(1, "At least one step is required.")
-                    .fields(stepFields => ({
-                        id: stepFields.text().label("ID").required("ID is required."),
-                        title: stepFields.text().label("Title").required("Title is required."),
-                        color: stepFields.text().label("Color"),
-                        description: stepFields.text().label("Description"),
-                        teams: stepFields
+                    .fields(fields => ({
+                        id: fields.text().label("ID").required("ID is required."),
+                        title: fields.text().label("Title").required("Title is required."),
+                        color: fields.text().label("Color"),
+                        description: fields.text().label("Description"),
+                        teams: fields
                             .object()
                             .label("Teams")
                             .list()
                             .fields(teamFields => ({
                                 id: teamFields.text().label("ID").required("ID is required.")
                             })),
-                        notifications: stepFields
+                        notifications: fields
                             .object()
+                            .list()
                             .label("Notifications")
-                            .fields(notificationFields => ({
-                                enabled: notificationFields.boolean().label("Enabled")
+                            .fields(fields => ({
+                                id: fields.text().label("Id").required("Id is required.")
                             }))
                     }))
             }));
     }
 }
 
-export const WorkflowModel = Model.createImplementation({
+export const WorkflowModel = ModelFactory.createImplementation({
     implementation: WorkflowModelImpl,
     dependencies: []
 });

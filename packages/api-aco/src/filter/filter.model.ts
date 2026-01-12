@@ -1,9 +1,9 @@
-import { Model } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
+import { ModelFactory } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
 
 export const FILTER_MODEL_ID = "acoFilter";
 
-class FilterPrivateModelImpl implements Model.Interface {
-    buildModel(builder: Model.Builder) {
+class FilterPrivateModelImpl implements ModelFactory.Interface {
+    execute(builder: ModelFactory.Builder) {
         return builder
             .private()
             .modelId(FILTER_MODEL_ID)
@@ -61,7 +61,7 @@ class FilterPrivateModelImpl implements Model.Interface {
     }
 }
 
-export const FilterPrivateModel = Model.createImplementation({
+export const FilterPrivateModel = ModelFactory.createImplementation({
     implementation: FilterPrivateModelImpl,
     dependencies: []
 });
