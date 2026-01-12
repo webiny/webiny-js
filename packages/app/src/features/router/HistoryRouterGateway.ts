@@ -80,11 +80,6 @@ export class HistoryRouterGateway implements RouterGateway.Interface {
         this.resolvePathname(currentPathname, queryParams);
     }
 
-    addRoute(route: RouteDefinition): void {
-        this.routes.push(this.routeWithAction(route));
-        this.sortRoutes(this.routes);
-    }
-
     destroy(): void {
         this.stopListening();
         this.unblock && this.unblock();
