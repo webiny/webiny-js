@@ -44,7 +44,7 @@ export const globalEntityAttributes: AttributeDefinitions = {
 };
 
 export const createGlobalEntity = <T extends GenericRecord = GenericRecord>(
-    params: EntityConstructor
+    params: Omit<EntityConstructor, "attributes"> & Partial<Pick<EntityConstructor, "attributes">>
 ) => {
     return createEntity<IGlobalEntityAttributes<T>>({
         ...params,
@@ -101,7 +101,7 @@ export const standardEntityAttributes: AttributeDefinitions = {
 };
 
 export const createStandardEntity = <T extends GenericRecord = GenericRecord>(
-    params: EntityConstructor
+    params: Omit<EntityConstructor, "attributes"> & Partial<Pick<EntityConstructor, "attributes">>
 ) => {
     return createEntity<IStandardEntityAttributes<T>>({
         ...params,

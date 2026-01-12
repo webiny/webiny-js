@@ -1,4 +1,4 @@
-import { batchReadAll } from "@webiny/db-dynamodb";
+import { batchReadAll } from "@webiny/db-dynamodb/utils/batch/batchRead.js";
 import { createSynchronizationBuilder } from "@webiny/api-dynamodb-to-elasticsearch";
 import type { IGetElasticsearchEntityTypeParams } from "~/tasks/dataSynchronization/entities/index.js";
 import {

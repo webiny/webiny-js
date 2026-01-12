@@ -22,10 +22,12 @@ import type { deleteItem, IDeleteItemKeys } from "~/utils/delete.js";
 import type { batchReadAll, BatchReadItem } from "~/utils/batch/batchRead.js";
 import type { IEntityWriteBatchParams } from "./EntityWriteBatch.js";
 import type { IEntityReadBatchParams } from "./EntityReadBatch.js";
+import { queryPerPage } from "~/utils/index.js";
 
 export type IEntityQueryOneParams = Omit<QueryOneParams, "entity">;
 
 export type IEntityQueryAllParams = Omit<QueryAllParams, "entity">;
+export type IEntityQueryPerPageParams = Omit<QueryAllParams, "entity">;
 
 export interface IEntityCreateEntityWriterParams<T = GenericRecord>
     extends Omit<IEntityWriteBatchParams<T>, "entity"> {}
@@ -39,6 +41,7 @@ export type IEntityQueryOneResult<T> = ReturnType<typeof queryOne<T>>;
 export type IEntityQueryOneCleanResult<T> = ReturnType<typeof queryOneClean<T>>;
 export type IEntityQueryAllResult<T> = ReturnType<typeof queryAll<T>>;
 export type IEntityQueryAllCleanResult<T> = ReturnType<typeof queryAllClean<T>>;
+export type IEntityQueryPerPageResult<T> = ReturnType<typeof queryPerPage<T>>;
 
 export interface IEntity<T extends GenericRecord = GenericRecord> {
     readonly entity: BaseEntity;
@@ -55,6 +58,7 @@ export interface IEntity<T extends GenericRecord = GenericRecord> {
     queryOneClean<R extends T = T>(params: IEntityQueryOneParams): IEntityQueryOneCleanResult<R>;
     queryAll<R extends T = T>(params: IEntityQueryAllParams): IEntityQueryAllResult<R>;
     queryAllClean<R extends T = T>(params: IEntityQueryAllParams): IEntityQueryAllCleanResult<R>;
+    queryPerPage<R extends T = T>(params: IEntityQueryPerPageParams): IEntityQueryPerPageResult<R>;
 }
 
 export interface IEntityWriteBatchBuilder {
