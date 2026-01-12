@@ -24,3 +24,29 @@ export namespace ApiKeysRepository {
     export type Interface = IApiKeysRepository;
     export type Error = RepositoryError;
 }
+
+export type CodeApiKey = Pick<ApiKey, "name" | "permissions"> & {
+    token: `wat_${string}`;
+};
+
+export interface IApiKeyFactory {
+    execute(): Promise<CodeApiKey[]> | CodeApiKey[];
+}
+
+export const ApiKeyFactory = createAbstraction<IApiKeyFactory>("ApiKeyFactory");
+
+export namespace ApiKeyFactory {
+    export type Interface = IApiKeyFactory;
+    export type Return = Promise<CodeApiKey[]> | CodeApiKey[];
+    export type ApiKey = CodeApiKey;
+}
+
+export interface IApiKeyProvider {
+    getByToken(token: string): Promise<ApiKey | null>;
+}
+
+export const ApiKeyProvider = createAbstraction<IApiKeyProvider>("ApiKeyProvider");
+
+export namespace ApiKeyProvider {
+    export type Interface = IApiKeyProvider;
+}

@@ -96,10 +96,8 @@ export interface OnRouteExit {
 
 interface IRouterGateway {
     setRoutes(routes: RouteDefinition[]): void;
-    addRoute(route: RouteDefinition): void;
     goToRoute(name: string, params?: { [k: string]: any }): void;
     pushState(url: string): void;
-    generateRouteUrl(id: string, params?: { [k: string]: any }): string;
     onRouteExit(cb: OnRouteExit): void;
     destroy(): void;
 }

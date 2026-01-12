@@ -3,6 +3,7 @@ import type { MatchedRoute, RouteDefinition, OnRouteExit } from "./abstractions.
 import * as Abstractions from "./abstractions.js";
 import { Route, RouteParamsDefinition, RouteParamsInfer } from "./Route.js";
 import { createImplementation } from "@webiny/di";
+import { generateUrl } from "./generateUrl.js";
 
 const INIT_ROUTE = { name: "__init__", path: "", pathname: "", params: {} };
 
@@ -36,12 +37,7 @@ class RouterRepositoryImpl implements Abstractions.RouterRepository.Interface {
         route: Route<TParams>,
         params?: TParams extends RouteParamsDefinition ? RouteParamsInfer<TParams> : undefined
     ): string {
-        const routeExists = this.routes.find(existingRoute => existingRoute.name === route.name);
-        if (!routeExists) {
-            this.gateway.addRoute(this.routeWithAction(route));
-            this.routes.push(route);
-        }
-        return this.gateway.generateRouteUrl(route.name, params);
+        return generateUrl(route.path, params);
     }
 
     goToRoute<TParams extends RouteParamsDefinition | undefined>(

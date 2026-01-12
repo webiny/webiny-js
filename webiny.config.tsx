@@ -1,5 +1,5 @@
 import React from "react";
-import { Cli, Infra, Project, Security } from "webiny/extensions";
+import { Api, Cli, Infra, Project, Security } from "webiny/extensions";
 import { MySchemaExtension } from "./extensions/graphql/MySchemaExtension.js";
 import { Cognito } from "@webiny/cognito";
 // import { MyIdpExtension } from "./extensions/idp/okta/MyIdpExtension.js";
@@ -86,6 +86,7 @@ export const Extensions = () => {
             <MySchemaExtension />
 
             {/* Security 👇 */}
+            <Api.Extension src={"./extensions/MyApiKey.ts"} />
             <Security.ApiKey.AfterUpdate src={"./extensions/MyApiKeyAfterUpdate.ts"} />
 
             {/* 🚧 WIP 👇 */}
