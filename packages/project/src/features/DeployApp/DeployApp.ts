@@ -2,15 +2,14 @@ import { createImplementation } from "@webiny/di";
 import {
     DeployApp,
     BuildAppWorkspaceService,
-    WatchedLambdaFunctionsService,
     GetApp,
     GetProject,
     GetPulumiService,
     LoggerService,
     ProjectSdkParamsService,
     PulumiGetSecretsProviderService,
-    PulumiGetStackOutputService,
-    PulumiSelectStackService
+    PulumiSelectStackService,
+    WatchedLambdaFunctionsService
 } from "~/abstractions/index.js";
 import {
     createEnvConfiguration,
@@ -31,7 +30,6 @@ export class DefaultDeployApp implements DeployApp.Interface {
         private pulumiGetSecretsProviderService: PulumiGetSecretsProviderService.Interface,
         private logger: LoggerService.Interface,
         private projectSdkParamsService: ProjectSdkParamsService.Interface,
-        private pulumiGetStackOutputService: PulumiGetStackOutputService.Interface,
         private watchedLambdaFunctionsService: WatchedLambdaFunctionsService.Interface
     ) {}
 
@@ -102,17 +100,6 @@ export class DefaultDeployApp implements DeployApp.Interface {
         // Promise is returned so that the caller can await it if needed.
         await pulumiProcess;
         await output;
-
-        // Clear Lambda URNs that needed replacement after successful deployment
-        this.watchedLambdaFunctionsService.clearDirty(app.name);
-
-        // Update the stack output cache after successful deployment
-        try {
-            await this.pulumiGetStackOutputService.execute(app, { skipCache: true });
-        } catch (error) {
-            // Cache refresh failure shouldn't affect deployment success
-            this.logger.error("Failed to update stack output cache after deployment.", error);
-        }
     }
 }
 
@@ -128,7 +115,6 @@ export const deployApp = createImplementation({
         PulumiGetSecretsProviderService,
         LoggerService,
         ProjectSdkParamsService,
-        PulumiGetStackOutputService,
         WatchedLambdaFunctionsService
     ]
 });

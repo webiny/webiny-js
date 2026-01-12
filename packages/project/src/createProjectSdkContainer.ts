@@ -88,7 +88,13 @@ import {
     wcpService
 } from "./services/index.js";
 
-import { buildAppWithHooks, deployAppWithHooks, watchWithHooks } from "./decorators/index.js";
+import {
+    buildAppWithHooks,
+    deployAppClearWatchedLambdaFunctions,
+    deployAppRefreshStackOutputCache,
+    deployAppWithHooks,
+    watchWithHooks
+} from "./decorators/index.js";
 
 import {
     GetProject,
@@ -308,6 +314,8 @@ export const createProjectSdkContainer = async (
 
     // Decorators that must be applied last on top of potentially custom ones.
     container.registerDecorator(buildAppWithHooks);
+    container.registerDecorator(deployAppClearWatchedLambdaFunctions);
+    container.registerDecorator(deployAppRefreshStackOutputCache);
     container.registerDecorator(deployAppWithHooks);
     container.registerDecorator(watchWithHooks);
 
