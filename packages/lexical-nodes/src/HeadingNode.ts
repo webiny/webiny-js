@@ -230,7 +230,7 @@ export class HeadingNode extends BaseHeadingNode implements TypographyStylesNode
         }
 
         if (!this.__styleId || !this.__className) {
-            this.setDefaultTypography(theme.emotionMap);
+            this.setDefaultTypography(theme.emotionMap, this.__styleId);
         }
 
         if (this.__className) {
@@ -240,8 +240,15 @@ export class HeadingNode extends BaseHeadingNode implements TypographyStylesNode
         return element;
     }
 
-    private setDefaultTypography(themeEmotionMap: ThemeEmotionMap) {
-        const typographyStyle = findTypographyStyleByHtmlTag(this.getTag(), themeEmotionMap);
+    private setDefaultTypography(themeEmotionMap: ThemeEmotionMap, styleId?: string) {
+        let typographyStyle = findTypographyStyleByHtmlTag(this.getTag(), themeEmotionMap);
+        if (styleId) {
+            const byStyleId = themeEmotionMap[styleId];
+            if (byStyleId) {
+                typographyStyle = byStyleId;
+            }
+        }
+
         if (typographyStyle) {
             this.__styleId = typographyStyle.id;
             this.__className = typographyStyle.className;
