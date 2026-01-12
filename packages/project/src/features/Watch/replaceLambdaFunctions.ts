@@ -9,7 +9,8 @@ import {
 import {
     type ListAppLambdaFunctionsService,
     type LoggerService,
-    type PulumiGetStackExportService,
+    type PulumiExportService,
+    type WatchedLambdaFunctionsService,
     type UiService
 } from "~/abstractions/index.js";
 import { type AppModel } from "~/models/index.js";
@@ -28,7 +29,8 @@ export interface IReplaceLambdaFunctionsParams {
     dependencies: {
         uiService: UiService.Interface;
         loggerService: LoggerService.Interface;
-        pulumiGetStackExportService: PulumiGetStackExportService.Interface;
+        pulumiExportService: PulumiExportService.Interface;
+        watchedLambdaFunctionsService: WatchedLambdaFunctionsService.Interface;
     };
 }
 
@@ -42,14 +44,42 @@ export const replaceLambdaFunctions = async ({
     localExecutionHandshakeTimeout,
     dependencies
 }: IReplaceLambdaFunctionsParams) => {
-    const { loggerService: logger, pulumiGetStackExportService: getAppStackExport } = dependencies;
+    const {
+        loggerService: logger,
+        pulumiExportService: exportStackState,
+        watchedLambdaFunctionsService
+    } = dependencies;
 
-    const stackExport = await getAppStackExport.execute(app);
+    const stackExport = await exportStackState.execute(app);
     if (!stackExport) {
         // If no stack export is found, return an empty array. This is a valid scenario.
         // For example, watching the Admin app locally, but not deploying it.
         logger.info("No AWS Lambda functions to replace.");
         return [];
+    }
+
+    // Find the URNs of Lambda functions that will be replaced
+    const functionNamesToUpdate = functionsList.list.map(fn => fn.name);
+    const replacedFunctionUrns: string[] = [];
+
+    if (stackExport.deployment?.resources) {
+        for (const resource of stackExport.deployment.resources) {
+            if (resource.type === "aws:lambda/function:Function") {
+                const functionName = resource.inputs?.name;
+                if (functionName && functionNamesToUpdate.includes(functionName)) {
+                    replacedFunctionUrns.push(resource.urn);
+                    logger.debug(`Will replace Lambda function: ${functionName} (${resource.urn})`);
+                }
+            }
+        }
+    }
+
+    // Mark these functions as needing replacement on next deployment
+    if (replacedFunctionUrns.length > 0) {
+        watchedLambdaFunctionsService.markDirty(app.name, replacedFunctionUrns);
+        logger.info(
+            `Marked ${replacedFunctionUrns.length} Lambda function(s) for replacement on next deployment.`
+        );
     }
 
     logger.info("replacing %s AWS Lambda function(s).", functionsList.meta.count);

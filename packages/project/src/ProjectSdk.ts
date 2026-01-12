@@ -4,9 +4,9 @@ import {
     BuildApp,
     DeployApp,
     DestroyApp,
+    ExportStack,
     GetApp,
     GetAppOutput,
-    GetAppStackExport,
     GetAppStackOutput,
     GetProductionEnvironments,
     GetProject,
@@ -118,10 +118,10 @@ export class ProjectSdk {
         return this.container.resolve(GetAppStackOutput).execute<TOutput>(appName);
     }
 
-    async getAppStackExport<
-        TExport extends GetAppStackExport.StackExport = GetAppStackExport.StackExport
-    >(params: GetAppStackExport.Params) {
-        return this.container.resolve(GetAppStackExport).execute<TExport>(params);
+    async getAppStackExport<TExport extends ExportStack.StackExport = ExportStack.StackExport>(
+        params: ExportStack.Params
+    ) {
+        return this.container.resolve(ExportStack).execute<TExport>(params);
     }
 
     buildApp(params: BuildApp.Params) {

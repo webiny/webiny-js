@@ -16,6 +16,9 @@ export const createRsbuildConfig = ({ cwd }) => {
         output: { distPath: { root: paths.admin.outputFolder } },
         mode,
         dev: { hmr: true },
+        performance: {
+            printFileSize: false
+        },
         tools: {
             postcss: (_, { addPlugins }) => {
                 addPlugins(

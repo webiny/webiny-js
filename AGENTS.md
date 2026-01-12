@@ -9,3 +9,6 @@
    - feat: for new features
    - fix: for bug fixes
    - docs: for documentation changes
+
+### Misc.
+1. When generating code, once done, run "git add ." to stage all changes.

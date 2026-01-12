@@ -21,6 +21,9 @@ export const createRsbuildConfig = ({ cwd }) => {
             },
             distPath: { root: paths.fn.outputFolder }
         },
+        performance: {
+            printFileSize: false
+        },
         tools: {
             rspack: {
                 externals: [/^@aws-sdk/, /^sharp$/],
