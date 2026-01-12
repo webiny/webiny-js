@@ -2,13 +2,13 @@ import { createImplementation } from "@webiny/di";
 import {
     GetPulumiService,
     LoggerService,
-    PulumiGetStackExportService,
+    PulumiExportService,
     PulumiSelectStackService
 } from "~/abstractions/index.js";
 import { type AppModel } from "~/models/index.js";
 import { createEnvConfiguration, withPulumiConfigPassphrase } from "~/utils/env/index.js";
 
-export class DefaultPulumiGetStackExportService implements PulumiGetStackExportService.Interface {
+export class DefaultPulumiExportService implements PulumiExportService.Interface {
     constructor(
         private getPulumiService: GetPulumiService.Interface,
         private pulumiSelectStackService: PulumiSelectStackService.Interface,
@@ -43,8 +43,13 @@ export class DefaultPulumiGetStackExportService implements PulumiGetStackExportS
     }
 }
 
-export const pulumiGetStackExportService = createImplementation({
-    abstraction: PulumiGetStackExportService,
-    implementation: DefaultPulumiGetStackExportService,
+export const pulumiExportService = createImplementation({
+    abstraction: PulumiExportService,
+    implementation: DefaultPulumiExportService,
     dependencies: [GetPulumiService, PulumiSelectStackService, LoggerService]
 });
+
+// Backwards compatibility
+/** @deprecated Use pulumiExportService instead */
+export const pulumiGetStackExportService = pulumiExportService;
+export const DefaultPulumiGetStackExportService = DefaultPulumiExportService;

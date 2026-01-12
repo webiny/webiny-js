@@ -1,6 +1,7 @@
 export * from "./ProjectInfoService/index.js";
 export { BuildAppWorkspaceService } from "./BuildAppWorkspaceService.js";
 export { BuildProjectWorkspaceService } from "./BuildProjectWorkspaceService.js";
+export { DirtyLambdaService } from "./DirtyLambdaService.js";
 export { GetAppPackagesService } from "./GetAppPackagesService.js";
 export { GetAppService } from "./GetAppService.js";
 export { GetCwdService } from "./GetCwdService.js";
@@ -20,7 +21,8 @@ export { LoggerService } from "./LoggerService.js";
 export { ProjectSdkParamsService } from "./ProjectSdkParamsService.js";
 export { PulumiGetConfigPassphraseService } from "./PulumiGetConfigPassphraseService.js";
 export { PulumiGetSecretsProviderService } from "./PulumiGetSecretsProviderService.js";
-export { PulumiGetStackExportService } from "./PulumiGetStackExportService.js";
+export { PulumiExportService, PulumiGetStackExportService } from "./PulumiExportService.js";
+export { PulumiImportService } from "./PulumiImportService.js";
 export { PulumiGetStackOutputService } from "./PulumiGetStackOutputService.js";
 export { PulumiLoginService } from "./PulumiLoginService.js";
 export { PulumiSelectStackService } from "./PulumiSelectStackService.js";

@@ -1,5 +1,6 @@
 export * from "./BuildAppWorkspaceService/index.js";
 export * from "./BuildProjectWorkspaceService/index.js";
+export * from "./DirtyLambdaService/index.js";
 export * from "./GetAppPackagesService/index.js";
 export * from "./GetAppService/index.js";
 export * from "./GetCwdService/index.js";
@@ -20,7 +21,8 @@ export * from "./ProjectInfoService/index.js";
 export * from "./ProjectSdkParamsService/index.js";
 export * from "./PulumiGetConfigPassphraseService/index.js";
 export * from "./PulumiGetSecretsProviderService/index.js";
-export * from "./PulumiGetStackExportService/index.js";
+export * from "./PulumiExportService/index.js";
+export * from "./PulumiImportService/index.js";
 export * from "./PulumiGetStackOutputService/index.js";
 export * from "./PulumiLoginService/index.js";
 export * from "./PulumiSelectStackService/index.js";
