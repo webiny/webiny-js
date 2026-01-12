@@ -1,15 +1,8 @@
 import path from "path";
-
-// ANSI color codes
-const colors = {
-    blue: "\x1b[34m",
-    cyan: "\x1b[36m",
-    magenta: "\x1b[35m",
-    reset: "\x1b[0m"
-};
+import chalk from "chalk";
 
 export const printBuildStats =
-    cwd =>
+    ({ cwd, label = "build", extensions = [".js", ".mjs", ".css"] }) =>
     ({ stats }) => {
         if (!stats) return;
 
@@ -28,12 +21,12 @@ export const printBuildStats =
 
         // Sort assets by size for better readability
         const sortedAssets = assets
-            .filter(asset => asset.name.endsWith(".mjs"))
+            .filter(asset => extensions.some(ext => asset.name.endsWith(ext)))
             .sort((a, b) => a.size - b.size);
 
         // Print header with blue color
         console.log(
-            `\n${colors.blue}File (node)${colors.reset}${"".padEnd(69)}${colors.blue}Size${colors.reset}`
+            `\n${chalk.blue(`File (${label})`.padEnd(50))}${chalk.blue("Size".padStart(11))}`
         );
 
         let totalSize = 0;
@@ -43,13 +36,9 @@ export const printBuildStats =
             totalSize += asset.size;
 
             // Print filename in cyan
-            console.log(
-                `${colors.cyan}${fileName.padEnd(79)}${colors.reset}${sizeKB.padStart(8)} kB`
-            );
+            console.log(`${chalk.cyan(fileName.padEnd(50))}${sizeKB.padStart(10)} kB`);
         }
 
         const totalSizeKB = (totalSize / 1024).toFixed(1);
-        console.log(
-            `\n${" ".repeat(79)}${colors.magenta}Total:${colors.reset}${totalSizeKB.padStart(8)} kB\n`
-        );
+        console.log(`\n${chalk.magenta("Total:".padEnd(50))}${totalSizeKB.padStart(10)} kB\n`);
     };
