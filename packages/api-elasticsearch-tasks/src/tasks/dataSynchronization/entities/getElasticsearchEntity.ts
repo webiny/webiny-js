@@ -1,8 +1,8 @@
-import type { Entity } from "@webiny/db-dynamodb/toolbox.js";
 import type { NonEmptyArray } from "@webiny/api/types.js";
 import type { IRegistryItem } from "@webiny/db";
 import { EntityType } from "./getElasticsearchEntityType.js";
 import { DbRegistry } from "~/abstractions/DbRegistry.js";
+import type { IEntity, IStandardEntityAttributes } from "@webiny/db-dynamodb";
 
 export interface IGetElasticsearchEntityParams {
     type: EntityType | unknown;
@@ -19,7 +19,7 @@ export const getElasticsearchEntity = (params: IGetElasticsearchEntityParams) =>
     const { type, dbRegistry } = params;
 
     const getByPredicate = (predicate: (item: IRegistryItem) => boolean) => {
-        return dbRegistry.getOneItem<Entity>(predicate);
+        return dbRegistry.getOneItem<IEntity<IStandardEntityAttributes>>(predicate);
     };
 
     try {

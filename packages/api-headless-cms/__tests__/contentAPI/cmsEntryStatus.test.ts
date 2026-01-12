@@ -118,7 +118,8 @@ describe("cms entry status filtering", () => {
                                 status: "published",
                                 version: 1
                             }
-                        }
+                        },
+                        error: null
                     }
                 }
             });

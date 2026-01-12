@@ -1,34 +1,36 @@
 import type { Table } from "@webiny/db-dynamodb/toolbox.js";
-import { Entity } from "@webiny/db-dynamodb/toolbox.js";
+import { createEntity, standardEntityAttributes } from "@webiny/db-dynamodb";
+import type { IEntryEntity, IEntryEntityAttributes } from "./types.js";
 
 interface Params {
     table: Table<string, string, string>;
     entityName: string;
 }
 
-export const createEntryEntity = (params: Params): Entity<any> => {
+export const createEntryEntity = (params: Params): IEntryEntity => {
     const { table, entityName } = params;
-    return new Entity({
+    return createEntity<IEntryEntityAttributes>({
         name: entityName,
         table,
         attributes: {
-            PK: {
-                type: "string",
-                partitionKey: true
-            },
-            SK: {
-                type: "string",
-                sortKey: true
-            },
-            GSI1_PK: {
-                type: "string"
-            },
-            GSI1_SK: {
-                type: "string"
-            },
-            TYPE: {
-                type: "string"
-            },
+            ...standardEntityAttributes,
+            // PK: {
+            //     type: "string",
+            //     partitionKey: true
+            // },
+            // SK: {
+            //     type: "string",
+            //     sortKey: true
+            // },
+            // GSI1_PK: {
+            //     type: "string"
+            // },
+            // GSI1_SK: {
+            //     type: "string"
+            // },
+            // TYPE: {
+            //     type: "string"
+            // },
             __type: {
                 type: "string"
             },
@@ -80,16 +82,6 @@ export const createEntryEntity = (params: Params): Entity<any> => {
             restoredBy: { type: "map" },
             firstPublishedBy: { type: "map" },
             lastPublishedBy: { type: "map" },
-
-            /**
-             * Deprecated fields. 👇
-             */
-            ownedBy: {
-                type: "map"
-            },
-            publishedOn: {
-                type: "string"
-            },
 
             /**
              * The rest. 👇

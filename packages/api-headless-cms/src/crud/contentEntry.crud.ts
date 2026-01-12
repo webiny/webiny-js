@@ -23,9 +23,9 @@ import { MoveEntryUseCase } from "~/features/contentEntry/MoveEntry/abstractions
 import { RepublishEntryUseCase } from "~/features/contentEntry/RepublishEntry/abstractions.js";
 import { PublishEntryUseCase } from "~/features/contentEntry/PublishEntry/abstractions.js";
 import {
+    ListDeletedEntriesUseCase,
     ListLatestEntriesUseCase,
-    ListPublishedEntriesUseCase,
-    ListDeletedEntriesUseCase
+    ListPublishedEntriesUseCase
 } from "~/features/contentEntry/ListEntries/index.js";
 import { ListEntriesUseCase } from "~/features/contentEntry/ListEntries/abstractions.js";
 import { GetEntriesByIdsUseCase } from "~/features/contentEntry/GetEntriesByIds/index.js";
@@ -212,11 +212,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
         if (result.isFail()) {
             // Convert Result error to WebinyError for backward compatibility
-            const error = result.error;
             throw new WebinyError(
-                error.message || "Could not publish entry.",
-                error.code || "PUBLISH_ERROR",
-                error.data
+                result.error.message || "Could not publish entry.",
+                result.error.code || "PUBLISH_ERROR",
+                result.error.data
             );
         }
 

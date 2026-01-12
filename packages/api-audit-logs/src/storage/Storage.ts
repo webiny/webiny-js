@@ -1,6 +1,4 @@
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import { put } from "@webiny/db-dynamodb/utils/put.js";
-import { getClean } from "@webiny/db-dynamodb/utils/get.js";
 import { createEntity } from "~/storage/entity.js";
 import type {
     IStorage,
@@ -11,7 +9,6 @@ import type {
     IStorageStoreParams,
     IStorageStoreResult
 } from "~/storage/abstractions/Storage.js";
-import type { IStorageItem } from "~/storage/types.js";
 import type { ICompressor } from "@webiny/utils/compression/index.js";
 import { Converter } from "~/storage/Converter.js";
 import { createAccessPatterns } from "~/storage/accessPatterns/index.js";
@@ -39,7 +36,7 @@ export class Storage implements IStorage {
         this.entity = entity;
 
         const patterns = createAccessPatterns({
-            entity: this.entity
+            entity
         });
         this.patternHandler = new AccessPatternHandler({
             patterns
@@ -55,12 +52,9 @@ export class Storage implements IStorage {
         const { id, tenant } = params;
 
         try {
-            const result = await getClean<IStorageItem>({
-                entity: this.entity,
-                keys: {
-                    PK: `T#${tenant}#AUDIT_LOG`,
-                    SK: `${id}`
-                }
+            const result = await this.entity.get({
+                PK: `T#${tenant}#AUDIT_LOG`,
+                SK: `${id}`
             });
             if (!result) {
                 return {
@@ -85,10 +79,7 @@ export class Storage implements IStorage {
 
         try {
             const item = await this.converter.oneToStorage(auditLog);
-            await put({
-                entity: this.entity,
-                item
-            });
+            await this.entity.put(item);
         } catch (ex) {
             return {
                 error: ex,

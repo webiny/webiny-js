@@ -1,5 +1,5 @@
 import type DataLoader from "dataloader";
-import type { DataLoaderParams } from "./types.js";
+import type { IDataLoaderParams } from "./types.js";
 import { createGetAllEntryRevisions } from "./getAllEntryRevisions.js";
 import { createGetLatestRevisionByEntryId } from "./getLatestRevisionByEntryId.js";
 import { createGetPublishedRevisionByEntryId } from "./getPublishedRevisionByEntryId.js";
@@ -8,7 +8,7 @@ import { createGetRevisionById } from "./getRevisionById.js";
 export * from "./DataLoaderCache.js";
 
 interface Callable {
-    (params: DataLoaderParams): DataLoader<any, any>;
+    (params: IDataLoaderParams): DataLoader<any, any>;
 }
 
 const dataLoaders: Record<string, Callable> = {

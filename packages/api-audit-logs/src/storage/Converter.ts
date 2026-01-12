@@ -65,6 +65,7 @@ export class Converter implements IConverter {
             PK: defaultKeys.partitionKey,
             SK: defaultKeys.sortKey as unknown as string,
             ...keys,
+            TYPE: "auditLog.log",
             GSI_TENANT: auditLog.tenant,
             data: {
                 ...auditLog,

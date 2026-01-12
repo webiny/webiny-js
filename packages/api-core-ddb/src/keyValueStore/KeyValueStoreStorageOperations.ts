@@ -1,24 +1,20 @@
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import { get, put, deleteItem } from "@webiny/db-dynamodb";
-import type { QueryAllParams } from "@webiny/db-dynamodb/utils/query.js";
-import { queryAll } from "@webiny/db-dynamodb/utils/query.js";
 import { WebinyError } from "@webiny/error";
 import { KeyValueStoreDynamoTable } from "./KeyValueStoreDynamoTable.js";
 
 interface KeyValueRecord {
     key: string;
     value: any;
-}
-
-interface StorageRecord {
-    data: KeyValueRecord;
+    scope: string;
 }
 
 export class KeyValueStoreStorageOperations {
-    private table: KeyValueStoreDynamoTable;
+    private readonly table;
+    private readonly entity;
 
     constructor(dynamoDbClient: DynamoDBDocument) {
-        this.table = new KeyValueStoreDynamoTable(dynamoDbClient);
+        this.table = new KeyValueStoreDynamoTable<KeyValueRecord>(dynamoDbClient);
+        this.entity = this.table.getEntity();
     }
 
     private createScopedKey(key: string, scope: string): string {
@@ -28,10 +24,7 @@ export class KeyValueStoreStorageOperations {
     async get(key: string, scope: string): Promise<KeyValueRecord | null> {
         try {
             const scopedKey = this.createScopedKey(key, scope);
-            const entry = await get<StorageRecord>({
-                entity: this.table.getEntity(),
-                keys: this.table.createKeys({ scopedKey })
-            });
+            const entry = await this.entity.get(this.table.createKeys({ scopedKey }));
 
             if (!entry) {
                 return null;
@@ -40,7 +33,8 @@ export class KeyValueStoreStorageOperations {
             // Return the user-facing key without scope prefix
             return {
                 key,
-                value: entry.data.value
+                value: entry.data.value,
+                scope: entry.data.scope
             };
         } catch (err) {
             throw WebinyError.from(err, {
@@ -59,16 +53,13 @@ export class KeyValueStoreStorageOperations {
                 ...this.table.createGsiKeys({ scope, scopedKey })
             };
 
-            await put({
-                entity: this.table.getEntity(),
-                item: {
-                    ...keys,
-                    TYPE: "KeyValueStore",
-                    data: {
-                        key,
-                        value,
-                        scope
-                    }
+            await this.entity.put({
+                ...keys,
+                TYPE: "KeyValueStore",
+                data: {
+                    key,
+                    value,
+                    scope
                 }
             });
         } catch (err) {
@@ -83,10 +74,7 @@ export class KeyValueStoreStorageOperations {
     async delete(key: string, scope: string): Promise<void> {
         try {
             const scopedKey = this.createScopedKey(key, scope);
-            await deleteItem({
-                entity: this.table.getEntity(),
-                keys: this.table.createKeys({ scopedKey })
-            });
+            await this.entity.delete(this.table.createKeys({ scopedKey }));
         } catch (err) {
             throw WebinyError.from(err, {
                 message: "Could not delete key-value record.",
@@ -99,15 +87,13 @@ export class KeyValueStoreStorageOperations {
     async listByPrefix(keyPrefix: string, scope: string): Promise<KeyValueRecord[]> {
         try {
             const scopedPrefix = this.createScopedKey(keyPrefix, scope);
-            const options: QueryAllParams["options"] = {
-                index: "GSI1",
-                beginsWith: `KEY#${scopedPrefix}`
-            };
 
-            const records = await queryAll<StorageRecord>({
-                entity: this.table.getEntity(),
+            const records = await this.entity.queryAll({
                 partitionKey: `KV#${scope}`,
-                options
+                options: {
+                    index: "GSI1",
+                    beginsWith: `KEY#${scopedPrefix}`
+                }
             });
 
             // Return records with user-facing keys (already stored without scope prefix)

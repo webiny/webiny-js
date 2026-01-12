@@ -1,5 +1,4 @@
 import type { IAccessPattern } from "../abstractions/AccessPattern.js";
-import type { Entity } from "@webiny/db-dynamodb/toolbox.js";
 import { DefaultAccessPattern } from "~/storage/accessPatterns/DefaultAccessPattern.js";
 import { AppAccessPattern } from "~/storage/accessPatterns/AppAccessPattern.js";
 import { AppCreatedByAccessPattern } from "~/storage/accessPatterns/AppCreatedByAccessPattern.js";
@@ -10,9 +9,10 @@ import { AppEntityActionAccessPattern } from "~/storage/accessPatterns/AppEntity
 import { EntityIdGlobalAccessPattern } from "~/storage/accessPatterns/EntityIdAccessPattern.js";
 import { CreatedByAccessPattern } from "~/storage/accessPatterns/CreatedByAccessPattern.js";
 import { CreatedOnAccessPattern } from "~/storage/accessPatterns/CreatedOnAccessPattern.js";
+import type { AuditLogsEntity } from "~/storage/entity.js";
 
 export interface ICreateAccessPatternsParams {
-    entity: Entity;
+    entity: AuditLogsEntity;
 }
 
 export const createAccessPatterns = (

@@ -8,7 +8,6 @@ import {
     LoggerService,
     ProjectSdkParamsService,
     PulumiGetSecretsProviderService,
-    PulumiGetStackOutputService,
     PulumiSelectStackService
 } from "~/abstractions/index.js";
 import {
@@ -29,8 +28,7 @@ export class DefaultDeployApp implements DeployApp.Interface {
         private getPulumiService: GetPulumiService.Interface,
         private pulumiGetSecretsProviderService: PulumiGetSecretsProviderService.Interface,
         private logger: LoggerService.Interface,
-        private projectSdkParamsService: ProjectSdkParamsService.Interface,
-        private pulumiGetStackOutputService: PulumiGetStackOutputService.Interface
+        private projectSdkParamsService: ProjectSdkParamsService.Interface
     ) {}
 
     async execute(params: DeployApp.Params) {
@@ -59,15 +57,17 @@ export class DefaultDeployApp implements DeployApp.Interface {
         });
 
         const secretsProvider = this.pulumiGetSecretsProviderService.execute();
+
         const pulumiProcess = params.preview
             ? pulumi.run({
                   command: "preview",
                   args: {
                       diff: true,
-                      debug: !!params.debug
 
                       // Preview command does not accept "--secrets-provider" argument.
-                      // secretsProvider: PULUMI_SECRETS_PROVIDER
+                      // secretsProvider: PULUMI_SECRETS_PROVIDER,
+
+                      ...params.pulumiArgs
                   },
                   execa: { env }
               })
@@ -77,7 +77,7 @@ export class DefaultDeployApp implements DeployApp.Interface {
                       yes: true,
                       skipPreview: true,
                       secretsProvider,
-                      debug: !!params.debug
+                      ...params.pulumiArgs
                   },
                   execa: { env }
               });
@@ -94,14 +94,6 @@ export class DefaultDeployApp implements DeployApp.Interface {
         // Promise is returned so that the caller can await it if needed.
         await pulumiProcess;
         await output;
-
-        // Update the stack output cache after successful deployment
-        try {
-            await this.pulumiGetStackOutputService.execute(app, { skipCache: true });
-        } catch (error) {
-            // Cache refresh failure shouldn't affect deployment success
-            this.logger.error("Failed to update stack output cache after deployment.", error);
-        }
     }
 }
 
@@ -116,7 +108,6 @@ export const deployApp = createImplementation({
         GetPulumiService,
         PulumiGetSecretsProviderService,
         LoggerService,
-        ProjectSdkParamsService,
-        PulumiGetStackOutputService
+        ProjectSdkParamsService
     ]
 });

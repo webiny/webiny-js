@@ -1,7 +1,7 @@
 import { createImplementation } from "@webiny/di";
 import {
     ListAppLambdaFunctionsService,
-    PulumiGetStackExportService,
+    PulumiExportService,
     LoggerService
 } from "~/abstractions/index.js";
 import { type AppModel } from "~/models/index.js";
@@ -26,13 +26,12 @@ export class DefaultListAppLambdaFunctionsService
     implements ListAppLambdaFunctionsService.Interface
 {
     constructor(
-        private pulumiGetStackExportService: PulumiGetStackExportService.Interface,
+        private pulumiExportService: PulumiExportService.Interface,
         private loggerService: LoggerService.Interface
     ) {}
 
     async execute(app: AppModel, params?: ListAppLambdaFunctionsService.Params) {
-        const stackExport =
-            await this.pulumiGetStackExportService.execute<ExpectedStackExport>(app);
+        const stackExport = await this.pulumiExportService.execute<ExpectedStackExport>(app);
 
         if (!stackExport) {
             // If no stack export is found, return an empty array. This is a valid scenario.
@@ -113,5 +112,5 @@ export class DefaultListAppLambdaFunctionsService
 export const listAppLambdaFunctionsService = createImplementation({
     abstraction: ListAppLambdaFunctionsService,
     implementation: DefaultListAppLambdaFunctionsService,
-    dependencies: [PulumiGetStackExportService, LoggerService]
+    dependencies: [PulumiExportService, LoggerService]
 });
