@@ -194,7 +194,7 @@ describe("Security API Key Test", () => {
                             name: "API Key",
                             description: "API key description",
                             permissions: [{ name: "security.role" }],
-                            token: expect.stringMatching(/a[a-f0-9]{47}/),
+                            token: expect.stringMatching(/wat_[a-f0-9]{36}/),
                             createdOn: expect.stringMatching(/^20/)
                         },
                         error: null

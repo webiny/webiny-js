@@ -1,6 +1,7 @@
 import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import { ApiKeysRepository as RepositoryAbstraction } from "./abstractions.js";
+import { ApiKeyProvider } from "./abstractions.js";
 import type { ApiKey, ListApiKeysInput } from "./types.js";
 import { SecurityStorageOperations } from "~/features/security/shared/abstractions.js";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
@@ -9,7 +10,8 @@ import { ApiKeyNotFoundError, ApiKeyStorageError } from "./errors.js";
 class ApiKeysRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
         private tenantContext: TenantContext.Interface,
-        private storageOperations: SecurityStorageOperations.Interface
+        private storageOperations: SecurityStorageOperations.Interface,
+        private apiKeyProvider: ApiKeyProvider.Interface
     ) {}
 
     async get(id: string): Promise<Result<ApiKey, RepositoryAbstraction.Error>> {
@@ -28,6 +30,13 @@ class ApiKeysRepositoryImpl implements RepositoryAbstraction.Interface {
 
     async getByToken(token: string): Promise<Result<ApiKey, RepositoryAbstraction.Error>> {
         try {
+            // First, check if the API key is provided by a factory
+            const factoryApiKey = await this.apiKeyProvider.getByToken(token);
+            if (factoryApiKey) {
+                return Result.ok(factoryApiKey);
+            }
+
+            // If not found in factories, fall back to storage operations
             const tenant = this.tenantContext.getTenant();
             const apiKey = await this.storageOperations.getApiKeyByToken({
                 token,
@@ -90,5 +99,5 @@ class ApiKeysRepositoryImpl implements RepositoryAbstraction.Interface {
 export const ApiKeysRepository = createImplementation({
     abstraction: RepositoryAbstraction,
     implementation: ApiKeysRepositoryImpl,
-    dependencies: [TenantContext, SecurityStorageOperations]
+    dependencies: [TenantContext, SecurityStorageOperations, ApiKeyProvider]
 });

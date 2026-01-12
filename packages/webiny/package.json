@@ -30,6 +30,7 @@
   "exports": {
     "./configs/tsconfig.json": "./configs/tsconfig.json",
     "./global.ts": "./global.ts",
+    "./api/security": "./api/security.js",
     "./api/features/eventPublisher": "./api/features/eventPublisher.js",
     "./api/features/Logger": "./api/features/Logger.js",
     "./api/security/features/IdentityContext": "./api/security/features/IdentityContext.js",
@@ -93,7 +94,6 @@
     "./infra/features/ApiPulumi": "./infra/features/ApiPulumi.js",
     "./infra/features/CorePulumi": "./infra/features/CorePulumi.js",
     "./infra/features/GetAppStackOutput": "./infra/features/GetAppStackOutput.js",
-    "./infra/features/GetAppStackExport": "./infra/features/GetAppStackExport.js",
     "./extensions": "./extensions.js",
     "./infra/features/InvokeLambdaFunction": "./infra/features/InvokeLambdaFunction.js",
     "./infra/features/AdminStackOutputService": "./infra/features/AdminStackOutputService.js",

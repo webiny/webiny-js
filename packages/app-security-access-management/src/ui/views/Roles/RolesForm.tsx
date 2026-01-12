@@ -51,7 +51,7 @@ export const RolesForm = ({ id, newEntry }: RolesFormProps) => {
                 return;
             }
 
-            const { error } = data.security.group;
+            const { error } = data.security.role;
             if (error) {
                 goToRoute(Routes.Roles.List);
                 showSnackbar(error.message);
@@ -110,20 +110,20 @@ export const RolesForm = ({ id, newEntry }: RolesFormProps) => {
 
             const response = await operation(args);
 
-            const { data: group, error } = response.data.security.group;
+            const { data: role, error } = response.data.security.role;
             if (error) {
                 return showSnackbar(error.message);
             }
 
             if (!isUpdate) {
-                goToRoute(Routes.Roles.List, { id: group.id });
+                goToRoute(Routes.Roles.List, { id: role.id });
             }
             showSnackbar(t`Role saved successfully!`);
         },
         [id]
     );
 
-    const data: Role = loading ? {} : get(getQuery, "data.security.group.data", {});
+    const data: Role = loading ? {} : get(getQuery, "data.security.role.data", {});
 
     const systemRole = data.slug === "full-access" || data.system;
     const pluginRole = data.plugin;
@@ -180,7 +180,7 @@ export const RolesForm = ({ id, newEntry }: RolesFormProps) => {
                                                 size={"lg"}
                                                 label={t`Name`}
                                                 disabled={!canModifyRole}
-                                                data-testid="admin.am.group.new.name"
+                                                data-testid="admin.am.role.new.name"
                                             />
                                         </Bind>
                                     </Grid.Column>
@@ -193,7 +193,7 @@ export const RolesForm = ({ id, newEntry }: RolesFormProps) => {
                                                 size={"lg"}
                                                 disabled={!canModifyRole || !newEntry}
                                                 label={t`Slug`}
-                                                data-testid="admin.am.group.new.slug"
+                                                data-testid="admin.am.role.new.slug"
                                             />
                                         </Bind>
                                     </Grid.Column>
@@ -207,7 +207,7 @@ export const RolesForm = ({ id, newEntry }: RolesFormProps) => {
                                                 label={t`Description`}
                                                 rows={3}
                                                 disabled={!canModifyRole}
-                                                data-testid="admin.am.group.new.description"
+                                                data-testid="admin.am.role.new.description"
                                             />
                                         </Bind>
                                     </Grid.Column>
@@ -269,7 +269,7 @@ export const RolesForm = ({ id, newEntry }: RolesFormProps) => {
                                     />
                                     <Button
                                         text={t`Save`}
-                                        data-testid="admin.am.group.new.save"
+                                        data-testid="admin.am.role.new.save"
                                         onClick={ev => {
                                             form.submit(ev);
                                         }}

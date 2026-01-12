@@ -4,9 +4,9 @@ import UniversalRouter, {
     RouterContext,
     RouteParams as UniversalRouteParams
 } from "universal-router";
-import generateUrls from "universal-router/generateUrls";
 import type { MatchedRoute, RouteDefinition, OnRouteExit } from "./abstractions.js";
 import { RouterGateway } from "./abstractions.js";
+import { generateUrl } from "./generateUrl.js";
 
 type RouteResolveResult = [MatchedRoute, RouteDefinition["onMatch"]];
 
@@ -18,7 +18,6 @@ export class HistoryRouterGateway implements RouterGateway.Interface {
     private readonly history: History;
     private readonly routes: RouteDefinitionWithAction[] = [];
     private readonly router: UniversalRouter<RouteResolveResult>;
-    private readonly urlGenerator: ReturnType<typeof generateUrls>;
     private stopListening: () => void;
     private unblock: (() => void) | undefined;
     private currentRoute: MatchedRoute | undefined;
@@ -41,12 +40,6 @@ export class HistoryRouterGateway implements RouterGateway.Interface {
             errorHandler: () => undefined
         });
 
-        this.urlGenerator = generateUrls(this.router, {
-            stringifyQueryParams: (params: any) => {
-                return new URLSearchParams(params as Record<string, any>).toString();
-            }
-        });
-
         this.stopListening = history.listen(async ({ location }) => {
             const queryParams = Object.fromEntries(new URLSearchParams(location.search).entries());
             this.resolvePathname(location.pathname, queryParams);
@@ -58,11 +51,13 @@ export class HistoryRouterGateway implements RouterGateway.Interface {
     }
 
     goToRoute(name: string, params: z.ZodTypeAny): void {
-        this.history.push(this.generateRouteUrl(name, params));
-    }
+        const route = this.routes.find(r => r.name === name);
+        if (!route) {
+            console.warn(`Route "${name}" not found.`);
+            return;
+        }
 
-    generateRouteUrl(id: string, params: any = {}): string {
-        return this.urlGenerator(id, params);
+        this.history.push(generateUrl(route.path, params));
     }
 
     setRoutes(routes: RouteDefinition[]) {

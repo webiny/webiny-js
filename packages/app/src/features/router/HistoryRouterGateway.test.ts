@@ -1,6 +1,7 @@
 import { describe, it, beforeEach, expect, vi } from "vitest";
 import { createMemoryHistory } from "history";
 import { HistoryRouterGateway } from "./HistoryRouterGateway.js";
+import { generateUrl } from "./generateUrl.js";
 
 const wait = () => new Promise(resolve => setTimeout(resolve, 10));
 
@@ -87,23 +88,11 @@ describe("Router Gateway", () => {
     });
 
     it("should generate route URLs", async () => {
-        const spyHome = vi.fn();
-        const spyLogin = vi.fn();
-        const spyDynamic = vi.fn();
-
-        const history = createMemoryHistory();
-        const gateway = new HistoryRouterGateway(history, "");
-        gateway.setRoutes([
-            { name: "root", path: "/", onMatch: spyHome },
-            { name: "login", path: "/login", onMatch: spyLogin },
-            { name: "dynamic", path: "/dynamic-route/:name", onMatch: spyDynamic }
-        ]);
-
         const urls = [
-            gateway.generateRouteUrl("root"),
-            gateway.generateRouteUrl("login"),
-            gateway.generateRouteUrl("login", { redirect: "/", reason: "login" }),
-            gateway.generateRouteUrl("dynamic", { name: "cars" })
+            generateUrl("/"),
+            generateUrl("/login", {}),
+            generateUrl("/login", { redirect: "/", reason: "login" }),
+            generateUrl("/dynamic-route/:name", { name: "cars" })
         ];
         expect(urls).toEqual([
             "/",
