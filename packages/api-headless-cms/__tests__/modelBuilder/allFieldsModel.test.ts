@@ -15,160 +15,162 @@ describe("All Field Types Model", () => {
     it("should support all field types with various configurations", async () => {
         class AllFieldsModelImpl implements ModelFactory.Interface {
             execute(builder: ModelFactory.Builder) {
-                return builder
-                    .private()
-                    .modelId("allFieldsModel")
-                    .name("All Fields Model")
-                    .fields(fields => ({
-                        location: fields.location(),
-                        // Text field - basic
-                        title: fields.text().label("Title").required("Title is required."),
+                return [
+                    builder
+                        .private()
+                        .modelId("allFieldsModel")
+                        .name("All Fields Model")
+                        .fields(fields => ({
+                            location: fields.location(),
+                            // Text field - basic
+                            title: fields.text().label("Title").required("Title is required."),
 
-                        // Long text field
-                        description: fields.longText().label("Description"),
+                            // Long text field
+                            description: fields.longText().label("Description"),
 
-                        // Rich text field
-                        content: fields.richText().label("Content"),
+                            // Rich text field
+                            content: fields.richText().label("Content"),
 
-                        // Number field
-                        count: fields.number().label("Count"),
+                            // Number field
+                            count: fields.number().label("Count"),
 
-                        // Number field with validation
-                        rating: fields
-                            .number()
-                            .label("Rating")
-                            .gte(1, "Must be at least 1")
-                            .lte(5, "Must be at most 5"),
+                            // Number field with validation
+                            rating: fields
+                                .number()
+                                .label("Rating")
+                                .gte(1, "Must be at least 1")
+                                .lte(5, "Must be at most 5"),
 
-                        // Boolean field with default
-                        isPublished: fields.boolean().label("Is Published").defaultValue(false),
+                            // Boolean field with default
+                            isPublished: fields.boolean().label("Is Published").defaultValue(false),
 
-                        // File field - basic
-                        attachment: fields.file().label("Attachment"),
+                            // File field - basic
+                            attachment: fields.file().label("Attachment"),
 
-                        // File field - images only
-                        coverImage: fields.file().label("Cover Image").imagesOnly(),
+                            // File field - images only
+                            coverImage: fields.file().label("Cover Image").imagesOnly(),
 
-                        // File field - multiple
-                        gallery: fields.file().label("Gallery").imagesOnly().list(),
+                            // File field - multiple
+                            gallery: fields.file().label("Gallery").imagesOnly().list(),
 
-                        // DateTime field - date only
-                        publishDate: fields.datetime().label("Publish Date").dateOnly(),
+                            // DateTime field - date only
+                            publishDate: fields.datetime().label("Publish Date").dateOnly(),
 
-                        // DateTime field - time only
-                        publishTime: fields.datetime().label("Publish Time").timeOnly(),
+                            // DateTime field - time only
+                            publishTime: fields.datetime().label("Publish Time").timeOnly(),
 
-                        // DateTime field - with timezone
-                        scheduledAt: fields.datetime().label("Scheduled At").withTimezone(),
+                            // DateTime field - with timezone
+                            scheduledAt: fields.datetime().label("Scheduled At").withTimezone(),
 
-                        // DateTime field - without timezone
-                        createdAt: fields.datetime().label("Created At").withoutTimezone(),
+                            // DateTime field - without timezone
+                            createdAt: fields.datetime().label("Created At").withoutTimezone(),
 
-                        // Reference field
-                        author: fields
-                            .ref()
-                            .label("Author")
-                            .models([{ modelId: "author" }]),
+                            // Reference field
+                            author: fields
+                                .ref()
+                                .label("Author")
+                                .models([{ modelId: "author" }]),
 
-                        // Reference field - multiple
-                        tags: fields
-                            .ref()
-                            .label("Tags")
-                            .list()
-                            .models([{ modelId: "tag" }]),
+                            // Reference field - multiple
+                            tags: fields
+                                .ref()
+                                .label("Tags")
+                                .list()
+                                .models([{ modelId: "tag" }]),
 
-                        // Object field
-                        metadata: fields
-                            .object()
-                            .label("Metadata")
-                            .fields(objFields => ({
-                                source: objFields.text().label("Source"),
-                                publishedAt: objFields
-                                    .datetime()
-                                    .label("Published At")
-                                    .withTimezone()
-                            }))
-                            .layout([["source"], ["publishedAt"]]),
+                            // Object field
+                            metadata: fields
+                                .object()
+                                .label("Metadata")
+                                .fields(objFields => ({
+                                    source: objFields.text().label("Source"),
+                                    publishedAt: objFields
+                                        .datetime()
+                                        .label("Published At")
+                                        .withTimezone()
+                                }))
+                                .layout([["source"], ["publishedAt"]]),
 
-                        // Object field - multiple (repeatable)
-                        sections: fields
-                            .object()
-                            .label("Sections")
-                            .list()
-                            .fields(objFields => ({
-                                title: objFields.text().label("Section Title"),
-                                content: objFields.richText().label("Section Content"),
-                                order: objFields.number().label("Order")
-                            }))
-                            .layout([["title"], ["content"], ["order"]]),
+                            // Object field - multiple (repeatable)
+                            sections: fields
+                                .object()
+                                .label("Sections")
+                                .list()
+                                .fields(objFields => ({
+                                    title: objFields.text().label("Section Title"),
+                                    content: objFields.richText().label("Section Content"),
+                                    order: objFields.number().label("Order")
+                                }))
+                                .layout([["title"], ["content"], ["order"]]),
 
-                        // Dynamic Zone field
-                        dynamicContent: fields
-                            .dynamicZone()
-                            .label("Dynamic Content")
-                            .list()
-                            .template("textBlock", {
-                                name: "Text Block",
-                                gqlTypeName: "TextBlock",
-                                icon: "fas/paragraph",
-                                description: "A simple text block",
-                                fields: f => ({
-                                    heading: f.text().label("Heading"),
-                                    body: f.longText().label("Body")
-                                }),
-                                layout: [["heading"], ["body"]]
-                            })
-                            .template("imageBlock", {
-                                name: "Image Block",
-                                gqlTypeName: "ImageBlock",
-                                icon: "fas/image",
-                                description: "An image with caption",
-                                fields: f => ({
-                                    image: f.file().label("Image").imagesOnly(),
-                                    caption: f.text().label("Caption"),
-                                    altText: f.text().label("Alt Text")
-                                }),
-                                layout: [["image"], ["caption"], ["altText"]]
-                            })
-                            .template("statsBlock", {
-                                name: "Stats Block",
-                                gqlTypeName: "StatsBlock",
-                                icon: "fas/chart-bar",
-                                description: "Display statistics",
-                                fields: f => ({
-                                    stats: f
-                                        .object()
-                                        .label("Stats")
-                                        .list()
-                                        .fields(statFields => ({
-                                            label: statFields.text().label("Label"),
-                                            value: statFields.number().label("Value"),
-                                            trend: statFields
-                                                .text()
-                                                .label("Trend")
-                                                .predefinedValues([
-                                                    {
-                                                        value: "up",
-                                                        label: "Up",
-                                                        selected: false
-                                                    },
-                                                    {
-                                                        value: "down",
-                                                        label: "Down",
-                                                        selected: false
-                                                    },
-                                                    {
-                                                        value: "neutral",
-                                                        label: "Neutral",
-                                                        selected: true
-                                                    }
-                                                ])
-                                        }))
-                                        .layout([["label"], ["value"], ["trend"]])
-                                }),
-                                layout: [["stats"]]
-                            })
-                    }));
+                            // Dynamic Zone field
+                            dynamicContent: fields
+                                .dynamicZone()
+                                .label("Dynamic Content")
+                                .list()
+                                .template("textBlock", {
+                                    name: "Text Block",
+                                    gqlTypeName: "TextBlock",
+                                    icon: "fas/paragraph",
+                                    description: "A simple text block",
+                                    fields: f => ({
+                                        heading: f.text().label("Heading"),
+                                        body: f.longText().label("Body")
+                                    }),
+                                    layout: [["heading"], ["body"]]
+                                })
+                                .template("imageBlock", {
+                                    name: "Image Block",
+                                    gqlTypeName: "ImageBlock",
+                                    icon: "fas/image",
+                                    description: "An image with caption",
+                                    fields: f => ({
+                                        image: f.file().label("Image").imagesOnly(),
+                                        caption: f.text().label("Caption"),
+                                        altText: f.text().label("Alt Text")
+                                    }),
+                                    layout: [["image"], ["caption"], ["altText"]]
+                                })
+                                .template("statsBlock", {
+                                    name: "Stats Block",
+                                    gqlTypeName: "StatsBlock",
+                                    icon: "fas/chart-bar",
+                                    description: "Display statistics",
+                                    fields: f => ({
+                                        stats: f
+                                            .object()
+                                            .label("Stats")
+                                            .list()
+                                            .fields(statFields => ({
+                                                label: statFields.text().label("Label"),
+                                                value: statFields.number().label("Value"),
+                                                trend: statFields
+                                                    .text()
+                                                    .label("Trend")
+                                                    .predefinedValues([
+                                                        {
+                                                            value: "up",
+                                                            label: "Up",
+                                                            selected: false
+                                                        },
+                                                        {
+                                                            value: "down",
+                                                            label: "Down",
+                                                            selected: false
+                                                        },
+                                                        {
+                                                            value: "neutral",
+                                                            label: "Neutral",
+                                                            selected: true
+                                                        }
+                                                    ])
+                                            }))
+                                            .layout([["label"], ["value"], ["trend"]])
+                                    }),
+                                    layout: [["stats"]]
+                                })
+                        }))
+                ];
             }
         }
 
@@ -276,26 +278,28 @@ describe("All Field Types Model", () => {
 
         class FullPublicModelImpl implements ModelFactory.Interface {
             execute(builder: ModelFactory.Builder) {
-                return builder
-                    .public()
-                    .modelId("fullPublicModel")
-                    .name("Full Public Model")
-                    .singularApiName("FullPublicModel")
-                    .pluralApiName("FullPublicModels")
-                    .group(testGroup)
-                    .icon("fas/database")
-                    .description("A complete public model with all fields")
-                    .titleFieldId("title")
-                    .descriptionFieldId("description")
-                    .imageFieldId("image")
-                    .tags(["type:content", "category:article"])
-                    .fields(fields => ({
-                        title: fields.text().label("Title").required("Title is required."),
-                        description: fields.longText().label("Description"),
-                        image: fields.file().label("Image").imagesOnly(),
-                        publishedAt: fields.datetime().label("Published At").withTimezone()
-                    }))
-                    .layout([["title"], ["description", "image"], ["publishedAt"]]);
+                return [
+                    builder
+                        .public()
+                        .modelId("fullPublicModel")
+                        .name("Full Public Model")
+                        .singularApiName("FullPublicModel")
+                        .pluralApiName("FullPublicModels")
+                        .group(testGroup)
+                        .icon("fas/database")
+                        .description("A complete public model with all fields")
+                        .titleFieldId("title")
+                        .descriptionFieldId("description")
+                        .imageFieldId("image")
+                        .tags(["type:content", "category:article"])
+                        .fields(fields => ({
+                            title: fields.text().label("Title").required("Title is required."),
+                            description: fields.longText().label("Description"),
+                            image: fields.file().label("Image").imagesOnly(),
+                            publishedAt: fields.datetime().label("Published At").withTimezone()
+                        }))
+                        .layout([["title"], ["description", "image"], ["publishedAt"]])
+                ];
             }
         }
 
@@ -352,16 +356,18 @@ describe("All Field Types Model", () => {
         // Test public model with duplicate tags including "type:model"
         class DuplicateTagsPublicModel implements ModelFactory.Interface {
             execute(builder: ModelFactory.Builder) {
-                return builder
-                    .public()
-                    .modelId("duplicateTagsPublic")
-                    .name("Duplicate Tags Public")
-                    .group(testGroup)
-                    .tags(["type:model", "custom:tag", "type:model", "custom:tag"])
-                    .fields(fields => ({
-                        title: fields.text().label("Title")
-                    }))
-                    .layout([["title"]]);
+                return [
+                    builder
+                        .public()
+                        .modelId("duplicateTagsPublic")
+                        .name("Duplicate Tags Public")
+                        .group(testGroup)
+                        .tags(["type:model", "custom:tag", "type:model", "custom:tag"])
+                        .fields(fields => ({
+                            title: fields.text().label("Title")
+                        }))
+                        .layout([["title"]])
+                ];
             }
         }
 
@@ -377,14 +383,16 @@ describe("All Field Types Model", () => {
         // Test private model with duplicate tags
         class DuplicateTagsPrivateModel implements ModelFactory.Interface {
             execute(builder: ModelFactory.Builder) {
-                return builder
-                    .private()
-                    .modelId("duplicateTagsPrivate")
-                    .name("Duplicate Tags Private")
-                    .tags(["type:model", "custom:tag", "type:model", "custom:tag"])
-                    .fields(fields => ({
-                        title: fields.text().label("Title")
-                    }));
+                return [
+                    builder
+                        .private()
+                        .modelId("duplicateTagsPrivate")
+                        .name("Duplicate Tags Private")
+                        .tags(["type:model", "custom:tag", "type:model", "custom:tag"])
+                        .fields(fields => ({
+                            title: fields.text().label("Title")
+                        }))
+                ];
             }
         }
 
@@ -402,15 +410,17 @@ describe("All Field Types Model", () => {
         // Test model without tags still gets type:model
         class NoTagsModel implements ModelFactory.Interface {
             execute(builder: ModelFactory.Builder) {
-                return builder
-                    .public()
-                    .modelId("noTagsModel")
-                    .name("No Tags Model")
-                    .group(testGroup)
-                    .fields(fields => ({
-                        title: fields.text().label("Title")
-                    }))
-                    .layout([["title"]]);
+                return [
+                    builder
+                        .public()
+                        .modelId("noTagsModel")
+                        .name("No Tags Model")
+                        .group(testGroup)
+                        .fields(fields => ({
+                            title: fields.text().label("Title")
+                        }))
+                        .layout([["title"]])
+                ];
             }
         }
 

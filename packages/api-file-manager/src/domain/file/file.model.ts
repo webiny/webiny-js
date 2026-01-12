@@ -59,7 +59,7 @@ class FilePrivateModelImpl implements ModelFactory.Interface {
             }));
         }
 
-        return model;
+        return [model];
     }
 }
 

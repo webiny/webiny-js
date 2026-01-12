@@ -20,14 +20,18 @@ export class ModelsProvider implements ProviderAbstraction.Interface {
             // Entry builder that determines model type
             const entryBuilder = new ModelBuilder(this.fieldsRegistry);
 
-            // Get typed builder (private or public)
-            const typedBuilder = await modelImpl.execute(entryBuilder);
-            const modelPlugin = typedBuilder.build();
+            // Get typed builders (array of private or public builders)
+            const typedBuilders = await modelImpl.execute(entryBuilder);
 
-            allModels.push({
-                ...modelPlugin.contentModel,
-                tenant
-            });
+            // Process each builder in the array
+            for (const typedBuilder of typedBuilders) {
+                const modelPlugin = typedBuilder.build();
+
+                allModels.push({
+                    ...modelPlugin.contentModel,
+                    tenant
+                });
+            }
         }
 
         if (!this.accessControl) {

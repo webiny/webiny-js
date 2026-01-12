@@ -14,25 +14,27 @@ describe("Object Field Multiple .fields() Calls", () => {
     it("should append fields when .fields() is called multiple times on object field", async () => {
         class TestModelImpl implements ModelFactory.Interface {
             execute(builder: ModelFactory.Builder) {
-                return builder
-                    .private()
-                    .modelId("testObjectMultipleFields")
-                    .name("Test Object Multiple Fields")
-                    .fields(fields => ({
-                        metadata: fields
-                            .object()
-                            .label("Metadata")
-                            .fields(objFields => ({
-                                // First call - add base fields
-                                title: objFields.text().label("Title"),
-                                description: objFields.longText().label("Description")
-                            }))
-                            .fields(objFields => ({
-                                // Second call - add more fields
-                                author: objFields.text().label("Author"),
-                                date: objFields.datetime().label("Date")
-                            }))
-                    }));
+                return [
+                    builder
+                        .private()
+                        .modelId("testObjectMultipleFields")
+                        .name("Test Object Multiple Fields")
+                        .fields(fields => ({
+                            metadata: fields
+                                .object()
+                                .label("Metadata")
+                                .fields(objFields => ({
+                                    // First call - add base fields
+                                    title: objFields.text().label("Title"),
+                                    description: objFields.longText().label("Description")
+                                }))
+                                .fields(objFields => ({
+                                    // Second call - add more fields
+                                    author: objFields.text().label("Author"),
+                                    date: objFields.datetime().label("Date")
+                                }))
+                        }))
+                ];
             }
         }
 
@@ -88,13 +90,15 @@ describe("Object Field Multiple .fields() Calls", () => {
                     return objField;
                 };
 
-                return builder
-                    .private()
-                    .modelId("conditionalObjectModel")
-                    .name("Conditional Object Model")
-                    .fields(fields => ({
-                        metadata: metadataBuilder(fields)
-                    }));
+                return [
+                    builder
+                        .private()
+                        .modelId("conditionalObjectModel")
+                        .name("Conditional Object Model")
+                        .fields(fields => ({
+                            metadata: metadataBuilder(fields)
+                        }))
+                ];
             }
         }
 
@@ -134,34 +138,36 @@ describe("Object Field Multiple .fields() Calls", () => {
     it("should support nested object fields with multiple .fields() calls", async () => {
         class NestedObjectModelImpl implements ModelFactory.Interface {
             execute(builder: ModelFactory.Builder) {
-                return builder
-                    .private()
-                    .modelId("nestedObjectModel")
-                    .name("Nested Object Model")
-                    .fields(fields => ({
-                        section: fields
-                            .object()
-                            .label("Section")
-                            .fields(objFields => ({
-                                header: objFields.text().label("Header")
-                            }))
-                            .fields(objFields => {
-                                const content = objFields
-                                    .object()
-                                    .label("Content")
-                                    .fields(contentFields => ({
-                                        body: contentFields.longText().label("Body")
+                return [
+                    builder
+                        .private()
+                        .modelId("nestedObjectModel")
+                        .name("Nested Object Model")
+                        .fields(fields => ({
+                            section: fields
+                                .object()
+                                .label("Section")
+                                .fields(objFields => ({
+                                    header: objFields.text().label("Header")
+                                }))
+                                .fields(objFields => {
+                                    const content = objFields
+                                        .object()
+                                        .label("Content")
+                                        .fields(contentFields => ({
+                                            body: contentFields.longText().label("Body")
+                                        }));
+
+                                    content.fields(contentFields => ({
+                                        footer: contentFields.text().label("Footer")
                                     }));
 
-                                content.fields(contentFields => ({
-                                    footer: contentFields.text().label("Footer")
-                                }));
-
-                                return {
-                                    content
-                                };
-                            })
-                    }));
+                                    return {
+                                        content
+                                    };
+                                })
+                        }))
+                ];
             }
         }
 

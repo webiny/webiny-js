@@ -72,24 +72,26 @@ describe("Model Builder Comparison - Old vs New API", () => {
             // ============================================
             class TestModelImpl implements ModelFactory.Interface {
                 execute(builder: ModelFactory.Builder) {
-                    return builder
-                        .private()
-                        .modelId("testModel")
-                        .name("TestModel")
-                        .fields(fields => ({
-                            name: fields.text().label("Name").required("Value is required."),
-                            description: fields.text().label("Description"),
-                            metadata: fields
-                                .object()
-                                .label("Metadata")
-                                .fields(fields => ({
-                                    author: fields.text().label("Author"),
-                                    version: fields
-                                        .text()
-                                        .label("Version")
-                                        .required("Value is required.")
-                                }))
-                        }));
+                    return [
+                        builder
+                            .private()
+                            .modelId("testModel")
+                            .name("TestModel")
+                            .fields(fields => ({
+                                name: fields.text().label("Name").required("Value is required."),
+                                description: fields.text().label("Description"),
+                                metadata: fields
+                                    .object()
+                                    .label("Metadata")
+                                    .fields(fields => ({
+                                        author: fields.text().label("Author"),
+                                        version: fields
+                                            .text()
+                                            .label("Version")
+                                            .required("Value is required.")
+                                    }))
+                            }))
+                    ];
                 }
             }
 
@@ -163,81 +165,83 @@ describe("Model Builder Comparison - Old vs New API", () => {
             // ============================================
             class ArticleModelImpl implements ModelFactory.Interface {
                 execute(builder: ModelFactory.Builder) {
-                    return builder
-                        .private()
-                        .modelId("article")
-                        .name("Article")
-                        .fields(fields => ({
-                            title: fields.text().storageId("text@title").label("Title"),
-                            body: fields.richText().storageId("rich-text@body").label("Body"),
-                            categories: fields
-                                .ref()
-                                .storageId("ref@categories")
-                                .label("Categories")
-                                .list()
-                                .models([{ modelId: "category" }]),
-                            content: fields
-                                .dynamicZone()
-                                .storageId("dynamicZone@content")
-                                .label("Content")
-                                .list()
-                                .template("cv2zf965v324ivdc7e1vt", {
-                                    name: "Hero #1",
-                                    gqlTypeName: "Hero",
-                                    icon: "fas/flag",
-                                    description: "The top piece of content on every page.",
-                                    fields: f => ({
-                                        title: f.text().label("Title")
+                    return [
+                        builder
+                            .private()
+                            .modelId("article")
+                            .name("Article")
+                            .fields(fields => ({
+                                title: fields.text().storageId("text@title").label("Title"),
+                                body: fields.richText().storageId("rich-text@body").label("Body"),
+                                categories: fields
+                                    .ref()
+                                    .storageId("ref@categories")
+                                    .label("Categories")
+                                    .list()
+                                    .models([{ modelId: "category" }]),
+                                content: fields
+                                    .dynamicZone()
+                                    .storageId("dynamicZone@content")
+                                    .label("Content")
+                                    .list()
+                                    .template("cv2zf965v324ivdc7e1vt", {
+                                        name: "Hero #1",
+                                        gqlTypeName: "Hero",
+                                        icon: "fas/flag",
+                                        description: "The top piece of content on every page.",
+                                        fields: f => ({
+                                            title: f.text().label("Title")
+                                        })
                                     })
-                                })
-                                .template("81qiz2v453wx9uque0gox", {
-                                    name: "Simple Text #1",
-                                    gqlTypeName: "SimpleText",
-                                    icon: "fas/file-text",
-                                    description: "Simple paragraph of text.",
-                                    fields: f => ({
-                                        text: f.longText().label("Text")
+                                    .template("81qiz2v453wx9uque0gox", {
+                                        name: "Simple Text #1",
+                                        gqlTypeName: "SimpleText",
+                                        icon: "fas/file-text",
+                                        description: "Simple paragraph of text.",
+                                        fields: f => ({
+                                            text: f.longText().label("Text")
+                                        })
                                     })
-                                })
-                                .template("9ht43gurhegkbdfsaafyads", {
-                                    name: "Settings",
-                                    gqlTypeName: "Settings",
-                                    icon: "fas/file-text",
-                                    description: "Settings",
-                                    fields: f => ({
-                                        settings: f
-                                            .object()
-                                            .label("Settings")
-                                            .fields(objFields => ({
-                                                title: objFields.text().label("Title"),
-                                                seo: objFields
-                                                    .object()
-                                                    .label("SEO")
-                                                    .list()
-                                                    .fields(seoFields => ({
-                                                        title: seoFields.text().label("Title")
-                                                    }))
-                                            })),
-                                        dynamicZone: f
-                                            .dynamicZone()
-                                            .label("DynamicZone")
-                                            .template("0emukbsvmzpozx2lzk883", {
-                                                name: "Ad",
-                                                gqlTypeName: "Ad",
-                                                icon: "fab/buysellads",
-                                                description: "Ad",
-                                                fields: adFields => ({
-                                                    authors: adFields
-                                                        .ref()
-                                                        .label("Authors")
+                                    .template("9ht43gurhegkbdfsaafyads", {
+                                        name: "Settings",
+                                        gqlTypeName: "Settings",
+                                        icon: "fas/file-text",
+                                        description: "Settings",
+                                        fields: f => ({
+                                            settings: f
+                                                .object()
+                                                .label("Settings")
+                                                .fields(objFields => ({
+                                                    title: objFields.text().label("Title"),
+                                                    seo: objFields
+                                                        .object()
+                                                        .label("SEO")
                                                         .list()
-                                                        .models([{ modelId: "author" }])
-                                                })
-                                            }),
-                                        emptyDynamicZone: f.dynamicZone().label("DynamicZone")
+                                                        .fields(seoFields => ({
+                                                            title: seoFields.text().label("Title")
+                                                        }))
+                                                })),
+                                            dynamicZone: f
+                                                .dynamicZone()
+                                                .label("DynamicZone")
+                                                .template("0emukbsvmzpozx2lzk883", {
+                                                    name: "Ad",
+                                                    gqlTypeName: "Ad",
+                                                    icon: "fab/buysellads",
+                                                    description: "Ad",
+                                                    fields: adFields => ({
+                                                        authors: adFields
+                                                            .ref()
+                                                            .label("Authors")
+                                                            .list()
+                                                            .models([{ modelId: "author" }])
+                                                    })
+                                                }),
+                                            emptyDynamicZone: f.dynamicZone().label("DynamicZone")
+                                        })
                                     })
-                                })
-                        }));
+                            }))
+                    ];
                 }
             }
 

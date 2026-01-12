@@ -31,16 +31,19 @@ export interface IModelBuilder {
 export interface IModelFactory {
     execute(
         builder: IModelBuilder
-    ): Promise<PrivateModelBuilder | PublicModelBuilder> | PrivateModelBuilder | PublicModelBuilder;
+    ):
+        | Promise<PrivateModelBuilder[] | PublicModelBuilder[]>
+        | PrivateModelBuilder[]
+        | PublicModelBuilder[];
 }
 
 export const ModelFactory = createAbstraction<IModelFactory>("ModelFactory");
 export namespace ModelFactory {
     export type Interface = IModelFactory;
     export type Return =
-        | Promise<PrivateModelBuilder | PublicModelBuilder>
-        | PrivateModelBuilder
-        | PublicModelBuilder;
+        | Promise<PrivateModelBuilder[] | PublicModelBuilder[]>
+        | PrivateModelBuilder[]
+        | PublicModelBuilder[];
     export type Builder = IModelBuilder;
     export type FieldBuilder = FieldBuilderRegistry.Interface;
 }

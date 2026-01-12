@@ -31,7 +31,7 @@ describe("Private Models", () => {
                     isActive: fields.boolean().label("Is Active")
                 }));
 
-                return model;
+                return [model];
             }
         }
 
@@ -79,7 +79,7 @@ describe("Private Models", () => {
                     }));
                 }
 
-                return model;
+                return [model];
             }
         }
 
@@ -147,7 +147,7 @@ describe("Public Models", () => {
                 // Add layout for all fields
                 model.layout([["title"], ["description"], ["image"], ["tags"]]);
 
-                return model;
+                return [model];
             }
         }
 
@@ -204,7 +204,7 @@ describe("Public Models", () => {
                     model.layout([["title"]]);
                 }
 
-                return model;
+                return [model];
             }
         }
 
