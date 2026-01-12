@@ -1,31 +1,34 @@
-import {
-    ModelsProvider as ProviderAbstraction,
-    PublicModelProvider,
-    PrivateModelProvider
-} from "./abstractions.js";
+import { ModelsProvider as ProviderAbstraction } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
+import { Model, FieldBuilderRegistry } from "~/features/modelBuilder/index.js";
 import type { CmsModel } from "~/types/index.js";
 import { filterAsync } from "~/utils/filterAsync.js";
-import { ensureTypeTag } from "~/crud/contentModel/ensureTypeTag.js";
+import { ModelBuilder } from "./ModelBuilder.js";
 
-class ModelsProviderImpl implements ProviderAbstraction.Interface {
+export class ModelsProvider implements ProviderAbstraction.Interface {
     constructor(
-        private publicProvider: PublicModelProvider.Interface,
-        private privateProvider: PrivateModelProvider.Interface,
+        private getModels: () => Model.Interface[],
+        private fieldsRegistry: FieldBuilderRegistry.Interface,
         private accessControl: AccessControl.Interface
     ) {}
 
     async list(tenant: string): Promise<CmsModel[]> {
-        // Get models from both providers
-        const publicModels = await this.publicProvider.getModels();
-        const privateModels = await this.privateProvider.getModels();
+        const modelImpls = this.getModels();
+        const allModels: CmsModel[] = [];
 
-        // Combine and tag models with tenant
-        const allModels = [...publicModels, ...privateModels].map<CmsModel>(model => ({
-            ...model,
-            tags: ensureTypeTag(model),
-            tenant
-        }));
+        for (const modelImpl of modelImpls) {
+            // Entry builder that determines model type
+            const entryBuilder = new ModelBuilder(this.fieldsRegistry);
+
+            // Get typed builder (private or public)
+            const typedBuilder = await modelImpl.buildModel(entryBuilder);
+            const modelPlugin = typedBuilder.build();
+
+            allModels.push({
+                ...modelPlugin.contentModel,
+                tenant
+            });
+        }
 
         // Apply access control filtering
         return filterAsync(allModels, model => {
@@ -33,8 +36,3 @@ class ModelsProviderImpl implements ProviderAbstraction.Interface {
         });
     }
 }
-
-export const ModelsProvider = ProviderAbstraction.createImplementation({
-    implementation: ModelsProviderImpl,
-    dependencies: [PublicModelProvider, PrivateModelProvider, AccessControl]
-});

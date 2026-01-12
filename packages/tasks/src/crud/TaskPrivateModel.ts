@@ -1,14 +1,14 @@
-import { PrivateModel } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
+import { Model } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
 import { TaskDataStatus } from "~/types.js";
 
 export const WEBINY_TASK_MODEL_ID = "webinyTask";
 
-class TaskPrivateModelImpl implements PrivateModel.Interface {
-    buildModel(builder: PrivateModel.Builder): PrivateModel.Builder {
-        return builder
+class TaskPrivateModelImpl implements Model.Interface {
+    buildModel(builder: Model.Builder) {
+        return builder.private()
             .modelId(WEBINY_TASK_MODEL_ID)
             .name("Webiny Task")
-            .fields((fields: PrivateModel.FieldBuilder) => ({
+            .fields(fields => ({
                 name: fields.text().label("Name").required("Name is required."),
                 definitionId: fields
                     .text()
@@ -52,7 +52,7 @@ class TaskPrivateModelImpl implements PrivateModel.Interface {
     }
 }
 
-export const TaskPrivateModel = PrivateModel.createImplementation({
+export const TaskPrivateModel = Model.createImplementation({
     implementation: TaskPrivateModelImpl,
     dependencies: []
 });

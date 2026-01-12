@@ -1,6 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
 import { FieldBuilderRegistry } from "./fields/FieldBuilderRegistry.js";
-import { FieldBuilderRegistry as FieldBuilderAbstraction } from "./abstractions.js";
 import { TextFieldType } from "./fields/TextFieldType.js";
 import { LongTextFieldType } from "./fields/LongTextFieldType.js";
 import { RichTextFieldType } from "./fields/RichTextFieldType.js";
@@ -13,14 +12,14 @@ import { FileFieldType } from "./fields/FileFieldType.js";
 import { DateTimeFieldType } from "./fields/DateTimeFieldType.js";
 import { JsonFieldType } from "./fields/JsonFieldType.js";
 import { SearchableJsonFieldType } from "./fields/SearchableJsonFieldType.js";
-import { ModelsProvider } from "./models/ModelsProvider.js";
 import { LocationFieldType } from "~/features/modelBuilder/fields/LocationFieldType.js";
-import { PublicModelProvider as PublicAbstraction } from "./models/abstractions.js";
-import { PublicModelProvider } from "./models/PublicModelProvider.js";
-import { PublicModel } from "~/features/modelBuilder/abstractions.js";
-import { PrivateModelProvider as PrivateAbstraction } from "./models/abstractions.js";
-import { PrivateModelProvider } from "./models/PrivateModelProvider.js";
-import { PrivateModel } from "~/features/modelBuilder/abstractions.js";
+import {
+    Model,
+    FieldBuilderRegistry as FieldsRegistryAbstraction
+} from "~/features/modelBuilder/abstractions.js";
+import { AccessControl } from "~/features/shared/abstractions.js";
+import { ModelsProvider as ModelsProviderAbstraction } from "~/features/modelBuilder/models/abstractions.js";
+import { ModelsProvider } from "./models/ModelsProvider.js";
 
 export const ModelBuilderFeature = createFeature({
     name: "ModelBuilder",
@@ -43,20 +42,13 @@ export const ModelBuilderFeature = createFeature({
         // Register field builder registry (will automatically get all FieldType implementations)
         container.register(FieldBuilderRegistry).inSingletonScope();
 
-        // Register model providers
-        container.registerFactory(PublicAbstraction, () => {
-            return new PublicModelProvider(
-                () => container.resolveAll(PublicModel),
-                container.resolve(FieldBuilderAbstraction)
+        // Register unified models provider
+        container.registerFactory(ModelsProviderAbstraction, () => {
+            return new ModelsProvider(
+                () => container.resolveAll(Model),
+                container.resolve(FieldsRegistryAbstraction),
+                container.resolve(AccessControl)
             );
         });
-
-        container.registerFactory(PrivateAbstraction, () => {
-            return new PrivateModelProvider(
-                () => container.resolveAll(PrivateModel),
-                container.resolve(FieldBuilderAbstraction)
-            );
-        });
-        container.register(ModelsProvider).inSingletonScope();
     }
 });

@@ -1,11 +1,12 @@
-import { PrivateModel } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
+import { Model } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
 import { WORKFLOW_MODEL_ID } from "~/constants.js";
 
 export { WORKFLOW_MODEL_ID };
 
-class WorkflowModelImpl implements PrivateModel.Interface {
-    buildModel(builder: PrivateModel.Builder): PrivateModel.Builder {
+class WorkflowModelImpl implements Model.Interface {
+    buildModel(builder: Model.Builder) {
         return builder
+            .private()
             .modelId(WORKFLOW_MODEL_ID)
             .name("Workflow")
             .fields(fields => ({
@@ -40,7 +41,7 @@ class WorkflowModelImpl implements PrivateModel.Interface {
     }
 }
 
-export const WorkflowModel = PrivateModel.createImplementation({
+export const WorkflowModel = Model.createImplementation({
     implementation: WorkflowModelImpl,
     dependencies: []
 });

@@ -1,10 +1,10 @@
-import { PrivateModel } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
+import { Model } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
 
 export const FOLDER_MODEL_ID = "acoFolder";
 
-class FolderPrivateModelImpl implements PrivateModel.Interface {
-    buildModel(builder: PrivateModel.Builder): PrivateModel.Builder {
-        return builder
+class FolderPrivateModelImpl implements Model.Interface {
+    buildModel(builder: Model.Builder) {
+        return builder.private()
             .modelId(FOLDER_MODEL_ID)
             .name("ACO - Folder")
             .fields(fields => ({
@@ -60,7 +60,7 @@ class FolderPrivateModelImpl implements PrivateModel.Interface {
     }
 }
 
-export const FolderModel = PrivateModel.createImplementation({
+export const FolderModel = Model.createImplementation({
     implementation: FolderPrivateModelImpl,
     dependencies: []
 });

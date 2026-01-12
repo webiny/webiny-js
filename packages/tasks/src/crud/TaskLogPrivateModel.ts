@@ -1,14 +1,15 @@
-import { PrivateModel } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
+import { Model } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
 import { TaskLogItemType } from "~/types.js";
 
 export const WEBINY_TASK_LOG_MODEL_ID = "webinyTaskLog";
 
-class TaskLogPrivateModelImpl implements PrivateModel.Interface {
-    buildModel(builder: PrivateModel.Builder): PrivateModel.Builder {
+class TaskLogPrivateModelImpl implements Model.Interface {
+    buildModel(builder: Model.Builder) {
         return builder
+            .private()
             .modelId(WEBINY_TASK_LOG_MODEL_ID)
             .name("Webiny Task Log")
-            .fields((fields: PrivateModel.FieldBuilder) => ({
+            .fields(fields => ({
                 executionName: fields.text().label("Execution Name"),
                 task: fields.text().label("Task").required("Task is required."),
                 iteration: fields.number().label("Iteration").required("Iteration is required."),
@@ -17,16 +18,13 @@ class TaskLogPrivateModelImpl implements PrivateModel.Interface {
                     .label("Items")
                     .list()
                     .required("Items is required.")
-                    .fields((itemFields: PrivateModel.FieldBuilder) => ({
-                        message: itemFields
-                            .text()
-                            .label("Message")
-                            .required("Message is required."),
-                        createdOn: itemFields
+                    .fields(fields => ({
+                        message: fields.text().label("Message").required("Message is required."),
+                        createdOn: fields
                             .datetime()
                             .label("Created On")
                             .required("Created On is required."),
-                        type: itemFields
+                        type: fields
                             .text()
                             .label("Type")
                             .required("Type is required.")
@@ -40,14 +38,14 @@ class TaskLogPrivateModelImpl implements PrivateModel.Interface {
                                     label: "Error"
                                 }
                             ]),
-                        data: itemFields.json().label("Data"),
-                        error: itemFields.json().label("Error")
+                        data: fields.json().label("Data"),
+                        error: fields.json().label("Error")
                     }))
             }));
     }
 }
 
-export const TaskLogPrivateModel = PrivateModel.createImplementation({
+export const TaskLogPrivateModel = Model.createImplementation({
     implementation: TaskLogPrivateModelImpl,
     dependencies: []
 });

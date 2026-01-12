@@ -1,4 +1,6 @@
 export * from "./abstractions.js";
+export * from "./models/BaseModelBuilder.js";
+export * from "./models/ModelBuilder.js";
 export * from "./models/PrivateModelBuilder.js";
 export * from "./models/PublicModelBuilder.js";
 export * from "./feature.js";

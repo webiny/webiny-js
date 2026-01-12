@@ -1,10 +1,10 @@
-import { PrivateModel } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
+import { Model } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
 
 export const RECORD_LOCKING_MODEL_ID = "wby_recordLocking";
 
-class RecordLockingPrivateModelImpl implements PrivateModel.Interface {
-    buildModel(builder: PrivateModel.Builder): PrivateModel.Builder {
-        return builder
+class RecordLockingPrivateModelImpl implements Model.Interface {
+    buildModel(builder: Model.Builder) {
+        return builder.private()
             .modelId(RECORD_LOCKING_MODEL_ID)
             .name("Record Lock Tracking")
             .fields(fields => ({
@@ -42,7 +42,7 @@ class RecordLockingPrivateModelImpl implements PrivateModel.Interface {
     }
 }
 
-export const RecordLockingPrivateModel = PrivateModel.createImplementation({
+export const RecordLockingModel = Model.createImplementation({
     implementation: RecordLockingPrivateModelImpl,
     dependencies: []
 });

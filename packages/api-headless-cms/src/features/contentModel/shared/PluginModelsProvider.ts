@@ -2,7 +2,6 @@ import { AccessControl, CmsContext } from "~/features/shared/abstractions.js";
 import { PluginModelsProvider as ProviderAbstraction } from "./abstractions.js";
 import type { CmsModel } from "~/types/index.js";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin.js";
-import { ensureTypeTag } from "~/crud/contentModel/ensureTypeTag.js";
 import { filterAsync } from "~/utils/filterAsync.js";
 import {
     ModelsProvider,
@@ -38,7 +37,7 @@ class PluginModelsProviderImpl implements ProviderAbstraction.Interface {
             .map(plugin => {
                 return {
                     ...plugin.contentModel,
-                    tags: ensureTypeTag(plugin.contentModel),
+                    tags: this.ensureTypeTag(plugin.contentModel),
                     tenant
                 };
             }) as unknown as CmsModel[];
@@ -53,6 +52,17 @@ class PluginModelsProviderImpl implements ProviderAbstraction.Interface {
         return filterAsync(allModels, model => {
             return this.accessControl.canAccessModel({ model });
         });
+    }
+
+    private ensureTypeTag(model: Pick<CmsModel, "tags">) {
+        // Let's make sure we have a `type` tag assigned.
+        // If `type` tag is not set, set it to a default one (`model`).
+        const tags = model.tags || [];
+        if (!tags.some(tag => tag.startsWith("type:"))) {
+            tags.push("type:model");
+        }
+
+        return tags;
     }
 }
 

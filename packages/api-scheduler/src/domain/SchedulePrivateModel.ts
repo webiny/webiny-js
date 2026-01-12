@@ -1,22 +1,23 @@
-import { PrivateModel } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
+import { Model } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
 import { SCHEDULE_MODEL_ID } from "~/constants.js";
 
-class SchedulePrivateModelImpl implements PrivateModel.Interface {
-    buildModel(builder: PrivateModel.Builder): PrivateModel.Builder {
+class SchedulePrivateModelImpl implements Model.Interface {
+    buildModel(builder: Model.Builder) {
         return builder
+            .private()
             .modelId(SCHEDULE_MODEL_ID)
             .name("Webiny CMS Schedule")
-            .fields((fields: PrivateModel.FieldBuilder) => ({
+            .fields(fields => ({
                 namespace: fields.text().label("Namespace"),
                 actionType: fields.text().label("Action Type"),
                 targetId: fields.text().label("Target ID"),
                 scheduledBy: fields
                     .object()
                     .label("Scheduled By")
-                    .fields((scheduledByFields: PrivateModel.FieldBuilder) => ({
-                        id: scheduledByFields.text().label("Identity ID"),
-                        displayName: scheduledByFields.text().label("Display Name"),
-                        type: scheduledByFields.text().label("Type")
+                    .fields(fields => ({
+                        id: fields.text().label("Identity ID"),
+                        displayName: fields.text().label("Display Name"),
+                        type: fields.text().label("Type")
                     })),
                 scheduledOn: fields.datetime().label("Scheduled On"),
                 dateOn: fields.datetime().label("Date On"),
@@ -27,7 +28,7 @@ class SchedulePrivateModelImpl implements PrivateModel.Interface {
     }
 }
 
-export const SchedulePrivateModel = PrivateModel.createImplementation({
+export const SchedulePrivateModel = Model.createImplementation({
     implementation: SchedulePrivateModelImpl,
     dependencies: []
 });

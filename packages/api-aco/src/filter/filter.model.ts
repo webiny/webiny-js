@@ -1,10 +1,10 @@
-import { PrivateModel } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
+import { Model } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
 
 export const FILTER_MODEL_ID = "acoFilter";
 
-class FilterPrivateModelImpl implements PrivateModel.Interface {
-    buildModel(builder: PrivateModel.Builder): PrivateModel.Builder {
-        return builder
+class FilterPrivateModelImpl implements Model.Interface {
+    buildModel(builder: Model.Builder) {
+        return builder.private()
             .modelId(FILTER_MODEL_ID)
             .name("ACO - Filter")
             .fields(fields => ({
@@ -60,7 +60,7 @@ class FilterPrivateModelImpl implements PrivateModel.Interface {
     }
 }
 
-export const FilterPrivateModel = PrivateModel.createImplementation({
+export const FilterPrivateModel = Model.createImplementation({
     implementation: FilterPrivateModelImpl,
     dependencies: []
 });
