@@ -31,6 +31,9 @@ export const createUniqueValidator = (): CmsModelFieldValidatorPlugin => {
                         },
                         limit: 1
                     });
+                    if (listResult.isFail()) {
+                        throw listResult.error;
+                    }
 
                     return listResult.value.entries.length === 0;
                 } catch (ex) {

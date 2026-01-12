@@ -32,7 +32,9 @@ export const createGetPublishedRevisionByEntryId = (params: IDataLoaderParams) =
             }
 
             const records = await reader.execute();
-            const items = cleanupItems(entity.entity, records);
+            const items = cleanupItems(entity.entity, records).map(item => {
+                return item.data;
+            });
 
             return ids.map(id => {
                 const { id: entryId } = parseIdentifier(id);

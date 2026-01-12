@@ -373,12 +373,22 @@ describe("content model test", () => {
         });
 
         // Let's move the entry to the trash bin and try to delete the content model: it should fail.
-        await deleteCategory({
+        const [deleteCategoryResult] = await deleteCategory({
             revision: createCategoryResponse.data.createCategory.data.entryId,
             options: {
                 permanently: false
             }
         });
+
+        expect(deleteCategoryResult).toEqual({
+            data: {
+                deleteCategory: {
+                    data: true,
+                    error: null
+                }
+            }
+        });
+
         const [deleteWithEntriesInTrashResponse] = await deleteContentModelMutation({
             modelId: model.modelId
         });
