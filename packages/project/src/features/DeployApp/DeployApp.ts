@@ -2,6 +2,7 @@ import { createImplementation } from "@webiny/di";
 import {
     DeployApp,
     BuildAppWorkspaceService,
+    DirtyLambdaService,
     GetApp,
     GetProject,
     GetPulumiService,
@@ -30,7 +31,8 @@ export class DefaultDeployApp implements DeployApp.Interface {
         private pulumiGetSecretsProviderService: PulumiGetSecretsProviderService.Interface,
         private logger: LoggerService.Interface,
         private projectSdkParamsService: ProjectSdkParamsService.Interface,
-        private pulumiGetStackOutputService: PulumiGetStackOutputService.Interface
+        private pulumiGetStackOutputService: PulumiGetStackOutputService.Interface,
+        private dirtyLambdaService: DirtyLambdaService.Interface
     ) {}
 
     async execute(params: DeployApp.Params) {
@@ -59,6 +61,10 @@ export class DefaultDeployApp implements DeployApp.Interface {
         });
 
         const secretsProvider = this.pulumiGetSecretsProviderService.execute();
+
+        // Get dirty Lambda URNs for this app
+        const dirtyLambdaUrns = this.dirtyLambdaService.getDirty(app.name);
+
         const pulumiProcess = params.preview
             ? pulumi.run({
                   command: "preview",
@@ -77,7 +83,9 @@ export class DefaultDeployApp implements DeployApp.Interface {
                       yes: true,
                       skipPreview: true,
                       secretsProvider,
-                      debug: !!params.debug
+                      debug: !!params.debug,
+                      // Only replace specific dirty Lambdas if any exist
+                      replace: dirtyLambdaUrns.length > 0 ? dirtyLambdaUrns : undefined
                   },
                   execa: { env }
               });
@@ -94,6 +102,9 @@ export class DefaultDeployApp implements DeployApp.Interface {
         // Promise is returned so that the caller can await it if needed.
         await pulumiProcess;
         await output;
+
+        // Clear dirty Lambda URNs after successful deployment
+        this.dirtyLambdaService.clearDirty(app.name);
 
         // Update the stack output cache after successful deployment
         try {
@@ -117,6 +128,7 @@ export const deployApp = createImplementation({
         PulumiGetSecretsProviderService,
         LoggerService,
         ProjectSdkParamsService,
-        PulumiGetStackOutputService
+        PulumiGetStackOutputService,
+        DirtyLambdaService
     ]
 });
