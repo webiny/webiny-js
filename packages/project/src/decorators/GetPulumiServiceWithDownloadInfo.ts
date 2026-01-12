@@ -12,7 +12,10 @@ export class GetPulumiServiceWithDownloadInfo implements GetPulumiService.Interf
         const pulumiCliPath = project.paths.dotWebinyFolder.join("pulumi-cli");
 
         if (!pulumiCliPath.existsSync()) {
-            this.ui.info("Downloading pulumi cli...");
+            this.ui.info("Looks like this is your first time using Pulumi CLI. Downloading...");
+
+            // New line b/c after the Pulumi CLI download, plugins are next.
+            this.ui.emptyLine();
         }
 
         return this.decoratee.execute(params);
