@@ -16,7 +16,7 @@ export interface IDeployCommandParams {
     variant?: string;
     region?: string;
     env: string;
-    deploymentLogs?: boolean;
+    showDeploymentLogs?: boolean;
     build?: boolean;
     preview?: boolean;
     allowLocalStateFiles?: boolean;
@@ -27,7 +27,7 @@ export interface IDeploySingleAppParams {
     variant?: string;
     region?: string;
     env: string;
-    deploymentLogs?: boolean;
+    showDeploymentLogs?: boolean;
     build?: boolean;
     preview?: boolean;
 }
@@ -79,7 +79,7 @@ export class DeployCommand implements CliCommand.Interface<IDeployCommandParams>
                     default: false
                 },
                 {
-                    name: "deployment-logs",
+                    name: "show-deployment-logs",
                     description: "Print deployment logs (automatically enabled in CI environments)",
                     type: "boolean",
                     default: false
@@ -203,7 +203,7 @@ export class DeployCommand implements CliCommand.Interface<IDeployCommandParams>
 
         // We always show deployment logs when doing previews.
         const showDeploymentLogs = Boolean(
-            projectSdk.isCi() || params.preview || params.deploymentLogs
+            projectSdk.isCi() || params.preview || params.showDeploymentLogs
         );
 
         return await projectSdk.deployApp({

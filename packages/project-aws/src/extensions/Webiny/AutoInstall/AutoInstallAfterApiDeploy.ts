@@ -64,7 +64,12 @@ class AutoInstallAfterApiDeployImpl implements ApiAfterDeploy.Interface {
         private logger: LoggerService.Interface
     ) {}
 
-    async execute() {
+    async execute(params: ApiAfterDeploy.Params): Promise<void> {
+        if (params.preview) {
+            // Skip auto-install on preview deployments
+            return;
+        }
+
         const projectConfig = await this.getProjectConfig.execute();
         const adminAutoInstallExtensions = projectConfig.extensionsByType("Project/AutoInstall");
 

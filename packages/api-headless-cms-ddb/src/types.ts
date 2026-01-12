@@ -65,12 +65,12 @@ export interface StorageOperationsFactory {
 }
 
 export interface CmsEntryStorageOperations extends BaseCmsEntryStorageOperations {
-    dataLoaders: DataLoadersHandlerInterface;
+    dataLoaders: IDataLoadersHandler;
 }
 
 export interface DataLoadersHandlerInterfaceClearAllParams {
     model: Pick<CmsModel, "tenant">;
 }
-export interface DataLoadersHandlerInterface {
+export interface IDataLoadersHandler {
     clearAll: (params?: DataLoadersHandlerInterfaceClearAllParams) => void;
 }

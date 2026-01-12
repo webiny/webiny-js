@@ -3,8 +3,9 @@ import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js"
 import type { Client } from "@webiny/api-elasticsearch";
 import { createElasticsearchEntity, createElasticsearchTable } from "@webiny/api-elasticsearch";
 import type { IManager } from "~/types.js";
-import type { BatchReadItem, IEntity } from "@webiny/db-dynamodb";
-import { batchReadAll } from "@webiny/db-dynamodb";
+import type { BatchReadItem } from "@webiny/db-dynamodb/utils/batch/batchRead.js";
+import { batchReadAll } from "@webiny/db-dynamodb/utils/batch/batchRead.js";
+import type { IEntity } from "@webiny/db-dynamodb";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 export interface ManagerParams<

@@ -68,7 +68,7 @@ export const Extensions = () => {
             {/* Project 👇 */}
             <Project.Telemetry enabled={false} />
 
-            {process.env.WEBINY_AUTO_INSTALL && (
+            {process.env.WEBINY_CLI_AUTO_INSTALL && (
                 <Project.AutoInstall
                     adminUser={{
                         firstName: "Ad",
