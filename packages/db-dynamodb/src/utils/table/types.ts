@@ -1,4 +1,4 @@
-import type { TableDef } from "dynamodb-toolbox/dist/cjs/classes/Table/types.js";
+import type DynamoDbTable from "dynamodb-toolbox/dist/cjs/classes/Table/Table.js";
 import type {
     BatchWriteItem,
     BatchWriteResult,
@@ -13,8 +13,12 @@ export type ITableScanParams = BaseScanParams;
 
 export type ITableScanResponse<T> = ScanResponse<T>;
 
-export interface ITable {
-    table: TableDef;
+export interface ITable<
+    Name extends string = string,
+    PK extends string = string,
+    SK extends string = string
+> {
+    table: DynamoDbTable<Name, PK, SK>;
     createWriter(): ITableWriteBatch;
     createReader(): ITableReadBatch;
     scan<T>(params: ITableScanParams): Promise<ITableScanResponse<T>>;
@@ -22,7 +26,6 @@ export interface ITable {
 
 export interface ITableWriteBatch {
     readonly total: number;
-    // readonly table: TableDef;
     readonly items: BatchWriteItem[];
     put(entity: Entity, item: IPutBatchItem): void;
     delete(entity: Entity, item: IDeleteBatchItem): void;
@@ -36,7 +39,7 @@ export interface ITableReadBatchKey {
 }
 
 export interface ITableReadBatchBuilderGetResponse {
-    Table: TableDef;
+    Table: DynamoDbTable<string, string, string>;
     Key: ITableReadBatchKey;
 }
 

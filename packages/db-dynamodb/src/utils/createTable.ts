@@ -1,23 +1,31 @@
-import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import { Table as BaseTable } from "~/toolbox.js";
-import type { GenericRecord } from "@webiny/api/types.js";
+import type { ITable } from "~/utils/table/index.js";
+import { Table } from "~/utils/table/index.js";
+import type { TableConstructor } from "~/toolbox.js";
 
 export interface ICreateTableParamsIndexDefinition {
     partitionKey: string;
     sortKey?: string;
 }
 
-export interface ICreateTableParams {
-    name?: string;
-    documentClient: DynamoDBDocument;
-    indexes?: GenericRecord<string, ICreateTableParamsIndexDefinition>;
-}
+// export interface ICreateTableParams {
+//     name?: string;
+//     documentClient: DynamoDBDocument;
+//     indexes?: GenericRecord<string, ICreateTableParamsIndexDefinition>;
+// }
 
-export type Table = BaseTable<string, "PK", "SK">;
+export type ICreateTableParams = Partial<
+    Omit<TableConstructor<string, string, string>, "DocumentClient">
+> & {
+    name: string;
+    documentClient: Pick<
+        TableConstructor<string, string, string>,
+        "DocumentClient"
+    >["DocumentClient"];
+};
 
-export const createTable = ({ name, documentClient, indexes }: ICreateTableParams): Table => {
-    return new BaseTable({
-        name: name || String(process.env.DB_TABLE),
+export const createTable = (params: ICreateTableParams): ITable<string, "PK", "SK"> => {
+    const { documentClient, indexes = {}, ...rest } = params;
+    return new Table({
         partitionKey: "PK",
         sortKey: "SK",
         DocumentClient: documentClient,
@@ -36,6 +44,7 @@ export const createTable = ({ name, documentClient, indexes }: ICreateTableParam
             ...indexes
         },
         autoExecute: true,
-        autoParse: true
+        autoParse: true,
+        ...rest
     });
 };

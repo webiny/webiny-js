@@ -12,12 +12,12 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
     const { table: tableName, documentClient } = params;
 
     const table = createTable({
-        name: tableName,
+        name: tableName || (process.env.DB_TABLE as string),
         documentClient
     });
 
     const entities = {
-        users: createUserEntity(table)
+        users: createUserEntity(table.table)
     };
 
     const createUserKeys = (user: Pick<AdminUser, "tenant" | "id">) => ({

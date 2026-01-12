@@ -1,9 +1,7 @@
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import type { AttributeDefinition, Table } from "@webiny/db-dynamodb/toolbox.js";
 import type { AdminUsersStorageOperations as BaseAdminUsersStorageOperations } from "@webiny/api-core/types/users.js";
 import type { IAdminUserEntity } from "~/adminUsers/definitions/types.js";
-
-export type Attributes = Record<string, AttributeDefinition>;
+import { ITable } from "@webiny/db-dynamodb";
 
 export enum ENTITIES {
     SYSTEM = "AdminUsers.System",
@@ -24,6 +22,6 @@ export interface IAdminUsersGetEntitiesResponse {
 }
 
 export interface AdminUsersStorageOperations extends BaseAdminUsersStorageOperations {
-    getTable(): Table<string, string, string>;
+    getTable(): ITable;
     getEntities(): IAdminUsersGetEntitiesResponse;
 }

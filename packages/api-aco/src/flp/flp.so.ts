@@ -45,7 +45,7 @@ class FolderLevelPermissionsStorageOperations
         });
 
         this.entity = createStandardEntity<FolderLevelPermission>({
-            table: this.table,
+            table: this.table.table,
             name: "ACO.flp"
         });
     }

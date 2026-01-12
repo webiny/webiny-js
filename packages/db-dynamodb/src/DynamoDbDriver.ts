@@ -29,9 +29,7 @@ class DynamoDbDriver implements DbDriver<DynamoDBDocument> {
     constructor({ documentClient }: ConstructorArgs) {
         this.documentClient = documentClient;
         this.table = createTable({
-            documentClient
-        });
-        this.table = createTable({
+            name: process.env.DB_TABLE as string,
             documentClient
         });
         this.entity = createEntity({
