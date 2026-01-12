@@ -2,7 +2,7 @@ import { createImplementation } from "@webiny/di";
 import {
     DeployApp,
     BuildAppWorkspaceService,
-    DirtyLambdaService,
+    WatchedLambdaFunctionsService,
     GetApp,
     GetProject,
     GetPulumiService,
@@ -32,7 +32,7 @@ export class DefaultDeployApp implements DeployApp.Interface {
         private logger: LoggerService.Interface,
         private projectSdkParamsService: ProjectSdkParamsService.Interface,
         private pulumiGetStackOutputService: PulumiGetStackOutputService.Interface,
-        private dirtyLambdaService: DirtyLambdaService.Interface
+        private watchedLambdaFunctionsService: WatchedLambdaFunctionsService.Interface
     ) {}
 
     async execute(params: DeployApp.Params) {
@@ -62,8 +62,8 @@ export class DefaultDeployApp implements DeployApp.Interface {
 
         const secretsProvider = this.pulumiGetSecretsProviderService.execute();
 
-        // Get dirty Lambda URNs for this app
-        const dirtyLambdaUrns = this.dirtyLambdaService.getDirty(app.name);
+        // Get Lambda URNs that need replacement for this app
+        const lambdaUrnsToReplace = this.watchedLambdaFunctionsService.getDirty(app.name);
 
         const pulumiProcess = params.preview
             ? pulumi.run({
@@ -84,8 +84,8 @@ export class DefaultDeployApp implements DeployApp.Interface {
                       skipPreview: true,
                       secretsProvider,
                       debug: !!params.debug,
-                      // Only replace specific dirty Lambdas if any exist
-                      replace: dirtyLambdaUrns.length > 0 ? dirtyLambdaUrns : undefined
+                      // Only replace specific Lambdas that were updated during watch if any exist
+                      replace: lambdaUrnsToReplace.length > 0 ? lambdaUrnsToReplace : undefined
                   },
                   execa: { env }
               });
@@ -103,8 +103,8 @@ export class DefaultDeployApp implements DeployApp.Interface {
         await pulumiProcess;
         await output;
 
-        // Clear dirty Lambda URNs after successful deployment
-        this.dirtyLambdaService.clearDirty(app.name);
+        // Clear Lambda URNs that needed replacement after successful deployment
+        this.watchedLambdaFunctionsService.clearDirty(app.name);
 
         // Update the stack output cache after successful deployment
         try {
@@ -129,6 +129,6 @@ export const deployApp = createImplementation({
         LoggerService,
         ProjectSdkParamsService,
         PulumiGetStackOutputService,
-        DirtyLambdaService
+        WatchedLambdaFunctionsService
     ]
 });

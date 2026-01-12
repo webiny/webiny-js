@@ -27,9 +27,9 @@ import {
     corePulumi,
     deployApp,
     destroyApp,
+    exportStack,
     getApp,
     getAppOutput,
-    getAppStackExport,
     getAppStackOutput,
     getLogger,
     getProductionEnvironments,
@@ -51,6 +51,7 @@ import {
     getAppService,
     buildAppWorkspaceService,
     buildProjectWorkspaceService,
+    watchedLambdaFunctionsService,
     getAppPackagesService,
     getCwdService,
     getIsCiService,
@@ -75,7 +76,8 @@ import {
     projectSdkParamsService,
     pulumiGetConfigPassphraseService,
     pulumiGetSecretsProviderService,
-    pulumiGetStackExportService,
+    pulumiExportService,
+    pulumiImportService,
     pulumiGetStackOutputService,
     pulumiLoginService,
     pulumiSelectStackService,
@@ -140,6 +142,7 @@ export const createProjectSdkContainer = async (
     container.register(getAppService).inSingletonScope();
     container.register(buildAppWorkspaceService).inSingletonScope();
     container.register(buildProjectWorkspaceService).inSingletonScope();
+    container.register(watchedLambdaFunctionsService).inSingletonScope();
     container.register(getAppPackagesService).inSingletonScope();
     container.register(getCwdService).inSingletonScope();
     container.register(getIsCiService).inSingletonScope();
@@ -164,7 +167,8 @@ export const createProjectSdkContainer = async (
     container.register(projectSdkParamsService).inSingletonScope();
     container.register(pulumiGetConfigPassphraseService).inSingletonScope();
     container.register(pulumiGetSecretsProviderService).inSingletonScope();
-    container.register(pulumiGetStackExportService).inSingletonScope();
+    container.register(pulumiExportService).inSingletonScope();
+    container.register(pulumiImportService).inSingletonScope();
     container.register(pulumiGetStackOutputService).inSingletonScope();
     container.register(pulumiLoginService).inSingletonScope();
     container.register(pulumiSelectStackService).inSingletonScope();
@@ -178,9 +182,9 @@ export const createProjectSdkContainer = async (
     container.register(buildApp).inSingletonScope();
     container.register(deployApp).inSingletonScope();
     container.register(destroyApp).inSingletonScope();
+    container.register(exportStack).inSingletonScope();
     container.register(getApp).inSingletonScope();
     container.register(getAppOutput).inSingletonScope();
-    container.register(getAppStackExport).inSingletonScope();
     container.register(getAppStackOutput).inSingletonScope();
     container.register(getLogger).inSingletonScope();
     container.register(getProductionEnvironments).inSingletonScope();

@@ -1,6 +1,7 @@
 import { createImplementation } from "@webiny/di";
 import {
     BuildAppWorkspaceService,
+    WatchedLambdaFunctionsService,
     GetApp,
     GetProductionEnvironments,
     GetProject,
@@ -9,7 +10,7 @@ import {
     ListPackagesService,
     LoggerService,
     ProjectSdkParamsService,
-    PulumiGetStackExportService,
+    PulumiExportService,
     PulumiGetStackOutputService,
     UiService,
     ValidateProjectConfigService,
@@ -36,7 +37,8 @@ export class DefaultWatch implements Watch.Interface {
         private getProductionEnvironments: GetProductionEnvironments.Interface,
         private ui: UiService.Interface,
         private pulumiGetStackOutputService: PulumiGetStackOutputService.Interface,
-        private pulumiGetStackExportService: PulumiGetStackOutputService.Interface,
+        private pulumiExportService: PulumiExportService.Interface,
+        private watchedLambdaFunctionsService: WatchedLambdaFunctionsService.Interface,
         private buildAppWorkspaceService: BuildAppWorkspaceService.Interface,
         private projectSdkParamsService: ProjectSdkParamsService.Interface
     ) {}
@@ -244,7 +246,8 @@ export class DefaultWatch implements Watch.Interface {
             dependencies: {
                 uiService: ui,
                 loggerService: logger,
-                pulumiGetStackExportService: this.pulumiGetStackExportService
+                pulumiExportService: this.pulumiExportService,
+                watchedLambdaFunctionsService: this.watchedLambdaFunctionsService
             },
             iotEndpoint,
             iotEndpointTopic,
@@ -291,7 +294,8 @@ export const watch = createImplementation({
         GetProductionEnvironments,
         UiService,
         PulumiGetStackOutputService,
-        PulumiGetStackExportService,
+        PulumiExportService,
+        WatchedLambdaFunctionsService,
         BuildAppWorkspaceService,
         ProjectSdkParamsService
     ]

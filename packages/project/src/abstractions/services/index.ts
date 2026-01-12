@@ -1,7 +1,6 @@
 export * from "./ProjectInfoService/index.js";
 export { BuildAppWorkspaceService } from "./BuildAppWorkspaceService.js";
 export { BuildProjectWorkspaceService } from "./BuildProjectWorkspaceService.js";
-export { DirtyLambdaService } from "./DirtyLambdaService.js";
 export { GetAppPackagesService } from "./GetAppPackagesService.js";
 export { GetAppService } from "./GetAppService.js";
 export { GetCwdService } from "./GetCwdService.js";
@@ -30,4 +29,5 @@ export { SetProjectIdService } from "./SetProjectIdService.js";
 export { StdioService } from "./StdioService.js";
 export { UiService } from "./UiService.js";
 export { ValidateProjectConfigService } from "./ValidateProjectConfigService.js";
+export { WatchedLambdaFunctionsService } from "./WatchedLambdaFunctionsService.js";
 export { WcpService } from "./WcpService.js";

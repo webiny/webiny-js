@@ -1,6 +1,5 @@
 export * from "./BuildAppWorkspaceService/index.js";
 export * from "./BuildProjectWorkspaceService/index.js";
-export * from "./DirtyLambdaService/index.js";
 export * from "./GetAppPackagesService/index.js";
 export * from "./GetAppService/index.js";
 export * from "./GetCwdService/index.js";
@@ -30,4 +29,5 @@ export * from "./SetProjectIdService/index.js";
 export * from "./StdioService/index.js";
 export * from "./UiService/index.js";
 export * from "./ValidateProjectConfigService/index.js";
+export * from "./WatchedLambdaFunctionsService/index.js";
 export * from "./WcpService/index.js";
