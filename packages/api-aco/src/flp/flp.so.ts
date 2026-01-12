@@ -41,6 +41,7 @@ class FolderLevelPermissionsStorageOperations
 
     constructor({ documentClient }: StorageOperationsConfig) {
         this.table = createTable({
+            name: String(process.env.DB_TABLE),
             documentClient
         });
 
