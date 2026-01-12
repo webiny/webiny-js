@@ -36,7 +36,6 @@ import type {
 } from "@webiny/api-elasticsearch/types.js";
 import type { CmsEntryStorageOperations, CmsIndexEntry } from "~/types.js";
 import { createElasticsearchBody } from "./elasticsearch/body.js";
-import { logIgnoredEsResponseError } from "./elasticsearch/logIgnoredEsResponseError.js";
 import { shouldIgnoreEsResponseError } from "./elasticsearch/shouldIgnoreEsResponseError.js";
 import { StorageOperationsCmsModelPlugin } from "@webiny/api-headless-cms";
 import { createTransformer } from "./transformations/index.js";
@@ -1291,12 +1290,6 @@ export const createEntriesStorageOperations = (
              * This is because the index might not exist yet, and we don't want to throw an error.
              */
             if (shouldIgnoreEsResponseError(error)) {
-                logIgnoredEsResponseError({
-                    error,
-                    model,
-                    indexName: index
-                });
-
                 return {
                     hasMoreItems: false,
                     totalCount: 0,
@@ -2000,11 +1993,6 @@ export const createEntriesStorageOperations = (
             });
         } catch (error) {
             if (shouldIgnoreEsResponseError(error)) {
-                logIgnoredEsResponseError({
-                    error,
-                    model,
-                    indexName: index
-                });
                 return [];
             }
 
