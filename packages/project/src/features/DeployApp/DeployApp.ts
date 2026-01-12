@@ -8,8 +8,7 @@ import {
     LoggerService,
     ProjectSdkParamsService,
     PulumiGetSecretsProviderService,
-    PulumiSelectStackService,
-    WatchedLambdaFunctionsService
+    PulumiSelectStackService
 } from "~/abstractions/index.js";
 import {
     createEnvConfiguration,
@@ -29,8 +28,7 @@ export class DefaultDeployApp implements DeployApp.Interface {
         private getPulumiService: GetPulumiService.Interface,
         private pulumiGetSecretsProviderService: PulumiGetSecretsProviderService.Interface,
         private logger: LoggerService.Interface,
-        private projectSdkParamsService: ProjectSdkParamsService.Interface,
-        private watchedLambdaFunctionsService: WatchedLambdaFunctionsService.Interface
+        private projectSdkParamsService: ProjectSdkParamsService.Interface
     ) {}
 
     async execute(params: DeployApp.Params) {
@@ -60,18 +58,16 @@ export class DefaultDeployApp implements DeployApp.Interface {
 
         const secretsProvider = this.pulumiGetSecretsProviderService.execute();
 
-        // Get Lambda URNs that need replacement for this app
-        const lambdaUrnsToReplace = this.watchedLambdaFunctionsService.getDirty(app.name);
-
         const pulumiProcess = params.preview
             ? pulumi.run({
                   command: "preview",
                   args: {
                       diff: true,
-                      debug: !!params.debug
 
                       // Preview command does not accept "--secrets-provider" argument.
-                      // secretsProvider: PULUMI_SECRETS_PROVIDER
+                      // secretsProvider: PULUMI_SECRETS_PROVIDER,
+
+                      ...params.pulumiArgs
                   },
                   execa: { env }
               })
@@ -81,9 +77,7 @@ export class DefaultDeployApp implements DeployApp.Interface {
                       yes: true,
                       skipPreview: true,
                       secretsProvider,
-                      debug: !!params.debug,
-                      // Only replace specific Lambdas that were updated during watch if any exist
-                      replace: lambdaUrnsToReplace.length > 0 ? lambdaUrnsToReplace : undefined
+                      ...params.pulumiArgs
                   },
                   execa: { env }
               });
@@ -114,7 +108,6 @@ export const deployApp = createImplementation({
         GetPulumiService,
         PulumiGetSecretsProviderService,
         LoggerService,
-        ProjectSdkParamsService,
-        WatchedLambdaFunctionsService
+        ProjectSdkParamsService
     ]
 });

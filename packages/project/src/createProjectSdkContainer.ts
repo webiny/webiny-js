@@ -93,6 +93,7 @@ import {
     deployAppClearWatchedLambdaFunctions,
     deployAppRefreshStackOutputCache,
     deployAppWithHooks,
+    deployAppWithWatchedLambdaReplacement,
     watchWithHooks
 } from "./decorators/index.js";
 
@@ -314,6 +315,7 @@ export const createProjectSdkContainer = async (
 
     // Decorators that must be applied last on top of potentially custom ones.
     container.registerDecorator(buildAppWithHooks);
+    container.registerDecorator(deployAppWithWatchedLambdaReplacement);
     container.registerDecorator(deployAppClearWatchedLambdaFunctions);
     container.registerDecorator(deployAppRefreshStackOutputCache);
     container.registerDecorator(deployAppWithHooks);
