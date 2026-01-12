@@ -92,13 +92,15 @@ describe("Router Gateway", () => {
             generateUrl("/"),
             generateUrl("/login", {}),
             generateUrl("/login", { redirect: "/", reason: "login" }),
-            generateUrl("/dynamic-route/:name", { name: "cars" })
+            generateUrl("/dynamic-route/:name", { name: "cars" }),
+            generateUrl("/dynamic-route", { folderId: "696556831e485d00027a1a0b#0001" })
         ];
         expect(urls).toEqual([
             "/",
             "/login",
             "/login?redirect=%2F&reason=login",
-            "/dynamic-route/cars"
+            "/dynamic-route/cars",
+            "/dynamic-route?folderId=696556831e485d00027a1a0b%230001"
         ]);
     });
 });

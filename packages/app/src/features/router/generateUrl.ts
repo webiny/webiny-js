@@ -1,4 +1,4 @@
-import { parse, tokensToFunction } from "path-to-regexp";
+import { compile, parse } from "path-to-regexp";
 
 interface Params {
     [key: string]: any;
@@ -10,7 +10,6 @@ interface Params {
  *
  * @param pattern - Route pattern (e.g., '/security/api-keys/:id')
  * @param params - Parameters object (e.g., { id: 123, new: true })
- * @param options - Optional configuration
  * @returns Generated URL string
  *
  * @example
@@ -18,15 +17,15 @@ interface Params {
  * // Returns: '/security/api-keys/123?new=true'
  */
 export function generateUrl(pattern: string, params?: Params): string {
-    // Parse the pattern to extract tokens
-    const tokens = parse(pattern, {});
-    const toPath = tokensToFunction(tokens);
+    // Compile the pattern to a path generator function
+    const toPath = compile(pattern, { encode: encodeURIComponent });
 
-    // Extract which keys are used in the path
+    // Parse the pattern to extract parameter names
+    const { tokens } = parse(pattern);
     const pathKeys = Object.create(null);
-    for (let i = 0; i < tokens.length; i++) {
-        const token = tokens[i];
-        if (token && typeof token !== "string") {
+
+    for (const token of tokens) {
+        if (typeof token === "object" && "name" in token) {
             pathKeys[token.name] = true;
         }
     }
@@ -39,8 +38,7 @@ export function generateUrl(pattern: string, params?: Params): string {
         const queryParams: Record<string, any> = {};
         const keys = Object.keys(params);
 
-        for (let i = 0; i < keys.length; i++) {
-            const key = keys[i];
+        for (const key of keys) {
             if (key && !pathKeys[key]) {
                 queryParams[key] = params[key] ?? "";
             }
@@ -70,3 +68,5 @@ export function generateUrl(pattern: string, params?: Params): string {
 
     return url;
 }
+
+export default generateUrl;
