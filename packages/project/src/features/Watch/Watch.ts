@@ -236,10 +236,6 @@ export class DefaultWatch implements Watch.Interface {
         const increaseTimeout = params.increaseTimeout;
         const localExecutionHandshakeTimeout = params.increaseHandshakeTimeout || 5; // Default to 5 seconds.
 
-        // TODO: we need a better solution for this.
-        // We want to ensure a Pulumi refresh is made before the next deploy.
-        // setMustRefreshBeforeDeploy(context);
-
         // Ignore promise, we don't need to wait for this to finish.
         replaceLambdaFunctions({
             app,
