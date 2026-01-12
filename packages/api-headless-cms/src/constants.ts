@@ -2,7 +2,7 @@ import type { CmsIdentity } from "~/types/index.js";
 
 export const ROOT_FOLDER = "root";
 
-export const CMS_MODEL_SINGLETON_TAG = "singleton";
+export const CMS_MODEL_SINGLETON_TAG = "singleEntry";
 
 // Content entries - xOn and xBy meta fields.
 export const ENTRY_META_FIELDS = [

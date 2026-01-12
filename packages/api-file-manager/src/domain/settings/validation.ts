@@ -35,8 +35,11 @@ export const updateSettingsValidation = zod.object({
         .transform(async value => {
             if (!value) {
                 const manifest = await ServiceDiscovery.load();
-                // Using ! here because it's not possible for a manifest not to exist.
-                const { domainName } = manifest!.api.cloudfront;
+                if (!manifest || !manifest.api) {
+                    return "";
+                }
+
+                const { domainName } = manifest.api.cloudfront;
 
                 return `https://${domainName}/files/`;
             }

@@ -1,4 +1,4 @@
-import { createCmsGroup, createCmsModel } from "~/plugins";
+import { createCmsGroup, createModelPlugin } from "~/plugins";
 
 export const exportedGroupsAndModels = {
     groups: [
@@ -276,7 +276,7 @@ export const createModels = () => {
             description: null,
             icon: "fas/location-dot"
         }),
-        createCmsModel({
+        createModelPlugin({
             modelId: "machines",
             name: "Machines",
             group: {
