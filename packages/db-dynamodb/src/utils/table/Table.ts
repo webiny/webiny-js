@@ -11,11 +11,11 @@ import { createTableWriteBatch } from "./TableWriteBatch.js";
 import { createTableReadBatch } from "./TableReadBatch.js";
 import { scan } from "../scan.js";
 
-export class TableDefinition<
+export class Table<
     Name extends string = string,
     PartitionKey extends string = string,
     SortKey extends string = string
-> implements ITable
+> implements ITable<Name, PartitionKey, SortKey>
 {
     public readonly table: BaseTable<Name, PartitionKey, SortKey>;
 
@@ -42,13 +42,3 @@ export class TableDefinition<
         });
     }
 }
-
-export const defineTable = <
-    Name extends string = string,
-    PartitionKey extends string = string,
-    SortKey extends string = string
->(
-    params: TableConstructor<Name, PartitionKey, SortKey>
-) => {
-    return new TableDefinition<Name, PartitionKey, SortKey>(params);
-};

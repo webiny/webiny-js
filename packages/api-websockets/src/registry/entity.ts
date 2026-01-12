@@ -12,7 +12,7 @@ export const createEntity = (documentClient: DynamoDBDocument) => {
 
     return createStandardEntity<IWebsocketsConnectionRegistryData>({
         name,
-        table,
+        table: table.table,
         attributes: {
             PK: {
                 partitionKey: true

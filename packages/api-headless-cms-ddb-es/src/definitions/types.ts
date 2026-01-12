@@ -9,7 +9,7 @@ import type {
     IEntryState
 } from "@webiny/api-headless-cms/types/index.js";
 
-export interface IEntryEntityAttributes extends IStandardEntityAttributes {
+export interface IEntryEntityAttributesData {
     tenant: string;
     entryId: string;
     id: string;
@@ -64,6 +64,8 @@ export interface IEntryEntityAttributes extends IStandardEntityAttributes {
     meta?: GenericRecord;
     state?: IEntryState;
 }
+
+export type IEntryEntityAttributes = IStandardEntityAttributes<IEntryEntityAttributesData>;
 
 export type IModelEntity = IEntity<IStandardEntityAttributes<CmsModel>>;
 export type IGroupEntity = IEntity<IStandardEntityAttributes<CmsGroup>>;

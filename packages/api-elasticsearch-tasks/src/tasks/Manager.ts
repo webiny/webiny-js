@@ -52,7 +52,7 @@ export class Manager<
 
     public async read<T>(items: BatchReadItem[]): Promise<T[]> {
         return await batchReadAll<T>({
-            table: this.table,
+            table: this.table.table,
             items
         });
     }

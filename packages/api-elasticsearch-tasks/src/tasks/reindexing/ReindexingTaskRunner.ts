@@ -60,7 +60,7 @@ export class ReindexingTaskRunner {
                 }
 
                 const results = await scan<IDynamoDbElasticsearchRecord>({
-                    table: this.manager.table,
+                    table: this.manager.table.table,
                     keys: this.keys,
                     options: {
                         limit
@@ -72,7 +72,7 @@ export class ReindexingTaskRunner {
                 }
 
                 const tableWriteBatch = createTableWriteBatch({
-                    table: this.manager.table
+                    table: this.manager.table.table
                 });
 
                 for (const item of results.items) {

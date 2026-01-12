@@ -10,7 +10,6 @@ import { configurations } from "~/configurations";
 import type { CmsModel } from "@webiny/api-headless-cms/types";
 import type { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import { OpensearchTenantIndexFactory } from "@webiny/api-elasticsearch-tasks";
-import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 const createIndexName = (model: Pick<CmsModel, "tenant" | "modelId">): string => {
@@ -42,61 +41,67 @@ describe("Create index task", () => {
 
         const plugin = indexFactories[0];
 
-        const indexes = await plugin.getIndexList({ id: "root" } as Tenant);
+        const indexes = (
+            await plugin.getIndexList({
+                id: "root"
+            })
+        ).sort((a, b) => (a.index > b.index ? 1 : -1));
 
         expect(indexes).toHaveLength(7);
 
-        expect(indexes).toEqual([
-            {
-                index: createIndexName({
-                    tenant: "root",
-                    modelId: "webinyTask"
-                }),
-                settings: expect.any(Object)
-            },
-            {
-                index: createIndexName({
-                    tenant: "root",
-                    modelId: "webinyTaskLog"
-                }),
-                settings: expect.any(Object)
-            },
-            {
-                index: createIndexName({
-                    tenant: "root",
-                    modelId: "car"
-                }),
-                settings: expect.any(Object)
-            },
-            {
-                index: createIndexName({
-                    tenant: "root",
-                    modelId: "author"
-                }),
-                settings: expect.any(Object)
-            },
-            {
-                index: createIndexName({
-                    tenant: "root",
-                    modelId: "book"
-                }),
-                settings: expect.any(Object)
-            },
-            {
-                index: createIndexName({
-                    tenant: "root",
-                    modelId: "category"
-                }),
-                settings: expect.any(Object)
-            },
-            {
-                index: createIndexName({
-                    tenant: "root",
-                    modelId: "tag"
-                }),
-                settings: expect.any(Object)
-            }
-        ]);
+        expect(indexes).toEqual(
+            [
+                {
+                    index: createIndexName({
+                        tenant: "root",
+                        modelId: "webinyTask"
+                    }),
+                    settings: expect.any(Object)
+                },
+                {
+                    index: createIndexName({
+                        tenant: "root",
+                        modelId: "webinyTaskLog"
+                    }),
+                    settings: expect.any(Object)
+                },
+                {
+                    index: createIndexName({
+                        tenant: "root",
+                        modelId: "car"
+                    }),
+                    settings: expect.any(Object)
+                },
+                {
+                    index: createIndexName({
+                        tenant: "root",
+                        modelId: "author"
+                    }),
+                    settings: expect.any(Object)
+                },
+                {
+                    index: createIndexName({
+                        tenant: "root",
+                        modelId: "book"
+                    }),
+                    settings: expect.any(Object)
+                },
+                {
+                    index: createIndexName({
+                        tenant: "root",
+                        modelId: "category"
+                    }),
+                    settings: expect.any(Object)
+                },
+                {
+                    index: createIndexName({
+                        tenant: "root",
+                        modelId: "tag"
+                    }),
+                    settings: expect.any(Object)
+                }
+            ].sort((a, b) => (a.index > b.index ? 1 : -1))
+        );
     });
 
     it("should create an index for each of the models defined", async () => {
