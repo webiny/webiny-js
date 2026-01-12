@@ -1,4 +1,4 @@
-import { createCmsModelPlugin } from "@webiny/api-headless-cms";
+import { createModelPlugin as createModelPluginBase, createModelField } from "@webiny/api-headless-cms";
 
 export const AUTHOR_MODEL_ID = "author";
 
@@ -26,28 +26,28 @@ export const model = {
     },
     layout: [["fullName", "image", "images", "wrapper", "wrappers"]],
     fields: [
-        {
+        createModelField({
             id: "fullName",
             multipleValues: false,
             label: "Full name",
             type: "text",
             fieldId: "fullName"
-        },
-        {
+        }),
+        createModelField({
             id: "image",
             multipleValues: false,
             label: "Image",
             fieldId: "image",
             type: "file"
-        },
-        {
+        }),
+        createModelField({
             id: "images",
             multipleValues: true,
             label: "Image",
             fieldId: "images",
             type: "file"
-        },
-        {
+        }),
+        createModelField({
             id: "wrapper",
             multipleValues: false,
             label: "Wrapper",
@@ -55,24 +55,24 @@ export const model = {
             fieldId: "wrapper",
             settings: {
                 fields: [
-                    {
+                    createModelField({
                         id: "image",
                         multipleValues: false,
                         label: "Image",
                         fieldId: "image",
                         type: "file"
-                    },
-                    {
+                    }),
+                    createModelField({
                         id: "images",
                         multipleValues: true,
                         label: "Images",
                         fieldId: "images",
                         type: "file"
-                    }
+                    })
                 ]
             }
-        },
-        {
+        }),
+        createModelField({
             id: "wrappers",
             multipleValues: true,
             label: "Wrappers",
@@ -80,27 +80,27 @@ export const model = {
             fieldId: "wrappers",
             settings: {
                 fields: [
-                    {
+                    createModelField({
                         id: "image",
                         multipleValues: false,
                         label: "Image",
                         fieldId: "image",
                         type: "file"
-                    },
-                    {
+                    }),
+                    createModelField({
                         id: "images",
                         multipleValues: true,
                         label: "Images",
                         fieldId: "images",
                         type: "file"
-                    }
+                    })
                 ]
             }
-        }
+        })
     ],
     tenant: "root"
 };
 
 export const createModelPlugin = () => {
-    return createCmsModelPlugin(model);
+    return createModelPluginBase(model);
 };
