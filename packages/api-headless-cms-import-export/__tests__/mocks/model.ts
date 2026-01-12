@@ -1,4 +1,7 @@
-import { createModelPlugin as createModelPluginBase, createModelField } from "@webiny/api-headless-cms";
+import {
+    createModelPlugin as createModelPluginBase,
+    createModelField
+} from "@webiny/api-headless-cms";
 
 export const AUTHOR_MODEL_ID = "author";
 
