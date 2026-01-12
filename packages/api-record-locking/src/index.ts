@@ -3,10 +3,7 @@ import { ContextPlugin } from "@webiny/api";
 import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel";
-import {
-    RecordLockingModel,
-    RECORD_LOCKING_MODEL_ID
-} from "~/domain/RecordLockingModel.js";
+import { RecordLockingModel, RECORD_LOCKING_MODEL_ID } from "~/domain/RecordLockingModel.js";
 import { getTimeout } from "~/utils/getTimeout.js";
 import { RecordLockingFeature } from "~/features/RecordLockingFeature.js";
 import { createGraphQLSchema } from "~/graphql/schema.js";

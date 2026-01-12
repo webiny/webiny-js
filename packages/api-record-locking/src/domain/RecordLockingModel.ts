@@ -4,7 +4,8 @@ export const RECORD_LOCKING_MODEL_ID = "wby_recordLocking";
 
 class RecordLockingPrivateModelImpl implements Model.Interface {
     buildModel(builder: Model.Builder) {
-        return builder.private()
+        return builder
+            .private()
             .modelId(RECORD_LOCKING_MODEL_ID)
             .name("Record Lock Tracking")
             .fields(fields => ({

@@ -4,7 +4,8 @@ export const FILTER_MODEL_ID = "acoFilter";
 
 class FilterPrivateModelImpl implements Model.Interface {
     buildModel(builder: Model.Builder) {
-        return builder.private()
+        return builder
+            .private()
             .modelId(FILTER_MODEL_ID)
             .name("ACO - Filter")
             .fields(fields => ({

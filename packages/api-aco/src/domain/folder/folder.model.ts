@@ -4,7 +4,8 @@ export const FOLDER_MODEL_ID = "acoFolder";
 
 class FolderPrivateModelImpl implements Model.Interface {
     buildModel(builder: Model.Builder) {
-        return builder.private()
+        return builder
+            .private()
             .modelId(FOLDER_MODEL_ID)
             .name("ACO - Folder")
             .fields(fields => ({

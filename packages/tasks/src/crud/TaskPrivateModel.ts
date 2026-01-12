@@ -5,7 +5,8 @@ export const WEBINY_TASK_MODEL_ID = "webinyTask";
 
 class TaskPrivateModelImpl implements Model.Interface {
     buildModel(builder: Model.Builder) {
-        return builder.private()
+        return builder
+            .private()
             .modelId(WEBINY_TASK_MODEL_ID)
             .name("Webiny Task")
             .fields(fields => ({
