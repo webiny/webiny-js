@@ -1,8 +1,11 @@
 import type { CmsContext } from "~/types/index.js";
 
+/**
+ * TODO: Legacy function - review and remove!
+ */
 export const isHeadlessCmsReady = async ({ tenancy }: CmsContext): Promise<boolean> => {
     /**
-     * In case of a fresh webiny project "tenant" and "locale" won't be there until the installation is completed.
+     * In case of a fresh webiny project "tenant" won't be there until the installation is completed.
      */
     const tenant = tenancy.getCurrentTenant();
     if (!tenant) {
