@@ -11,14 +11,18 @@ export const createGetAllEntryRevisions = (params: IDataLoaderParams) => {
             const results: Record<string, CmsStorageEntry[]> = {};
 
             for (const id of ids) {
-                results[id] = await entity.queryAllClean({
-                    partitionKey: createPartitionKey({
-                        tenant,
-                        id
-                    }),
-                    options: {
-                        beginsWith: "REV#"
-                    }
+                results[id] = (
+                    await entity.queryAllClean({
+                        partitionKey: createPartitionKey({
+                            tenant,
+                            id
+                        }),
+                        options: {
+                            beginsWith: "REV#"
+                        }
+                    })
+                ).map(item => {
+                    return item.data;
                 });
             }
 

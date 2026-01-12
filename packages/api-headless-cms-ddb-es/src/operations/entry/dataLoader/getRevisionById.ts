@@ -4,7 +4,6 @@ import { createPartitionKey, createRevisionSortKey } from "~/operations/entry/ke
 import type { IDataLoaderParams } from "./types.js";
 import { parseIdentifier } from "@webiny/utils";
 import { createBatchScheduleFn } from "./createBatchScheduleFn.js";
-import { cleanupItems } from "@webiny/db-dynamodb";
 
 export const createGetRevisionById = (params: IDataLoaderParams) => {
     const { entity, tenant } = params;
@@ -39,8 +38,9 @@ export const createGetRevisionById = (params: IDataLoaderParams) => {
                 });
             }
 
-            const records = await reader.execute();
-            const items = cleanupItems(entity.entity, records);
+            const items = (await reader.execute()).map(item => {
+                return item.data;
+            });
 
             return ids.map(id => {
                 return items.filter(item => {

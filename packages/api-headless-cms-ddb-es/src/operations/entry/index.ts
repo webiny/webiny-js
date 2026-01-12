@@ -47,7 +47,7 @@ import {
     isRestoredEntryMetaField,
     pickEntryMetaFields
 } from "@webiny/api-headless-cms/constants.js";
-import type { IEntryEntity } from "~/definitions/types.js";
+import type { IEntryEntity, IEntryEntityAttributes } from "~/definitions/types.js";
 
 export interface CreateEntriesStorageOperationsParams {
     entity: IEntryEntity;
@@ -132,23 +132,29 @@ export const createEntriesStorageOperations = (
         const entityBatch = entity.createEntityWriter({
             put: [
                 {
-                    ...storageEntry,
-                    locked,
-                    ...revisionKeys
+                    ...revisionKeys,
+                    data: {
+                        ...storageEntry,
+                        locked
+                    }
                 },
                 {
-                    ...storageEntry,
-                    locked,
-                    ...latestKeys
+                    ...latestKeys,
+                    data: {
+                        ...storageEntry,
+                        locked
+                    }
                 }
             ]
         });
 
         if (isPublished) {
             entityBatch.put({
-                ...storageEntry,
-                locked,
-                ...publishedKeys
+                ...publishedKeys,
+                data: {
+                    ...storageEntry,
+                    locked
+                }
             });
         }
 
@@ -234,20 +240,20 @@ export const createEntriesStorageOperations = (
         const entityBatch = entity.createEntityWriter({
             put: [
                 {
-                    ...storageEntry,
-                    ...revisionKeys
+                    ...revisionKeys,
+                    data: storageEntry
                 },
                 {
-                    ...storageEntry,
-                    ...latestKeys
+                    ...latestKeys,
+                    data: storageEntry
                 }
             ]
         });
 
         if (isPublished) {
             entityBatch.put({
-                ...storageEntry,
-                ...publishedKeys
+                ...publishedKeys,
+                data: storageEntry
             });
 
             // Unpublish previously published revision (if any).
@@ -261,9 +267,11 @@ export const createEntriesStorageOperations = (
             if (publishedRevisionStorageEntry) {
                 const publishedRevisionKey = createEntryRevisionKeys(publishedRevisionStorageEntry);
                 entityBatch.put({
-                    ...publishedRevisionStorageEntry,
                     ...publishedRevisionKey,
-                    status: CONTENT_ENTRY_STATUS.UNPUBLISHED
+                    data: {
+                        ...publishedRevisionStorageEntry,
+                        status: CONTENT_ENTRY_STATUS.UNPUBLISHED
+                    }
                 });
             }
         }
@@ -363,18 +371,22 @@ export const createEntriesStorageOperations = (
         const entityBatch = entity.createEntityWriter({
             put: [
                 {
-                    ...storageEntry,
-                    locked,
-                    ...revisionKeys
+                    ...revisionKeys,
+                    data: {
+                        ...storageEntry,
+                        locked
+                    }
                 }
             ]
         });
 
         if (isPublished) {
             entityBatch.put({
-                ...storageEntry,
-                locked,
-                ...publishedKeys
+                ...publishedKeys,
+                data: {
+                    ...storageEntry,
+                    locked
+                }
             });
         }
 
@@ -394,8 +406,8 @@ export const createEntriesStorageOperations = (
                  * First we update the regular DynamoDB table.
                  */
                 entityBatch.put({
-                    ...storageEntry,
-                    ...latestKeys
+                    ...latestKeys,
+                    data: storageEntry
                 });
 
                 /**
@@ -418,10 +430,12 @@ export const createEntriesStorageOperations = (
                     isEntryLevelEntryMetaField
                 );
 
-                const updatedLatestStorageEntry = {
-                    ...latestStorageEntry,
+                const updatedLatestStorageEntry: IEntryEntityAttributes = {
                     ...latestKeys,
-                    ...updatedEntryLevelMetaFields
+                    data: {
+                        ...latestStorageEntry,
+                        ...updatedEntryLevelMetaFields
+                    }
                 };
 
                 /**
@@ -537,9 +551,12 @@ export const createEntriesStorageOperations = (
         for (const record of records) {
             entityBatch.put({
                 ...record,
-                location: {
-                    ...record?.location,
-                    folderId
+                data: {
+                    ...record.data,
+                    location: {
+                        ...record.data.location,
+                        folderId
+                    }
                 }
             });
 
@@ -547,9 +564,9 @@ export const createEntriesStorageOperations = (
              * We need to get the published and latest records, so we can update the Elasticsearch.
              */
             if (record.SK === publishedSortKey) {
-                publishedRecord = record;
+                publishedRecord = record.data;
             } else if (record.SK === latestSortKey) {
-                latestRecord = record;
+                latestRecord = record.data;
             }
         }
         try {
@@ -683,19 +700,22 @@ export const createEntriesStorageOperations = (
         for (const record of records) {
             entityBatch.put({
                 ...record,
-                ...updatedEntryMetaFields,
-                wbyDeleted: storageEntry.wbyDeleted,
-                location: storageEntry.location,
-                binOriginalFolderId: storageEntry.binOriginalFolderId
+                data: {
+                    ...record.data,
+                    ...updatedEntryMetaFields,
+                    wbyDeleted: storageEntry.wbyDeleted,
+                    location: storageEntry.location,
+                    binOriginalFolderId: storageEntry.binOriginalFolderId
+                }
             });
 
             /**
              * We need to get the published and latest records, so we can update the Elasticsearch.
              */
             if (record.SK === publishedSortKey) {
-                publishedRecord = record;
+                publishedRecord = record.data;
             } else if (record.SK === latestSortKey) {
-                latestRecord = record;
+                latestRecord = record.data;
             }
         }
 
@@ -848,19 +868,22 @@ export const createEntriesStorageOperations = (
         for (const record of records) {
             entityBatch.put({
                 ...record,
-                ...updatedEntryMetaFields,
-                wbyDeleted: storageEntry.wbyDeleted,
-                location: storageEntry.location,
-                binOriginalFolderId: storageEntry.binOriginalFolderId
+                data: {
+                    ...record.data,
+                    ...updatedEntryMetaFields,
+                    wbyDeleted: storageEntry.wbyDeleted,
+                    location: storageEntry.location,
+                    binOriginalFolderId: storageEntry.binOriginalFolderId
+                }
             });
 
             /**
              * We need to get the published and latest records, so we can update the Elasticsearch.
              */
             if (record.SK === publishedSortKey) {
-                publishedRecord = record;
+                publishedRecord = record.data;
             } else if (record.SK === latestSortKey) {
-                latestRecord = record;
+                latestRecord = record.data;
             }
         }
 
@@ -1094,8 +1117,8 @@ export const createEntriesStorageOperations = (
              */
             const latestStorageEntryLatestKey = createEntryLatestKeys(latestStorageEntry);
             entityBatch.put({
-                ...latestStorageEntry,
-                ...latestStorageEntryLatestKey
+                ...latestStorageEntryLatestKey,
+                data: latestStorageEntry
             });
 
             /**
@@ -1104,8 +1127,8 @@ export const createEntriesStorageOperations = (
              */
             const actualRevisionEntryKey = createEntryRevisionKeys(initialLatestStorageEntry);
             entityBatch.put({
-                ...latestStorageEntry,
-                ...actualRevisionEntryKey
+                ...actualRevisionEntryKey,
+                data: latestStorageEntry
             });
 
             const latestTransformer = createTransformer({
@@ -1401,12 +1424,12 @@ export const createEntriesStorageOperations = (
         const entityBatch = entity.createEntityWriter({
             put: [
                 {
-                    ...storageEntry,
-                    ...revisionKeys
+                    ...revisionKeys,
+                    data: storageEntry
                 },
                 {
-                    ...storageEntry,
-                    ...publishedKeys
+                    ...publishedKeys,
+                    data: storageEntry
                 }
             ]
         });
@@ -1425,8 +1448,8 @@ export const createEntriesStorageOperations = (
         if (publishingLatestRevision) {
             // 2.1 If we're publishing the latest revision, we first need to update the L record.
             entityBatch.put({
-                ...storageEntry,
-                ...latestKeys
+                ...latestKeys,
+                data: storageEntry
             });
 
             // 2.2 Additionally, if we have a previously published entry, we need to mark it as unpublished.
@@ -1442,9 +1465,11 @@ export const createEntriesStorageOperations = (
                     const publishedStorageEntryKeys =
                         createEntryRevisionKeys(publishedStorageEntry);
                     entityBatch.put({
-                        ...publishedStorageEntry,
                         ...publishedStorageEntryKeys,
-                        status: CONTENT_ENTRY_STATUS.UNPUBLISHED
+                        data: {
+                            ...publishedStorageEntry,
+                            status: CONTENT_ENTRY_STATUS.UNPUBLISHED
+                        }
                     });
                 }
             }
@@ -1472,15 +1497,15 @@ export const createEntriesStorageOperations = (
 
             const latestStorageEntryLatestKeys = createEntryLatestKeys(latestStorageEntry);
             entityBatch.put({
-                ...latestStorageEntryFields,
-                ...latestStorageEntryLatestKeys
+                ...latestStorageEntryLatestKeys,
+                data: latestStorageEntryFields
             });
 
             // 2.5 Update REV# record.
             const latestStorageEntryRevisionKeys = createEntryRevisionKeys(latestStorageEntry);
             entityBatch.put({
-                ...latestStorageEntryFields,
-                ...latestStorageEntryRevisionKeys
+                ...latestStorageEntryRevisionKeys,
+                data: latestStorageEntryFields
             });
 
             // 2.6 Additionally, if we have a previously published entry, we need to mark it as unpublished.
@@ -1496,9 +1521,11 @@ export const createEntriesStorageOperations = (
                     const publishedStorageEntryRevisionKeys =
                         createEntryRevisionKeys(publishedStorageEntry);
                     entityBatch.put({
-                        ...publishedStorageEntry,
                         ...publishedStorageEntryRevisionKeys,
-                        status: CONTENT_ENTRY_STATUS.UNPUBLISHED
+                        data: {
+                            ...publishedStorageEntry,
+                            status: CONTENT_ENTRY_STATUS.UNPUBLISHED
+                        }
                     });
                 }
             }
@@ -1655,8 +1682,8 @@ export const createEntriesStorageOperations = (
         const entityBatch = entity.createEntityWriter({
             put: [
                 {
-                    ...storageEntry,
-                    ...entryRevisionKeys
+                    ...entryRevisionKeys,
+                    data: storageEntry
                 }
             ],
             delete: [
@@ -1686,8 +1713,8 @@ export const createEntriesStorageOperations = (
 
             const entryLatestKeys = createEntryLatestKeys(storageEntry);
             entityBatch.put({
-                ...storageEntry,
-                ...entryLatestKeys
+                ...entryLatestKeys,
+                data: storageEntry
             });
 
             const esLatestData = await transformer.getElasticsearchLatestEntryData();
@@ -1881,10 +1908,15 @@ export const createEntriesStorageOperations = (
         };
 
         try {
-            const unfilteredEntries = await entity.queryAll({
-                partitionKey,
-                options
+            const unfilteredEntries = (
+                await entity.queryAll({
+                    partitionKey,
+                    options
+                })
+            ).map(item => {
+                return item.data;
             });
+
             const entries = unfilteredEntries.filter(item => {
                 return item.version < version;
             });

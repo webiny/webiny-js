@@ -3,7 +3,6 @@ import type { CmsStorageEntry } from "@webiny/api-headless-cms/types/index.js";
 import { createBatchScheduleFn } from "./createBatchScheduleFn.js";
 import { createLatestSortKey, createPartitionKey } from "~/operations/entry/keys.js";
 import type { IDataLoaderParams } from "./types.js";
-import { cleanupItems } from "@webiny/db-dynamodb";
 
 export const createGetLatestRevisionByEntryId = (params: IDataLoaderParams) => {
     const { entity, tenant } = params;
@@ -31,8 +30,9 @@ export const createGetLatestRevisionByEntryId = (params: IDataLoaderParams) => {
                 });
             }
 
-            const records = await reader.execute();
-            const items = cleanupItems(entity.entity, records);
+            const items = (await reader.execute()).map(item => {
+                return item.data;
+            });
 
             return ids.map(entryId => {
                 return items.filter(item => {
