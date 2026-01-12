@@ -14,6 +14,19 @@
     "Sven Al Hamad <sven@webiny.com>",
     "Adrian Smijulj <adrian@webiny.com>"
   ],
+  "webiny": {
+    "exports": {
+      "./graphql/abstractions.ts": {
+        "exportPath": "./api/graphql",
+        "namedExports": [
+          "GraphQLSchemaFactory",
+          "GraphQLTypeDefsFactory",
+          "GraphQLResolversFactory",
+          "GraphQLResolverDecoratorsFactory"
+        ]
+      }
+    }
+  },
   "dependencies": {
     "@graphql-tools/merge": "^9.1.7",
     "@graphql-tools/resolvers-composition": "^7.0.26",

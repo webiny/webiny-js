@@ -13,6 +13,7 @@
     "@webiny/api-core": "0.0.0",
     "@webiny/app-admin": "0.0.0",
     "@webiny/cli-core": "0.0.0",
+    "@webiny/handler-graphql": "0.0.0",
     "@webiny/project": "0.0.0",
     "@webiny/project-aws": "0.0.0",
     "@webiny/tasks": "0.0.0"
@@ -69,6 +70,7 @@
     "./admin/configs": "./admin/configs.js",
     "./cli/features/CliCommand": "./cli/features/CliCommand.js",
     "./cli/features/Ui": "./cli/features/Ui.js",
+    "./api/graphql": "./api/graphql.js",
     "./infra/features/AdminAfterBuild": "./infra/features/AdminAfterBuild.js",
     "./infra/features/AdminAfterDeploy": "./infra/features/AdminAfterDeploy.js",
     "./infra/features/AdminBeforeBuild": "./infra/features/AdminBeforeBuild.js",
