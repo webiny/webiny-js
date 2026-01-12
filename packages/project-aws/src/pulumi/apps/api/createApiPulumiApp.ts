@@ -23,7 +23,6 @@ import type { WithServiceManifest } from "~/pulumi/utils/withServiceManifest.js"
 import { ApiScheduler } from "~/pulumi/apps/api/ApiScheduler.js";
 import { getProjectSdk } from "@webiny/project";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
-import { getEsConfigFromExtension } from "../extensions/getEsConfigFromExtension.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
 import { License } from "@webiny/wcp";
 import { handleGuardDutyEvents } from "./handleGuardDutyEvents.js";
@@ -42,17 +41,11 @@ export const createApiPulumiApp = () => {
             const pulumiResourceNamePrefix = await sdk.getPulumiResourceNamePrefix();
             const vpcExtensionsConfig = getVpcConfigFromExtension(projectConfig);
             const openSearchExtensionConfig = getOsConfigFromExtension(projectConfig);
-            const elasticSearchExtensionConfig = getEsConfigFromExtension(projectConfig);
 
-            let searchEngineParams:
-                | typeof openSearchExtensionConfig
-                | typeof elasticSearchExtensionConfig
-                | null = null;
+            let searchEngineParams: typeof openSearchExtensionConfig | null = null;
 
             if (openSearchExtensionConfig) {
                 searchEngineParams = openSearchExtensionConfig;
-            } else if (elasticSearchExtensionConfig) {
-                searchEngineParams = elasticSearchExtensionConfig;
             }
 
             if (searchEngineParams) {

@@ -31,13 +31,12 @@ import {
     Vpc
 } from "./pulumi/extensions/index.js";
 
-import { OpenSearch, ElasticSearch, AwsDefaultRegion } from "./extensions/index.js";
+import { OpenSearch, AwsDefaultRegion } from "./extensions/index.js";
 import { EnvIs, EnvIsNot } from "@webiny/project/extensions/infra/index.js";
 
 export const Infra = {
     Vpc,
     BlueGreenDeployments,
-    ElasticSearch,
     OpenSearch,
     PulumiResourceNamePrefix,
     ProductionEnvironments,
