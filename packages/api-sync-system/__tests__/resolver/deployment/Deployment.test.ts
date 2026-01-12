@@ -32,7 +32,7 @@ describe("Deployment", () => {
             arn: deployment.services.primaryDynamoDbArn,
             type: "regular"
         });
-        expect(deployment.getTable(DynamoDBTableType.ELASTICSEARCH)).toEqual({
+        expect(deployment.getTable(DynamoDBTableType.OPENSEARCH)).toEqual({
             name: deployment.services.elasticsearchDynamodbTableName,
             arn: deployment.services.elasticsearchDynamodbTableArn,
             type: "elasticsearch"
@@ -69,7 +69,7 @@ describe("Deployment", () => {
         });
 
         expect(() => {
-            deploymentWithoutElasticsearch.getTable(DynamoDBTableType.ELASTICSEARCH);
+            deploymentWithoutElasticsearch.getTable(DynamoDBTableType.OPENSEARCH);
         }).toThrow(`Unknown table type "elasticsearch" - no data.`);
     });
 });

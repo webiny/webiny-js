@@ -8,7 +8,7 @@ describe("getTableType", () => {
     });
 
     it("should return elasticsearch table type", () => {
-        const result = getTableType(process.env.DB_TABLE_ELASTICSEARCH as string);
+        const result = getTableType(process.env.DB_TABLE_OPENSEARCH as string);
         expect(result).toEqual("elasticsearch");
     });
 

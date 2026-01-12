@@ -2,10 +2,10 @@ declare namespace NodeJS {
     export interface ProcessEnv {
         NODE_ENV?: "test" | "prod" | "dev" | string;
         DB_TABLE?: string;
-        DB_TABLE_ELASTICSEARCH?: string;
+        DB_TABLE_OPENSEARCH?: string;
         DB_TABLE_LOG?: string;
         DB_TABLE_AUDIT_LOGS?: string;
-        ELASTICSEARCH_SHARED_INDEXES?: "true" | "false" | string;
+        OPENSEARCH_SHARED_INDEXES?: "true" | "false" | string;
         WEBINY_VERSION?: string;
         WEBINY_IS_PRE_529?: "true" | "false";
         WEBINY_ENABLE_VERSION_HEADER?: "true" | "false" | string;
@@ -20,7 +20,7 @@ declare namespace NodeJS {
         PULUMI_HOME?: string;
         PULUMI_SKIP_UPDATE_CHECK?: "true" | "false" | string;
         MOCK_DYNAMODB_ENDPOINT?: string;
-        ELASTICSEARCH_PORT?: string;
+        OPENSEARCH_PORT?: string;
         WEBINY_ENV?: string;
         WEBINY_ENV_VARIANT?: string;
         WEBINY_ADMIN_ENV?: string;
@@ -39,14 +39,13 @@ declare namespace NodeJS {
         COGNITO_REGION?: string;
         IMAGE_TRANSFORMER_FUNCTION?: string;
         S3_BUCKET?: string;
-        ELASTIC_SEARCH_INDEX_PREFIX?: string;
+        OPENSEARCH_INDEX_PREFIX?: string;
         EXPORT_PROCESS_HANDLER?: string;
         IMPORT_CREATE_HANDLER?: string;
         PUBLIC_URL?: string;
         WEBINY_HEADLESS_CMS_GRAPHQL_INPUT_REQUIRE_ARRAY_ITEM?: "false" | string;
-        WEBINY_ELASTICSEARCH_INDEX_LOCALE?: "true" | string;
         APW_SCHEDULER_SCHEDULE_ACTION_HANDLER?: string;
-        ELASTIC_SEARCH_ENDPOINT?: string;
+        OPENSEARCH_ENDPOINT?: string;
         EVENT_BUS?: string;
         WEBINY_FUNCTION_TYPE?: string;
         WEBINY_DEV_DEBUG?: "true" | string;

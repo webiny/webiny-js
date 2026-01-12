@@ -52,15 +52,15 @@ export function createCorePulumiApp() {
                 const params = searchEngineParams;
                 if (typeof params === "object") {
                     if (params.domainName) {
-                        process.env.AWS_ELASTIC_SEARCH_DOMAIN_NAME = params.domainName;
+                        process.env.AWS_OS_DOMAIN_NAME = params.domainName;
                     }
 
                     if (params.indexPrefix) {
-                        process.env.ELASTIC_SEARCH_INDEX_PREFIX = params.indexPrefix;
+                        process.env.OPENSEARCH_INDEX_PREFIX = params.indexPrefix;
                     }
 
                     if (params.sharedIndexes) {
-                        process.env.ELASTICSEARCH_SHARED_INDEXES = "true";
+                        process.env.OPENSEARCH_SHARED_INDEXES = "true";
                     }
                 }
             }

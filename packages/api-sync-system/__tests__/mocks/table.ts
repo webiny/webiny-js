@@ -12,8 +12,8 @@ export const createRegularMockTable = (params?: ITable): ITable => {
 
 export const createElasticsearchMockTable = (params?: ITable): ITable => {
     return {
-        name: process.env.DB_TABLE_ELASTICSEARCH as string,
-        type: DynamoDBTableType.ELASTICSEARCH,
+        name: process.env.DB_TABLE_OPENSEARCH as string,
+        type: DynamoDBTableType.OPENSEARCH,
         arn: "arnElasticsearch",
         ...params
     };

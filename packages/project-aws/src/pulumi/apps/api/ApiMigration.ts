@@ -45,10 +45,10 @@ export const ApiMigration = createAppModule({
                         DB_TABLE: core.primaryDynamodbTableName,
                         DB_TABLE_LOG: core.logDynamodbTableName,
                         DB_TABLE_AUDIT_LOGS: core.auditLogsDynamodbTableName,
-                        DB_TABLE_ELASTICSEARCH: core.elasticsearchDynamodbTableName,
-                        ELASTIC_SEARCH_ENDPOINT: core.elasticsearchDomainEndpoint,
-                        ELASTIC_SEARCH_INDEX_PREFIX: process.env.ELASTIC_SEARCH_INDEX_PREFIX,
-                        ELASTICSEARCH_SHARED_INDEXES: process.env.ELASTICSEARCH_SHARED_INDEXES,
+                        DB_TABLE_OPENSEARCH: core.elasticsearchDynamodbTableName,
+                        OPENSEARCH_ENDPOINT: core.elasticsearchDomainEndpoint,
+                        OPENSEARCH_INDEX_PREFIX: process.env.OPENSEARCH_INDEX_PREFIX,
+                        OPENSEARCH_SHARED_INDEXES: process.env.OPENSEARCH_SHARED_INDEXES,
                         S3_BUCKET: core.fileManagerBucketId
                     })) as Record<string, any>
                 },

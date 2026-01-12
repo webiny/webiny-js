@@ -6,9 +6,9 @@ import {
     BatchWriteCommand
 } from "@webiny/aws-sdk/client-dynamodb/index.js";
 
-const streamTableName = process.env.DB_TABLE_ELASTICSEARCH;
+const streamTableName = process.env.DB_TABLE_OPENSEARCH;
 
-const isElasticsearchStreamTable = table => {
+const isOpensearchStreamTable = table => {
     return table === streamTableName;
 };
 
@@ -51,7 +51,7 @@ export const createDynamoStreamRecord = (eventName, data = {}) => {
 };
 
 const processDelete = async (documentClient, handler, params) => {
-    if (isElasticsearchStreamTable(params.input?.TableName) === false) {
+    if (isOpensearchStreamTable(params.input?.TableName) === false) {
         return;
     }
     // Get original item from DDB to use as OldImage
@@ -69,7 +69,7 @@ const processDelete = async (documentClient, handler, params) => {
 
 const processPut = async (documentClient, handler, params) => {
     const tableName = params.input?.TableName;
-    if (isElasticsearchStreamTable(tableName) === false) {
+    if (isOpensearchStreamTable(tableName) === false) {
         return;
     }
 
@@ -97,18 +97,18 @@ const processBatchWrite = async (documentClient, handler, params) => {
         if (DeleteRequest) {
             const { Item } = await documentClient.get({
                 Key: DeleteRequest.Key,
-                TableName: process.env.DB_TABLE_ELASTICSEARCH
+                TableName: process.env.DB_TABLE_OPENSEARCH
             });
 
             if (!Item) {
                 const { PK, SK } = DeleteRequest.Key;
                 throw new Error(
-                    `Missing record in the elasticsearch table "${process.env.DB_TABLE_ELASTICSEARCH}" with keys PK "${PK}" and SK "${SK}". Make sure that record you are deleting is stored in the Elasticsearch table.`
+                    `Missing record in the elasticsearch table "${process.env.DB_TABLE_OPENSEARCH}" with keys PK "${PK}" and SK "${SK}". Make sure that record you are deleting is stored in the Elasticsearch table.`
                 );
             } else if (!Item.index) {
                 const { PK, SK } = Item;
                 throw new Error(
-                    `Missing index value on the record in the elasticsearch table "${process.env.DB_TABLE_ELASTICSEARCH}" with keys PK "${PK}" and SK "${SK}". Make sure that you stored Elasticsearch entry in the Elasticsearch table.`
+                    `Missing index value on the record in the elasticsearch table "${process.env.DB_TABLE_OPENSEARCH}" with keys PK "${PK}" and SK "${SK}". Make sure that you stored Elasticsearch entry in the Elasticsearch table.`
                 );
             }
             const record = createDynamoStreamRecord("REMOVE", {

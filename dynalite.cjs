@@ -107,7 +107,7 @@ const createDynaliteTables = (options = {}) => {
       withExpiresAtAttributeDefinition(
         withTenantAttributeDefinition(
           withTenantGlobalSecondaryIndex({
-            TableName: process.env.DB_TABLE_ELASTICSEARCH,
+            TableName: process.env.DB_TABLE_OPENSEARCH,
             KeySchema: [
               { AttributeName: "PK", KeyType: "HASH" },
               { AttributeName: "SK", KeyType: "RANGE" }

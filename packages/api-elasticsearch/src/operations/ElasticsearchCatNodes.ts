@@ -18,7 +18,7 @@ export class ElasticsearchCatNodes {
             if (!Array.isArray(response.body) || response.body.length === 0) {
                 throw new WebinyError({
                     message: `There is no valid response from cat.nodes operation.`,
-                    code: "ELASTICSEARCH_NODES_INVALID_RESPONSE",
+                    code: "OPENSEARCH_NODES_INVALID_RESPONSE",
                     data: response.body
                 });
             }

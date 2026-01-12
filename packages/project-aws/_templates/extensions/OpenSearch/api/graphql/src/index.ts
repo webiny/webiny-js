@@ -31,7 +31,7 @@ const debug = process.env.DEBUG === "true";
 const documentClient = getDocumentClient();
 
 const elasticsearchClient = createElasticsearchClient({
-    endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}`
+    endpoint: `https://${process.env.OPENSEARCH_ENDPOINT}`
 });
 
 export const handler = createHandler({

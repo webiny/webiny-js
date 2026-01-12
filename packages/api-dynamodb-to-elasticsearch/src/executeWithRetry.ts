@@ -21,19 +21,19 @@ export interface IExecuteWithRetryParams extends Omit<IExecuteParams, "maxProces
 
 export const executeWithRetry = async (params: IExecuteWithRetryParams) => {
     const maxRetryTime = getNumberEnvVariable(
-        "WEBINY_DYNAMODB_TO_ELASTICSEARCH_MAX_RETRY_TIME",
+        "WEBINY_DYNAMODB_TO_OPENSEARCH_MAX_RETRY_TIME",
         params.maxRetryTime || 300000
     );
     const retries = getNumberEnvVariable(
-        "WEBINY_DYNAMODB_TO_ELASTICSEARCH_RETRIES",
+        "WEBINY_DYNAMODB_TO_OPENSEARCH_RETRIES",
         params.retries || 20
     );
     const minTimeout = getNumberEnvVariable(
-        "WEBINY_DYNAMODB_TO_ELASTICSEARCH_MIN_TIMEOUT",
+        "WEBINY_DYNAMODB_TO_OPENSEARCH_MIN_TIMEOUT",
         params.minTimeout || 1500
     );
     const maxTimeout = getNumberEnvVariable(
-        "WEBINY_DYNAMODB_TO_ELASTICSEARCH_MAX_TIMEOUT",
+        "WEBINY_DYNAMODB_TO_OPENSEARCH_MAX_TIMEOUT",
         params.maxTimeout || 30000
     );
 

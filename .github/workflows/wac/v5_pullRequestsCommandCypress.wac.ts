@@ -99,15 +99,15 @@ const createCypressJobs = (dbSetup: string) => {
     };
 
     if (dbSetup === "ddb-es") {
-        env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}";
-        env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.ELASTIC_SEARCH_ENDPOINT }}";
-        env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ github.run_id }}_";
+        env["AWS_OPENSEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPENSEARCH_DOMAIN_NAME }}";
+        env["OPENSEARCH_ENDPOINT"] = "${{ secrets.OPENSEARCH_ENDPOINT }}";
+        env["OPENSEARCH_INDEX_PREFIX"] = "${{ github.run_id }}_";
     } else if (dbSetup === "ddb-os") {
         // We still use the same environment variables as for "ddb-es" setup, it's
         // just that the values are read from different secrets.
-        env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}";
-        env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.OPEN_SEARCH_ENDPOINT }}";
-        env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ github.run_id }}_";
+        env["AWS_OPENSEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}";
+        env["OPENSEARCH_ENDPOINT"] = "${{ secrets.OPEN_SEARCH_ENDPOINT }}";
+        env["OPENSEARCH_INDEX_PREFIX"] = "${{ github.run_id }}_";
     }
 
     const projectSetupJob: NormalJob = createJob({

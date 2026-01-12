@@ -30,7 +30,7 @@ export class Deployment implements IDeployment {
                     arn: this.services.primaryDynamoDbArn,
                     type
                 };
-            case "elasticsearch":
+            case "opensearch":
                 if (
                     !this.services.elasticsearchDynamodbTableName ||
                     !this.services.elasticsearchDynamodbTableArn

@@ -76,7 +76,7 @@ export const createElasticsearchClient = (options: ElasticsearchClientOptions): 
             });
             throw new WebinyError(
                 "Could not connect to Elasticsearch.",
-                "ELASTICSEARCH_CLIENT_ERROR",
+                "OPENSEARCH_CLIENT_ERROR",
                 data
             );
         }

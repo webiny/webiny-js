@@ -11,7 +11,7 @@ export const createElasticsearchTable = ({
     documentClient
 }: ICreateElasticsearchTableParams): ITable => {
     return createTable({
-        name: name || (process.env.DB_TABLE_ELASTICSEARCH as string),
+        name: name || (process.env.DB_TABLE_OPENSEARCH as string),
         indexes: {
             GSI_TENANT: {
                 partitionKey: "GSI_TENANT"
