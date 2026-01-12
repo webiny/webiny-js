@@ -728,7 +728,7 @@ export const createEntriesStorageOperations = (
             });
         }
         try {
-            entityBatch.execute();
+            await entityBatch.execute();
 
             dataLoaders.clearAll({
                 model
