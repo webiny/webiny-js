@@ -5,6 +5,7 @@
     { "path": "../api-core" },
     { "path": "../app-admin" },
     { "path": "../cli-core" },
+    { "path": "../handler-graphql" },
     { "path": "../project" },
     { "path": "../project-aws" },
     { "path": "../tasks" }
