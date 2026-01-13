@@ -1,3 +1,6 @@
+### Code
+1. When writing comments, use `//` for single-line comments and `/* ... */` for multi-line comments. Always end comments with a period.
+
 ### Building
 1. When building a single package, use `yarn build -p <package-name>`, for example `yarn build -p @webiny/api-core`.
 2. To build all packages, simply run `yarn build`.
