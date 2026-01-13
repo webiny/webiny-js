@@ -169,8 +169,8 @@ export class ProjectSdk {
         return this.container.resolve(ListDeployedEnvironmentsService).execute();
     }
 
-    installExtension(params: InstallExtension.Params) {
-        return this.container.resolve(InstallExtension).execute(params);
+    installExtension(source: string) {
+        return this.container.resolve(InstallExtension).execute(source);
     }
 
     // Utility methods.
