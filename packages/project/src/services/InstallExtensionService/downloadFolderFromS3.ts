@@ -1,4 +1,8 @@
-import { S3Client, ListObjectsV2Command, GetObjectCommand } from "@webiny/aws-sdk/client-s3/index.js";
+import {
+    S3Client,
+    ListObjectsV2Command,
+    GetObjectCommand
+} from "@webiny/aws-sdk/client-s3/index.js";
 import fs from "fs";
 import path from "path";
 
@@ -19,6 +23,9 @@ export class NoObjectsFoundError extends Error {
 
 export const downloadFolderFromS3 = async (params: DownloadFolderFromS3Params) => {
     const { bucketName, bucketRegion, bucketFolderKey, downloadFolderPath } = params;
+
+    // Prepend v6/ to the folder key
+    const s3FolderKey = `v6/${bucketFolderKey}`;
 
     // Configure the S3 client
     const s3Client = new S3Client({ region: bucketRegion });
@@ -52,14 +59,14 @@ export const downloadFolderFromS3 = async (params: DownloadFolderFromS3Params) =
         });
     };
 
-    const objects = (await listObjects(bucketName, bucketFolderKey)) || [];
+    const objects = (await listObjects(bucketName, s3FolderKey)) || [];
     if (!objects.length) {
         throw new NoObjectsFoundError(`No objects found in the specified S3 folder.`);
     }
 
     for (const object of objects) {
         const s3Key = object.Key!;
-        const relativePath = path.relative(bucketFolderKey, s3Key);
+        const relativePath = path.relative(s3FolderKey, s3Key);
         const localFilePath = path.join(downloadFolderPath, relativePath);
 
         if (s3Key.endsWith("/")) {

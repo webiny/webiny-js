@@ -36,7 +36,7 @@ const getVersionFromVersionFolders = async (
 ) => {
     const availableVersions = versionFoldersList
         .filter(v => v.match(FOLDER_NAME_IS_VERSION_REGEX))
-        .map(v => v.replace(".x", ".0"))
+        .map(v => v.replace(/\.x$/, ".0"))
         .sort();
 
     let versionToUse = "";
@@ -54,7 +54,7 @@ const getVersionFromVersionFolders = async (
         }
     }
 
-    return versionToUse.replace(".0", ".x");
+    return versionToUse.replace(/\.0$/, ".x");
 };
 
 class DefaultInstallExtensionService implements InstallExtensionService.Interface {
@@ -75,13 +75,10 @@ class DefaultInstallExtensionService implements InstallExtensionService.Interfac
             const randomId = String(Date.now());
             const downloadFolderPath = path.join(os.tmpdir(), `wby-ext-${randomId}`);
 
-            // If source doesn't start with "extensions/", prepend it for S3 bucket lookup
-            const s3FolderKey = source.startsWith("extensions/") ? source : `extensions/${source}`;
-
             await downloadFolderFromS3({
                 bucketName: S3_BUCKET_NAME,
                 bucketRegion: S3_BUCKET_REGION,
-                bucketFolderKey: s3FolderKey,
+                bucketFolderKey: source,
                 downloadFolderPath
             });
 
