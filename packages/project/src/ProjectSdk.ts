@@ -15,6 +15,7 @@ import {
     GetProjectConfig,
     GetProjectInfo,
     GetPulumiResourceNamePrefix,
+    InstallExtension,
     IsCi,
     IsTelemetryEnabled,
     LocalStorageService,
@@ -166,6 +167,10 @@ export class ProjectSdk {
 
     listDeployedEnvironments() {
         return this.container.resolve(ListDeployedEnvironmentsService).execute();
+    }
+
+    installExtension(params: InstallExtension.Params) {
+        return this.container.resolve(InstallExtension).execute(params);
     }
 
     // Utility methods.
