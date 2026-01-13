@@ -1,6 +1,5 @@
 import { createImplementation } from "@webiny/di";
 import { CliCommand, GetProjectSdkService, UiService } from "~/abstractions/index.js";
-import { InstallExtensionService } from "@webiny/project/abstractions/services/InstallExtensionService.js";
 import chalk from "chalk";
 import ora from "ora";
 
@@ -11,8 +10,7 @@ interface IExtensionCommandParams {
 export class ExtensionCommand implements CliCommand.Interface<IExtensionCommandParams> {
     constructor(
         private getProjectSdkService: GetProjectSdkService.Interface,
-        private uiService: UiService.Interface,
-        private installExtensionService: InstallExtensionService.Interface
+        private uiService: UiService.Interface
     ) {}
 
     execute(): CliCommand.CommandDefinition<IExtensionCommandParams> {
@@ -32,8 +30,9 @@ export class ExtensionCommand implements CliCommand.Interface<IExtensionCommandP
                 const { source } = args;
 
                 const spinner = ora();
+                const projectSdk = await this.getProjectSdkService.execute();
 
-                const result = await this.installExtensionService.execute({
+                const result = await projectSdk.installExtension({
                     source,
                     onProgress: (message: string) => {
                         spinner.start(message);
@@ -52,7 +51,7 @@ export class ExtensionCommand implements CliCommand.Interface<IExtensionCommandP
                     this.uiService.text(chalk.bold("Next Steps"));
                     result.nextSteps.forEach(({ text, variables = [] }) => {
                         const formattedText = variables.reduce(
-                            (acc, variable, index) => acc.replace(`%s`, chalk.green(variable)),
+                            (acc, variable) => acc.replace(`%s`, chalk.green(variable)),
                             text
                         );
                         this.uiService.text(`‣ ${formattedText}`);
@@ -65,7 +64,7 @@ export class ExtensionCommand implements CliCommand.Interface<IExtensionCommandP
                     this.uiService.text(chalk.bold("Additional Notes"));
                     result.additionalNotes.forEach(({ text, variables = [] }) => {
                         const formattedText = variables.reduce(
-                            (acc, variable, index) => acc.replace(`%s`, chalk.green(variable)),
+                            (acc, variable) => acc.replace(`%s`, chalk.green(variable)),
                             text
                         );
                         this.uiService.text(`‣ ${formattedText}`);
@@ -83,5 +82,5 @@ export class ExtensionCommand implements CliCommand.Interface<IExtensionCommandP
 export const extensionCommand = createImplementation({
     abstraction: CliCommand,
     implementation: ExtensionCommand,
-    dependencies: [GetProjectSdkService, UiService, InstallExtensionService]
+    dependencies: [GetProjectSdkService, UiService]
 });

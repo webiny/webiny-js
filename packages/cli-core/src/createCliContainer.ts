@@ -21,15 +21,16 @@ import {
     ddbPutItemConditionalCheckFailedGracefulErrorHandler,
     deployCommand,
     destroyCommand,
+    disableTelemetryCommand,
+    enableTelemetryCommand,
+    extensionCommand,
     infoCommand,
-    openCommand,
     missingFilesInBuildGracefulErrorHandler,
+    openCommand,
     outputCommand,
     pendingOperationsGracefulErrorHandler,
     pulumiCommand,
     refreshCommand,
-    enableTelemetryCommand,
-    disableTelemetryCommand,
     syncDepsCommand,
     verifyDepsCommand,
     watchCommand,
@@ -74,6 +75,7 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
     container.register(refreshCommand).inSingletonScope();
     container.register(enableTelemetryCommand).inSingletonScope();
     container.register(disableTelemetryCommand).inSingletonScope();
+    container.register(extensionCommand).inSingletonScope();
     container.register(syncDepsCommand).inSingletonScope();
     container.register(verifyDepsCommand).inSingletonScope();
     container.register(destroyCommand).inSingletonScope();
