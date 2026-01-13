@@ -8,6 +8,7 @@ export * from "./GetProjectIdService/index.js";
 export * from "./GetProjectService/index.js";
 export * from "./GetProjectVersionService/index.js";
 export * from "./GetPulumiService/index.js";
+export * from "./InstallExtensionService/index.js";
 export * from "./IsRemotePulumiBackendService/index.js";
 export * from "./ListAppLambdaFunctionsService/index.js";
 export * from "./ListDeployedEnvironmentsService/index.js";

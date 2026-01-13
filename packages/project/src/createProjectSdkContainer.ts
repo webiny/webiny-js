@@ -37,6 +37,7 @@ import {
     getProjectConfig,
     getProjectInfo,
     getPulumiResourceNamePrefix,
+    installExtension,
     isCi,
     isTelemetryEnabled,
     isWcpEnabled,
@@ -64,6 +65,7 @@ import {
     getPulumiService,
     getPulumiVersionService,
     getYarnVersionService,
+    installExtensionService,
     isRemotePulumiBackendService,
     listAppLambdaFunctionsService,
     listDeployedEnvironmentsService,
@@ -163,6 +165,7 @@ export const createProjectSdkContainer = async (
     container.register(getPulumiService).inSingletonScope();
     container.register(getPulumiVersionService).inSingletonScope();
     container.register(getYarnVersionService).inSingletonScope();
+    container.register(installExtensionService).inSingletonScope();
     container.register(isRemotePulumiBackendService).inSingletonScope();
     container.register(listAppLambdaFunctionsService).inSingletonScope();
     container.register(listDeployedEnvironmentsService).inSingletonScope();
@@ -200,6 +203,7 @@ export const createProjectSdkContainer = async (
     container.register(getProjectConfig).inSingletonScope();
     container.register(getProjectInfo).inSingletonScope();
     container.register(getPulumiResourceNamePrefix).inSingletonScope();
+    container.register(installExtension).inSingletonScope();
     container.register(isCi).inSingletonScope();
     container.register(isTelemetryEnabled).inSingletonScope();
     container.register(isWcpEnabled).inSingletonScope();
