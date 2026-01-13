@@ -1,8 +1,8 @@
 /**
- * Schema for Webiny extension.jsonc configuration files.
+ * Schema for Webiny extension.json configuration files.
  * Based on: https://github.com/webiny/extensions/blob/main/schemas/extension.schema.json
  */
-export interface ExtensionJsonc {
+export interface ExtensionJson {
     $schema?: string;
     /**
      * The unique name of the extension.

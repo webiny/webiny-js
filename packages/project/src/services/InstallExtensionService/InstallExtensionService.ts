@@ -2,17 +2,17 @@ import os from "os";
 import path from "path";
 import fs from "fs";
 import fsAsync from "fs/promises";
-import { parse as parseJsonc } from "jsonc-parser";
+import loadJsonFile from "load-json-file";
 import { createImplementation } from "@webiny/di";
 import {
     InstallExtensionService,
     GetProjectVersionService,
     GetProjectService
 } from "~/abstractions/index.js";
-import { downloadFolderFromS3, NoObjectsFoundError } from "./downloadFolderFromS3.js";
+import { downloadFolderFromS3 } from "./downloadFolderFromS3.js";
 import { mergePackageJson } from "./mergePackageJson.js";
 import { updateWebinyConfig } from "./updateWebinyConfig.js";
-import type { ExtensionJsonc } from "./types.js";
+import type { ExtensionJson } from "./types.js";
 
 const EXTENSIONS_ROOT_FOLDER = "extensions";
 const S3_BUCKET_NAME = "webiny-examples";
@@ -69,7 +69,7 @@ class DefaultInstallExtensionService implements InstallExtensionService.Interfac
         });
 
         let extensionsFolderToCopyPath = path.join(downloadFolderPath, "extensions");
-        let extensionJsoncPath = path.join(downloadFolderPath, "extension.jsonc");
+        let extensionJsonPath = path.join(downloadFolderPath, "extension.json");
 
         // If we have `extensions` folder in the root of the downloaded extension,
         // it means the extension is not versioned, and we can just copy it.
@@ -89,21 +89,21 @@ class DefaultInstallExtensionService implements InstallExtensionService.Interfac
             );
 
             extensionsFolderToCopyPath = path.join(downloadFolderPath, versionToUse, "extensions");
-            const subExtensionJsoncPath = path.join(
+            const subExtensionJsonPath = path.join(
                 downloadFolderPath,
                 versionToUse,
-                "extension.jsonc"
+                "extension.json"
             );
-            if (fs.existsSync(subExtensionJsoncPath)) {
-                extensionJsoncPath = subExtensionJsoncPath;
+            if (fs.existsSync(subExtensionJsonPath)) {
+                extensionJsonPath = subExtensionJsonPath;
             }
         }
 
-        // Read and parse extension.jsonc.
-        const extensionJsoncExists = fs.existsSync(extensionJsoncPath);
-        const extensionJsonc: ExtensionJsonc = extensionJsoncExists
-            ? parseJsonc(fs.readFileSync(extensionJsoncPath, "utf-8"))
-            : { name: "unknown", type: "unknown" };
+        // Read and parse extension.json.
+        const extensionJsonExists = fs.existsSync(extensionJsonPath);
+        const extensionJson: ExtensionJson = extensionJsonExists
+            ? await loadJsonFile(extensionJsonPath)
+            : { name: "unknown", type: "admin" };
 
         // Ensure the extensions root folder exists.
         const targetExtensionsFolder = path.join(projectRoot, EXTENSIONS_ROOT_FOLDER);
@@ -123,27 +123,27 @@ class DefaultInstallExtensionService implements InstallExtensionService.Interfac
         );
 
         // Merge package.json if provided.
-        if (extensionJsonc.packageJson && Object.keys(extensionJsonc.packageJson).length > 0) {
+        if (extensionJson.packageJson && Object.keys(extensionJson.packageJson).length > 0) {
             await mergePackageJson({
                 projectRoot,
-                extensionPackageJson: extensionJsonc.packageJson
+                extensionPackageJson: extensionJson.packageJson
             });
         }
 
         // Update webiny.config.tsx if provided.
-        if (extensionJsonc.webinyConfigTsx) {
+        if (extensionJson.webinyConfigTsx) {
             await updateWebinyConfig({
                 projectRoot,
-                webinyConfigTsx: extensionJsonc.webinyConfigTsx
+                webinyConfigTsx: extensionJson.webinyConfigTsx
             });
         }
 
         // Extract next steps and additional notes.
-        const nextSteps = extensionJsonc.nextSteps?.messages || [];
-        const additionalNotes = extensionJsonc.additionalNotes?.messages || [];
+        const nextSteps = extensionJson.nextSteps?.messages || [];
+        const additionalNotes = extensionJson.additionalNotes?.messages || [];
 
         return {
-            extensionName: extensionJsonc.name,
+            extensionName: extensionJson.name,
             extensionPaths,
             nextSteps,
             additionalNotes
