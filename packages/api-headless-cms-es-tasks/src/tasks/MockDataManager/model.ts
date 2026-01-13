@@ -1,6 +1,7 @@
 import type { CmsModelCreateInput } from "@webiny/api-headless-cms/types/index.js";
 import type { CmsGroup } from "@webiny/api-headless-cms/types/index.js";
 import { CARS_MODEL_ID } from "./constants.js";
+import { createModelField } from "@webiny/api-headless-cms";
 
 export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
     return {
@@ -11,7 +12,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
         description: "Cars Data Model",
         group: group.id,
         fields: [
-            {
+            createModelField({
                 id: "carsVehicle",
                 fieldId: "carsVehicle",
                 type: "text",
@@ -26,8 +27,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                         message: "Value is required."
                     }
                 ]
-            },
-            {
+            }),
+            createModelField({
                 id: "vehicleNmb",
                 fieldId: "vehicleNmb",
                 type: "number",
@@ -42,8 +43,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                         message: "Value is required."
                     }
                 ]
-            },
-            {
+            }),
+            createModelField({
                 id: "carsYear",
                 fieldId: "carsYear",
                 type: "number",
@@ -51,8 +52,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "number-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "carsMake",
                 fieldId: "carsMake",
                 type: "text",
@@ -60,8 +61,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "carsModelName",
                 fieldId: "carsModelName",
                 type: "text",
@@ -69,8 +70,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "trimName",
                 fieldId: "trimName",
                 type: "text",
@@ -79,8 +80,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "bodyStyle",
                 fieldId: "bodyStyle",
                 multipleValues: false,
@@ -89,8 +90,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "manufacturerCd",
                 fieldId: "manufacturerCd",
                 type: "text",
@@ -98,8 +99,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "releaseType",
                 fieldId: "releaseType",
                 type: "text",
@@ -107,8 +108,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "newUsedBg",
                 fieldId: "newUsedBg",
                 type: "text",
@@ -116,8 +117,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "carsUid",
                 fieldId: "carsUid",
                 type: "number",
@@ -125,8 +126,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "number-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "carsDiscontinued",
                 fieldId: "carsDiscontinued",
                 type: "number",
@@ -134,8 +135,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "number-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "slugMake",
                 fieldId: "slugMake",
                 type: "text",
@@ -143,8 +144,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "slugModelName",
                 fieldId: "slugModelName",
                 type: "text",
@@ -152,8 +153,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "slugTrimName",
                 fieldId: "slugTrimName",
                 type: "text",
@@ -161,8 +162,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "slugBodystyle",
                 fieldId: "slugBodystyle",
                 type: "text",
@@ -170,8 +171,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "makeFeaturedImage",
                 fieldId: "makeFeaturedImage",
                 type: "text",
@@ -179,8 +180,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "makeIcon",
                 fieldId: "makeIcon",
                 type: "text",
@@ -188,8 +189,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "makeDiscontinued",
                 fieldId: "makeDiscontinued",
                 type: "number",
@@ -197,8 +198,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "number-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "baseVehicle",
                 fieldId: "baseVehicle",
                 type: "number",
@@ -207,8 +208,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                     name: "number-input"
                 },
                 helpText: "This is a Required Field."
-            },
-            {
+            }),
+            createModelField({
                 id: "oemUrl",
                 fieldId: "oemUrl",
                 type: "text",
@@ -216,8 +217,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "carsSubcategory",
                 fieldId: "carsSubcategory",
                 type: "text",
@@ -225,8 +226,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "slugSubcategory",
                 fieldId: "slugSubcategory",
                 type: "text",
@@ -234,8 +235,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "mainCategory",
                 fieldId: "mainCategory",
                 type: "text",
@@ -243,8 +244,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "slugMainCategory",
                 fieldId: "slugMainCategory",
                 type: "text",
@@ -252,8 +253,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "hybridElectricCategory",
                 fieldId: "hybridElectricCategory",
                 type: "text",
@@ -261,8 +262,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "slugHybridElectricCategory",
                 fieldId: "slugHybridElectricCategory",
                 type: "text",
@@ -270,8 +271,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "dieselCategory",
                 fieldId: "dieselCategory",
                 type: "text",
@@ -279,8 +280,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "slugDieselCategory",
                 fieldId: "slugDieselCategory",
                 type: "text",
@@ -288,8 +289,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "updatedOn",
                 fieldId: "updatedOn",
                 type: "text",
@@ -297,8 +298,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "vehicleStatus",
                 fieldId: "vehicleStatus",
                 type: "number",
@@ -306,8 +307,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "number-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "featuredImage",
                 fieldId: "featuredImage",
                 type: "text",
@@ -315,8 +316,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "propertyType",
                 fieldId: "propertyType",
                 type: "text",
@@ -324,8 +325,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "marketingImage",
                 fieldId: "marketingImage",
                 type: "text",
@@ -333,8 +334,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "priceRangeValue",
                 fieldId: "priceRangeValue",
                 type: "number",
@@ -342,8 +343,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "number-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "priceRangeText",
                 fieldId: "priceRangeText",
                 type: "text",
@@ -351,8 +352,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "ymmPriceRange",
                 fieldId: "ymmPriceRange",
                 type: "text",
@@ -360,8 +361,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "bodyType",
                 fieldId: "bodyType",
                 type: "text",
@@ -369,8 +370,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "bodyTypeText",
                 fieldId: "bodyTypeText",
                 type: "text",
@@ -378,8 +379,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "slugBodyType",
                 fieldId: "slugBodyType",
                 type: "text",
@@ -387,8 +388,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "bodyTypeOrder",
                 fieldId: "bodyTypeOrder",
                 type: "number",
@@ -396,8 +397,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "number-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "secondaryBodyType",
                 fieldId: "secondaryBodyType",
                 type: "text",
@@ -405,8 +406,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "secondaryBodyTypeText",
                 fieldId: "secondaryBodyTypeText",
                 type: "text",
@@ -414,8 +415,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "slugSecondaryBodyType",
                 fieldId: "slugSecondaryBodyType",
                 type: "text",
@@ -423,8 +424,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "secondaryBodyTypeOrder",
                 fieldId: "secondaryBodyTypeOrder",
                 type: "number",
@@ -432,8 +433,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "number-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "priceRangeSlug",
                 fieldId: "priceRangeSlug",
                 type: "text",
@@ -441,8 +442,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "latestYear",
                 fieldId: "latestYear",
                 type: "number",
@@ -450,8 +451,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "number-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "ymmLowestPriceRange",
                 fieldId: "ymmLowestPriceRange",
                 type: "number",
@@ -459,8 +460,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "number-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "ymmMaxPriceRange",
                 fieldId: "ymmMaxPriceRange",
                 type: "number",
@@ -468,8 +469,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "number-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "makeThumbnailUrl",
                 fieldId: "makeThumbnailUrl",
                 type: "text",
@@ -477,8 +478,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "combinedPrice",
                 fieldId: "combinedPrice",
                 type: "number",
@@ -486,8 +487,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "number-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "carsCombinedEpaMpg",
                 fieldId: "carsCombinedEpaMpg",
                 type: "number",
@@ -495,8 +496,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "number-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "horsePowerVal",
                 fieldId: "horsePowerVal",
                 type: "number",
@@ -504,8 +505,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "number-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "slugMakeModel",
                 fieldId: "slugMakeModel",
                 type: "text",
@@ -513,8 +514,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "slugYearMakeModel",
                 fieldId: "slugYearMakeModel",
                 type: "text",
@@ -523,8 +524,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                     name: "text-input"
                 },
                 helpText: "This is a Required Field."
-            },
-            {
+            }),
+            createModelField({
                 id: "retainedValue",
                 fieldId: "retainedValue",
                 type: "text",
@@ -532,8 +533,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "standardTires",
                 fieldId: "standardTires",
                 type: "text",
@@ -541,8 +542,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "carsMakePageShow",
                 fieldId: "carsMakePageShow",
                 type: "number",
@@ -551,8 +552,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                     name: "number-input"
                 },
                 helpText: "This is a Required Field."
-            },
-            {
+            }),
+            createModelField({
                 id: "carsPricePageShow",
                 fieldId: "carsPricePageShow",
                 type: "number",
@@ -561,8 +562,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                     name: "number-input"
                 },
                 helpText: "This is a Required Field."
-            },
-            {
+            }),
+            createModelField({
                 id: "carsEditorialRating",
                 fieldId: "editorialRating",
                 type: "number",
@@ -570,8 +571,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "number-input"
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "specifications",
                 fieldId: "specifications",
                 type: "object",
@@ -594,7 +595,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                         ["payloadCapacity", "vehicleClass", "engineType"]
                     ],
                     fields: [
-                        {
+                        createModelField({
                             id: "driveTrain",
                             fieldId: "driveTrain",
                             multipleValues: false,
@@ -603,8 +604,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "seatingCapacity",
                             fieldId: "seatingCapacity",
                             multipleValues: false,
@@ -613,8 +614,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "specWidth",
                             fieldId: "specWidth",
                             multipleValues: false,
@@ -623,8 +624,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "specLength",
                             fieldId: "specLength",
                             multipleValues: false,
@@ -633,8 +634,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "specHeight",
                             fieldId: "specHeight",
                             multipleValues: false,
@@ -643,8 +644,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "specWheelase",
                             fieldId: "specWheelbase",
                             type: "text",
@@ -653,8 +654,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "frontHeadroom",
                             fieldId: "frontHeadroom",
                             type: "text",
@@ -663,8 +664,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "rearHeadroom",
                             fieldId: "rearHeadroom",
                             type: "text",
@@ -673,8 +674,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "frontShoulderRoom",
                             fieldId: "frontShoulderRoom",
                             type: "text",
@@ -683,8 +684,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "rearShoulderRoom",
                             fieldId: "rearShoulderRoom",
                             type: "text",
@@ -693,8 +694,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "frontLegroom",
                             fieldId: "frontLegroom",
                             type: "text",
@@ -703,8 +704,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "rearLegroom",
                             fieldId: "rearLegroom",
                             type: "text",
@@ -713,8 +714,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "groundClearance",
                             fieldId: "groundClearance",
                             type: "text",
@@ -723,8 +724,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "curbWeight",
                             fieldId: "curbWeight",
                             type: "text",
@@ -733,8 +734,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "cargoCapacity",
                             fieldId: "cargoCapacity",
                             type: "text",
@@ -743,8 +744,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "specGvwr",
                             fieldId: "specGvwr",
                             type: "text",
@@ -753,8 +754,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "payloadCapacity",
                             fieldId: "payloadCapacity",
                             type: "text",
@@ -763,8 +764,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "towingCapacity",
                             fieldId: "towingCapacity",
                             type: "text",
@@ -773,8 +774,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "engineName",
                             fieldId: "engineName",
                             type: "text",
@@ -783,8 +784,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "specHorsepower",
                             fieldId: "specHorsepower",
                             type: "text",
@@ -793,8 +794,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "specTorque",
                             fieldId: "specTorque",
                             type: "text",
@@ -803,8 +804,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "fuelType",
                             fieldId: "fuelType",
                             multipleValues: false,
@@ -813,8 +814,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "fuelCapacity",
                             fieldId: "fuelCapacity",
                             multipleValues: false,
@@ -823,8 +824,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "stdEpaMpg",
                             fieldId: "stdEpaMpg",
                             type: "text",
@@ -834,8 +835,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                 name: "text-input"
                             },
                             helpText: "This is a Required Field."
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "transmissionName",
                             fieldId: "transmissionName",
                             type: "text",
@@ -844,8 +845,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "transmissionType",
                             fieldId: "transmissionType",
                             type: "text",
@@ -854,8 +855,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "drivingRange",
                             fieldId: "drivingRange",
                             type: "text",
@@ -864,8 +865,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "cylinderConfiguration",
                             fieldId: "cylinderConfiguration",
                             type: "text",
@@ -874,8 +875,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "numberOfCylinders",
                             fieldId: "numberOfCylinders",
                             type: "text",
@@ -884,8 +885,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "specTonnage",
                             fieldId: "specTonnage",
                             type: "text",
@@ -894,8 +895,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "stdMpgWithUnits",
                             fieldId: "stdMpgWithUnits",
                             type: "text",
@@ -904,8 +905,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "heroLabel1",
                             fieldId: "heroLabel1",
                             type: "text",
@@ -914,8 +915,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "heroValue1",
                             fieldId: "heroValue1",
                             type: "text",
@@ -924,8 +925,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "vehicleClass",
                             fieldId: "vehicleClass",
                             type: "text",
@@ -934,8 +935,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "engineType",
                             fieldId: "engineType",
                             type: "text",
@@ -944,11 +945,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        }
+                        })
                     ]
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "powertrains",
                 fieldId: "powertrains",
                 multipleValues: true,
@@ -960,7 +961,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 settings: {
                     layout: [["ptHorseower", "ptCityMpg", "ptHwyMpg"]],
                     fields: [
-                        {
+                        createModelField({
                             id: "ptHorseower",
                             fieldId: "ptHorseower",
                             type: "number",
@@ -969,8 +970,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "ptCityMpg",
                             fieldId: "ptCityMpg",
                             type: "number",
@@ -979,8 +980,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "ptHwyMpg",
                             fieldId: "ptHwyMpg",
                             type: "number",
@@ -989,11 +990,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        }
+                        })
                     ]
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "warranty",
                 fieldId: "warranty",
                 type: "object",
@@ -1013,7 +1014,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                         ["corrosionWarrantyMiles", "corrosionWarrantyMonths"]
                     ],
                     fields: [
-                        {
+                        createModelField({
                             id: "fullWarrantyMiles",
                             fieldId: "fullWarrantyMiles",
                             type: "text",
@@ -1022,8 +1023,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "fullWarrantyMonths",
                             fieldId: "fullWarrantyMonths",
                             type: "text",
@@ -1032,8 +1033,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "powertrainWarrantyMiles",
                             fieldId: "powertrainWarrantyMiles",
                             type: "text",
@@ -1042,8 +1043,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "powertrainWarrantyMonths",
                             fieldId: "powertrainWarrantyMonths",
                             type: "text",
@@ -1052,8 +1053,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "maintenanceWarrantyMiles",
                             fieldId: "maintenanceWarrantyMiles",
                             type: "text",
@@ -1062,8 +1063,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "maintenanceWarrantyMonths",
                             fieldId: "maintenanceWarrantyMonths",
                             type: "text",
@@ -1072,8 +1073,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "roadsideWarrantyMiles",
                             fieldId: "roadsideWarrantyMiles",
                             type: "text",
@@ -1082,8 +1083,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "roadsideWarrantyMonths",
                             fieldId: "roadsideWarrantyMonths",
                             type: "text",
@@ -1092,8 +1093,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "corrosionWarrantyMiles",
                             fieldId: "corrosionWarrantyMiles",
                             type: "text",
@@ -1102,8 +1103,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "corrosionWarrantyMonths",
                             fieldId: "corrosionWarrantyMonths",
                             type: "text",
@@ -1112,11 +1113,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        }
+                        })
                     ]
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "pricing",
                 fieldId: "pricing",
                 type: "object",
@@ -1134,7 +1135,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                         ["pFmpOrCrvValue"]
                     ],
                     fields: [
-                        {
+                        createModelField({
                             id: "pInvoice",
                             fieldId: "pInvoice",
                             type: "number",
@@ -1143,8 +1144,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "pMsrp",
                             fieldId: "pMsrp",
                             type: "number",
@@ -1153,8 +1154,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "pDestination",
                             fieldId: "pDestination",
                             type: "number",
@@ -1163,8 +1164,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "pEffectiveOn",
                             fieldId: "pEffectiveOn",
                             type: "text",
@@ -1173,8 +1174,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "pTargetPrice",
                             fieldId: "pTargetPrice",
                             type: "number",
@@ -1183,8 +1184,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "pTotalTargetPrice",
                             fieldId: "pTotalTargetPrice",
                             type: "number",
@@ -1193,8 +1194,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "pAverageSalesTaxAndFees",
                             fieldId: "pAverageSalesTaxAndFees",
                             type: "number",
@@ -1203,8 +1204,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "pGasGuzzlerTax",
                             fieldId: "pGasGuzzlerTax",
                             type: "number",
@@ -1213,8 +1214,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "pTargetRebate",
                             fieldId: "pTargetRebate",
                             type: "number",
@@ -1223,8 +1224,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "pNewMonthly",
                             fieldId: "pNewMonthly",
                             type: "number",
@@ -1233,8 +1234,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "pCpoPrice",
                             fieldId: "pCpoPrice",
                             type: "text",
@@ -1243,8 +1244,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "pExcellentRetailValue",
                             fieldId: "pExcellentRetailValue",
                             type: "number",
@@ -1253,8 +1254,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "pMsrpLabel",
                             fieldId: "pMsrpLabel",
                             type: "text",
@@ -1263,8 +1264,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "pMsrpValue",
                             fieldId: "pMsrpValue",
                             type: "text",
@@ -1273,8 +1274,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "pFmpOrCrvLabel",
                             fieldId: "pFmpOrCrvLabel",
                             type: "text",
@@ -1283,8 +1284,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "pFmpOrCrvValue",
                             fieldId: "pFmpOrCrvValue",
                             type: "text",
@@ -1293,11 +1294,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        }
+                        })
                     ]
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "safetyRatings",
                 fieldId: "safetyRatings",
                 type: "object",
@@ -1317,7 +1318,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                         ["iihsRearCrash", "iihsRoofStrength", "iihsFrontSmallOverlap"]
                     ],
                     fields: [
-                        {
+                        createModelField({
                             id: "nhtsaRatingOverall",
                             fieldId: "nhtsaRatingOverall",
                             type: "text",
@@ -1326,8 +1327,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "nhtsaRatingRollover",
                             fieldId: "nhtsaRatingRollover",
                             type: "text",
@@ -1336,8 +1337,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "nhtsaRatingFrontDriver",
                             fieldId: "nhtsaRatingFrontDriver",
                             type: "text",
@@ -1346,8 +1347,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "nhtsaRatingFrontPassenger",
                             fieldId: "nhtsaRatingFrontPassenger",
                             type: "text",
@@ -1356,8 +1357,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "nhtsaRatingFrontSide",
                             fieldId: "nhtsaRatingFrontSide",
                             type: "text",
@@ -1366,8 +1367,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "nhtsaRatingRearSide",
                             fieldId: "nhtsaRatingRearSide",
                             type: "text",
@@ -1376,8 +1377,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "iihsFrontModerateOverlap",
                             fieldId: "iihsFrontModerateOverlap",
                             type: "text",
@@ -1386,8 +1387,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "iihsOverallSideCrash",
                             fieldId: "iihsOverallSideCrash",
                             type: "text",
@@ -1396,8 +1397,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "iihsBestPick",
                             fieldId: "iihsBestPick",
                             type: "text",
@@ -1406,8 +1407,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "iihsRearCrash",
                             fieldId: "iihsRearCrash",
                             type: "text",
@@ -1416,8 +1417,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "iihsRoofStrength",
                             fieldId: "iihsRoofStrength",
                             type: "text",
@@ -1426,8 +1427,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "iihsFrontSmallOverlap",
                             fieldId: "iihsFrontSmallOverlap",
                             type: "text",
@@ -1436,11 +1437,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        }
+                        })
                     ]
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "ownershipCosts",
                 fieldId: "ownershipCosts",
                 type: "object",
@@ -1457,7 +1458,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                         ["valueRating"]
                     ],
                     fields: [
-                        {
+                        createModelField({
                             id: "depreciationTotal",
                             fieldId: "depreciationTotal",
                             type: "text",
@@ -1466,8 +1467,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "financingTotal",
                             fieldId: "financingTotal",
                             type: "text",
@@ -1476,8 +1477,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "insuranceTotal",
                             fieldId: "insuranceTotal",
                             type: "text",
@@ -1486,8 +1487,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "stateFeesTotal",
                             fieldId: "stateFeesTotal",
                             type: "text",
@@ -1496,8 +1497,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "fuelTotal",
                             fieldId: "fuelTotal",
                             type: "text",
@@ -1506,8 +1507,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "maintenanceTotal",
                             fieldId: "maintenanceTotal",
                             type: "text",
@@ -1516,8 +1517,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "repairsTotal",
                             fieldId: "repairsTotal",
                             type: "text",
@@ -1526,8 +1527,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "total5YearOcCost",
                             fieldId: "total5YearOcCost",
                             type: "text",
@@ -1536,8 +1537,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "total5YearOcCostLessHybrid",
                             fieldId: "total5YearOcCostLessHybrid",
                             type: "number",
@@ -1546,8 +1547,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "similarVehicles",
                             fieldId: "similarVehicles",
                             type: "number",
@@ -1556,8 +1557,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "difference5YearCost",
                             fieldId: "difference5YearCost",
                             type: "number",
@@ -1566,8 +1567,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "hybridTax",
                             fieldId: "hybridTax",
                             type: "text",
@@ -1576,8 +1577,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "valueRating",
                             fieldId: "valueRating",
                             type: "text",
@@ -1586,11 +1587,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        }
+                        })
                     ]
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "cpoComparison",
                 fieldId: "cpoComparison",
                 type: "object",
@@ -1607,7 +1608,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                         ["vehicleRating"]
                     ],
                     fields: [
-                        {
+                        createModelField({
                             id: "usedMonthly",
                             fieldId: "usedMonthly",
                             type: "number",
@@ -1616,8 +1617,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "cpoMonthly",
                             fieldId: "cpoMonthly",
                             type: "number",
@@ -1626,8 +1627,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "usedMaintenanceRepairs",
                             fieldId: "usedMaintenanceRepairs",
                             type: "number",
@@ -1636,8 +1637,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "cpoMaintenanceRepairs",
                             fieldId: "cpoMaintenanceRepairs",
                             type: "number",
@@ -1646,8 +1647,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "usedTotalMonthly",
                             fieldId: "usedTotalMonthly",
                             type: "number",
@@ -1656,8 +1657,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "cpoTotalMonthly",
                             fieldId: "cpoTotalMonthly",
                             type: "number",
@@ -1666,8 +1667,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "cpoYear",
                             fieldId: "cpoYear",
                             type: "number",
@@ -1676,8 +1677,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "cpoMake",
                             fieldId: "cpoMake",
                             type: "text",
@@ -1686,8 +1687,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "modelName",
                             fieldId: "modelName",
                             type: "text",
@@ -1696,8 +1697,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "usedCarTrim",
                             fieldId: "usedCarTrim",
                             type: "text",
@@ -1706,8 +1707,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "cpoPrice",
                             fieldId: "cpoPrice",
                             type: "text",
@@ -1716,8 +1717,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "usedCarPrice",
                             fieldId: "usedCarPrice",
                             type: "number",
@@ -1726,8 +1727,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "vehicleRating",
                             fieldId: "vehicleRating",
                             type: "text",
@@ -1736,11 +1737,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        }
+                        })
                     ]
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "historicalMotortrendScores",
                 fieldId: "historicalMotortrendScores",
                 type: "object",
@@ -1757,7 +1758,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                         ["vrValue", "toolTipValue"]
                     ],
                     fields: [
-                        {
+                        createModelField({
                             id: "vrPerformance",
                             fieldId: "vrPerformance",
                             type: "number",
@@ -1766,8 +1767,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "toolTipPerformance",
                             fieldId: "toolTipPerformance",
                             type: "text",
@@ -1776,8 +1777,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "overallScore",
                             fieldId: "overallScore",
                             type: "number",
@@ -1786,8 +1787,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "toolTipOverallScore",
                             fieldId: "toolTipOverallScore",
                             type: "text",
@@ -1796,8 +1797,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "fuelEconomy",
                             fieldId: "fuelEconomy",
                             type: "number",
@@ -1806,8 +1807,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "toolTipFuelEconomy",
                             fieldId: "toolTipFuelEconomy",
                             type: "text",
@@ -1816,8 +1817,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "techInnovation",
                             fieldId: "techInnovation",
                             type: "number",
@@ -1826,8 +1827,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "toolTipTechInnovation",
                             fieldId: "toolTipTechInnovation",
                             type: "text",
@@ -1836,8 +1837,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "vrValue",
                             fieldId: "vrValue",
                             type: "number",
@@ -1846,8 +1847,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "toolTipValue",
                             fieldId: "toolTipValue",
                             type: "text",
@@ -1856,11 +1857,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        }
+                        })
                     ]
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "recalls",
                 fieldId: "recalls",
                 multipleValues: true,
@@ -1877,7 +1878,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                         ["descDefect", "consequenceDefect", "correctiveAction"]
                     ],
                     fields: [
-                        {
+                        createModelField({
                             id: "recallId",
                             fieldId: "recallId",
                             type: "number",
@@ -1886,8 +1887,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "recallsCampNumber",
                             fieldId: "recallsCampNumber",
                             type: "text",
@@ -1896,8 +1897,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "makeText",
                             fieldId: "makeText",
                             type: "text",
@@ -1906,8 +1907,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "modelText",
                             fieldId: "modelText",
                             type: "text",
@@ -1916,8 +1917,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "yearText",
                             fieldId: "yearText",
                             type: "number",
@@ -1926,8 +1927,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "compName",
                             fieldId: "compName",
                             type: "text",
@@ -1936,8 +1937,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "mfgText",
                             fieldId: "mfgText",
                             type: "text",
@@ -1946,8 +1947,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "recallsPotaff",
                             fieldId: "recallsPotaff",
                             type: "number",
@@ -1956,8 +1957,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "rcDate",
                             fieldId: "rcDate",
                             type: "text",
@@ -1966,8 +1967,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "descDefect",
                             fieldId: "descDefect",
                             type: "text",
@@ -1976,8 +1977,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "consequenceDefect",
                             fieldId: "consequenceDefect",
                             type: "text",
@@ -1986,8 +1987,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "correctiveAction",
                             fieldId: "correctiveAction",
                             type: "text",
@@ -1996,11 +1997,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        }
+                        })
                     ]
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "carsRebates",
                 fieldId: "carsRebates",
                 multipleValues: true,
@@ -2015,7 +2016,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                         ["nationallyAvailable", "rebatesDescription", "rebatesExpDate"]
                     ],
                     fields: [
-                        {
+                        createModelField({
                             id: "rebatesExpDate",
                             fieldId: "rebatesExpDate",
                             type: "text",
@@ -2024,8 +2025,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "rebatesLow",
                             fieldId: "rebatesLow",
                             type: "number",
@@ -2034,8 +2035,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "rebatesHigh",
                             fieldId: "rebatesHigh",
                             type: "number",
@@ -2044,8 +2045,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "rebateText",
                             fieldId: "rebateText",
                             type: "text",
@@ -2054,8 +2055,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "nationallyAvailable",
                             fieldId: "nationallyAvailable",
                             type: "number",
@@ -2064,8 +2065,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "rebatesDescription",
                             fieldId: "rebatesDescription",
                             type: "text",
@@ -2074,11 +2075,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        }
+                        })
                     ]
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "cpoProgram",
                 fieldId: "cpoProgram",
                 type: "object",
@@ -2097,7 +2098,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                         ["cpoProgramOverview"]
                     ],
                     fields: [
-                        {
+                        createModelField({
                             id: "cpoName",
                             fieldId: "cpoName",
                             type: "text",
@@ -2106,8 +2107,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "cpoInspectionPoint",
                             fieldId: "cpoInspectionPoint",
                             type: "text",
@@ -2116,8 +2117,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "cpoInspectionScore",
                             fieldId: "cpoInspectionScore",
                             type: "number",
@@ -2126,8 +2127,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "cpoAgeMileage",
                             fieldId: "cpoAgeMileage",
                             type: "text",
@@ -2136,8 +2137,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "cpoWarranty",
                             fieldId: "cpoWarranty",
                             type: "text",
@@ -2146,8 +2147,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "cpoWarrantyDeductible",
                             fieldId: "cpoWarrantyDeductible",
                             type: "text",
@@ -2156,8 +2157,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "cpoWarrantyBbnc",
                             fieldId: "cpoWarrantyBbnc",
                             type: "text",
@@ -2166,8 +2167,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "cpoWarrantyTransferable",
                             fieldId: "cpoWarrantyTransferable",
                             type: "text",
@@ -2176,8 +2177,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "cpoWarrantyExtended",
                             fieldId: "cpoWarrantyExtended",
                             type: "text",
@@ -2186,8 +2187,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "cpoRoadside",
                             fieldId: "cpoRoadside",
                             type: "text",
@@ -2196,8 +2197,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "cpoReturnExchange",
                             fieldId: "cpoReturnExchange",
                             type: "text",
@@ -2206,8 +2207,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "cpoFinancing",
                             fieldId: "cpoFinancing",
                             type: "text",
@@ -2216,8 +2217,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "cpoLease",
                             fieldId: "cpoLease",
                             type: "text",
@@ -2226,8 +2227,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "cpoWebsite",
                             fieldId: "cpoWebsite",
                             type: "text",
@@ -2236,8 +2237,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "cpoCustomerServiceNumber",
                             fieldId: "cpoCustomerServiceNumber",
                             type: "text",
@@ -2246,8 +2247,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "cpoParticipation",
                             fieldId: "cpoParticipation",
                             type: "text",
@@ -2256,8 +2257,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "cpoHistoryReport",
                             fieldId: "cpoHistoryReport",
                             type: "number",
@@ -2266,8 +2267,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "cpoAdditionalBenefits",
                             fieldId: "cpoAdditionalBenefits",
                             type: "text",
@@ -2276,8 +2277,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "cpoProgramOverview",
                             fieldId: "cpoProgramOverview",
                             type: "text",
@@ -2286,11 +2287,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        }
+                        })
                     ]
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "realmpg",
                 fieldId: "realmpg",
                 type: "object",
@@ -2303,7 +2304,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                         ["realmpgAverageMpg", "realmpgAverageMpgCity", "realmpgAverageMpgHwy"]
                     ],
                     fields: [
-                        {
+                        createModelField({
                             id: "realmpgAverageMpg",
                             fieldId: "realmpgAverageMpg",
                             type: "number",
@@ -2312,8 +2313,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "realmpgAverageMpgCity",
                             fieldId: "realmpgAverageMpgCity",
                             type: "number",
@@ -2322,8 +2323,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "realmpgAverageMpgHwy",
                             fieldId: "realmpgAverageMpgHwy",
                             type: "number",
@@ -2332,11 +2333,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        }
+                        })
                     ]
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "hubs",
                 fieldId: "hubs",
                 multipleValues: true,
@@ -2348,7 +2349,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 settings: {
                     layout: [["hubsImage", "makeModelHub", "hubsName", "hubsText"]],
                     fields: [
-                        {
+                        createModelField({
                             id: "hubsImage",
                             fieldId: "hubsImage",
                             type: "text",
@@ -2357,8 +2358,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "makeModelHub",
                             fieldId: "makeModelHub",
                             type: "number",
@@ -2367,8 +2368,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "hubsName",
                             fieldId: "hubsName",
                             type: "text",
@@ -2377,8 +2378,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "hubsText",
                             fieldId: "hubsText",
                             type: "text",
@@ -2387,11 +2388,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        }
+                        })
                     ]
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "seoText",
                 fieldId: "seoText",
                 type: "object",
@@ -2402,7 +2403,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 settings: {
                     layout: [["seoType", "seoTitle"], ["seoContent"]],
                     fields: [
-                        {
+                        createModelField({
                             id: "seoType",
                             fieldId: "seoType",
                             multipleValues: false,
@@ -2411,8 +2412,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "seoTitle",
                             fieldId: "seoTitle",
                             multipleValues: false,
@@ -2421,8 +2422,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "seoContent",
                             fieldId: "seoContent",
                             multipleValues: false,
@@ -2431,11 +2432,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        }
+                        })
                     ]
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "images",
                 fieldId: "images",
                 multipleValues: true,
@@ -2447,7 +2448,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 settings: {
                     layout: [["imageUrl"], ["imageAngle", "imageType", "imageOrder"]],
                     fields: [
-                        {
+                        createModelField({
                             id: "imageUrl",
                             fieldId: "imageUrl",
                             type: "text",
@@ -2456,8 +2457,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                 name: "text-input"
                             },
                             helpText: "This is a Required Field."
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "imageAngle",
                             fieldId: "imageAngle",
                             type: "text",
@@ -2466,8 +2467,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "imageType",
                             fieldId: "imageType",
                             type: "text",
@@ -2476,8 +2477,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "imageOrder",
                             fieldId: "imageOrder",
                             type: "number",
@@ -2486,11 +2487,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        }
+                        })
                     ]
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "featuresIntellicar",
                 fieldId: "featuresIntellicar",
                 type: "object",
@@ -2532,7 +2533,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                         ["wheelsCategory"]
                     ],
                     fields: [
-                        {
+                        createModelField({
                             id: "packageCategory",
                             fieldId: "packageCategory",
                             type: "object",
@@ -2548,7 +2549,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                     ["sequenceNmb", "categorySequenceNmb"]
                                 ],
                                 fields: [
-                                    {
+                                    createModelField({
                                         id: "name",
                                         fieldId: "name",
                                         type: "text",
@@ -2556,8 +2557,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "availability",
                                         fieldId: "availability",
                                         type: "text",
@@ -2565,8 +2566,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
@@ -2575,8 +2576,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "includesNote",
                                         fieldId: "includesNote",
                                         type: "text",
@@ -2584,8 +2585,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
@@ -2594,8 +2595,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
@@ -2604,8 +2605,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
@@ -2614,11 +2615,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    }
+                                    })
                                 ]
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "engineCategory",
                             fieldId: "engineCategory",
                             type: "object",
@@ -2634,7 +2635,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                     ["sequenceNmb", "categorySequenceNmb"]
                                 ],
                                 fields: [
-                                    {
+                                    createModelField({
                                         id: "name",
                                         fieldId: "name",
                                         type: "text",
@@ -2642,8 +2643,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "availability",
                                         fieldId: "availability",
                                         type: "text",
@@ -2651,8 +2652,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
@@ -2661,8 +2662,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "includesNote",
                                         fieldId: "includesNote",
                                         type: "text",
@@ -2670,8 +2671,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
@@ -2680,8 +2681,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
@@ -2690,8 +2691,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
@@ -2700,11 +2701,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    }
+                                    })
                                 ]
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "transmissionCategory",
                             fieldId: "transmissionCategory",
                             type: "object",
@@ -2720,7 +2721,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                     ["sequenceNmb", "categorySequenceNmb"]
                                 ],
                                 fields: [
-                                    {
+                                    createModelField({
                                         id: "name",
                                         fieldId: "name",
                                         type: "text",
@@ -2728,8 +2729,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "availability",
                                         fieldId: "availability",
                                         type: "text",
@@ -2737,8 +2738,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
@@ -2747,8 +2748,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "includesNote",
                                         fieldId: "includesNote",
                                         type: "text",
@@ -2756,8 +2757,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
@@ -2766,8 +2767,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
@@ -2776,8 +2777,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
@@ -2786,11 +2787,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    }
+                                    })
                                 ]
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "exteriorColorCategory",
                             fieldId: "exteriorColorCategory",
                             type: "object",
@@ -2806,7 +2807,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                     ["sequenceNmb", "categorySequenceNmb"]
                                 ],
                                 fields: [
-                                    {
+                                    createModelField({
                                         id: "name",
                                         fieldId: "name",
                                         type: "text",
@@ -2814,8 +2815,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "availability",
                                         fieldId: "availability",
                                         type: "text",
@@ -2823,8 +2824,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
@@ -2833,8 +2834,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "includesNote",
                                         fieldId: "includesNote",
                                         type: "text",
@@ -2842,8 +2843,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
@@ -2852,8 +2853,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
@@ -2862,8 +2863,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
@@ -2872,11 +2873,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    }
+                                    })
                                 ]
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "interiorColorCategory",
                             fieldId: "interiorColorCategory",
                             type: "object",
@@ -2892,7 +2893,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                     ["sequenceNmb", "categorySequenceNmb"]
                                 ],
                                 fields: [
-                                    {
+                                    createModelField({
                                         id: "name",
                                         fieldId: "name",
                                         type: "text",
@@ -2900,8 +2901,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "availability",
                                         fieldId: "availability",
                                         type: "text",
@@ -2909,8 +2910,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
@@ -2919,8 +2920,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "includesNote",
                                         fieldId: "includesNote",
                                         type: "text",
@@ -2928,8 +2929,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
@@ -2938,8 +2939,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
@@ -2948,8 +2949,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
@@ -2958,11 +2959,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    }
+                                    })
                                 ]
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "topColorCategory",
                             fieldId: "topColorCategory",
                             type: "object",
@@ -2978,7 +2979,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                     ["sequenceNmb", "categorySequenceNmb"]
                                 ],
                                 fields: [
-                                    {
+                                    createModelField({
                                         id: "name",
                                         fieldId: "name",
                                         type: "text",
@@ -2986,8 +2987,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "availability",
                                         fieldId: "availability",
                                         type: "text",
@@ -2995,8 +2996,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
@@ -3005,8 +3006,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "includesNote",
                                         fieldId: "includesNote",
                                         type: "text",
@@ -3014,8 +3015,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
@@ -3024,8 +3025,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
@@ -3034,8 +3035,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
@@ -3044,11 +3045,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    }
+                                    })
                                 ]
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "bodyCategory",
                             fieldId: "bodyCategory",
                             type: "object",
@@ -3064,7 +3065,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                     ["sequenceNmb", "categorySequenceNmb"]
                                 ],
                                 fields: [
-                                    {
+                                    createModelField({
                                         id: "name",
                                         fieldId: "name",
                                         type: "text",
@@ -3072,8 +3073,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "availability",
                                         fieldId: "availability",
                                         type: "text",
@@ -3081,8 +3082,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
@@ -3091,8 +3092,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "includesNote",
                                         fieldId: "includesNote",
                                         type: "text",
@@ -3100,8 +3101,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
@@ -3110,8 +3111,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
@@ -3120,8 +3121,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
@@ -3130,11 +3131,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    }
+                                    })
                                 ]
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "brakesCategory",
                             fieldId: "brakesCategory",
                             type: "object",
@@ -3150,7 +3151,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                     ["sequenceNmb", "categorySequenceNmb"]
                                 ],
                                 fields: [
-                                    {
+                                    createModelField({
                                         id: "name",
                                         fieldId: "name",
                                         type: "text",
@@ -3158,8 +3159,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "availability",
                                         fieldId: "availability",
                                         type: "text",
@@ -3167,8 +3168,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
@@ -3177,8 +3178,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "includesNote",
                                         fieldId: "includesNote",
                                         type: "text",
@@ -3186,8 +3187,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
@@ -3196,8 +3197,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
@@ -3206,8 +3207,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
@@ -3216,11 +3217,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    }
+                                    })
                                 ]
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "convenienceCategory",
                             fieldId: "convenienceCategory",
                             type: "object",
@@ -3236,7 +3237,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                     ["sequenceNmb", "categorySequenceNmb"]
                                 ],
                                 fields: [
-                                    {
+                                    createModelField({
                                         id: "name",
                                         fieldId: "name",
                                         type: "text",
@@ -3244,8 +3245,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "availability",
                                         fieldId: "availability",
                                         type: "text",
@@ -3253,8 +3254,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
@@ -3263,8 +3264,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "includesNote",
                                         fieldId: "includesNote",
                                         type: "text",
@@ -3272,8 +3273,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
@@ -3282,8 +3283,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
@@ -3292,8 +3293,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
@@ -3302,11 +3303,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    }
+                                    })
                                 ]
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "driveCategory",
                             fieldId: "driveCategory",
                             type: "object",
@@ -3322,7 +3323,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                     ["sequenceNmb", "categorySequenceNmb"]
                                 ],
                                 fields: [
-                                    {
+                                    createModelField({
                                         id: "name",
                                         fieldId: "name",
                                         type: "text",
@@ -3330,8 +3331,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "availability",
                                         fieldId: "availability",
                                         type: "text",
@@ -3339,8 +3340,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
@@ -3349,8 +3350,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "includesNote",
                                         fieldId: "includesNote",
                                         type: "text",
@@ -3358,8 +3359,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
@@ -3368,8 +3369,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
@@ -3378,8 +3379,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
@@ -3388,11 +3389,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    }
+                                    })
                                 ]
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "engineeringCategory",
                             fieldId: "engineeringCategory",
                             type: "object",
@@ -3408,7 +3409,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                     ["sequenceNmb", "categorySequenceNmb"]
                                 ],
                                 fields: [
-                                    {
+                                    createModelField({
                                         id: "name",
                                         fieldId: "name",
                                         type: "text",
@@ -3416,8 +3417,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "availability",
                                         fieldId: "availability",
                                         type: "text",
@@ -3425,8 +3426,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
@@ -3435,8 +3436,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "includesNote",
                                         fieldId: "includesNote",
                                         type: "text",
@@ -3444,8 +3445,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
@@ -3454,8 +3455,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
@@ -3464,8 +3465,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
@@ -3474,11 +3475,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    }
+                                    })
                                 ]
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "exteriorCategory",
                             fieldId: "exteriorCategory",
                             type: "object",
@@ -3494,7 +3495,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                     ["sequenceNmb", "categorySequenceNmb"]
                                 ],
                                 fields: [
-                                    {
+                                    createModelField({
                                         id: "name",
                                         fieldId: "name",
                                         type: "text",
@@ -3502,8 +3503,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "availability",
                                         fieldId: "availability",
                                         type: "text",
@@ -3511,8 +3512,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
@@ -3521,8 +3522,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "includesNote",
                                         fieldId: "includesNote",
                                         type: "text",
@@ -3530,8 +3531,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
@@ -3540,8 +3541,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
@@ -3550,8 +3551,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
@@ -3560,11 +3561,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    }
+                                    })
                                 ]
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "interiorCategory",
                             fieldId: "interiorCategory",
                             type: "object",
@@ -3580,7 +3581,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                     ["sequenceNmb", "categorySequenceNmb"]
                                 ],
                                 fields: [
-                                    {
+                                    createModelField({
                                         id: "name",
                                         fieldId: "name",
                                         type: "text",
@@ -3588,8 +3589,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "availability",
                                         fieldId: "availability",
                                         type: "text",
@@ -3597,8 +3598,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
@@ -3607,8 +3608,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "includesNote",
                                         fieldId: "includesNote",
                                         type: "text",
@@ -3616,8 +3617,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
@@ -3626,8 +3627,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
@@ -3636,8 +3637,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
@@ -3646,11 +3647,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    }
+                                    })
                                 ]
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "lightingCategory",
                             fieldId: "lightingCategory",
                             type: "object",
@@ -3666,7 +3667,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                     ["sequenceNmb", "categorySequenceNmb"]
                                 ],
                                 fields: [
-                                    {
+                                    createModelField({
                                         id: "name",
                                         fieldId: "name",
                                         type: "text",
@@ -3674,8 +3675,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "availability",
                                         fieldId: "availability",
                                         type: "text",
@@ -3683,8 +3684,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
@@ -3693,8 +3694,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "includesNote",
                                         fieldId: "includesNote",
                                         type: "text",
@@ -3702,8 +3703,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
@@ -3712,8 +3713,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
@@ -3722,8 +3723,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
@@ -3732,11 +3733,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    }
+                                    })
                                 ]
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "mandatoryCategory",
                             fieldId: "mandatoryCategory",
                             type: "object",
@@ -3752,7 +3753,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                     ["sequenceNmb", "categorySequenceNmb"]
                                 ],
                                 fields: [
-                                    {
+                                    createModelField({
                                         id: "name",
                                         fieldId: "name",
                                         type: "text",
@@ -3760,8 +3761,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "availability",
                                         fieldId: "availability",
                                         type: "text",
@@ -3769,8 +3770,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
@@ -3779,8 +3780,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "includesNote",
                                         fieldId: "includesNote",
                                         type: "text",
@@ -3788,8 +3789,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
@@ -3798,8 +3799,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
@@ -3808,8 +3809,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
@@ -3818,11 +3819,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    }
+                                    })
                                 ]
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "mirrorsCategory",
                             fieldId: "mirrorsCategory",
                             type: "object",
@@ -3838,7 +3839,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                     ["sequenceNmb", "categorySequenceNmb"]
                                 ],
                                 fields: [
-                                    {
+                                    createModelField({
                                         id: "name",
                                         fieldId: "name",
                                         type: "text",
@@ -3846,8 +3847,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "availability",
                                         fieldId: "availability",
                                         type: "text",
@@ -3855,8 +3856,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
@@ -3865,8 +3866,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "includesNote",
                                         fieldId: "includesNote",
                                         type: "text",
@@ -3874,8 +3875,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
@@ -3884,8 +3885,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
@@ -3894,8 +3895,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
@@ -3904,11 +3905,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    }
+                                    })
                                 ]
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "noteCategory",
                             fieldId: "noteCategory",
                             type: "object",
@@ -3924,7 +3925,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                     ["sequenceNmb", "categorySequenceNmb"]
                                 ],
                                 fields: [
-                                    {
+                                    createModelField({
                                         id: "name",
                                         fieldId: "name",
                                         type: "text",
@@ -3932,8 +3933,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "availability",
                                         fieldId: "availability",
                                         type: "text",
@@ -3941,8 +3942,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
@@ -3951,8 +3952,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "includesNote",
                                         fieldId: "includesNote",
                                         type: "text",
@@ -3960,8 +3961,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
@@ -3970,8 +3971,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
@@ -3980,8 +3981,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
@@ -3990,11 +3991,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    }
+                                    })
                                 ]
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "otherCategory",
                             fieldId: "otherCategory",
                             type: "object",
@@ -4010,7 +4011,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                     ["sequenceNmb", "categorySequenceNmb"]
                                 ],
                                 fields: [
-                                    {
+                                    createModelField({
                                         id: "name",
                                         fieldId: "name",
                                         type: "text",
@@ -4018,8 +4019,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "availability",
                                         fieldId: "availability",
                                         type: "text",
@@ -4027,8 +4028,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
@@ -4037,8 +4038,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "includesNote",
                                         fieldId: "includesNote",
                                         type: "text",
@@ -4046,8 +4047,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
@@ -4056,8 +4057,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
@@ -4066,8 +4067,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
@@ -4076,11 +4077,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    }
+                                    })
                                 ]
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "paintCategory",
                             fieldId: "paintCategory",
                             type: "object",
@@ -4096,7 +4097,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                     ["sequenceNmb", "categorySequenceNmb"]
                                 ],
                                 fields: [
-                                    {
+                                    createModelField({
                                         id: "name",
                                         fieldId: "name",
                                         type: "text",
@@ -4104,8 +4105,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "availability",
                                         fieldId: "availability",
                                         type: "text",
@@ -4113,8 +4114,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
@@ -4123,8 +4124,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "includesNote",
                                         fieldId: "includesNote",
                                         type: "text",
@@ -4132,8 +4133,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
@@ -4142,8 +4143,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
@@ -4152,8 +4153,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
@@ -4162,11 +4163,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    }
+                                    })
                                 ]
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "safetyCategory",
                             fieldId: "safetyCategory",
                             type: "object",
@@ -4182,7 +4183,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                     ["sequenceNmb", "categorySequenceNmb"]
                                 ],
                                 fields: [
-                                    {
+                                    createModelField({
                                         id: "name",
                                         fieldId: "name",
                                         type: "text",
@@ -4190,8 +4191,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "availability",
                                         fieldId: "availability",
                                         type: "text",
@@ -4199,8 +4200,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
@@ -4209,8 +4210,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "includesNote",
                                         fieldId: "includesNote",
                                         type: "text",
@@ -4218,8 +4219,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
@@ -4228,8 +4229,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
@@ -4238,8 +4239,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
@@ -4248,11 +4249,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    }
+                                    })
                                 ]
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "seatsCategory",
                             fieldId: "seatsCategory",
                             type: "object",
@@ -4268,7 +4269,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                     ["sequenceNmb", "categorySequenceNmb"]
                                 ],
                                 fields: [
-                                    {
+                                    createModelField({
                                         id: "name",
                                         fieldId: "name",
                                         type: "text",
@@ -4276,8 +4277,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "availability",
                                         fieldId: "availability",
                                         type: "text",
@@ -4285,8 +4286,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
@@ -4295,8 +4296,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "includesNote",
                                         fieldId: "includesNote",
                                         type: "text",
@@ -4304,8 +4305,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
@@ -4314,8 +4315,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
@@ -4324,8 +4325,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
@@ -4334,11 +4335,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    }
+                                    })
                                 ]
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "soundCategory",
                             fieldId: "soundCategory",
                             type: "object",
@@ -4354,7 +4355,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                     ["sequenceNmb", "categorySequenceNmb"]
                                 ],
                                 fields: [
-                                    {
+                                    createModelField({
                                         id: "name",
                                         fieldId: "name",
                                         type: "text",
@@ -4362,8 +4363,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "availability",
                                         fieldId: "availability",
                                         type: "text",
@@ -4371,8 +4372,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
@@ -4381,8 +4382,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "includesNote",
                                         fieldId: "includesNote",
                                         type: "text",
@@ -4390,8 +4391,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
@@ -4400,8 +4401,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
@@ -4410,8 +4411,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
@@ -4420,11 +4421,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    }
+                                    })
                                 ]
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "specialFeesCreditsOptionsCategory",
                             fieldId: "specialFeesCreditsOptionsCategory",
                             type: "object",
@@ -4440,7 +4441,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                     ["sequenceNmb", "categorySequenceNmb"]
                                 ],
                                 fields: [
-                                    {
+                                    createModelField({
                                         id: "name",
                                         fieldId: "name",
                                         type: "text",
@@ -4448,8 +4449,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "availability",
                                         fieldId: "availability",
                                         type: "text",
@@ -4457,8 +4458,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
@@ -4467,8 +4468,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "includesNote",
                                         fieldId: "includesNote",
                                         type: "text",
@@ -4476,8 +4477,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
@@ -4486,8 +4487,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
@@ -4496,8 +4497,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
@@ -4506,11 +4507,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    }
+                                    })
                                 ]
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "steeringCategory",
                             fieldId: "steeringCategory",
                             type: "object",
@@ -4526,7 +4527,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                     ["sequenceNmb", "categorySequenceNmb"]
                                 ],
                                 fields: [
-                                    {
+                                    createModelField({
                                         id: "name",
                                         fieldId: "name",
                                         type: "text",
@@ -4534,8 +4535,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "availability",
                                         fieldId: "availability",
                                         type: "text",
@@ -4543,8 +4544,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
@@ -4553,8 +4554,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "includesNote",
                                         fieldId: "includesNote",
                                         type: "text",
@@ -4562,8 +4563,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
@@ -4572,8 +4573,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
@@ -4582,8 +4583,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
@@ -4592,11 +4593,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    }
+                                    })
                                 ]
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "suspensionCategory",
                             fieldId: "suspensionCategory",
                             type: "object",
@@ -4612,7 +4613,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                     ["sequenceNmb", "categorySequenceNmb"]
                                 ],
                                 fields: [
-                                    {
+                                    createModelField({
                                         id: "name",
                                         fieldId: "name",
                                         type: "text",
@@ -4620,8 +4621,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "availability",
                                         fieldId: "availability",
                                         type: "text",
@@ -4629,8 +4630,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
@@ -4639,8 +4640,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "includesNote",
                                         fieldId: "includesNote",
                                         type: "text",
@@ -4648,8 +4649,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
@@ -4658,8 +4659,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
@@ -4668,8 +4669,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
@@ -4678,11 +4679,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    }
+                                    })
                                 ]
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "tiresCategory",
                             fieldId: "tiresCategory",
                             type: "object",
@@ -4698,7 +4699,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                     ["sequenceNmb", "categorySequenceNmb"]
                                 ],
                                 fields: [
-                                    {
+                                    createModelField({
                                         id: "name",
                                         fieldId: "name",
                                         type: "text",
@@ -4706,8 +4707,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "availability",
                                         fieldId: "availability",
                                         type: "text",
@@ -4715,8 +4716,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
@@ -4725,8 +4726,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "includesNote",
                                         fieldId: "includesNote",
                                         type: "text",
@@ -4734,8 +4735,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
@@ -4744,8 +4745,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
@@ -4754,8 +4755,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
@@ -4764,11 +4765,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    }
+                                    })
                                 ]
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "towingCategory",
                             fieldId: "towingCategory",
                             type: "object",
@@ -4784,7 +4785,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                     ["sequenceNmb", "categorySequenceNmb"]
                                 ],
                                 fields: [
-                                    {
+                                    createModelField({
                                         id: "name",
                                         fieldId: "name",
                                         type: "text",
@@ -4792,8 +4793,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "availability",
                                         fieldId: "availability",
                                         type: "text",
@@ -4801,8 +4802,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
@@ -4811,8 +4812,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "includesNote",
                                         fieldId: "includesNote",
                                         type: "text",
@@ -4820,8 +4821,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
@@ -4830,8 +4831,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
@@ -4840,8 +4841,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
@@ -4850,11 +4851,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    }
+                                    })
                                 ]
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "truckBedsCategory",
                             fieldId: "truckBedsCategory",
                             type: "object",
@@ -4870,7 +4871,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                     ["sequenceNmb", "categorySequenceNmb"]
                                 ],
                                 fields: [
-                                    {
+                                    createModelField({
                                         id: "name",
                                         fieldId: "name",
                                         type: "text",
@@ -4878,8 +4879,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "availability",
                                         fieldId: "availability",
                                         type: "text",
@@ -4887,8 +4888,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
@@ -4897,8 +4898,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "includesNote",
                                         fieldId: "includesNote",
                                         type: "text",
@@ -4906,8 +4907,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
@@ -4916,8 +4917,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
@@ -4926,8 +4927,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
@@ -4936,11 +4937,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    }
+                                    })
                                 ]
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "wheelsCategory",
                             fieldId: "wheelsCategory",
                             type: "object",
@@ -4956,7 +4957,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                     ["sequenceNmb", "categorySequenceNmb"]
                                 ],
                                 fields: [
-                                    {
+                                    createModelField({
                                         id: "name",
                                         fieldId: "name",
                                         type: "text",
@@ -4964,8 +4965,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "availability",
                                         fieldId: "availability",
                                         type: "text",
@@ -4973,8 +4974,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
@@ -4983,8 +4984,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "includesNote",
                                         fieldId: "includesNote",
                                         type: "text",
@@ -4992,8 +4993,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "text-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
@@ -5002,8 +5003,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
@@ -5012,8 +5013,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    },
-                                    {
+                                    }),
+                                    createModelField({
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
@@ -5022,14 +5023,14 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         renderer: {
                                             name: "number-input"
                                         }
-                                    }
+                                    })
                                 ]
                             }
-                        }
+                        })
                     ]
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "vehicleRankingClass",
                 fieldId: "vehicleRankingClass",
                 type: "object",
@@ -5054,7 +5055,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                         ["vrcTopRankingTrophyImage"]
                     ],
                     fields: [
-                        {
+                        createModelField({
                             id: "classTitle",
                             fieldId: "classTitle",
                             type: "text",
@@ -5063,8 +5064,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                 name: "text-input"
                             },
                             helpText: "This is a Required Field."
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "classSlugRedirect",
                             fieldId: "classSlugRedirect",
                             type: "text",
@@ -5072,8 +5073,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "associatedBody",
                             fieldId: "associatedBody",
                             type: "number",
@@ -5081,8 +5082,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "classPosition",
                             fieldId: "classPosition",
                             type: "number",
@@ -5090,8 +5091,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "rankClass",
                             fieldId: "rankClass",
                             type: "text",
@@ -5099,8 +5100,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "slugClassTitle",
                             fieldId: "slugClassTitle",
                             type: "text",
@@ -5109,8 +5110,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                 name: "text-input"
                             },
                             helpText: "This is a Required Field."
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "subclassTitle",
                             fieldId: "subclassTitle",
                             type: "text",
@@ -5119,8 +5120,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                 name: "text-input"
                             },
                             helpText: "This is a Required Field."
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "vrPerformance",
                             fieldId: "vrPerformance",
                             type: "number",
@@ -5128,8 +5129,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "toolTipPerformance",
                             fieldId: "toolTipPerformance",
                             type: "text",
@@ -5137,8 +5138,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "overallScore",
                             fieldId: "overallScore",
                             type: "number",
@@ -5147,8 +5148,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                 name: "number-input"
                             },
                             helpText: "This is a Required Field."
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "toolTipOverallScore",
                             fieldId: "toolTipOverallScore",
                             type: "text",
@@ -5156,8 +5157,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "fuelEconomy",
                             fieldId: "fuelEconomy",
                             type: "number",
@@ -5165,8 +5166,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "toolTipFuelEconomy",
                             fieldId: "toolTipFuelEconomy",
                             type: "text",
@@ -5174,8 +5175,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "techInnovation",
                             fieldId: "techInnovation",
                             type: "number",
@@ -5183,8 +5184,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "toolTipTechInnovation",
                             fieldId: "toolTipTechInnovation",
                             type: "text",
@@ -5192,8 +5193,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "vrValue",
                             fieldId: "vrValue",
                             type: "number",
@@ -5201,8 +5202,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "toolTipValue",
                             fieldId: "toolTipValue",
                             type: "text",
@@ -5210,8 +5211,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "vrcClassThumbnailRolloverUrl",
                             fieldId: "classThumbnailRolloverUrl",
                             type: "text",
@@ -5219,8 +5220,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "vrcClassThumbnailUrl",
                             fieldId: "classThumbnailUrl",
                             type: "text",
@@ -5228,8 +5229,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "vrcIsMakeBodyStyleVehicleShow",
                             fieldId: "isMakeBodyStyleVehicleShow",
                             type: "number",
@@ -5237,8 +5238,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "vrcIsRankShow",
                             fieldId: "isRankShow",
                             type: "number",
@@ -5247,8 +5248,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                 name: "number-input"
                             },
                             helpText: "This is a Required Field."
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "vrcIsVehicleShow",
                             fieldId: "isVehicleShow",
                             type: "number",
@@ -5257,8 +5258,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                 name: "number-input"
                             },
                             helpText: "This is a Required Field."
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "vrcRankInSubclassText",
                             fieldId: "rankInSubclassText",
                             type: "text",
@@ -5266,8 +5267,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "vrcRankWithinSubclass",
                             fieldId: "rankWithinSubclass",
                             type: "number",
@@ -5276,8 +5277,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                 name: "number-input"
                             },
                             helpText: "This is a Required Field."
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "vrcSubclass",
                             fieldId: "subclass",
                             type: "text",
@@ -5285,8 +5286,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "vrcSubclassPosition",
                             fieldId: "subclassPosition",
                             type: "number",
@@ -5294,8 +5295,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "vrcTopRankingTrophyImage",
                             fieldId: "topRankingTrophyImage",
                             type: "text",
@@ -5303,11 +5304,11 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        }
+                        })
                     ]
                 }
-            },
-            {
+            }),
+            createModelField({
                 id: "carMatchCustomRankings",
                 fieldId: "carMatchCustomRankings",
                 multipleValues: true,
@@ -5326,7 +5327,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                         ["rankWithinSubclass", "carMatchSubClassTitle"]
                     ],
                     fields: [
-                        {
+                        createModelField({
                             id: "carMatchBody",
                             fieldId: "carMatchBody",
                             type: "text",
@@ -5335,8 +5336,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "carMatchSeats",
                             fieldId: "carMatchSeats",
                             type: "text",
@@ -5345,8 +5346,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "carMatchLuxury",
                             fieldId: "carMatchLuxury",
                             type: "text",
@@ -5355,8 +5356,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "carMatchGreen",
                             fieldId: "carMatchGreen",
                             type: "text",
@@ -5365,8 +5366,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "carMatchOffroad",
                             fieldId: "carMatchOffroad",
                             type: "text",
@@ -5375,8 +5376,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "carMatchBudget",
                             fieldId: "carMatchBudget",
                             type: "text",
@@ -5385,8 +5386,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "totalPercentage",
                             fieldId: "totalPercentage",
                             type: "number",
@@ -5395,8 +5396,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "carMatchPriority",
                             fieldId: "carMatchPriority",
                             type: "number",
@@ -5405,8 +5406,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "carMatchEstimated",
                             fieldId: "carMatchEstimated",
                             type: "number",
@@ -5415,8 +5416,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "priceRange",
                             fieldId: "priceRange",
                             type: "text",
@@ -5425,8 +5426,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "carMatchMpg",
                             fieldId: "carMatchMpg",
                             type: "text",
@@ -5435,8 +5436,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "seatingCapacity",
                             fieldId: "seatingCapacity",
                             type: "text",
@@ -5445,8 +5446,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "carMatchHorsepower",
                             fieldId: "carMatchHorsepower",
                             type: "text",
@@ -5455,8 +5456,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "winnerDescription",
                             fieldId: "winnerDescription",
                             type: "text",
@@ -5465,8 +5466,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "rankWithinSubclass",
                             fieldId: "rankWithinSubclass",
                             type: "number",
@@ -5475,8 +5476,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "carMatchSubClassTitle",
                             fieldId: "carMatchSubClassTitle",
                             type: "text",
@@ -5485,8 +5486,8 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             }
-                        },
-                        {
+                        }),
+                        createModelField({
                             id: "carMatchUUID",
                             fieldId: "carMatchUUID",
                             type: "number",
@@ -5494,10 +5495,10 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             }
-                        }
+                        })
                     ]
                 }
-            }
+            })
         ],
         layout: [
             ["carsVehicle"],

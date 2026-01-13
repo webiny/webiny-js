@@ -13,6 +13,7 @@
     "@webiny/api-core": "0.0.0",
     "@webiny/app-admin": "0.0.0",
     "@webiny/cli-core": "0.0.0",
+    "@webiny/handler-graphql": "0.0.0",
     "@webiny/project": "0.0.0",
     "@webiny/project-aws": "0.0.0",
     "@webiny/tasks": "0.0.0"
@@ -30,6 +31,7 @@
   "exports": {
     "./configs/tsconfig.json": "./configs/tsconfig.json",
     "./global.ts": "./global.ts",
+    "./api/security": "./api/security.js",
     "./api/features/eventPublisher": "./api/features/eventPublisher.js",
     "./api/features/Logger": "./api/features/Logger.js",
     "./api/security/features/IdentityContext": "./api/security/features/IdentityContext.js",
@@ -68,6 +70,7 @@
     "./admin/configs": "./admin/configs.js",
     "./cli/features/CliCommand": "./cli/features/CliCommand.js",
     "./cli/features/Ui": "./cli/features/Ui.js",
+    "./api/graphql": "./api/graphql.js",
     "./infra/features/AdminAfterBuild": "./infra/features/AdminAfterBuild.js",
     "./infra/features/AdminAfterDeploy": "./infra/features/AdminAfterDeploy.js",
     "./infra/features/AdminBeforeBuild": "./infra/features/AdminBeforeBuild.js",
@@ -93,7 +96,6 @@
     "./infra/features/ApiPulumi": "./infra/features/ApiPulumi.js",
     "./infra/features/CorePulumi": "./infra/features/CorePulumi.js",
     "./infra/features/GetAppStackOutput": "./infra/features/GetAppStackOutput.js",
-    "./infra/features/GetAppStackExport": "./infra/features/GetAppStackExport.js",
     "./extensions": "./extensions.js",
     "./infra/features/InvokeLambdaFunction": "./infra/features/InvokeLambdaFunction.js",
     "./infra/features/AdminStackOutputService": "./infra/features/AdminStackOutputService.js",

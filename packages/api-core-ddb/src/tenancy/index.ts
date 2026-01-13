@@ -28,7 +28,7 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
     const entities = {
         tenants: createTenantEntity({
             entityName: ENTITIES.TENANT,
-            table: tableInstance
+            table: tableInstance.table
         })
     };
 

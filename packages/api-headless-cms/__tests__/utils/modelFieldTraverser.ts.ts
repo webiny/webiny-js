@@ -5,13 +5,13 @@ import { ModelFieldTraverser } from "~/utils";
 import { CmsContext } from "~/types";
 import { pageModel } from "~tests/contentAPI/mocks/pageWithDynamicZonesModel";
 import { CmsModelToAstConverter } from "~/utils/contentModelAst";
-import { CmsModelInput, createCmsModelPlugin } from "~/plugins";
+import { CmsModelInput, createModelPlugin } from "~/plugins";
 
 describe("model field traverser", () => {
     const { handler } = useHandler({
         plugins: [
             ...createModelPlugins(models.map(model => model.modelId)),
-            createCmsModelPlugin(pageModel as unknown as CmsModelInput)
+            createModelPlugin(pageModel as unknown as CmsModelInput)
         ]
     });
 

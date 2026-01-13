@@ -8,7 +8,6 @@ import {
     createEntryRawData
 } from "./mocks/data";
 import { configurations } from "~/configurations";
-import type { CmsEntry } from "@webiny/api-headless-cms/types";
 import { createPartitionKey } from "~/operations/entry/keys";
 import lodashMerge from "lodash/merge";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
@@ -116,7 +115,7 @@ describe("storage field path converters enabled", () => {
         /**
          * Load the DynamoDB record directly and check the structure.
          */
-        const dbResponse = await entryEntity.get<CmsEntry>({
+        const dbResponse = await entryEntity.get({
             PK: createPartitionKey({
                 ...model,
                 id: entry.id
@@ -129,7 +128,7 @@ describe("storage field path converters enabled", () => {
             (await createElasticsearchEntryConvertedData()).rawValues
         );
 
-        expect(dbResponse?.values).toEqual({
+        expect(dbResponse?.data?.values).toEqual({
             ...expectedDynamoDbRecord,
             "long-text@descriptionFieldIdWithSomeValue": {
                 compression: "gzip",

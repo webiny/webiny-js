@@ -15,14 +15,14 @@ export const createStorageOperations = (
     const { table: tableName, documentClient } = params;
 
     const table = createTable({
-        name: tableName,
+        name: tableName || (process.env.DB_TABLE as string),
         documentClient
     });
 
     const entities = {
-        apiKeys: createApiKeyEntity(table),
-        roles: createRoleEntity(table),
-        teams: createTeamEntity(table)
+        apiKeys: createApiKeyEntity(table.table),
+        roles: createRoleEntity(table.table),
+        teams: createTeamEntity(table.table)
     };
 
     const createApiKeyKeys = ({ id, tenant }: Pick<ApiKey, "id" | "tenant">) => ({

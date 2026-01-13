@@ -44,7 +44,7 @@ export const createStorageOperations: StorageOperationsFactory = params => {
     const { table, esTable, documentClient, elasticsearch, plugins: userPlugins } = params;
 
     const tableInstance = createTable({
-        name: table,
+        name: table || (process.env.DB_TABLE as string),
         documentClient
     });
     const tableElasticsearchInstance = createElasticsearchTable({

@@ -1,14 +1,24 @@
 import { ErrorResponse, NotFoundResponse, Response } from "@webiny/handler-graphql/responses.js";
-import { GraphQLSchema } from "@webiny/handler-graphql/graphql/abstractions.js";
+import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
 import { GetUserUseCase } from "@webiny/api-core/features/GetUser";
 import { CreateUserUseCase } from "@webiny/api-core/features/CreateUser";
 import { UpdateUserUseCase } from "@webiny/api-core/features/UpdateUser";
 import { DeleteUserUseCase } from "@webiny/api-core/features/DeleteUser";
 import NotAuthorizedResponse from "@webiny/api-core/graphql/security/NotAuthorizedResponse.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 
-class AdminUserSchemaImpl implements GraphQLSchema.Interface {
-    getTypeDefs(): GraphQLSchema.GetTypeDefsReturn {
+class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
+    execute(): CoreGraphQLSchemaFactory.Return {
+        return [
+            {
+                typeDefs: this.getTypeDefs(),
+                resolvers: this.getResolvers()
+            }
+        ];
+    }
+
+    private getTypeDefs() {
         return /* GraphQL */ `
             """
             This input type is used by administrators to create other user's accounts within the same tenant.
@@ -59,7 +69,7 @@ class AdminUserSchemaImpl implements GraphQLSchema.Interface {
         `;
     }
 
-    getResolvers(): GraphQLSchema.GetResolversReturn {
+    private getResolvers(): CoreGraphQLSchemaFactory.Resolvers<ApiCoreContext> {
         return {
             AdminUsersMutation: {
                 updateCurrentUser: async (_, args: any, context) => {
@@ -141,7 +151,7 @@ class AdminUserSchemaImpl implements GraphQLSchema.Interface {
     }
 }
 
-export const AdminUsersSchema = GraphQLSchema.createImplementation({
+export const AdminUsersSchema = CoreGraphQLSchemaFactory.createImplementation({
     implementation: AdminUserSchemaImpl,
     dependencies: []
 });

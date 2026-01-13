@@ -67,7 +67,7 @@ export const createEntity = (params: ICreateEntityParams): ICreateEntityResult =
 
     const entity = baseCreateEntity<IAuditLogsEntityAttributes>({
         name: "AuditLogs",
-        table,
+        table: table.table,
         attributes: {
             PK: {
                 partitionKey: true

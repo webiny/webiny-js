@@ -63,6 +63,7 @@ export const TypographyAction: TypographyAction = () => {
             editor.dispatchCommand<LexicalCommand<TypographyPayload>>(ADD_TYPOGRAPHY_COMMAND, {
                 value
             });
+            return;
         }
 
         if (value.tag === "ol") {
@@ -72,6 +73,7 @@ export const TypographyAction: TypographyAction = () => {
                     themeStyleId: value.id
                 }
             );
+            return;
         }
 
         if (value.tag === "ul") {
@@ -81,6 +83,7 @@ export const TypographyAction: TypographyAction = () => {
                     themeStyleId: value.id
                 }
             );
+            return;
         }
 
         if (quoteTagNames.includes(value.tag)) {

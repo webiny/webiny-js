@@ -1,118 +1,15 @@
-import type { Table } from "@webiny/db-dynamodb/toolbox.js";
-import { createEntity, standardEntityAttributes } from "@webiny/db-dynamodb";
-import type { IEntryEntity, IEntryEntityAttributes } from "./types.js";
+import { createStandardEntity, type ITable } from "@webiny/db-dynamodb";
+import type { IEntryEntity, IEntryEntityAttirbutesData } from "./types.js";
 
 interface Params {
-    table: Table<string, string, string>;
+    table: ITable;
     entityName: string;
 }
 
 export const createEntryEntity = (params: Params): IEntryEntity => {
     const { table, entityName } = params;
-    return createEntity<IEntryEntityAttributes>({
+    return createStandardEntity<IEntryEntityAttirbutesData>({
         name: entityName,
-        table,
-        attributes: {
-            ...standardEntityAttributes,
-            // PK: {
-            //     type: "string",
-            //     partitionKey: true
-            // },
-            // SK: {
-            //     type: "string",
-            //     sortKey: true
-            // },
-            // GSI1_PK: {
-            //     type: "string"
-            // },
-            // GSI1_SK: {
-            //     type: "string"
-            // },
-            // TYPE: {
-            //     type: "string"
-            // },
-            __type: {
-                type: "string"
-            },
-            tenant: {
-                type: "string"
-            },
-            entryId: {
-                type: "string"
-            },
-            id: {
-                type: "string"
-            },
-            modelId: {
-                type: "string"
-            },
-
-            /**
-             * Revision-level meta fields. 👇
-             */
-            revisionCreatedOn: { type: "string" },
-            revisionModifiedOn: { type: "string" },
-            revisionSavedOn: { type: "string" },
-            revisionDeletedOn: { type: "string" },
-            revisionRestoredOn: { type: "string" },
-            revisionFirstPublishedOn: { type: "string" },
-            revisionLastPublishedOn: { type: "string" },
-            revisionCreatedBy: { type: "map" },
-            revisionModifiedBy: { type: "map" },
-            revisionSavedBy: { type: "map" },
-            revisionDeletedBy: { type: "map" },
-            revisionRestoredBy: { type: "map" },
-            revisionFirstPublishedBy: { type: "map" },
-            revisionLastPublishedBy: { type: "map" },
-
-            /**
-             * Entry-level meta fields. 👇
-             */
-            createdOn: { type: "string" },
-            modifiedOn: { type: "string" },
-            savedOn: { type: "string" },
-            deletedOn: { type: "string" },
-            restoredOn: { type: "string" },
-            firstPublishedOn: { type: "string" },
-            lastPublishedOn: { type: "string" },
-            createdBy: { type: "map" },
-            modifiedBy: { type: "map" },
-            savedBy: { type: "map" },
-            deletedBy: { type: "map" },
-            restoredBy: { type: "map" },
-            firstPublishedBy: { type: "map" },
-            lastPublishedBy: { type: "map" },
-
-            /**
-             * The rest. 👇
-             */
-            version: {
-                type: "number"
-            },
-            locked: {
-                type: "boolean"
-            },
-            status: {
-                type: "string"
-            },
-            location: {
-                type: "map"
-            },
-            wbyDeleted: {
-                type: "boolean"
-            },
-            binOriginalFolderId: {
-                type: "string"
-            },
-            values: {
-                type: "map"
-            },
-            meta: {
-                type: "map"
-            },
-            state: {
-                type: "map"
-            }
-        }
+        table: table.table
     });
 };

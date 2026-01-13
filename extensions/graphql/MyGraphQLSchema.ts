@@ -1,30 +1,31 @@
-import { GraphQLSchema } from "@webiny/handler-graphql/graphql/abstractions.js";
+import { GraphQLSchemaFactory } from "webiny/api/graphql";
 import { IdentityContext } from "webiny/api/security/features/IdentityContext";
 
-class Schema implements GraphQLSchema.Interface {
+class Schema implements GraphQLSchemaFactory.Interface {
     constructor(private identityContext: IdentityContext.Interface) {}
 
-    getTypeDefs() {
-        return /* GraphQL */ `
-            type Query {
-                hello: String
-            }
-        `;
-    }
-
-    getResolvers() {
-        return {
-            Query: {
-                hello: () => {
-                    const identity = this.identityContext.getIdentity();
-                    return `Hello, ${identity.displayName}!`;
+    execute(): GraphQLSchemaFactory.Return {
+        return [
+            {
+                typeDefs: /* GraphQL */ `
+                    type Query {
+                        hello: String
+                    }
+                `,
+                resolvers: {
+                    Query: {
+                        hello: () => {
+                            const identity = this.identityContext.getIdentity();
+                            return `Hello, ${identity.displayName}!`;
+                        }
+                    }
                 }
             }
-        };
+        ];
     }
 }
 
-export const MyGraphQLSchema = GraphQLSchema.createImplementation({
+export const MyGraphQLSchema = GraphQLSchemaFactory.createImplementation({
     implementation: Schema,
     dependencies: [IdentityContext]
 });

@@ -38,7 +38,9 @@ const plugin: CmsModelFieldTypePlugin = {
         graphql: {
             queryField({ field, model, graphQLTypePrefix }) {
                 const typePrefix = `${graphQLTypePrefix}_${createTypeName(field.fieldId)}`;
-                const fields = (field.settings ? field.settings.fields : []) as CmsModelField[];
+                const fields = (
+                    field.settings ? (field.settings.fields ?? []) : []
+                ) as CmsModelField[];
                 return `{ ${createFieldsList({ model, fields, graphQLTypePrefix: typePrefix })} }`;
             }
         }

@@ -1,10 +1,5 @@
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import {
-    createEntity,
-    createTable,
-    type IStandardEntityAttributes,
-    standardEntityAttributes
-} from "@webiny/db-dynamodb";
+import { createStandardEntity, createTable } from "@webiny/db-dynamodb";
 
 import { WebinyError } from "@webiny/error";
 import type {
@@ -46,15 +41,13 @@ class FolderLevelPermissionsStorageOperations
 
     constructor({ documentClient }: StorageOperationsConfig) {
         this.table = createTable({
+            name: String(process.env.DB_TABLE),
             documentClient
         });
 
-        this.entity = createEntity<IStandardEntityAttributes<FolderLevelPermission>>({
-            table: this.table,
-            name: "ACO.flp",
-            attributes: {
-                ...standardEntityAttributes
-            }
+        this.entity = createStandardEntity<FolderLevelPermission>({
+            table: this.table.table,
+            name: "ACO.flp"
         });
     }
 

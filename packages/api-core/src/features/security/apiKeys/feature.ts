@@ -6,12 +6,14 @@ import { ListApiKeysFeature } from "./ListApiKeys/feature.js";
 import { CreateApiKeyFeature } from "./CreateApiKey/feature.js";
 import { UpdateApiKeyFeature } from "./UpdateApiKey/feature.js";
 import { DeleteApiKeyFeature } from "./DeleteApiKey/feature.js";
+import { ApiKeyProvider } from "~/features/security/apiKeys/shared/ApiKeyProvider.js";
 
 export const ApiKeysFeature = createFeature({
     name: "ApiKeys",
     register(container) {
         // Register repository in singleton scope
         container.register(ApiKeysRepository).inSingletonScope();
+        container.register(ApiKeyProvider).inSingletonScope();
 
         // Register all use cases
         GetApiKeyFeature.register(container);

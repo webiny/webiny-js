@@ -1,13 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { useHandler } from "~tests/testHelpers/useHandler";
-import { CmsModelPlugin } from "~/plugins";
 import { pageModel } from "./mocks/page.model";
 import { pageEntry } from "./mocks/page.entry";
 
 describe("Content Traverser", () => {
     it("should traverse model AST and build flat object with entry values", async () => {
         const { handler, tenant } = useHandler({
-            plugins: [new CmsModelPlugin(pageModel)]
+            plugins: [pageModel]
         });
 
         const context = await handler({

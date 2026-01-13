@@ -1,1 +1,1 @@
-export const CMS_MODEL_SINGLETON_TAG = "singleton";
+export const CMS_MODEL_SINGLETON_TAG = "singleEntry";

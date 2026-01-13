@@ -4,7 +4,8 @@ import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js
 import { RunnableTaskDecorator } from "./decorators/RunnableTaskDecorator.js";
 import { TaskController } from "./features/TaskController/index.js";
 import type { Context } from "~/types.js";
-import { createTaskModel } from "./crud/model.js";
+import { TaskPrivateModel } from "./crud/TaskPrivateModel.js";
+import { TaskLogPrivateModel } from "./crud/TaskLogPrivateModel.js";
 import { createDefinitionCrud } from "./crud/definition.tasks.js";
 import { createServiceCrud } from "~/crud/service.tasks.js";
 import { createTaskCrud } from "./crud/crud.tasks.js";
@@ -14,6 +15,10 @@ import { TestingRunTaskDefinition } from "~/tasks/testingRunTask.js";
 
 const createTasksCrud = () => {
     const plugin = new ContextPlugin<Context>(async context => {
+        // Register the private models
+        context.container.register(TaskPrivateModel);
+        context.container.register(TaskLogPrivateModel);
+
         // Register the RunnableTaskDecorator to wrap all TaskDefinition instances
         context.container.registerDecorator(RunnableTaskDecorator);
 
@@ -30,7 +35,7 @@ const createTasksCrud = () => {
 };
 
 const createTasksContext = (): Plugin[] => {
-    return [...createServicePlugins(), ...createTaskModel(), createTasksCrud()];
+    return [...createServicePlugins(), createTasksCrud()];
 };
 
 export const createBackgroundTaskContext = (): Plugin[] => {
