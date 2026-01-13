@@ -16,6 +16,7 @@ import { NullAssetOutputStrategy } from "./NullAssetOutputStrategy.js";
 import { TransformationAssetProcessor } from "./transformation/TransformationAssetProcessor.js";
 import { PassthroughAssetTransformationStrategy } from "./transformation/PassthroughAssetTransformationStrategy.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
+import { Container } from "@webiny/di";
 
 type Setter<TParams, TReturn> = (params: TParams) => TReturn;
 
@@ -24,7 +25,10 @@ export type AssetRequestResolverDecorator = Setter<
     AssetRequestResolver
 >;
 
-export type AssetResolverDecorator = Setter<{ assetResolver: AssetResolver }, AssetResolver>;
+export type AssetResolverDecorator = Setter<
+    { assetResolver: AssetResolver; container: Container },
+    AssetResolver
+>;
 
 export type AssetProcessorDecorator = Setter<
     { context: ApiCoreContext; assetProcessor: AssetProcessor },
@@ -94,9 +98,9 @@ export class AssetDeliveryConfigBuilder {
     /**
      * @internal
      */
-    getAssetResolver() {
+    getAssetResolver(container: Container) {
         return this.assetResolverDecorators.reduce<AssetResolver>(
-            (value, decorator) => decorator({ assetResolver: value }),
+            (value, decorator) => decorator({ container, assetResolver: value }),
             new NullAssetResolver()
         );
     }

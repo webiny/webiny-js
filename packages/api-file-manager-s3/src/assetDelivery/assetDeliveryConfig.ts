@@ -7,6 +7,7 @@ import { S3AssetResolver } from "~/assetDelivery/s3/S3AssetResolver.js";
 import { S3OutputStrategy } from "~/assetDelivery/s3/S3OutputStrategy.js";
 import { SharpTransform } from "~/assetDelivery/s3/SharpTransform.js";
 import type { AssetDeliveryParams } from "~/assetDelivery/types.js";
+import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 
 export const assetDeliveryConfig = (params: AssetDeliveryParams) => {
     const bucket = process.env.S3_BUCKET as string;
@@ -30,9 +31,9 @@ export const assetDeliveryConfig = (params: AssetDeliveryParams) => {
         createAssetDeliveryConfig(config => {
             const s3 = new S3({ region });
 
-            config.decorateAssetResolver(() => {
+            config.decorateAssetResolver(({ container }) => {
                 // This resolver loads file information from the `.metadata` file.
-                return new S3AssetResolver(s3, bucket);
+                return new S3AssetResolver(container.resolve(GlobalKeyValueStore), s3, bucket);
             });
 
             config.decorateAssetOutputStrategy(() => {
