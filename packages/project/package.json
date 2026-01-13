@@ -24,6 +24,7 @@
     "chokidar": "^4.0.3",
     "ci-info": "^4.3.1",
     "debounce": "^1.2.1",
+    "deepmerge": "^4.3.1",
     "dotenv": "^8.6.0",
     "execa": "^5.1.1",
     "exit-hook": "^4.0.0",
@@ -31,6 +32,7 @@
     "find-up": "^5.0.0",
     "graphql-request": "^7.4.0",
     "humanize-duration": "3.33.2",
+    "load-json-file": "6.2.0",
     "lodash": "^4.17.21",
     "minimatch": "^5.1.6",
     "mqtt": "^5.14.1",
@@ -45,6 +47,7 @@
     "serialize-error": "^12.0.0",
     "ts-morph": "^24.0.0",
     "tsx": "^4.21.0",
+    "write-json-file": "^4.3.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {
