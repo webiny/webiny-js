@@ -283,10 +283,10 @@ export const OpenSearch = createAppModule({
         });
 
         app.addOutputs({
-            elasticsearchDomainArn: domain.output.arn,
-            elasticsearchDomainEndpoint: domain.output.endpoint,
-            elasticsearchDynamodbTableArn: table.output.arn,
-            elasticsearchDynamodbTableName: table.output.name
+            opensearchDomainArn: domain.output.arn,
+            opensearchDomainEndpoint: domain.output.endpoint,
+            opensearchDynamodbTableArn: table.output.arn,
+            opensearchDynamodbTableName: table.output.name
         });
 
         return {

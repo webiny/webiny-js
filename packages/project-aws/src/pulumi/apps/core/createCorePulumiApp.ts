@@ -36,16 +36,16 @@ export function createCorePulumiApp() {
 
             const pulumiResourceNamePrefix = await sdk.getPulumiResourceNamePrefix();
             const vpcExtensionsConfig = getVpcConfigFromExtension(projectConfig);
-            const openSearchExtensionConfig = getOsConfigFromExtension(projectConfig);
+            const opensearchExtensionConfig = getOsConfigFromExtension(projectConfig);
 
             const deploymentId = new random.RandomId("deploymentId", { byteLength: 8 });
 
-            let searchEngineType: "openSearch" | null = null;
-            let searchEngineParams: typeof openSearchExtensionConfig | null = null;
+            let searchEngineType: "opensearch" | null = null;
+            let searchEngineParams: typeof opensearchExtensionConfig | null = null;
 
-            if (openSearchExtensionConfig) {
-                searchEngineParams = openSearchExtensionConfig;
-                searchEngineType = "openSearch";
+            if (opensearchExtensionConfig) {
+                searchEngineParams = opensearchExtensionConfig;
+                searchEngineType = "opensearch";
             }
 
             if (searchEngineParams) {
@@ -99,7 +99,7 @@ export function createCorePulumiApp() {
                         );
                     }
 
-                    if (openSearchExtensionConfig) {
+                    if (opensearchExtensionConfig) {
                         if (!useExistingVpc.openSearchDomainVpcConfig) {
                             throw new Error(
                                 "Cannot specify `useExistingVpc` parameter because the `openSearchDomainVpcConfig` parameter wasn't provided."
@@ -239,9 +239,9 @@ export function createCorePulumiApp() {
             // Setup file core bucket
             const { bucket: fileManagerBucket } = app.addModule(CoreFileManger, { protect });
 
-            let elasticSearch;
-            if (searchEngineType === "openSearch") {
-                elasticSearch = app.addModule(OpenSearch, { protect });
+            let opensearch;
+            if (searchEngineType === "opensearch") {
+                opensearch = app.addModule(OpenSearch, { protect });
             }
 
             app.addModule(WatchCommand, { deploymentId: deploymentId.hex });
@@ -280,7 +280,7 @@ export function createCorePulumiApp() {
                 ...cognito,
                 fileManagerBucket,
                 eventBus,
-                elasticSearch
+                opensearch
             };
         }
     });

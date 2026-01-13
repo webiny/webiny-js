@@ -14,8 +14,8 @@ describe("Deployment", () => {
                 s3Arn: "arn:aws:s3:::s3-bucket",
                 primaryDynamoDbName: "primary-table",
                 primaryDynamoDbArn: "arn:aws:dynamodb:region:account-id:table/primary-table",
-                elasticsearchDynamodbTableName: "elasticsearch-table",
-                elasticsearchDynamodbTableArn:
+                opensearchDynamodbTableName: "elasticsearch-table",
+                opensearchDynamodbTableArn:
                     "arn:aws:dynamodb:region:account-id:table/elasticsearch-table",
                 logDynamodbTableName: "log-table",
                 logDynamodbTableArn: "arn:aws:dynamodb:region:account-id:table/log-table",
@@ -33,8 +33,8 @@ describe("Deployment", () => {
             type: "regular"
         });
         expect(deployment.getTable(DynamoDBTableType.OPENSEARCH)).toEqual({
-            name: deployment.services.elasticsearchDynamodbTableName,
-            arn: deployment.services.elasticsearchDynamodbTableArn,
+            name: deployment.services.opensearchDynamodbTableName,
+            arn: deployment.services.opensearchDynamodbTableArn,
             type: "elasticsearch"
         });
         expect(deployment.getTable(DynamoDBTableType.LOG)).toEqual({
@@ -60,8 +60,8 @@ describe("Deployment", () => {
                 logDynamodbTableArn: "arn:aws:dynamodb:region:account-id:table/log-table",
                 primaryDynamoDbHashKey: "PK",
                 primaryDynamoDbRangeKey: "SK",
-                elasticsearchDynamodbTableName: undefined,
-                elasticsearchDynamodbTableArn: undefined,
+                opensearchDynamodbTableName: undefined,
+                opensearchDynamodbTableArn: undefined,
                 cognitoUserPoolId: "cognito-user-pool-id"
             },
             region: "us-east-1",

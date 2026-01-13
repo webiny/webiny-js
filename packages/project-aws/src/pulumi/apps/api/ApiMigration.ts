@@ -45,8 +45,8 @@ export const ApiMigration = createAppModule({
                         DB_TABLE: core.primaryDynamodbTableName,
                         DB_TABLE_LOG: core.logDynamodbTableName,
                         DB_TABLE_AUDIT_LOGS: core.auditLogsDynamodbTableName,
-                        DB_TABLE_OPENSEARCH: core.elasticsearchDynamodbTableName,
-                        OPENSEARCH_ENDPOINT: core.elasticsearchDomainEndpoint,
+                        DB_TABLE_OPENSEARCH: core.opensearchDynamodbTableName,
+                        OPENSEARCH_ENDPOINT: core.opensearchDomainEndpoint,
                         OPENSEARCH_INDEX_PREFIX: process.env.OPENSEARCH_INDEX_PREFIX,
                         OPENSEARCH_SHARED_INDEXES: process.env.OPENSEARCH_SHARED_INDEXES,
                         S3_BUCKET: core.fileManagerBucketId

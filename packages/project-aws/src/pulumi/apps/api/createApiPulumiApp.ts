@@ -154,8 +154,8 @@ export const createApiPulumiApp = () => {
                     DB_TABLE: core.primaryDynamodbTableName,
                     DB_TABLE_LOG: core.logDynamodbTableName,
                     DB_TABLE_AUDIT_LOGS: core.auditLogsDynamodbTableName,
-                    DB_TABLE_OPENSEARCH: core.elasticsearchDynamodbTableName,
-                    OPENSEARCH_ENDPOINT: core.elasticsearchDomainEndpoint,
+                    DB_TABLE_OPENSEARCH: core.opensearchDynamodbTableName,
+                    OPENSEARCH_ENDPOINT: core.opensearchDomainEndpoint,
 
                     // Not required. Useful for testing purposes / ephemeral environments.
                     // https://www.webiny.com/docs/key-topics/ci-cd/testing/slow-ephemeral-environments
@@ -257,10 +257,10 @@ export const createApiPulumiApp = () => {
                 schedulerLambdaInvokeRole: scheduler.invokeRole.output.arn
             });
 
-            // Only add `dynamoDbElasticsearchTable` output if using search engine (ES/OS).
+            // Only add `dynamoDbOpensearchTable` output if using search engine (ES/OS).
             if (searchEngineParams) {
                 app.addOutputs({
-                    dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName
+                    dynamoDbOpensearchTable: core.opensearchDynamodbTableName
                 });
             }
 

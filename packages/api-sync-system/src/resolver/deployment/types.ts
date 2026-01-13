@@ -9,8 +9,8 @@ export interface IDeploymentServices {
     primaryDynamoDbName: string;
     primaryDynamoDbHashKey: string;
     primaryDynamoDbRangeKey: string;
-    elasticsearchDynamodbTableArn?: string;
-    elasticsearchDynamodbTableName?: string;
+    opensearchDynamodbTableArn?: string;
+    opensearchDynamodbTableName?: string;
     logDynamodbTableArn: string;
     logDynamodbTableName: string;
     cognitoUserPoolId: string;
