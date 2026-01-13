@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { Container } from "@webiny/di";
 import { ModelBuilderFeature } from "~/features/modelBuilder/feature.js";
 import { ModelFactory, ModelsProvider } from "~/features/modelBuilder/index.js";
-import type { CmsModelGroup } from "~/types/index.js";
 
 describe("Private Models", () => {
     let container: Container;
@@ -119,11 +118,6 @@ describe("Public Models", () => {
         ModelBuilderFeature.register(container);
     });
 
-    const testGroup: CmsModelGroup = {
-        id: "test-group-id",
-        name: "Test Group"
-    };
-
     it("should append fields when .fields() is called multiple times on public models", async () => {
         class TestPublicModelImpl implements ModelFactory.Interface {
             execute(builder: ModelFactory.Builder) {
@@ -132,7 +126,7 @@ describe("Public Models", () => {
                     .public()
                     .modelId("publicTestModel")
                     .name("Public Test Model")
-                    .group(testGroup)
+                    .group("test")
                     .fields(fields => ({
                         title: fields.text().label("Title").required("Title is required."),
                         description: fields.longText().label("Description")
@@ -183,7 +177,7 @@ describe("Public Models", () => {
                     .public()
                     .modelId("conditionalPublicModel")
                     .name("Conditional Public Model")
-                    .group(testGroup)
+                    .group("test")
                     .fields(fields => ({
                         title: fields.text().label("Title").required("Title is required.")
                     }));

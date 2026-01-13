@@ -56,6 +56,7 @@ const plugin = createCmsGraphQLSchemaPlugin({
         type CmsImportValidateResponseDataGroupResultItem {
             id: String
             name: String
+            slug: String
         }
 
         type CmsImportValidateResponseDataGroupResult {
