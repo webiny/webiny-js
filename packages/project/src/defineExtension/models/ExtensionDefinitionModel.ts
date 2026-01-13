@@ -1,6 +1,13 @@
-import { type ExtensionTags, type ParamsSchemaDefinition, type ParamsSchemaInfer, type ParamsSchemaFunction } from "~/defineExtension/types.js";
+import {
+    type ExtensionTags,
+    type ParamsSchemaDefinition,
+    type ParamsSchemaInfer,
+    type ParamsSchemaFunction
+} from "~/defineExtension/types.js";
 
-export interface ExtensionDefinitionModelParams<TParamsSchema extends ParamsSchemaDefinition | undefined> {
+export interface ExtensionDefinitionModelParams<
+    TParamsSchema extends ParamsSchemaDefinition | undefined
+> {
     type: string;
     tags?: ExtensionTags;
     description: string;
@@ -8,12 +15,16 @@ export interface ExtensionDefinitionModelParams<TParamsSchema extends ParamsSche
     paramsSchema?: ParamsSchemaFunction<TParamsSchema>;
 
     build?(
-        params: TParamsSchema extends ParamsSchemaDefinition ? ParamsSchemaInfer<TParamsSchema> : any,
+        params: TParamsSchema extends ParamsSchemaDefinition
+            ? ParamsSchemaInfer<TParamsSchema>
+            : any,
         ctx: any
     ): Promise<void> | void;
 
     validate?(
-        params: TParamsSchema extends ParamsSchemaDefinition ? ParamsSchemaInfer<TParamsSchema> : any
+        params: TParamsSchema extends ParamsSchemaDefinition
+            ? ParamsSchemaInfer<TParamsSchema>
+            : any
     ): Promise<void> | void;
 }
 
@@ -25,12 +36,16 @@ export class ExtensionDefinitionModel<TParamsSchema extends ParamsSchemaDefiniti
     paramsSchema?: ParamsSchemaFunction<TParamsSchema>;
 
     build?(
-        params: TParamsSchema extends ParamsSchemaDefinition ? ParamsSchemaInfer<TParamsSchema> : any,
+        params: TParamsSchema extends ParamsSchemaDefinition
+            ? ParamsSchemaInfer<TParamsSchema>
+            : any,
         ctx: any
     ): Promise<void> | void;
 
     validate?(
-        params: TParamsSchema extends ParamsSchemaDefinition ? ParamsSchemaInfer<TParamsSchema> : any
+        params: TParamsSchema extends ParamsSchemaDefinition
+            ? ParamsSchemaInfer<TParamsSchema>
+            : any
     ): Promise<void> | void;
 
     constructor(params: ExtensionDefinitionModelParams<TParamsSchema>) {

@@ -1,6 +1,10 @@
 import React, { useMemo } from "react";
 import { Property, useIdGenerator } from "@webiny/react-properties";
-import { type DefineExtensionParams, type ParamsSchemaDefinition, type ParamsSchemaInfer } from "./types.js";
+import {
+    type DefineExtensionParams,
+    type ParamsSchemaDefinition,
+    type ParamsSchemaInfer
+} from "./types.js";
 
 const KeyValues = (props: Record<string, any>) => {
     const getId = useIdGenerator("");
@@ -9,17 +13,17 @@ const KeyValues = (props: Record<string, any>) => {
     });
 };
 
-type ExtensionReactComponentProps<TParamsSchema extends ParamsSchemaDefinition | undefined> = 
+type ExtensionReactComponentProps<TParamsSchema extends ParamsSchemaDefinition | undefined> =
     (TParamsSchema extends ParamsSchemaDefinition ? ParamsSchemaInfer<TParamsSchema> : {}) & {
-    remove?: boolean;
-    before?: string;
-    after?: string;
-    name?: string;
-};
+        remove?: boolean;
+        before?: string;
+        after?: string;
+        name?: string;
+    };
 
-export function createExtensionReactComponent<TParamsSchema extends ParamsSchemaDefinition | undefined>(
-    extensionParams: DefineExtensionParams<TParamsSchema>
-) {
+export function createExtensionReactComponent<
+    TParamsSchema extends ParamsSchemaDefinition | undefined
+>(extensionParams: DefineExtensionParams<TParamsSchema>) {
     const ExtensionReactComponent: React.FC<
         ExtensionReactComponentProps<TParamsSchema>
     > = props => {

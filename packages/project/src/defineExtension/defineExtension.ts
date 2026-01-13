@@ -1,13 +1,15 @@
-import { type DefineExtensionParams, type ParamsSchemaDefinition } from "~/defineExtension/types.js";
+import {
+    type DefineExtensionParams,
+    type ParamsSchemaDefinition
+} from "~/defineExtension/types.js";
 import { createExtensionDefinition } from "./createExtensionDefinition.js";
 import { createExtensionReactComponent } from "./createExtensionReactComponent.js";
 
-export type ExtensionComponent<TParamsSchema extends ParamsSchemaDefinition | undefined> = ReturnType<
-    typeof createExtensionReactComponent<TParamsSchema>
-> & {
-    def: ReturnType<typeof createExtensionDefinition<TParamsSchema>>;
-    getDefinition: () => ReturnType<typeof createExtensionDefinition<TParamsSchema>>;
-};
+export type ExtensionComponent<TParamsSchema extends ParamsSchemaDefinition | undefined> =
+    ReturnType<typeof createExtensionReactComponent<TParamsSchema>> & {
+        def: ReturnType<typeof createExtensionDefinition<TParamsSchema>>;
+        getDefinition: () => ReturnType<typeof createExtensionDefinition<TParamsSchema>>;
+    };
 
 export function defineExtension<TParamsSchema extends ParamsSchemaDefinition | undefined>(
     extensionParams: DefineExtensionParams<TParamsSchema>

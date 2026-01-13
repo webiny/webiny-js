@@ -17,8 +17,9 @@ export type ParamsSchemaInfer<T extends ParamsSchemaDefinition | undefined> =
 export type ParamsSchemaContext = ExtensionInstanceModelContext & { z: typeof z };
 
 // Type for the new unified pattern: ({ z, project, ... }) => ({...}) or z.object({...})
-export type ParamsSchemaFunction<TParamsSchema extends ParamsSchemaDefinition | undefined> = 
-    (ctx: ParamsSchemaContext) => TParamsSchema | z.ZodObject<any>;
+export type ParamsSchemaFunction<TParamsSchema extends ParamsSchemaDefinition | undefined> = (
+    ctx: ParamsSchemaContext
+) => TParamsSchema | z.ZodObject<any>;
 
 export interface DefineExtensionParams<TParamsSchema extends ParamsSchemaDefinition | undefined> {
     type: string;
@@ -27,8 +28,14 @@ export interface DefineExtensionParams<TParamsSchema extends ParamsSchemaDefinit
     multiple?: boolean;
     paramsSchema?: ParamsSchemaFunction<TParamsSchema>;
     build?: (
-        params: TParamsSchema extends ParamsSchemaDefinition ? ParamsSchemaInfer<TParamsSchema> : any,
+        params: TParamsSchema extends ParamsSchemaDefinition
+            ? ParamsSchemaInfer<TParamsSchema>
+            : any,
         ctx: ExtensionInstanceModelContext
     ) => Promise<void> | void;
-    validate?: (params: TParamsSchema extends ParamsSchemaDefinition ? ParamsSchemaInfer<TParamsSchema> : any) => Promise<void> | void;
+    validate?: (
+        params: TParamsSchema extends ParamsSchemaDefinition
+            ? ParamsSchemaInfer<TParamsSchema>
+            : any
+    ) => Promise<void> | void;
 }

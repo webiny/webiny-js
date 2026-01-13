@@ -13,7 +13,9 @@ export interface ExtensionInstanceModelContext {
 export class ExtensionInstanceModel<TParamsSchema extends ParamsSchemaDefinition | undefined> {
     constructor(
         public definition: ExtensionDefinitionModel<TParamsSchema>,
-        public params: TParamsSchema extends ParamsSchemaDefinition ? ParamsSchemaInfer<TParamsSchema> : any,
+        public params: TParamsSchema extends ParamsSchemaDefinition
+            ? ParamsSchemaInfer<TParamsSchema>
+            : any,
         public context: ExtensionInstanceModelContext
     ) {}
 
@@ -33,10 +35,10 @@ export class ExtensionInstanceModel<TParamsSchema extends ParamsSchemaDefinition
         // Call paramsSchema with context that includes z
         const contextWithZ = { ...this.context, z };
         const result = this.definition.paramsSchema(contextWithZ);
-        
+
         // Check if the result is already a Zod object or a plain object
         let paramsSchema: z.ZodObject<any>;
-        if (result && typeof result === 'object' && 'safeParse' in result) {
+        if (result && typeof result === "object" && "safeParse" in result) {
             // Result is already a ZodObject (e.g., z.object({...}))
             paramsSchema = result as z.ZodObject<any>;
         } else {
