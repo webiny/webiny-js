@@ -12,7 +12,7 @@ import {
 import { downloadFolderFromS3, NoObjectsFoundError } from "./downloadFolderFromS3.js";
 import { mergePackageJson } from "./mergePackageJson.js";
 import { updateWebinyConfig } from "./updateWebinyConfig.js";
-import type { ExtensionJsonc, InstallExtensionParams, InstallExtensionResult } from "./types.js";
+import type { ExtensionJsonc } from "./types.js";
 
 const EXTENSIONS_ROOT_FOLDER = "extensions";
 const S3_BUCKET_NAME = "webiny-examples";
@@ -53,7 +53,7 @@ class DefaultInstallExtensionService implements InstallExtensionService.Interfac
         private getProject: GetProjectService.Interface
     ) {}
 
-    async execute(params: InstallExtensionParams): Promise<InstallExtensionResult> {
+    async execute(params: InstallExtensionService.Params): Promise<InstallExtensionService.Result> {
         const { source, onProgress, onSuccess, onError } = params;
 
         try {

@@ -1,17 +1,14 @@
 import { createAbstraction } from "~/abstractions/createAbstraction.js";
-import {
-    InstallExtensionParams,
-    InstallExtensionResult
-} from "~/services/InstallExtensionService/types.js";
+import { InstallExtensionService } from "../services/index.js";
 
 interface IInstallExtension {
-    execute(params: InstallExtensionParams): Promise<InstallExtensionResult>;
+    execute(params: InstallExtensionService.Params): Promise<InstallExtensionService.Result>;
 }
 
 export const InstallExtension = createAbstraction<IInstallExtension>("InstallExtension");
 
 export namespace InstallExtension {
     export type Interface = IInstallExtension;
-    export type Params = InstallExtensionParams;
-    export type Result = InstallExtensionResult;
+    export type Params = InstallExtensionService.Params;
+    export type Result = InstallExtensionService.Result;
 }
