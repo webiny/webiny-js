@@ -167,7 +167,7 @@ const getDataToImport = (state: State): DataToImportResult => {
         ) {
             continue;
         }
-        const validatedGroup = state.groups?.find(group => group.id === validatedModel.group);
+        const validatedGroup = state.groups?.find(group => group.slug === validatedModel.group);
         if (!validatedGroup?.action || validatedGroup.error) {
             continue;
         }
@@ -189,7 +189,7 @@ const getDataToImport = (state: State): DataToImportResult => {
             continue;
         }
 
-        const group = state.data?.groups?.find(group => group.id === validatedModel.group);
+        const group = state.data?.groups?.find(group => group.slug === validatedModel.group);
         if (!group) {
             continue;
         }
