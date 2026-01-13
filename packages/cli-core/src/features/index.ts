@@ -3,6 +3,7 @@ export * from "./BuildCommand/index.js";
 export * from "./ConfigCommand.js";
 export * from "./DeployCommand/index.js";
 export * from "./DestroyCommand/index.js";
+export * from "./ExtensionCommand/index.js";
 export * from "./InfoCommand/index.js";
 export * from "./OpenCommand.js";
 export * from "./DisableTelemetryCommand.js";
