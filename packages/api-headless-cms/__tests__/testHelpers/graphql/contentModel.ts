@@ -7,11 +7,7 @@ const DATA_FIELD = /* GraphQL*/ `
         pluralApiName
         name
         description
-        group {
-            id
-            name
-            slug
-        }
+        group
         icon
         layout
         titleFieldId
@@ -25,6 +21,7 @@ const DATA_FIELD = /* GraphQL*/ `
             storageId
             fieldId
             type
+            tags
             multipleValues
             predefinedValues {
                 enabled

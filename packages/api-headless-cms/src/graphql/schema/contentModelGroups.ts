@@ -64,7 +64,7 @@ export const createGroupsSchema = ({ context }: Params): ICmsGraphQLSchemaPlugin
                         if (model.isPrivate === true) {
                             return false;
                         }
-                        return model.group.id === group.id;
+                        return model.group === group.slug;
                     });
                 },
                 totalContentModels: async (group, _, context) => {
@@ -75,7 +75,7 @@ export const createGroupsSchema = ({ context }: Params): ICmsGraphQLSchemaPlugin
                         if (model.isPrivate === true) {
                             return false;
                         }
-                        return model.group === group.id;
+                        return model.group === group.slug;
                     }).length;
                 },
                 plugin: async (group, _, context: CmsContext): Promise<boolean> => {

@@ -1,5 +1,6 @@
 import type { CmsGroup } from "~/types";
 import type { CmsModel } from "../../types";
+import { createModelField } from "~/utils/createModelField.js";
 
 const floats = [2, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 20];
 
@@ -8,15 +9,12 @@ export const createNumbersModel = (group: CmsGroup): CmsModel => {
         modelId: "numberModel",
         singularApiName: "NumberModel",
         pluralApiName: "NumberModels",
-        group: {
-            id: group.id,
-            name: group.name
-        },
+        group: group.slug,
         name: "Numbers",
         description: "",
         titleFieldId: "title",
         fields: [
-            {
+            createModelField({
                 id: "integer",
                 storageId: "number@integer",
                 fieldId: "integer",
@@ -24,17 +22,15 @@ export const createNumbersModel = (group: CmsGroup): CmsModel => {
                 validation: [],
                 settings: {},
                 label: "Integer"
-            },
+            }),
             ...floats.map(f => {
-                return {
+                return createModelField({
                     id: `float${f}`,
                     storageId: `number@float${f}`,
                     fieldId: `float${f}`,
                     type: "number",
-                    validation: [],
-                    settings: {},
                     label: `Float ${f}`
-                };
+                });
             })
         ],
         layout: []

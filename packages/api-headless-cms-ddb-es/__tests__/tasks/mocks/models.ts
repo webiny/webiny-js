@@ -1,26 +1,13 @@
-import type { CmsGroup } from "@webiny/api-headless-cms";
-import {
-    createCmsGroup,
-    createModelPlugin,
-    createPrivateModelPlugin
-} from "@webiny/api-headless-cms";
+import { createModelPlugin, createPrivateModelPlugin } from "@webiny/api-headless-cms";
 
 export const createMockModels = () => {
-    const group: CmsGroup = {
-        id: "mockGroup",
-        name: "Mock Group",
-        icon: "fas/star",
-        slug: "mock-group",
-        description: "Mock Group Description"
-    };
     return [
-        createCmsGroup(group),
         createModelPlugin({
             noValidate: true,
             modelId: "car",
             singularApiName: "Car",
             pluralApiName: "Cars",
-            group: group,
+            group: "mock-group",
             name: "Car",
             description: "Car model",
             fields: [],
@@ -32,7 +19,7 @@ export const createMockModels = () => {
             modelId: "author",
             singularApiName: "Author",
             pluralApiName: "Authors",
-            group: group,
+            group: "mock-group",
             name: "Author",
             description: "Author model",
             fields: [],
@@ -44,7 +31,7 @@ export const createMockModels = () => {
             modelId: "book",
             singularApiName: "Book",
             pluralApiName: "Books",
-            group: group,
+            group: "mock-group",
             name: "Book",
             description: "Book model",
             fields: [],
@@ -56,7 +43,7 @@ export const createMockModels = () => {
             modelId: "category",
             singularApiName: "Category",
             pluralApiName: "Categories",
-            group: group,
+            group: "mock-group",
             name: "Category",
             description: "Category model",
             fields: [],

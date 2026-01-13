@@ -8,19 +8,13 @@ import { ModelCreateFromErrorEvent } from "./events.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/TenantContext";
 import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
-import { CmsContext } from "~/features/shared/abstractions.js";
-import {
-    ModelNotAuthorizedError,
-    ModelPersistenceError,
-    ModelValidationError
-} from "~/domain/contentModel/errors.js";
+import { ModelNotAuthorizedError, ModelValidationError } from "~/domain/contentModel/errors.js";
 import { createZodError } from "@webiny/utils";
 import { removeUndefinedValues } from "@webiny/utils";
 import { createModelCreateFromValidation } from "~/domain/contentModel/schemas.js";
 import type { CmsModel } from "~/types/index.js";
 import type { CmsModelCreateFromInput } from "~/types/index.js";
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
-import { GetGroupUseCase } from "~/features/contentModelGroup/GetGroup/index.js";
 
 /**
  * CreateModelFromUseCase - Clone/copy a model from existing model.
@@ -40,13 +34,11 @@ import { GetGroupUseCase } from "~/features/contentModelGroup/GetGroup/index.js"
 class CreateModelFromUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private getModelUseCase: GetModelUseCase.Interface,
-        private getGroupUseCase: GetGroupUseCase.Interface,
         private eventPublisher: EventPublisher.Interface,
         private repository: CreateModelFromRepository.Interface,
         private accessControl: AccessControl.Interface,
         private tenantContext: TenantContext.Interface,
-        private identityContext: IdentityContext.Interface,
-        private cmsContext: CmsContext.Interface
+        private identityContext: IdentityContext.Interface
     ) {}
 
     async execute(
@@ -80,32 +72,15 @@ class CreateModelFromUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const data = removeUndefinedValues(validationResult.data);
 
-        // Resolve group
-        const groupResult = await this.getGroupUseCase.execute(data.group);
-
-        if (groupResult.isFail()) {
-            const error = groupResult.error;
-            if (error.code === "Cms/ModelGroup/PersistenceError") {
-                return Result.fail(new ModelPersistenceError(error));
-            }
-
-            return Result.fail(error);
-        }
-
-        const group = groupResult.value;
-
         // Create new model from original (preserve fields and layout)
         const identity = this.identityContext.getIdentity();
         const tenant = this.tenantContext.getTenant();
 
         const model: CmsModel = {
             ...original,
+            group: input.group || original.group,
             singularApiName: data.singularApiName,
             pluralApiName: data.pluralApiName,
-            group: {
-                id: group.id,
-                name: group.name
-            },
             icon: data.icon,
             name: data.name,
             modelId: data.modelId || "", // Will be set by repository
@@ -157,12 +132,10 @@ export const CreateModelFromUseCase = UseCaseAbstraction.createImplementation({
     implementation: CreateModelFromUseCaseImpl,
     dependencies: [
         GetModelUseCase,
-        GetGroupUseCase,
         EventPublisher,
         CreateModelFromRepository,
         AccessControl,
         TenantContext,
-        IdentityContext,
-        CmsContext
+        IdentityContext
     ]
 });

@@ -5,11 +5,7 @@ const DATA_FIELD = /* GraphQL*/ `
         pluralApiName
         name
         description
-        group {
-            id
-            name
-            slug
-        }
+        group
         icon
         layout
         titleFieldId

@@ -37,6 +37,7 @@ const GROUPS_FIELD = /* GraphQL */ `
     groups {
         group {
             id
+            slug
             name
         }
         action

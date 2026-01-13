@@ -2,7 +2,6 @@ import upperFirst from "lodash/upperFirst.js";
 import camelCase from "lodash/camelCase.js";
 import pluralize from "pluralize";
 import { createModelPlugin } from "~/plugins/CmsModelPlugin.js";
-import type { CmsModelGroup } from "~/types/index.js";
 import { BaseModelBuilder } from "./BaseModelBuilder.js";
 
 const createApiName = (name: string) => {
@@ -17,7 +16,7 @@ export class PublicModelBuilder extends BaseModelBuilder {
     private publicConfig: {
         singularApiName?: string;
         pluralApiName?: string;
-        group?: CmsModelGroup;
+        group?: string;
         icon?: string;
         description?: string;
         titleFieldId?: string;
@@ -36,8 +35,8 @@ export class PublicModelBuilder extends BaseModelBuilder {
         return this;
     }
 
-    group(group: CmsModelGroup): this {
-        this.publicConfig.group = group;
+    group(slug: string): this {
+        this.publicConfig.group = slug;
         return this;
     }
 

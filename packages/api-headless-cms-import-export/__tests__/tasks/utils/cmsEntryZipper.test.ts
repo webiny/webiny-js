@@ -208,7 +208,7 @@ describe("cms entry zipper", () => {
             ],
             assets: [],
             model: expect.objectContaining({
-                group: model.group.id,
+                group: model.group,
                 fields: model.fields,
                 modelId: model.modelId
             })

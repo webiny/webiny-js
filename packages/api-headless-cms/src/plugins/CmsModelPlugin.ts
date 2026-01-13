@@ -117,10 +117,7 @@ export class CmsModelPlugin extends Plugin {
             : createPluralApiName(input.name);
 
         const modelPlugin: CmsModelPluginModel = {
-            group: {
-                id: "",
-                name: ""
-            },
+            group: input.group ?? "ungrouped",
             description: "",
             fields: [],
             isPlugin: true,
@@ -347,10 +344,7 @@ export const createPrivateModelPlugin = (
             authorization: false,
             noValidate: true,
             isPrivate: true,
-            group: {
-                id: "private",
-                name: "Private Models"
-            },
+            group: "private",
             ...input
         },
         {

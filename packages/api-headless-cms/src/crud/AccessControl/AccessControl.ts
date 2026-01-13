@@ -277,7 +277,7 @@ export class AccessControl {
                         continue;
                     }
 
-                    const group = await this.getGroup(model.group.id);
+                    const group = await this.getGroup(model.group);
                     if (!group) {
                         continue;
                     }
@@ -313,7 +313,7 @@ export class AccessControl {
                         continue;
                     }
 
-                    if (!groupsPermissions.groups.includes(model.group.id)) {
+                    if (!groupsPermissions.groups.includes(model.group)) {
                         continue;
                     }
                 }
@@ -468,6 +468,7 @@ export class AccessControl {
             return [{ rwd: "rwd", pw: "pu", canAccessNonOwned: true, canAccessOnlyOwned: false }];
         }
 
+        // We need a map of groups slugs to ids, to perform checks on models
         const { model } = params;
         const groupsPermissionsList = await this.getGroupsPermissions();
         const acl: EntriesAccessControlList = [];
@@ -494,7 +495,7 @@ export class AccessControl {
             }
 
             if (groupPermissions.own) {
-                const group = await this.getGroup(model.group.id);
+                const group = await this.getGroup(model.group);
                 if (!group) {
                     continue;
                 }
@@ -526,7 +527,7 @@ export class AccessControl {
                     continue;
                 }
 
-                if (!groups.includes(model.group.id)) {
+                if (!groups.includes(model.group)) {
                     continue;
                 }
             }
@@ -632,7 +633,7 @@ export class AccessControl {
         return false;
     }
 
-    async listAllGroups(): Promise<CmsGroup[]> {
+    private async listAllGroups(): Promise<CmsGroup[]> {
         if (this.allGroups === null) {
             this.allGroups = this.listAllGroupsCallback();
         }
@@ -640,8 +641,8 @@ export class AccessControl {
         return this.allGroups;
     }
 
-    async getGroup(id: string): Promise<CmsGroup | undefined> {
+    private async getGroup(slug: string): Promise<CmsGroup | undefined> {
         const groups = await this.listAllGroups();
-        return groups.find(group => group.id === id);
+        return groups.find(group => group.slug === slug);
     }
 }

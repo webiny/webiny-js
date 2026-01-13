@@ -101,7 +101,7 @@ const NewContentModelDialog = ({ open, onClose }: NewContentModelDialogProps) =>
     const contentModelGroups = useMemo(() => {
         return groups.map((item): CmsGroupOption => {
             return {
-                value: item.id,
+                value: item.slug,
                 label: item.name
             };
         });

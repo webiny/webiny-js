@@ -4,7 +4,6 @@ import type { Resolvers } from "@webiny/handler-graphql/types.js";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin.js";
 import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import { createCmsGraphQLSchemaPlugin } from "~/plugins/index.js";
-import { toSlug } from "~/utils/toSlug.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 
 export interface CreateModelsSchemaParams {
@@ -57,18 +56,6 @@ export const createModelsSchema = ({
             }
         },
         CmsContentModel: {
-            group: async (model: CmsModel) => {
-                const groups = await context.security.withoutAuthorization(async () => {
-                    return context.cms.listGroups();
-                });
-
-                const group = groups.find(group => group.id === model.group.id);
-                return {
-                    ...model.group,
-                    slug: toSlug(model.group.name),
-                    ...(group || {})
-                };
-            },
             tags(model: CmsModel) {
                 // Make sure `tags` always contain a `type` tag, to differentiate between models.
                 const hasType = (model.tags || []).find(tag => tag.startsWith("type:"));
@@ -168,8 +155,9 @@ export const createModelsSchema = ({
                 singularApiName: String!
                 pluralApiName: String!
                 modelId: String
-                group: RefInput!
+                group: String!
                 icon: String
+                singleEntry: Boolean
                 description: String
                 layout: [[ID!]!]
                 fields: [CmsContentModelFieldInput!]
@@ -185,7 +173,7 @@ export const createModelsSchema = ({
                 singularApiName: String!
                 pluralApiName: String!
                 modelId: String
-                group: RefInput!
+                group: String!
                 icon: String
                 description: String
                 locale: String
@@ -195,7 +183,7 @@ export const createModelsSchema = ({
                 name: String
                 singularApiName: String
                 pluralApiName: String
-                group: RefInput
+                group: String
                 icon: String
                 description: String
                 layout: [[ID!]!]!
@@ -273,7 +261,7 @@ export const createModelsSchema = ({
                 pluralApiName: String!
                 modelId: String!
                 description: String
-                group: CmsContentModelGroup!
+                group: String!
                 icon: String
                 createdOn: DateTime
                 savedOn: DateTime
