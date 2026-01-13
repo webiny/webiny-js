@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import { useSecurity } from "~/presentation/security/hooks/useSecurity.js";
+import { useAuthentication } from "~/presentation/security/hooks/useAuthentication.js";
 
 interface HasPermissionProps {
     any?: string[];
@@ -9,10 +9,10 @@ interface HasPermissionProps {
 }
 
 export const HasPermission = ({ children, ...props }: HasPermissionProps) => {
-    const { getPermissions } = useSecurity();
+    const { identity } = useAuthentication();
 
     if (props.name) {
-        const permissionsCollections = getPermissions(props.name);
+        const permissionsCollections = identity.getPermissions(props.name);
         const hasPermission = permissionsCollections.length > 0;
         if (hasPermission) {
             return <Fragment>{children}</Fragment>;
@@ -27,7 +27,7 @@ export const HasPermission = ({ children, ...props }: HasPermissionProps) => {
 
     const anyAllPermissions = props.any || props.all || [];
 
-    const permissionsCollections = anyAllPermissions.map(name => getPermissions(name));
+    const permissionsCollections = anyAllPermissions.map(name => identity.getPermissions(name));
 
     const hasPermission = props.any
         ? permissionsCollections.some(collection => collection.length > 0)

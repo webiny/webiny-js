@@ -1,7 +1,7 @@
 import { createContentModelGroup } from "./contentModelGroup";
 import type { CmsModel } from "~/types";
 import type { CmsGroupPlugin, CmsModelInput, CmsModelPlugin } from "~/plugins";
-import { createCmsGroupPlugin, createCmsModelPlugin } from "~/plugins";
+import { createCmsGroupPlugin, createModelPlugin } from "~/plugins";
 
 const contentModelGroup = createContentModelGroup();
 
@@ -407,6 +407,7 @@ const models: CmsModel[] = [
                 //         message: "Please select a category"
                 //     }
                 // ],
+                validation: [],
                 listValidation: [],
                 settings: {
                     models: [{ modelId: "category" }]
@@ -703,6 +704,8 @@ const models: CmsModel[] = [
                             placeholderText: null,
                             helpText: "",
                             label: "Image",
+                            validation: [],
+                            listValidation: [],
                             type: "file",
                             renderer: {
                                 name: "file"
@@ -716,12 +719,7 @@ const models: CmsModel[] = [
                             storageId: "ref@categoryStorageId",
                             fieldId: "category",
                             type: "ref",
-                            // validation: [
-                            //     {
-                            //         name: "required",
-                            //         message: "Please select a category"
-                            //     }
-                            // ],
+                            validation: [],
                             listValidation: [],
                             settings: {
                                 models: [{ modelId: "category" }]
@@ -798,6 +796,8 @@ const models: CmsModel[] = [
                                         helpText: "",
                                         label: "Image",
                                         type: "file",
+                                        validation: [],
+                                        listValidation: [],
                                         renderer: {
                                             name: "file"
                                         }
@@ -810,12 +810,7 @@ const models: CmsModel[] = [
                                         storageId: "ref@categoryStorageId",
                                         fieldId: "category",
                                         type: "ref",
-                                        // validation: [
-                                        //     {
-                                        //         name: "required",
-                                        //         message: "Please select a category"
-                                        //     }
-                                        // ],
+                                        validation: [],
                                         listValidation: [],
                                         settings: {
                                             models: [{ modelId: "category" }]
@@ -916,6 +911,7 @@ const models: CmsModel[] = [
                             type: "text",
                             storageId: "text@textStorageId",
                             fieldId: "text",
+                            validation: [],
                             listValidation: [],
                             placeholderText: "placeholder text",
                             predefinedValues: {
@@ -1854,6 +1850,8 @@ const models: CmsModel[] = [
                 fieldId: "title",
                 type: "text",
                 storageId: "text@titleStorageId",
+                validation: [],
+                listValidation: [],
                 predefinedValues: {
                     enabled: false,
                     values: []
@@ -1869,6 +1867,8 @@ const models: CmsModel[] = [
                 type: "ref",
                 storageId: "ref@references",
                 multipleValues: true,
+                validation: [],
+                listValidation: [],
                 settings: {
                     models: [
                         {
@@ -1924,7 +1924,7 @@ export const createModelPlugins = (targets: string[]) => {
                 ...(model as Omit<CmsModel, "isPrivate">),
                 noValidate: true
             };
-            return createCmsModelPlugin(newModel);
+            return createModelPlugin(newModel);
         })
     ];
 };
@@ -1934,7 +1934,7 @@ export const createPluginFromCmsModel = (
 ): (CmsModelPlugin | CmsGroupPlugin)[] => {
     return [
         createCmsGroupPlugin(contentModelGroup),
-        createCmsModelPlugin({
+        createModelPlugin({
             ...model,
             group: {
                 id: contentModelGroup.id,

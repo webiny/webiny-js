@@ -15,9 +15,13 @@ export class KeyValueStoreDynamoTable<T extends GenericRecord> {
     private readonly entity;
 
     constructor(documentClient: DynamoDBDocument) {
+        const table = createTable({
+            name: process.env.DB_TABLE as string,
+            documentClient
+        });
         this.entity = createGlobalEntity<T>({
             name: "KeyValueStore",
-            table: createTable({ documentClient }),
+            table: table.table,
             attributes: {
                 ...globalEntityAttributes
             }

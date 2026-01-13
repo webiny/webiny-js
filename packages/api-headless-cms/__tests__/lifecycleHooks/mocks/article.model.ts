@@ -1,7 +1,7 @@
-import { createPrivateModel } from "~/plugins";
+import { createPrivateModelPlugin } from "~/plugins";
 import { createModelField } from "~/utils/createModelField";
 
-export const articleModel = createPrivateModel({
+export const articleModel = createPrivateModelPlugin({
     titleFieldId: "title",
     name: "Article",
     modelId: "article",

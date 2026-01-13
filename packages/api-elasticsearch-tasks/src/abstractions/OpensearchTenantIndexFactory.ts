@@ -8,7 +8,7 @@ export interface IOpensearchIndexConfig {
 }
 
 export interface IOpensearchTenantIndexFactory {
-    getIndexList(tenant: Tenant): Promise<IOpensearchIndexConfig[]>;
+    getIndexList(tenant: Pick<Tenant, "id">): Promise<IOpensearchIndexConfig[]>;
 }
 
 export const OpensearchTenantIndexFactory = createAbstraction<IOpensearchTenantIndexFactory>(

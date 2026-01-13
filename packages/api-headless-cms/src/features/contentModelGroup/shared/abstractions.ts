@@ -21,3 +21,20 @@ export const GroupCache = createAbstraction<ICache<Promise<CmsGroup[]>>>("GroupC
 export namespace GroupCache {
     export type Interface = ICache;
 }
+
+interface IModelGroup {
+    slug: string;
+    name: string;
+    icon: string;
+}
+
+export interface IModelGroupFactory {
+    execute(): Promise<IModelGroup[]> | IModelGroup[];
+}
+
+export const ModelGroupFactory = createAbstraction<IModelGroupFactory>("ModelGroupFactory");
+export namespace ModelGroupFactory {
+    export type Interface = IModelGroupFactory;
+    export type Return = Promise<IModelGroup[]> | IModelGroup[];
+    export type Group = IModelGroup;
+}

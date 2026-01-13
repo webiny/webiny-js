@@ -80,7 +80,7 @@ export interface CmsModelField {
      *
      * @default []
      */
-    validation?: CmsModelFieldValidation[];
+    validation: CmsModelFieldValidation[];
     /**
      * List of validations for the list of values, when a field is set to accept a list of values.
      * These validations will be applied to the entire list, and `validation` (see above) will be applied
@@ -88,7 +88,7 @@ export interface CmsModelField {
      *
      * @default []
      */
-    listValidation?: CmsModelFieldValidation[];
+    listValidation: CmsModelFieldValidation[];
     /**
      * Is this a multiple values field?
      *
@@ -160,11 +160,11 @@ export interface CmsModelFieldInput {
     /**
      * List of validations for the field.
      */
-    validation?: CmsModelFieldValidation[];
+    validation: CmsModelFieldValidation[];
     /**
      * @see CmsModelField.listValidation
      */
-    listValidation?: CmsModelFieldValidation[];
+    listValidation: CmsModelFieldValidation[];
     /**
      * User defined settings.
      */

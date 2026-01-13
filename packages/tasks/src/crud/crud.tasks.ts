@@ -11,7 +11,8 @@ import type {
     ITaskUpdateData
 } from "~/types.js";
 import { TaskDataStatus } from "~/types.js";
-import { WEBINY_TASK_LOG_MODEL_ID, WEBINY_TASK_MODEL_ID } from "./model.js";
+import { WEBINY_TASK_MODEL_ID } from "./TaskPrivateModel.js";
+import { WEBINY_TASK_LOG_MODEL_ID } from "./TaskLogPrivateModel.js";
 import type { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { remapWhere } from "./where.js";

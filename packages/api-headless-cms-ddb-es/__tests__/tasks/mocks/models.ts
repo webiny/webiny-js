@@ -1,5 +1,9 @@
 import type { CmsGroup } from "@webiny/api-headless-cms";
-import { createCmsGroup, createCmsModel, createPrivateModel } from "@webiny/api-headless-cms";
+import {
+    createCmsGroup,
+    createModelPlugin,
+    createPrivateModelPlugin
+} from "@webiny/api-headless-cms";
 
 export const createMockModels = () => {
     const group: CmsGroup = {
@@ -11,7 +15,7 @@ export const createMockModels = () => {
     };
     return [
         createCmsGroup(group),
-        createCmsModel({
+        createModelPlugin({
             noValidate: true,
             modelId: "car",
             singularApiName: "Car",
@@ -23,7 +27,7 @@ export const createMockModels = () => {
             layout: [],
             titleFieldId: "title"
         }),
-        createCmsModel({
+        createModelPlugin({
             noValidate: true,
             modelId: "author",
             singularApiName: "Author",
@@ -35,7 +39,7 @@ export const createMockModels = () => {
             layout: [],
             titleFieldId: "title"
         }),
-        createCmsModel({
+        createModelPlugin({
             noValidate: true,
             modelId: "book",
             singularApiName: "Book",
@@ -47,7 +51,7 @@ export const createMockModels = () => {
             layout: [],
             titleFieldId: "title"
         }),
-        createCmsModel({
+        createModelPlugin({
             noValidate: true,
             modelId: "category",
             singularApiName: "Category",
@@ -59,13 +63,11 @@ export const createMockModels = () => {
             layout: [],
             titleFieldId: "title"
         }),
-        createCmsModel(
-            createPrivateModel({
-                modelId: "tag",
-                name: "Tag",
-                fields: [],
-                titleFieldId: "title"
-            })
-        )
+        createPrivateModelPlugin({
+            modelId: "tag",
+            name: "Tag",
+            fields: [],
+            titleFieldId: "title"
+        })
     ];
 };

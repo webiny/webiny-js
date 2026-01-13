@@ -209,7 +209,7 @@ const NewContentModelDialog = ({ open, onClose }: NewContentModelDialogProps) =>
                                         </Bind>
                                     </Grid.Column>
                                     <Grid.Column span={12}>
-                                        <Bind name={"singleton"} defaultValue={false}>
+                                        <Bind name={"singleEntry"} defaultValue={false}>
                                             <Switch
                                                 description={t`Create a model that can hold only one entry. Cannot be changed later.`}
                                                 label={t`Single entry model`}

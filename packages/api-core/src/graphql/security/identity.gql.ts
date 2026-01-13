@@ -6,11 +6,12 @@ import { AfterLoginEvent } from "~/features/security/login/index.js";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 import { GetTenantByIdUseCase } from "~/features/tenancy/GetTenantById/index.js";
 import { GetUserUseCase } from "~/features/users/GetUser/index.js";
-import { ListRolesUseCase } from "~/features/security/roles/ListRoles/index.js";
-import { ListTeamsUseCase } from "~/features/security/teams/ListTeams/index.js";
 import { ProfileMapper } from "~/graphql/security/ProfileMapper.js";
 import type { SecurityContext } from "~/types/security.js";
 import type { AdminUser } from "~/types/users.js";
+import { AdminUsersRepository } from "~/features/users/shared/abstractions.js";
+import { TeamsRepository } from "~/features/security/teams/shared/abstractions.js";
+import { RolesRepository } from "~/features/security/roles/shared/abstractions.js";
 
 const getDefaultTenant = async (context: SecurityContext) => {
     const identity = context.security.getIdentity();
@@ -80,7 +81,7 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
                 const identity = context.security.getIdentity();
                 if (identity.isAnonymous()) {
                     return new ErrorResponse({
-                        code: "NOT_AUTHENTICATED",
+                        code: "Security/Identity/NotAuthenticated",
                         message: "Unauthenticated!"
                     });
                 }
@@ -93,15 +94,15 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
                 }
 
                 // Roles and teams are stored in the user record.
-                const getUser = context.container.resolve(GetUserUseCase);
-                const listRoles = context.container.resolve(ListRolesUseCase);
-                const listTeams = context.container.resolve(ListTeamsUseCase);
+                const usersRepo = context.container.resolve(AdminUsersRepository);
+                const rolesRepo = context.container.resolve(RolesRepository);
+                const teamsRepo = context.container.resolve(TeamsRepository);
 
-                const adminUserResult = await getUser.execute({ id: identity.id });
+                const adminUserResult = await usersRepo.get({ id: identity.id });
 
                 if (adminUserResult.isFail()) {
                     return new ErrorResponse({
-                        code: "NOT_AUTHENTICATED",
+                        code: "Security/Identity/NotAuthorized",
                         message: "Missing user profile!"
                     });
                 }
@@ -109,8 +110,8 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
                 const user = adminUserResult.value;
 
                 const [roles, teams] = await Promise.all([
-                    getRoles(user, listRoles),
-                    getTeams(user, listTeams)
+                    getRoles(user, rolesRepo),
+                    getTeams(user, teamsRepo)
                 ]);
 
                 return new Response({
@@ -173,10 +174,10 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
     }
 });
 
-const getRoles = async (user: AdminUser, listRoles: ListRolesUseCase.Interface) => {
+const getRoles = async (user: AdminUser, rolesRepo: RolesRepository.Interface) => {
     const roleIds = user.roles ?? [];
     if (roleIds.length > 0) {
-        const result = await listRoles.execute({
+        const result = await rolesRepo.list({
             where: { id_in: roleIds }
         });
 
@@ -192,10 +193,10 @@ const getRoles = async (user: AdminUser, listRoles: ListRolesUseCase.Interface) 
     return [];
 };
 
-const getTeams = async (user: AdminUser, listTeams: ListTeamsUseCase.Interface) => {
+const getTeams = async (user: AdminUser, teamsRepo: TeamsRepository.Interface) => {
     const teamIds = user.teams ?? [];
     if (teamIds.length > 0) {
-        const result = await listTeams.execute({
+        const result = await teamsRepo.list({
             where: { id_in: teamIds }
         });
         if (result.isOk()) {

@@ -34,12 +34,14 @@ export const globalEntityAttributes: AttributeDefinitions = {
         type: "string"
     },
     TYPE: {
-        type: "string"
+        type: "string",
+        required: true
     },
     data: {
         type: "map"
-        // TODO make required after all storage ops are updated to store in data
-        //required: true
+    },
+    expiresAt: {
+        type: "number"
     }
 };
 
@@ -91,12 +93,14 @@ export const standardEntityAttributes: AttributeDefinitions = {
         type: "string"
     },
     TYPE: {
-        type: "string"
+        type: "string",
+        required: true
     },
     data: {
         type: "map"
-        // TODO make required after all storage ops are updated to store in data
-        //required: true
+    },
+    expiresAt: {
+        type: "number"
     }
 };
 

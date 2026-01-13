@@ -57,6 +57,12 @@
   },
   "webiny": {
     "exports": {
+      "./features/security/apiKeys/shared/abstractions.ts": {
+        "exportPath": "./api/security",
+        "namedExports": [
+          "ApiKeyFactory"
+        ]
+      },
       "./features/eventPublisher/index.ts": "./api/features/eventPublisher",
       "./features/logger/index.ts": "./api/features/Logger",
       "./features/security/IdentityContext/index.ts": "./api/security/features/IdentityContext",

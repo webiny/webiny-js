@@ -96,7 +96,8 @@ import {
     deployAppRefreshStackOutputCache,
     deployAppWithHooks,
     deployAppWithWatchedLambdaReplacement,
-    watchWithHooks
+    watchWithHooks,
+    getPulumiServiceWithDownloadInfo
 } from "./decorators/index.js";
 
 import {
@@ -324,6 +325,7 @@ export const createProjectSdkContainer = async (
     container.registerDecorator(deployAppRefreshStackOutputCache);
     container.registerDecorator(deployAppWithHooks);
     container.registerDecorator(watchWithHooks);
+    container.registerDecorator(getPulumiServiceWithDownloadInfo);
 
     // Register custom implementations first (they replace existing implementations)
     const projectImplementations = [

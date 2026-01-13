@@ -31,6 +31,7 @@ import { entryFromStorageTransform, entryToStorageTransform } from "~/utils/entr
 import { getSearchableFields } from "~/crud/contentEntry/searchableFields.js";
 import { ContentModelGroupFeature } from "~/features/contentModelGroup/ContentModelGroupFeature.js";
 import { ContentModelFeature } from "~/features/contentModel/ContentModelFeature.js";
+import { ModelBuilderFeature } from "~/features/modelBuilder/index.js";
 
 const getParameters = async (context: CmsContext): Promise<CmsParametersPluginResponse> => {
     const plugins = context.plugins.byType<CmsParametersPlugin>(CmsParametersPlugin.type);
@@ -166,6 +167,7 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
         ContentEntriesFeature.register(context.container);
         ContentModelFeature.register(context.container);
         ContentModelGroupFeature.register(context.container);
+        ModelBuilderFeature.register(context.container);
 
         if (!storageOperations.init) {
             return;

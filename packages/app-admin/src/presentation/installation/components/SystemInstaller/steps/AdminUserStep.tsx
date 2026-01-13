@@ -48,7 +48,7 @@ const AdminUserInputs = () => {
                     beforeChange={(value: string, cb) => cb(value.toLowerCase())}
                     validators={validation.create("required,email")}
                 >
-                    <Input label={"Your email"} />
+                    <Input label={"Your email"} autoComplete={"new-password"} />
                 </Bind>
             </Grid.Column>
             <Grid.Column span={12}>
@@ -56,7 +56,11 @@ const AdminUserInputs = () => {
                     name={"AdminUser.password"}
                     validators={[passwordValidator, validation.create("required")]}
                 >
-                    <Input label={"Choose password"} type={"password"} autoComplete={"off"} />
+                    <Input
+                        label={"Choose password"}
+                        type={"password"}
+                        autoComplete={"new-password"}
+                    />
                 </Bind>
             </Grid.Column>
 

@@ -32,7 +32,6 @@ import {
     pickEntryMetaFields
 } from "@webiny/api-headless-cms/constants.js";
 import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldType.js";
-import { cleanupItems } from "@webiny/db-dynamodb";
 
 interface ConvertStorageEntryParams {
     storageEntry: CmsStorageEntry;
@@ -153,14 +152,18 @@ export const createEntriesStorageOperations = (
         const entityBatch = entity.createEntityWriter({
             put: [
                 {
-                    ...storageEntry,
                     ...storageEntryRevisionKeys,
-                    locked
+                    data: {
+                        ...storageEntry,
+                        locked
+                    }
                 },
                 {
-                    ...storageEntry,
                     ...storageEntryLatestKeys,
-                    locked
+                    data: {
+                        ...storageEntry,
+                        locked
+                    }
                 }
             ]
         });
@@ -171,9 +174,11 @@ export const createEntriesStorageOperations = (
         if (isPublished) {
             const storageEntryPublishedKeys = createEntryPublishedKeys(storageEntry);
             entityBatch.put({
-                ...storageEntry,
                 ...storageEntryPublishedKeys,
-                locked
+                data: {
+                    ...storageEntry,
+                    locked
+                }
             });
         }
 
@@ -219,12 +224,16 @@ export const createEntriesStorageOperations = (
         const entityBatch = entity.createEntityWriter({
             put: [
                 {
-                    ...storageEntry,
-                    ...createEntryRevisionKeys(storageEntry)
+                    ...createEntryRevisionKeys(storageEntry),
+                    data: {
+                        ...storageEntry
+                    }
                 },
                 {
-                    ...storageEntry,
-                    ...createEntryLatestKeys(storageEntry)
+                    ...createEntryLatestKeys(storageEntry),
+                    data: {
+                        ...storageEntry
+                    }
                 }
             ]
         });
@@ -232,8 +241,10 @@ export const createEntriesStorageOperations = (
         const isPublished = entry.status === "published";
         if (isPublished) {
             entityBatch.put({
-                ...storageEntry,
-                ...createEntryPublishedKeys(storageEntry)
+                ...createEntryPublishedKeys(storageEntry),
+                data: {
+                    ...storageEntry
+                }
             });
 
             // Unpublish previously published revision (if any).
@@ -246,9 +257,11 @@ export const createEntriesStorageOperations = (
 
             if (publishedRevisionStorageEntry) {
                 entityBatch.put({
-                    ...publishedRevisionStorageEntry,
                     ...createEntryRevisionKeys(publishedRevisionStorageEntry),
-                    status: CONTENT_ENTRY_STATUS.UNPUBLISHED
+                    data: {
+                        ...publishedRevisionStorageEntry,
+                        status: CONTENT_ENTRY_STATUS.UNPUBLISHED
+                    }
                 });
             }
         }
@@ -295,18 +308,22 @@ export const createEntriesStorageOperations = (
         const entityBatch = entity.createEntityWriter({
             put: [
                 {
-                    ...storageEntry,
-                    locked,
-                    ...createEntryRevisionKeys(storageEntry)
+                    ...createEntryRevisionKeys(storageEntry),
+                    data: {
+                        ...storageEntry,
+                        locked
+                    }
                 }
             ]
         });
 
         if (isPublished) {
             entityBatch.put({
-                ...storageEntry,
-                locked,
-                ...createEntryPublishedKeys(storageEntry)
+                ...createEntryPublishedKeys(storageEntry),
+                data: {
+                    ...storageEntry,
+                    locked
+                }
             });
         }
 
@@ -319,9 +336,11 @@ export const createEntriesStorageOperations = (
             const updatingLatestRevision = latestStorageEntry.id === entry.id;
             if (updatingLatestRevision) {
                 entityBatch.put({
-                    ...storageEntry,
-                    locked,
-                    ...createEntryLatestKeys(storageEntry)
+                    ...createEntryLatestKeys(storageEntry),
+                    data: {
+                        ...storageEntry,
+                        locked
+                    }
                 });
             } else {
                 /**
@@ -339,15 +358,19 @@ export const createEntriesStorageOperations = (
                  * - one for the latest record
                  */
                 entityBatch.put({
-                    ...latestStorageEntry,
-                    ...updatedEntryLevelMetaFields,
-                    ...createEntryRevisionKeys(latestStorageEntry)
+                    ...createEntryRevisionKeys(latestStorageEntry),
+                    data: {
+                        ...latestStorageEntry,
+                        ...updatedEntryLevelMetaFields
+                    }
                 });
 
                 entityBatch.put({
-                    ...latestStorageEntry,
-                    ...updatedEntryLevelMetaFields,
-                    ...createEntryLatestKeys(latestStorageEntry)
+                    ...createEntryLatestKeys(latestStorageEntry),
+                    data: {
+                        ...latestStorageEntry,
+                        ...updatedEntryLevelMetaFields
+                    }
                 });
             }
         }
@@ -398,9 +421,12 @@ export const createEntriesStorageOperations = (
             put: records.map(item => {
                 return {
                     ...item,
-                    location: {
-                        ...item.location,
-                        folderId
+                    data: {
+                        ...item.data,
+                        location: {
+                            ...item.data.location,
+                            folderId
+                        }
                     }
                 };
             })
@@ -475,10 +501,13 @@ export const createEntriesStorageOperations = (
             put: records.map(record => {
                 return {
                     ...record,
-                    ...updatedDeletedMetaFields,
-                    wbyDeleted: storageEntry.wbyDeleted,
-                    location: storageEntry.location,
-                    binOriginalFolderId: storageEntry.binOriginalFolderId
+                    data: {
+                        ...record.data,
+                        ...updatedDeletedMetaFields,
+                        wbyDeleted: storageEntry.wbyDeleted,
+                        location: storageEntry.location,
+                        binOriginalFolderId: storageEntry.binOriginalFolderId
+                    }
                 };
             })
         });
@@ -608,10 +637,13 @@ export const createEntriesStorageOperations = (
             put: records.map(record => {
                 return {
                     ...record,
-                    ...updatedRestoredMetaFields,
-                    wbyDeleted: storageEntry.wbyDeleted,
-                    location: storageEntry.location,
-                    binOriginalFolderId: storageEntry.binOriginalFolderId
+                    data: {
+                        ...record.data,
+                        ...updatedRestoredMetaFields,
+                        wbyDeleted: storageEntry.wbyDeleted,
+                        location: storageEntry.location,
+                        binOriginalFolderId: storageEntry.binOriginalFolderId
+                    }
                 };
             })
         });
@@ -680,19 +712,23 @@ export const createEntriesStorageOperations = (
                 model
             });
             entityBatch.put({
-                ...latestStorageEntry,
-                ...createEntryLatestKeys(latestStorageEntry)
+                ...createEntryLatestKeys(latestStorageEntry),
+                data: {
+                    ...latestStorageEntry
+                }
             });
 
             // Do an update on the latest revision. We need to update the latest revision's
             // entry-level meta fields to match the previous revision's entry-level meta fields.
             entityBatch.put({
-                ...latestStorageEntry,
-                ...createEntryRevisionKeys(latestStorageEntry)
+                ...createEntryRevisionKeys(latestStorageEntry),
+                data: {
+                    ...latestStorageEntry
+                }
             });
         }
         try {
-            entityBatch.execute();
+            await entityBatch.execute();
 
             dataLoaders.clearAll({
                 model
@@ -897,7 +933,7 @@ export const createEntriesStorageOperations = (
             id: entryId
         });
 
-        const unfilteredRevisions = await entity.queryAllClean({
+        const unfilteredRevisions = await entity.queryAll({
             partitionKey,
             options: {
                 beginsWith: `REV#`,
@@ -905,7 +941,7 @@ export const createEntriesStorageOperations = (
             }
         });
         const filteredRevisions = unfilteredRevisions.filter(item => {
-            return item.version < version;
+            return item.data.version < version;
         });
         const storageEntry = filteredRevisions[0];
         if (!storageEntry) {
@@ -914,7 +950,7 @@ export const createEntriesStorageOperations = (
 
         try {
             return convertFromStorageEntry({
-                storageEntry,
+                storageEntry: storageEntry.data,
                 model
             });
         } catch (ex) {
@@ -997,7 +1033,7 @@ export const createEntriesStorageOperations = (
         const records = await Promise.all(
             storageEntries.map(async storageEntry => {
                 const entry = convertFromStorageEntry({
-                    storageEntry,
+                    storageEntry: storageEntry.data,
                     model
                 });
 
@@ -1053,7 +1089,7 @@ export const createEntriesStorageOperations = (
             hasMoreItems,
             totalCount,
             cursor,
-            items: cleanupItems(entity.entity, slicedItems)
+            items: slicedItems
         };
     };
 
@@ -1094,12 +1130,16 @@ export const createEntriesStorageOperations = (
         const entityBatch = entity.createEntityWriter({
             put: [
                 {
-                    ...storageEntry,
-                    ...createEntryRevisionKeys(storageEntry)
+                    ...createEntryRevisionKeys(storageEntry),
+                    data: {
+                        ...storageEntry
+                    }
                 },
                 {
-                    ...storageEntry,
-                    ...createEntryPublishedKeys(storageEntry)
+                    ...createEntryPublishedKeys(storageEntry),
+                    data: {
+                        ...storageEntry
+                    }
                 }
             ]
         });
@@ -1112,8 +1152,10 @@ export const createEntriesStorageOperations = (
         if (publishingLatestRevision) {
             // 2.1 If we're publishing the latest revision, we first need to update the L record.
             entityBatch.put({
-                ...storageEntry,
-                ...createEntryLatestKeys(storageEntry)
+                ...createEntryLatestKeys(storageEntry),
+                data: {
+                    ...storageEntry
+                }
             });
 
             // 2.2 Additionally, if we have a previously published entry, we need to mark it as unpublished.
@@ -1124,9 +1166,11 @@ export const createEntriesStorageOperations = (
                 });
 
                 entityBatch.put({
-                    ...publishedStorageEntry,
-                    status: CONTENT_ENTRY_STATUS.UNPUBLISHED,
-                    ...createEntryRevisionKeys(publishedStorageEntry)
+                    ...createEntryRevisionKeys(publishedStorageEntry),
+                    data: {
+                        ...publishedStorageEntry,
+                        status: CONTENT_ENTRY_STATUS.UNPUBLISHED
+                    }
                 });
             }
         } else {
@@ -1157,14 +1201,18 @@ export const createEntriesStorageOperations = (
             };
 
             entityBatch.put({
-                ...latestStorageEntryFields,
-                ...createEntryLatestKeys(latestStorageEntryFields)
+                ...createEntryLatestKeys(latestStorageEntryFields),
+                data: {
+                    ...latestStorageEntryFields
+                }
             });
 
             // 2.3.2 Update REV# record.
             entityBatch.put({
-                ...latestStorageEntryFields,
-                ...createEntryRevisionKeys(latestStorageEntryFields)
+                ...createEntryRevisionKeys(latestStorageEntryFields),
+                data: {
+                    ...latestStorageEntryFields
+                }
             });
 
             // 2.3.3 Finally, if we got a published entry, but it wasn't the latest one, we need to take
@@ -1178,9 +1226,11 @@ export const createEntriesStorageOperations = (
                 });
 
                 entityBatch.put({
-                    ...publishedStorageEntry,
-                    status: CONTENT_ENTRY_STATUS.UNPUBLISHED,
-                    ...createEntryRevisionKeys(publishedStorageEntry)
+                    ...createEntryRevisionKeys(publishedStorageEntry),
+                    data: {
+                        ...publishedStorageEntry,
+                        status: CONTENT_ENTRY_STATUS.UNPUBLISHED
+                    }
                 });
             }
         }
@@ -1232,8 +1282,10 @@ export const createEntriesStorageOperations = (
             ],
             put: [
                 {
-                    ...storageEntry,
-                    ...createEntryRevisionKeys(storageEntry)
+                    ...createEntryRevisionKeys(storageEntry),
+                    data: {
+                        ...storageEntry
+                    }
                 }
             ]
         });
@@ -1247,8 +1299,10 @@ export const createEntriesStorageOperations = (
             const unpublishingLatestRevision = entry.id === initialLatestStorageEntry.id;
             if (unpublishingLatestRevision) {
                 entityBatch.put({
-                    ...storageEntry,
-                    ...createEntryLatestKeys(storageEntry)
+                    ...createEntryLatestKeys(storageEntry),
+                    data: {
+                        ...storageEntry
+                    }
                 });
             } else {
                 const latestStorageEntry = convertToStorageEntry({
@@ -1265,16 +1319,20 @@ export const createEntriesStorageOperations = (
 
                 // 1. Update actual revision record.
                 entityBatch.put({
-                    ...latestStorageEntry,
-                    ...updatedEntryLevelMetaFields,
-                    ...createEntryRevisionKeys(latestStorageEntry)
+                    ...createEntryRevisionKeys(latestStorageEntry),
+                    data: {
+                        ...latestStorageEntry,
+                        ...updatedEntryLevelMetaFields
+                    }
                 });
 
                 // 2. Update latest record.
                 entityBatch.put({
-                    ...latestStorageEntry,
-                    ...updatedEntryLevelMetaFields,
-                    ...createEntryLatestKeys(latestStorageEntry)
+                    ...createEntryLatestKeys(latestStorageEntry),
+                    data: {
+                        ...latestStorageEntry,
+                        ...updatedEntryLevelMetaFields
+                    }
                 });
             }
         }

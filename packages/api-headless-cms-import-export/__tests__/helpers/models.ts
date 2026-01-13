@@ -1,5 +1,9 @@
 import type { CmsGroup, CmsModelInput } from "@webiny/api-headless-cms";
-import { createCmsGroupPlugin, createCmsModelPlugin } from "@webiny/api-headless-cms";
+import {
+    createCmsGroupPlugin,
+    createModelPlugin,
+    createModelField
+} from "@webiny/api-headless-cms";
 
 export const group: CmsGroup = {
     id: "5e7c96c46adcbe0007268295",
@@ -22,7 +26,7 @@ export const categoryModel: CmsModelInput = {
     },
     layout: [["titleFieldIdAbcdef"], ["slugFieldIdAbc"], ["parentCategory"], ["tags"]],
     fields: [
-        {
+        createModelField({
             id: "titleFieldIdAbcdef",
             multipleValues: false,
             helpText: "",
@@ -52,8 +56,8 @@ export const categoryModel: CmsModelInput = {
             renderer: {
                 name: "renderer"
             }
-        },
-        {
+        }),
+        createModelField({
             id: "slugFieldIdAbc",
             multipleValues: false,
             helpText: "",
@@ -76,8 +80,8 @@ export const categoryModel: CmsModelInput = {
             renderer: {
                 name: "renderer"
             }
-        },
-        {
+        }),
+        createModelField({
             id: "parentCategory",
             multipleValues: false,
             helpText: "",
@@ -87,20 +91,19 @@ export const categoryModel: CmsModelInput = {
             settings: {
                 models: [
                     {
-                        modelId: "category",
-                        name: "Category"
+                        modelId: "category"
                     }
                 ]
             }
-        },
-        {
+        }),
+        createModelField({
             id: "tags",
             multipleValues: true,
             helpText: "",
             label: "Tags",
             type: "text",
             fieldId: "tags"
-        }
+        })
     ]
 };
 export const models: CmsModelInput[] = [categoryModel];
@@ -109,7 +112,7 @@ export const createCmsPlugins = () => {
     return [
         createCmsGroupPlugin(group),
         ...models.map(model => {
-            return createCmsModelPlugin(model);
+            return createModelPlugin(model);
         })
     ];
 };

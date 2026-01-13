@@ -8,7 +8,7 @@ export interface Config {
 export default ({ identityType }: Config) => {
     return new ContextPlugin<ApiCoreContext>(context => {
         context.security.addAuthenticator(async token => {
-            if (typeof token !== "string" || !token.startsWith("a")) {
+            if (typeof token !== "string" || !token.startsWith("wat_")) {
                 return null;
             }
 

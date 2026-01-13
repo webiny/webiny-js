@@ -28,12 +28,12 @@ import { ListFolderLevelPermissionsTargetsFeature } from "~/features/folder/List
 import { Tenant } from "@webiny/api-core/types/tenancy";
 import { getLocale } from "@webiny/api-core/legacy/i18n/getLocale.js";
 import { CmsFlpFeature } from "~/features/cms/index.js";
-import { createFolderModel, FOLDER_MODEL_ID } from "~/domain/folder/folder.model.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { FolderModel } from "~/domain/folder/abstractions.js";
-import { createModelPlugin } from "@webiny/api-headless-cms/plugins/index.js";
+import { FolderModel as FolderModelAbstraction } from "~/domain/folder/abstractions.js";
 import { CreateFlpOnFolderCreatedFeature } from "~/features/flp/CreateFlpOnFolderCreated/index.js";
 import { EnsureFolderIsEmptyFeature } from "~/features/folder/EnsureFolderIsEmpty/feature.js";
+import { FOLDER_MODEL_ID, FolderModel } from "~/domain/folder/folder.model.js";
+import { FilterPrivateModel } from "~/filter/filter.model.js";
 
 interface CreateAcoContextParams {
     useFolderLevelPermissions?: boolean;
@@ -46,14 +46,14 @@ const setupAcoContext = async (
 ): Promise<void> => {
     const { tenancy, security } = context;
 
-    const folderModelDefinition = createFolderModel();
-    context.plugins.register(createModelPlugin(folderModelDefinition));
+    context.container.register(FolderModel);
+    context.container.register(FilterPrivateModel);
 
     const getModel = context.container.resolve(GetModelUseCase);
 
     await context.security.withoutAuthorization(async () => {
         const folderModel = await getModel.execute(FOLDER_MODEL_ID);
-        context.container.registerInstance(FolderModel, folderModel.value);
+        context.container.registerInstance(FolderModelAbstraction, folderModel.value);
     });
 
     const getTenant = (): Tenant => {
@@ -65,10 +65,6 @@ const setupAcoContext = async (
          * TODO: We need to figure out a way to pass "cms" from outside (e.g. apps/api/graphql)
          */
         cms: context.cms,
-        /**
-         * TODO: This is required for "entryFieldFromStorageTransform" which access plugins from context.
-         */
-        getCmsContext: () => context,
         documentClient: setupAcoContextParams.documentClient,
         security
     });

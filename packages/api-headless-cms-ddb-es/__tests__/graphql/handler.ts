@@ -33,6 +33,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
     const testProjectLicense = createTestWcpLicense();
 
     const table = createTable({
+        name: process.env.DB_TABLE as string,
         documentClient
     });
     const entryEntity = createEntryEntity({
