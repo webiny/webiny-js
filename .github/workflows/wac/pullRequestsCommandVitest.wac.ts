@@ -71,7 +71,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
                     "working-directory": DIR_WEBINY_JS,
                     run: runNodeScript(
                         "listVitestTestCommands",
-                        `["${storageOps?.id || ""}", \${{ needs.constants.outputs.changed-packages }}]`,
+                        `["${storageOps?.id || ""}"]`,
                         { outputAs: "vitest-test-commands" }
                     )
                 }
