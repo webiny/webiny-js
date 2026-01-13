@@ -13,6 +13,7 @@ export * from "./GetProject/index.js";
 export * from "./GetProjectConfig/index.js";
 export * from "./GetProjectInfo/index.js";
 export * from "./GetPulumiResourceNamePrefix/index.js";
+export * from "./InstallExtension/index.js";
 export * from "./IsCi/index.js";
 export * from "./IsTelemetryEnabled/index.js";
 export * from "./IsWcpEnabled/index.js";
