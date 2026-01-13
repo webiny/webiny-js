@@ -14,9 +14,9 @@ describe("Deployment", () => {
                 s3Arn: "arn:aws:s3:::s3-bucket",
                 primaryDynamoDbName: "primary-table",
                 primaryDynamoDbArn: "arn:aws:dynamodb:region:account-id:table/primary-table",
-                elasticsearchDynamodbTableName: "elasticsearch-table",
-                elasticsearchDynamodbTableArn:
-                    "arn:aws:dynamodb:region:account-id:table/elasticsearch-table",
+                opensearchDynamodbTableName: "opensearch-table",
+                opensearchDynamodbTableArn:
+                    "arn:aws:dynamodb:region:account-id:table/opensearch-table",
                 logDynamodbTableName: "log-table",
                 logDynamodbTableArn: "arn:aws:dynamodb:region:account-id:table/log-table",
                 primaryDynamoDbHashKey: "PK",
@@ -32,10 +32,10 @@ describe("Deployment", () => {
             arn: deployment.services.primaryDynamoDbArn,
             type: "regular"
         });
-        expect(deployment.getTable(DynamoDBTableType.ELASTICSEARCH)).toEqual({
-            name: deployment.services.elasticsearchDynamodbTableName,
-            arn: deployment.services.elasticsearchDynamodbTableArn,
-            type: "elasticsearch"
+        expect(deployment.getTable(DynamoDBTableType.OPENSEARCH)).toEqual({
+            name: deployment.services.opensearchDynamodbTableName,
+            arn: deployment.services.opensearchDynamodbTableArn,
+            type: "opensearch"
         });
         expect(deployment.getTable(DynamoDBTableType.LOG)).toEqual({
             name: deployment.services.logDynamodbTableName,
@@ -47,7 +47,7 @@ describe("Deployment", () => {
             deployment.getTable("unknown" as any);
         }).toThrow(`Unknown table type "unknown".`);
 
-        const deploymentWithoutElasticsearch = createDeployment({
+        const deploymentWithoutOpensearch = createDeployment({
             name: "test#blue",
             env: "test",
             variant: "blue",
@@ -60,8 +60,8 @@ describe("Deployment", () => {
                 logDynamodbTableArn: "arn:aws:dynamodb:region:account-id:table/log-table",
                 primaryDynamoDbHashKey: "PK",
                 primaryDynamoDbRangeKey: "SK",
-                elasticsearchDynamodbTableName: undefined,
-                elasticsearchDynamodbTableArn: undefined,
+                opensearchDynamodbTableName: undefined,
+                opensearchDynamodbTableArn: undefined,
                 cognitoUserPoolId: "cognito-user-pool-id"
             },
             region: "us-east-1",
@@ -69,7 +69,7 @@ describe("Deployment", () => {
         });
 
         expect(() => {
-            deploymentWithoutElasticsearch.getTable(DynamoDBTableType.ELASTICSEARCH);
-        }).toThrow(`Unknown table type "elasticsearch" - no data.`);
+            deploymentWithoutOpensearch.getTable(DynamoDBTableType.OPENSEARCH);
+        }).toThrow(`Unknown table type "opensearch" - no data.`);
     });
 });

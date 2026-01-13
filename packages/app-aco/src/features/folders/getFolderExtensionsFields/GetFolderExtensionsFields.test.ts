@@ -11,10 +11,7 @@ import type { Folder } from "~/domain/folder/Folder.js";
 
 describe("GetFolderExtensionsFields", () => {
     const model = {
-        group: {
-            id: "private",
-            name: "Private Models"
-        },
+        group: "private",
         description: "",
         fields: [
             {

@@ -69,7 +69,7 @@ const indexCreate = async (params: IndexCreateParams): Promise<void> => {
         }
         throw new WebinyError(
             error.message || `Could not create Elasticsearch index for the ${type}.`,
-            error.code || "CREATE_ELASTICSEARCH_INDEX_ERROR",
+            error.code || "CREATE_OPENSEARCH_INDEX_ERROR",
             {
                 error: {
                     ...error,

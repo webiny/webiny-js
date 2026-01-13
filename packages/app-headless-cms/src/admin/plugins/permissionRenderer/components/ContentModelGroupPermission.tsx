@@ -74,7 +74,7 @@ const ContentModelGroupPermission = ({
                                         <CheckboxGroup
                                             items={modelsGroups.groups.map(item => {
                                                 return {
-                                                    value: item.id,
+                                                    value: item.slug,
                                                     label: item.label,
                                                     disabled
                                                 };

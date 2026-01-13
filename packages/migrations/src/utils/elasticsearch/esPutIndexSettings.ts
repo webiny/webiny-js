@@ -18,7 +18,7 @@ export const esPutIndexSettings = async (params: PutIndexSettingsParams) => {
     } catch (ex) {
         throw new WebinyError(
             ex.message || "Could not put Elasticsearch index settings.",
-            ex.code || "PUT_ELASTICSEARCH_INDEX_SETTINGS_ERROR",
+            ex.code || "PUT_OPENSEARCH_INDEX_SETTINGS_ERROR",
             {
                 error: ex,
                 index,

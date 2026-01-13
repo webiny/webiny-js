@@ -15618,7 +15618,6 @@ __metadata:
     invariant: "npm:^2.2.4"
     lodash: "npm:^4.17.21"
     mime: "npm:^3.0.0"
-    ora: "npm:4.1.1"
     react: "npm:18.2.0"
     regenerator-runtime: "npm:^0.14.1"
     typescript: "npm:5.9.3"

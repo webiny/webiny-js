@@ -23,7 +23,6 @@ import type { WithServiceManifest } from "~/pulumi/utils/withServiceManifest.js"
 import { ApiScheduler } from "~/pulumi/apps/api/ApiScheduler.js";
 import { getProjectSdk } from "@webiny/project";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
-import { getEsConfigFromExtension } from "../extensions/getEsConfigFromExtension.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
 import { License } from "@webiny/wcp";
 import { handleGuardDutyEvents } from "./handleGuardDutyEvents.js";
@@ -42,32 +41,26 @@ export const createApiPulumiApp = () => {
             const pulumiResourceNamePrefix = await sdk.getPulumiResourceNamePrefix();
             const vpcExtensionsConfig = getVpcConfigFromExtension(projectConfig);
             const openSearchExtensionConfig = getOsConfigFromExtension(projectConfig);
-            const elasticSearchExtensionConfig = getEsConfigFromExtension(projectConfig);
 
-            let searchEngineParams:
-                | typeof openSearchExtensionConfig
-                | typeof elasticSearchExtensionConfig
-                | null = null;
+            let searchEngineParams: typeof openSearchExtensionConfig | null = null;
 
             if (openSearchExtensionConfig) {
                 searchEngineParams = openSearchExtensionConfig;
-            } else if (elasticSearchExtensionConfig) {
-                searchEngineParams = elasticSearchExtensionConfig;
             }
 
             if (searchEngineParams) {
                 const params = searchEngineParams;
                 if (typeof params === "object") {
                     if (params.domainName) {
-                        process.env.AWS_ELASTIC_SEARCH_DOMAIN_NAME = params.domainName;
+                        process.env.AWS_OS_DOMAIN_NAME = params.domainName;
                     }
 
                     if (params.indexPrefix) {
-                        process.env.ELASTIC_SEARCH_INDEX_PREFIX = params.indexPrefix;
+                        process.env.OPENSEARCH_INDEX_PREFIX = params.indexPrefix;
                     }
 
                     if (params.sharedIndexes) {
-                        process.env.ELASTICSEARCH_SHARED_INDEXES = "true";
+                        process.env.OPENSEARCH_SHARED_INDEXES = "true";
                     }
                 }
             }
@@ -161,13 +154,13 @@ export const createApiPulumiApp = () => {
                     DB_TABLE: core.primaryDynamodbTableName,
                     DB_TABLE_LOG: core.logDynamodbTableName,
                     DB_TABLE_AUDIT_LOGS: core.auditLogsDynamodbTableName,
-                    DB_TABLE_ELASTICSEARCH: core.elasticsearchDynamodbTableName,
-                    ELASTIC_SEARCH_ENDPOINT: core.elasticsearchDomainEndpoint,
+                    DB_TABLE_OPENSEARCH: core.opensearchDynamodbTableName,
+                    OPENSEARCH_ENDPOINT: core.opensearchDomainEndpoint,
 
                     // Not required. Useful for testing purposes / ephemeral environments.
                     // https://www.webiny.com/docs/key-topics/ci-cd/testing/slow-ephemeral-environments
-                    ELASTIC_SEARCH_INDEX_PREFIX: process.env.ELASTIC_SEARCH_INDEX_PREFIX,
-                    ELASTICSEARCH_SHARED_INDEXES: process.env.ELASTICSEARCH_SHARED_INDEXES,
+                    OPENSEARCH_INDEX_PREFIX: process.env.OPENSEARCH_INDEX_PREFIX,
+                    OPENSEARCH_SHARED_INDEXES: process.env.OPENSEARCH_SHARED_INDEXES,
 
                     S3_BUCKET: core.fileManagerBucketId,
                     EVENT_BUS: core.eventBusArn,
@@ -264,10 +257,10 @@ export const createApiPulumiApp = () => {
                 schedulerLambdaInvokeRole: scheduler.invokeRole.output.arn
             });
 
-            // Only add `dynamoDbElasticsearchTable` output if using search engine (ES/OS).
+            // Only add `dynamoDbOpensearchTable` output if using search engine (ES/OS).
             if (searchEngineParams) {
                 app.addOutputs({
-                    dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName
+                    dynamoDbOpensearchTable: core.opensearchDynamodbTableName
                 });
             }
 

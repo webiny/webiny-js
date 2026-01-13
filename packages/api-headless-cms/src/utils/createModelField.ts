@@ -19,7 +19,7 @@ export const createModelField = (params: CreateModelFieldParams): CmsModelField 
         fieldId: initialFieldId,
         storageId,
         type,
-        tags,
+        tags = [],
         settings = {},
         listValidation = [],
         validation = [],
@@ -39,7 +39,7 @@ export const createModelField = (params: CreateModelFieldParams): CmsModelField 
 
     return {
         id: id ?? fieldId,
-        storageId: storageId ?? `${type}@${fieldId}`,
+        storageId: storageId ?? `${type}@${id ?? fieldId}`,
         fieldId,
         label,
         type,

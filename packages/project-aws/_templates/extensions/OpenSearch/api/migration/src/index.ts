@@ -9,7 +9,7 @@ import { migrations } from "@webiny/migrations/ddb-es";
 const documentClient = getDocumentClient();
 
 const elasticsearchClient = createElasticsearchClient({
-    endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}`
+    endpoint: `https://${process.env.OPENSEARCH_ENDPOINT}`
 });
 
 export const handler = createHandler({
@@ -23,7 +23,7 @@ export const handler = createHandler({
                 documentClient
             }),
             dynamoToEsTable: createTable({
-                name: String(process.env.DB_TABLE_ELASTICSEARCH),
+                name: String(process.env.DB_TABLE_OPENSEARCH),
                 documentClient
             }),
             elasticsearchClient,

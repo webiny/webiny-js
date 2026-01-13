@@ -21,7 +21,7 @@ import { getElasticsearchIndexPrefix } from "@webiny/api-elasticsearch";
 
 const prefix = getElasticsearchIndexPrefix();
 if (!prefix.includes("api-")) {
-    process.env.ELASTIC_SEARCH_INDEX_PREFIX = `${prefix}api-headless-cms-env-`;
+    process.env.OPENSEARCH_INDEX_PREFIX = `${prefix}api-headless-cms-env-`;
 }
 
 setStorageOps("cms", () => {

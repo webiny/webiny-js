@@ -1,9 +1,6 @@
-import { createContentModelGroup } from "./contentModelGroup";
 import type { CmsModel } from "~/types";
 import type { CmsGroupPlugin, CmsModelInput, CmsModelPlugin } from "~/plugins";
-import { createCmsGroupPlugin, createModelPlugin } from "~/plugins";
-
-const contentModelGroup = createContentModelGroup();
+import { createModelPlugin } from "~/plugins";
 
 export interface Fruit {
     id?: string;
@@ -101,10 +98,7 @@ const models: CmsModel[] = [
         modelId: "testModel",
         singularApiName: "TestEntry",
         pluralApiName: "TestEntries",
-        group: {
-            id: contentModelGroup.id,
-            name: contentModelGroup.name
-        },
+        group: "a-sample-content-model-group",
         layout: [[ids.field11], [ids.field12]],
         fields: [
             {
@@ -176,10 +170,7 @@ const models: CmsModel[] = [
         modelId: "category",
         singularApiName: "CategoryApiNameWhichIsABitDifferentThanModelId",
         pluralApiName: "CategoriesApiModel",
-        group: {
-            id: contentModelGroup.id,
-            name: contentModelGroup.name
-        },
+        group: "a-sample-content-model-group",
         layout: [[ids.field11], [ids.field12]],
         fields: [
             {
@@ -250,10 +241,7 @@ const models: CmsModel[] = [
         modelId: "categorySingleton",
         singularApiName: "CategoryApiNameWhichIsABitDifferentThanModelIdSingleton",
         pluralApiName: "CategoriesApiModelSingleton",
-        group: {
-            id: contentModelGroup.id,
-            name: contentModelGroup.name
-        },
+        group: "a-sample-content-model-group",
         layout: [[ids.field11], [ids.field12]],
         fields: [
             {
@@ -350,10 +338,7 @@ const models: CmsModel[] = [
         singularApiName: "ProductApiSingular",
         pluralApiName: "ProductPluralApiName",
         description: "Products being sold in our webshop",
-        group: {
-            id: contentModelGroup.id,
-            name: contentModelGroup.name
-        },
+        group: "a-sample-content-model-group",
         layout: [
             [ids.field201],
             [ids.field202],
@@ -948,10 +933,7 @@ const models: CmsModel[] = [
         modelId: "review",
         singularApiName: "ReviewApiModel",
         pluralApiName: "ReviewsApiModel",
-        group: {
-            id: contentModelGroup.id,
-            name: contentModelGroup.name
-        },
+        group: "a-sample-content-model-group",
         layout: [[ids.field31], [ids.field32], [ids.field33], [ids.field34]],
         fields: [
             {
@@ -1054,10 +1036,7 @@ const models: CmsModel[] = [
         modelId: "author",
         singularApiName: "AuthorApiModel",
         pluralApiName: "AuthorsApiModel",
-        group: {
-            id: contentModelGroup.id,
-            name: contentModelGroup.name
-        },
+        group: "a-sample-content-model-group",
         layout: [[ids.field40]],
         fields: [
             {
@@ -1097,10 +1076,7 @@ const models: CmsModel[] = [
         modelId: "fruit",
         singularApiName: "FruitApiModel",
         pluralApiName: "FruitsApiModel",
-        group: {
-            id: contentModelGroup.id,
-            name: contentModelGroup.name
-        },
+        group: "a-sample-content-model-group",
         layout: [
             [ids.field501],
             [ids.field502],
@@ -1602,10 +1578,7 @@ const models: CmsModel[] = [
         modelId: "bug",
         singularApiName: "BugApiModel",
         pluralApiName: "BugsApiModel",
-        group: {
-            id: contentModelGroup.id,
-            name: contentModelGroup.name
-        },
+        group: "a-sample-content-model-group",
         layout: [[ids.field601], [ids.field602], [ids.field603], [ids.field604]],
         fields: [
             {
@@ -1739,10 +1712,7 @@ const models: CmsModel[] = [
         modelId: "article",
         singularApiName: "ArticleApiModel",
         pluralApiName: "ArticlesApiModel",
-        group: {
-            id: contentModelGroup.id,
-            name: contentModelGroup.name
-        },
+        group: "a-sample-content-model-group",
         layout: [[ids.field701, ids.field702, ids.field703, ids.field704]],
         fields: [
             {
@@ -1839,10 +1809,7 @@ const models: CmsModel[] = [
         modelId: "wrap",
         singularApiName: "Wrap",
         pluralApiName: "Wraps",
-        group: {
-            id: contentModelGroup.id,
-            name: contentModelGroup.name
-        },
+        group: "a-sample-content-model-group",
         fields: [
             {
                 id: ids.field_wrap_1,
@@ -1912,9 +1879,6 @@ export const getCmsModel = (modelId: string) => {
 
 export const createModelPlugins = (targets: string[]) => {
     return [
-        createCmsGroupPlugin({
-            ...contentModelGroup
-        }),
         ...targets.map(modelId => {
             const model = models.find(m => m.modelId === modelId);
             if (!model) {
@@ -1933,13 +1897,9 @@ export const createPluginFromCmsModel = (
     model: Omit<CmsModel, "isPrivate">
 ): (CmsModelPlugin | CmsGroupPlugin)[] => {
     return [
-        createCmsGroupPlugin(contentModelGroup),
         createModelPlugin({
             ...model,
-            group: {
-                id: contentModelGroup.id,
-                name: contentModelGroup.name
-            },
+            group: "a-sample-content-model-group",
             noValidate: true
         })
     ];

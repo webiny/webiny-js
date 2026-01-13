@@ -17,7 +17,7 @@ export const setupContentModel = async (params: SetupContentModelParams) => {
             modelId: model.modelId,
             singularApiName: model.singularApiName,
             pluralApiName: model.pluralApiName,
-            group: group.id
+            group: group.slug
         }
     });
 

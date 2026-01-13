@@ -90,6 +90,7 @@ export interface ImportStructureResponseDataGroup {
     group: {
         id: string;
         name: string;
+        slug: string;
     };
     action: ImportAction;
     error: CmsErrorResponse | null;

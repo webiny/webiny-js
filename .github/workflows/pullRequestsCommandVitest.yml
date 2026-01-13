@@ -141,7 +141,8 @@ jobs:
         run: >-
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
-          '{"storageOps":null}')" >> "$GITHUB_OUTPUT"
+          '["", ${{ needs.constants.outputs.changed-packages }}]')" >>
+          "$GITHUB_OUTPUT"
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -212,7 +213,8 @@ jobs:
         run: >-
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
-          '{"storageOps":"ddb"}')" >> "$GITHUB_OUTPUT"
+          '["ddb", ${{ needs.constants.outputs.changed-packages }}]')" >>
+          "$GITHUB_OUTPUT"
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -283,7 +285,8 @@ jobs:
         run: >-
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
-          '{"storageOps":"ddbOs"}')" >> "$GITHUB_OUTPUT"
+          '["ddb-os,ddb", ${{ needs.constants.outputs.changed-packages }}]')" >>
+          "$GITHUB_OUTPUT"
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -306,9 +309,9 @@ jobs:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       AWS_REGION: eu-central-1
-      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_3_DOMAIN_NAME }}
-      ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_3_ENDPOINT }}
-      ELASTIC_SEARCH_INDEX_PREFIX: ${{ matrix.testCommand.id }}
+      AWS_OPENSEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_3_DOMAIN_NAME }}
+      OPENSEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_3_ENDPOINT }}
+      OPENSEARCH_INDEX_PREFIX: ${{ matrix.testCommand.id }}
     steps:
       - uses: actions/setup-node@v4
         with:

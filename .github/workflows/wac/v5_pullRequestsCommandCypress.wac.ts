@@ -1,19 +1,13 @@
 import { createWorkflow, NormalJob } from "github-actions-wac";
 import {
+    createGlobalBuildCacheSteps,
+    createInstallBuildSteps,
+    createRunBuildCacheSteps,
     createSetupVerdaccioSteps,
     createYarnCacheSteps,
-    createInstallBuildSteps,
-    createGlobalBuildCacheSteps,
-    createRunBuildCacheSteps,
     withCommonParams
 } from "./steps";
-import {
-    NODE_OPTIONS,
-    NODE_VERSION,
-    BUILD_PACKAGES_RUNNER,
-    AWS_REGION,
-    runNodeScript
-} from "./utils";
+import { AWS_REGION, BUILD_PACKAGES_RUNNER, NODE_OPTIONS, NODE_VERSION } from "./utils";
 import { createJob } from "./jobs";
 
 // Will print "next" or "dev". Important for caching (via actions/cache).
@@ -98,16 +92,10 @@ const createCypressJobs = (dbSetup: string) => {
         WEBINY_PULUMI_BACKEND: `\${{ needs.${jobNames.constants}.outputs.pulumi-backend-url }}`
     };
 
-    if (dbSetup === "ddb-es") {
-        env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}";
-        env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.ELASTIC_SEARCH_ENDPOINT }}";
-        env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ github.run_id }}_";
-    } else if (dbSetup === "ddb-os") {
-        // We still use the same environment variables as for "ddb-es" setup, it's
-        // just that the values are read from different secrets.
-        env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}";
-        env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.OPEN_SEARCH_ENDPOINT }}";
-        env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ github.run_id }}_";
+    if (dbSetup === "ddb-os") {
+        env["AWS_OPENSEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}";
+        env["OPENSEARCH_ENDPOINT"] = "${{ secrets.OPEN_SEARCH_ENDPOINT }}";
+        env["OPENSEARCH_INDEX_PREFIX"] = "${{ github.run_id }}_";
     }
 
     const projectSetupJob: NormalJob = createJob({

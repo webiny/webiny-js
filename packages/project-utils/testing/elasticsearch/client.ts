@@ -6,12 +6,12 @@ import {
 import type * as RequestParams from "@elastic/elasticsearch/api/requestParams";
 import type { TransportRequestOptions } from "@elastic/elasticsearch/lib/Transport";
 
-const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || 9200;
+const OPENSEARCH_PORT = process.env.OPENSEARCH_PORT || 9200;
 
-const esEndpoint: string | undefined = process.env.ELASTIC_SEARCH_ENDPOINT;
+const esEndpoint: string | undefined = process.env.OPENSEARCH_ENDPOINT;
 
 const defaultOptions: Partial<ElasticsearchClientOptions> = {
-    node: `http://localhost:${ELASTICSEARCH_PORT}`,
+    node: `http://localhost:${OPENSEARCH_PORT}`,
     auth: {
         username: "",
         password: ""

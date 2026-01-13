@@ -1,4 +1,4 @@
-import { createCmsGroup, createModelPlugin } from "~/plugins";
+import { createCmsGroupPlugin, createModelPlugin } from "~/plugins";
 
 export const exportedGroupsAndModels = {
     groups: [
@@ -21,7 +21,7 @@ export const exportedGroupsAndModels = {
         {
             modelId: "article",
             name: "Article",
-            group: "64d4c105110b570008736515",
+            group: "machines",
             icon: "far/newspaper",
             singularApiName: "Article",
             pluralApiName: "Articles",
@@ -114,7 +114,7 @@ export const exportedGroupsAndModels = {
         {
             modelId: "author",
             name: "Author",
-            group: "64d4c105110b570008736515",
+            group: "blog",
             icon: "fas/person",
             singularApiName: "Author",
             pluralApiName: "Authors",
@@ -207,7 +207,7 @@ export const exportedGroupsAndModels = {
         {
             modelId: "category",
             name: "Category",
-            group: "64d4c105110b570008736515",
+            group: "machines",
             icon: "fas/location-dot",
             singularApiName: "Category",
             pluralApiName: "Categories",
@@ -237,7 +237,7 @@ export const exportedGroupsAndModels = {
         {
             modelId: "machines",
             name: "Machines",
-            group: "64d4c105110b570008736516",
+            group: "machines",
             icon: "fas/location-dot",
             singularApiName: "Machine",
             pluralApiName: "Machine",
@@ -269,7 +269,7 @@ export const exportedGroupsAndModels = {
 
 export const createModels = () => {
     return [
-        createCmsGroup({
+        createCmsGroupPlugin({
             id: "64d4c105110b570008736516",
             name: "Machines",
             slug: "machines",
@@ -279,10 +279,7 @@ export const createModels = () => {
         createModelPlugin({
             modelId: "machines",
             name: "Machines",
-            group: {
-                id: "64d4c105110b570008736516",
-                name: "Machines"
-            },
+            group: "machines",
             icon: "fas/location-dot",
             singularApiName: "Machine",
             pluralApiName: "Machines",

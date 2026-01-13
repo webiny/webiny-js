@@ -34,12 +34,12 @@ export interface IDefaultStackOutput extends IStackOutput {
     vpcPublicSubnetIds: string[] | undefined;
     vpcPrivateSubnetIds: string[] | undefined;
     vpcSecurityGroupIds: string[] | undefined;
-    elasticsearchDomainArn: string | undefined;
-    elasticsearchDomainEndpoint: string | undefined;
-    elasticsearchDynamodbTableHashKey: string;
-    elasticsearchDynamodbTableRangeKey: string;
-    elasticsearchDynamodbTableArn: string | undefined;
-    elasticsearchDynamodbTableName: string | undefined;
+    opensearchDomainArn: string | undefined;
+    opensearchDomainEndpoint: string | undefined;
+    opensearchDynamodbTableHashKey: string;
+    opensearchDynamodbTableRangeKey: string;
+    opensearchDynamodbTableArn: string | undefined;
+    opensearchDynamodbTableName: string | undefined;
     appStorage: string;
     appDomain?: string;
     deliveryDomain?: string;

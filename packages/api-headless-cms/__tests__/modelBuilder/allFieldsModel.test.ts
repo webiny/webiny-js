@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { Container } from "@webiny/di";
 import { ModelBuilderFeature } from "~/features/modelBuilder/feature.js";
 import { ModelFactory, ModelsProvider } from "~/features/modelBuilder/index.js";
-import type { CmsModelGroup } from "~/types/index.js";
 
 describe("All Field Types Model", () => {
     let container: Container;
@@ -271,11 +270,6 @@ describe("All Field Types Model", () => {
     });
 
     it("should support all public-model-specific methods", async () => {
-        const testGroup: CmsModelGroup = {
-            id: "test-group-id",
-            name: "Test Group"
-        };
-
         class FullPublicModelImpl implements ModelFactory.Interface {
             execute(builder: ModelFactory.Builder) {
                 return [
@@ -285,7 +279,7 @@ describe("All Field Types Model", () => {
                         .name("Full Public Model")
                         .singularApiName("FullPublicModel")
                         .pluralApiName("FullPublicModels")
-                        .group(testGroup)
+                        .group("test")
                         .icon("fas/database")
                         .description("A complete public model with all fields")
                         .titleFieldId("title")
@@ -319,7 +313,7 @@ describe("All Field Types Model", () => {
         expect(model!.pluralApiName).toBe("FullPublicModels");
 
         // Verify group
-        expect(model!.group).toEqual(testGroup);
+        expect(model!.group).toEqual("test");
 
         // Verify icon
         expect(model!.icon).toBe("fas/database");
@@ -348,11 +342,6 @@ describe("All Field Types Model", () => {
     });
 
     it("should ensure tags are unique and always include type:model", async () => {
-        const testGroup: CmsModelGroup = {
-            id: "test-group-id",
-            name: "Test Group"
-        };
-
         // Test public model with duplicate tags including "type:model"
         class DuplicateTagsPublicModel implements ModelFactory.Interface {
             execute(builder: ModelFactory.Builder) {
@@ -361,7 +350,7 @@ describe("All Field Types Model", () => {
                         .public()
                         .modelId("duplicateTagsPublic")
                         .name("Duplicate Tags Public")
-                        .group(testGroup)
+                        .group("test")
                         .tags(["type:model", "custom:tag", "type:model", "custom:tag"])
                         .fields(fields => ({
                             title: fields.text().label("Title")
@@ -415,7 +404,7 @@ describe("All Field Types Model", () => {
                         .public()
                         .modelId("noTagsModel")
                         .name("No Tags Model")
-                        .group(testGroup)
+                        .group("test")
                         .fields(fields => ({
                             title: fields.text().label("Title")
                         }))

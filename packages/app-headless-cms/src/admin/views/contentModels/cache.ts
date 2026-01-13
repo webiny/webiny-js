@@ -58,7 +58,7 @@ export const addModelToGroupCache = (cache: DataProxy, model: CmsEditorContentMo
 
     const { listContentModelGroups: groupsList } = response;
 
-    const groupIndex = groupsList.data.findIndex(g => g.id === model.group.id);
+    const groupIndex = groupsList.data.findIndex(g => g.slug === model.group);
     const newGroupModelIndex = groupsList.data[groupIndex].contentModels.length;
 
     cache.writeQuery({
@@ -83,7 +83,7 @@ export const updateModelInGroupCache = (cache: DataProxy, model: CmsModel): void
 
     const { listContentModelGroups: groupsList } = response;
 
-    const groupIndex = groupsList.data.findIndex(g => g.id === model.group.id);
+    const groupIndex = groupsList.data.findIndex(g => g.slug === model.group);
     if (groupIndex < 0) {
         return;
     }
@@ -163,7 +163,7 @@ export const removeModelFromGroupCache = (cache: DataProxy, model: CmsEditorCont
     }
     const { listContentModelGroups: groupsList } = response;
 
-    const groupIndex = groupsList.data.findIndex(g => g.id === model.group.id);
+    const groupIndex = groupsList.data.findIndex(g => g.slug === model.group);
     if (groupIndex < 0) {
         return;
     }

@@ -60,7 +60,9 @@ export const useGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
         return [JSON.parse(response.body || "{}"), response];
     };
 
-    const { elasticsearchClient } = getElasticsearchClient({ name: "testing-ddb-es" });
+    const { elasticsearchClient } = getElasticsearchClient({
+        name: "testing-ddb-es"
+    });
 
     const createQuery = <
         T extends GenericRecord = GenericRecord,

@@ -15,7 +15,7 @@ export interface IListIndicesResponse {
     index: string;
 }
 
-const indexPrefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+const indexPrefix = process.env.OPENSEARCH_INDEX_PREFIX || "";
 const filterIndex = (item?: string) => {
     if (!item) {
         return false;

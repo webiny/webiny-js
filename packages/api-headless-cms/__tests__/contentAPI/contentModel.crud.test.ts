@@ -6,6 +6,7 @@ import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 import { assignModelEvents, pubSubTracker } from "./mocks/lifecycleHooks";
 import { useBugManageHandler } from "../testHelpers/useBugManageHandler";
+import { createModelField } from "~/utils/createModelField.js";
 
 const getTypeFields = (type: any) => {
     return type.fields.filter((f: any) => f.name !== "_empty").map((f: any) => f.name);
@@ -125,7 +126,7 @@ describe("content model test", () => {
                 modelId: "test-content-model",
                 singularApiName: "TestContentModel",
                 pluralApiName: "TestContentModels",
-                group: contentModelGroup.id,
+                group: contentModelGroup.slug,
                 icon: "fa/fas"
             }
         });
@@ -148,11 +149,7 @@ describe("content model test", () => {
                         fields: [],
                         layout: [],
                         plugin: false,
-                        group: {
-                            id: contentModelGroup.id,
-                            name: contentModelGroup.name,
-                            slug: contentModelGroup.slug
-                        },
+                        group: contentModelGroup.slug,
                         icon: "fa/fas"
                     },
                     error: null
@@ -263,7 +260,7 @@ describe("content model test", () => {
                 modelId: "test-content-model",
                 singularApiName: "TestContentModel",
                 pluralApiName: "TestContentModels",
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
 
@@ -302,7 +299,7 @@ describe("content model test", () => {
                 modelId: category.modelId,
                 singularApiName: category.singularApiName,
                 pluralApiName: category.pluralApiName,
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
 
@@ -437,7 +434,7 @@ describe("content model test", () => {
                 modelId: "test-content-model",
                 singularApiName: "TestContentModel",
                 pluralApiName: "TestContentModels",
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
 
@@ -544,7 +541,7 @@ describe("content model test", () => {
             data: {
                 ...modelData,
                 modelId: realModelId,
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
 
@@ -569,6 +566,7 @@ describe("content model test", () => {
             helpText: "help text",
             multipleValues: false,
             placeholderText: "placeholder text",
+            tags: [],
             predefinedValues: {
                 enabled: false,
                 values: []
@@ -597,6 +595,7 @@ describe("content model test", () => {
             },
             settings: {},
             type: "number",
+            tags: [],
             validation: [],
             listValidation: []
         };
@@ -635,11 +634,7 @@ describe("content model test", () => {
                                 storageId: `${numberField.type}@${numberField.id}`
                             }
                         ],
-                        group: {
-                            id: contentModelGroup.id,
-                            name: "Group",
-                            slug: contentModelGroup.slug
-                        },
+                        group: contentModelGroup.slug,
                         modelId: contentModel.modelId,
                         layout: [[textField.id], [numberField.id]],
                         name: "new name",
@@ -661,7 +656,7 @@ describe("content model test", () => {
                 modelId: "test-content-model",
                 singularApiName: "TestContentModel",
                 pluralApiName: "TestContentModels",
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
 
@@ -720,7 +715,7 @@ describe("content model test", () => {
                 modelId: "test-content-model",
                 singularApiName: "TestContentModel",
                 pluralApiName: "TestContentModels",
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
 
@@ -754,7 +749,7 @@ describe("content model test", () => {
                 modelId: "test-content-model",
                 singularApiName: "TestContentModel",
                 pluralApiName: "TestContentModels",
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
         const { modelId } = createResponse.data.createContentModel.data;
@@ -769,7 +764,7 @@ describe("content model test", () => {
                 singularApiName: "ClonedTestModel",
                 pluralApiName: "ClonedTestModels",
                 description: "Cloned model description",
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
 
@@ -780,10 +775,7 @@ describe("content model test", () => {
                         name: "Cloned model",
                         description: "Cloned model description",
                         modelId: "clonedTestModel",
-                        group: {
-                            id: contentModelGroup.id,
-                            name: contentModelGroup.name
-                        },
+                        group: contentModelGroup.slug,
                         fields: [],
                         layout: [],
                         plugin: false
@@ -815,7 +807,7 @@ describe("content model test", () => {
                 modelId: "test-content-model",
                 singularApiName: "TestContentModel",
                 pluralApiName: "TestContentModels",
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
         const { modelId } = createResponse.data.createContentModel.data;
@@ -862,7 +854,7 @@ describe("content model test", () => {
                 modelId: "test-content-model",
                 singularApiName: "TestContentModel",
                 pluralApiName: "TestContentModels",
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
         const { modelId } = createResponse.data.createContentModel.data;
@@ -908,7 +900,7 @@ describe("content model test", () => {
                 modelId: bugModel.modelId,
                 singularApiName: bugModel.singularApiName,
                 pluralApiName: bugModel.pluralApiName,
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
 
@@ -1008,7 +1000,7 @@ describe("content model test", () => {
                     modelId: `test-content-model-${i}`,
                     singularApiName: `TestContentModel${i}`,
                     pluralApiName: `TestContentModels${i}`,
-                    group: contentModelGroup.id
+                    group: contentModelGroup.slug
                 }
             });
             createdContentModels.push(createResponse.data.createContentModel.data);
@@ -1040,7 +1032,7 @@ describe("content model test", () => {
                     modelId: `test-content-model-${i}`,
                     singularApiName: `TestContentModel${i}`,
                     pluralApiName: `TestContentModels${i}`,
-                    group: contentModelGroup.id
+                    group: contentModelGroup.slug
                 }
             });
             createdContentModels.push(createResponse.data.createContentModel.data);
@@ -1048,7 +1040,7 @@ describe("content model test", () => {
         // Get model with group permissions
         const permissions = createPermissions({
             models: [createdContentModels[0].modelId],
-            groups: ["some-group-id"]
+            groups: ["some-group-slug"]
         });
         const { getContentModelQuery: getModel } = useGraphQLHandler({
             ...manageHandlerOpts,
@@ -1079,7 +1071,7 @@ describe("content model test", () => {
                     modelId: `test-content-model-${i}`,
                     singularApiName: `TestContentModel${i}`,
                     pluralApiName: `TestContentModels${i}`,
-                    group: contentModelGroup.id
+                    group: contentModelGroup.slug
                 }
             });
             createdContentModels.push(createResponse.data.createContentModel.data);
@@ -1088,7 +1080,7 @@ describe("content model test", () => {
         // Get model with group permissions
         const permissions = createPermissions({
             models: [createdContentModels[0].modelId],
-            groups: [contentModelGroup.id]
+            groups: [contentModelGroup.slug]
         });
         const { getContentModelQuery: getModelB } = useGraphQLHandler({
             ...manageHandlerOpts,
@@ -1119,7 +1111,7 @@ describe("content model test", () => {
         const [createResponse] = await createContentModelMutation({
             data: {
                 ...model,
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
         expect(createResponse).toMatchObject({
@@ -1201,12 +1193,12 @@ describe("content model test", () => {
     it("should assign description field", async () => {
         const { createContentModelMutation, getContentModelQuery, updateContentModelMutation } =
             useGraphQLHandler(manageHandlerOpts);
-        const field = {
+        const field = createModelField({
             id: "testId",
             fieldId: "testFieldId",
             type: "long-text",
             label: "Test Field"
-        };
+        });
 
         const [createResponseWithInitialLongText] = await createContentModelMutation({
             data: {
@@ -1214,7 +1206,7 @@ describe("content model test", () => {
                 modelId: "test-content-model",
                 singularApiName: `TestContentModel`,
                 pluralApiName: `TestContentModels`,
-                group: contentModelGroup.id,
+                group: contentModelGroup.slug,
                 fields: [field],
                 layout: [["testId"]]
             }
@@ -1255,7 +1247,7 @@ describe("content model test", () => {
                 modelId: "test-content-model-2",
                 singularApiName: `TestContentModel2`,
                 pluralApiName: `TestContentModels2`,
-                group: contentModelGroup.id,
+                group: contentModelGroup.slug,
                 fields: [],
                 layout: []
             }
@@ -1313,7 +1305,7 @@ describe("content model test", () => {
     it("should assign image field", async () => {
         const { createContentModelMutation, getContentModelQuery, updateContentModelMutation } =
             useGraphQLHandler(manageHandlerOpts);
-        const field = {
+        const field = createModelField({
             id: "testId",
             fieldId: "testFieldId",
             type: "file",
@@ -1321,7 +1313,7 @@ describe("content model test", () => {
             settings: {
                 imagesOnly: true
             }
-        };
+        });
 
         const [createResponseWithInitialFile] = await createContentModelMutation({
             data: {
@@ -1329,7 +1321,7 @@ describe("content model test", () => {
                 modelId: "test-content-model",
                 singularApiName: `TestContentModel`,
                 pluralApiName: `TestContentModels`,
-                group: contentModelGroup.id,
+                group: contentModelGroup.slug,
                 fields: [field],
                 layout: [["testId"]]
             }
@@ -1370,7 +1362,7 @@ describe("content model test", () => {
                 modelId: "test-content-model-2",
                 singularApiName: `TestContentModel2`,
                 pluralApiName: `TestContentModels2`,
-                group: contentModelGroup.id,
+                group: contentModelGroup.slug,
                 fields: [],
                 layout: []
             }
@@ -1429,6 +1421,7 @@ describe("content model test", () => {
         await createContentModelGroupMutation({
             data: {
                 id: "a-custom-group-id",
+                slug: "a-custom-group-slug",
                 name: "My Group With ID",
                 description: "A group with ID",
                 icon: "fa/fas"
@@ -1441,7 +1434,7 @@ describe("content model test", () => {
                 modelId: "test-content-model-2",
                 singularApiName: `TestContentModel2`,
                 pluralApiName: `TestContentModels2`,
-                group: "a-custom-group-id",
+                group: "a-custom-group-slug",
                 fields: [],
                 layout: []
             }
@@ -1451,10 +1444,7 @@ describe("content model test", () => {
                 createContentModel: {
                     data: {
                         modelId: "testContentModel2",
-                        group: {
-                            id: "a-custom-group-id",
-                            name: "My Group With ID"
-                        }
+                        group: "a-custom-group-slug"
                     },
                     error: null
                 }
@@ -1465,7 +1455,7 @@ describe("content model test", () => {
     it("should create and update a model with steps in settings", async () => {
         const { createContentModelMutation, updateContentModelMutation } =
             useGraphQLHandler(manageHandlerOpts);
-        const field = {
+        const field = createModelField({
             id: "testId",
             fieldId: "testFieldId",
             type: "file",
@@ -1473,7 +1463,7 @@ describe("content model test", () => {
             settings: {
                 imagesOnly: true
             }
-        };
+        });
 
         const [createModelResponse] = await createContentModelMutation({
             data: {
@@ -1481,7 +1471,7 @@ describe("content model test", () => {
                 modelId: "test-content-model",
                 singularApiName: `TestContentModel`,
                 pluralApiName: `TestContentModels`,
-                group: contentModelGroup.id,
+                group: contentModelGroup.slug,
                 fields: [field],
                 layout: [["testId"]]
             }

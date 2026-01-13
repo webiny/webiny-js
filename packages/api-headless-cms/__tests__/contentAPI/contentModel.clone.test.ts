@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { CmsGroup, CmsModel, CmsModelField } from "~/types";
 import models from "./mocks/contentModels";
-import { toSlug } from "~/utils/toSlug";
 
 const setEmptyTextsAsNull = (fields: CmsModelField[]): CmsModelField[] => {
     return fields.map(field => {
@@ -20,11 +19,7 @@ const setEmptyTextsAsNull = (fields: CmsModelField[]): CmsModelField[] => {
 const createExpectedModel = (original: CmsModel, group?: CmsGroup) => {
     return {
         ...original,
-        group: {
-            id: group ? group.id : original.group.id,
-            name: group ? group.name : original.group.name,
-            slug: group ? group.slug : toSlug(original.group.name)
-        },
+        group: group ? group.slug : original.group,
         fields: setEmptyTextsAsNull(original.fields),
         createdOn: expect.stringMatching(/^20/),
         savedOn: expect.stringMatching(/^20/),
@@ -83,7 +78,7 @@ describe("content model - cloning", () => {
                 modelId: targetModel.modelId,
                 singularApiName: targetModel.singularApiName,
                 pluralApiName: targetModel.pluralApiName,
-                group: defaultGroup.id
+                group: defaultGroup.slug
             }
         });
         const createdModel = createModelResponse.data.createContentModel.data;
@@ -106,7 +101,7 @@ describe("content model - cloning", () => {
                 description: "Cloned model description",
                 singularApiName: "ClonedModel",
                 pluralApiName: "ClonedModels",
-                group: defaultGroup.id
+                group: defaultGroup.slug
             }
         });
 
@@ -162,13 +157,14 @@ describe("content model - cloning", () => {
                 description: "Cloned model description",
                 singularApiName: "ClonedModel",
                 pluralApiName: "ClonedModels",
-                group: cloneGroup.id
+                group: cloneGroup.slug
             }
         });
 
         const expectedModel: CmsModel = createExpectedModel(
             {
                 ...originalModel,
+                group: cloneGroup.slug,
                 singularApiName: "ClonedModel",
                 pluralApiName: "ClonedModels"
             },
@@ -190,7 +186,7 @@ describe("content model - cloning", () => {
             modelId: originalModel.modelId,
             data: {
                 name: originalModel.name,
-                group: defaultGroup.id,
+                group: defaultGroup.slug,
                 singularApiName: originalModel.singularApiName,
                 pluralApiName: originalModel.pluralApiName,
                 description: "Cloned model description"
@@ -219,7 +215,7 @@ describe("content model - cloning", () => {
             data: {
                 name: "Cloned model",
                 modelId: originalModel.modelId,
-                group: defaultGroup.id,
+                group: defaultGroup.slug,
                 singularApiName: "ClonedModel",
                 pluralApiName: "ClonedModels",
                 description: "Cloned model description"
@@ -248,7 +244,7 @@ describe("content model - cloning", () => {
             data: {
                 name: "Cloned model",
                 modelId: "clonedModel",
-                group: defaultGroup.id,
+                group: defaultGroup.slug,
                 singularApiName: originalModel.singularApiName,
                 pluralApiName: "ClonedModels",
                 description: "Cloned model description"
@@ -274,7 +270,7 @@ describe("content model - cloning", () => {
             data: {
                 name: "Cloned model",
                 modelId: "clonedModel",
-                group: defaultGroup.id,
+                group: defaultGroup.slug,
                 singularApiName: originalModel.pluralApiName,
                 pluralApiName: "ClonedModels",
                 description: "Cloned model description"
@@ -300,7 +296,7 @@ describe("content model - cloning", () => {
             data: {
                 name: "Cloned model",
                 modelId: "clonedModel",
-                group: defaultGroup.id,
+                group: defaultGroup.slug,
                 singularApiName: "ClonedModel",
                 pluralApiName: originalModel.pluralApiName,
                 description: "Cloned model description"
@@ -326,7 +322,7 @@ describe("content model - cloning", () => {
             data: {
                 name: "Cloned model",
                 modelId: "clonedModel",
-                group: defaultGroup.id,
+                group: defaultGroup.slug,
                 singularApiName: "ClonedModel",
                 pluralApiName: originalModel.singularApiName,
                 description: "Cloned model description"

@@ -284,6 +284,7 @@ export const ImportContextProvider = ({ children }: ImportContextProviderProps) 
                     return {
                         id: group.group.id,
                         name: group.group.name,
+                        slug: group.group.slug,
                         error: group.error,
                         action: group.action
                     };
@@ -377,6 +378,7 @@ export const ImportContextProvider = ({ children }: ImportContextProviderProps) 
                     return {
                         id: result?.group.id || group.id,
                         name: result?.group.name || group.name,
+                        slug: result?.group.slug || group.slug,
                         error: result?.error || group.error,
                         imported: result ? result.imported : group.imported
                     };

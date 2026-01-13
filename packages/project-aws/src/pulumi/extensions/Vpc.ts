@@ -12,17 +12,6 @@ export const Vpc = defineExtension({
             .describe("Whether to use VPC endpoints for AWS services."),
         useExistingVpc: z
             .object({
-                elasticSearchDomainVpcConfig: z
-                    .object({
-                        securityGroupIds: z
-                            .array(z.string())
-                            .describe("The security group IDs for the Elasticsearch domain."),
-                        subnetIds: z
-                            .array(z.string())
-                            .describe("The subnet IDs for the Elasticsearch domain.")
-                    })
-                    .optional()
-                    .describe("VPC configuration for an existing Elasticsearch domain."),
                 openSearchDomainVpcConfig: z
                     .object({
                         securityGroupIds: z

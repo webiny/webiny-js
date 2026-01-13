@@ -205,8 +205,7 @@ jobs:
           --storage=ddb","storage":"ddb","packageName":"api-headless-cms-aco","id":"718c110b004c59ed7d13cbcc875a6b64"},{"cmd":"packages/api-headless-cms-bulk-actions
           --storage=ddb","storage":"ddb","packageName":"api-headless-cms-bulk-actions","id":"00c0a57737502f28c304015d2d1ba442"},{"cmd":"packages/api-headless-cms-import-export
           --storage=ddb","storage":"ddb","packageName":"api-headless-cms-import-export","id":"e9052e7c40171aeb43ce089fdfbbe3c8"},{"cmd":"packages/api-mailer
-          --storage=ddb","storage":"ddb","packageName":"api-mailer","id":"2cc1dc707a39e72f4e5d9a140677ca39"},{"cmd":"packages/api-security-cognito
-          --storage=ddb","storage":"ddb","packageName":"api-security-cognito","id":"0787967fe56689618106e6c64e784bff"},{"cmd":"packages/tasks
+          --storage=ddb","storage":"ddb","packageName":"api-mailer","id":"2cc1dc707a39e72f4e5d9a140677ca39"},{"cmd":"packages/tasks
           --storage=ddb","storage":"ddb","packageName":"tasks","id":"925ba761b5995e8a8b980c0789034b3c"}]')
           }}
     runs-on: ${{ matrix.os }}
@@ -290,9 +289,9 @@ jobs:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       AWS_REGION: eu-central-1
-      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}
-      ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
-      ELASTIC_SEARCH_INDEX_PREFIX: ${{ matrix.package.id }}
+      AWS_OPENSEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}
+      OPENSEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
+      OPENSEARCH_INDEX_PREFIX: ${{ matrix.package.id }}
     steps:
       - uses: actions/setup-node@v4
         with:

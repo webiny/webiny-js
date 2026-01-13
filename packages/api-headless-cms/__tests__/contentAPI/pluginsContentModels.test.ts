@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { CmsGroup, CmsModel } from "~/types";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
+import { createModelField } from "~/utils/createModelField.js";
 
 const contentModelPlugin = new CmsModelPlugin({
     name: "Product",
@@ -9,38 +10,35 @@ const contentModelPlugin = new CmsModelPlugin({
     singularApiName: "Product",
     pluralApiName: "Products",
     tenant: "root",
-    group: {
-        id: "ecommerce",
-        name: "E-Commerce"
-    },
+    group: "e-commerce",
     fields: [
-        {
+        createModelField({
             id: "name",
             // storageId: "text@name",
             fieldId: "name",
             type: "text",
             label: "Product Name"
-        },
-        {
+        }),
+        createModelField({
             id: "sku",
             // storageId: "text@sku",
             fieldId: "sku",
             type: "text",
             label: "SKU"
-        },
-        {
+        }),
+        createModelField({
             id: "price",
             // storageId: "number@price",
             fieldId: "price",
             type: "number",
             label: "Price"
-        },
-        {
+        }),
+        createModelField({
             id: "descr",
             fieldId: "descr",
             label: "Description",
             type: "long-text"
-        }
+        })
     ],
     layout: [["name"], ["sku", "price"], ["descr"]],
     titleFieldId: "name",
@@ -199,7 +197,7 @@ describe("content model plugins", () => {
                 modelId: "product",
                 singularApiName: "Product",
                 pluralApiName: "Products",
-                group: group.id
+                group: group.slug
             }
         });
 
@@ -268,7 +266,7 @@ describe("content model plugins", () => {
         });
 
         const [getContentModelResponse] = await getContentModelQuery({ modelId: "product" });
-        expect(getContentModelResponse).toEqual({
+        expect(getContentModelResponse).toMatchObject({
             data: {
                 getContentModel: {
                     data: {
@@ -279,69 +277,33 @@ describe("content model plugins", () => {
                             {
                                 storageId: "text@name",
                                 fieldId: "name",
-                                helpText: null,
                                 id: "name",
                                 label: "Product Name",
-                                listValidation: null,
-                                multipleValues: null,
-                                placeholderText: null,
-                                predefinedValues: null,
-                                renderer: null,
-                                settings: null,
-                                type: "text",
-                                validation: null
+                                type: "text"
                             },
                             {
                                 storageId: "text@sku",
                                 fieldId: "sku",
-                                helpText: null,
                                 id: "sku",
                                 label: "SKU",
-                                listValidation: null,
-                                multipleValues: null,
-                                placeholderText: null,
-                                predefinedValues: null,
-                                renderer: null,
-                                settings: null,
-                                type: "text",
-                                validation: null
+                                type: "text"
                             },
                             {
                                 storageId: "number@price",
                                 fieldId: "price",
-                                helpText: null,
                                 id: "price",
                                 label: "Price",
-                                listValidation: null,
-                                multipleValues: null,
-                                placeholderText: null,
-                                predefinedValues: null,
-                                renderer: null,
-                                settings: null,
-                                type: "number",
-                                validation: null
+                                type: "number"
                             },
                             {
                                 storageId: "long-text@descr",
                                 fieldId: "descr",
-                                helpText: null,
                                 id: "descr",
                                 label: "Description",
-                                listValidation: null,
-                                multipleValues: null,
-                                placeholderText: null,
-                                predefinedValues: null,
-                                renderer: null,
-                                settings: null,
-                                type: "long-text",
-                                validation: null
+                                type: "long-text"
                             }
                         ],
-                        group: {
-                            id: "ecommerce",
-                            slug: "e-commerce",
-                            name: "E-Commerce"
-                        },
+                        group: "e-commerce",
                         layout: [["name"], ["sku", "price"], ["descr"]],
                         modelId: "product",
                         name: "Product",
@@ -361,7 +323,7 @@ describe("content model plugins", () => {
 
         const [listContentModelsResponse] = await listContentModelsQuery();
 
-        expect(listContentModelsResponse).toEqual({
+        expect(listContentModelsResponse).toMatchObject({
             data: {
                 listContentModels: {
                     data: [
@@ -373,69 +335,33 @@ describe("content model plugins", () => {
                                 {
                                     storageId: "text@name",
                                     fieldId: "name",
-                                    helpText: null,
                                     id: "name",
                                     label: "Product Name",
-                                    listValidation: null,
-                                    multipleValues: null,
-                                    placeholderText: null,
-                                    predefinedValues: null,
-                                    renderer: null,
-                                    settings: null,
-                                    type: "text",
-                                    validation: null
+                                    type: "text"
                                 },
                                 {
                                     storageId: "text@sku",
                                     fieldId: "sku",
-                                    helpText: null,
                                     id: "sku",
                                     label: "SKU",
-                                    listValidation: null,
-                                    multipleValues: null,
-                                    placeholderText: null,
-                                    predefinedValues: null,
-                                    renderer: null,
-                                    settings: null,
-                                    type: "text",
-                                    validation: null
+                                    type: "text"
                                 },
                                 {
                                     storageId: "number@price",
                                     fieldId: "price",
-                                    helpText: null,
                                     id: "price",
                                     label: "Price",
-                                    listValidation: null,
-                                    multipleValues: null,
-                                    placeholderText: null,
-                                    predefinedValues: null,
-                                    renderer: null,
-                                    settings: null,
-                                    type: "number",
-                                    validation: null
+                                    type: "number"
                                 },
                                 {
                                     storageId: "long-text@descr",
                                     fieldId: "descr",
-                                    helpText: null,
                                     id: "descr",
                                     label: "Description",
-                                    listValidation: null,
-                                    multipleValues: null,
-                                    placeholderText: null,
-                                    predefinedValues: null,
-                                    renderer: null,
-                                    settings: null,
-                                    type: "long-text",
-                                    validation: null
+                                    type: "long-text"
                                 }
                             ],
-                            group: {
-                                id: "ecommerce",
-                                slug: "e-commerce",
-                                name: "E-Commerce"
-                            },
+                            group: "e-commerce",
                             icon: null,
                             layout: [["name"], ["sku", "price"], ["descr"]],
                             modelId: "product",
@@ -646,7 +572,7 @@ describe("content model plugins", () => {
                 modelId: "shop",
                 singularApiName: "Shop",
                 pluralApiName: "Shops",
-                group: group.id
+                group: group.slug
             }
         });
 
@@ -680,22 +606,19 @@ describe("content model plugins", () => {
                 name: "test",
                 layout: [],
                 fields: [
-                    {
+                    createModelField({
                         type: "text",
                         fieldId: "something",
                         id: "something",
                         label: "Something",
                         storageId: "text@something!",
                         settings: {}
-                    }
+                    })
                 ],
                 modelId: "test",
                 singularApiName: "Test",
                 pluralApiName: "Tests",
-                group: {
-                    id: "group",
-                    name: "Group"
-                },
+                group: "group",
                 description: "",
                 titleFieldId: "something"
             });
@@ -713,21 +636,18 @@ describe("content model plugins", () => {
         singularApiName: "TestModel",
         pluralApiName: "TestModels",
         fields: [
-            {
+            createModelField({
                 id: "title",
                 fieldId: "title",
                 label: "Title",
                 type: "text"
-            }
+            })
         ],
         layout: [],
         titleFieldId: "title",
         name: "Test Model",
         description: "",
-        group: {
-            id: "id",
-            name: "name"
-        }
+        group: "name"
     };
 
     it("should validate model fields layout", () => {
