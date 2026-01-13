@@ -2,6 +2,7 @@ import os from "os";
 import path from "path";
 import fs from "fs";
 import fsAsync from "fs/promises";
+import { parse as parseJsonc } from "jsonc-parser";
 import { createImplementation } from "@webiny/di";
 import {
     InstallExtensionService,
@@ -18,17 +19,6 @@ const S3_BUCKET_NAME = "webiny-examples";
 const S3_BUCKET_REGION = "us-east-1";
 const FOLDER_NAME_IS_VERSION_REGEX = /^\d+\.\d+\.x$/;
 const WEBINY_DEV_VERSION = "0.0.0";
-
-/**
- * Parse JSONC (JSON with comments) by removing comments before parsing.
- */
-const parseJsonc = (content: string): any => {
-    // Remove single-line comments
-    let cleaned = content.replace(/\/\/.*$/gm, "");
-    // Remove multi-line comments
-    cleaned = cleaned.replace(/\/\*[\s\S]*?\*\//g, "");
-    return JSON.parse(cleaned);
-};
 
 const getVersionFromVersionFolders = async (
     versionFoldersList: string[],

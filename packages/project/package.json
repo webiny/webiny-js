@@ -32,6 +32,7 @@
     "find-up": "^5.0.0",
     "graphql-request": "^7.4.0",
     "humanize-duration": "3.33.2",
+    "jsonc-parser": "^3.3.1",
     "load-json-file": "6.2.0",
     "lodash": "^4.17.21",
     "minimatch": "^5.1.6",

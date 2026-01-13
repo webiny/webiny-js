@@ -7,9 +7,6 @@ import { Cognito } from "@webiny/cognito";
 export const Extensions = () => {
     return (
         <>
-            {/* Admin 👇 */}
-            {/*<Admin.Extension src={"./extensions/AdminLogo/AdminLogo.tsx"} />*/}
-
             {/* Infra 👇 */}
             <Infra.PulumiResourceNamePrefix prefix={"myproj-"} />
             <Infra.ProductionEnvironments environments={["prod", "staging"]} />
