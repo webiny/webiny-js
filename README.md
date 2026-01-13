@@ -19,6 +19,10 @@
 
 For full documentation, visit [webiny.com/docs](https://www.webiny.com/docs).
 
+## Extensions
+
+Explore community extensions at [github.com/webiny/extensions](https://github.com/webiny/extensions).
+
 ## Community
 
 For help, discussion about best practices, or feature ideas:
