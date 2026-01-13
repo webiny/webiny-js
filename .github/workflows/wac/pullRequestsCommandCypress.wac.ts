@@ -75,9 +75,9 @@ const createCypressJobs = (dbSetup: string) => {
     };
 
     if (dbSetup === "ddb-os") {
-        env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPEN_SEARCH_3_DOMAIN_NAME }}";
-        env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.OPEN_SEARCH_3_ENDPOINT }}";
-        env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ github.run_id }}_";
+        env["AWS_OPENSEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPEN_SEARCH_3_DOMAIN_NAME }}";
+        env["OPENSEARCH_ENDPOINT"] = "${{ secrets.OPEN_SEARCH_3_ENDPOINT }}";
+        env["OPENSEARCH_INDEX_PREFIX"] = "${{ github.run_id }}_";
     }
 
     const projectSetupJob: NormalJob = createJob({

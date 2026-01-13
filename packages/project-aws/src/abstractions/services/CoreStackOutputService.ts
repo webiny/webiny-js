@@ -4,8 +4,8 @@ export interface ICoreStackOutput {
     region?: string;
     deploymentId?: string;
     databaseSetup?: string;
-    elasticsearchDomainEndpoint?: string;
-    elasticsearchDomainArn?: string;
+    opensearchDomainEndpoint?: string;
+    opensearchDomainArn?: string;
     [key: string]: any;
 }
 

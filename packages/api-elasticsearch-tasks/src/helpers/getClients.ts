@@ -7,7 +7,7 @@ export function getClients(context: Context, params?: Partial<IElasticsearchTask
         params?.elasticsearchClient ??
         context.elasticsearch ??
         createElasticsearchClient({
-            endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}`
+            endpoint: `https://${process.env.OPENSEARCH_ENDPOINT}`
         });
 
     const documentClient = params?.documentClient ?? getDocumentClient();

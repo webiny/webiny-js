@@ -46,8 +46,8 @@ export interface ICreateMockDeploymentItem {
     primaryDynamoDbName: string;
     primaryDynamoDbHashKey: string;
     primaryDynamoDbRangeKey: string;
-    elasticsearchDynamodbTableArn?: string;
-    elasticsearchDynamodbTableName?: string;
+    opensearchDynamodbTableArn?: string;
+    opensearchDynamodbTableName?: string;
     logDynamodbTableArn: string;
     logDynamodbTableName: string;
 }
@@ -65,8 +65,8 @@ export const createMockDeploymentData = (item: Partial<ICreateMockDeploymentItem
         primaryDynamoDbName: "primaryDynamoDbName",
         primaryDynamoDbHashKey: "primaryDynamoDbHashKey",
         primaryDynamoDbRangeKey: "primaryDynamoDbRangeKey",
-        elasticsearchDynamodbTableArn: "elasticsearchDynamodbTableArn",
-        elasticsearchDynamodbTableName: "elasticsearchDynamodbTableName",
+        opensearchDynamodbTableArn: "opensearchDynamodbTableArn",
+        opensearchDynamodbTableName: "opensearchDynamodbTableName",
         logDynamodbTableArn: "logDynamodbTableArn",
         logDynamodbTableName: "logDynamodbTableName",
         cognitoUserPoolId: "cognitoUserPoolId",
@@ -89,8 +89,8 @@ export const createMockDeployment = (
             primaryDynamoDbName: item.primaryDynamoDbName,
             primaryDynamoDbHashKey: item.primaryDynamoDbHashKey,
             primaryDynamoDbRangeKey: item.primaryDynamoDbRangeKey,
-            elasticsearchDynamodbTableArn: item.elasticsearchDynamodbTableArn,
-            elasticsearchDynamodbTableName: item.elasticsearchDynamodbTableName,
+            opensearchDynamodbTableArn: item.opensearchDynamodbTableArn,
+            opensearchDynamodbTableName: item.opensearchDynamodbTableName,
             logDynamodbTableArn: item.logDynamodbTableArn,
             logDynamodbTableName: item.logDynamodbTableName
         }

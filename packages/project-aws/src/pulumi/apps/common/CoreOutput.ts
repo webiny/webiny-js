@@ -31,12 +31,12 @@ export interface ICoreOutput {
     vpcPublicSubnetIds: string[] | undefined;
     vpcPrivateSubnetIds: string[] | undefined;
     vpcSecurityGroupIds: string[] | undefined;
-    elasticsearchDomainArn: string | undefined;
-    elasticsearchDomainEndpoint: string | undefined;
-    elasticsearchDynamodbTableHashKey: string;
-    elasticsearchDynamodbTableRangeKey: string;
-    elasticsearchDynamodbTableArn: string | undefined;
-    elasticsearchDynamodbTableName: string | undefined;
+    opensearchDomainArn: string | undefined;
+    opensearchDomainEndpoint: string | undefined;
+    opensearchDynamodbTableHashKey: string;
+    opensearchDynamodbTableRangeKey: string;
+    opensearchDynamodbTableArn: string | undefined;
+    opensearchDynamodbTableName: string | undefined;
 }
 
 export const CoreOutput = createAppModule({
@@ -74,11 +74,11 @@ export const CoreOutput = createAppModule({
                 vpcPublicSubnetIds: output["vpcPublicSubnetIds"],
                 vpcPrivateSubnetIds: output["vpcPrivateSubnetIds"],
                 vpcSecurityGroupIds: output["vpcSecurityGroupIds"],
-                // These outputs are optional, since Elasticsearch is not always enabled.
-                elasticsearchDomainArn: output["elasticsearchDomainArn"],
-                elasticsearchDomainEndpoint: output["elasticsearchDomainEndpoint"],
-                elasticsearchDynamodbTableArn: output["elasticsearchDynamodbTableArn"],
-                elasticsearchDynamodbTableName: output["elasticsearchDynamodbTableName"]
+                // These outputs are optional, since Opensearch is not always enabled.
+                opensearchDomainArn: output["opensearchDomainArn"],
+                opensearchDomainEndpoint: output["opensearchDomainEndpoint"],
+                opensearchDynamodbTableArn: output["opensearchDynamodbTableArn"],
+                opensearchDynamodbTableName: output["opensearchDynamodbTableName"]
             } as ICoreOutput;
         });
     }

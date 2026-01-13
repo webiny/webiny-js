@@ -81,7 +81,7 @@ export const createInitialQuery = (params: Params): ElasticsearchBoolQueryConfig
     else {
         throw new WebinyError(
             `Cannot call Elasticsearch query when not setting "published" or "latest".`,
-            "ELASTICSEARCH_UNSUPPORTED_QUERY",
+            "OPENSEARCH_UNSUPPORTED_QUERY",
             {
                 where
             }

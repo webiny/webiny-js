@@ -1,12 +1,12 @@
 import { logger } from "@webiny/project-utils/testing/logger";
 import { createElasticsearchClient } from "@webiny/api-elasticsearch";
 
-const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || 9200;
+const OPENSEARCH_PORT = process.env.OPENSEARCH_PORT || 9200;
 
-const esEndpoint = process.env.ELASTIC_SEARCH_ENDPOINT;
+const esEndpoint = process.env.OPENSEARCH_ENDPOINT;
 
 const defaultOptions = {
-    node: `http://localhost:${ELASTICSEARCH_PORT}`,
+    node: `http://localhost:${OPENSEARCH_PORT}`,
     auth: {},
     maxRetries: 10,
     pingTimeout: 500

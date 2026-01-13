@@ -5,7 +5,7 @@ import { createEventHandler } from "@webiny/api-dynamodb-to-elasticsearch";
 export const handler = createHandler({
     plugins: [
         elasticsearchClientContextPlugin({
-            endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}`
+            endpoint: `https://${process.env.OPENSEARCH_ENDPOINT}`
         }),
         createEventHandler()
     ],

@@ -1,3 +1,3 @@
 export const isSharedElasticsearchIndex = () => {
-    return process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
+    return process.env.OPENSEARCH_SHARED_INDEXES === "true";
 };

@@ -59,7 +59,7 @@ export class ElasticsearchClientConfig {
             // Prefix will only be handled once, for the first processed storage operations.
             const indexPrefix = getElasticsearchIndexPrefix();
             if (!indexPrefix.includes("api-")) {
-                process.env.ELASTIC_SEARCH_INDEX_PREFIX = `${indexPrefix}${prefix}`;
+                process.env.OPENSEARCH_INDEX_PREFIX = `${indexPrefix}${prefix}`;
             }
         }
 
