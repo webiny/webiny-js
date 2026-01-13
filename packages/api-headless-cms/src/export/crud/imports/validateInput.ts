@@ -60,7 +60,20 @@ export const validateInput = async (params: Params): Promise<ValidResponse | Inv
     const validatedModels = await validateModels({
         groups: inputGroups,
         models,
-        input: data.models
+        input: data.models.map(model => {
+            let groupSlug = "ungrouped";
+            // v6 export
+            if (typeof model.group === "string") {
+                groupSlug = model.group;
+            } else if (model.group && "id" in model.group) {
+                // @ts-expect-error v5 export has `group` as an object, not a string.
+                const group = inputGroups.find(g => g.id === model.group.id);
+                if (group) {
+                    groupSlug = group.slug;
+                }
+            }
+            return { ...model, group: groupSlug };
+        })
     });
     if (validatedModels.length === 0) {
         return {

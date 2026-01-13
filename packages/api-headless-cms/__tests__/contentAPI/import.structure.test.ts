@@ -5,7 +5,7 @@ import { createModels, exportedGroupsAndModels } from "./mocks/exportedGroupsAnd
 import { CmsImportAction } from "~/export/types";
 import type { CmsModel } from "~/types";
 
-describe.skip("import cms structure", () => {
+describe("import cms structure", () => {
     const {
         validateCmsStructureMutation,
         importCmsStructureMutation,
@@ -489,7 +489,6 @@ describe.skip("import cms structure", () => {
                                 action: CmsImportAction.CREATE,
                                 group: {
                                     id: group.id,
-                                    slug: group.slug,
                                     name: group.name
                                 },
                                 error: null
@@ -877,7 +876,7 @@ describe.skip("import cms structure", () => {
                 validateImportStructure: {
                     data: {
                         groups: exportedGroupsAndModels.groups.map(group => {
-                            const isCodeGroup = codeGroups.includes(group.slug);
+                            const isCodeGroup = codeGroups.includes(group.id);
                             return {
                                 action: isCodeGroup ? CmsImportAction.CODE : CmsImportAction.CREATE,
                                 error: isCodeGroup ? expect.any(Object) : null,
