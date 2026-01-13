@@ -15684,7 +15684,6 @@ __metadata:
     find-up: "npm:^5.0.0"
     graphql-request: "npm:^7.4.0"
     humanize-duration: "npm:3.33.2"
-    jsonc-parser: "npm:^3.3.1"
     load-json-file: "npm:6.2.0"
     lodash: "npm:^4.17.21"
     minimatch: "npm:^5.1.6"
@@ -25023,13 +25022,6 @@ __metadata:
   version: 3.2.0
   resolution: "jsonc-parser@npm:3.2.0"
   checksum: 10/bd68b902e5f9394f01da97921f49c5084b2dc03a0c5b4fdb2a429f8d6f292686c1bf87badaeb0a8148d024192a88f5ad2e57b2918ba43fe25cf15f3371db64d4
-  languageName: node
-  linkType: hard
-
-"jsonc-parser@npm:^3.3.1":
-  version: 3.3.1
-  resolution: "jsonc-parser@npm:3.3.1"
-  checksum: 10/9b0dc391f20b47378f843ef1e877e73ec652a5bdc3c5fa1f36af0f119a55091d147a86c1ee86a232296f55c929bba174538c2bf0312610e0817a22de131cc3f4
   languageName: node
   linkType: hard
 
