@@ -4,8 +4,8 @@ import { InstallExtension, InstallExtensionService } from "~/abstractions/index.
 export class DefaultInstallExtension implements InstallExtension.Interface {
     constructor(private installExtensionService: InstallExtensionService.Interface) {}
 
-    execute(params: InstallExtension.Params) {
-        return this.installExtensionService.execute(params);
+    execute(source: string) {
+        return this.installExtensionService.execute(source);
     }
 }
 
