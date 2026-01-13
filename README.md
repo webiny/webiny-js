@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-    <a href="https://github.com/webiny/webiny-js/actions"><img src="https://img.shields.io/github/actions/workflow/status/webiny/webiny-js/ci.yml" alt="Build Status"></a>
+    <a href="https://github.com/webiny/webiny-js/actions"><img src="https://img.shields.io/github/actions/workflow/status/webiny/webiny-js/push.yml" alt="Build Status"></a>
     <a href="https://www.npmjs.com/package/@webiny/cli"><img src="https://img.shields.io/npm/dt/@webiny/cli.svg" alt="Total Downloads"></a>
     <a href="https://github.com/webiny/webiny-js/releases"><img src="https://img.shields.io/github/v/release/webiny/webiny-js" alt="Latest Release"></a>
     <a href="https://github.com/webiny/webiny-js/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License"></a>
