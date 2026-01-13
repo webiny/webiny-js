@@ -6,7 +6,8 @@
 2. To build all packages, simply run `yarn build`.
 3. To build all packages without caching, use `yarn build --no-cache`.
 
-### Commit Messages
+### Commits
+1. Do not commit by yourself when on local machine. I'll do it.
 1. Avoid overly verbose descriptions or unnecessary details.
 2. Use conventional commit message formats like:
    - feat: for new features
