@@ -32,47 +32,45 @@ export class ExtensionCommand implements CliCommand.Interface<IExtensionCommandP
                 const spinner = ora();
                 const projectSdk = await this.getProjectSdkService.execute();
 
-                const result = await projectSdk.installExtension({
-                    source,
-                    onProgress: (message: string) => {
-                        spinner.start(message);
-                    },
-                    onSuccess: (message: string) => {
-                        spinner.succeed(message);
-                    },
-                    onError: (message: string) => {
-                        spinner.fail(message);
+                spinner.start("Installing extension...");
+
+                try {
+                    const result = await projectSdk.installExtension(source);
+
+                    spinner.succeed(
+                        `Extension "${result.extensionName}" installed successfully to ${result.extensionPaths.join(", ")}`
+                    );
+
+                    // Display next steps if available
+                    if (result.nextSteps && result.nextSteps.length > 0) {
+                        this.uiService.emptyLine();
+                        this.uiService.text(chalk.bold("Next Steps"));
+                        result.nextSteps.forEach(({ text, variables = [] }) => {
+                            const formattedText = variables.reduce(
+                                (acc, variable) => acc.replace(`%s`, chalk.green(variable)),
+                                text
+                            );
+                            this.uiService.text(`‣ ${formattedText}`);
+                        });
                     }
-                });
 
-                // Display next steps if available
-                if (result.success && result.nextSteps && result.nextSteps.length > 0) {
-                    this.uiService.emptyLine();
-                    this.uiService.text(chalk.bold("Next Steps"));
-                    result.nextSteps.forEach(({ text, variables = [] }) => {
-                        const formattedText = variables.reduce(
-                            (acc, variable) => acc.replace(`%s`, chalk.green(variable)),
-                            text
-                        );
-                        this.uiService.text(`‣ ${formattedText}`);
-                    });
-                }
-
-                // Display additional notes if available
-                if (result.success && result.additionalNotes && result.additionalNotes.length > 0) {
-                    this.uiService.emptyLine();
-                    this.uiService.text(chalk.bold("Additional Notes"));
-                    result.additionalNotes.forEach(({ text, variables = [] }) => {
-                        const formattedText = variables.reduce(
-                            (acc, variable) => acc.replace(`%s`, chalk.green(variable)),
-                            text
-                        );
-                        this.uiService.text(`‣ ${formattedText}`);
-                    });
-                }
-
-                if (!result.success) {
-                    process.exit(1);
+                    // Display additional notes if available
+                    if (result.additionalNotes && result.additionalNotes.length > 0) {
+                        this.uiService.emptyLine();
+                        this.uiService.text(chalk.bold("Additional Notes"));
+                        result.additionalNotes.forEach(({ text, variables = [] }) => {
+                            const formattedText = variables.reduce(
+                                (acc, variable) => acc.replace(`%s`, chalk.green(variable)),
+                                text
+                            );
+                            this.uiService.text(`‣ ${formattedText}`);
+                        });
+                    }
+                } catch (error) {
+                    spinner.fail("Installation failed.");
+                    throw new Error(
+                        `Failed to install extension from source "${source}": ${error.message}`
+                    );
                 }
             }
         };

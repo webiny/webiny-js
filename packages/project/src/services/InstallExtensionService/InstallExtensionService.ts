@@ -53,142 +53,101 @@ class DefaultInstallExtensionService implements InstallExtensionService.Interfac
         private getProject: GetProjectService.Interface
     ) {}
 
-    async execute(params: InstallExtensionService.Params): Promise<InstallExtensionService.Result> {
-        const { source, onProgress, onSuccess, onError } = params;
+    async execute(source: string): Promise<InstallExtensionService.Result> {
+        const currentWebinyVersion = this.getProjectVersion.execute();
+        const project = this.getProject.execute();
+        const projectRoot = project.paths.rootFolder.toString();
 
-        try {
-            const currentWebinyVersion = this.getProjectVersion.execute();
-            const project = this.getProject.execute();
-            const projectRoot = project.paths.rootFolder.toString();
+        const randomId = String(Date.now());
+        const downloadFolderPath = path.join(os.tmpdir(), `wby-ext-${randomId}`);
 
-            onProgress?.("Downloading extension...");
+        await downloadFolderFromS3({
+            bucketName: S3_BUCKET_NAME,
+            bucketRegion: S3_BUCKET_REGION,
+            bucketFolderKey: source,
+            downloadFolderPath
+        });
 
-            const randomId = String(Date.now());
-            const downloadFolderPath = path.join(os.tmpdir(), `wby-ext-${randomId}`);
+        let extensionsFolderToCopyPath = path.join(downloadFolderPath, "extensions");
+        let extensionJsoncPath = path.join(downloadFolderPath, "extension.jsonc");
 
-            await downloadFolderFromS3({
-                bucketName: S3_BUCKET_NAME,
-                bucketRegion: S3_BUCKET_REGION,
-                bucketFolderKey: source,
-                downloadFolderPath
-            });
+        // If we have `extensions` folder in the root of the downloaded extension,
+        // it means the extension is not versioned, and we can just copy it.
+        const extensionsFolderExistsInRoot = fs.existsSync(extensionsFolderToCopyPath);
+        const versionedExtension = !extensionsFolderExistsInRoot;
 
-            onProgress?.("Processing extension...");
+        if (versionedExtension) {
+            // If we have `x.x.x` folders in the root of the downloaded
+            // extension, we need to find the right version to use.
 
-            let extensionsFolderToCopyPath = path.join(downloadFolderPath, "extensions");
-            let extensionJsoncPath = path.join(downloadFolderPath, "extension.jsonc");
+            // This can be `5.40.x`, `6.0.x`, etc.
+            const versionFolders = await fsAsync.readdir(downloadFolderPath);
 
-            // If we have `extensions` folder in the root of the downloaded extension,
-            // it means the extension is not versioned, and we can just copy it.
-            const extensionsFolderExistsInRoot = fs.existsSync(extensionsFolderToCopyPath);
-            const versionedExtension = !extensionsFolderExistsInRoot;
-
-            if (versionedExtension) {
-                // If we have `x.x.x` folders in the root of the downloaded
-                // extension, we need to find the right version to use.
-
-                // This can be `5.40.x`, `6.0.x`, etc.
-                const versionFolders = await fsAsync.readdir(downloadFolderPath);
-
-                const versionToUse = await getVersionFromVersionFolders(
-                    versionFolders,
-                    currentWebinyVersion
-                );
-
-                extensionsFolderToCopyPath = path.join(
-                    downloadFolderPath,
-                    versionToUse,
-                    "extensions"
-                );
-
-                const subExtensionJsoncPath = path.join(
-                    downloadFolderPath,
-                    versionToUse,
-                    "extension.jsonc"
-                );
-                if (fs.existsSync(subExtensionJsoncPath)) {
-                    extensionJsoncPath = subExtensionJsoncPath;
-                }
-            }
-
-            // Read and parse extension.jsonc
-            const extensionJsoncExists = fs.existsSync(extensionJsoncPath);
-            const extensionJsonc: ExtensionJsonc = extensionJsoncExists
-                ? parseJsonc(fs.readFileSync(extensionJsoncPath, "utf-8"))
-                : { name: "unknown", type: "unknown" };
-
-            onProgress?.("Copying extension files...");
-
-            // Ensure the extensions root folder exists
-            const targetExtensionsFolder = path.join(projectRoot, EXTENSIONS_ROOT_FOLDER);
-            if (!fs.existsSync(targetExtensionsFolder)) {
-                fs.mkdirSync(targetExtensionsFolder, { recursive: true });
-            }
-
-            // Copy the extensions folder contents
-            await fsAsync.cp(extensionsFolderToCopyPath, targetExtensionsFolder, {
-                recursive: true
-            });
-
-            // Get the list of extensions that were copied
-            const extensionsFolderNames = await fsAsync.readdir(extensionsFolderToCopyPath);
-            const extensionPaths = extensionsFolderNames.map(name =>
-                path.join(EXTENSIONS_ROOT_FOLDER, name)
+            const versionToUse = await getVersionFromVersionFolders(
+                versionFolders,
+                currentWebinyVersion
             );
 
-            // Merge package.json if provided
-            if (extensionJsonc.packageJson && Object.keys(extensionJsonc.packageJson).length > 0) {
-                onProgress?.("Updating package.json...");
-                await mergePackageJson({
-                    projectRoot,
-                    extensionPackageJson: extensionJsonc.packageJson
-                });
+            extensionsFolderToCopyPath = path.join(downloadFolderPath, versionToUse, "extensions");
+            const subExtensionJsoncPath = path.join(
+                downloadFolderPath,
+                versionToUse,
+                "extension.jsonc"
+            );
+            if (fs.existsSync(subExtensionJsoncPath)) {
+                extensionJsoncPath = subExtensionJsoncPath;
             }
-
-            // Update webiny.config.tsx if provided
-            if (extensionJsonc.webinyConfigTsx) {
-                onProgress?.("Updating webiny.config.tsx...");
-                await updateWebinyConfig({
-                    projectRoot,
-                    webinyConfigTsx: extensionJsonc.webinyConfigTsx
-                });
-            }
-
-            // Build success message
-            if (extensionPaths.length === 1) {
-                onSuccess?.(
-                    `Extension "${extensionJsonc.name}" downloaded successfully to ${extensionPaths[0]}`
-                );
-            } else {
-                onSuccess?.(
-                    `Extension "${extensionJsonc.name}" with multiple components downloaded successfully`
-                );
-            }
-
-            // Extract next steps and additional notes
-            const nextSteps = extensionJsonc.nextSteps?.messages || [];
-            const additionalNotes = extensionJsonc.additionalNotes?.messages || [];
-
-            return {
-                success: true,
-                extensionName: extensionJsonc.name,
-                extensionPaths,
-                nextSteps,
-                additionalNotes
-            };
-        } catch (error: any) {
-            const errorMessage =
-                error instanceof NoObjectsFoundError
-                    ? "Could not download extension. The extension does not exist."
-                    : "Could not download extension. Please check the error details.";
-
-            onError?.(errorMessage, error);
-
-            return {
-                success: false,
-                error
-            };
         }
+
+        // Read and parse extension.jsonc.
+        const extensionJsoncExists = fs.existsSync(extensionJsoncPath);
+        const extensionJsonc: ExtensionJsonc = extensionJsoncExists
+            ? parseJsonc(fs.readFileSync(extensionJsoncPath, "utf-8"))
+            : { name: "unknown", type: "unknown" };
+
+        // Ensure the extensions root folder exists.
+        const targetExtensionsFolder = path.join(projectRoot, EXTENSIONS_ROOT_FOLDER);
+        if (!fs.existsSync(targetExtensionsFolder)) {
+            fs.mkdirSync(targetExtensionsFolder, { recursive: true });
+        }
+
+        // Copy the extensions folder contents.
+        await fsAsync.cp(extensionsFolderToCopyPath, targetExtensionsFolder, {
+            recursive: true
+        });
+
+        // Get the list of extensions that were copied.
+        const extensionsFolderNames = await fsAsync.readdir(extensionsFolderToCopyPath);
+        const extensionPaths = extensionsFolderNames.map(name =>
+            path.join(EXTENSIONS_ROOT_FOLDER, name)
+        );
+
+        // Merge package.json if provided.
+        if (extensionJsonc.packageJson && Object.keys(extensionJsonc.packageJson).length > 0) {
+            await mergePackageJson({
+                projectRoot,
+                extensionPackageJson: extensionJsonc.packageJson
+            });
+        }
+
+        // Update webiny.config.tsx if provided.
+        if (extensionJsonc.webinyConfigTsx) {
+            await updateWebinyConfig({
+                projectRoot,
+                webinyConfigTsx: extensionJsonc.webinyConfigTsx
+            });
+        }
+
+        // Extract next steps and additional notes.
+        const nextSteps = extensionJsonc.nextSteps?.messages || [];
+        const additionalNotes = extensionJsonc.additionalNotes?.messages || [];
+
+        return {
+            extensionName: extensionJsonc.name,
+            extensionPaths,
+            nextSteps,
+            additionalNotes
+        };
     }
 }
 
