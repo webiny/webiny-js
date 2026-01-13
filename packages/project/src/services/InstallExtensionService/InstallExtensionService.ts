@@ -7,7 +7,7 @@ import { createImplementation } from "@webiny/di";
 import {
     InstallExtensionService,
     GetProjectVersionService,
-    GetCwdService
+    GetProjectService
 } from "~/abstractions/index.js";
 import { downloadFolderFromS3, NoObjectsFoundError } from "./downloadFolderFromS3.js";
 import { mergePackageJson } from "./mergePackageJson.js";
@@ -50,7 +50,7 @@ const getVersionFromVersionFolders = async (
 class DefaultInstallExtensionService implements InstallExtensionService.Interface {
     constructor(
         private getProjectVersion: GetProjectVersionService.Interface,
-        private getCwd: GetCwdService.Interface
+        private getProject: GetProjectService.Interface
     ) {}
 
     async execute(params: InstallExtensionParams): Promise<InstallExtensionResult> {
@@ -58,7 +58,8 @@ class DefaultInstallExtensionService implements InstallExtensionService.Interfac
 
         try {
             const currentWebinyVersion = this.getProjectVersion.execute();
-            const projectRoot = this.getCwd.execute();
+            const project = this.getProject.execute();
+            const projectRoot = project.paths.rootFolder.toString();
 
             onProgress?.("Downloading extension...");
 
@@ -186,5 +187,5 @@ class DefaultInstallExtensionService implements InstallExtensionService.Interfac
 export const installExtensionService = createImplementation({
     abstraction: InstallExtensionService,
     implementation: DefaultInstallExtensionService,
-    dependencies: [GetProjectVersionService, GetCwdService]
+    dependencies: [GetProjectVersionService, GetProjectService]
 });
