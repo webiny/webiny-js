@@ -85,7 +85,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
                 matrix: {
                     os: ["ubuntu-latest"],
                     node: [NODE_VERSION],
-                    testCommand: "${{ fromJson('" + JSON.stringify(testCommands) + "') }}"
+                    testCommand: `$\{{ fromJSON(needs.${jobNames.constants}.outputs.vitest-test-commands) }}`
                 }
             },
             "runs-on": "${{ matrix.os }}",
