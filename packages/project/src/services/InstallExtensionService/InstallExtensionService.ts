@@ -100,7 +100,15 @@ class DefaultInstallExtensionService implements InstallExtensionService.Interfac
                     versionToUse,
                     "extensions"
                 );
-                extensionJsoncPath = path.join(downloadFolderPath, versionToUse, "extension.jsonc");
+
+                const subExtensionJsoncPath = path.join(
+                    downloadFolderPath,
+                    versionToUse,
+                    "extension.jsonc"
+                );
+                if (fs.existsSync(subExtensionJsoncPath)) {
+                    extensionJsoncPath = subExtensionJsoncPath;
+                }
             }
 
             // Read and parse extension.jsonc
