@@ -7,7 +7,7 @@ export interface IDetailItem {
     SK: string;
     command: ExtendedCommandType;
     /**
-     * There will be multiple tables that will get populated through the system (regular table and elasticsearch for start).
+     * There will be multiple tables that will get populated through the system (regular table and opensearch for start).
      */
     tableName: string;
     tableType: DynamoDBTableType;

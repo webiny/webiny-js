@@ -7,9 +7,9 @@ describe("getTableType", () => {
         expect(result).toEqual("regular");
     });
 
-    it("should return elasticsearch table type", () => {
+    it("should return opensearch table type", () => {
         const result = getTableType(process.env.DB_TABLE_OPENSEARCH as string);
-        expect(result).toEqual("elasticsearch");
+        expect(result).toEqual("opensearch");
     });
 
     it("should return log table type", () => {

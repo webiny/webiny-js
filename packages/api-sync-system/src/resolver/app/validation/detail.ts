@@ -31,7 +31,7 @@ export const createDetailValidation = () => {
                     SK: zod.string(),
                     tableName: zod.string(),
                     tableType: zod
-                        .enum(["regular", "elasticsearch", "log", "unknown"])
+                        .enum(["regular", "opensearch", "log", "unknown"])
                         .transform(input => {
                             return transformTableType(input);
                         }),
