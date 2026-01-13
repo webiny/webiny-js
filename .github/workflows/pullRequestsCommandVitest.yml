@@ -158,7 +158,7 @@ jobs:
           - ubuntu-latest
         node:
           - 24
-        testCommand: ${{ fromJson('[]') }}
+        testCommand: ${{ fromJSON(needs.vitest-constants.outputs.vitest-test-commands) }}
     runs-on: ${{ matrix.os }}
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -229,7 +229,9 @@ jobs:
           - ubuntu-latest
         node:
           - 24
-        testCommand: ${{ fromJson('[]') }}
+        testCommand: >-
+          ${{ fromJSON(needs.vitest-ddb-constants.outputs.vitest-test-commands)
+          }}
     runs-on: ${{ matrix.os }}
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -300,7 +302,9 @@ jobs:
           - ubuntu-latest
         node:
           - 24
-        testCommand: ${{ fromJson('[]') }}
+        testCommand: >-
+          ${{
+          fromJSON(needs.vitest-ddbOs-constants.outputs.vitest-test-commands) }}
     runs-on: ${{ matrix.os }}
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
