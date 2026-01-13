@@ -180,8 +180,8 @@ const createCypressJobs = (dbSetup: string) => {
     };
 };
 
-export const pullRequestsCommandCypress = createWorkflow({
-    name: "Pull Requests Command - Cypress",
+export const pullRequestsCommandE2e = createWorkflow({
+    name: "Pull Requests Command - E2E",
     on: "issue_comment",
     env: {
         NODE_OPTIONS,
@@ -189,7 +189,7 @@ export const pullRequestsCommandCypress = createWorkflow({
     },
     jobs: {
         checkComment: createJob({
-            name: `Check comment for /cypress`,
+            name: `Check comment for /e2e`,
             if: "${{ github.event.issue.pull_request }}",
             checkout: false,
             steps: [
@@ -199,7 +199,7 @@ export const pullRequestsCommandCypress = createWorkflow({
                     uses: "xt0rted/slash-command-action@v2",
                     with: {
                         "repo-token": "${{ secrets.GITHUB_TOKEN }}",
-                        command: "cypress",
+                        command: "e2e",
                         reaction: "true",
                         "reaction-type": "eyes",
                         "allow-edits": "false",
