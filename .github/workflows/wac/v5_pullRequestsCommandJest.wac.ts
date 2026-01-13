@@ -37,11 +37,7 @@ const createJestTestsJob = (storage: string | null) => {
     const env: Record<string, string> = { AWS_REGION };
 
     if (storage) {
-        if (storage === "ddb-es") {
-            env["AWS_OPENSEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPENSEARCH_DOMAIN_NAME }}";
-            env["OPENSEARCH_ENDPOINT"] = "${{ secrets.OPENSEARCH_ENDPOINT }}";
-            env["OPENSEARCH_INDEX_PREFIX"] = "${{ matrix.package.id }}";
-        } else if (storage === "ddb-os") {
+        if (storage === "ddb-os") {
             // We still use the same environment variables as for "ddb-es" setup, it's
             // just that the values are read from different secrets.
             env["AWS_OPENSEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}";
@@ -65,7 +61,7 @@ const createJestTestsJob = (storage: string | null) => {
         },
         "runs-on": "${{ matrix.os }}",
         env,
-        awsAuth: storage === "ddb-es" || storage === "ddb-os",
+        awsAuth: storage === "ddb-os",
         checkout: { path: DIR_WEBINY_JS },
         steps: [
             ...createCheckoutPrSteps(),
