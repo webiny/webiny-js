@@ -39,7 +39,7 @@ describe("multiple values in field", () => {
                 modelId: model.modelId,
                 singularApiName: model.singularApiName,
                 pluralApiName: model.pluralApiName,
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
 
@@ -80,6 +80,7 @@ describe("multiple values in field", () => {
                 ],
                 listValidation: [],
                 placeholderText: "placeholder text",
+                tags: [],
                 predefinedValues: {
                     enabled: true,
                     values: [
@@ -121,7 +122,7 @@ describe("multiple values in field", () => {
                 modelId: model.modelId,
                 singularApiName: model.singularApiName,
                 pluralApiName: model.pluralApiName,
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
 

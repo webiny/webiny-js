@@ -242,7 +242,7 @@ export const validateModels = async (params: Params): Promise<ValidatedCmsModelR
 
             const targetModel: ValidatedCmsModel = {
                 ...data,
-                group: group.id
+                group: group.slug
             };
 
             const modelValidationResult = validateModel({

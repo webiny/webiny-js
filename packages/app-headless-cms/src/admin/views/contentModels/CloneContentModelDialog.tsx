@@ -32,7 +32,7 @@ const getSelectedGroup = (groups: CmsGroupOption[] | null, model: CmsModel): str
     if (!groups || groups.length === 0 || !model) {
         return "";
     }
-    const current = model.group.id;
+    const current = model.group;
     const group = groups.find(g => g.value === current);
     if (group) {
         return group.value;
@@ -105,7 +105,7 @@ export const CloneContentModelDialog = ({
         const items = listMenuGroupsQuery.data.listContentModelGroups.data || [];
         for (const item of items) {
             options.push({
-                value: item.id,
+                value: item.slug,
                 label: item.name
             });
             models.push(...item.contentModels);

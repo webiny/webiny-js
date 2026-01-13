@@ -1,6 +1,5 @@
 import type { CmsIdentity } from "./identity.js";
 import type { CmsModelField, CmsModelFieldInput } from "./modelField.js";
-import type { CmsModelGroup } from "./modelGroup.js";
 
 /**
  * Base CMS Model. Should not be exported and used outside of this package.
@@ -40,9 +39,9 @@ export interface CmsModel {
      */
     tenant: string;
     /**
-     * Cms Group reference object.
+     * Model group slug.
      */
-    group: CmsModelGroup;
+    group: string;
     /**
      * Icon for the content model.
      */

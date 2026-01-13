@@ -1,17 +1,5 @@
-import type { CmsGroup, CmsModelInput } from "@webiny/api-headless-cms";
-import {
-    createCmsGroupPlugin,
-    createModelPlugin,
-    createModelField
-} from "@webiny/api-headless-cms";
-
-export const group: CmsGroup = {
-    id: "5e7c96c46adcbe0007268295",
-    name: "A sample content model group",
-    slug: "a-sample-content-model-group",
-    description: "This is a simple content model group example.",
-    icon: "fas/star"
-};
+import type { CmsModelInput } from "@webiny/api-headless-cms";
+import { createModelPlugin, createModelField } from "@webiny/api-headless-cms";
 
 export const categoryModel: CmsModelInput = {
     titleFieldId: "title",
@@ -20,10 +8,7 @@ export const categoryModel: CmsModelInput = {
     modelId: "category",
     singularApiName: "CategoryApiNameWhichIsABitDifferentThanModelId",
     pluralApiName: "CategoriesApiModel",
-    group: {
-        id: group.id,
-        name: group.name
-    },
+    group: "a-sample-content-model-group",
     layout: [["titleFieldIdAbcdef"], ["slugFieldIdAbc"], ["parentCategory"], ["tags"]],
     fields: [
         createModelField({
@@ -110,7 +95,6 @@ export const models: CmsModelInput[] = [categoryModel];
 
 export const createCmsPlugins = () => {
     return [
-        createCmsGroupPlugin(group),
         ...models.map(model => {
             return createModelPlugin(model);
         })

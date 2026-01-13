@@ -29,7 +29,7 @@ describe("revision id scalar", () => {
                 fields: articleModel.fields,
                 description: "This is a description.",
                 icon: "fa/fas",
-                group: group.id
+                group: group.slug
             }
         });
     });

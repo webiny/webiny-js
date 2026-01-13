@@ -79,7 +79,7 @@ export interface CmsGroup {
 
 export interface CmsModel {
     id: string;
-    group: Pick<CmsGroup, "id" | "name">;
+    group: string;
     description?: string;
     version: number;
     layout?: CmsEditorFieldsLayout;

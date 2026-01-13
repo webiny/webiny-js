@@ -12,10 +12,10 @@ export default function GroupSelect({ value, ...props }: FormComponentProps) {
 
     const groups = loading || !data ? [] : data.listContentModelGroups.data;
     const options = useMemo(() => {
-        return groups.map(item => ({ value: item.id, label: item.name }));
+        return groups.map(item => ({ value: item.slug, label: item.name }));
     }, [groups]);
 
-    const selectValue = typeof value === "string" ? value : value.id;
+    const selectValue = typeof value === "string" ? value : value.slug;
 
     return (
         <Select

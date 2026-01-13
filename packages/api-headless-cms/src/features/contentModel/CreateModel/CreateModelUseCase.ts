@@ -8,19 +8,13 @@ import { ModelCreateErrorEvent } from "./events.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/TenantContext";
 import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
-import { CmsContext } from "~/features/shared/abstractions.js";
-import {
-    ModelNotAuthorizedError,
-    ModelPersistenceError,
-    ModelValidationError
-} from "~/domain/contentModel/errors.js";
+import { ModelNotAuthorizedError, ModelValidationError } from "~/domain/contentModel/errors.js";
 import { createZodError } from "@webiny/utils";
 import { removeUndefinedValues } from "@webiny/utils";
 import { createModelCreateValidation } from "~/domain/contentModel/schemas.js";
 import { assignModelDefaultFields } from "~/crud/contentModel/defaultFields.js";
 import type { CmsModel } from "~/types/index.js";
 import type { CmsModelCreateInput } from "~/types/index.js";
-import { GetGroupUseCase } from "~/features/contentModelGroup/GetGroup/index.js";
 
 /**
  * CreateModelUseCase - Core model creation orchestration.
@@ -42,13 +36,11 @@ import { GetGroupUseCase } from "~/features/contentModelGroup/GetGroup/index.js"
  */
 class CreateModelUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
-        private getGroupUseCase: GetGroupUseCase.Interface,
         private eventPublisher: EventPublisher.Interface,
         private repository: CreateModelRepository.Interface,
         private accessControl: AccessControl.Interface,
         private tenantContext: TenantContext.Interface,
-        private identityContext: IdentityContext.Interface,
-        private cmsContext: CmsContext.Interface
+        private identityContext: IdentityContext.Interface
     ) {}
 
     async execute(input: CmsModelCreateInput): Promise<Result<CmsModel, UseCaseAbstraction.Error>> {
@@ -73,20 +65,6 @@ class CreateModelUseCaseImpl implements UseCaseAbstraction.Interface {
             assignModelDefaultFields(data);
         }
 
-        // Resolve group - reuse group domain errors as they're already descriptive
-        const groupResult = await this.getGroupUseCase.execute(input.group);
-
-        if (groupResult.isFail()) {
-            const error = groupResult.error;
-            if (error.code === "Cms/ModelGroup/PersistenceError") {
-                return Result.fail(new ModelPersistenceError(error));
-            }
-
-            return Result.fail(error);
-        }
-
-        const group = groupResult.value;
-
         // Create the domain model object
         const identity = this.identityContext.getIdentity();
         const tenant = this.tenantContext.getTenant();
@@ -103,10 +81,6 @@ class CreateModelUseCaseImpl implements UseCaseAbstraction.Interface {
                 type: identity.type
             },
             description: data.description || "",
-            group: {
-                id: group.id,
-                name: group.name
-            },
             // Fields and layout from data
             fields: data.fields || [],
             layout: data.layout || [],
@@ -149,12 +123,10 @@ class CreateModelUseCaseImpl implements UseCaseAbstraction.Interface {
 export const CreateModelUseCase = UseCaseAbstraction.createImplementation({
     implementation: CreateModelUseCaseImpl,
     dependencies: [
-        GetGroupUseCase,
         EventPublisher,
         CreateModelRepository,
         AccessControl,
         TenantContext,
-        IdentityContext,
-        CmsContext
+        IdentityContext
     ]
 });

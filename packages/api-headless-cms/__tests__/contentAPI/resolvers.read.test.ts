@@ -102,7 +102,7 @@ describe.sequential("READ - Resolvers", () => {
                 modelId: targetModel.modelId,
                 singularApiName: targetModel.singularApiName,
                 pluralApiName: targetModel.pluralApiName,
-                group: group.id
+                group: group.slug
             }
         });
 
@@ -278,7 +278,7 @@ describe.sequential("READ - Resolvers", () => {
         const { listCategories } = useCategoryReadHandler({
             ...readOpts,
             permissions: createPermissions({
-                groups: [contentModelGroup.id],
+                groups: [contentModelGroup.slug],
                 models: ["category"]
             })
         });
@@ -324,7 +324,7 @@ describe.sequential("READ - Resolvers", () => {
         const { getCategory } = useCategoryReadHandler({
             ...readOpts,
             permissions: createPermissions({
-                groups: ["someOtherGroupId"]
+                groups: ["someOtherGroupSlug"]
             })
         });
 

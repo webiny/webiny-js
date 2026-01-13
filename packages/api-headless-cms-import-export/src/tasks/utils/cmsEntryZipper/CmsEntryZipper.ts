@@ -110,7 +110,7 @@ export class CmsEntryZipper implements ICmsEntryZipper {
                     assets,
                     model: sanitizeModel(
                         {
-                            id: model.group.id
+                            slug: model.group
                         },
                         model
                     )
