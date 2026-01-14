@@ -77,7 +77,6 @@ const SidebarMenuSubItem = ({
             e.stopPropagation();
             e.preventDefault();
 
-            console.log(buttonProps.pinnedIcon)
             if (isPinned) {
                 sidebar.unregisterPinnedItem(menuItemId);
             } else {
