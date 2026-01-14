@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import type { CmsEntry } from "~/types/index.js";
+import type { CmsEntry, CmsEntryValues } from "~/types/index.js";
 import type { CmsModel } from "~/types/index.js";
 import { EntryNotFoundError, type EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 
@@ -8,7 +8,7 @@ import { EntryNotFoundError, type EntryPersistenceError } from "~/domain/content
  * GetPublishedRevisionByEntryId Use Case
  */
 export interface IGetPublishedRevisionByEntryIdUseCase {
-    execute(model: CmsModel, entryId: string): Promise<Result<CmsEntry | null, UseCaseError>>;
+    execute<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, entryId: string): Promise<Result<CmsEntry<T> | null, UseCaseError>>;
 }
 
 export interface IGetPublishedRevisionByEntryIdUseCaseErrors {
@@ -32,7 +32,7 @@ export namespace GetPublishedRevisionByEntryIdUseCase {
  * GetPublishedRevisionByEntryIdRepository - Fetches published revision from storage.
  */
 export interface IGetPublishedRevisionByEntryIdRepository {
-    execute(model: CmsModel, entryId: string): Promise<Result<CmsEntry | null, RepositoryError>>;
+    execute<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, entryId: string): Promise<Result<CmsEntry<T> | null, RepositoryError>>;
 }
 
 export interface IGetPublishedRevisionByEntryIdRepositoryErrors {

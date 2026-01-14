@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import type { CmsEntry, CmsModel } from "~/types/index.js";
+import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import type { EntryPersistenceError, EntryValidationError } from "~/domain/contentEntry/errors.js";
 import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import type { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
@@ -9,7 +9,7 @@ import type { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
  * PublishEntry Use Case - Publishes an entry revision.
  */
 export interface IPublishEntryUseCase {
-    execute(model: CmsModel, id: string): Promise<Result<CmsEntry, UseCaseError>>;
+    execute<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, id: string): Promise<Result<CmsEntry<T>, UseCaseError>>;
 }
 
 export interface IPublishEntryUseCaseErrors {
@@ -60,7 +60,7 @@ export interface EntryPublishErrorPayload {
  * PublishEntryRepository - Handles storage operations for publishing entries.
  */
 export interface IPublishEntryRepository {
-    execute(model: CmsModel, entry: CmsEntry): Promise<Result<CmsEntry, RepositoryError>>;
+    execute<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, entry: CmsEntry<T>): Promise<Result<CmsEntry<T>, RepositoryError>>;
 }
 
 export interface IPublishEntryRepositoryErrors {

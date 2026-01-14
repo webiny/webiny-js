@@ -19,7 +19,7 @@ import { EntryFromStorageTransform, SearchableFieldsProvider } from "~/legacy/ab
  * Returns entries with pagination metadata.
  */
 class ListEntriesRepositoryImpl implements RepositoryAbstraction.Interface {
-    constructor(
+    public constructor(
         private searchableFieldsProvider: SearchableFieldsProvider.Interface,
         private entryFromStorageTransform: EntryFromStorageTransform.Interface,
         private storageOperations: StorageOperations.Interface
@@ -47,7 +47,7 @@ class ListEntriesRepositoryImpl implements RepositoryAbstraction.Interface {
                 fields: this.searchableFieldsProvider({ fields: model.fields })
             };
 
-            const result = await this.storageOperations.entries.list(model, listParams);
+            const result = await this.storageOperations.entries.list<T>(model, listParams);
 
             // Transform storage entries to domain entries
             const items = await Promise.all(
@@ -62,7 +62,7 @@ class ListEntriesRepositoryImpl implements RepositoryAbstraction.Interface {
                 cursor: result.hasMoreItems ? result.cursor : null
             };
 
-            return Result.ok({ entries: items as CmsEntry<T>[], meta });
+            return Result.ok({ entries: items, meta });
         } catch (error) {
             return Result.fail(new EntryPersistenceError(error as Error));
         }

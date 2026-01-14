@@ -93,7 +93,7 @@ const createEntryId = (input: CreateCmsEntryInput) => {
 /**
  * Cleans and adds default values to create input data.
  */
-const mapAndCleanCreateInputData = <TValues extends CmsEntryValues = CmsEntryValues>(
+const cleanInputValues = <TValues extends CmsEntryValues = CmsEntryValues>(
     model: CmsModel,
     input: TValues
 ) => {
@@ -129,7 +129,7 @@ interface CreateEntryDataParams<TValues extends CmsEntryValues = CmsEntryValues>
 
 interface ICreateEntryDataResponse<TValues extends CmsEntryValues = CmsEntryValues> {
     entry: CmsEntry<TValues>;
-    input: TValues;
+    input: CreateCmsEntryInput<TValues>;
 }
 
 export const createEntryData = async <TValues extends CmsEntryValues = CmsEntryValues>({
@@ -140,8 +140,8 @@ export const createEntryData = async <TValues extends CmsEntryValues = CmsEntryV
     getIdentity: getSecurityIdentity,
     getTenant,
     accessControl
-}: CreateEntryDataParams<TValues>): Promise<ICreateEntryDataResponse> => {
-    const initialValues = mapAndCleanCreateInputData<TValues>(model, rawInput.values);
+}: CreateEntryDataParams<TValues>): Promise<ICreateEntryDataResponse<TValues>> => {
+    const initialValues = cleanInputValues<TValues>(model, rawInput.values);
 
     await validateModelEntryDataOrThrow({
         context,
@@ -225,7 +225,7 @@ export const createEntryData = async <TValues extends CmsEntryValues = CmsEntryV
         };
     }
 
-    const entry: CmsEntry = {
+    const entry: CmsEntry<TValues> = {
         tenant: getTenant().id,
         entryId,
         id,
@@ -285,6 +285,9 @@ export const createEntryData = async <TValues extends CmsEntryValues = CmsEntryV
 
     return {
         entry,
-        input: structuredClone(values)
+        input: {
+            ...rawInput,
+            values: structuredClone(values)
+        }
     };
 };

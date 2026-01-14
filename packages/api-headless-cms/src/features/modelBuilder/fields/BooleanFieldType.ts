@@ -6,7 +6,7 @@ export interface IBooleanFieldBuilder extends FieldBuilder<"boolean"> {
 }
 
 class BooleanFieldBuilder extends FieldBuilder<"boolean"> implements IBooleanFieldBuilder {
-    constructor() {
+    public constructor() {
         super("boolean");
     }
 

@@ -2,6 +2,7 @@ import type {
     CmsContext,
     CmsEntry,
     CmsEntryStatus,
+    CmsEntryValues,
     CmsModel,
     UpdateCmsEntryInput,
     UpdateCmsEntryOptionsInput
@@ -17,18 +18,23 @@ import { getState } from "./state.js";
 import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 
-interface CreateEntryRevisionFromDataParams {
+interface CreateEntryRevisionFromDataParams<TValues extends CmsEntryValues = CmsEntryValues> {
     metaInput?: Record<string, any>;
     model: CmsModel;
-    rawInput: UpdateCmsEntryInput;
+    rawInput: UpdateCmsEntryInput<TValues>;
     options?: UpdateCmsEntryOptionsInput;
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
     getTenant: () => Tenant;
-    originalEntry: CmsEntry;
+    originalEntry: CmsEntry<TValues>;
 }
 
-export const createUpdateEntryData = async ({
+interface CreateEntryRevisionFromDataResponse<TValues extends CmsEntryValues = CmsEntryValues> {
+    entry: CmsEntry<TValues>;
+    input: UpdateCmsEntryInput<TValues>;
+}
+
+export const createUpdateEntryData = async <TValues extends CmsEntryValues = CmsEntryValues>({
     model,
     rawInput,
     options,
@@ -36,10 +42,9 @@ export const createUpdateEntryData = async ({
     metaInput,
     getIdentity: getSecurityIdentity,
     originalEntry
-}: CreateEntryRevisionFromDataParams): Promise<{
-    entry: CmsEntry;
-    input: Record<string, any>;
-}> => {
+}: CreateEntryRevisionFromDataParams<TValues>): Promise<
+    CreateEntryRevisionFromDataResponse<TValues>
+> => {
     /**
      * Make sure we only work with fields that are defined in the model.
      */
@@ -48,12 +53,12 @@ export const createUpdateEntryData = async ({
     await validateModelEntryDataOrThrow({
         context,
         model,
-        data: input,
+        values: input,
         entry: originalEntry,
         skipValidators: options?.skipValidators
     });
 
-    const initialValues = {
+    const initialValues: TValues = {
         /**
          * Existing values from the database, transformed back to original, of course.
          */
@@ -64,10 +69,10 @@ export const createUpdateEntryData = async ({
         ...input
     };
 
-    const values = await referenceFieldsMapping({
+    const values = await referenceFieldsMapping<TValues>({
         context,
         model,
-        input: initialValues,
+        values: initialValues,
         validateEntries: false
     });
 
@@ -82,7 +87,7 @@ export const createUpdateEntryData = async ({
     /**
      * We always send the full entry to the hooks and storage operations update.
      */
-    const entry: CmsEntry = {
+    const entry: CmsEntry<TValues> = {
         ...originalEntry,
 
         /**
@@ -154,7 +159,13 @@ export const createUpdateEntryData = async ({
         };
     }
 
-    return { entry, input };
+    return {
+        entry,
+        input: {
+            ...rawInput,
+            values: structuredClone(values)
+        }
+    };
 };
 
 /**

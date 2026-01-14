@@ -14,7 +14,7 @@ import {
  * 2. New ModelBuilder providers (public and private)
  */
 class PluginModelsProviderImpl implements ProviderAbstraction.Interface {
-    constructor(
+    public constructor(
         private cmsContext: CmsContext.Interface,
         private accessControl: AccessControl.Interface,
         private modelsProvider: IModelsProvider

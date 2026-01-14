@@ -11,7 +11,7 @@ import { isEntryLevelEntryMetaField, pickEntryMetaFields } from "~/constants.js"
  * DeleteEntryRevisionRepository - Handles storage operations for deleting entry revisions.
  */
 class DeleteEntryRevisionRepositoryImpl implements RepositoryAbstraction.Interface {
-    constructor(
+    public constructor(
         private entryToStorageTransform: EntryToStorageTransform.Interface,
         private storageOperations: StorageOperations.Interface
     ) {}

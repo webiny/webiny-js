@@ -8,7 +8,7 @@ import type { CmsEntryListParams, CmsEntryValues, CmsModel } from "~/types/index
  * Delegates to base ListEntriesUseCase with published: true filter.
  */
 class ListPublishedEntriesUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(private listEntriesUseCase: ListEntriesUseCase.Interface) {}
+    public constructor(private listEntriesUseCase: ListEntriesUseCase.Interface) {}
 
     async execute<T extends CmsEntryValues>(
         model: CmsModel,

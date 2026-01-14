@@ -15,7 +15,7 @@ import { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
  * Composes the base use case and filters out deleted entries.
  */
 class GetLatestRevisionByEntryIdUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(private baseUseCase: GetLatestRevisionByEntryIdBaseUseCase.Interface) {}
+    public constructor(private baseUseCase: GetLatestRevisionByEntryIdBaseUseCase.Interface) {}
 
     async execute<T extends CmsEntryValues>(
         model: CmsModel,

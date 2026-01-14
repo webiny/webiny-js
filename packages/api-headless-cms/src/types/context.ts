@@ -42,7 +42,7 @@ export interface CmsEntryContext {
     /**
      * Get a list of entries for a model by a given ID (revision).
      */
-    getEntriesByIds: (model: CmsModel, revisions: string[]) => Promise<CmsEntry[]>;
+    getEntriesByIds: <T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, revisions: string[]) => Promise<CmsEntry<T>[]>;
     /**
      * Get the entry for a model by a given ID.
      */
@@ -81,11 +81,11 @@ export interface CmsEntryContext {
     /**
      * List published entries by IDs.
      */
-    getPublishedEntriesByIds: (model: CmsModel, ids: string[]) => Promise<CmsEntry[]>;
+    getPublishedEntriesByIds: <T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, ids: string[]) => Promise<CmsEntry<T>[]>;
     /**
      * List latest entries by IDs.
      */
-    getLatestEntriesByIds: (model: CmsModel, ids: string[]) => Promise<CmsEntry[]>;
+    getLatestEntriesByIds: <T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, ids: string[]) => Promise<CmsEntry<T>[]>;
     /**
      * Create a new content entry.
      */
@@ -97,12 +97,12 @@ export interface CmsEntryContext {
     /**
      * Create a new entry from already existing entry.
      */
-    createEntryRevisionFrom: (
+    createEntryRevisionFrom: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         id: string,
-        input: CreateFromCmsEntryInput,
+        input: CreateFromCmsEntryInput<T>,
         options?: CreateRevisionCmsEntryOptionsInput
-    ) => Promise<CmsEntry>;
+    ) => Promise<CmsEntry<T>>;
     /**
      * Update existing entry.
      */
@@ -116,20 +116,20 @@ export interface CmsEntryContext {
     /**
      * Validate the entry - either new one or existing one.
      */
-    validateEntry: (
+    validateEntry: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         id?: string,
-        input?: UpdateCmsEntryInput
+        input?: UpdateCmsEntryInput<T>
     ) => Promise<CmsEntryValidateResponse>;
     /**
      * Move entry, and all its revisions, to a new folder.
      */
-    moveEntry: (model: CmsModel, id: string, folderId: string) => Promise<CmsEntry>;
+    moveEntry: <T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, id: string, folderId: string) => Promise<CmsEntry<T>>;
     /**
      * Method that republishes entry with given identifier.
      * @internal
      */
-    republishEntry: (model: CmsModel, id: string) => Promise<CmsEntry>;
+    republishEntry: <T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, id: string) => Promise<CmsEntry<T>>;
     /**
      * Delete only a certain revision of the entry.
      */
@@ -141,7 +141,7 @@ export interface CmsEntryContext {
     /**
      * Restore entry from trash bin with all its revisions.
      */
-    restoreEntryFromBin: (model: CmsModel, id: string) => Promise<CmsEntry>;
+    restoreEntryFromBin: <T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, id: string) => Promise<CmsEntry<T>>;
     /**
      * Delete multiple entries
      */
@@ -166,7 +166,7 @@ export interface CmsEntryContext {
     /**
      * Get all entry revisions.
      */
-    getEntryRevisions: (model: CmsModel, id: string) => Promise<CmsEntry[]>;
+    getEntryRevisions: <T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, id: string) => Promise<CmsEntry<T>[]>;
     /**
      * List all unique values for a given field.
      *

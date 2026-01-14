@@ -15,7 +15,7 @@ import type {
 class GetLatestRevisionByEntryIdIncludingDeletedUseCaseImpl
     implements UseCaseAbstraction.Interface
 {
-    constructor(private baseUseCase: GetLatestRevisionByEntryIdBaseUseCase.Interface) {}
+    public constructor(private baseUseCase: GetLatestRevisionByEntryIdBaseUseCase.Interface) {}
 
     async execute<T extends CmsEntryValues>(
         model: CmsModel,

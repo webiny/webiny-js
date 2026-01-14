@@ -33,7 +33,7 @@ class DynamicZoneFieldBuilder
 {
     private templates: IDynamicZoneTemplate[] = [];
 
-    constructor(private registry: IFieldBuilderRegistry) {
+    public constructor(private registry: IFieldBuilderRegistry) {
         super("dynamicZone");
     }
 

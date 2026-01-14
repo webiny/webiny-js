@@ -1382,86 +1382,98 @@ export interface CmsEntryStorageOperationsListResponse<
  * @category StorageOperations
  * @category CmsEntry
  */
-export interface CmsEntryStorageOperations<T extends CmsStorageEntry = CmsStorageEntry> {
+export interface CmsEntryStorageOperations {
     /**
      * Get all the entries of the ids.
      */
-    getByIds: (model: CmsModel, params: CmsEntryStorageOperationsGetByIdsParams) => Promise<T[]>;
+    getByIds: <T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        params: CmsEntryStorageOperationsGetByIdsParams
+    ) => Promise<CmsEntry<T>[]>;
     /**
      * Get all the published entries of the ids.
      */
-    getPublishedByIds: (
+    getPublishedByIds: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryStorageOperationsGetPublishedByIdsParams
-    ) => Promise<T[]>;
+    ) => Promise<CmsEntry<T>[]>;
     /**
      * Get all the latest entries of the ids.
      */
-    getLatestByIds: (
+    getLatestByIds: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryStorageOperationsGetLatestByIdsParams
-    ) => Promise<T[]>;
+    ) => Promise<CmsEntry<T>[]>;
     /**
      * Get all revisions of the given entry id.
      */
-    getRevisions: (
+    getRevisions: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryStorageOperationsGetRevisionsParams
-    ) => Promise<T[]>;
+    ) => Promise<CmsEntry<T>[]>;
     /**
      * Get the entry by the given revision id.
      */
-    getRevisionById: (
+    getRevisionById: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryStorageOperationsGetRevisionParams
-    ) => Promise<T | null>;
+    ) => Promise<CmsEntry<T> | null>;
     /**
      * Get the published entry by given entryId.
      */
-    getPublishedRevisionByEntryId: (
+    getPublishedRevisionByEntryId: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryStorageOperationsGetPublishedRevisionParams
-    ) => Promise<T | null>;
+    ) => Promise<CmsEntry<T> | null>;
     /**
      * Get the latest entry by given entryId.
      */
-    getLatestRevisionByEntryId: (
+    getLatestRevisionByEntryId: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryStorageOperationsGetLatestRevisionParams
-    ) => Promise<T | null>;
+    ) => Promise<CmsEntry<T> | null>;
     /**
      * Get the revision of the entry before given one.
      */
-    getPreviousRevision: (
+    getPreviousRevision: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryStorageOperationsGetPreviousRevisionParams
-    ) => Promise<T | null>;
+    ) => Promise<CmsEntry<T> | null>;
     /**
      * Gets entry by given params.
      */
-    get: (model: CmsModel, params: CmsEntryStorageOperationsGetParams) => Promise<T | null>;
+    get: <T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        params: CmsEntryStorageOperationsGetParams
+    ) => Promise<CmsEntry<T> | null>;
     /**
      * List all entries. Filterable via params.
      */
-    list: (
+    list: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryStorageOperationsListParams
-    ) => Promise<CmsEntryStorageOperationsListResponse<T>>;
+    ) => Promise<CmsEntryStorageOperationsListResponse<CmsEntry<T>>>;
     /**
      * Create a new entry.
      */
-    create: (model: CmsModel, params: CmsEntryStorageOperationsCreateParams<T>) => Promise<T>;
+    create: <T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        params: CmsEntryStorageOperationsCreateParams<CmsEntry<T>>
+    ) => Promise<CmsEntry<T>>;
     /**
      * Create a new entry from existing one.
      */
-    createRevisionFrom: (
+    createRevisionFrom: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
-        params: CmsEntryStorageOperationsCreateRevisionFromParams<T>
-    ) => Promise<T>;
+        params: CmsEntryStorageOperationsCreateRevisionFromParams<CmsEntry<T>>
+    ) => Promise<CmsEntry<T>>;
     /**
      * Update existing entry.
      */
-    update: (model: CmsModel, params: CmsEntryStorageOperationsUpdateParams<T>) => Promise<T>;
+    update: <T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        params: CmsEntryStorageOperationsUpdateParams<CmsEntry<T>>
+    ) => Promise<CmsEntry<T>>;
     /**
      * Move entry and all its entries into a new folder.
      */
@@ -1469,9 +1481,9 @@ export interface CmsEntryStorageOperations<T extends CmsStorageEntry = CmsStorag
     /**
      * Delete the entry revision.
      */
-    deleteRevision: (
+    deleteRevision: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
-        params: CmsEntryStorageOperationsDeleteRevisionParams<T>
+        params: CmsEntryStorageOperationsDeleteRevisionParams<CmsEntry<T>>
     ) => Promise<void>;
     /**
      * Delete the entry.
@@ -1484,10 +1496,10 @@ export interface CmsEntryStorageOperations<T extends CmsStorageEntry = CmsStorag
     /**
      * Restore the entry from the bin.
      */
-    restoreFromBin: (
+    restoreFromBin: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
-        params: CmsEntryStorageOperationsRestoreFromBinParams<T>
-    ) => Promise<T>;
+        params: CmsEntryStorageOperationsRestoreFromBinParams<CmsEntry<T>>
+    ) => Promise<CmsEntry<T>>;
     /**
      * Delete multiple entries, with a limit on how much can be deleted in one call.
      */
@@ -1498,11 +1510,17 @@ export interface CmsEntryStorageOperations<T extends CmsStorageEntry = CmsStorag
     /**
      * Publish the entry.
      */
-    publish: (model: CmsModel, params: CmsEntryStorageOperationsPublishParams<T>) => Promise<T>;
+    publish: <T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        params: CmsEntryStorageOperationsPublishParams<CmsEntry<T>>
+    ) => Promise<CmsEntry<T>>;
     /**
      * Unpublish the entry.
      */
-    unpublish: (model: CmsModel, params: CmsEntryStorageOperationsUnpublishParams<T>) => Promise<T>;
+    unpublish: <T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        params: CmsEntryStorageOperationsUnpublishParams<CmsEntry<T>>
+    ) => Promise<CmsEntry<T>>;
     /**
      * Method to list all the unique values for the given field id.
      * Simplest use case would be to aggregate tags for some content.

@@ -11,12 +11,12 @@ import { EntryToStorageTransform } from "~/legacy/abstractions.js";
  * Transforms domain entry to storage format and persists it.
  */
 class CreateEntryRepositoryImpl implements RepositoryAbstraction.Interface {
-    constructor(
+    public constructor(
         private entryToStorageTransform: EntryToStorageTransform.Interface,
         private storageOperations: StorageOperations.Interface
     ) {}
 
-    async execute(
+    public async execute(
         model: CmsModel,
         entry: CmsEntry
     ): Promise<Result<void, RepositoryAbstraction.Error>> {

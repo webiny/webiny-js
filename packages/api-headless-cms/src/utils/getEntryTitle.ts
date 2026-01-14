@@ -1,8 +1,8 @@
-import type { CmsEntry, CmsModel } from "~/types/index.js";
+import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 
-export function getEntryTitle(
+export function getEntryTitle<T extends CmsEntryValues = CmsEntryValues>(
     model: Pick<CmsModel, "titleFieldId" | "fields">,
-    entry: Pick<CmsEntry, "id" | "values">
+    entry: Pick<CmsEntry<T>, "id" | "values">
 ): string {
     if (!model.titleFieldId) {
         return entry.id;
@@ -11,9 +11,9 @@ export function getEntryTitle(
     if (!field) {
         return entry.id;
     }
-    const titleFieldId = field.fieldId;
+    const titleFieldId = field.fieldId as keyof T;
     const titleValue = entry.values[titleFieldId];
-    if (!titleValue) {
+    if (!titleValue || typeof titleValue !== "string") {
         return entry.id;
     }
 

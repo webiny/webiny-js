@@ -2,7 +2,7 @@ import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
 import { UpdateEntryRepository as RepositoryAbstraction } from "./abstractions.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
-import type { CmsEntry, CmsModel } from "~/types/index.js";
+import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
 import { EntryToStorageTransform } from "~/legacy/abstractions.js";
 
@@ -11,21 +11,21 @@ import { EntryToStorageTransform } from "~/legacy/abstractions.js";
  * Transforms domain entry to storage format and persists changes.
  */
 class UpdateEntryRepositoryImpl implements RepositoryAbstraction.Interface {
-    constructor(
+    public constructor(
         private entryToStorageTransform: EntryToStorageTransform.Interface,
         private storageOperations: StorageOperations.Interface
     ) {}
 
-    async execute(
+    async execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
-        entry: CmsEntry
+        entry: CmsEntry<T>
     ): Promise<Result<void, RepositoryAbstraction.Error>> {
         try {
             // Transform domain entry to storage format
-            const storageEntry = await this.entryToStorageTransform(model, entry);
+            const storageEntry = await this.entryToStorageTransform<T>(model, entry);
 
             // Persist to storage
-            await this.storageOperations.entries.update(model, {
+            await this.storageOperations.entries.update<T>(model, {
                 entry,
                 storageEntry
             });

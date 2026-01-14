@@ -16,7 +16,7 @@ import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
  * Returns the latest revision for a given entry (includes deleted entries).
  */
 class GetLatestRevisionByEntryIdRepositoryImpl implements RepositoryAbstraction.Interface {
-    constructor(
+    public constructor(
         private entryFromStorageTransform: EntryFromStorageTransform.Interface,
         private storageOperations: StorageOperations.Interface
     ) {}
@@ -38,7 +38,7 @@ class GetLatestRevisionByEntryIdRepositoryImpl implements RepositoryAbstraction.
             // Transform storage entry to domain entry
             const transformedEntry = await this.entryFromStorageTransform(model, entry);
 
-            return Result.ok(transformedEntry as CmsEntry<T>);
+            return Result.ok(transformedEntry);
         } catch (error) {
             return Result.fail(new EntryPersistenceError(error as Error));
         }

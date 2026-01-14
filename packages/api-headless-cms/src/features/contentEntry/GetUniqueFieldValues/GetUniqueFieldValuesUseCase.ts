@@ -12,7 +12,7 @@ import { getSearchableFields } from "~/crud/contentEntry/searchableFields.js";
 import type { CmsModel, CmsEntryUniqueValue } from "~/types/index.js";
 
 class GetUniqueFieldValuesUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(
+    public constructor(
         private repository: GetUniqueFieldValuesRepository.Interface,
         private accessControl: AccessControl.Interface,
         private cmsContext: CmsContext.Interface

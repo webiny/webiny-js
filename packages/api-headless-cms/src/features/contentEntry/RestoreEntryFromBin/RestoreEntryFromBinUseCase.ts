@@ -6,7 +6,7 @@ import { RestoreEntryFromBinUseCase as UseCaseAbstraction } from "./abstractions
 import { RestoreEntryFromBinRepository } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import { GetLatestDeletedRevisionByEntryIdUseCase } from "~/features/contentEntry/GetLatestRevisionByEntryId/index.js";
-import type { CmsEntry, CmsModel } from "~/types/index.js";
+import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import {
     EntryBeforeRestoreFromBinEvent,
     EntryAfterRestoreFromBinEvent,
@@ -30,7 +30,7 @@ import { getIdentity } from "~/utils/identity.js";
  * - Delegate to repository for storage operations
  */
 class RestoreEntryFromBinUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(
+    public constructor(
         private repository: RestoreEntryFromBinRepository.Interface,
         private accessControl: AccessControl.Interface,
         private getDeletedEntry: GetLatestDeletedRevisionByEntryIdUseCase.Interface,
@@ -38,10 +38,10 @@ class RestoreEntryFromBinUseCaseImpl implements UseCaseAbstraction.Interface {
         private eventPublisher: EventPublisher.Interface
     ) {}
 
-    async execute(
+    public async execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         id: string
-    ): Promise<Result<CmsEntry, UseCaseAbstraction.Error>> {
+    ): Promise<Result<CmsEntry<T>, UseCaseAbstraction.Error>> {
         // Check access control
         const canAccess = await this.accessControl.canAccessEntry({ model, rwd: "w" });
         if (!canAccess) {
@@ -49,7 +49,7 @@ class RestoreEntryFromBinUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         // Get the deleted entry to restore by ID
-        const getResult = await this.getDeletedEntry.execute(model, { id });
+        const getResult = await this.getDeletedEntry.execute<T>(model, { id });
 
         if (getResult.isFail()) {
             return Result.fail(new EntryNotFoundError(id));
@@ -72,7 +72,7 @@ class RestoreEntryFromBinUseCaseImpl implements UseCaseAbstraction.Interface {
         const currentDateTime = new Date().toISOString();
         const currentIdentity = this.identityContext.getIdentity();
 
-        const entryToRestore: CmsEntry = {
+        const entryToRestore: CmsEntry<T> = {
             ...originalEntry,
             wbyDeleted: false,
 
@@ -101,7 +101,7 @@ class RestoreEntryFromBinUseCaseImpl implements UseCaseAbstraction.Interface {
             );
 
             // Delegate to repository
-            const result = await this.repository.execute(model, entryToRestore);
+            const result = await this.repository.execute<T>(model, entryToRestore);
 
             if (result.isFail()) {
                 await this.eventPublisher.publish(

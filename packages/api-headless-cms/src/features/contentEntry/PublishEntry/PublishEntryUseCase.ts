@@ -7,7 +7,7 @@ import { PublishEntryRepository } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import { GetRevisionByIdUseCase } from "~/features/contentEntry/GetRevisionById/index.js";
 import { GetLatestRevisionByEntryIdUseCase } from "~/features/contentEntry/GetLatestRevisionByEntryId/index.js";
-import type { CmsEntry, CmsModel } from "~/types/index.js";
+import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import {
     EntryBeforePublishEvent,
     EntryAfterPublishEvent,
@@ -31,7 +31,7 @@ import { CmsContext } from "~/features/shared/abstractions.js";
  * - Delegate to repository for storage operations
  */
 class PublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(
+    public constructor(
         private repository: PublishEntryRepository.Interface,
         private accessControl: AccessControl.Interface,
         private getRevisionById: GetRevisionByIdUseCase.Interface,
@@ -41,10 +41,10 @@ class PublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         private cmsContext: CmsContext.Interface
     ) {}
 
-    async execute(
+    async execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         id: string
-    ): Promise<Result<CmsEntry, UseCaseAbstraction.Error>> {
+    ): Promise<Result<CmsEntry<T>, UseCaseAbstraction.Error>> {
         // Check access control (publish permission)
         const canAccess = await this.accessControl.canAccessEntry({ model, pw: "p" });
         if (!canAccess) {
@@ -52,7 +52,7 @@ class PublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         // Get the entry to publish
-        const result = await this.getRevisionById.execute(model, id);
+        const result = await this.getRevisionById.execute<T>(model, id);
 
         if (result.isFail()) {
             return Result.fail(new EntryNotFoundError(id));
@@ -72,7 +72,7 @@ class PublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         // Get the latest revision for entry-level metadata
-        const latestResult = await this.getLatestRevision.execute(model, {
+        const latestResult = await this.getLatestRevision.execute<T>(model, {
             id: originalEntry.entryId
         });
 
@@ -83,7 +83,7 @@ class PublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         const latestEntry = latestResult.value;
 
         // Prepare entry data for publishing (includes validation)
-        const { entry } = await createPublishEntryData({
+        const { entry } = await createPublishEntryData<T>({
             context: this.cmsContext,
             model,
             originalEntry,

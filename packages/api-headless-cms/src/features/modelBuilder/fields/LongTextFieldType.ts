@@ -27,7 +27,7 @@ export interface ILongTextFieldBuilder
         UpperCaseSpaceValidator {}
 
 class LongTextFieldBuilder extends FieldBuilder<"long-text"> implements ILongTextFieldBuilder {
-    constructor() {
+    public constructor() {
         super("long-text");
     }
 

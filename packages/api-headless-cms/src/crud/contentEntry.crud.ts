@@ -10,6 +10,8 @@ import type {
     CmsModel,
     CreateCmsEntryInput,
     CreateCmsEntryOptionsInput,
+    CreateFromCmsEntryInput,
+    CreateRevisionCmsEntryOptionsInput,
     UpdateCmsEntryInput,
     UpdateCmsEntryOptionsInput
 } from "~/types/index.js";
@@ -48,14 +50,16 @@ interface CreateContentEntryCrudParams {
 export const createContentEntryCrud = (params: CreateContentEntryCrudParams): CmsEntryContext => {
     const { context } = params;
 
-    const createEntry: CmsEntryContext["createEntry"] = async <T = CmsEntryValues>(
+    const createEntry: CmsEntryContext["createEntry"] = async <
+        T extends CmsEntryValues = CmsEntryValues
+    >(
         model: CmsModel,
-        rawInput: CreateCmsEntryInput,
+        rawInput: CreateCmsEntryInput<T>,
         options?: CreateCmsEntryOptionsInput
     ): Promise<CmsEntry<T>> => {
         // Delegate to new CreateEntry use case
         const useCase = context.container.resolve(CreateEntryUseCase);
-        const result = await useCase.execute(model, rawInput, options);
+        const result = await useCase.execute<T>(model, rawInput, options);
 
         if (result.isFail()) {
             // Convert Result error to WebinyError for backward compatibility
@@ -67,18 +71,20 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             );
         }
 
-        return result.value as CmsEntry<T>;
+        return result.value;
     };
 
-    const createEntryRevisionFrom: CmsEntryContext["createEntryRevisionFrom"] = async (
-        model,
-        sourceId,
-        rawInput,
-        options
+    const createEntryRevisionFrom: CmsEntryContext["createEntryRevisionFrom"] = async <
+        T extends CmsEntryValues = CmsEntryValues
+    >(
+        model: CmsModel,
+        sourceId: string,
+        rawInput: CreateFromCmsEntryInput<T>,
+        options?: CreateRevisionCmsEntryOptionsInput
     ) => {
         // Delegate to new CreateEntryRevisionFrom use case
         const useCase = context.container.resolve(CreateEntryRevisionFromUseCase);
-        const result = await useCase.execute(model, sourceId, rawInput, options);
+        const result = await useCase.execute<T>(model, sourceId, rawInput, options);
 
         if (result.isFail()) {
             // Convert Result error to WebinyError for backward compatibility
@@ -93,16 +99,18 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         return result.value;
     };
 
-    const updateEntry: CmsEntryContext["updateEntry"] = async <T = CmsEntryValues>(
+    const updateEntry: CmsEntryContext["updateEntry"] = async <
+        T extends CmsEntryValues = CmsEntryValues
+    >(
         model: CmsModel,
         id: string,
-        rawInput: UpdateCmsEntryInput,
+        rawInput: UpdateCmsEntryInput<T>,
         metaInput?: GenericRecord,
         options?: UpdateCmsEntryOptionsInput
     ): Promise<CmsEntry<T>> => {
         // Delegate to new UpdateEntry use case
         const useCase = context.container.resolve(UpdateEntryUseCase);
-        const result = await useCase.execute(model, id, rawInput, metaInput, options);
+        const result = await useCase.execute<T>(model, id, rawInput, metaInput, options);
 
         if (result.isFail()) {
             // Convert Result error to WebinyError for backward compatibility
@@ -113,7 +121,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             );
         }
 
-        return result.value as CmsEntry<T>;
+        return result.value;
     };
 
     const validateEntry: CmsEntryContext["validateEntry"] = async (model, id, inputData) => {
@@ -134,10 +142,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         return result.value;
     };
 
-    const moveEntry: CmsEntryContext["moveEntry"] = async (model, id, folderId) => {
+    const moveEntry = async <T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, id: string, folderId: string) => {
         // Delegate to new MoveEntry use case
         const useCase = context.container.resolve(MoveEntryUseCase);
-        const result = await useCase.execute(model, id, folderId);
+        const result = await useCase.execute<T>(model, id, folderId);
 
         if (result.isFail()) {
             // Convert Result error to WebinyError for backward compatibility
@@ -152,10 +160,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         return result.value;
     };
 
-    const republishEntry: CmsEntryContext["republishEntry"] = async (model, id) => {
+    const republishEntry = async <T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, id: string) => {
         // Delegate to new RepublishEntry use case
         const useCase = context.container.resolve(RepublishEntryUseCase);
-        const result = await useCase.execute(model, id);
+        const result = await useCase.execute<T>(model, id);
 
         if (result.isFail()) {
             // Convert Result error to WebinyError for backward compatibility
@@ -208,7 +216,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     ) => {
         // Delegate to new PublishEntry use case
         const useCase = context.container.resolve(PublishEntryUseCase);
-        const result = await useCase.execute(model, id);
+        const result = await useCase.execute<T>(model, id);
 
         if (result.isFail()) {
             // Convert Result error to WebinyError for backward compatibility
@@ -219,7 +227,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             );
         }
 
-        return result.value as CmsEntry<T>;
+        return result.value;
     };
     const unpublishEntry = async <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
@@ -227,7 +235,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     ) => {
         // Delegate to new UnpublishEntry use case
         const useCase = context.container.resolve(UnpublishEntryUseCase);
-        const result = await useCase.execute(model, id);
+        const result = await useCase.execute<T>(model, id);
 
         if (result.isFail()) {
             const error = result.error;
@@ -238,7 +246,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             );
         }
 
-        return result.value as CmsEntry<T>;
+        return result.value;
     };
 
     const getUniqueFieldValues: CmsEntryContext["getUniqueFieldValues"] = async (model, params) => {
@@ -268,12 +276,12 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         /**
          * Get entries by exact revision IDs from the database.
          */
-        async getEntriesByIds(model, ids) {
+        async getEntriesByIds<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, ids: string[]) {
             return context.benchmark.measure(
                 "headlessCms.crud.entries.getEntriesByIds",
                 async () => {
                     const useCase = context.container.resolve(GetEntriesByIdsUseCase);
-                    const result = await useCase.execute(model, ids);
+                    const result = await useCase.execute<T>(model, ids);
 
                     if (result.isFail()) {
                         const error = result.error;
@@ -315,12 +323,12 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         /**
          * Get published revisions by entry IDs.
          */
-        async getPublishedEntriesByIds(model: CmsModel, ids: string[]) {
+        async getPublishedEntriesByIds<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, ids: string[]) {
             return context.benchmark.measure(
                 "headlessCms.crud.entries.getPublishedEntriesByIds",
                 async () => {
                     const useCase = context.container.resolve(GetPublishedEntriesByIdsUseCase);
-                    const result = await useCase.execute(model, ids);
+                    const result = await useCase.execute<T>(model, ids);
 
                     if (result.isFail()) {
                         const error = result.error;
@@ -342,12 +350,12 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         /**
          * Get the latest revisions by entry IDs.
          */
-        async getLatestEntriesByIds(model: CmsModel, ids: string[]) {
+        async getLatestEntriesByIds<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, ids: string[]) {
             return context.benchmark.measure(
                 "headlessCms.crud.entries.getLatestEntriesByIds",
                 async () => {
                     const useCase = context.container.resolve(GetLatestEntriesByIdsUseCase);
-                    const result = await useCase.execute(model, ids);
+                    const result = await useCase.execute<T>(model, ids);
 
                     if (result.isFail()) {
                         const error = result.error;
@@ -366,12 +374,12 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 }
             );
         },
-        async getEntryRevisions(model, entryId) {
+        async getEntryRevisions<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, entryId: string) {
             return context.benchmark.measure(
                 "headlessCms.crud.entries.getEntryRevisions",
                 async () => {
                     const useCase = context.container.resolve(GetRevisionsByEntryIdUseCase);
-                    const result = await useCase.execute(model, entryId);
+                    const result = await useCase.execute<T>(model, entryId);
 
                     if (result.isFail()) {
                         const error = result.error;
@@ -526,38 +534,53 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 return createEntry(model, input, options);
             });
         },
-        async createEntryRevisionFrom(model, sourceId, input, options) {
+        async createEntryRevisionFrom<T extends CmsEntryValues = CmsEntryValues>(
+            model: CmsModel,
+            sourceId: string,
+            input: CreateFromCmsEntryInput<T>,
+            options?: CreateRevisionCmsEntryOptionsInput
+        ) {
             return context.benchmark.measure(
                 "headlessCms.crud.entries.createEntryRevisionFrom",
                 async () => {
-                    return createEntryRevisionFrom(model, sourceId, input, options);
+                    return createEntryRevisionFrom<T>(model, sourceId, input, options);
                 }
             );
         },
-        async updateEntry(model, id, input, meta, options) {
+        async updateEntry<T extends CmsEntryValues = CmsEntryValues>(
+            model: CmsModel,
+            id: string,
+            input: UpdateCmsEntryInput<T>,
+            meta?: GenericRecord,
+            options?: UpdateCmsEntryOptionsInput
+        ) {
             return context.benchmark.measure("headlessCms.crud.entries.updateEntry", async () => {
-                return updateEntry(model, id, input, meta, options);
+                return updateEntry<T>(model, id, input, meta, options);
             });
         },
-        async validateEntry(model, id, input) {
+        async validateEntry<T extends CmsEntryValues = CmsEntryValues>(
+            model: CmsModel,
+            id?: string,
+            input?: UpdateCmsEntryInput<T>
+        ) {
             return context.benchmark.measure("headlessCms.crud.entries.validateEntry", async () => {
                 return validateEntry(model, id, input);
             });
         },
-        async moveEntry(model, id, folderId) {
+        async moveEntry<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, id: string, folderId: string) {
             return context.benchmark.measure("headlessCms.crud.entries.moveEntry", async () => {
-                return moveEntry(model, id, folderId);
+                return moveEntry<T>(model, id, folderId);
             });
         },
         /**
          * Method used internally. Not documented and should not be used in users systems.
          * @internal
          */
-        async republishEntry(model, id) {
+        async republishEntry<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, id: string) {
             return context.benchmark.measure(
                 "headlessCms.crud.entries.republishEntry",
                 async () => {
-                    return republishEntry(model, id);
+                    return republishEntry<T>(model, id);
                 }
             );
         },
@@ -583,12 +606,12 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 }
             });
         },
-        async restoreEntryFromBin(model, entryId) {
+        async restoreEntryFromBin<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, entryId: string) {
             return context.benchmark.measure(
                 "headlessCms.crud.entries.restoreEntryFromBin",
                 async () => {
                     const useCase = context.container.resolve(RestoreEntryFromBinUseCase);
-                    const result = await useCase.execute(model, entryId);
+                    const result = await useCase.execute<T>(model, entryId);
                     if (result.isFail()) {
                         throw new WebinyError(
                             result.error.message,
@@ -608,16 +631,16 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 }
             );
         },
-        async publishEntry(model, id) {
+        async publishEntry<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, id: string) {
             return context.benchmark.measure("headlessCms.crud.entries.publishEntry", async () => {
-                return publishEntry(model, id);
+                return publishEntry<T>(model, id);
             });
         },
-        async unpublishEntry(model, id) {
+        async unpublishEntry<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, id: string) {
             return context.benchmark.measure(
                 "headlessCms.crud.entries.unpublishEntry",
                 async () => {
-                    return unpublishEntry(model, id);
+                    return unpublishEntry<T>(model, id);
                 }
             );
         },

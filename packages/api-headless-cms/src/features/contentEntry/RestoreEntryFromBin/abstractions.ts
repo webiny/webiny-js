@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import type { CmsEntry, CmsModel } from "~/types/index.js";
+import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import type { EntryNotFoundError, EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 
@@ -9,7 +9,7 @@ import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
  * This clears the wbyDeleted flag and restores the entry to its original folder.
  */
 export interface IRestoreEntryFromBinUseCase {
-    execute(model: CmsModel, id: string): Promise<Result<CmsEntry, UseCaseError>>;
+    execute<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, id: string): Promise<Result<CmsEntry<T>, UseCaseError>>;
 }
 
 export interface IRestoreEntryFromBinUseCaseErrors {
@@ -58,7 +58,7 @@ export interface EntryRestoreFromBinErrorPayload {
  * RestoreEntryFromBinRepository - Handles storage operations for restoring entries from bin.
  */
 export interface IRestoreEntryFromBinRepository {
-    execute(model: CmsModel, entry: CmsEntry): Promise<Result<CmsEntry, RepositoryError>>;
+    execute<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, entry: CmsEntry<T>): Promise<Result<CmsEntry<T>, RepositoryError>>;
 }
 
 export interface IRestoreEntryFromBinRepositoryErrors {

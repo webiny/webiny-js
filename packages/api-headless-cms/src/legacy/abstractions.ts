@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { PluginsContainer as PluginsContainerType } from "@webiny/plugins";
-import type { CmsEntry, CmsModel, CmsModelField } from "~/types/index.js";
+import type { CmsEntry, CmsEntryValues, CmsModel, CmsModelField } from "~/types/index.js";
 
 export const PluginsContainer = createAbstraction<PluginsContainerType>("PluginsContainer");
 
@@ -29,7 +29,7 @@ export namespace SearchableFieldsProvider {
  * Legacy abstraction for the utility function.
  */
 export interface IEntryToStorageTransform {
-    (model: CmsModel, entry: CmsEntry): Promise<CmsEntry>;
+    <T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, entry: CmsEntry<T>): Promise<CmsEntry<T>>;
 }
 
 export const EntryToStorageTransform =
@@ -44,7 +44,7 @@ export namespace EntryToStorageTransform {
  * Legacy abstraction for the utility function.
  */
 export interface IEntryFromStorageTransform {
-    (model: CmsModel, entry: CmsEntry): Promise<CmsEntry>;
+    <T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, entry: CmsEntry<T>): Promise<CmsEntry<T>>;
 }
 
 export const EntryFromStorageTransform = createAbstraction<IEntryFromStorageTransform>(

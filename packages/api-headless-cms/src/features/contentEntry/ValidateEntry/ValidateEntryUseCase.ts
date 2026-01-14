@@ -20,7 +20,7 @@ import { CmsContext } from "~/features/shared/abstractions.js";
  * - Return validation results
  */
 class ValidateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(
+    public constructor(
         private accessControl: AccessControl.Interface,
         private getRevisionById: GetRevisionByIdUseCase.Interface,
         private cmsContext: CmsContext.Interface
@@ -67,7 +67,7 @@ class ValidateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         const validationResult = await validateModelEntryData({
             context: this.cmsContext,
             model,
-            data: input,
+            values: input,
             entry: originalEntry
         });
 

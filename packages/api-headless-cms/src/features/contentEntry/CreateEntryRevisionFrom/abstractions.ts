@@ -1,5 +1,4 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
+import { createAbstraction, Result } from "@webiny/feature/api";
 import type {
     CmsEntry,
     CmsEntryValues,
@@ -8,11 +7,11 @@ import type {
     CreateCmsEntryOptionsInput
 } from "~/types/index.js";
 import type {
+    EntryNotAuthorizedError,
+    EntryNotFoundError,
     EntryPersistenceError,
-    EntryValidationError,
-    EntryNotFoundError
+    EntryValidationError
 } from "~/domain/contentEntry/errors.js";
-import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 
 /**
  * CreateEntryRevisionFrom Use Case - Creates a new revision from an existing entry.
@@ -42,7 +41,9 @@ export const CreateEntryRevisionFromUseCase = createAbstraction<ICreateEntryRevi
 
 export namespace CreateEntryRevisionFromUseCase {
     export type Interface = ICreateEntryRevisionFromUseCase;
-    export type Return<T> = Promise<Result<CmsEntry<T>, UseCaseError>>;
+    export type Return<T extends CmsEntryValues = CmsEntryValues> = Promise<
+        Result<CmsEntry<T>, UseCaseError>
+    >;
     export type Error = UseCaseError;
 }
 
@@ -81,7 +82,7 @@ export interface EntryRevisionCreateErrorPayload {
  * CreateEntryRevisionFromRepository - Handles storage operations for creating entry revisions.
  */
 export interface ICreateEntryRevisionFromRepository {
-    execute(model: CmsModel, entry: CmsEntry): Promise<Result<CmsEntry, RepositoryError>>;
+    execute<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, entry: CmsEntry<T>): Promise<Result<CmsEntry<T>, RepositoryError>>;
 }
 
 export interface ICreateEntryRevisionFromRepositoryErrors {

@@ -13,7 +13,7 @@ import { ModelPersistenceError } from "~/domain/contentModel/errors.js";
  * - Return all accessible models
  */
 class ListModelsRepositoryImpl implements RepositoryAbstraction.Interface {
-    constructor(private modelsFetcher: ModelsFetcher.Interface) {}
+    public constructor(private modelsFetcher: ModelsFetcher.Interface) {}
 
     async execute(
         params?: ICmsModelListParams

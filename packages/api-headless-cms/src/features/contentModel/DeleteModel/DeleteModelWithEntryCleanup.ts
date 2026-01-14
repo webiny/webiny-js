@@ -19,7 +19,7 @@ import { CmsModel } from "~/types/model.js";
  * 3. Only proceed to the base use case if validations pass
  */
 class DeleteModelWithEntryCleanupImpl implements DeleteModelUseCase.Interface {
-    constructor(
+    public constructor(
         private cmsContext: CmsContext.Interface,
         private decoratee: DeleteModelUseCase.Interface
     ) {}

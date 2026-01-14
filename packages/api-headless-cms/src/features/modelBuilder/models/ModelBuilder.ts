@@ -7,7 +7,7 @@ import { PublicModelBuilder } from "./PublicModelBuilder.js";
  * Call .private() or .public() to get the appropriate typed builder.
  */
 export class ModelBuilder {
-    constructor(private registry: FieldBuilderRegistry.Interface) {}
+    public constructor(private registry: FieldBuilderRegistry.Interface) {}
 
     /**
      * Create a private model (internal models, no GraphQL API).

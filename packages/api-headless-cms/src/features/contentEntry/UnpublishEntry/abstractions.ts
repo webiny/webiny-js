@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import type { CmsEntry } from "~/types/index.js";
+import type { CmsEntry, CmsEntryValues } from "~/types/index.js";
 import type { CmsModel } from "~/types/index.js";
 import type { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
 import type { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
@@ -11,7 +11,7 @@ import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
  * UnpublishEntry Use Case
  */
 export interface IUnpublishEntryUseCase {
-    execute(model: CmsModel, id: string): Promise<Result<CmsEntry, UseCaseError>>;
+    execute<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, id: string): Promise<Result<CmsEntry<T>, UseCaseError>>;
 }
 
 export interface IUnpublishEntryUseCaseErrors {
@@ -36,7 +36,7 @@ export namespace UnpublishEntryUseCase {
  * Takes a domain CmsEntry object and unpublishes it.
  */
 export interface IUnpublishEntryRepository {
-    execute(model: CmsModel, entry: CmsEntry): Promise<Result<CmsEntry, RepositoryError>>;
+    execute<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, entry: CmsEntry<T>): Promise<Result<CmsEntry<T>, RepositoryError>>;
 }
 
 export interface IUnpublishEntryRepositoryErrors {

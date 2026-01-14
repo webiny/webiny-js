@@ -1,9 +1,7 @@
-import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
+import { createImplementation, Result } from "@webiny/feature/api";
 import { GetPublishedRevisionByEntryIdRepository as RepositoryAbstraction } from "./abstractions.js";
 import { EntryNotFoundError, EntryPersistenceError } from "~/domain/contentEntry/errors.js";
-import type { CmsEntry } from "~/types/index.js";
-import type { CmsModel } from "~/types/index.js";
+import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
 import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
 
@@ -12,21 +10,21 @@ import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
  * Returns null if entry not found or is deleted.
  */
 class GetPublishedRevisionByEntryIdRepositoryImpl implements RepositoryAbstraction.Interface {
-    constructor(
+    public constructor(
         private entryFromStorageTransform: EntryFromStorageTransform.Interface,
         private storageOperations: StorageOperations.Interface
     ) {}
 
-    async execute(
+    public async execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         entryId: string
-    ): Promise<Result<CmsEntry, RepositoryAbstraction.Error>> {
+    ): Promise<Result<CmsEntry<T>, RepositoryAbstraction.Error>> {
         try {
             // Get published revision from storage
-            const storageEntry = await this.storageOperations.entries.getPublishedRevisionByEntryId(
-                model,
-                { id: entryId }
-            );
+            const storageEntry =
+                await this.storageOperations.entries.getPublishedRevisionByEntryId<T>(model, {
+                    id: entryId
+                });
 
             if (!storageEntry || storageEntry.wbyDeleted) {
                 return Result.fail(new EntryNotFoundError(entryId));

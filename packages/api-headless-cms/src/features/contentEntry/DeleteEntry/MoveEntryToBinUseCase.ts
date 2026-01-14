@@ -26,7 +26,7 @@ import { ROOT_FOLDER } from "~/constants.js";
  * - Delegate to repository for storage operations
  */
 class MoveEntryToBinUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(
+    public constructor(
         private repository: MoveEntryToBinRepository.Interface,
         private accessControl: AccessControl.Interface,
         private getLatestRevision: GetLatestRevisionByEntryIdUseCase.Interface,
