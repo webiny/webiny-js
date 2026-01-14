@@ -49,12 +49,14 @@ const SidebarMenuItemBase = ({
 
     const isPinned = sidebar.isItemPinned(menuItemId);
 
-    // Use pinnedIcon for pinned items if provided
-    const pinnedIcon = useMemo(() => {
-        return isPinned && buttonProps.pinnedIcon
-            ? buttonProps.pinnedIcon
-            : buttonProps.icon || parentIcon;
-    }, [isPinned, buttonProps.pinnedIcon, buttonProps.icon, parentIcon]);
+    // Icon to use when this item is pinned
+    const pinnedItemIcon = useMemo(() => {
+        if (buttonProps.pinnedIcon) {
+            return buttonProps.pinnedIcon;
+        }
+
+        return buttonProps.icon || parentIcon;
+    }, [buttonProps.pinnedIcon, buttonProps.icon, parentIcon]);
 
     // Register on mount if already pinned, unregister on unmount
     // Re-register when active state changes to keep pinned items in sync
@@ -63,7 +65,7 @@ const SidebarMenuItemBase = ({
             sidebar.registerPinnedItem({
                 id: menuItemId,
                 text: buttonProps.text,
-                icon: pinnedIcon,
+                icon: pinnedItemIcon,
                 to: buttonProps.to,
                 onClick: buttonProps.onClick,
                 active: buttonProps.active
@@ -75,7 +77,7 @@ const SidebarMenuItemBase = ({
                 sidebar.unregisterPinnedItem(menuItemId);
             }
         };
-    }, [pinnable, isPinned, menuItemId, buttonProps.active, pinnedIcon]);
+    }, [pinnable, isPinned, menuItemId, buttonProps.active, pinnedItemIcon]);
 
     const pinAction = useMemo(() => {
         if (!pinnable) {
@@ -93,7 +95,7 @@ const SidebarMenuItemBase = ({
                 sidebar.registerPinnedItem({
                     id: menuItemId,
                     text: buttonProps.text,
-                    icon: pinnedIcon,
+                    icon: pinnedItemIcon,
                     to: buttonProps.to,
                     onClick: buttonProps.onClick,
                     active: buttonProps.active

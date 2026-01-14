@@ -38,12 +38,14 @@ const SidebarMenuSubItem = ({
 
     const isPinned = sidebar.isItemPinned(menuItemId);
 
-    // Use pinnedIcon for pinned items if provided
+    // Icon to use when this item is pinned
     const pinnedIcon = useMemo(() => {
-        return isPinned && buttonProps.pinnedIcon
-            ? buttonProps.pinnedIcon
-            : buttonProps.icon || parentIcon;
-    }, [isPinned, buttonProps.pinnedIcon, buttonProps.icon, parentIcon]);
+        if (buttonProps.pinnedIcon) {
+            return buttonProps.pinnedIcon;
+        }
+
+        return buttonProps.icon || parentIcon;
+    }, [buttonProps.pinnedIcon, buttonProps.icon, parentIcon]);
 
     // Register on mount if already pinned, unregister on unmount
     // Re-register when active state changes to keep pinned items in sync
