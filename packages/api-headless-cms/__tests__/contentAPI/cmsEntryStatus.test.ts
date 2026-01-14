@@ -80,8 +80,10 @@ describe("cms entry status filtering", () => {
             const slug = camelCase(title);
             const [response] = await createCategory({
                 data: {
-                    title,
-                    slug
+                    values: {
+                        title,
+                        slug
+                    }
                 }
             });
             expect(response).toMatchObject({
@@ -89,8 +91,10 @@ describe("cms entry status filtering", () => {
                     createCategory: {
                         data: {
                             id: expect.any(String),
-                            title,
-                            slug,
+                            values: {
+                                title,
+                                slug
+                            },
                             meta: {
                                 status: "draft",
                                 version: 1

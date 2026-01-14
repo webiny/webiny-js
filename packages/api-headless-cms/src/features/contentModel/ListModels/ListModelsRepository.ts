@@ -1,8 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { ListModelsRepository as RepositoryAbstraction } from "./abstractions.js";
 import { ModelsFetcher } from "~/features/contentModel/shared/abstractions.js";
-import type { CmsModel } from "~/types/index.js";
-import type { ICmsModelListParams } from "~/types/index.js";
+import type { CmsModel, ICmsModelListParams } from "~/types/index.js";
 import { ModelPersistenceError } from "~/domain/contentModel/errors.js";
 
 /**

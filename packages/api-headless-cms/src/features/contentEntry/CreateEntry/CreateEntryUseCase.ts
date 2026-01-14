@@ -1,10 +1,8 @@
-import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
-import { CreateEntryUseCase as UseCaseAbstraction } from "./abstractions.js";
-import { CreateEntryRepository } from "./abstractions.js";
+import { createImplementation, Result } from "@webiny/feature/api";
+import { CreateEntryRepository, CreateEntryUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
-import { EntryBeforeCreateEvent, EntryAfterCreateEvent } from "./events.js";
-import { AccessControl } from "~/features/shared/abstractions.js";
+import { EntryAfterCreateEvent, EntryBeforeCreateEvent } from "./events.js";
+import { AccessControl, CmsContext } from "~/features/shared/abstractions.js";
 import type {
     CmsEntry,
     CmsEntryValues,
@@ -16,7 +14,6 @@ import { EntryNotAuthorizedError, EntryValidationError } from "~/domain/contentE
 import { createEntryData } from "~/crud/contentEntry/entryDataFactories/createEntryData.js";
 import { TenantContext } from "@webiny/api-core/features/TenantContext";
 import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
-import { CmsContext } from "~/features/shared/abstractions.js";
 
 /**
  * CreateEntryUseCase - Orchestrates entry creation.
@@ -37,7 +34,7 @@ class CreateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         private cmsContext: CmsContext.Interface
     ) {}
 
-    async execute<T = CmsEntryValues>(
+    async execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         rawInput: CreateCmsEntryInput<T>,
         options?: CreateCmsEntryOptionsInput

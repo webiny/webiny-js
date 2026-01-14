@@ -35,8 +35,10 @@ const categoryFields = `
 
         revisions {
             id
-            title
-            slug
+            values {
+                title
+                slug
+            }
             meta {
                 status
                 version
@@ -48,8 +50,10 @@ const categoryFields = `
         folderId
     }
     # user defined fields
-    title
-    slug
+    values {
+        title
+        slug
+    }
 `;
 
 const errorFields = `

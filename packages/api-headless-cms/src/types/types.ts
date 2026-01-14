@@ -297,7 +297,9 @@ export interface CmsGroupContext {
  * @category CmsEntry
  */
 export interface CmsEntryValues {
-    [key: string]: any;
+    // TODO REMOVE
+    someKeyToBreakTypescriptCompiler?: string;
+    // [key: string]: any;
 }
 
 export interface ICmsEntryLocation {
@@ -316,7 +318,7 @@ export interface IEntryState {
  * @category Database model
  * @category CmsEntry
  */
-export interface CmsEntry<T = CmsEntryValues> {
+export interface CmsEntry<TValues extends CmsEntryValues = CmsEntryValues> {
     /**
      * Tenant id which is this entry for. Can be used in case of shared storage.
      */
@@ -473,7 +475,7 @@ export interface CmsEntry<T = CmsEntryValues> {
      *
      * @see CmsModelField
      */
-    values: T;
+    values: TValues;
     /**
      * Advanced Content Organization
      */
@@ -784,7 +786,7 @@ export interface CmsEntryMeta {
  * @category Context
  * @category CmsEntry
  */
-export type CreateCmsEntryInput<TValues = CmsEntryValues> = TValues & {
+export interface CreateCmsEntryInput<TValues extends CmsEntryValues = CmsEntryValues> {
     id?: string;
     status?: CmsEntryStatus;
 
@@ -797,6 +799,7 @@ export type CreateCmsEntryInput<TValues = CmsEntryValues> = TValues & {
     deletedOn?: Date | string | null;
     restoredOn?: Date | string | null;
     createdBy?: CmsIdentity;
+    modifiedBy?: CmsIdentity;
     savedBy?: CmsIdentity;
     deletedBy?: CmsIdentity | null;
     restoredBy?: CmsIdentity | null;
@@ -822,13 +825,18 @@ export type CreateCmsEntryInput<TValues = CmsEntryValues> = TValues & {
     revisionLastPublishedOn?: Date | string;
     revisionFirstPublishedBy?: CmsIdentity;
     revisionLastPublishedBy?: CmsIdentity;
-
+    // TODO remove wbyAco_location
     wbyAco_location?: {
+        folderId?: string | null;
+    };
+    location?: {
         folderId?: string | null;
     };
 
     state?: Partial<IEntryState>;
-};
+
+    values: TValues;
+}
 
 export interface CreateCmsEntryOptionsInput {
     skipValidators?: string[];
@@ -838,7 +846,7 @@ export interface CreateCmsEntryOptionsInput {
  * @category Context
  * @category CmsEntry
  */
-export interface CreateFromCmsEntryInput {
+export interface CreateFromCmsEntryInput<TValues extends CmsEntryValues = CmsEntryValues> {
     /**
      * Revision-level meta fields. 👇
      */
@@ -869,7 +877,7 @@ export interface CreateFromCmsEntryInput {
 
     state?: Partial<IEntryState>;
 
-    [key: string]: any;
+    values: TValues;
 }
 
 export interface CreateRevisionCmsEntryOptionsInput {

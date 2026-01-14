@@ -34,7 +34,7 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
     return function createFieldResolvers(params: CreateFieldResolvers) {
         const { graphQLType, fields, isRoot = false, extraResolvers = {} } = params;
 
-        const fieldResolvers = { ...extraResolvers };
+        const fieldResolvers: Resolvers<any> = {};
         const typeResolvers = {};
 
         for (const field of fields) {
@@ -113,6 +113,12 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
             };
         }
 
-        return { [graphQLType]: fieldResolvers, ...typeResolvers };
+        return {
+            [graphQLType]: {
+                values: fieldResolvers,
+                ...extraResolvers
+            },
+            ...typeResolvers
+        };
     };
 };

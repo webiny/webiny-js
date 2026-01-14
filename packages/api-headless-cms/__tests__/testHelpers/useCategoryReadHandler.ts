@@ -8,8 +8,10 @@ const categoryFields = `
     entryId
     createdOn
     savedOn
-    title
-    slug
+    values {
+        title
+        slug
+    }
 `;
 
 const errorFields = `

@@ -62,27 +62,38 @@ export const createReadSDL: CreateReadSDL = ({
 
     return `
         """${model.description || singularName}"""
+        type ${singularName}Values {
+            ${fieldsRender.map(f => f.fields).join("\n") || "_empty: String"}
+        }
+        
         type ${singularName} {
             id: ID!
             entryId: String!
             ${hasModelIdField ? "" : "modelId: String!"}
             
             ${onByMetaGqlFields}
-            ${fieldsRender.map(f => f.fields).join("\n")}
+            values: ${singularName}Values!
         }
         
         ${fieldsRender
             .map(f => f.typeDefs)
             .filter(Boolean)
             .join("\n")}
-        
-        input ${singularName}GetWhereInput {
-            ${getFilterFieldsRender}
+            
+        input ${singularName}GetWhereInputValues {
+            ${getFilterFieldsRender || "_empty: String"}
         }
         
+        input ${singularName}GetWhereInput {
+            values: ${getFilterFieldsRender}Values
+        }
+        
+        input ${singularName}ListWhereInputValues {
+            ${listFilterFieldsRender || "_empty: String"}
+        }
         
         input ${singularName}ListWhereInput {
-            ${listFilterFieldsRender}
+            values: ${singularName}ListWhereInputValues
             AND: [${singularName}ListWhereInput!]
             OR: [${singularName}ListWhereInput!]
         }
