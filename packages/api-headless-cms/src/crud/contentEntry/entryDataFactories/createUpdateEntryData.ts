@@ -48,17 +48,17 @@ export const createUpdateEntryData = async <TValues extends CmsEntryValues = Cms
     /**
      * Make sure we only work with fields that are defined in the model.
      */
-    const input = mapAndCleanUpdatedInputData(model, rawInput);
+    const cleanedValues = mapAndCleanUpdatedInputData<TValues>(model, rawInput.values || ({} as TValues) );
 
     await validateModelEntryDataOrThrow({
         context,
         model,
-        values: input,
+        values: cleanedValues,
         entry: originalEntry,
         skipValidators: options?.skipValidators
     });
 
-    const initialValues: TValues = {
+    const mergedValues: TValues = {
         /**
          * Existing values from the database, transformed back to original, of course.
          */
@@ -66,13 +66,13 @@ export const createUpdateEntryData = async <TValues extends CmsEntryValues = Cms
         /**
          * Add new values.
          */
-        ...input
+        ...cleanedValues
     };
 
     const values = await referenceFieldsMapping<TValues>({
         context,
         model,
-        values: initialValues,
+        values: mergedValues,
         validateEntries: false
     });
 

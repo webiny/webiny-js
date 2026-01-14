@@ -888,7 +888,7 @@ export interface CreateRevisionCmsEntryOptionsInput {
  * @category Context
  * @category CmsEntry
  */
-export type UpdateCmsEntryInput<TValues extends CmsEntryValues = CmsEntryValues> = TValues & {
+export interface UpdateCmsEntryInput<TValues extends CmsEntryValues = CmsEntryValues> {
     /**
      * Revision-level meta fields. 👇
      */
@@ -930,7 +930,9 @@ export type UpdateCmsEntryInput<TValues extends CmsEntryValues = CmsEntryValues>
     };
 
     state?: Partial<IEntryState>;
-};
+    
+    values?: TValues;
+}
 
 export interface UpdateCmsEntryOptionsInput {
     skipValidators?: string[];

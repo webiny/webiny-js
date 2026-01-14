@@ -127,8 +127,8 @@ export interface CmsEntryContext {
      */
     validateEntry: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
-        id?: string,
-        input?: UpdateCmsEntryInput<T>
+        id: string,
+        input: UpdateCmsEntryInput<T>
     ) => Promise<CmsEntryValidateResponse>;
     /**
      * Move entry, and all its revisions, to a new folder.

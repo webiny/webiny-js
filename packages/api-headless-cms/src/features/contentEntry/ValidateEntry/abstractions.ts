@@ -1,6 +1,11 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import type { CmsModel, CmsModelFieldValidation } from "~/types/index.js";
+import type {
+    CmsEntryValues,
+    CmsModel,
+    CmsModelFieldValidation,
+    UpdateCmsEntryInput
+} from "~/types/index.js";
 import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import type { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
 import { GetRevisionByIdUseCase } from "~/features/contentEntry/GetRevisionById/index.js";
@@ -16,10 +21,10 @@ export interface IValidateEntryUserCaseExecuteResult {
  * This can be used to validate data before creating or updating an entry.
  */
 export interface IValidateEntryUseCase {
-    execute(
+    execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         id: string | null,
-        inputData: Record<string, any>
+        input: UpdateCmsEntryInput<T>
     ): Promise<Result<IValidateEntryUserCaseExecuteResult[], UseCaseError>>;
 }
 
