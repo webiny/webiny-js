@@ -98,6 +98,10 @@ export interface FormOnSubmit<T = GenericFormData> {
     (data: T, form: FormAPI<T>): any;
 }
 
+export interface FormOnAfterSubmit<T = GenericFormData> {
+    (data: T, form: FormAPI<T>): any;
+}
+
 export interface FormPropsState<T extends GenericFormData = GenericFormData> {
     data: T;
 }
@@ -108,6 +112,7 @@ export interface FormProps<T extends GenericFormData = GenericFormData> {
     validateOnFirstSubmit?: boolean;
     submitOnEnter?: boolean;
     onSubmit?: FormOnSubmit<T>;
+    onAfterSubmit?: FormOnAfterSubmit<T>;
     onInvalid?: (validation: FormValidation) => void;
     onChange?: FormOnSubmit<T>;
     children(params: FormRenderPropParams<T>): React.ReactElement;

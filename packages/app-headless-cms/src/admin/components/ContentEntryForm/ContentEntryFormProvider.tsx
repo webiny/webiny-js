@@ -76,6 +76,7 @@ export const ContentEntryFormProvider = ({
     confirmNavigationIfDirty
 }: ContentEntryFormProviderProps) => {
     const ref = useRef<FormAPI<CmsContentEntry> | null>(null);
+    const onAfterSubmitRef = useRef<(entry: CmsContentEntry) => void>(() => void 0);
     const [invalidFields, setInvalidFields] = useState<FormInvalidFields>({});
     const { showSnackbar } = useSnackbar();
     const saveOptionsRef = useRef<SaveEntryOptions>({ skipValidators: undefined });
@@ -122,13 +123,7 @@ export const ContentEntryFormProvider = ({
         const isNewRevision = !isNewEntry && data.id !== entry.id;
 
         if ((isNewEntry || isNewRevision) && onAfterCreate) {
-            // We need a timeout to let the Prompt component update.
-            await new Promise<void>(resolve => {
-                setTimeout(() => {
-                    onAfterCreate(entry);
-                    resolve();
-                }, 50);
-            });
+            onAfterSubmitRef.current = onAfterCreate;
         }
 
         return entry;
@@ -143,6 +138,9 @@ export const ContentEntryFormProvider = ({
     return (
         <Form<CmsContentEntry>
             onSubmit={onFormSubmit}
+            onAfterSubmit={data => {
+                onAfterSubmitRef.current(data);
+            }}
             onChange={onChange}
             data={entry}
             ref={ref}
@@ -165,7 +163,7 @@ export const ContentEntryFormProvider = ({
                         {confirmNavigationIfDirty ? (
                             <CompositionScope name={"cms.contentEntryForm"}>
                                 <NavigationPrompt
-                                    when={!formProps.form.isPristine}
+                                    when={() => !formProps.form.isPristine}
                                     message={promptMessage}
                                 />
                             </CompositionScope>

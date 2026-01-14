@@ -12,7 +12,6 @@ export function useGenerateSlug(form: FormAPI, from: string, to = "slug") {
     const generateSlug = () => {
         const targetValue = form.getValue(to);
         const sourceValue = form.getValue(from);
-        console.log("generateSlug", sourceValue, targetValue);
         if (targetValue || !sourceValue) {
             return;
         }
