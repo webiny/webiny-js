@@ -26,7 +26,7 @@ class GetLatestRevisionByEntryIdRepositoryImpl implements RepositoryAbstraction.
         params: CmsEntryStorageOperationsGetLatestRevisionParams
     ): Promise<Result<CmsEntry<T>, RepositoryAbstraction.Error>> {
         try {
-            const entry = await this.storageOperations.entries.getLatestRevisionByEntryId(
+            const entry = await this.storageOperations.entries.getLatestRevisionByEntryId<T>(
                 model,
                 params
             );

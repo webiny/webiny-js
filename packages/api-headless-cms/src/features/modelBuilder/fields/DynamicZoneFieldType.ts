@@ -1,15 +1,17 @@
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
 import { FieldBuilder } from "./FieldBuilder.js";
 import { type IFieldBuilderRegistry } from "../abstractions.js";
+import type { CmsModelFieldValidation } from "~/types/index.js";
 
-export interface IDynamicZoneTemplate {
+interface IDynamicZoneTemplate {
     id: string;
     name: string;
     gqlTypeName: string;
-    icon?: string;
-    description?: string;
+    icon: string;
+    description: string;
     fields: any[];
-    layout?: string[][];
+    layout: string[][];
+    validation: CmsModelFieldValidation[];
 }
 
 export interface IDynamicZoneFieldBuilder extends FieldBuilder<"dynamicZone"> {
@@ -27,17 +29,26 @@ export interface IDynamicZoneFieldBuilder extends FieldBuilder<"dynamicZone"> {
     ): this;
 }
 
+interface IDynamicZoneFieldBuilderTemplateConfig {
+    name: string;
+    gqlTypeName: string;
+    icon?: string;
+    description?: string;
+    fields: (registry: IFieldBuilderRegistry) => Record<string, FieldBuilder<any>>;
+    layout?: string[][];
+}
+
 class DynamicZoneFieldBuilder
     extends FieldBuilder<"dynamicZone">
     implements IDynamicZoneFieldBuilder
 {
-    private templates: IDynamicZoneTemplate[] = [];
+    private readonly templates: IDynamicZoneTemplate[] = [];
 
     public constructor(private registry: IFieldBuilderRegistry) {
         super("dynamicZone");
     }
 
-    required(message?: string): this {
+    public required(message?: string): this {
         return this.validation({
             name: "required",
             message: message || "Field is required",
@@ -45,17 +56,7 @@ class DynamicZoneFieldBuilder
         });
     }
 
-    template(
-        id: string,
-        config: {
-            name: string;
-            gqlTypeName: string;
-            icon?: string;
-            description?: string;
-            fields: (registry: IFieldBuilderRegistry) => Record<string, FieldBuilder<any>>;
-            layout?: string[][];
-        }
-    ): this {
+    public template(id: string, config: IDynamicZoneFieldBuilderTemplateConfig): this {
         const fieldBuilders = config.fields(this.registry);
         const fields: any[] = [];
 
@@ -70,16 +71,17 @@ class DynamicZoneFieldBuilder
             id,
             name: config.name,
             gqlTypeName: config.gqlTypeName,
-            icon: config.icon,
-            description: config.description,
+            icon: config.icon || "",
+            description: config.description || "",
             fields,
-            layout: config.layout
+            layout: config.layout || [],
+            validation: []
         });
 
         return this;
     }
 
-    override build() {
+    public override build() {
         // Set templates in settings before building
         this.config.settings = this.config.settings || {};
         this.config.settings.templates = this.templates;
@@ -88,9 +90,9 @@ class DynamicZoneFieldBuilder
 }
 
 class DynamicZoneFieldTypeFactory implements IFieldTypeFactory {
-    readonly type = "dynamicZone";
+    public readonly type = "dynamicZone";
 
-    create(registry: IFieldBuilderRegistry): IDynamicZoneFieldBuilder {
+    public create(registry: IFieldBuilderRegistry): IDynamicZoneFieldBuilder {
         return new DynamicZoneFieldBuilder(registry);
     }
 }
