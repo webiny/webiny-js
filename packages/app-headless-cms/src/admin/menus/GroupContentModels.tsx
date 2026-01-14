@@ -26,38 +26,41 @@ export const GroupContentModels = ({ group }: { group: CmsGroup }) => {
         );
     }
 
-    const icon = (group.icon || "").split("/") as IconProp;
     return (
         <>
-            {group.contentModels.map(contentModel => (
-                <HasContentEntryPermissions
-                    key={contentModel.modelId}
-                    group={group}
-                    contentModel={contentModel}
-                >
-                    <Menu
-                        parent={group.id}
-                        name={contentModel.modelId}
-                        element={
-                            <Menu.Link
-                                pinnable={true}
-                                text={contentModel.name}
-                                to={router.getLink(Routes.ContentEntries.List, {
-                                    modelId: contentModel.modelId
-                                })}
-                                pinnedIcon={
-                                    contentModel.icon ? (
-                                        <Menu.Link.Icon
-                                            label={contentModel.name}
-                                            element={<FontAwesomeIcon icon={icon} />}
-                                        />
-                                    ) : undefined
-                                }
-                            />
-                        }
-                    />
-                </HasContentEntryPermissions>
-            ))}
+            {group.contentModels.map(contentModel => {
+                const icon = (contentModel.icon || "").split("/") as IconProp;
+
+                return (
+                    <HasContentEntryPermissions
+                        key={contentModel.modelId}
+                        group={group}
+                        contentModel={contentModel}
+                    >
+                        <Menu
+                            parent={group.id}
+                            name={contentModel.modelId}
+                            element={
+                                <Menu.Link
+                                    pinnable={true}
+                                    text={contentModel.name}
+                                    to={router.getLink(Routes.ContentEntries.List, {
+                                        modelId: contentModel.modelId
+                                    })}
+                                    pinnedIcon={
+                                        contentModel.icon ? (
+                                            <Menu.Link.Icon
+                                                label={contentModel.name}
+                                                element={<FontAwesomeIcon icon={icon} />}
+                                            />
+                                        ) : undefined
+                                    }
+                                />
+                            }
+                        />
+                    </HasContentEntryPermissions>
+                );
+            })}
         </>
     );
 };
