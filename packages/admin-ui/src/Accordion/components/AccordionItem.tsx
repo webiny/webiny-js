@@ -68,7 +68,13 @@ const AccordionItemBase = (props: AccordionItemProps) => {
                 "group-item data-[state=open]:rounded-bl-lg data-[state=open]:rounded-br-lg",
                 "group-[.accordion-variant-container]/accordion:rounded-lg",
                 "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-                "hover:bg-neutral-dimmed",
+
+                // Designer had a hover effect that was basically an overlay over the original
+                // bg color. We achieve that with a pseudo element. Dirty but it works well.
+                "relative",
+                "before:absolute before:inset-0 before:pointer-events-none before:rounded-[inherit]",
+                "before:bg-neutral-dark/0 before:transition-colors",
+                "hover:before:bg-neutral-dark/2",
 
                 // These are useful for nested accordions.
                 background === "base" && "has-[.group-item:hover]:bg-neutral-base",
