@@ -13,7 +13,10 @@ class CreateFileRepositoryImpl implements RepositoryAbstraction.Interface {
     ) {}
 
     async execute(data: FileInput): Promise<Result<File, RepositoryAbstraction.Error>> {
-        const result = await this.createEntry.execute(this.fileModel, data);
+        const result = await this.createEntry.execute(this.fileModel, {
+            ...data,
+            values: data
+        });
 
         if (result.isFail()) {
             if (result.error.code === "Cms/Entry/NotAuthorized") {

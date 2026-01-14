@@ -3,7 +3,21 @@ import { DataLoadersHandler } from "./dataLoaders.js";
 import type {
     CmsEntry,
     CmsEntryListWhere,
+    CmsEntryStorageOperationsGetByIdsParams,
+    CmsEntryStorageOperationsGetLatestByIdsParams,
+    CmsEntryStorageOperationsGetLatestRevisionParams,
+    CmsEntryStorageOperationsGetParams,
+    CmsEntryStorageOperationsGetPreviousRevisionParams,
+    CmsEntryStorageOperationsGetPublishedByIdsParams,
+    CmsEntryStorageOperationsGetPublishedRevisionParams,
+    CmsEntryStorageOperationsGetRevisionParams,
+    CmsEntryStorageOperationsGetRevisionsParams,
+    CmsEntryStorageOperationsListParams,
+    CmsEntryStorageOperationsPublishParams,
+    CmsEntryStorageOperationsRestoreFromBinParams,
+    CmsEntryStorageOperationsUnpublishParams,
     CmsEntryUniqueValue,
+    CmsEntryValues,
     CmsModel,
     CmsStorageEntry,
     StorageOperationsCmsModel
@@ -33,9 +47,9 @@ import {
 } from "@webiny/api-headless-cms/constants.js";
 import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldType.js";
 
-interface ConvertStorageEntryParams {
-    storageEntry: CmsStorageEntry;
-    model: StorageOperationsCmsModel;
+interface ConvertStorageEntryParams<T extends CmsEntryValues = CmsEntryValues> {
+    storageEntry: CmsStorageEntry<T>;
+    model: StorageOperationsCmsModel<T>;
 }
 
 const convertToStorageEntry = (params: ConvertStorageEntryParams): CmsStorageEntry => {
@@ -51,7 +65,9 @@ const convertToStorageEntry = (params: ConvertStorageEntryParams): CmsStorageEnt
     };
 };
 
-const convertFromStorageEntry = (params: ConvertStorageEntryParams): CmsStorageEntry => {
+const convertFromStorageEntry = <T extends CmsEntryValues = CmsEntryValues>(
+    params: ConvertStorageEntryParams<T>
+): CmsStorageEntry<T> => {
     const { model, storageEntry } = params;
 
     const values = model.convertValueKeyFromStorage({
@@ -87,9 +103,11 @@ export const createEntriesStorageOperations = (
         return storageOperationsCmsModelPlugin;
     };
 
-    const getStorageOperationsModel = (model: CmsModel): StorageOperationsCmsModel => {
+    const getStorageOperationsModel = <T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel
+    ): StorageOperationsCmsModel<T> => {
         const plugin = getStorageOperationsCmsModelPlugin();
-        return plugin.getModel(model);
+        return plugin.getModel<T>(model);
     };
 
     const dataLoaders = new DataLoadersHandler({
@@ -585,10 +603,10 @@ export const createEntriesStorageOperations = (
         }
     };
 
-    const restoreFromBin: CmsEntryStorageOperations["restoreFromBin"] = async (
-        initialModel,
-        params
-    ): Promise<CmsStorageEntry> => {
+    const restoreFromBin = async <T extends CmsEntryValues = CmsEntryValues>(
+        initialModel: CmsModel,
+        params: CmsEntryStorageOperationsRestoreFromBinParams<CmsEntry<T>>
+    ): Promise<CmsStorageEntry<T>> => {
         const { entry, storageEntry: initialStorageEntry } = params;
         const model = getStorageOperationsModel(initialModel);
 
@@ -793,48 +811,32 @@ export const createEntriesStorageOperations = (
         await entityBatch.execute();
     };
 
-    const getLatestRevisionByEntryId: CmsEntryStorageOperations["getLatestRevisionByEntryId"] =
-        async (initialModel, params) => {
-            const model = getStorageOperationsModel(initialModel);
-
-            const items = await dataLoaders.getLatestRevisionByEntryId({
-                model,
-                ids: [params.id]
-            });
-            const item = items.shift() || null;
-            if (!item) {
-                return null;
-            }
-            return convertFromStorageEntry({
-                storageEntry: item,
-                model
-            });
-        };
-    const getPublishedRevisionByEntryId: CmsEntryStorageOperations["getPublishedRevisionByEntryId"] =
-        async (initialModel, params) => {
-            const model = getStorageOperationsModel(initialModel);
-
-            const items = await dataLoaders.getPublishedRevisionByEntryId({
-                model,
-                ids: [params.id]
-            });
-            const item = items.shift() || null;
-            if (!item) {
-                return null;
-            }
-            return convertFromStorageEntry({
-                storageEntry: item,
-                model
-            });
-        };
-
-    const getRevisionById: CmsEntryStorageOperations["getRevisionById"] = async (
-        initialModel,
-        params
+    const getLatestRevisionByEntryId = async <T extends CmsEntryValues = CmsEntryValues>(
+        initialModel: CmsModel,
+        params: CmsEntryStorageOperationsGetLatestRevisionParams
     ) => {
-        const model = getStorageOperationsModel(initialModel);
+        const model = getStorageOperationsModel<T>(initialModel);
 
-        const items = await dataLoaders.getRevisionById({
+        const items = await dataLoaders.getLatestRevisionByEntryId<T>({
+            model,
+            ids: [params.id]
+        });
+        const item = items.shift() || null;
+        if (!item) {
+            return null;
+        }
+        return convertFromStorageEntry({
+            storageEntry: item,
+            model
+        });
+    };
+    const getPublishedRevisionByEntryId = async <T extends CmsEntryValues = CmsEntryValues>(
+        initialModel: CmsModel,
+        params: CmsEntryStorageOperationsGetPublishedRevisionParams
+    ) => {
+        const model = getStorageOperationsModel<T>(initialModel);
+
+        const items = await dataLoaders.getPublishedRevisionByEntryId<T>({
             model,
             ids: [params.id]
         });
@@ -848,29 +850,52 @@ export const createEntriesStorageOperations = (
         });
     };
 
-    const getRevisions: CmsEntryStorageOperations["getRevisions"] = async (
-        initialModel,
-        params
+    const getRevisionById = async <T extends CmsEntryValues = CmsEntryValues>(
+        initialModel: CmsModel,
+        params: CmsEntryStorageOperationsGetRevisionParams
     ) => {
-        const model = getStorageOperationsModel(initialModel);
+        const model = getStorageOperationsModel<T>(initialModel);
 
-        const items = await dataLoaders.getAllEntryRevisions({
+        const items = await dataLoaders.getRevisionById<T>({
+            model,
+            ids: [params.id]
+        });
+        const item = items.shift() || null;
+        if (!item) {
+            return null;
+        }
+        return convertFromStorageEntry({
+            storageEntry: item,
+            model
+        });
+    };
+
+    const getRevisions = async <T extends CmsEntryValues = CmsEntryValues>(
+        initialModel: CmsModel,
+        params: CmsEntryStorageOperationsGetRevisionsParams
+    ) => {
+        const model = getStorageOperationsModel<T>(initialModel);
+
+        const items = await dataLoaders.getAllEntryRevisions<T>({
             model,
             ids: [params.id]
         });
 
         return items.map(item => {
-            return convertFromStorageEntry({
+            return convertFromStorageEntry<T>({
                 storageEntry: item,
                 model
             });
         });
     };
 
-    const getByIds: CmsEntryStorageOperations["getByIds"] = async (initialModel, params) => {
-        const model = getStorageOperationsModel(initialModel);
+    const getByIds = async <T extends CmsEntryValues = CmsEntryValues>(
+        initialModel: CmsModel,
+        params: CmsEntryStorageOperationsGetByIdsParams
+    ) => {
+        const model = getStorageOperationsModel<T>(initialModel);
 
-        const items = await dataLoaders.getRevisionById({
+        const items = await dataLoaders.getRevisionById<T>({
             model,
             ids: params.ids
         });
@@ -883,13 +908,13 @@ export const createEntriesStorageOperations = (
         });
     };
 
-    const getLatestByIds: CmsEntryStorageOperations["getLatestByIds"] = async (
-        initialModel,
-        params
+    const getLatestByIds = async <T extends CmsEntryValues = CmsEntryValues>(
+        initialModel: CmsModel,
+        params: CmsEntryStorageOperationsGetLatestByIdsParams
     ) => {
-        const model = getStorageOperationsModel(initialModel);
+        const model = getStorageOperationsModel<T>(initialModel);
 
-        const items = await dataLoaders.getLatestRevisionByEntryId({
+        const items = await dataLoaders.getLatestRevisionByEntryId<T>({
             model,
             ids: params.ids
         });
@@ -902,13 +927,13 @@ export const createEntriesStorageOperations = (
         });
     };
 
-    const getPublishedByIds: CmsEntryStorageOperations["getPublishedByIds"] = async (
-        initialModel,
-        params
+    const getPublishedByIds = async <T extends CmsEntryValues = CmsEntryValues>(
+        initialModel: CmsModel,
+        params: CmsEntryStorageOperationsGetPublishedByIdsParams
     ) => {
-        const model = getStorageOperationsModel(initialModel);
+        const model = getStorageOperationsModel<T>(initialModel);
 
-        const items = await dataLoaders.getPublishedRevisionByEntryId({
+        const items = await dataLoaders.getPublishedRevisionByEntryId<T>({
             model,
             ids: params.ids
         });
@@ -921,11 +946,11 @@ export const createEntriesStorageOperations = (
         });
     };
 
-    const getPreviousRevision: CmsEntryStorageOperations["getPreviousRevision"] = async (
-        initialModel,
-        params
+    const getPreviousRevision = async <T extends CmsEntryValues = CmsEntryValues>(
+        initialModel: CmsModel,
+        params: CmsEntryStorageOperationsGetPreviousRevisionParams
     ) => {
-        const model = getStorageOperationsModel(initialModel);
+        const model = getStorageOperationsModel<T>(initialModel);
 
         const { entryId, version } = params;
         const partitionKey = createPartitionKey({
@@ -967,7 +992,10 @@ export const createEntriesStorageOperations = (
         }
     };
 
-    const list: CmsEntryStorageOperations["list"] = async (initialModel, params) => {
+    const list = async <T extends CmsEntryValues = CmsEntryValues>(
+        initialModel: CmsModel,
+        params: CmsEntryStorageOperationsListParams
+    ) => {
         const model = getStorageOperationsModel(initialModel);
 
         const {
@@ -1044,14 +1072,14 @@ export const createEntriesStorageOperations = (
                     );
                 }
 
-                return entry as CmsEntry;
+                return entry as CmsEntry<T>;
             })
         );
         /**
          * Filter the read items via the code.
          * It will build the filters out of the where input and transform the values it is using.
          */
-        const filteredItems = filter({
+        const filteredItems = filter<T>({
             items: records,
             where,
             plugins,
@@ -1068,7 +1096,7 @@ export const createEntriesStorageOperations = (
          * Sorting is also done via the code.
          * It takes the sort input and sorts by it via the lodash sortBy method.
          */
-        const sortedItems = sort({
+        const sortedItems = sort<T>({
             model,
             plugins,
             items: filteredItems,
@@ -1093,17 +1121,23 @@ export const createEntriesStorageOperations = (
         };
     };
 
-    const get: CmsEntryStorageOperations["get"] = async (initialModel, params) => {
+    const get = async <T extends CmsEntryValues = CmsEntryValues>(
+        initialModel: CmsModel,
+        params: CmsEntryStorageOperationsGetParams
+    ) => {
         const model = getStorageOperationsModel(initialModel);
 
-        const { items } = await list(model, {
+        const { items } = await list<T>(model, {
             ...params,
             limit: 1
         });
         return items.shift() || null;
     };
 
-    const publish: CmsEntryStorageOperations["publish"] = async (initialModel, params) => {
+    const publish = async <T extends CmsEntryValues = CmsEntryValues>(
+        initialModel: CmsModel,
+        params: CmsEntryStorageOperationsPublishParams<CmsEntry<T>>
+    ) => {
         const { entry, storageEntry: initialStorageEntry } = params;
         const model = getStorageOperationsModel(initialModel);
 
@@ -1254,7 +1288,10 @@ export const createEntriesStorageOperations = (
         }
     };
 
-    const unpublish: CmsEntryStorageOperations["unpublish"] = async (initialModel, params) => {
+    const unpublish = async <T extends CmsEntryValues = CmsEntryValues>(
+        initialModel: CmsModel,
+        params: CmsEntryStorageOperationsUnpublishParams<CmsEntry<T>>
+    ) => {
         const { entry, storageEntry: initialStorageEntry } = params;
         const model = getStorageOperationsModel(initialModel);
 

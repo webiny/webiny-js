@@ -1,4 +1,8 @@
-import type { CmsEntry, CmsEntryListWhere } from "@webiny/api-headless-cms/types/index.js";
+import type {
+    CmsEntry,
+    CmsEntryListWhere,
+    CmsEntryValues
+} from "@webiny/api-headless-cms/types/index.js";
 import { ValueFilterPlugin } from "@webiny/db-dynamodb/plugins/definitions/ValueFilterPlugin.js";
 import WebinyError from "@webiny/error";
 import type { PluginsContainer } from "@webiny/plugins";
@@ -91,8 +95,8 @@ const executeExpressions = (params: ExecuteExpressionsParams): boolean => {
     return condition === "OR" ? false : true;
 };
 
-interface Params {
-    items: CmsEntry[];
+interface Params<T extends CmsEntryValues = CmsEntryValues> {
+    items: CmsEntry<T>[];
     where: Partial<CmsEntryListWhere>;
     plugins: PluginsContainer;
     fields: Record<string, Field>;
@@ -102,7 +106,9 @@ interface Params {
     };
 }
 
-export const filter = (params: Params): CmsEntry[] => {
+export const filter = <T extends CmsEntryValues = CmsEntryValues>(
+    params: Params<T>
+): CmsEntry<T>[] => {
     const { items: records, where, plugins, fields, fullTextSearch } = params;
 
     const keys = Object.keys(where);

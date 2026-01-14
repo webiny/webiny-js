@@ -35,12 +35,12 @@ import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
 import {
-    TaskBeforeCreateEvent,
     TaskAfterCreateEvent,
-    TaskBeforeUpdateEvent,
+    TaskAfterDeleteEvent,
     TaskAfterUpdateEvent,
+    TaskBeforeCreateEvent,
     TaskBeforeDeleteEvent,
-    TaskAfterDeleteEvent
+    TaskBeforeUpdateEvent
 } from "~/events/index.js";
 
 const createRevisionId = (id: string) => {
@@ -222,9 +222,11 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
             const model = await getTaskModel();
             const createEntry = context.container.resolve(CreateEntryUseCase);
             return createEntry.execute(model, {
-                ...data,
-                iterations: 0,
-                taskStatus: TaskDataStatus.PENDING
+                values: {
+                    ...data,
+                    iterations: 0,
+                    taskStatus: TaskDataStatus.PENDING
+                }
             });
         });
 
@@ -326,8 +328,10 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
             const model = await getLogModel();
             const createEntry = context.container.resolve(CreateEntryUseCase);
             return createEntry.execute(model, {
-                ...data,
-                task: task.id
+                values: {
+                    ...data,
+                    task: task.id
+                }
             });
         });
 
@@ -343,7 +347,9 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
         const result = await identityContext.withoutAuthorization(async () => {
             const model = await getLogModel();
             const updateEntry = context.container.resolve(UpdateEntryUseCase);
-            return updateEntry.execute(model, createRevisionId(id), data);
+            return updateEntry.execute(model, createRevisionId(id), {
+                values: data
+            });
         });
 
         if (result.isFail()) {

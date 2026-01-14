@@ -6,7 +6,7 @@ import type { CmsEntryValues, CmsModel } from "~/types/index.js";
  */
 export const mapAndCleanUpdatedInputData = <TValues extends CmsEntryValues = CmsEntryValues>(
     model: CmsModel,
-    input: TValues
+    input: Partial<TValues>
 ) => {
     return model.fields.reduce<Partial<TValues>>((acc, field) => {
         /**

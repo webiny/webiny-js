@@ -110,7 +110,12 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         };
 
         // Create CMS entry
-        const createResult = await this.createEntryUseCase.execute(this.model, scheduledAction);
+        const createResult = await this.createEntryUseCase.execute<IScheduledAction>(this.model, {
+            ...scheduledAction,
+            values: {
+                ...scheduledAction
+            }
+        });
 
         if (createResult.isFail()) {
             return Result.fail(

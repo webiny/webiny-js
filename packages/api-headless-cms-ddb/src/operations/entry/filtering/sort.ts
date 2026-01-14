@@ -1,4 +1,4 @@
-import type { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types/index.js";
+import type { CmsEntry, CmsEntryValues, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import WebinyError from "@webiny/error";
 import dotProp from "dot-prop";
 import lodashSortBy from "lodash/sortBy.js";
@@ -6,9 +6,9 @@ import { extractSort } from "./extractSort.js";
 import type { Field } from "./types.js";
 import type { PluginsContainer } from "@webiny/plugins";
 
-interface Params {
+interface Params<T extends CmsEntryValues = CmsEntryValues> {
     model: CmsModel;
-    items: CmsEntry[];
+    items: CmsEntry<T>[];
     sort?: string[];
     fields: Record<string, Field>;
     plugins: PluginsContainer;
@@ -19,7 +19,9 @@ interface SortedItem {
     value: any;
 }
 
-export const sort = (params: Params): CmsEntry[] => {
+export const sort = <T extends CmsEntryValues = CmsEntryValues>(
+    params: Params<T>
+): CmsEntry<T>[] => {
     const { model, items, sort = [], fields, plugins } = params;
     if (items.length <= 1) {
         return items;

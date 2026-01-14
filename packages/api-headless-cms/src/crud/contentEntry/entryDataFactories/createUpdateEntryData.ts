@@ -18,7 +18,7 @@ import { getState } from "./state.js";
 import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 
-interface CreateEntryRevisionFromDataParams<TValues extends CmsEntryValues = CmsEntryValues> {
+interface UpdateEntryFromDataParams<TValues extends CmsEntryValues = CmsEntryValues> {
     metaInput?: Record<string, any>;
     model: CmsModel;
     rawInput: UpdateCmsEntryInput<TValues>;
@@ -29,7 +29,7 @@ interface CreateEntryRevisionFromDataParams<TValues extends CmsEntryValues = Cms
     originalEntry: CmsEntry<TValues>;
 }
 
-interface CreateEntryRevisionFromDataResponse<TValues extends CmsEntryValues = CmsEntryValues> {
+interface UpdateEntryDataResponse<TValues extends CmsEntryValues = CmsEntryValues> {
     entry: CmsEntry<TValues>;
     input: UpdateCmsEntryInput<TValues>;
 }
@@ -42,15 +42,13 @@ export const createUpdateEntryData = async <TValues extends CmsEntryValues = Cms
     metaInput,
     getIdentity: getSecurityIdentity,
     originalEntry
-}: CreateEntryRevisionFromDataParams<TValues>): Promise<
-    CreateEntryRevisionFromDataResponse<TValues>
-> => {
+}: UpdateEntryFromDataParams<TValues>): Promise<UpdateEntryDataResponse<TValues>> => {
     /**
      * Make sure we only work with fields that are defined in the model.
      */
     const cleanedValues = mapAndCleanUpdatedInputData<TValues>(
         model,
-        rawInput.values || ({} as TValues)
+        rawInput?.values || ({} as TValues)
     );
 
     await validateModelEntryDataOrThrow({

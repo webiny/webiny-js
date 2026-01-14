@@ -31,7 +31,7 @@ class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
         const { where, sort, limit, after } = params;
 
         // List entries from CMS
-        const listResult = await this.listEntriesUseCase.execute(this.model, {
+        const listResult = await this.listEntriesUseCase.execute<IScheduledAction>(this.model, {
             where: where as CmsEntryListWhere,
             sort,
             limit,

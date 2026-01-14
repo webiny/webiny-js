@@ -148,9 +148,10 @@ export interface CmsModelFieldValidatorValidateParams<T = any> {
  *
  * @category CmsModel
  */
-export interface StorageOperationsCmsModel extends CmsModel {
-    convertValueKeyToStorage: CmsModelConverterCallable;
-    convertValueKeyFromStorage: CmsModelConverterCallable;
+export interface StorageOperationsCmsModel<T extends CmsEntryValues = CmsEntryValues>
+    extends CmsModel {
+    convertValueKeyToStorage: CmsModelConverterCallable<T>;
+    convertValueKeyFromStorage: CmsModelConverterCallable<T>;
 }
 
 /**
@@ -500,7 +501,7 @@ export interface CmsEntry<TValues extends CmsEntryValues = CmsEntryValues> {
     state?: IEntryState;
 }
 
-export interface CmsStorageEntry extends CmsEntry {
+export interface CmsStorageEntry<T extends CmsEntryValues = CmsEntryValues> extends CmsEntry<T> {
     [key: string]: any;
 }
 
@@ -929,7 +930,7 @@ export interface UpdateCmsEntryInput<TValues extends CmsEntryValues = CmsEntryVa
 
     state?: Partial<IEntryState>;
 
-    values?: TValues;
+    values?: Partial<TValues>;
 }
 
 export interface UpdateCmsEntryOptionsInput {
