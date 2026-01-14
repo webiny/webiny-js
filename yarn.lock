@@ -15225,6 +15225,7 @@ __metadata:
     mobx: "npm:^6.15.0"
     mobx-react-lite: "npm:^3.4.3"
     rimraf: "npm:^6.1.2"
+    slugify: "npm:^1.6.6"
     typescript: "npm:5.9.3"
     vitest: "npm:^3.2.4"
   peerDependencies:

@@ -26,10 +26,6 @@ export interface IGlobalKeyValueStore {
         key: string,
         options?: IGlobalKeyValueStoreOptions
     ): Promise<Result<void, KeyValueStoreRepository.Error>>;
-    list(
-        keyPrefix: string,
-        options?: IGlobalKeyValueStoreOptions
-    ): Promise<Result<IKeyValueRecord[], KeyValueStoreRepository.Error>>;
 }
 
 export const GlobalKeyValueStore = createAbstraction<IGlobalKeyValueStore>("GlobalKeyValueStore");
@@ -45,7 +41,6 @@ export interface IKeyValueStore {
     get<T = unknown>(key: string): Promise<Result<T, KeyValueStoreRepository.Error>>;
     set(key: string, value: any): Promise<Result<void, KeyValueStoreRepository.Error>>;
     delete(key: string): Promise<Result<void, KeyValueStoreRepository.Error>>;
-    list(keyPrefix: string): Promise<Result<IKeyValueRecord[], KeyValueStoreRepository.Error>>;
 }
 
 export const KeyValueStore = createAbstraction<IKeyValueStore>("KeyValueStore");
@@ -68,10 +63,6 @@ export interface IKeyValueStoreRepository {
     get<T = unknown>(key: string, scope: string): Promise<Result<T, RepositoryError>>;
     set(key: string, value: any, scope: string): Promise<Result<void, RepositoryError>>;
     delete(key: string, scope: string): Promise<Result<void, RepositoryError>>;
-    listByPrefix(
-        keyPrefix: string,
-        scope: string
-    ): Promise<Result<IKeyValueRecord[], RepositoryError>>;
 }
 
 export const KeyValueStoreRepository =
@@ -88,7 +79,6 @@ export interface IKeyValueStorageOperations {
     get(key: string, scope: string): Promise<{ key: string; value: any } | null>;
     set(key: string, value: any, scope: string): Promise<void>;
     delete(key: string, scope: string): Promise<void>;
-    listByPrefix(keyPrefix: string, scope: string): Promise<Array<{ key: string; value: any }>>;
 }
 
 export const KeyValueStorageOperations = createAbstraction<IKeyValueStorageOperations>(
