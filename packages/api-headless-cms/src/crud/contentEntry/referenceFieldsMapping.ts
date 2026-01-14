@@ -76,4 +76,3 @@ export const referenceFieldsMapping = async <TValues extends CmsEntryValues = Cm
 
     return output;
 };
-

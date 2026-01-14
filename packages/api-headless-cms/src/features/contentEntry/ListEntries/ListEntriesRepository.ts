@@ -1,9 +1,7 @@
-import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
+import { createImplementation, Result } from "@webiny/feature/api";
 import { ListEntriesRepository as RepositoryAbstraction } from "./abstractions.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type {
-    CmsEntry,
     CmsEntryListParams,
     CmsEntryMeta,
     CmsEntryStorageOperationsListParams,

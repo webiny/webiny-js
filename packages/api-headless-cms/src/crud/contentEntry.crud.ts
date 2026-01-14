@@ -142,7 +142,11 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         return result.value;
     };
 
-    const moveEntry = async <T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, id: string, folderId: string) => {
+    const moveEntry = async <T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        id: string,
+        folderId: string
+    ) => {
         // Delegate to new MoveEntry use case
         const useCase = context.container.resolve(MoveEntryUseCase);
         const result = await useCase.execute<T>(model, id, folderId);
@@ -160,7 +164,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         return result.value;
     };
 
-    const republishEntry = async <T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, id: string) => {
+    const republishEntry = async <T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        id: string
+    ) => {
         // Delegate to new RepublishEntry use case
         const useCase = context.container.resolve(RepublishEntryUseCase);
         const result = await useCase.execute<T>(model, id);
@@ -276,7 +283,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         /**
          * Get entries by exact revision IDs from the database.
          */
-        async getEntriesByIds<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, ids: string[]) {
+        async getEntriesByIds<T extends CmsEntryValues = CmsEntryValues>(
+            model: CmsModel,
+            ids: string[]
+        ) {
             return context.benchmark.measure(
                 "headlessCms.crud.entries.getEntriesByIds",
                 async () => {
@@ -323,7 +333,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         /**
          * Get published revisions by entry IDs.
          */
-        async getPublishedEntriesByIds<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, ids: string[]) {
+        async getPublishedEntriesByIds<T extends CmsEntryValues = CmsEntryValues>(
+            model: CmsModel,
+            ids: string[]
+        ) {
             return context.benchmark.measure(
                 "headlessCms.crud.entries.getPublishedEntriesByIds",
                 async () => {
@@ -350,7 +363,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         /**
          * Get the latest revisions by entry IDs.
          */
-        async getLatestEntriesByIds<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, ids: string[]) {
+        async getLatestEntriesByIds<T extends CmsEntryValues = CmsEntryValues>(
+            model: CmsModel,
+            ids: string[]
+        ) {
             return context.benchmark.measure(
                 "headlessCms.crud.entries.getLatestEntriesByIds",
                 async () => {
@@ -374,7 +390,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 }
             );
         },
-        async getEntryRevisions<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, entryId: string) {
+        async getEntryRevisions<T extends CmsEntryValues = CmsEntryValues>(
+            model: CmsModel,
+            entryId: string
+        ) {
             return context.benchmark.measure(
                 "headlessCms.crud.entries.getEntryRevisions",
                 async () => {
@@ -567,7 +586,11 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 return validateEntry(model, id, input);
             });
         },
-        async moveEntry<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, id: string, folderId: string) {
+        async moveEntry<T extends CmsEntryValues = CmsEntryValues>(
+            model: CmsModel,
+            id: string,
+            folderId: string
+        ) {
             return context.benchmark.measure("headlessCms.crud.entries.moveEntry", async () => {
                 return moveEntry<T>(model, id, folderId);
             });
@@ -576,7 +599,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          * Method used internally. Not documented and should not be used in users systems.
          * @internal
          */
-        async republishEntry<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, id: string) {
+        async republishEntry<T extends CmsEntryValues = CmsEntryValues>(
+            model: CmsModel,
+            id: string
+        ) {
             return context.benchmark.measure(
                 "headlessCms.crud.entries.republishEntry",
                 async () => {
@@ -606,7 +632,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 }
             });
         },
-        async restoreEntryFromBin<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, entryId: string) {
+        async restoreEntryFromBin<T extends CmsEntryValues = CmsEntryValues>(
+            model: CmsModel,
+            entryId: string
+        ) {
             return context.benchmark.measure(
                 "headlessCms.crud.entries.restoreEntryFromBin",
                 async () => {
@@ -636,7 +665,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 return publishEntry<T>(model, id);
             });
         },
-        async unpublishEntry<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, id: string) {
+        async unpublishEntry<T extends CmsEntryValues = CmsEntryValues>(
+            model: CmsModel,
+            id: string
+        ) {
             return context.benchmark.measure(
                 "headlessCms.crud.entries.unpublishEntry",
                 async () => {

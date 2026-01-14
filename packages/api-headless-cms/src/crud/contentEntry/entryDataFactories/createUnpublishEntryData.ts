@@ -16,7 +16,9 @@ interface ICreateUnpublishEntryDataResponse<TValues extends CmsEntryValues = Cms
 export const createUnpublishEntryData = async <TValues extends CmsEntryValues = CmsEntryValues>({
     getIdentity: getSecurityIdentity,
     originalEntry
-}: CreateRepublishEntryDataParams<TValues>): Promise<ICreateUnpublishEntryDataResponse<TValues>> => {
+}: CreateRepublishEntryDataParams<TValues>): Promise<
+    ICreateUnpublishEntryDataResponse<TValues>
+> => {
     const currentDateTime = new Date().toISOString();
     const currentIdentity = getSecurityIdentity();
 

@@ -8,7 +8,10 @@ import { EntryNotFoundError, type EntryPersistenceError } from "~/domain/content
  * GetPublishedRevisionByEntryId Use Case
  */
 export interface IGetPublishedRevisionByEntryIdUseCase {
-    execute<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, entryId: string): Promise<Result<CmsEntry<T> | null, UseCaseError>>;
+    execute<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        entryId: string
+    ): Promise<Result<CmsEntry<T> | null, UseCaseError>>;
 }
 
 export interface IGetPublishedRevisionByEntryIdUseCaseErrors {
@@ -32,7 +35,10 @@ export namespace GetPublishedRevisionByEntryIdUseCase {
  * GetPublishedRevisionByEntryIdRepository - Fetches published revision from storage.
  */
 export interface IGetPublishedRevisionByEntryIdRepository {
-    execute<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, entryId: string): Promise<Result<CmsEntry<T> | null, RepositoryError>>;
+    execute<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        entryId: string
+    ): Promise<Result<CmsEntry<T> | null, RepositoryError>>;
 }
 
 export interface IGetPublishedRevisionByEntryIdRepositoryErrors {

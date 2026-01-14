@@ -249,7 +249,6 @@ interface ValidateFieldParams<TValues extends CmsEntryValues = CmsEntryValues> {
 const executeFieldValidation = async <TValues extends CmsEntryValues = CmsEntryValues>(
     params: ValidateFieldParams<TValues>
 ): Promise<FieldError[]> => {
-    const { values } = params;
     // TODO put per-field validation into plugins.
     const { field } = params;
     /**

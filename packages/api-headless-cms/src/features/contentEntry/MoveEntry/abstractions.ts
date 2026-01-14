@@ -9,7 +9,11 @@ import type { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
  * MoveEntry Use Case - Moves an entry to a different folder.
  */
 export interface IMoveEntryUseCase {
-    execute<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, id: string, folderId: string): Promise<Result<CmsEntry<T>, UseCaseError>>;
+    execute<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        id: string,
+        folderId: string
+    ): Promise<Result<CmsEntry<T>, UseCaseError>>;
 }
 
 export interface IMoveEntryUseCaseErrors {

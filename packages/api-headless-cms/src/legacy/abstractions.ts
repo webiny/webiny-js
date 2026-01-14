@@ -29,7 +29,10 @@ export namespace SearchableFieldsProvider {
  * Legacy abstraction for the utility function.
  */
 export interface IEntryToStorageTransform {
-    <T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, entry: CmsEntry<T>): Promise<CmsEntry<T>>;
+    <T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        entry: CmsEntry<T>
+    ): Promise<CmsEntry<T>>;
 }
 
 export const EntryToStorageTransform =
@@ -44,7 +47,10 @@ export namespace EntryToStorageTransform {
  * Legacy abstraction for the utility function.
  */
 export interface IEntryFromStorageTransform {
-    <T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, entry: CmsEntry<T>): Promise<CmsEntry<T>>;
+    <T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        entry: CmsEntry<T>
+    ): Promise<CmsEntry<T>>;
 }
 
 export const EntryFromStorageTransform = createAbstraction<IEntryFromStorageTransform>(

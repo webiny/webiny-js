@@ -11,7 +11,10 @@ import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
  * UnpublishEntry Use Case
  */
 export interface IUnpublishEntryUseCase {
-    execute<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, id: string): Promise<Result<CmsEntry<T>, UseCaseError>>;
+    execute<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        id: string
+    ): Promise<Result<CmsEntry<T>, UseCaseError>>;
 }
 
 export interface IUnpublishEntryUseCaseErrors {
@@ -36,7 +39,10 @@ export namespace UnpublishEntryUseCase {
  * Takes a domain CmsEntry object and unpublishes it.
  */
 export interface IUnpublishEntryRepository {
-    execute<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, entry: CmsEntry<T>): Promise<Result<CmsEntry<T>, RepositoryError>>;
+    execute<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        entry: CmsEntry<T>
+    ): Promise<Result<CmsEntry<T>, RepositoryError>>;
 }
 
 export interface IUnpublishEntryRepositoryErrors {

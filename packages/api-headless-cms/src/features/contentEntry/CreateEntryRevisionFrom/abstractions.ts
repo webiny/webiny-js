@@ -82,7 +82,10 @@ export interface EntryRevisionCreateErrorPayload {
  * CreateEntryRevisionFromRepository - Handles storage operations for creating entry revisions.
  */
 export interface ICreateEntryRevisionFromRepository {
-    execute<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, entry: CmsEntry<T>): Promise<Result<CmsEntry<T>, RepositoryError>>;
+    execute<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        entry: CmsEntry<T>
+    ): Promise<Result<CmsEntry<T>, RepositoryError>>;
 }
 
 export interface ICreateEntryRevisionFromRepositoryErrors {

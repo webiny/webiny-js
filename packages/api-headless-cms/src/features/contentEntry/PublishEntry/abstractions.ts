@@ -9,7 +9,10 @@ import type { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
  * PublishEntry Use Case - Publishes an entry revision.
  */
 export interface IPublishEntryUseCase {
-    execute<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, id: string): Promise<Result<CmsEntry<T>, UseCaseError>>;
+    execute<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        id: string
+    ): Promise<Result<CmsEntry<T>, UseCaseError>>;
 }
 
 export interface IPublishEntryUseCaseErrors {
@@ -60,7 +63,10 @@ export interface EntryPublishErrorPayload {
  * PublishEntryRepository - Handles storage operations for publishing entries.
  */
 export interface IPublishEntryRepository {
-    execute<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, entry: CmsEntry<T>): Promise<Result<CmsEntry<T>, RepositoryError>>;
+    execute<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        entry: CmsEntry<T>
+    ): Promise<Result<CmsEntry<T>, RepositoryError>>;
 }
 
 export interface IPublishEntryRepositoryErrors {

@@ -26,7 +26,10 @@ class GetPreviousRevisionByEntryIdRepositoryImpl implements RepositoryAbstractio
         params: CmsEntryStorageOperationsGetPreviousRevisionParams
     ): Promise<Result<CmsEntry<T>, RepositoryAbstraction.Error>> {
         try {
-            const entry = await this.storageOperations.entries.getPreviousRevision<T>(model, params);
+            const entry = await this.storageOperations.entries.getPreviousRevision<T>(
+                model,
+                params
+            );
 
             if (!entry) {
                 return Result.fail(new EntryNotFoundError(params.entryId));

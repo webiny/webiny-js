@@ -15,7 +15,9 @@ import {
  * Gets the singleton entry for a model, creating it if it doesn't exist.
  */
 export interface IGetSingletonEntryUseCase {
-    execute<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel): Promise<Result<CmsEntry<T>, UseCaseError>>;
+    execute<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel
+    ): Promise<Result<CmsEntry<T>, UseCaseError>>;
 }
 
 export interface IGetSingletonEntryUseCaseErrors {

@@ -16,7 +16,7 @@ interface IResolveBaseRefField<TValues extends CmsEntryValues = CmsEntryValues> 
 }
 
 const resolveBaseRef = <TValues extends CmsEntryValues = CmsEntryValues>(
-    params: IResolveBaseRefField
+    params: IResolveBaseRefField<TValues>
 ): string[] => {
     const { field, parentPaths, input, collection, isMultipleValues } = params;
     const parentPathsValue = parentPaths.length > 0 ? `${parentPaths.join(".")}.` : "";

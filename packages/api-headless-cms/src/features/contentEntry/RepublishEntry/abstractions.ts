@@ -10,7 +10,10 @@ import type { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
  * This updates the entry and publishes it again.
  */
 export interface IRepublishEntryUseCase {
-    execute<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, id: string): Promise<Result<CmsEntry<T>, UseCaseError>>;
+    execute<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        id: string
+    ): Promise<Result<CmsEntry<T>, UseCaseError>>;
 }
 
 export interface IRepublishEntryUseCaseErrors {
@@ -58,7 +61,10 @@ export interface EntryRepublishErrorPayload {
  * RepublishEntryRepository - Handles storage operations for republishing entries.
  */
 export interface IRepublishEntryRepository {
-    execute<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, entry: CmsEntry<T>): Promise<Result<CmsEntry<T>, RepositoryError>>;
+    execute<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        entry: CmsEntry<T>
+    ): Promise<Result<CmsEntry<T>, RepositoryError>>;
 }
 
 export interface IRepublishEntryRepositoryErrors {

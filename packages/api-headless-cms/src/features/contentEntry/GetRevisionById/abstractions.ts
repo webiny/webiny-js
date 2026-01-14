@@ -8,7 +8,10 @@ import type { EntryNotFoundError, EntryPersistenceError } from "~/domain/content
  * Returns the entry or fails with EntryNotFoundError if not found or deleted.
  */
 export interface IGetRevisionByIdUseCase {
-    execute<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, id: string): Promise<Result<CmsEntry<T>, UseCaseError>>;
+    execute<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        id: string
+    ): Promise<Result<CmsEntry<T>, UseCaseError>>;
 }
 
 export interface IGetRevisionByIdUseCaseErrors {
@@ -31,7 +34,10 @@ export namespace GetRevisionByIdUseCase {
  * Returns the entry or fails with EntryNotFoundError if not found.
  */
 export interface IGetRevisionByIdRepository {
-    execute<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, id: string): Promise<Result<CmsEntry<T>, RepositoryError>>;
+    execute<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        id: string
+    ): Promise<Result<CmsEntry<T>, RepositoryError>>;
 }
 
 export interface IGetRevisionByIdRepositoryErrors {
