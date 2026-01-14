@@ -63,6 +63,7 @@
   --z-index-base: 1;
   --z-index-base-overwrite: 10;
   --z-index-header: 50;
+  --z-index-sidebar: 100;
   --z-index-drawer-backdrop: 145;
   --z-index-drawer: 150;
   --z-index-overlay-backdrop: 145;
