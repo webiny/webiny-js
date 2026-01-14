@@ -1,6 +1,9 @@
 import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
-import { ValidateEntryUseCase as UseCaseAbstraction } from "./abstractions.js";
+import {
+    type IValidateEntryUserCaseExecuteResult,
+    ValidateEntryUseCase as UseCaseAbstraction
+} from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import { GetRevisionByIdUseCase } from "~/features/contentEntry/GetRevisionById/index.js";
 import type { CmsModel, CmsModelFieldValidation } from "~/types/index.js";
@@ -30,7 +33,7 @@ class ValidateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         model: CmsModel,
         id: string | null,
         inputData: Record<string, any>
-    ): Promise<Result<CmsModelFieldValidation[], UseCaseAbstraction.Error>> {
+    ): Promise<Result<IValidateEntryUserCaseExecuteResult[], UseCaseAbstraction.Error>> {
         // Check access control
         const canAccess = await this.accessControl.canAccessEntry({ model, rwd: "w" });
         if (!canAccess) {

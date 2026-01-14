@@ -5,6 +5,12 @@ import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import type { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
 import { GetRevisionByIdUseCase } from "~/features/contentEntry/GetRevisionById/index.js";
 
+export interface IValidateEntryUserCaseExecuteResult {
+    error: string;
+    id: string;
+    fieldId: string;
+    parents: string[];
+}
 /**
  * ValidateEntry Use Case - Validates entry data against model field validators.
  * This can be used to validate data before creating or updating an entry.
@@ -14,7 +20,7 @@ export interface IValidateEntryUseCase {
         model: CmsModel,
         id: string | null,
         inputData: Record<string, any>
-    ): Promise<Result<CmsModelFieldValidation[], UseCaseError>>;
+    ): Promise<Result<IValidateEntryUserCaseExecuteResult[], UseCaseError>>;
 }
 
 export interface IValidateEntryUseCaseErrors {

@@ -124,10 +124,14 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         return result.value;
     };
 
-    const validateEntry: CmsEntryContext["validateEntry"] = async (model, id, inputData) => {
+    const validateEntry = async <T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        id?: string,
+        input?: UpdateCmsEntryInput<T>
+    ) => {
         // Delegate to new ValidateEntry use case
         const useCase = context.container.resolve(ValidateEntryUseCase);
-        const result = await useCase.execute(model, id || null, inputData || {});
+        const result = await useCase.execute(model, id || null, input || {});
 
         if (result.isFail()) {
             // Convert Result error to WebinyError for backward compatibility
@@ -583,7 +587,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             input?: UpdateCmsEntryInput<T>
         ) {
             return context.benchmark.measure("headlessCms.crud.entries.validateEntry", async () => {
-                return validateEntry(model, id, input);
+                return validateEntry<T>(model, id, input);
             });
         },
         async moveEntry<T extends CmsEntryValues = CmsEntryValues>(
