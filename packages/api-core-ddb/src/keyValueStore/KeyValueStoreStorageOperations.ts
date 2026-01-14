@@ -48,10 +48,7 @@ export class KeyValueStoreStorageOperations {
     async set(key: string, value: any, scope: string): Promise<void> {
         try {
             const scopedKey = this.createScopedKey(key, scope);
-            const keys = {
-                ...this.table.createKeys({ scopedKey }),
-                ...this.table.createGsiKeys({ scope, scopedKey })
-            };
+            const keys = this.table.createKeys({ scopedKey });
 
             await this.entity.put({
                 ...keys,
@@ -80,29 +77,6 @@ export class KeyValueStoreStorageOperations {
                 message: "Could not delete key-value record.",
                 code: "DELETE_KEY_VALUE_ERROR",
                 data: { key, scope }
-            });
-        }
-    }
-
-    async listByPrefix(keyPrefix: string, scope: string): Promise<KeyValueRecord[]> {
-        try {
-            const scopedPrefix = this.createScopedKey(keyPrefix, scope);
-
-            const records = await this.entity.queryAll({
-                partitionKey: `KV#${scope}`,
-                options: {
-                    index: "GSI1",
-                    beginsWith: `KEY#${scopedPrefix}`
-                }
-            });
-
-            // Return records with user-facing keys (already stored without scope prefix)
-            return records.map(record => record.data);
-        } catch (err) {
-            throw WebinyError.from(err, {
-                message: "Could not list key-value records by prefix.",
-                code: "LIST_KEY_VALUE_BY_PREFIX_ERROR",
-                data: { keyPrefix, scope }
             });
         }
     }
