@@ -42,6 +42,14 @@ export const GroupContentModels = ({ group }: { group: CmsGroup }) => {
                                 to={router.getLink(Routes.ContentEntries.List, {
                                     modelId: contentModel.modelId
                                 })}
+                                pinnedIcon={
+                                    contentModel.icon ? (
+                                        <Menu.Link.Icon
+                                            label={contentModel.name}
+                                            element={contentModel.icon}
+                                        />
+                                    ) : undefined
+                                }
                             />
                         }
                     />

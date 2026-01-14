@@ -28,8 +28,6 @@ const SidebarMenuItemBase = ({
         return btoa(`sidebar-item-${currentLevel}-${buttonProps.text}`);
     }, [buttonProps.text, currentLevel]);
 
-    const effectiveIcon = buttonProps.icon || parentIcon;
-
     const isSectionExpanded = useMemo(() => {
         return sidebar.isSectionExpanded(menuItemId);
     }, [sidebar.expandedSections]);
@@ -51,6 +49,13 @@ const SidebarMenuItemBase = ({
 
     const isPinned = sidebar.isItemPinned(menuItemId);
 
+    // Use pinnedIcon for pinned items if provided
+    const pinnedIcon = useMemo(() => {
+        return isPinned && buttonProps.pinnedIcon
+            ? buttonProps.pinnedIcon
+            : buttonProps.icon || parentIcon;
+    }, [isPinned, buttonProps.pinnedIcon, buttonProps.icon, parentIcon]);
+
     // Register on mount if already pinned, unregister on unmount
     // Re-register when active state changes to keep pinned items in sync
     useEffect(() => {
@@ -58,7 +63,7 @@ const SidebarMenuItemBase = ({
             sidebar.registerPinnedItem({
                 id: menuItemId,
                 text: buttonProps.text,
-                icon: effectiveIcon,
+                icon: pinnedIcon,
                 to: buttonProps.to,
                 onClick: buttonProps.onClick,
                 active: buttonProps.active
@@ -70,7 +75,7 @@ const SidebarMenuItemBase = ({
                 sidebar.unregisterPinnedItem(menuItemId);
             }
         };
-    }, [pinnable, isPinned, menuItemId, buttonProps.active]);
+    }, [pinnable, isPinned, menuItemId, buttonProps.active, pinnedIcon]);
 
     const pinAction = useMemo(() => {
         if (!pinnable) {
@@ -84,10 +89,11 @@ const SidebarMenuItemBase = ({
             if (isPinned) {
                 sidebar.unregisterPinnedItem(menuItemId);
             } else {
+
                 sidebar.registerPinnedItem({
                     id: menuItemId,
                     text: buttonProps.text,
-                    icon: effectiveIcon,
+                    icon: pinnedIcon,
                     to: buttonProps.to,
                     onClick: buttonProps.onClick,
                     active: buttonProps.active
