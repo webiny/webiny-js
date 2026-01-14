@@ -3,6 +3,8 @@ import type { CmsGroup } from "~/types.js";
 import { useRouter, AdminConfig } from "@webiny/app-admin";
 import { HasContentEntryPermissions } from "./HasContentEntryPermissions.js";
 import { Routes } from "~/routes.js";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 const { Menu } = AdminConfig;
 
@@ -24,6 +26,7 @@ export const GroupContentModels = ({ group }: { group: CmsGroup }) => {
         );
     }
 
+    const icon = (group.icon || "").split("/") as IconProp;
     return (
         <>
             {group.contentModels.map(contentModel => (
@@ -46,7 +49,7 @@ export const GroupContentModels = ({ group }: { group: CmsGroup }) => {
                                     contentModel.icon ? (
                                         <Menu.Link.Icon
                                             label={contentModel.name}
-                                            element={contentModel.icon}
+                                            element={<FontAwesomeIcon icon={icon} />}
                                         />
                                     ) : undefined
                                 }

@@ -13,7 +13,7 @@ const MenuLinkBase = (props: SidebarMenuItemLinkProps) => {
 
     const active = route.pathname === props.to.split("?")[0];
 
-    return <Sidebar.Link {...props} active={active} pinnedIcon={props.pinnedIcon} />;
+    return <Sidebar.Link {...props} active={active} />;
 };
 
 const DecoratableMenuLink = makeDecoratable("MenuLink", MenuLinkBase);

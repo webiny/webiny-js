@@ -39,7 +39,7 @@ const SidebarMenuSubItem = ({
     const isPinned = sidebar.isItemPinned(menuItemId);
 
     // Icon to use when this item is pinned
-    const pinnedIcon = useMemo(() => {
+    const pinnedItemIcon = useMemo(() => {
         if (buttonProps.pinnedIcon) {
             return buttonProps.pinnedIcon;
         }
@@ -54,7 +54,7 @@ const SidebarMenuSubItem = ({
             sidebar.registerPinnedItem({
                 id: menuItemId,
                 text: buttonProps.text,
-                icon: pinnedIcon,
+                icon: pinnedItemIcon,
                 to: buttonProps.to,
                 onClick: buttonProps.onClick,
                 active: buttonProps.active
@@ -66,7 +66,7 @@ const SidebarMenuSubItem = ({
                 sidebar.unregisterPinnedItem(menuItemId);
             }
         };
-    }, [pinnable, isPinned, menuItemId, buttonProps.active, pinnedIcon]);
+    }, [pinnable, isPinned, pinnedItemIcon,  menuItemId, buttonProps.active]);
 
     const pinAction = useMemo(() => {
         if (!pinnable) {
@@ -77,13 +77,14 @@ const SidebarMenuSubItem = ({
             e.stopPropagation();
             e.preventDefault();
 
+            console.log(buttonProps.pinnedIcon)
             if (isPinned) {
                 sidebar.unregisterPinnedItem(menuItemId);
             } else {
                 sidebar.registerPinnedItem({
                     id: menuItemId,
                     text: buttonProps.text,
-                    icon: pinnedIcon,
+                    icon: pinnedItemIcon,
                     to: buttonProps.to,
                     onClick: buttonProps.onClick,
                     active: buttonProps.active
@@ -113,7 +114,7 @@ const SidebarMenuSubItem = ({
         }
 
         return pinButton;
-    }, [pinnable, isPinned, action, sidebar, menuItemId]);
+    }, [pinnable, isPinned, pinnedItemIcon, action, sidebar, menuItemId]);
 
     useEffect(() => {
         if (sidebar.expanded) {

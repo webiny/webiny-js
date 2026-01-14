@@ -77,7 +77,7 @@ const SidebarMenuItemBase = ({
                 sidebar.unregisterPinnedItem(menuItemId);
             }
         };
-    }, [pinnable, isPinned, menuItemId, buttonProps.active, pinnedItemIcon]);
+    }, [pinnable, isPinned, pinnedItemIcon, menuItemId, buttonProps.active]);
 
     const pinAction = useMemo(() => {
         if (!pinnable) {
@@ -124,7 +124,7 @@ const SidebarMenuItemBase = ({
         }
 
         return pinButton;
-    }, [pinnable, isPinned, action, sidebar, menuItemId]);
+    }, [pinnable, isPinned, pinnedItemIcon, action, sidebar, menuItemId]);
 
     const sidebarMenuButton = useMemo(() => {
         if (!children) {
