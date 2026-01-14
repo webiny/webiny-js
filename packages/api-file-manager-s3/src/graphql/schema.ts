@@ -10,6 +10,7 @@ import { CreateMultiPartUploadUseCase } from "~/multiPartUpload/CreateMultiPartU
 import { CompleteMultiPartUploadUseCase } from "~/multiPartUpload/CompleteMultiPartUploadUseCase.js";
 import { createFileNormalizerFromContext } from "~/utils/createFileNormalizerFromContext.js";
 import { GetSettingsUseCase } from "@webiny/api-file-manager/features/settings/GetSettings/abstractions.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 
 export const createS3GraphQLSchema = () => {
     return createGraphQLSchemaPlugin({
@@ -119,7 +120,8 @@ export const createS3GraphQLSchema = () => {
                         const normalizer = createFileNormalizerFromContext(context);
                         const presignedPayload = await getPresignedPostPayload(
                             await normalizer.normalizeFile(data),
-                            settings
+                            settings,
+                            context.container.resolve(TenantContext)
                         );
 
                         return new Response(presignedPayload);
@@ -147,7 +149,8 @@ export const createS3GraphQLSchema = () => {
                         const presignedPayloads = await pMap(files, async data => {
                             return getPresignedPostPayload(
                                 await normalizer.normalizeFile(data),
-                                settings
+                                settings,
+                                context.container.resolve(TenantContext)
                             );
                         });
 

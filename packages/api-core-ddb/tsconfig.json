@@ -6,8 +6,7 @@
     { "path": "../api-core" },
     { "path": "../aws-sdk" },
     { "path": "../db-dynamodb" },
-    { "path": "../error" },
-    { "path": "../api" }
+    { "path": "../error" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -143,9 +142,7 @@
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/error/*": ["../error/src/*"],
-      "@webiny/error": ["../error/src"],
-      "@webiny/api/*": ["../api/src/*"],
-      "@webiny/api": ["../api/src"]
+      "@webiny/error": ["../error/src"]
     },
     "baseUrl": "."
   }

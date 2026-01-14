@@ -1,5 +1,4 @@
 export { S3AssetResolver } from "./s3/S3AssetResolver.js";
-export { S3AssetMetadataReader } from "./s3/S3AssetMetadataReader.js";
 export { S3OutputStrategy } from "./s3/S3OutputStrategy.js";
 export { S3ContentsReader } from "./s3/S3ContentsReader.js";
 export { S3ErrorAssetReply } from "./s3/S3ErrorAssetReply.js";

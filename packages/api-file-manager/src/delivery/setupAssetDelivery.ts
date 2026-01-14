@@ -77,7 +77,8 @@ export const setupAssetDelivery = () => {
                     return false;
                 }
 
-                const assetResolver = configBuilder.getAssetResolver();
+                const container = app.webiny.container;
+                const assetResolver = configBuilder.getAssetResolver(container);
 
                 resolvedAsset = await assetResolver.resolve(resolvedRequest);
 
