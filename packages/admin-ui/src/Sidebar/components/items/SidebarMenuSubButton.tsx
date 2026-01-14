@@ -44,7 +44,7 @@ const SidebarMenuSubButton = ({
 
     // eslint-disable-next-line
     pinnedIcon,
-    
+
     action,
     text,
     className,
