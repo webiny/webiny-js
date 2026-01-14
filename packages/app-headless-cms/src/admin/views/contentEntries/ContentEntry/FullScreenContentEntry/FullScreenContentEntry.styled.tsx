@@ -55,7 +55,7 @@ export const ContentFormWrapper = ({
     ...props
 }: React.HTMLAttributes<HTMLDivElement>) => {
     return (
-        <div className={cn("flex justify-center", className)} {...props}>
+        <div className={cn("flex justify-center pt-xl", className)} {...props}>
             {children}
         </div>
     );
