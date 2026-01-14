@@ -3,6 +3,8 @@ import type { CmsGroup } from "~/types.js";
 import { useRouter, AdminConfig } from "@webiny/app-admin";
 import { HasContentEntryPermissions } from "./HasContentEntryPermissions.js";
 import { Routes } from "~/routes.js";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 const { Menu } = AdminConfig;
 
@@ -26,27 +28,39 @@ export const GroupContentModels = ({ group }: { group: CmsGroup }) => {
 
     return (
         <>
-            {group.contentModels.map(contentModel => (
-                <HasContentEntryPermissions
-                    key={contentModel.modelId}
-                    group={group}
-                    contentModel={contentModel}
-                >
-                    <Menu
-                        parent={group.id}
-                        name={contentModel.modelId}
-                        element={
-                            <Menu.Link
-                                pinnable={true}
-                                text={contentModel.name}
-                                to={router.getLink(Routes.ContentEntries.List, {
-                                    modelId: contentModel.modelId
-                                })}
-                            />
-                        }
-                    />
-                </HasContentEntryPermissions>
-            ))}
+            {group.contentModels.map(contentModel => {
+                const icon = (contentModel.icon || "").split("/") as IconProp;
+
+                return (
+                    <HasContentEntryPermissions
+                        key={contentModel.modelId}
+                        group={group}
+                        contentModel={contentModel}
+                    >
+                        <Menu
+                            parent={group.id}
+                            name={contentModel.modelId}
+                            element={
+                                <Menu.Link
+                                    pinnable={true}
+                                    text={contentModel.name}
+                                    to={router.getLink(Routes.ContentEntries.List, {
+                                        modelId: contentModel.modelId
+                                    })}
+                                    pinnedIcon={
+                                        contentModel.icon ? (
+                                            <Menu.Link.Icon
+                                                label={contentModel.name}
+                                                element={<FontAwesomeIcon icon={icon} />}
+                                            />
+                                        ) : undefined
+                                    }
+                                />
+                            }
+                        />
+                    </HasContentEntryPermissions>
+                );
+            })}
         </>
     );
 };

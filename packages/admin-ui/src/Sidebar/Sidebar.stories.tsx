@@ -13,6 +13,8 @@ import { ReactComponent as ApiPlaygroundIcon } from "@webiny/icons/swap_horiz.sv
 import { ReactComponent as MoreVertIcon } from "@webiny/icons/more_vert.svg";
 import { ReactComponent as FileManagerIcon } from "@webiny/icons/insert_drive_file.svg";
 import { ReactComponent as GridIcon } from "@webiny/icons/grid_4x4.svg";
+import { ReactComponent as CarIcon } from "@webiny/icons/car_rental.svg";
+import { ReactComponent as VehiclesIcon } from "@webiny/icons/expand.svg";
 import { Sidebar } from "./Sidebar.js";
 import { SidebarProvider } from "~/Sidebar/components/SidebarProvider.js";
 import { DropdownMenu } from "~/DropdownMenu/index.js";
@@ -136,16 +138,20 @@ const SidebarComponent = () => {
                 >
                     <Sidebar.Item
                         text={"Vehicles"}
-                        icon={<Sidebar.Item.Icon label="Headless CMS" element={<GridIcon />} />}
+                        icon={<Sidebar.Item.Icon label="Headless CMS" element={<VehiclesIcon />} />}
                         action={<Sidebar.Item.Action element={<MoreVertIcon />} />}
                     >
                         <Sidebar.Link
                             pinnable
+                            pinnedIcon={
+                                <Sidebar.Item.Icon label="File Manager" element={<CarIcon />} />
+                            }
                             text={"Cars"}
                             to={"#cms-cars"}
                             active={hash === "#cms-cars"}
                         />
                         <Sidebar.Link
+                            pinnable
                             text={"Planes"}
                             to={"#cms-planes"}
                             active={hash === "#cms-planes"}

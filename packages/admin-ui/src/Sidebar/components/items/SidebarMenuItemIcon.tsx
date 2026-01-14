@@ -7,6 +7,10 @@ interface SidebarMenuItemIconProps extends Omit<IconProps, "icon"> {
 }
 
 const SidebarMenuItemIconBase = ({ element, ...props }: SidebarMenuItemIconProps) => {
+    if (!element) {
+        return null;
+    }
+
     return <Icon icon={element} size={"sm"} color={"neutral-strong"} {...props} />;
 };
 
