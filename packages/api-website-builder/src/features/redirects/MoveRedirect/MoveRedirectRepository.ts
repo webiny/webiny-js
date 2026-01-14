@@ -26,7 +26,9 @@ class MoveRedirectRepositoryImpl implements RepositoryAbstraction.Interface {
 
         // Update the redirect location with the new folderId
         const result = await this.updateEntry.execute(this.redirectModel, params.id, {
-            location: { folderId: params.folderId }
+            location: {
+                folderId: params.folderId
+            }
         });
 
         if (result.isFail()) {

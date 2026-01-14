@@ -44,9 +44,11 @@ class CreateFolderRepositoryImpl implements ICreateFolderRepository {
 
         // Create the entry
         const result = await this.createEntry.execute(this.folderModel, {
-            ...data,
-            parentId: data.parentId || null,
-            path: pathResult.value
+            values: {
+                ...data,
+                parentId: data.parentId || null,
+                path: pathResult.value
+            }
         });
 
         if (result.isFail()) {

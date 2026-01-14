@@ -51,7 +51,10 @@ export const createFilterOperations = (
         },
         createFilter({ data }) {
             return withModel(async model => {
-                const entry = await cms.createEntry(model, data);
+                const entry = await cms.createEntry(model, {
+                    ...data,
+                    values: data
+                });
                 return pickEntryFieldValues(entry);
             });
         },

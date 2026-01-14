@@ -928,6 +928,10 @@ export interface UpdateCmsEntryInput<TValues extends CmsEntryValues = CmsEntryVa
         folderId?: string | null;
     };
 
+    location?: {
+        folderId?: string | null;
+    };
+
     state?: Partial<IEntryState>;
 
     values?: Partial<TValues>;

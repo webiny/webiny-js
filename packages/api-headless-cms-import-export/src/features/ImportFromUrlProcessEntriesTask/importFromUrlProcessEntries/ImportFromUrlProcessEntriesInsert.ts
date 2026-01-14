@@ -106,7 +106,10 @@ export class ImportFromUrlProcessEntriesInsert<
                     });
                 }
 
-                const createResult = await this.createEntry.execute(this.model, item);
+                const createResult = await this.createEntry.execute(this.model, {
+                    ...item,
+                    values: item
+                });
 
                 if (createResult.isFail()) {
                     console.error(`Failed to insert entry "${item.id}"`, createResult.error);

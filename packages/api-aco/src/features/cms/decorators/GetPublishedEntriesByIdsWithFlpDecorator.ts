@@ -1,19 +1,18 @@
-import { createDecorator } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
+import { createDecorator, Result } from "@webiny/feature/api";
 import { GetPublishedEntriesByIdsUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetPublishedEntriesByIds/abstractions.js";
-import type { CmsModel, CmsEntryValues, CmsEntry } from "@webiny/api-headless-cms/types/index.js";
+import type { CmsEntry, CmsEntryValues, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 import { ROOT_FOLDER } from "~/constants.js";
 
 class GetPublishedEntriesByIdsWithFlpDecoratorImpl
     implements GetPublishedEntriesByIdsUseCase.Interface
 {
-    constructor(
+    public constructor(
         private folderLevelPermissions: FolderLevelPermissions.Interface,
         private decoratee: GetPublishedEntriesByIdsUseCase.Interface
     ) {}
 
-    async execute<T extends CmsEntryValues>(
+    public async execute<T extends CmsEntryValues>(
         model: CmsModel,
         ids: string[]
     ): Promise<Result<CmsEntry<T>[], GetPublishedEntriesByIdsUseCase.Error>> {
@@ -33,7 +32,9 @@ class GetPublishedEntriesByIdsWithFlpDecoratorImpl
         return Result.ok(filteredEntries);
     }
 
-    private async filterEntriesByFolder<T>(entries: CmsEntry<T>[]): Promise<CmsEntry<T>[]> {
+    private async filterEntriesByFolder<T extends CmsEntryValues = CmsEntryValues>(
+        entries: CmsEntry<T>[]
+    ): Promise<CmsEntry<T>[]> {
         const results = await Promise.all(
             entries.map(async entry => {
                 const folderId = entry.location?.folderId;
