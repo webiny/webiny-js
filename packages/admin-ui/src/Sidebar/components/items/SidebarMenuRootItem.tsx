@@ -91,7 +91,6 @@ const SidebarMenuItemBase = ({
             if (isPinned) {
                 sidebar.unregisterPinnedItem(menuItemId);
             } else {
-
                 sidebar.registerPinnedItem({
                     id: menuItemId,
                     text: buttonProps.text,
