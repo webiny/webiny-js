@@ -105,8 +105,8 @@ export const ElementOverlay = React.memo(
                                 onClick={onClick}
                                 className={cn(
                                     "absolute text-sm text-neutral-light p-xs opacity-0 pointer-events-auto",
-                                    "data-[state=hover]:bg-success-default data-[state=hover]:opacity-100",
-                                    "data-[state=active]:bg-primary-default data-[state=active]:opacity-100",
+                                    "data-[state=hover]:bg-success data-[state=hover]:opacity-100",
+                                    "data-[state=active]:bg-primary data-[state=active]:opacity-100",
                                     "data-[state=dragging]:opacity-30"
                                 )}
                                 style={{ top: -24 }}
