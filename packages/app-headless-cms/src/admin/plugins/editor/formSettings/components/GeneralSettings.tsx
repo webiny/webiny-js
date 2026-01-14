@@ -1,7 +1,5 @@
 import React from "react";
-import { Grid, Cell } from "@webiny/ui/Grid/index.js";
-import { Input } from "@webiny/ui/Input/index.js";
-import { Tags } from "@webiny/ui/Tags/index.js";
+import { Grid, Input, Textarea, Tags } from "@webiny/admin-ui";
 import { validation } from "@webiny/validation";
 import type { BindComponent } from "@webiny/form";
 import GroupSelect from "./GroupSelect.js";
@@ -15,49 +13,49 @@ const GeneralSettings = ({ Bind }: GeneralSettingsProps) => {
     return (
         <React.Fragment>
             <Grid>
-                <Cell span={12}>
+                <Grid.Column span={12}>
                     <Bind name={"name"}>
                         <Input label={"Content model name"} />
                     </Bind>
-                </Cell>
-                <Cell span={12}>
+                </Grid.Column>
+                <Grid.Column span={12}>
                     <Bind name={"modelId"}>
                         <Input disabled={true} label={"Content model ID"} />
                     </Bind>
-                </Cell>
-                <Cell span={12}>
+                </Grid.Column>
+                <Grid.Column span={12}>
                     <Bind name={"singularApiName"}>
                         <Input disabled={true} label={"Singular API Name"} />
                     </Bind>
-                </Cell>
-                <Cell span={12}>
+                </Grid.Column>
+                <Grid.Column span={12}>
                     <Bind name={"pluralApiName"}>
                         <Input disabled={true} label={"Plural API Name"} />
                     </Bind>
-                </Cell>
-                <Cell span={12}>
+                </Grid.Column>
+                <Grid.Column span={12}>
                     <Bind name={"description"}>
-                        <Input rows={5} label={"Content model description"} />
+                        <Textarea rows={5} label={"Content model description"} />
                     </Bind>
-                </Cell>
-                <Cell span={12}>
+                </Grid.Column>
+                <Grid.Column span={12}>
                     <Bind name={"group"} validators={validation.create("required")}>
                         <GroupSelect />
                     </Bind>
-                </Cell>
-                <Cell span={12}>
+                </Grid.Column>
+                <Grid.Column span={12}>
                     <Bind name="icon">
                         <IconPicker
                             label={`Icon`}
                             description={`Choose an icon to represent the model.`}
                         />
                     </Bind>
-                </Cell>
-                <Cell span={12}>
+                </Grid.Column>
+                <Grid.Column span={12}>
                     <Bind name={"tags"}>
-                        <Tags label={"Tags"} />
+                        <Tags label={"Tags"} protectedValues={["type:model"]} />
                     </Bind>
-                </Cell>
+                </Grid.Column>
             </Grid>
         </React.Fragment>
     );
