@@ -297,9 +297,7 @@ export interface CmsGroupContext {
  * @category CmsEntry
  */
 export interface CmsEntryValues {
-    // TODO REMOVE
-    someKeyToBreakTypescriptCompiler?: string;
-    // [key: string]: any;
+    [key: string]: any;
 }
 
 export interface ICmsEntryLocation {
@@ -930,7 +928,7 @@ export interface UpdateCmsEntryInput<TValues extends CmsEntryValues = CmsEntryVa
     };
 
     state?: Partial<IEntryState>;
-    
+
     values?: TValues;
 }
 

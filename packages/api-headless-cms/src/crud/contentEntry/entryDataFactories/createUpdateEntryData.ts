@@ -48,7 +48,10 @@ export const createUpdateEntryData = async <TValues extends CmsEntryValues = Cms
     /**
      * Make sure we only work with fields that are defined in the model.
      */
-    const cleanedValues = mapAndCleanUpdatedInputData<TValues>(model, rawInput.values || ({} as TValues) );
+    const cleanedValues = mapAndCleanUpdatedInputData<TValues>(
+        model,
+        rawInput.values || ({} as TValues)
+    );
 
     await validateModelEntryDataOrThrow({
         context,
