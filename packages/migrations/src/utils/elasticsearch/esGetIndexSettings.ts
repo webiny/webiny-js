@@ -22,7 +22,7 @@ export const esGetIndexSettings = async (params: GetIndexSettingsParams) => {
     } catch (ex) {
         throw new WebinyError(
             ex.message || "Could not get Elasticsearch index settings.",
-            ex.code || "GET_ELASTICSEARCH_INDEX_SETTINGS_ERROR",
+            ex.code || "GET_OPENSEARCH_INDEX_SETTINGS_ERROR",
             {
                 error: ex,
                 index,

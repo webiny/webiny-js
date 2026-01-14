@@ -60,8 +60,8 @@ export const OpenSearch = createAppModule({
 
         let domainPolicy;
 
-        if (process.env.AWS_ELASTIC_SEARCH_DOMAIN_NAME) {
-            const domainName = String(process.env.AWS_ELASTIC_SEARCH_DOMAIN_NAME);
+        if (process.env.AWS_OS_DOMAIN_NAME) {
+            const domainName = String(process.env.AWS_OS_DOMAIN_NAME);
             // This can be useful for testing purposes in ephemeral environments. More information here:
             // https://www.webiny.com/docs/key-topics/ci-cd/testing/slow-ephemeral-environments
             domain = app.addRemoteResource(domainName, () => {
@@ -248,7 +248,7 @@ export const OpenSearch = createAppModule({
                 environment: {
                     variables: {
                         DEBUG: String(process.env.DEBUG),
-                        ELASTIC_SEARCH_ENDPOINT: domain.output.endpoint,
+                        OPENSEARCH_ENDPOINT: domain.output.endpoint,
                         DB_TABLE_LOG: logDynamoDbTable.output.name
                     }
                 },
@@ -283,10 +283,10 @@ export const OpenSearch = createAppModule({
         });
 
         app.addOutputs({
-            elasticsearchDomainArn: domain.output.arn,
-            elasticsearchDomainEndpoint: domain.output.endpoint,
-            elasticsearchDynamodbTableArn: table.output.arn,
-            elasticsearchDynamodbTableName: table.output.name
+            opensearchDomainArn: domain.output.arn,
+            opensearchDomainEndpoint: domain.output.endpoint,
+            opensearchDynamodbTableArn: table.output.arn,
+            opensearchDynamodbTableName: table.output.name
         });
 
         return {

@@ -167,7 +167,7 @@ const getDataToImport = (state: State): DataToImportResult => {
         ) {
             continue;
         }
-        const validatedGroup = state.groups?.find(group => group.id === validatedModel.group);
+        const validatedGroup = state.groups?.find(group => group.slug === validatedModel.group);
         if (!validatedGroup?.action || validatedGroup.error) {
             continue;
         }
@@ -189,7 +189,7 @@ const getDataToImport = (state: State): DataToImportResult => {
             continue;
         }
 
-        const group = state.data?.groups?.find(group => group.id === validatedModel.group);
+        const group = state.data?.groups?.find(group => group.slug === validatedModel.group);
         if (!group) {
             continue;
         }
@@ -284,6 +284,7 @@ export const ImportContextProvider = ({ children }: ImportContextProviderProps) 
                     return {
                         id: group.group.id,
                         name: group.group.name,
+                        slug: group.group.slug,
                         error: group.error,
                         action: group.action
                     };
@@ -377,6 +378,7 @@ export const ImportContextProvider = ({ children }: ImportContextProviderProps) 
                     return {
                         id: result?.group.id || group.id,
                         name: result?.group.name || group.name,
+                        slug: result?.group.slug || group.slug,
                         error: result?.error || group.error,
                         imported: result ? result.imported : group.imported
                     };

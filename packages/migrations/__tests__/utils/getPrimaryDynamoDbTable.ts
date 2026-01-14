@@ -34,7 +34,7 @@ export const getDynamoToEsTable = (params?: CreateTableParams) => {
     const { name, documentClient } = params || {};
 
     return getPrimaryDynamoDbTable({
-        name: name || process.env.DB_TABLE_ELASTICSEARCH,
+        name: name || process.env.DB_TABLE_OPENSEARCH,
         documentClient
     });
 };

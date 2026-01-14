@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from "react";
 import get from "lodash/get.js";
 import { i18n } from "@webiny/app/i18n/index.js";
-import type { CmsDataCmsModel } from "./useCmsData.js";
+import type { CmsDataCmsGroup, CmsDataCmsModel } from "./useCmsData.js";
 import { useCmsData } from "./useCmsData.js";
 import ContentModelList from "./ContentModelList.js";
 import type { BindComponent } from "@webiny/form/types.js";
@@ -40,13 +40,13 @@ export const ContentModelPermission = ({
         }
     }, [data]);
 
-    const items = useMemo((): CmsDataCmsModel[] => {
+    const items = useMemo((): CmsDataCmsModel<CmsDataCmsGroup>[] => {
         let list = modelsGroups.models;
 
         const groups: string[] = selectedContentModelGroups || [];
         if (groups.length) {
             // Filter by groups
-            list = list.filter(item => groups.includes(item.group.id));
+            list = list.filter(item => groups.includes(item.group.slug));
         }
 
         return list;

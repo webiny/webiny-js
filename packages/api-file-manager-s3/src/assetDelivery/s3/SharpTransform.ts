@@ -48,7 +48,6 @@ export class SharpTransform implements AssetTransformationStrategy {
     }
 
     private async transformAsset(asset: Asset, options: Omit<AssetRequestOptions, "original">) {
-        console.log("Transform asset", options);
         if (options.width) {
             const { s3, bucket } = this.params;
 

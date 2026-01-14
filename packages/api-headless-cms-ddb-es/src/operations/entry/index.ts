@@ -1298,7 +1298,7 @@ export const createEntriesStorageOperations = (
                 };
             }
 
-            throw new WebinyError(error.message, error.code || "ELASTICSEARCH_ERROR", {
+            throw new WebinyError(error.message, error.code || "OPENSEARCH_ERROR", {
                 error,
                 index,
                 body,
@@ -1998,7 +1998,7 @@ export const createEntriesStorageOperations = (
 
             throw new WebinyError(
                 error.message || "Error in the Elasticsearch query.",
-                error.code || "ELASTICSEARCH_ERROR",
+                error.code || "OPENSEARCH_ERROR",
                 {
                     error,
                     index,

@@ -36,7 +36,7 @@ export default (
         if (context.elasticsearch) {
             throw new WebinyError(
                 "Elasticsearch client is already initialized, no need to define it again. Check your code for duplicate initializations.",
-                "ELASTICSEARCH_ALREADY_INITIALIZED"
+                "OPENSEARCH_ALREADY_INITIALIZED"
             );
         }
         /**

@@ -14,7 +14,7 @@ const createModelFactory = (manager: ProductManager, group: CmsGroup) => {
                 modelId: model.modelId,
                 singularApiName: model.singularApiName,
                 pluralApiName: model.pluralApiName,
-                group: group.id
+                group: group.slug
             }
         });
         const error = createResponse.data?.createContentModel?.error;

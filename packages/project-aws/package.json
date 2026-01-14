@@ -67,7 +67,6 @@
     "invariant": "^2.2.4",
     "lodash": "^4.17.21",
     "mime": "^3.0.0",
-    "ora": "4.1.1",
     "react": "18.2.0",
     "regenerator-runtime": "^0.14.1",
     "zod": "^3.25.76"

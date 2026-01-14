@@ -42,7 +42,7 @@ class DeleteGroupRepositoryImpl implements RepositoryAbstraction.Interface {
                 }
             });
 
-            const items = models.filter(model => model.group.id === group.id);
+            const items = models.filter(model => model.group === group.slug);
             if (items.length > 0) {
                 return Result.fail(new GroupHasModelsError());
             }

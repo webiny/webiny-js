@@ -68,12 +68,12 @@ const getPackageTestSetup = async (pkg: string) => {
 };
 
 export default async () => {
-    // Sanitize ElasticsearchPrefix
-    const esIndexPrefix = sanitizeEsIndexName(process.env.ELASTIC_SEARCH_INDEX_PREFIX);
+    // Sanitize Opensearch
+    const osIndexPrefix = sanitizeEsIndexName(process.env.OPENSEARCH_INDEX_PREFIX);
 
-    if (esIndexPrefix) {
-        process.env.ELASTIC_SEARCH_INDEX_PREFIX = esIndexPrefix;
-        process.stdout.write(`\nES index prefix: ${blueBright(esIndexPrefix)}\n\n`);
+    if (osIndexPrefix) {
+        process.env.OPENSEARCH_INDEX_PREFIX = osIndexPrefix;
+        process.stdout.write(`\nOS index prefix: ${blueBright(osIndexPrefix)}\n\n`);
     }
 
     // Loads environment variables defined in the project root ".env" file.

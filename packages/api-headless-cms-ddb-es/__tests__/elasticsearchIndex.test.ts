@@ -39,7 +39,7 @@ describe("Elasticsearch index", () => {
     it.each(tenants)(
         "should be root tenant in the index, no matter which one is sent",
         async tenant => {
-            process.env.ELASTICSEARCH_SHARED_INDEXES = "true";
+            process.env.OPENSEARCH_SHARED_INDEXES = "true";
 
             const prefix = getElasticsearchIndexPrefix();
 

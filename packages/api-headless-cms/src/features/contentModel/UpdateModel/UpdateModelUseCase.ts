@@ -7,12 +7,7 @@ import { ModelAfterUpdateEvent } from "./events.js";
 import { ModelUpdateErrorEvent } from "./events.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/TenantContext";
-import { CmsContext } from "~/features/shared/abstractions.js";
-import {
-    ModelNotAuthorizedError,
-    ModelPersistenceError,
-    ModelValidationError
-} from "~/domain/contentModel/errors.js";
+import { ModelNotAuthorizedError, ModelValidationError } from "~/domain/contentModel/errors.js";
 import { createZodError } from "@webiny/utils";
 import { removeUndefinedValues } from "@webiny/utils";
 import { createModelUpdateValidation } from "~/domain/contentModel/schemas.js";
@@ -20,7 +15,6 @@ import { ensureTypeTag } from "~/domain/contentModel/ensureTypeTag.js";
 import type { CmsModel } from "~/types/index.js";
 import type { CmsModelUpdateInput } from "~/types/index.js";
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
-import { GetGroupUseCase } from "~/features/contentModelGroup/GetGroup/index.js";
 
 /**
  * UpdateModelUseCase - Core model update orchestration.
@@ -41,12 +35,10 @@ import { GetGroupUseCase } from "~/features/contentModelGroup/GetGroup/index.js"
 class UpdateModelUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private getModelUseCase: GetModelUseCase.Interface,
-        private getGroupUseCase: GetGroupUseCase.Interface,
         private eventPublisher: EventPublisher.Interface,
         private repository: UpdateModelRepository.Interface,
         private accessControl: AccessControl.Interface,
-        private tenantContext: TenantContext.Interface,
-        private cmsContext: CmsContext.Interface
+        private tenantContext: TenantContext.Interface
     ) {}
 
     async execute(
@@ -81,31 +73,6 @@ class UpdateModelUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.ok(original);
         }
 
-        // Handle group changes
-        let group = {
-            id: original.group.id,
-            name: original.group.name
-        };
-
-        if (data.group) {
-            const groupResult = await this.getGroupUseCase.execute(data.group);
-
-            if (groupResult.isFail()) {
-                const error = groupResult.error;
-                if (error.code === "Cms/ModelGroup/PersistenceError") {
-                    return Result.fail(new ModelPersistenceError(error));
-                }
-
-                return Result.fail(error);
-            }
-
-            const groupData = groupResult.value;
-            group = {
-                id: groupData.id,
-                name: groupData.name
-            };
-        }
-
         // Create updated model
         const tenant = this.tenantContext.getTenant();
 
@@ -123,7 +90,6 @@ class UpdateModelUseCaseImpl implements UseCaseAbstraction.Interface {
                     : data.descriptionFieldId,
             imageFieldId:
                 data.imageFieldId === undefined ? original.imageFieldId : data.imageFieldId,
-            group,
             description: data.description || original.description,
             tenant: original.tenant || tenant.id,
             savedOn: new Date().toISOString()
@@ -169,11 +135,9 @@ export const UpdateModelUseCase = UseCaseAbstraction.createImplementation({
     implementation: UpdateModelUseCaseImpl,
     dependencies: [
         GetModelUseCase,
-        GetGroupUseCase,
         EventPublisher,
         UpdateModelRepository,
         AccessControl,
-        TenantContext,
-        CmsContext
+        TenantContext
     ]
 });

@@ -78,10 +78,7 @@ describe("export cms structure", () => {
                 data: {
                     modelId: model.modelId,
                     name: model.name,
-                    group: {
-                        id: group!.id,
-                        name: group!.name
-                    },
+                    group: group!.slug,
                     layout: model.layout,
                     fields: model.fields,
                     titleFieldId: model.titleFieldId,
@@ -123,7 +120,7 @@ describe("export cms structure", () => {
         });
         for (const model of createdModels) {
             const jsonModel = json.models.find(m => m.modelId === model.modelId) as CmsModel;
-            const group = createdGroups.find(g => g.id === model.group.id) as CmsGroup;
+            const group = createdGroups.find(g => g.slug === model.group) as CmsGroup;
             expect(jsonModel).toMatchObject({
                 modelId: model.modelId,
                 name: model.name,
@@ -132,7 +129,7 @@ describe("export cms structure", () => {
                 description: model.description,
                 titleFieldId: model.titleFieldId,
                 icon: model.icon,
-                group: group.id,
+                group: group.slug,
                 fields: fixFields(model.fields),
                 layout: model.layout
             });

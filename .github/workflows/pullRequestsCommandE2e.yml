@@ -2,14 +2,14 @@
 # DO NOT MODIFY IT BY HAND. Instead, modify the source *.wac.ts file(s)
 # and run "github-actions-wac build" (or "ghawac build") to regenerate this file.
 # For more information, run "github-actions-wac --help".
-name: Pull Requests Command - Cypress
+name: Pull Requests Command - E2E
 'on': issue_comment
 env:
   NODE_OPTIONS: '--max_old_space_size=4096'
   AWS_REGION: eu-central-1
 jobs:
   checkComment:
-    name: Check comment for /cypress
+    name: Check comment for /e2e
     if: ${{ github.event.issue.pull_request }}
     steps:
       - uses: actions/setup-node@v4
@@ -20,7 +20,7 @@ jobs:
         uses: xt0rted/slash-command-action@v2
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          command: cypress
+          command: e2e
           reaction: 'true'
           reaction-type: eyes
           allow-edits: 'false'
@@ -282,69 +282,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
-  e2e-wby-cms-ddb-cypress-tests:
-    name: >-
-      ${{ matrix.cypress-folder }} (ddb, ${{ matrix.os }}, Node v${{ matrix.node
-      }})
-    needs:
-      - baseBranch
-      - constants
-      - e2e-wby-cms-ddb-constants
-      - e2e-wby-cms-ddb-project-setup
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - ubuntu-latest
-        node:
-          - 24
-        cypress-folder: >-
-          ${{ fromJson(needs.e2e-wby-cms-ddb-constants.outputs.cypress-folders)
-          }}
-    environment: next
-    env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
-      CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
-      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
-      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      WEBINY_PULUMI_BACKEND: ${{ needs.e2e-wby-cms-ddb-constants.outputs.pulumi-backend-url }}
-    steps:
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-      - uses: actions/checkout@v4
-        with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Checkout Pull Request
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: gh pr checkout ${{ github.event.issue.number }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - uses: actions/cache@v4
-        with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
-          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v4
-        with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
-      - name: Install dependencies
-        run: yarn --immutable
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Build packages
-        run: yarn build
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Set up Cypress config
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          echo '${{ needs.e2e-wby-cms-ddb-project-setup.outputs.cypress-config
-          }}' > cypress-tests/cypress.config.ts
-      - name: Cypress - run "${{ matrix.cypress-folder }}" tests
-        timeout-minutes: 40
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: yarn cy:run --browser chrome --spec "${{ matrix.cypress-folder }}"
-    runs-on: ubuntu-latest
   e2e-wby-cms-ddb-os-constants:
     needs:
       - baseBranch
@@ -508,71 +445,3 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
-  e2e-wby-cms-ddb-os-cypress-tests:
-    name: >-
-      ${{ matrix.cypress-folder }} (ddb-os, ${{ matrix.os }}, Node v${{
-      matrix.node }})
-    needs:
-      - baseBranch
-      - constants
-      - e2e-wby-cms-ddb-os-constants
-      - e2e-wby-cms-ddb-os-project-setup
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - ubuntu-latest
-        node:
-          - 24
-        cypress-folder: >-
-          ${{
-          fromJson(needs.e2e-wby-cms-ddb-os-constants.outputs.cypress-folders)
-          }}
-    environment: next
-    env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
-      CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
-      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
-      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      WEBINY_PULUMI_BACKEND: ${{ needs.e2e-wby-cms-ddb-os-constants.outputs.pulumi-backend-url }}
-      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_3_DOMAIN_NAME }}
-      ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_3_ENDPOINT }}
-      ELASTIC_SEARCH_INDEX_PREFIX: ${{ github.run_id }}_
-    steps:
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-      - uses: actions/checkout@v4
-        with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Checkout Pull Request
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: gh pr checkout ${{ github.event.issue.number }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - uses: actions/cache@v4
-        with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
-          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v4
-        with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
-      - name: Install dependencies
-        run: yarn --immutable
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Build packages
-        run: yarn build
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Set up Cypress config
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          echo '${{
-          needs.e2e-wby-cms-ddb-os-project-setup.outputs.cypress-config }}' >
-          cypress-tests/cypress.config.ts
-      - name: Cypress - run "${{ matrix.cypress-folder }}" tests
-        timeout-minutes: 40
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: yarn cy:run --browser chrome --spec "${{ matrix.cypress-folder }}"
-    runs-on: ubuntu-latest

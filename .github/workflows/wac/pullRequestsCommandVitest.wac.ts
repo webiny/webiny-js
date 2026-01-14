@@ -47,9 +47,9 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
 
     if (storageOps) {
         if (storageOps.id === "ddb-os,ddb") {
-            env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPEN_SEARCH_3_DOMAIN_NAME }}";
-            env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.OPEN_SEARCH_3_ENDPOINT }}";
-            env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ matrix.testCommand.id }}";
+            env["AWS_OPENSEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPEN_SEARCH_3_DOMAIN_NAME }}";
+            env["OPENSEARCH_ENDPOINT"] = "${{ secrets.OPEN_SEARCH_3_ENDPOINT }}";
+            env["OPENSEARCH_INDEX_PREFIX"] = "${{ matrix.testCommand.id }}";
         }
     }
 
@@ -69,11 +69,9 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
                     id: "list-vitest-test-commands",
                     name: "List Vitest Test Commands",
                     "working-directory": DIR_WEBINY_JS,
-                    run: runNodeScript(
-                        "listVitestTestCommands",
-                        JSON.stringify({ storageOps: storageOps?.shortId || null }),
-                        { outputAs: "vitest-test-commands" }
-                    )
+                    run: runNodeScript("listVitestTestCommands", `["${storageOps?.id || ""}"]`, {
+                        outputAs: "vitest-test-commands"
+                    })
                 }
             ]
         }),
@@ -85,7 +83,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
                 matrix: {
                     os: ["ubuntu-latest"],
                     node: [NODE_VERSION],
-                    testCommand: "${{ fromJson('" + JSON.stringify(testCommands) + "') }}"
+                    testCommand: `$\{{ fromJSON(needs.${jobNames.constants}.outputs.vitest-test-commands) }}`
                 }
             },
             "runs-on": "${{ matrix.os }}",

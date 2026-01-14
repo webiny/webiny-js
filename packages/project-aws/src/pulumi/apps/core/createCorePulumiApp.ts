@@ -2,7 +2,6 @@ import * as aws from "@pulumi/aws";
 import { createPulumiApp, isResourceOfType } from "@webiny/pulumi";
 import { CoreCognito } from "./CoreCognito.js";
 import { CoreDynamo } from "./CoreDynamo.js";
-import { ElasticSearch } from "./CoreElasticSearch.js";
 import { OpenSearch } from "./CoreOpenSearch.js";
 import { CoreEventBus } from "./CoreEventBus.js";
 import { CoreFileManger } from "./CoreFileManager.js";
@@ -17,7 +16,6 @@ import * as random from "@pulumi/random";
 import { LogDynamo } from "./LogDynamo.js";
 import { getProjectSdk } from "@webiny/project";
 import { CorePulumi } from "@webiny/project/abstractions/index.js";
-import { getEsConfigFromExtension } from "~/pulumi/apps/extensions/getEsConfigFromExtension.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
 import { applyAwsResourceTags, getAwsRegion } from "~/pulumi/apps/awsUtils.js";
@@ -38,38 +36,31 @@ export function createCorePulumiApp() {
 
             const pulumiResourceNamePrefix = await sdk.getPulumiResourceNamePrefix();
             const vpcExtensionsConfig = getVpcConfigFromExtension(projectConfig);
-            const openSearchExtensionConfig = getOsConfigFromExtension(projectConfig);
-            const elasticSearchExtensionConfig = getEsConfigFromExtension(projectConfig);
+            const opensearchExtensionConfig = getOsConfigFromExtension(projectConfig);
 
             const deploymentId = new random.RandomId("deploymentId", { byteLength: 8 });
 
-            let searchEngineType: "openSearch" | "elasticSearch" | null = null;
-            let searchEngineParams:
-                | typeof openSearchExtensionConfig
-                | typeof elasticSearchExtensionConfig
-                | null = null;
+            let searchEngineType: "opensearch" | null = null;
+            let searchEngineParams: typeof opensearchExtensionConfig | null = null;
 
-            if (openSearchExtensionConfig) {
-                searchEngineParams = openSearchExtensionConfig;
-                searchEngineType = "openSearch";
-            } else if (elasticSearchExtensionConfig) {
-                searchEngineParams = elasticSearchExtensionConfig;
-                searchEngineType = "elasticSearch";
+            if (opensearchExtensionConfig) {
+                searchEngineParams = opensearchExtensionConfig;
+                searchEngineType = "opensearch";
             }
 
             if (searchEngineParams) {
                 const params = searchEngineParams;
                 if (typeof params === "object") {
                     if (params.domainName) {
-                        process.env.AWS_ELASTIC_SEARCH_DOMAIN_NAME = params.domainName;
+                        process.env.AWS_OS_DOMAIN_NAME = params.domainName;
                     }
 
                     if (params.indexPrefix) {
-                        process.env.ELASTIC_SEARCH_INDEX_PREFIX = params.indexPrefix;
+                        process.env.OPENSEARCH_INDEX_PREFIX = params.indexPrefix;
                     }
 
                     if (params.sharedIndexes) {
-                        process.env.ELASTICSEARCH_SHARED_INDEXES = "true";
+                        process.env.OPENSEARCH_SHARED_INDEXES = "true";
                     }
                 }
             }
@@ -108,23 +99,7 @@ export function createCorePulumiApp() {
                         );
                     }
 
-                    if (elasticSearchExtensionConfig) {
-                        if (!useExistingVpc.elasticSearchDomainVpcConfig) {
-                            throw new Error(
-                                "Cannot specify `useExistingVpc` parameter because the `elasticSearchDomainVpcConfig` parameter wasn't provided."
-                            );
-                        }
-
-                        onResource(resource => {
-                            if (isResourceOfType(resource, aws.elasticsearch.Domain)) {
-                                resource.config.vpcOptions(
-                                    useExistingVpc!.elasticSearchDomainVpcConfig
-                                );
-                            }
-                        });
-                    }
-
-                    if (openSearchExtensionConfig) {
+                    if (opensearchExtensionConfig) {
                         if (!useExistingVpc.openSearchDomainVpcConfig) {
                             throw new Error(
                                 "Cannot specify `useExistingVpc` parameter because the `openSearchDomainVpcConfig` parameter wasn't provided."
@@ -264,11 +239,9 @@ export function createCorePulumiApp() {
             // Setup file core bucket
             const { bucket: fileManagerBucket } = app.addModule(CoreFileManger, { protect });
 
-            let elasticSearch;
-            if (searchEngineType === "openSearch") {
-                elasticSearch = app.addModule(OpenSearch, { protect });
-            } else if (searchEngineType === "elasticSearch") {
-                elasticSearch = app.addModule(ElasticSearch, { protect });
+            let opensearch;
+            if (searchEngineType === "opensearch") {
+                opensearch = app.addModule(OpenSearch, { protect });
             }
 
             app.addModule(WatchCommand, { deploymentId: deploymentId.hex });
@@ -307,7 +280,7 @@ export function createCorePulumiApp() {
                 ...cognito,
                 fileManagerBucket,
                 eventBus,
-                elasticSearch
+                opensearch
             };
         }
     });

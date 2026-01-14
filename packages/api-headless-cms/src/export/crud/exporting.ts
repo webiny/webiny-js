@@ -25,7 +25,7 @@ export const createExportStructureContext = (context: CmsContext): HeadlessCmsEx
                 return modelIdList.includes(model.modelId);
             })
             .map(model => {
-                const group = groups.find(group => group.id === model.group.id);
+                const group = groups.find(group => group.slug === model.group);
                 if (!group) {
                     return null;
                 }
@@ -37,7 +37,7 @@ export const createExportStructureContext = (context: CmsContext): HeadlessCmsEx
 
         return {
             groups: groups.filter(group => {
-                return models.some(model => model.group === group.id);
+                return models.some(model => model.group === group.slug);
             }),
             models
         };

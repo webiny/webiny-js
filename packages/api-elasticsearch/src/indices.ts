@@ -22,7 +22,7 @@ export const getLastAddedIndexPlugin = <T extends ElasticsearchIndexPlugin>(
     if (plugins.length === 0) {
         throw new WebinyError(
             `Could not find a single ElasticsearchIndexPlugin of type "${params.type}".`,
-            "ELASTICSEARCH_INDEX_TEMPLATE_ERROR",
+            "OPENSEARCH_INDEX_TEMPLATE_ERROR",
             {
                 type: params.type
             }

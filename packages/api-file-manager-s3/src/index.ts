@@ -7,7 +7,6 @@ import { ApplyThreatScanningFeature } from "~/enterprise/ApplyThreatScanning/fea
 import { FlushCacheFeature } from "~/features/FlushCache/feature.js";
 export { createFileUploadModifier } from "./utils/FileUploadModifier.js";
 export { createAssetDelivery } from "./assetDelivery/createAssetDelivery.js";
-export { createCustomAssetDelivery } from "./assetDelivery/createCustomAssetDelivery.js";
 
 const contextPlugin = new ContextPlugin(context => {
     FlushCacheFeature.register(context.container);

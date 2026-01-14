@@ -31,7 +31,7 @@ export interface ITransformRecordPluginConfigTransformCallable {
 }
 
 export interface ITransformRecordPluginConfig {
-    tableType: DynamoDBTableType.REGULAR | DynamoDBTableType.ELASTICSEARCH;
+    tableType: DynamoDBTableType.REGULAR | DynamoDBTableType.OPENSEARCH;
     canTransform: ITransformRecordPluginConfigCanTransformCallable;
     transform: ITransformRecordPluginConfigTransformCallable;
 }

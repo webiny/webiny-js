@@ -24,7 +24,7 @@ export const esGetIndexExist = async (params: GetIndexExistParams) => {
 
         return false;
     } catch (ex) {
-        console.warn(`Could not find Elasticsearch index:`, ex.message);
+        console.warn(`Could not find index:`, ex.message);
         return false;
     }
 };

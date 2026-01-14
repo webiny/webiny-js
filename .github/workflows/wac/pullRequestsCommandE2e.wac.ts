@@ -1,20 +1,14 @@
 import { createWorkflow, NormalJob } from "github-actions-wac";
 import {
-    createSetupVerdaccioSteps,
     createDeployWebinySteps,
-    createYarnCacheSteps,
-    createInstallBuildSteps,
     createGlobalBuildCacheSteps,
+    createInstallBuildSteps,
     createRunBuildCacheSteps,
+    createSetupVerdaccioSteps,
+    createYarnCacheSteps,
     withCommonParams
 } from "./steps/index.js";
-import {
-    NODE_OPTIONS,
-    NODE_VERSION,
-    BUILD_PACKAGES_RUNNER,
-    AWS_REGION,
-    runNodeScript
-} from "./utils/index.js";
+import { AWS_REGION, BUILD_PACKAGES_RUNNER, NODE_OPTIONS } from "./utils/index.js";
 import { createJob } from "./jobs/index.js";
 
 // Will print "next" or "dev". Important for caching (via actions/cache).
@@ -180,48 +174,14 @@ const createCypressJobs = (dbSetup: string) => {
         ]
     });
 
-    const cypressTestsJob = createJob({
-        name: `\${{ matrix.cypress-folder }} (${dbSetup}, \${{ matrix.os }}, Node v\${{ matrix.node }})`,
-        needs: ["baseBranch", "constants", jobNames.constants, jobNames.projectSetup],
-        strategy: {
-            "fail-fast": false,
-            matrix: {
-                os: ["ubuntu-latest"],
-                node: [NODE_VERSION],
-                "cypress-folder": `\${{ fromJson(needs.${jobNames.constants}.outputs.cypress-folders) }}`
-            }
-        },
-        environment: "next",
-        env,
-        checkout: { path: "${{ needs.baseBranch.outputs.base-branch }}" },
-        steps: [
-            ...createCheckoutPrSteps(),
-            ...yarnCacheSteps,
-            ...runBuildCacheSteps,
-            ...installBuildSteps,
-            {
-                name: "Set up Cypress config",
-                "working-directory": DIR_WEBINY_JS,
-                run: `echo '\${{ needs.${jobNames.projectSetup}.outputs.cypress-config }}' > cypress-tests/cypress.config.ts`
-            },
-            {
-                name: 'Cypress - run "${{ matrix.cypress-folder }}" tests',
-                "timeout-minutes": 40,
-                "working-directory": DIR_WEBINY_JS,
-                run: 'yarn cy:run --browser chrome --spec "${{ matrix.cypress-folder }}"'
-            }
-        ]
-    });
-
     return {
         [jobNames.constants]: constantsJob,
-        [jobNames.projectSetup]: projectSetupJob,
-        [jobNames.cypressTests]: cypressTestsJob
+        [jobNames.projectSetup]: projectSetupJob
     };
 };
 
-export const pullRequestsCommandCypress = createWorkflow({
-    name: "Pull Requests Command - Cypress",
+export const pullRequestsCommandE2e = createWorkflow({
+    name: "Pull Requests Command - E2E",
     on: "issue_comment",
     env: {
         NODE_OPTIONS,
@@ -229,7 +189,7 @@ export const pullRequestsCommandCypress = createWorkflow({
     },
     jobs: {
         checkComment: createJob({
-            name: `Check comment for /cypress`,
+            name: `Check comment for /e2e`,
             if: "${{ github.event.issue.pull_request }}",
             checkout: false,
             steps: [
@@ -239,7 +199,7 @@ export const pullRequestsCommandCypress = createWorkflow({
                     uses: "xt0rted/slash-command-action@v2",
                     with: {
                         "repo-token": "${{ secrets.GITHUB_TOKEN }}",
-                        command: "cypress",
+                        command: "e2e",
                         reaction: "true",
                         "reaction-type": "eyes",
                         "allow-edits": "false",

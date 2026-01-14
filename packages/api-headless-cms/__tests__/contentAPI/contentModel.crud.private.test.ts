@@ -4,6 +4,7 @@ import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin";
 import { createPrivateModelPlugin } from "~/plugins/CmsModelPlugin";
 import type { CmsGroup, CmsGroupCreateInput, CmsModel } from "~/types";
 import type { CreateContentModelMutationVariables } from "~tests/testHelpers/graphql/contentModel";
+import { createModelField } from "~/utils/createModelField.js";
 
 const privateGroup = new CmsGroupPlugin({
     isPrivate: true,
@@ -17,21 +18,16 @@ const privateGroup = new CmsGroupPlugin({
 const privateAuthorsModel = createPrivateModelPlugin({
     modelId: "author",
     name: "Authors",
-    // layout: [["title"]],
     fields: [
-        {
+        createModelField({
             id: "title",
             storageId: "text@title",
             fieldId: "title",
             type: "text",
             label: "Title"
-        }
+        })
     ],
     titleFieldId: "title"
-    // group: {
-    //     id: privateGroup.contentModelGroup.id,
-    //     name: privateGroup.contentModelGroup.name
-    // },
 });
 
 describe("Private Groups and Models", function () {
@@ -86,10 +82,7 @@ describe("Private Groups and Models", function () {
             modelId: "animals",
             singularApiName: "Animal",
             pluralApiName: "Animals",
-            group: {
-                id: group.id,
-                name: group.name
-            },
+            group: group.slug,
             description: "Animals model",
             layout: [],
             fields: [],

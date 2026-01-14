@@ -40,7 +40,7 @@ export const esCreateIndex = async (params: EsCreateIndexParams): Promise<string
 
         throw new WebinyError(
             ex.message || "Could not create Elasticsearch index.",
-            ex.code || "CREATE_ELASTICSEARCH_INDEX_ERROR",
+            ex.code || "CREATE_OPENSEARCH_INDEX_ERROR",
             {
                 error: ex,
                 tenant,

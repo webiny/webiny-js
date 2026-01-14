@@ -34,6 +34,7 @@ export const VALIDATE_IMPORT_STRUCTURE = gql`
                     group {
                         id
                         name
+                        slug
                     }
                     action
                     ${ERROR}
@@ -90,6 +91,7 @@ export interface ImportStructureResponseDataGroup {
     group: {
         id: string;
         name: string;
+        slug: string;
     };
     action: ImportAction;
     error: CmsErrorResponse | null;

@@ -22,10 +22,7 @@ const BASE_CONTENT_MODEL_FIELDS = `
         type
         fieldId
     }
-    group {
-        id
-        name
-    }
+    group
     createdBy {
         id
         displayName
@@ -51,6 +48,7 @@ export const LIST_MENU_CONTENT_GROUPS_MODELS = gql`
         listContentModelGroups {
             data {
                 id
+                slug
                 name
                 icon
                 plugin

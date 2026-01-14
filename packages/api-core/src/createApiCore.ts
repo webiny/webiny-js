@@ -1,4 +1,3 @@
-import { createContextPlugin } from "@webiny/handler";
 import { ApiCoreFeature } from "./ApiCoreFeature.js";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types.js";
 import { createWcpContext } from "~/legacy/wcp/context.js";
@@ -7,6 +6,7 @@ import { createAdminUsersContext } from "~/legacy/users/createAdminUsersContext.
 import { createTenancyContext } from "~/legacy/tenancy/createTenancyContext.js";
 import { createSystemGraphQL } from "~/graphql/system/createSystemGraphQL.js";
 import type { ApiCoreStorageOperations } from "~/types/core.js";
+import { createHandlerOnRequest } from "@webiny/handler/plugins/HandlerOnRequestPlugin.js";
 
 export interface ApiCoreConfig {
     storageOperations: ApiCoreStorageOperations;
@@ -15,8 +15,8 @@ export interface ApiCoreConfig {
 
 export const createApiCore = (config: ApiCoreConfig) => {
     return [
-        createContextPlugin(context => {
-            // Register ALL core features
+        createHandlerOnRequest(async (_, __, context) => {
+            // Register ALL core features as early as possible.
             ApiCoreFeature.register(context.container, config.storageOperations);
         }),
         createWcpContext({ testProjectLicense: config.testProjectLicense }),

@@ -351,9 +351,9 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       AWS_REGION: eu-central-1
       WEBINY_STORAGE: ddb-os,ddb
-      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_3_DOMAIN_NAME }}
-      ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_3_ENDPOINT }}
-      ELASTIC_SEARCH_INDEX_PREFIX: ${{ matrix.testCommand.id }}
+      AWS_OPENSEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_3_DOMAIN_NAME }}
+      OPENSEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_3_ENDPOINT }}
+      OPENSEARCH_INDEX_PREFIX: ${{ matrix.testCommand.id }}
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -574,9 +574,9 @@ jobs:
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: ${{ needs.e2eTests-ddbOs-constants.outputs.pulumi-backend-url }}
-      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_3_DOMAIN_NAME }}
-      ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_3_ENDPOINT }}
-      ELASTIC_SEARCH_INDEX_PREFIX: ${{ github.run_id }}_
+      AWS_OPENSEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_3_DOMAIN_NAME }}
+      OPENSEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_3_ENDPOINT }}
+      OPENSEARCH_INDEX_PREFIX: ${{ github.run_id }}_
     steps:
       - uses: actions/setup-node@v4
         with:
