@@ -4,7 +4,7 @@ import { makeDecoratable } from "@webiny/react-composition";
 import { useDialogs } from "~/components/Dialogs/useDialogs.js";
 
 interface NavigationPromptProps {
-    when: boolean;
+    when: boolean | (() => boolean);
     message: React.ReactNode;
     confirmLabel?: string;
     cancelLabel?: string;
@@ -13,13 +13,19 @@ interface NavigationPromptProps {
 export const NavigationPrompt = makeDecoratable(
     "NavigationPrompt",
     ({ when, message, confirmLabel, cancelLabel }: NavigationPromptProps) => {
-        const stateRef = useRef(when);
+        const whenRef = useRef(when);
         const router = useRouter();
         const dialogs = useDialogs();
 
+        // Update the ref synchronously on every render to ensure we always have the latest value
+        whenRef.current = when;
+
         useEffect(() => {
             router.onRouteExit(transition => {
-                if (stateRef.current) {
+                const condition = whenRef.current;
+                const shouldConfirm = typeof condition === "function" ? condition() : condition;
+
+                if (shouldConfirm) {
                     dialogs.showDialog({
                         title: "Confirm Navigation",
                         content: message,
@@ -34,10 +40,6 @@ export const NavigationPrompt = makeDecoratable(
                 }
             });
         }, []);
-
-        useEffect(() => {
-            stateRef.current = when;
-        }, [when]);
 
         return null;
     }

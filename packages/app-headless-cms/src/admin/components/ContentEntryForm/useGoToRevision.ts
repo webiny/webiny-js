@@ -8,7 +8,11 @@ export const useGoToRevision = () => {
 
     const goToRevision = useCallback(
         (id: string) => {
-            goToRoute(Routes.ContentEntries.List, { ...route.params, id });
+            goToRoute(Routes.ContentEntries.List, {
+                id,
+                modelId: route.params.modelId,
+                folderId: route.params.folderId
+            });
         },
         [route]
     );
