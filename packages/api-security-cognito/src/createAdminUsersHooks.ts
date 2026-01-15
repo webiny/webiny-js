@@ -76,7 +76,7 @@ export const createAdminUsersHooks = () => {
         adminUsers.onUserBeforeUpdate.subscribe(async ({ user, updateData }) => {
             const tenant = getTenant();
 
-            if (!tenant) {
+            if (!tenant || !updateData.email) {
                 return;
             }
 

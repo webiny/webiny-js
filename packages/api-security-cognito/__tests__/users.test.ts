@@ -257,6 +257,53 @@ describe("Security User CRUD Test", () => {
         });
     });
 
+    test("should not allow to update user with an existing email", async () => {
+        // Let's create a user.
+        const [createUserAResponse] = await adminUsers.create({
+            data: {
+                ...mocks.userA,
+                password: "12345678",
+                groups: []
+            }
+        });
+
+        const userA = createUserAResponse.data.adminUsers.createUser.data;
+
+        const [createUserBResponse] = await adminUsers.create({
+            data: {
+                ...mocks.userB,
+                password: "12345678",
+                groups: []
+            }
+        });
+
+        const userB = createUserBResponse.data.adminUsers.createUser.data;
+
+        // Let's update the "userB" name
+        const [updateUserResponse] = await adminUsers.update({
+            id: userB.id,
+            data: {
+                // Use an existing email of another user.
+                email: userA.email
+            }
+        });
+
+        expect(updateUserResponse).toEqual({
+            data: {
+                adminUsers: {
+                    updateUser: {
+                        data: null,
+                        error: {
+                            code: "UPDATE_USER_ERROR",
+                            message: "Email is already taken!",
+                            data: null
+                        }
+                    }
+                }
+            }
+        });
+    });
+
     test("should return current user based on identity", async () => {
         const [groupResponseA] = await securityGroups.get({ slug: "full-access" });
         const fullAccessGroup = groupResponseA.data.security.getGroup.data;

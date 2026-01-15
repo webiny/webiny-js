@@ -100,7 +100,10 @@ export default (params: CreateUserGraphQlPluginsParams) => {
 
                             return new Response(user);
                         } catch (e) {
-                            return new ErrorResponse(e);
+                            return new ErrorResponse({
+                                message: e.message,
+                                code: e.code
+                            });
                         }
                     },
                     deleteUser: async (_, { id }: any, context) => {
