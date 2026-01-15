@@ -6,7 +6,6 @@ import { FullScreenContentEntryHeaderLeft } from "./FullScreenContentEntryHeader
 import * as FSE from "./FullScreenContentEntry.styled.js";
 import { FullScreenContentEntryProvider } from "./useFullScreenContentEntry.js";
 import { ContentEntryEditorConfig } from "~/ContentEntryEditorConfig.js";
-import { cmsLegacyEntryEditor } from "~/utils/cmsLegacyEntryEditor.js";
 import { useContentEntryEditorConfig } from "~/admin/config/contentEntries/index.js";
 import { HeaderBar, OverlayLoader } from "@webiny/admin-ui";
 
@@ -71,10 +70,6 @@ const FullScreenContentEntryFormHeaderDecorator =
     });
 
 export const FullScreenContentEntry = () => {
-    if (cmsLegacyEntryEditor) {
-        return null;
-    }
-
     return (
         <>
             <FullScreenContentEntryDecorator />
