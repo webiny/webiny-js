@@ -4,6 +4,7 @@ import type { CmsDynamicZoneTemplate } from "~/types.js";
 import { TemplateIcon } from "~/admin/plugins/fieldRenderers/dynamicZone/TemplateIcon.js";
 import { Text, Button } from "@webiny/admin-ui";
 import { Dialog } from "@webiny/admin-ui";
+import { ReactComponent as PlusIcon } from "@webiny/icons/add_circle_outline.svg";
 
 export interface TemplateCardProps {
     template: CmsDynamicZoneTemplate;
@@ -47,7 +48,9 @@ export const TemplateItem = makeDecoratable(
                             className="absolute inset-0 flex items-center justify-center bg-white/80 cursor-pointer"
                             onClick={() => onTemplate(template)}
                         >
-                            <Button variant="primary">Insert</Button>
+                            <Button size={"lg"} variant="primary" icon={<PlusIcon/>}>
+                                Insert
+                            </Button>
                         </div>
                     </Dialog.Close>
                 )}

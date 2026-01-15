@@ -40,12 +40,6 @@ export const AddTemplateButton = (props: AddTemplateProps) => {
                 <TemplateGallery onTemplate={onTemplate} onClose={() => {}} />
             </Dialog>
 
-            <Text size={"sm"} className={"text-neutral-strong"}>
-                Learn how&nbsp;
-                <Link to={"https://webiny.link/admin/how-to-use/dynamic-zones"} target={"_blank"}>
-                    templates and dynamic zones work.
-                </Link>{" "}
-            </Text>
         </div>
     );
 };
