@@ -1,41 +1,41 @@
 import { Plugin } from "@webiny/plugins";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 
-interface CmsEntryElasticsearchValuesModifierCbParamsSetValuesCb<T = CmsEntryValues> {
+interface CmsEntryElasticsearchValuesModifierCbParamsSetValuesCb<T extends CmsEntryValues = CmsEntryValues> {
     (prev: Partial<T>): Partial<T>;
 }
 
-interface CmsEntryElasticsearchValuesModifierCbParams<T = CmsEntryValues> {
+interface CmsEntryElasticsearchValuesModifierCbParams<T extends CmsEntryValues = CmsEntryValues> {
     model: CmsModel;
     entry: CmsEntry<T>;
     values: T;
     setValues: (cb: CmsEntryElasticsearchValuesModifierCbParamsSetValuesCb<T>) => void;
 }
 
-export interface CmsEntryElasticsearchValuesModifierCb<T = CmsEntryValues> {
+export interface CmsEntryElasticsearchValuesModifierCb<T extends CmsEntryValues = CmsEntryValues> {
     (params: CmsEntryElasticsearchValuesModifierCbParams<T>): void;
 }
 
-export interface CmsEntryElasticsearchValuesModifierExecParams<T = CmsEntryValues> {
+export interface CmsEntryElasticsearchValuesModifierExecParams<T extends CmsEntryValues = CmsEntryValues> {
     model: CmsModel;
     entry: CmsEntry<T>;
     values: Partial<T>;
 }
 
-export type CmsEntryElasticsearchValuesModifierParams<T> =
-    | CmsEntryElasticsearchValuesModifierCb<T>
+export type CmsEntryElasticsearchValuesModifierParams =
+    | CmsEntryElasticsearchValuesModifierCb
     | {
           models: string[];
-          modifier: CmsEntryElasticsearchValuesModifierCb<T>;
+          modifier: CmsEntryElasticsearchValuesModifierCb;
       };
 
-export class CmsEntryElasticsearchValuesModifier<T = CmsEntryValues> extends Plugin {
+export class CmsEntryElasticsearchValuesModifier extends Plugin {
     public static override readonly type: string = "cms.entry.elasticsearch.values.modifier";
 
     private readonly models?: string[] = undefined;
-    private readonly cb: CmsEntryElasticsearchValuesModifierCb<T>;
+    private readonly cb: CmsEntryElasticsearchValuesModifierCb;
 
-    public constructor(params: CmsEntryElasticsearchValuesModifierParams<T>) {
+    public constructor(params: CmsEntryElasticsearchValuesModifierParams) {
         super();
         if (typeof params === "function") {
             this.cb = params;
@@ -52,9 +52,9 @@ export class CmsEntryElasticsearchValuesModifier<T = CmsEntryValues> extends Plu
         return this.models.includes(modelId);
     }
 
-    public modify(params: CmsEntryElasticsearchValuesModifierExecParams<T>): Partial<T> {
+    public modify<T extends CmsEntryValues = CmsEntryValues>(params: CmsEntryElasticsearchValuesModifierExecParams<T>): T {
         const { model, entry, values: initialValues } = params;
-        let values: any = initialValues;
+        let values = initialValues;
         this.cb({
             model,
             entry,
@@ -67,7 +67,7 @@ export class CmsEntryElasticsearchValuesModifier<T = CmsEntryValues> extends Plu
     }
 }
 
-export const createCmsEntryElasticsearchValuesModifier = <T = CmsEntryValues>(
+export const createCmsEntryElasticsearchValuesModifier = <T extends CmsEntryValues = CmsEntryValues>(
     params: CmsEntryElasticsearchValuesModifierParams<T>
 ) => {
     return new CmsEntryElasticsearchValuesModifier<T>(params);

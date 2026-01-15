@@ -112,7 +112,7 @@ export interface CmsModelDateTimeField extends CmsModelField {
  * @category ModelField
  * @category FieldValidation
  */
-export interface CmsModelFieldValidatorValidateParams<T = any> {
+export interface CmsModelFieldValidatorValidateParams<T extends CmsEntryValues = CmsEntryValues> {
     /**
      * A value to be validated.
      */
@@ -140,7 +140,7 @@ export interface CmsModelFieldValidatorValidateParams<T = any> {
      * If entry is sent it means it is an update operation.
      * First usage is for the unique field value.
      */
-    entry?: CmsEntry;
+    entry?: CmsEntry<T>;
 }
 
 /**
@@ -1197,55 +1197,55 @@ export interface CmsEntryStorageOperationsListParams {
 }
 
 export interface CmsEntryStorageOperationsCreateParams<
-    T extends CmsStorageEntry = CmsStorageEntry
+    T extends CmsEntryValues = CmsEntryValues
 > {
     /**
      * Real entry, with no transformations on it.
      */
-    entry: CmsEntry;
+    entry: CmsEntry<T>;
     /**
      * Entry prepared for the storage.
      */
-    storageEntry: T;
+    storageEntry: CmsStorageEntry<T>;
 }
 
 export interface CmsEntryStorageOperationsCreateRevisionFromParams<
-    T extends CmsStorageEntry = CmsStorageEntry
+    T extends CmsEntryValues = CmsEntryValues
 > {
     /**
      * Real entry, with no transformations on it.
      */
-    entry: CmsEntry;
+    entry: CmsEntry<T>;
     /**
      * Entry prepared for the storage.
      */
-    storageEntry: T;
+    storageEntry: CmsStorageEntry<T>;
 }
 
 export interface CmsEntryStorageOperationsUpdateParams<
-    T extends CmsStorageEntry = CmsStorageEntry
+    T extends CmsEntryValues = CmsEntryValues
 > {
     /**
      * Real entry, with no transformations on it.
      */
-    entry: CmsEntry;
+    entry: CmsEntry<T>;
     /**
      * Entry prepared for the storage.
      */
-    storageEntry: T;
+    storageEntry: CmsStorageEntry<T>;
 }
 
 export interface CmsEntryStorageOperationsDeleteRevisionParams<
-    T extends CmsStorageEntry = CmsStorageEntry
+    T extends CmsEntryValues = CmsEntryValues
 > {
     /**
      * Entry that was deleted.
      */
-    entry: CmsEntry;
+    entry: CmsEntry<T>;
     /**
      * Entry that was deleted, directly from storage, with transformations.
      */
-    storageEntry: T;
+    storageEntry: CmsStorageEntry<T>;
     /**
      * Entry that was set as latest.
      */
@@ -1253,39 +1253,39 @@ export interface CmsEntryStorageOperationsDeleteRevisionParams<
     /**
      * Entry that was set as latest, directly from storage, with transformations.
      */
-    latestStorageEntry: T | null;
+    latestStorageEntry: CmsStorageEntry<T> | null;
 }
 
-export interface CmsEntryStorageOperationsDeleteParams {
-    entry: CmsEntry;
+export interface CmsEntryStorageOperationsDeleteParams<T extends CmsEntryValues = CmsEntryValues> {
+    entry: CmsEntry<T>;
 }
 
 export interface CmsEntryStorageOperationsMoveToBinParams<
-    T extends CmsStorageEntry = CmsStorageEntry
+    T extends CmsEntryValues = CmsEntryValues
 > {
     /**
      * The modified entry that is going to be saved as published.
      * Entry is in its original form.
      */
-    entry: CmsEntry;
+    entry: CmsEntry<T>;
     /**
      * The modified entry and prepared for the storage.
      */
-    storageEntry: T;
+    storageEntry: CmsStorageEntry<T>;
 }
 
 export interface CmsEntryStorageOperationsRestoreFromBinParams<
-    T extends CmsStorageEntry = CmsStorageEntry
+    T extends CmsEntryValues = CmsEntryValues
 > {
     /**
      * The modified entry that is going to be saved as restored.
      * Entry is in its original form.
      */
-    entry: CmsEntry;
+    entry: CmsEntry<T>;
     /**
      * The modified entry and prepared for the storage.
      */
-    storageEntry: T;
+    storageEntry: CmsStorageEntry<T>;
 }
 
 export interface CmsEntryStorageOperationsDeleteEntriesParams {
@@ -1293,30 +1293,30 @@ export interface CmsEntryStorageOperationsDeleteEntriesParams {
 }
 
 export interface CmsEntryStorageOperationsPublishParams<
-    T extends CmsStorageEntry = CmsStorageEntry
+    T extends CmsEntryValues = CmsEntryValues
 > {
     /**
      * The modified entry that is going to be saved as published.
      * Entry is in its original form.
      */
-    entry: CmsEntry;
+    entry: CmsEntry<T>;
     /**
      * The modified entry and prepared for the storage.
      */
-    storageEntry: T;
+    storageEntry: CmsStorageEntry<T>;
 }
 
 export interface CmsEntryStorageOperationsUnpublishParams<
-    T extends CmsStorageEntry = CmsStorageEntry
+    T extends CmsEntryValues = CmsEntryValues
 > {
     /**
      * The modified entry that is going to be saved as unpublished.
      */
-    entry: CmsEntry;
+    entry: CmsEntry<T>;
     /**
      * The modified entry that is going to be saved as unpublished, with transformations on it.
      */
-    storageEntry: T;
+    storageEntry: CmsStorageEntry<T>;
 }
 
 export interface CmsEntryStorageOperationsGetUniqueFieldValuesParams {
@@ -1463,21 +1463,21 @@ export interface CmsEntryStorageOperations {
      */
     create: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
-        params: CmsEntryStorageOperationsCreateParams<CmsEntry<T>>
+        params: CmsEntryStorageOperationsCreateParams<T>
     ) => Promise<CmsEntry<T>>;
     /**
      * Create a new entry from existing one.
      */
     createRevisionFrom: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
-        params: CmsEntryStorageOperationsCreateRevisionFromParams<CmsEntry<T>>
+        params: CmsEntryStorageOperationsCreateRevisionFromParams<T>
     ) => Promise<CmsEntry<T>>;
     /**
      * Update existing entry.
      */
     update: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
-        params: CmsEntryStorageOperationsUpdateParams<CmsEntry<T>>
+        params: CmsEntryStorageOperationsUpdateParams<T>
     ) => Promise<CmsEntry<T>>;
     /**
      * Move entry and all its entries into a new folder.
@@ -1488,7 +1488,7 @@ export interface CmsEntryStorageOperations {
      */
     deleteRevision: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
-        params: CmsEntryStorageOperationsDeleteRevisionParams<CmsEntry<T>>
+        params: CmsEntryStorageOperationsDeleteRevisionParams<T>
     ) => Promise<void>;
     /**
      * Delete the entry.
@@ -1503,7 +1503,7 @@ export interface CmsEntryStorageOperations {
      */
     restoreFromBin: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
-        params: CmsEntryStorageOperationsRestoreFromBinParams<CmsEntry<T>>
+        params: CmsEntryStorageOperationsRestoreFromBinParams<T>
     ) => Promise<CmsEntry<T>>;
     /**
      * Delete multiple entries, with a limit on how much can be deleted in one call.
@@ -1517,14 +1517,14 @@ export interface CmsEntryStorageOperations {
      */
     publish: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
-        params: CmsEntryStorageOperationsPublishParams<CmsEntry<T>>
+        params: CmsEntryStorageOperationsPublishParams<T>
     ) => Promise<CmsEntry<T>>;
     /**
      * Unpublish the entry.
      */
     unpublish: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
-        params: CmsEntryStorageOperationsUnpublishParams<CmsEntry<T>>
+        params: CmsEntryStorageOperationsUnpublishParams<T>
     ) => Promise<CmsEntry<T>>;
     /**
      * Method to list all the unique values for the given field id.

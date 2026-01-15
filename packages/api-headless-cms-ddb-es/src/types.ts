@@ -3,6 +3,7 @@ import type {
     CmsContext as BaseCmsContext,
     CmsEntry,
     CmsEntryStorageOperations as BaseCmsEntryStorageOperations,
+    CmsEntryValues,
     CmsModel,
     CmsModelField,
     CmsModelFieldToGraphQLPlugin,
@@ -23,18 +24,13 @@ import type { ITable } from "@webiny/db-dynamodb";
  * @category Elasticsearch
  * @category CmsEntry
  */
-export interface CmsIndexEntry extends CmsEntry {
+export interface CmsIndexEntry<T extends CmsEntryValues = CmsEntryValues> extends CmsEntry<T> {
     /**
      * Values that are not going to be indexed.
      */
-    rawValues: Record<string, any>;
+    rawValues: Partial<T>;
     /**
-     * A first part of the ID, without the revision.
-     * For example, we can search for all the revisions of the given entry.
-     */
-    primaryId: string;
-    /**
-     * Dev can add what ever keys they want and need. Just need to be careful not to break the entry.
+     * Dev can add whatever keys they want and need. Just need to be careful not to break the entry.
      */
     [key: string]: any;
 }

@@ -1,6 +1,7 @@
 import WebinyError from "@webiny/error";
 import type {
     CmsEntry,
+    CmsEntryValues,
     CmsModel,
     CmsModelFieldToGraphQLPlugin
 } from "@webiny/api-headless-cms/types/index.js";
@@ -13,18 +14,22 @@ interface SetupEntriesIndexHelpersParams {
     plugins: PluginsContainer;
 }
 
-interface ExtractEntriesFromIndexParams extends SetupEntriesIndexHelpersParams {
+interface ExtractEntriesFromIndexParams<T extends CmsEntryValues = CmsEntryValues>
+    extends SetupEntriesIndexHelpersParams {
     model: CmsModel;
-    entries: CmsIndexEntry[];
+    entries: CmsIndexEntry<T>[];
 }
 
-interface PrepareElasticsearchDataParams extends SetupEntriesIndexHelpersParams {
+interface PrepareElasticsearchDataParams<T extends CmsEntryValues = CmsEntryValues>
+    extends SetupEntriesIndexHelpersParams {
     model: CmsModel;
-    entry: CmsEntry;
-    storageEntry: CmsEntry;
+    entry: CmsEntry<T>;
+    storageEntry: CmsEntry<T>;
 }
 
-export const prepareEntryToIndex = (params: PrepareElasticsearchDataParams): CmsIndexEntry => {
+export const prepareEntryToIndex = <T extends CmsEntryValues = CmsEntryValues>(
+    params: PrepareElasticsearchDataParams<T>
+): CmsIndexEntry<T> => {
     const { plugins, storageEntry, entry, model } = params;
     const { fieldIndexPlugins, defaultIndexFieldPlugin, fieldTypePlugins } =
         setupEntriesIndexHelpers({ plugins });
@@ -48,12 +53,12 @@ export const prepareEntryToIndex = (params: PrepareElasticsearchDataParams): Cms
     }
 
     // These objects will contain values processed by field index plugins
-    const values: Record<string, string> = {};
-    const rawValues: Record<string, string> = {};
+    const values: T = {} as T;
+    const rawValues: T = {} as T;
 
     // We're only interested in current model fields.
     for (const field of model.fields) {
-        const identifier = getFieldIdentifier(storageEntry.values, field);
+        const identifier = getFieldIdentifier(storageEntry.values, field) as keyof T;
         if (!identifier) {
             continue;
         }
@@ -87,7 +92,7 @@ export const prepareEntryToIndex = (params: PrepareElasticsearchDataParams): Cms
         ...storageEntry,
         values,
         rawValues
-    } as CmsIndexEntry;
+    };
 };
 
 const setupEntriesIndexHelpers = ({
@@ -119,11 +124,11 @@ const setupEntriesIndexHelpers = ({
     };
 };
 
-export const extractEntriesFromIndex = ({
+export const extractEntriesFromIndex = <T extends CmsEntryValues = CmsEntryValues>({
     plugins,
     entries,
     model
-}: ExtractEntriesFromIndexParams): CmsEntry[] => {
+}: ExtractEntriesFromIndexParams<T>): CmsEntry<T>[] => {
     const { fieldIndexPlugins, defaultIndexFieldPlugin, fieldTypePlugins } =
         setupEntriesIndexHelpers({ plugins });
 
@@ -141,11 +146,11 @@ export const extractEntriesFromIndex = ({
         return fieldTypePlugins[fieldType];
     }
 
-    const list: CmsEntry[] = [];
+    const list: CmsEntry<T>[] = [];
 
     for (const entry of entries) {
         // This object will contain values processed by field index plugins
-        const indexValues: Record<string, string> = {};
+        const indexValues: T = {} as T;
 
         // We only consider fields that are present in the model
         for (const field of model.fields) {
@@ -169,23 +174,19 @@ export const extractEntriesFromIndex = ({
             }
 
             try {
-                indexValues[identifiers.valueIdentifier] = targetFieldPlugin.fromIndex({
+                const key = identifiers.valueIdentifier as keyof T;
+                const rawKey = identifiers.rawValueIdentifier as keyof T;
+                indexValues[key] = targetFieldPlugin.fromIndex({
                     plugins,
                     model,
                     field,
                     getFieldIndexPlugin,
                     getFieldTypePlugin,
-                    value: entry.values[
-                        identifiers.valueIdentifier || identifiers.rawValueIdentifier
-                    ],
+                    value: entry.values[key || rawKey],
                     /**
                      * Possibly no rawValues so we must check for the existence of the field.
                      */
-                    rawValue: entry.rawValues
-                        ? entry.rawValues[
-                              identifiers.rawValueIdentifier || identifiers.valueIdentifier
-                          ]
-                        : null
+                    rawValue: entry.rawValues ? entry.rawValues[rawKey || key] : null
                 });
             } catch (ex) {
                 throw new WebinyError(
@@ -201,7 +202,7 @@ export const extractEntriesFromIndex = ({
         /**
          * Let's have a new entry so we do not modify the original one.
          */
-        const newEntry: CmsEntry = {
+        const newEntry: CmsEntry<T> = {
             ...entry,
             values: indexValues
         };
@@ -218,7 +219,9 @@ export const extractEntriesFromIndex = ({
         delete newEntry["latest"];
         // @ts-expect-error
         delete newEntry["published"];
-        list.push({ ...newEntry });
+        list.push({
+            ...newEntry
+        });
     }
 
     return list;
