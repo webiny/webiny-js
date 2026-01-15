@@ -1,92 +1,106 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { useFruitManageHandler } from "../testHelpers/useFruitManageHandler";
 import { Fruit } from "./mocks/contentModels";
 import { setupContentModelGroup, setupContentModels } from "../testHelpers/setup";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
+import type { RequiredDeep } from "type-fest";
 
 const appleData: Fruit = {
-    name: "Apple",
-    isSomething: false,
-    rating: 400,
-    numbers: [5, 6, 7.2, 10.18, 12.05],
-    email: "john@doe.com",
-    url: "https://apple.test",
-    lowerCase: "apple",
-    upperCase: "APPLE",
-    date: "2020-12-15",
-    dateTime: new Date("2020-12-15T12:12:21").toISOString(),
-    dateTimeZ: "2020-12-15T14:52:41+01:00",
-    time: "11:39:58",
-    description: "fruit named apple cms"
+    values: {
+        name: "Apple",
+        isSomething: false,
+        rating: 400,
+        numbers: [5, 6, 7.2, 10.18, 12.05],
+        email: "john@doe.com",
+        url: "https://apple.test",
+        lowerCase: "apple",
+        upperCase: "APPLE",
+        date: "2020-12-15",
+        dateTime: new Date("2020-12-15T12:12:21").toISOString(),
+        dateTimeZ: "2020-12-15T14:52:41+01:00",
+        time: "11:39:58",
+        description: "fruit named apple cms"
+    }
 };
 
 const greenAppleData: Fruit = {
-    name: "Green-Apple",
-    isSomething: false,
-    rating: 400,
-    numbers: [5, 6, 7.2, 10.18, 12.05],
-    email: "john@doe.com",
-    url: "https://apple.test",
-    lowerCase: "greenapple",
-    upperCase: "GREENAPPLE",
-    date: "2020-12-15",
-    dateTime: new Date("2020-12-15T12:12:21").toISOString(),
-    dateTimeZ: "2020-12-15T14:52:41+01:00",
-    time: "11:39:58",
-    description: "fruit named green apple cms"
+    values: {
+        name: "Green-Apple",
+        isSomething: false,
+        rating: 400,
+        numbers: [5, 6, 7.2, 10.18, 12.05],
+        email: "john@doe.com",
+        url: "https://apple.test",
+        lowerCase: "greenapple",
+        upperCase: "GREENAPPLE",
+        date: "2020-12-15",
+        dateTime: new Date("2020-12-15T12:12:21").toISOString(),
+        dateTimeZ: "2020-12-15T14:52:41+01:00",
+        time: "11:39:58",
+        description: "fruit named green apple cms"
+    }
 };
 
 const strawberryData: Fruit = {
-    name: "Strawberry",
-    isSomething: true,
-    rating: 500,
-    numbers: [5, 6, 7.2, 10.18, 12.05],
-    email: "john@doe.com",
-    url: "https://strawberry.test",
-    lowerCase: "strawberry",
-    upperCase: "STRAWBERRY",
-    date: "2020-12-18",
-    dateTime: new Date("2020-12-19T12:12:21").toISOString(),
-    dateTimeZ: "2020-12-25T14:52:41+01:00",
-    time: "12:44:55",
-    description: "strawberry named fruit webiny"
+    values: {
+        name: "Strawberry",
+        isSomething: true,
+        rating: 500,
+        numbers: [5, 6, 7.2, 10.18, 12.05],
+        email: "john@doe.com",
+        url: "https://strawberry.test",
+        lowerCase: "strawberry",
+        upperCase: "STRAWBERRY",
+        date: "2020-12-18",
+        dateTime: new Date("2020-12-19T12:12:21").toISOString(),
+        dateTimeZ: "2020-12-25T14:52:41+01:00",
+        time: "12:44:55",
+        description: "strawberry named fruit webiny"
+    }
 };
 
 const bananaData: Fruit = {
-    name: "Banana",
-    isSomething: false,
-    rating: 450,
-    numbers: [5, 6, 7.2, 10.18, 12.05],
-    email: "john@doe.com",
-    url: "https://banana.test",
-    lowerCase: "banana",
-    upperCase: "BANANA",
-    date: "2020-12-03",
-    dateTime: new Date("2020-12-03T12:12:21").toISOString(),
-    dateTimeZ: "2020-12-03T14:52:41+01:00",
-    time: "11:59:01",
-    description: "fruit banana named cms webiny"
+    values: {
+        name: "Banana",
+        isSomething: false,
+        rating: 450,
+        numbers: [5, 6, 7.2, 10.18, 12.05],
+        email: "john@doe.com",
+        url: "https://banana.test",
+        lowerCase: "banana",
+        upperCase: "BANANA",
+        date: "2020-12-03",
+        dateTime: new Date("2020-12-03T12:12:21").toISOString(),
+        dateTimeZ: "2020-12-03T14:52:41+01:00",
+        time: "11:59:01",
+        description: "fruit banana named cms webiny"
+    }
 };
 
 const orangeData: Fruit = {
-    name: "Orange",
-    isSomething: false,
-    rating: 109001,
-    numbers: [5, 6, 7.2, 10.18, 12.05],
-    email: "orange@doe.com",
-    url: "https://orange.test",
-    lowerCase: "orange",
-    upperCase: "ORANGE",
-    date: "2020-12-04",
-    dateTime: new Date("2020-12-04T12:12:21").toISOString(),
-    dateTimeZ: "2020-12-03T14:52:41+01:00",
-    time: "13:14:38",
-    description: "fruit orange named"
+    values: {
+        name: "Orange",
+        isSomething: false,
+        rating: 109001,
+        numbers: [5, 6, 7.2, 10.18, 12.05],
+        email: "orange@doe.com",
+        url: "https://orange.test",
+        lowerCase: "orange",
+        upperCase: "ORANGE",
+        date: "2020-12-04",
+        dateTime: new Date("2020-12-04T12:12:21").toISOString(),
+        dateTimeZ: "2020-12-03T14:52:41+01:00",
+        time: "13:14:38",
+        description: "fruit orange named"
+    }
 };
 
-type CmsEntry<T = Record<string, any>> = T & {
-    name: string;
+type CmsEntry<T extends Fruit = Fruit> = {
+    id: string;
+    entryId: string;
+    values: T["values"];
     meta: {
+        title: string;
         status: string;
         modelId: string;
     };
@@ -113,16 +127,16 @@ describe("Content entries", () => {
         ...manageOpts
     });
 
-    const createAndPublishFruit = async (data: any): Promise<CmsEntry<Required<Fruit>>> => {
+    const createAndPublishFruit = async (data: Fruit): Promise<CmsEntry<Fruit>> => {
         const [response] = await createFruit({
-            data
+            data,
         });
 
-        const createdFruit = response.data.createFruit.data;
 
         if (response.data.createFruit.error) {
             throw new Error(response.data.createFruit.error.message);
         }
+        const createdFruit = response.data.createFruit.data;
 
         const [publish] = await publishFruit({
             revision: createdFruit.id
@@ -170,7 +184,7 @@ describe("Content entries", () => {
                 }
             }
         });
-        const secondBanana = secondBananaResponse.data.createFruitFrom.data;
+        const secondBanana = secondBananaResponse.data.createFruitFrom.data as CmsEntry<Fruit>;
 
         const [publishSecondBananaResponse] = await publishFruit({
             revision: secondBanana.id
@@ -208,7 +222,7 @@ describe("Content entries", () => {
                 }
             }
         });
-        const thirdBanana = thirdBananaResponse.data.createFruitFrom.data;
+        const thirdBanana = thirdBananaResponse.data.createFruitFrom.data as CmsEntry<Fruit>;
 
         const [getThirdBananaResponse] = await getContentEntry({
             entry: {
@@ -245,8 +259,8 @@ describe("Content entries", () => {
                         id: apple.id,
                         entryId: apple.entryId,
                         status: apple.meta.status,
-                        title: apple.name,
-                        description: apple.description,
+                        title: apple.values.name,
+                        description: apple.values.description,
                         image: null,
                         model: {
                             modelId: apple.meta.modelId,
@@ -283,8 +297,8 @@ describe("Content entries", () => {
                             id: apple.id,
                             entryId: apple.entryId,
                             status: apple.meta.status,
-                            title: apple.name,
-                            description: apple.description,
+                            title: apple.values.name,
+                            description: apple.values.description,
                             image: null,
                             model: {
                                 modelId: apple.meta.modelId,
@@ -295,8 +309,8 @@ describe("Content entries", () => {
                             id: banana.id,
                             entryId: banana.entryId,
                             status: "unpublished",
-                            title: banana.name,
-                            description: banana.description,
+                            title: banana.values.name,
+                            description: banana.values.description,
                             image: null,
                             model: {
                                 modelId: banana.meta.modelId,
@@ -307,8 +321,8 @@ describe("Content entries", () => {
                             id: strawberry.id,
                             entryId: strawberry.entryId,
                             status: strawberry.meta.status,
-                            title: strawberry.name,
-                            description: strawberry.description,
+                            title: strawberry.values.name,
+                            description: strawberry.values.description,
                             image: null,
                             model: {
                                 modelId: strawberry.meta.modelId,
@@ -338,8 +352,8 @@ describe("Content entries", () => {
                         id: thirdBanana.id,
                         entryId: thirdBanana.entryId,
                         status: "draft",
-                        title: thirdBanana.name,
-                        description: thirdBanana.description,
+                        title: thirdBanana.values.name,
+                        description: thirdBanana.values.description,
                         image: null,
                         model: {
                             modelId: thirdBanana.meta.modelId,
@@ -376,8 +390,8 @@ describe("Content entries", () => {
                             id: apple.id,
                             entryId: apple.entryId,
                             status: "published",
-                            title: apple.name,
-                            description: apple.description,
+                            title: apple.values.name,
+                            description: apple.values.description,
                             image: null,
                             model: {
                                 modelId: apple.meta.modelId,
@@ -388,8 +402,8 @@ describe("Content entries", () => {
                             id: thirdBanana.id,
                             entryId: thirdBanana.entryId,
                             status: "draft",
-                            title: thirdBanana.name,
-                            description: thirdBanana.description,
+                            title: thirdBanana.values.name,
+                            description: thirdBanana.values.description,
                             image: null,
                             model: {
                                 modelId: thirdBanana.meta.modelId,
@@ -400,8 +414,8 @@ describe("Content entries", () => {
                             id: strawberry.id,
                             entryId: strawberry.entryId,
                             status: "published",
-                            title: strawberry.name,
-                            description: strawberry.description,
+                            title: strawberry.values.name,
+                            description: strawberry.values.description,
                             image: null,
                             model: {
                                 modelId: strawberry.meta.modelId,
@@ -430,8 +444,8 @@ describe("Content entries", () => {
                         id: secondBanana.id,
                         entryId: secondBanana.entryId,
                         status: "published",
-                        title: secondBanana.name,
-                        description: secondBanana.description,
+                        title: secondBanana.values.name,
+                        description: secondBanana.values.description,
                         image: null,
                         model: {
                             modelId: secondBanana.meta.modelId,
@@ -468,8 +482,8 @@ describe("Content entries", () => {
                             id: apple.id,
                             entryId: apple.entryId,
                             status: "published",
-                            title: apple.name,
-                            description: apple.description,
+                            title: apple.values.name,
+                            description: apple.values.description,
                             image: null,
                             model: {
                                 modelId: apple.meta.modelId,
@@ -480,8 +494,8 @@ describe("Content entries", () => {
                             id: secondBanana.id,
                             entryId: secondBanana.entryId,
                             status: "published",
-                            title: secondBanana.name,
-                            description: secondBanana.description,
+                            title: secondBanana.values.name,
+                            description: secondBanana.values.description,
                             image: null,
                             model: {
                                 modelId: secondBanana.meta.modelId,
@@ -492,8 +506,8 @@ describe("Content entries", () => {
                             id: strawberry.id,
                             entryId: strawberry.entryId,
                             status: "published",
-                            title: strawberry.name,
-                            description: strawberry.description,
+                            title: strawberry.values.name,
+                            description: strawberry.values.description,
                             image: null,
                             model: {
                                 modelId: strawberry.meta.modelId,
@@ -542,56 +556,56 @@ describe("Content entries", () => {
                         {
                             id: secondBanana.id,
                             entryId: secondBanana.entryId,
-                            title: secondBanana.name,
+                            title: secondBanana.values.name,
                             status: secondBanana.meta.status,
                             published: {
                                 id: banana.id,
                                 entryId: banana.entryId,
-                                title: banana.name
+                                title: banana.values.name
                             }
                         },
                         {
                             id: greenApple.id,
                             entryId: greenApple.entryId,
-                            title: greenApple.name,
+                            title: greenApple.values.name,
                             status: greenApple.meta.status,
                             published: {
                                 id: greenApple.id,
                                 entryId: greenApple.entryId,
-                                title: greenApple.name
+                                title: greenApple.values.name
                             }
                         },
                         {
                             id: orange.id,
                             entryId: orange.entryId,
-                            title: orange.name,
+                            title: orange.values.name,
                             status: orange.meta.status,
                             published: {
                                 id: orange.id,
                                 entryId: orange.entryId,
-                                title: orange.name
+                                title: orange.values.name
                             }
                         },
                         {
                             id: strawberry.id,
                             entryId: strawberry.entryId,
-                            title: strawberry.name,
+                            title: strawberry.values.name,
                             status: strawberry.meta.status,
                             published: {
                                 id: strawberry.id,
                                 entryId: strawberry.entryId,
-                                title: strawberry.name
+                                title: strawberry.values.name
                             }
                         },
                         {
                             id: apple.id,
                             entryId: apple.entryId,
-                            title: apple.name,
+                            title: apple.values.name,
                             status: apple.meta.status,
                             published: {
                                 id: apple.id,
                                 entryId: apple.entryId,
-                                title: apple.name
+                                title: apple.values.name
                             }
                         }
                     ],
@@ -647,7 +661,7 @@ describe("Content entries", () => {
                     data: [
                         {
                             id: greenApple.id,
-                            title: greenApple.name
+                            title: greenApple.values.name
                         }
                     ],
                     error: null

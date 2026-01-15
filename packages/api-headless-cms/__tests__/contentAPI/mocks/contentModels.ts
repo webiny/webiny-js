@@ -5,20 +5,22 @@ import { createModelPlugin } from "~/plugins";
 export interface Fruit {
     id?: string;
     entryId?: string;
-    name: string;
-    isSomething: boolean;
-    rating: number;
-    numbers: number[];
-    email: string;
-    url: string;
-    lowerCase: string;
-    upperCase: string;
-    date: string;
-    dateTime: string;
-    dateTimeZ: string;
-    time: string;
-    description: string;
-    slug?: string | null;
+    values: {
+        name: string;
+        isSomething: boolean;
+        rating: number;
+        numbers: number[];
+        email: string;
+        url: string;
+        lowerCase: string;
+        upperCase: string;
+        date: string;
+        dateTime: string;
+        dateTimeZ: string;
+        time: string;
+        description: string;
+        slug?: string | null;
+    }
 }
 
 const ids = {

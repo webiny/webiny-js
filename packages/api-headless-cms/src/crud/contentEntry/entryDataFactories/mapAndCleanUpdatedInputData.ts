@@ -6,8 +6,11 @@ import type { CmsEntryValues, CmsModel } from "~/types/index.js";
  */
 export const mapAndCleanUpdatedInputData = <TValues extends CmsEntryValues = CmsEntryValues>(
     model: CmsModel,
-    input: Partial<TValues>
+    input?: Partial<TValues>
 ) => {
+    if (!input) {
+        return {};
+    }
     return model.fields.reduce<Partial<TValues>>((acc, field) => {
         /**
          * This should never happen, but let's make it sure.
