@@ -135,7 +135,11 @@ export const ReferencesDialog = (props: ReferencesDialogProps) => {
                 open={true}
                 onClose={onDialogClose}
                 title={"Select an existing record"}
-                description={`Content model: ${contentModel.name}`}
+                description={
+                    <>
+                        Content model: <span className={"font-bold text-neutral-primary"}>{contentModel.name}</span>
+                    </>
+                }
                 actions={
                     <>
                         <Dialog.CancelAction />
