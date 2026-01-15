@@ -43,13 +43,9 @@ class UpdateWorkflowStateRepositoryImpl implements Repository.Interface {
         });
 
         try {
-            const updateResult = await this.updateEntry.execute<Repository.Input>(
-                this.model,
-                id,
-                {
-                    values: updatedValues,
-                }
-            );
+            const updateResult = await this.updateEntry.execute<Repository.Input>(this.model, id, {
+                values: updatedValues
+            });
 
             if (updateResult.isFail()) {
                 return Result.fail(new WorkflowStatePersistenceError(updateResult.error));
