@@ -72,6 +72,28 @@ export const createAdminUsersHooks = () => {
             ]);
         });
 
+        // After a new user is created, link him to a tenant via the assigned group.
+        adminUsers.onUserBeforeUpdate.subscribe(async ({ user, updateData }) => {
+            const tenant = getTenant();
+
+            if (!tenant) {
+                return;
+            }
+
+            // We must ensure that the new email being stored is not taken.
+            // - load user by the desired email
+            // - if found, check if the id matches the user we're updating
+            // - if ID is different, throw an error
+
+            const userByEmail = await context.adminUsers.getUser({
+                where: { email: updateData.email }
+            });
+
+            if (userByEmail && userByEmail.id !== user.id) {
+                throw new Error(`Email is already taken!`);
+            }
+        });
+
         // On user update, if the group was changed, update the tenant link.
         adminUsers.onUserAfterUpdate.subscribe(async ({ updatedUser, originalUser }) => {
             if (originalUser.external) {
