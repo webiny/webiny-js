@@ -85,7 +85,7 @@ export const createReadSDL: CreateReadSDL = ({
         }
         
         input ${singularName}GetWhereInput {
-            values: ${getFilterFieldsRender}Values
+            values: ${singularName}GetWhereInputValues
         }
         
         input ${singularName}ListWhereInputValues {
