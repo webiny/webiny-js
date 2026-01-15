@@ -3,7 +3,7 @@ import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import type { CmsDynamicZoneTemplate, CmsDynamicZoneTemplateWithTypename } from "~/types.js";
 import { TemplateGallery } from "./TemplateGallery.js";
 import { useTemplateTypename } from "~/admin/plugins/fieldRenderers/dynamicZone/useTemplateTypename.js";
-import { Button, Link, Text, Dialog } from "@webiny/admin-ui";
+import { Button, Dialog } from "@webiny/admin-ui";
 
 interface UseAddTemplateParams {
     onTemplate: (template: CmsDynamicZoneTemplateWithTypename) => void;
