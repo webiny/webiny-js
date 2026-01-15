@@ -503,9 +503,7 @@ export default /* GraphQL */ `
     }
 
     extend type Query {
-        getPageModelApiName(
-            where: PageModelApiNameGetWhereInput!
-        ): PageModelApiNameResponse
+        getPageModelApiName(where: PageModelApiNameGetWhereInput!): PageModelApiNameResponse
 
         listPagesModelApiName(
             where: PageModelApiNameListWhereInput

@@ -584,9 +584,7 @@ export default /* GraphQL */ `
 
         getProductApiSingularRevisions(id: ID!): ProductApiSingularArrayResponse
 
-        getProductPluralApiNameByIds(
-            revisions: [ID!]!
-        ): ProductApiSingularArrayResponse
+        getProductPluralApiNameByIds(revisions: [ID!]!): ProductApiSingularArrayResponse
 
         listProductPluralApiName(
             where: ProductApiSingularListWhereInput
@@ -628,21 +626,13 @@ export default /* GraphQL */ `
             data: ProductApiSingularInput!
         ): CmsEntryValidationResponse!
 
-        moveProductApiSingular(
-            revision: ID!
-            folderId: ID!
-        ): ProductApiSingularMoveResponse
+        moveProductApiSingular(revision: ID!, folderId: ID!): ProductApiSingularMoveResponse
 
-        deleteProductApiSingular(
-            revision: ID!
-            options: CmsDeleteEntryOptions
-        ): CmsDeleteResponse
+        deleteProductApiSingular(revision: ID!, options: CmsDeleteEntryOptions): CmsDeleteResponse
 
         restoreProductApiSingularFromBin(revision: ID!): ProductApiSingularResponse
 
-        deleteMultipleProductPluralApiName(
-            entries: [ID!]!
-        ): CmsDeleteMultipleResponse!
+        deleteMultipleProductPluralApiName(entries: [ID!]!): CmsDeleteMultipleResponse!
 
         publishProductApiSingular(revision: ID!): ProductApiSingularResponse
 

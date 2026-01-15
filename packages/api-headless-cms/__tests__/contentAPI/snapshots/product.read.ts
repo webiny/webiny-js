@@ -4,9 +4,7 @@ export default /* GraphQL */ `
     """
     type ProductApiSingularValues {
         title: String
-        category(
-            populate: Boolean = true
-        ): CategoryApiNameWhichIsABitDifferentThanModelId
+        category(populate: Boolean = true): CategoryApiNameWhichIsABitDifferentThanModelId
         price: Number
         inStock: Boolean
         itemsInStock: Number
@@ -18,7 +16,7 @@ export default /* GraphQL */ `
         variant: ProductApiSingular_Variant
         fieldsObject: ProductApiSingular_FieldsObject
     }
-    
+
     type ProductApiSingular {
         id: ID!
         entryId: String!

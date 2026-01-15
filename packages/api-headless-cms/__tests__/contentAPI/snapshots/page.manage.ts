@@ -801,15 +801,9 @@ export default /* GraphQL */ `
             data: PageModelApiNameInput!
         ): CmsEntryValidationResponse!
 
-        movePageModelApiName(
-            revision: ID!
-            folderId: ID!
-        ): PageModelApiNameMoveResponse
+        movePageModelApiName(revision: ID!, folderId: ID!): PageModelApiNameMoveResponse
 
-        deletePageModelApiName(
-            revision: ID!
-            options: CmsDeleteEntryOptions
-        ): CmsDeleteResponse
+        deletePageModelApiName(revision: ID!, options: CmsDeleteEntryOptions): CmsDeleteResponse
 
         restorePageModelApiNameFromBin(revision: ID!): PageModelApiNameResponse
 
@@ -821,5 +815,4 @@ export default /* GraphQL */ `
 
         unpublishPageModelApiName(revision: ID!): PageModelApiNameResponse
     }
-
 `;

@@ -17,9 +17,12 @@ interface RenderGetFilterFields {
     (params: RenderGetFilterFieldsParams): RenderGetFilterFieldsResponse;
 }
 
-export const renderGetFilterFields: RenderGetFilterFields = ({ fields, fieldTypePlugins }): RenderGetFilterFieldsResponse => {
+export const renderGetFilterFields: RenderGetFilterFields = ({
+    fields,
+    fieldTypePlugins
+}): RenderGetFilterFieldsResponse => {
     const baseFilters: string[] = ["id: ID", "entryId: String"];
-    
+
     const fieldFilters: string[] = [];
 
     for (const field of fields) {

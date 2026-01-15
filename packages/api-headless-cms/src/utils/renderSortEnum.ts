@@ -20,7 +20,7 @@ export const renderSortEnum: RenderSortEnum = ({
     fieldTypePlugins,
     sorterPlugins
 }): string => {
-    let sorters: string[] = [
+    const sorters: string[] = [
         `id_ASC`,
         `id_DESC`,
 

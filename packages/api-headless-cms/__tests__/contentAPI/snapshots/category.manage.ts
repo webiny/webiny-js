@@ -2,12 +2,11 @@ export default /* GraphQL */ `
     """
     Product category
     """
-    
     type CategoryApiNameWhichIsABitDifferentThanModelIdValues {
         title: String
         slug: String
     }
-    
+
     type CategoryApiNameWhichIsABitDifferentThanModelId {
         id: ID!
         entryId: String!
@@ -42,7 +41,7 @@ export default /* GraphQL */ `
         revisionLastPublishedBy: CmsIdentity
         meta: CategoryApiNameWhichIsABitDifferentThanModelIdMeta
         wbyAco_location: WbyAcoLocation!
-        
+
         values: CategoryApiNameWhichIsABitDifferentThanModelIdValues!
     }
 
@@ -111,7 +110,7 @@ export default /* GraphQL */ `
 
         values: CategoryApiNameWhichIsABitDifferentThanModelIdInputValues
     }
-    
+
     input CategoryApiNameWhichIsABitDifferentThanModelIdGetWhereInputValues {
         title: String
         slug: String
@@ -310,7 +309,7 @@ export default /* GraphQL */ `
         status_not: String
         status_in: [String!]
         status_not_in: [String!]
-        
+
         state: ListWhereInputCmsEntryState
         wbyAco_location: WbyAcoLocationWhereInput
 

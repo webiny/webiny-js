@@ -6,7 +6,7 @@ export default /* GraphQL */ `
         title: String
         slug: String
     }
-    
+
     type CategoryApiNameWhichIsABitDifferentThanModelId {
         id: ID!
         entryId: String!
