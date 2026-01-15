@@ -45,11 +45,7 @@ const listCategoriesQuery = (model: CmsModel) => {
         ) {
             listCategories: list${model.pluralApiName}(where: $where, sort: $sort, limit: $limit, after: $after) {
                 data {
-                    id
-                    createdOn
-                    savedOn
-                    title
-                    slug
+                    ${categoryFields}
                 }
                 meta {
                     cursor

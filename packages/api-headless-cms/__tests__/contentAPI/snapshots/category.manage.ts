@@ -2,6 +2,12 @@ export default /* GraphQL */ `
     """
     Product category
     """
+    
+    type CategoryApiNameWhichIsABitDifferentThanModelIdValues {
+        title: String
+        slug: String
+    }
+    
     type CategoryApiNameWhichIsABitDifferentThanModelId {
         id: ID!
         entryId: String!
@@ -35,10 +41,9 @@ export default /* GraphQL */ `
         revisionFirstPublishedBy: CmsIdentity
         revisionLastPublishedBy: CmsIdentity
         meta: CategoryApiNameWhichIsABitDifferentThanModelIdMeta
-        title: String
-        slug: String
-        # Advanced Content Organization - make required in 5.38.0
         wbyAco_location: WbyAcoLocation
+        
+        values: CategoryApiNameWhichIsABitDifferentThanModelIdValues!
     }
 
     type CategoryApiNameWhichIsABitDifferentThanModelIdMeta {
@@ -60,6 +65,11 @@ export default /* GraphQL */ `
         Custom meta data stored in the root of the entry object.
         """
         data: JSON
+    }
+
+    input CategoryApiNameWhichIsABitDifferentThanModelIdInputValues {
+        title: String
+        slug: String
     }
 
     input CategoryApiNameWhichIsABitDifferentThanModelIdInput {
@@ -99,6 +109,10 @@ export default /* GraphQL */ `
 
         wbyAco_location: WbyAcoLocationInput
 
+        values: CategoryApiNameWhichIsABitDifferentThanModelIdInputValues
+    }
+    
+    input CategoryApiNameWhichIsABitDifferentThanModelIdGetWhereInputValues {
         title: String
         slug: String
     }
@@ -106,10 +120,28 @@ export default /* GraphQL */ `
     input CategoryApiNameWhichIsABitDifferentThanModelIdGetWhereInput {
         id: ID
         entryId: String
-        title: String
-        slug: String
+        values: CategoryApiNameWhichIsABitDifferentThanModelIdGetWhereInputValues
     }
 
+    input CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInputValues {
+        title: String
+        title_not: String
+        title_in: [String]
+        title_not_in: [String]
+        title_contains: String
+        title_not_contains: String
+        title_startsWith: String
+        title_not_startsWith: String
+
+        slug: String
+        slug_not: String
+        slug_in: [String]
+        slug_not_in: [String]
+        slug_contains: String
+        slug_not_contains: String
+        slug_startsWith: String
+        slug_not_startsWith: String
+    }
     input CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInput {
         state: ListWhereInputCmsEntryState
         wbyAco_location: WbyAcoLocationWhereInput
@@ -280,24 +312,7 @@ export default /* GraphQL */ `
         status_in: [String!]
         status_not_in: [String!]
 
-        title: String
-        title_not: String
-        title_in: [String]
-        title_not_in: [String]
-        title_contains: String
-        title_not_contains: String
-        title_startsWith: String
-        title_not_startsWith: String
-
-        slug: String
-        slug_not: String
-        slug_in: [String]
-        slug_not_in: [String]
-        slug_contains: String
-        slug_not_contains: String
-        slug_startsWith: String
-        slug_not_startsWith: String
-
+        values: CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInputValues
         AND: [CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInput!]
         OR: [CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInput!]
     }
@@ -354,10 +369,10 @@ export default /* GraphQL */ `
         revisionFirstPublishedOn_DESC
         revisionLastPublishedOn_ASC
         revisionLastPublishedOn_DESC
-        title_ASC
-        title_DESC
-        slug_ASC
-        slug_DESC
+        values_title_ASC
+        values_title_DESC
+        values_slug_ASC
+        values_slug_DESC
     }
 
     extend type Query {
