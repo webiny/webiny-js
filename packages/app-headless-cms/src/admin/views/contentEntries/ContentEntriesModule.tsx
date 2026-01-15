@@ -38,7 +38,6 @@ import { ShowConfirmationOnUnpublish } from "~/admin/components/Decorators/ShowC
 import { ShowConfirmationOnDeleteRevision } from "~/admin/components/Decorators/ShowConfirmationOnDeleteRevision.js";
 import { FullScreenContentEntry } from "~/admin/views/contentEntries/ContentEntry/FullScreenContentEntry/index.js";
 import { ShowRevisionList } from "~/admin/components/ContentEntryForm/Header/ShowRevisionsList/index.js";
-import { cmsLegacyEntryEditor } from "~/utils/cmsLegacyEntryEditor.js";
 import { ScheduleEntryMenuItem } from "~/admin/components/ContentEntries/Scheduler/actions/ScheduleEntryAction.js";
 import { AdvancedSearchConfigs } from "@webiny/app-aco/components/AdvancedSearch/AdvancedSearchConfigs";
 
@@ -121,15 +120,7 @@ export const ContentEntriesModule = () => {
                 <Actions.ButtonAction name={"publish"} element={<SaveAndPublishButton />} />
                 <Actions.MenuItemAction name={"delete"} element={<DeleteEntryMenuItem />} />
                 <Actions.MenuItemAction name={"schedule"} element={<ScheduleEntryMenuItem />} />
-                {/*
-                    The following Menu Action registration is needed
-                    only when the 'cmsLegacyEntryEditor' feature is NOT enabled.
-                */}
-                <Actions.MenuItemAction
-                    name={"showRevisionsList"}
-                    element={<ShowRevisionList />}
-                    remove={cmsLegacyEntryEditor}
-                />
+                <Actions.MenuItemAction name={"showRevisionsList"} element={<ShowRevisionList />} />
             </ContentEntryEditorConfig>
             <FullScreenContentEntry />
         </>

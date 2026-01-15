@@ -1,9 +1,4 @@
-export type FeatureFlags<TFeatureFlags = Record<string, any>> = {
-    allowCmsLegacyRichTextInput?: boolean;
-    cmsLegacyEntryEditor?: boolean;
-    experimentalDynamicPages?: boolean;
-    newWatchCommand?: boolean;
-} & TFeatureFlags;
+export type FeatureFlags<TFeatureFlags = Record<string, any>> = {} & TFeatureFlags;
 
 let featureFlags: FeatureFlags = {};
 
