@@ -5,7 +5,11 @@ import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { UpdateUserUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { AdminUsersRepository } from "~/features/users/shared/abstractions.js";
 import { updateUserValidation } from "./schema.js";
-import { NotAuthorizedError, UserValidationError } from "~/features/users/shared/errors.js";
+import {
+    NotAuthorizedError,
+    EmailTakenError,
+    UserValidationError
+} from "~/features/users/shared/errors.js";
 import { UserBeforeUpdateEvent, UserAfterUpdateEvent } from "./events.js";
 import type { AdminUser } from "~/features/users/shared/types.js";
 import type { UpdateUserInput } from "~/features/users/shared/types.js";
@@ -33,6 +37,15 @@ class UpdateUserUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new UserValidationError(validation.error.errors[0].message));
         }
 
+        // If the input contains email, check if it is free to use.
+        if (input.email) {
+            const existingUserResult = await this.repository.get({ email: input.email });
+            if (existingUserResult.isOk()) {
+                if (existingUserResult.value.id !== id) {
+                    return Result.fail(new EmailTakenError(input.email));
+                }
+            }
+        }
         // 3. Get existing user
         const getUserResult = await this.repository.get({ id });
         if (getUserResult.isFail()) {

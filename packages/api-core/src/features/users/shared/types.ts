@@ -19,6 +19,7 @@ export interface CreateUserInput {
 export interface UpdateUserInput {
     displayName?: string;
     firstName?: string;
+    email?: string;
     lastName?: string;
     avatar?: Record<string, any> | null;
     roles?: string[];

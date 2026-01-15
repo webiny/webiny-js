@@ -1,7 +1,7 @@
 import { BaseError } from "@webiny/feature/api";
 
 export class UserStorageError extends BaseError {
-    override readonly code = "USER_STORAGE_ERROR" as const;
+    override readonly code = "AdminUser/Persistence" as const;
 
     constructor(error: Error) {
         super({
@@ -11,7 +11,7 @@ export class UserStorageError extends BaseError {
 }
 
 export class UserNotFoundError extends BaseError<{ id: string }> {
-    override readonly code = "USER_NOT_FOUND" as const;
+    override readonly code = "AdminUser/NotFound" as const;
 
     constructor(id: string) {
         super({
@@ -21,8 +21,8 @@ export class UserNotFoundError extends BaseError<{ id: string }> {
     }
 }
 
-export class UserExistsError extends BaseError<{ email: string }> {
-    override readonly code = "USER_EXISTS" as const;
+export class EmailTakenError extends BaseError<{ email: string }> {
+    override readonly code = "AdminUser/EmailTaken" as const;
 
     constructor(email: string) {
         super({
@@ -33,7 +33,7 @@ export class UserExistsError extends BaseError<{ email: string }> {
 }
 
 export class UserValidationError extends BaseError<{ message: string }> {
-    override readonly code = "USER_VALIDATION_ERROR" as const;
+    override readonly code = "AdminUser/Validation" as const;
 
     constructor(message: string) {
         super({
@@ -45,7 +45,7 @@ export class UserValidationError extends BaseError<{ message: string }> {
 
 // Authorization error
 export class NotAuthorizedError extends BaseError {
-    override readonly code = "NOT_AUTHORIZED" as const;
+    override readonly code = "AdminUser/NotAuthorized" as const;
 
     constructor(message?: string) {
         super({
