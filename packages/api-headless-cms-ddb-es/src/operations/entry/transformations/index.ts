@@ -17,18 +17,20 @@ import {
 } from "~/operations/entry/recordType.js";
 import WebinyError from "@webiny/error";
 
-interface BaseTransformerParams<T extends CmsEntryValues = CmsEntryValues>{
+interface BaseTransformerParams<T extends CmsEntryValues = CmsEntryValues> {
     plugins: PluginsContainer;
     model: StorageOperationsCmsModel<T>;
 }
 
-interface EntryTransformerParams<T extends CmsEntryValues = CmsEntryValues> extends BaseTransformerParams<T> {
+interface EntryTransformerParams<T extends CmsEntryValues = CmsEntryValues>
+    extends BaseTransformerParams<T> {
     entry: CmsEntry<T>;
     storageEntry: CmsEntry<T>;
     transformedToIndex?: never;
 }
 
-interface TransformedEntryTransformerParams<T extends CmsEntryValues = CmsEntryValues> extends BaseTransformerParams<T> {
+interface TransformedEntryTransformerParams<T extends CmsEntryValues = CmsEntryValues>
+    extends BaseTransformerParams<T> {
     entry?: never;
     storageEntry?: never;
     transformedToIndex: CmsIndexEntry<T>;

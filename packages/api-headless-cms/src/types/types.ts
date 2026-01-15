@@ -116,7 +116,7 @@ export interface CmsModelFieldValidatorValidateParams<T extends CmsEntryValues =
     /**
      * A value to be validated.
      */
-    value: T;
+    value: T[keyof T];
     /**
      * Options from the CmsModelField validations.
      *
@@ -1196,9 +1196,7 @@ export interface CmsEntryStorageOperationsListParams {
     after?: string | null;
 }
 
-export interface CmsEntryStorageOperationsCreateParams<
-    T extends CmsEntryValues = CmsEntryValues
-> {
+export interface CmsEntryStorageOperationsCreateParams<T extends CmsEntryValues = CmsEntryValues> {
     /**
      * Real entry, with no transformations on it.
      */
@@ -1222,9 +1220,7 @@ export interface CmsEntryStorageOperationsCreateRevisionFromParams<
     storageEntry: CmsStorageEntry<T>;
 }
 
-export interface CmsEntryStorageOperationsUpdateParams<
-    T extends CmsEntryValues = CmsEntryValues
-> {
+export interface CmsEntryStorageOperationsUpdateParams<T extends CmsEntryValues = CmsEntryValues> {
     /**
      * Real entry, with no transformations on it.
      */
@@ -1292,9 +1288,7 @@ export interface CmsEntryStorageOperationsDeleteEntriesParams {
     entries: string[];
 }
 
-export interface CmsEntryStorageOperationsPublishParams<
-    T extends CmsEntryValues = CmsEntryValues
-> {
+export interface CmsEntryStorageOperationsPublishParams<T extends CmsEntryValues = CmsEntryValues> {
     /**
      * The modified entry that is going to be saved as published.
      * Entry is in its original form.

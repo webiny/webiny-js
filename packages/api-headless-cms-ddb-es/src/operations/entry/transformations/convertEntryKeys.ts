@@ -8,7 +8,9 @@ interface ConvertStorageEntryParams<T extends CmsEntryValues = CmsEntryValues> {
     entry: CmsStorageEntry<T>;
     model: StorageOperationsCmsModel<T>;
 }
-export const convertEntryKeysToStorage = <T extends CmsEntryValues = CmsEntryValues>(params: ConvertStorageEntryParams<T>): CmsStorageEntry<T> => {
+export const convertEntryKeysToStorage = <T extends CmsEntryValues = CmsEntryValues>(
+    params: ConvertStorageEntryParams<T>
+): CmsStorageEntry<T> => {
     const { model, entry } = params;
 
     const values = model.convertValueKeyToStorage({
@@ -21,7 +23,9 @@ export const convertEntryKeysToStorage = <T extends CmsEntryValues = CmsEntryVal
     };
 };
 
-export const convertEntryKeysFromStorage = <T extends CmsEntryValues = CmsEntryValues>(params: ConvertStorageEntryParams<T>): CmsStorageEntry<T> => {
+export const convertEntryKeysFromStorage = <T extends CmsEntryValues = CmsEntryValues>(
+    params: ConvertStorageEntryParams<T>
+): CmsStorageEntry<T> => {
     const { model, entry } = params;
 
     const values = model.convertValueKeyFromStorage({

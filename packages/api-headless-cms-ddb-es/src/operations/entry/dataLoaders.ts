@@ -1,6 +1,10 @@
 import type DataLoader from "dataloader";
 import WebinyError from "@webiny/error";
-import type { CmsEntryValues, CmsModel, CmsStorageEntry } from "@webiny/api-headless-cms/types/index.js";
+import type {
+    CmsEntryValues,
+    CmsModel,
+    CmsStorageEntry
+} from "@webiny/api-headless-cms/types/index.js";
 import type { CacheKeyParams } from "~/operations/entry/dataLoader/DataLoaderCache.js";
 import { DataLoaderCache } from "~/operations/entry/dataLoader/DataLoaderCache.js";
 import type { DataLoaders } from "~/operations/entry/dataLoader/index.js";
@@ -34,7 +38,9 @@ export class DataLoadersHandler implements IDataLoadersHandler {
         this.entity = params.entity;
     }
 
-    public async getAllEntryRevisions<T extends CmsEntryValues = CmsEntryValues>(params: DataLoaderParams): Promise<CmsStorageEntry<T>[]> {
+    public async getAllEntryRevisions<T extends CmsEntryValues = CmsEntryValues>(
+        params: DataLoaderParams
+    ): Promise<CmsStorageEntry<T>[]> {
         const ids = params.ids.map(id => {
             const { id: entryId } = parseIdentifier(id);
             return entryId;
@@ -42,7 +48,9 @@ export class DataLoadersHandler implements IDataLoadersHandler {
         return await this.loadMany<T>("getAllEntryRevisions", params, ids);
     }
 
-    public async getRevisionById<T extends CmsEntryValues = CmsEntryValues>(params: DataLoaderParams): Promise<CmsStorageEntry<T>[]> {
+    public async getRevisionById<T extends CmsEntryValues = CmsEntryValues>(
+        params: DataLoaderParams
+    ): Promise<CmsStorageEntry<T>[]> {
         return await this.loadMany<T>("getRevisionById", params, params.ids);
     }
 
@@ -56,7 +64,9 @@ export class DataLoadersHandler implements IDataLoadersHandler {
         return await this.loadMany<T>("getPublishedRevisionByEntryId", params, ids);
     }
 
-    public async getLatestRevisionByEntryId<T extends CmsEntryValues = CmsEntryValues>(params: DataLoaderParams): Promise<CmsStorageEntry<T>[]> {
+    public async getLatestRevisionByEntryId<T extends CmsEntryValues = CmsEntryValues>(
+        params: DataLoaderParams
+    ): Promise<CmsStorageEntry<T>[]> {
         const ids = params.ids.map(id => {
             const { id: entryId } = parseIdentifier(id);
             return entryId;

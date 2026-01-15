@@ -34,7 +34,7 @@ class UpdateRedirectRepositoryImpl implements RepositoryAbstraction.Interface {
         // Update the entry
         const result = await this.updateEntry.execute(this.redirectModel, id, {
             location: data.location,
-            values: data,
+            values: data
         });
 
         if (result.isFail()) {

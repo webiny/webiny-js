@@ -1,5 +1,6 @@
 import type {
-    CmsEntry, CmsEntryValues,
+    CmsEntry,
+    CmsEntryValues,
     CmsStorageEntry,
     StorageOperationsCmsModel
 } from "@webiny/api-headless-cms/types/index.js";
@@ -11,7 +12,9 @@ interface TransformKeysParams<T extends CmsEntryValues = CmsEntryValues> {
     storageEntry: CmsStorageEntry<T>;
 }
 
-export const transformEntryKeys = <T extends CmsEntryValues = CmsEntryValues>(params: TransformKeysParams<T>) => {
+export const transformEntryKeys = <T extends CmsEntryValues = CmsEntryValues>(
+    params: TransformKeysParams<T>
+) => {
     const { model, entry, storageEntry } = params;
     return {
         entry: convertEntryKeysToStorage<T>({

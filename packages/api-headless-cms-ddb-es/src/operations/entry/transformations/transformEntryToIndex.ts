@@ -14,7 +14,9 @@ interface TransformEntryToIndexParams<T extends CmsEntryValues = CmsEntryValues>
     storageEntry: CmsStorageEntry<T>;
 }
 
-export const transformEntryToIndex = <T extends CmsEntryValues = CmsEntryValues>(params: TransformEntryToIndexParams<T>) => {
+export const transformEntryToIndex = <T extends CmsEntryValues = CmsEntryValues>(
+    params: TransformEntryToIndexParams<T>
+) => {
     const { plugins, model, entry, storageEntry } = params;
     const result = prepareEntryToIndex<T>({
         plugins,
