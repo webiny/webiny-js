@@ -60,10 +60,12 @@ const ContentEntriesMultiAutocomplete = ({ bind, field }: ContentEntriesMultiAut
             onChange([...entries, value]);
             setShowNewEntryModal(false);
         },
+
         [onChange, entries]
     );
 
     const model = models.find(model => model.modelId === refModelId);
+
 
     if (renderNewEntryModal) {
         return (
