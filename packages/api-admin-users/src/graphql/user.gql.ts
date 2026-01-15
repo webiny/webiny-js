@@ -129,7 +129,7 @@ export default (params: CreateUserGraphQlPluginsParams) => {
                     getCurrentUser: async (_, __, context) => {
                         const identity = context.security.getIdentity();
 
-                        if (!identity) {
+                        if (!identity || identity.type !== "admin") {
                             throw new NotAuthorizedError();
                         }
 

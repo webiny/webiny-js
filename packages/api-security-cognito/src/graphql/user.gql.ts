@@ -60,7 +60,7 @@ export default (params: CreateUserGraphQlPluginsParams) => {
                     updateCurrentUser: async (_, args: any, context) => {
                         const { security, adminUsers } = context;
                         const identity = security.getIdentity();
-                        if (!identity) {
+                        if (!identity || identity.type !== "admin") {
                             throw new Error("Not authorized!");
                         }
 

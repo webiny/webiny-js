@@ -9,7 +9,7 @@ type Context = TenancyContext & SecurityContext;
 
 const checkPermissions = (context: SecurityContext) => {
     const identity = context.security.getIdentity();
-    if (!identity) {
+    if (!identity || identity.type !== "admin") {
         throw new NotAuthorizedError();
     }
 };
