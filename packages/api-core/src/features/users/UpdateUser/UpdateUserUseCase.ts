@@ -57,9 +57,6 @@ class UpdateUserUseCaseImpl implements UseCaseAbstraction.Interface {
         // 4. Clone update data for event modification
         const updateData = structuredClone(validation.data);
 
-        // Immediately delete password from `updateData`, as that object will be merged with the `user` data.
-        delete updateData["password"];
-
         // 5. Publish before event
         await this.eventPublisher.publish(
             new UserBeforeUpdateEvent({ user: originalUser, updateData, input: validation.data })

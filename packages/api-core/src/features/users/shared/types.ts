@@ -12,7 +12,6 @@ export interface CreateUserInput {
     avatar?: Record<string, any> | null;
     roles?: string[];
     teams?: string[];
-    password?: string; // Only for Cognito
     external?: boolean;
 }
 
@@ -24,7 +23,6 @@ export interface UpdateUserInput {
     avatar?: Record<string, any> | null;
     roles?: string[];
     teams?: string[];
-    password?: string; // Only for Cognito
 }
 
 export type GetUserInput =
