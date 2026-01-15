@@ -14495,7 +14495,6 @@ __metadata:
     "@webiny/app-trash-bin": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
-    "@webiny/feature-flags": "npm:0.0.0"
     "@webiny/form": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
     "@webiny/lexical-editor": "npm:0.0.0"
@@ -15189,7 +15188,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/feature-flags@npm:0.0.0, @webiny/feature-flags@workspace:packages/feature-flags":
+"@webiny/feature-flags@workspace:packages/feature-flags":
   version: 0.0.0-use.local
   resolution: "@webiny/feature-flags@workspace:packages/feature-flags"
   dependencies:
