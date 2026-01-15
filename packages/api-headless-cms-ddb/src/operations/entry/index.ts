@@ -605,7 +605,7 @@ export const createEntriesStorageOperations = (
 
     const restoreFromBin = async <T extends CmsEntryValues = CmsEntryValues>(
         initialModel: CmsModel,
-        params: CmsEntryStorageOperationsRestoreFromBinParams<CmsEntry<T>>
+        params: CmsEntryStorageOperationsRestoreFromBinParams<T>
     ): Promise<CmsStorageEntry<T>> => {
         const { entry, storageEntry: initialStorageEntry } = params;
         const model = getStorageOperationsModel(initialModel);
@@ -1136,7 +1136,7 @@ export const createEntriesStorageOperations = (
 
     const publish = async <T extends CmsEntryValues = CmsEntryValues>(
         initialModel: CmsModel,
-        params: CmsEntryStorageOperationsPublishParams<CmsEntry<T>>
+        params: CmsEntryStorageOperationsPublishParams<T>
     ) => {
         const { entry, storageEntry: initialStorageEntry } = params;
         const model = getStorageOperationsModel(initialModel);
@@ -1290,7 +1290,7 @@ export const createEntriesStorageOperations = (
 
     const unpublish = async <T extends CmsEntryValues = CmsEntryValues>(
         initialModel: CmsModel,
-        params: CmsEntryStorageOperationsUnpublishParams<CmsEntry<T>>
+        params: CmsEntryStorageOperationsUnpublishParams<T>
     ) => {
         const { entry, storageEntry: initialStorageEntry } = params;
         const model = getStorageOperationsModel(initialModel);
