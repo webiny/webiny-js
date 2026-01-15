@@ -131,14 +131,15 @@ export const createManageSDL: CreateManageSDL = ({
             
             wbyAco_location: WbyAcoLocationInput
             
-            values: ${singularName}InputValues!
+            values: ${singularName}InputValues
         }
         
         input ${singularName}GetWhereInputValues {
-            ${getFilterFieldsRender || "_empty: String"}
+            ${getFilterFieldsRender.fieldFiltersAsString() || "_empty: String"}
         }
         
         input ${singularName}GetWhereInput {
+            ${getFilterFieldsRender.baseFiltersAsString()}
             values: ${singularName}GetWhereInputValues
         }
         
@@ -151,11 +152,11 @@ export const createManageSDL: CreateManageSDL = ({
 
             state: ListWhereInputCmsEntryState
             wbyAco_location: WbyAcoLocationWhereInput
+            
             values: ${singularName}ListWhereInputValues
             AND: [${singularName}ListWhereInput!]
             OR: [${singularName}ListWhereInput!]
         }
-
 
         type ${singularName}Response {
             data: ${singularName}

@@ -41,7 +41,7 @@ export default /* GraphQL */ `
         revisionFirstPublishedBy: CmsIdentity
         revisionLastPublishedBy: CmsIdentity
         meta: CategoryApiNameWhichIsABitDifferentThanModelIdMeta
-        wbyAco_location: WbyAcoLocation
+        wbyAco_location: WbyAcoLocation!
         
         values: CategoryApiNameWhichIsABitDifferentThanModelIdValues!
     }
@@ -142,9 +142,8 @@ export default /* GraphQL */ `
         slug_startsWith: String
         slug_not_startsWith: String
     }
+
     input CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInput {
-        state: ListWhereInputCmsEntryState
-        wbyAco_location: WbyAcoLocationWhereInput
         id: ID
         id_not: ID
         id_in: [ID!]
@@ -311,6 +310,9 @@ export default /* GraphQL */ `
         status_not: String
         status_in: [String!]
         status_not_in: [String!]
+        
+        state: ListWhereInputCmsEntryState
+        wbyAco_location: WbyAcoLocationWhereInput
 
         values: CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInputValues
         AND: [CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInput!]
@@ -369,10 +371,10 @@ export default /* GraphQL */ `
         revisionFirstPublishedOn_DESC
         revisionLastPublishedOn_ASC
         revisionLastPublishedOn_DESC
-        values_title_ASC
-        values_title_DESC
-        values_slug_ASC
-        values_slug_DESC
+        title_ASC
+        title_DESC
+        slug_ASC
+        slug_DESC
     }
 
     extend type Query {

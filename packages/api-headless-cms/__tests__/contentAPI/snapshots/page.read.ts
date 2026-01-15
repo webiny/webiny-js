@@ -2,6 +2,16 @@ export default /* GraphQL */ `
     """
     Page
     """
+    type PageModelApiNameValues {
+        content: [PageModelApiName_Content!]
+        header: PageModelApiName_Header
+        objective: PageModelApiName_Objective
+        reference: PageModelApiName_Reference
+        references1: PageModelApiName_References1
+        references2: [PageModelApiName_References2!]
+        ghostObject: PageModelApiName_GhostObject
+    }
+
     type PageModelApiName {
         id: ID!
         entryId: String!
@@ -35,13 +45,7 @@ export default /* GraphQL */ `
         revisionRestoredBy: CmsIdentity
         revisionFirstPublishedBy: CmsIdentity
         revisionLastPublishedBy: CmsIdentity
-        content: [PageModelApiName_Content!]
-        header: PageModelApiName_Header
-        objective: PageModelApiName_Objective
-        reference: PageModelApiName_Reference
-        references1: PageModelApiName_References1
-        references2: [PageModelApiName_References2!]
-        ghostObject: PageModelApiName_GhostObject
+        values: PageModelApiNameValues!
     }
 
     union PageModelApiName_Content =
@@ -271,9 +275,18 @@ export default /* GraphQL */ `
         _empty: String
     }
 
+    input PageModelApiNameGetWhereInputValues {
+        _empty: String
+    }
+
     input PageModelApiNameGetWhereInput {
         id: ID
         entryId: String
+        values: PageModelApiNameGetWhereInputValues
+    }
+
+    input PageModelApiNameListWhereInputValues {
+        ghostObject: PageModelApiName_GhostObjectWhereInput
     }
 
     input PageModelApiNameListWhereInput {
@@ -439,7 +452,8 @@ export default /* GraphQL */ `
         revisionLastPublishedBy_not: ID
         revisionLastPublishedBy_in: [ID!]
         revisionLastPublishedBy_not_in: [ID!]
-        ghostObject: PageModelApiName_GhostObjectWhereInput
+
+        values: PageModelApiNameListWhereInputValues
         AND: [PageModelApiNameListWhereInput!]
         OR: [PageModelApiNameListWhereInput!]
     }
@@ -489,7 +503,9 @@ export default /* GraphQL */ `
     }
 
     extend type Query {
-        getPageModelApiName(where: PageModelApiNameGetWhereInput!): PageModelApiNameResponse
+        getPageModelApiName(
+            where: PageModelApiNameGetWhereInput!
+        ): PageModelApiNameResponse
 
         listPagesModelApiName(
             where: PageModelApiNameListWhereInput

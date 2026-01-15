@@ -2,6 +2,11 @@ export default /* GraphQL */ `
     """
     Product category
     """
+    type CategoryApiNameWhichIsABitDifferentThanModelIdValues {
+        title: String
+        slug: String
+    }
+    
     type CategoryApiNameWhichIsABitDifferentThanModelId {
         id: ID!
         entryId: String!
@@ -35,6 +40,10 @@ export default /* GraphQL */ `
         revisionRestoredBy: CmsIdentity
         revisionFirstPublishedBy: CmsIdentity
         revisionLastPublishedBy: CmsIdentity
+        values: CategoryApiNameWhichIsABitDifferentThanModelIdValues!
+    }
+
+    input CategoryApiNameWhichIsABitDifferentThanModelIdGetWhereInputValues {
         title: String
         slug: String
     }
@@ -42,8 +51,27 @@ export default /* GraphQL */ `
     input CategoryApiNameWhichIsABitDifferentThanModelIdGetWhereInput {
         id: ID
         entryId: String
+        values: CategoryApiNameWhichIsABitDifferentThanModelIdGetWhereInputValues
+    }
+
+    input CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInputValues {
         title: String
+        title_not: String
+        title_in: [String]
+        title_not_in: [String]
+        title_contains: String
+        title_not_contains: String
+        title_startsWith: String
+        title_not_startsWith: String
+
         slug: String
+        slug_not: String
+        slug_in: [String]
+        slug_not_in: [String]
+        slug_contains: String
+        slug_not_contains: String
+        slug_startsWith: String
+        slug_not_startsWith: String
     }
 
     input CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInput {
@@ -210,24 +238,7 @@ export default /* GraphQL */ `
         revisionLastPublishedBy_in: [ID!]
         revisionLastPublishedBy_not_in: [ID!]
 
-        title: String
-        title_not: String
-        title_in: [String]
-        title_not_in: [String]
-        title_contains: String
-        title_not_contains: String
-        title_startsWith: String
-        title_not_startsWith: String
-
-        slug: String
-        slug_not: String
-        slug_in: [String]
-        slug_not_in: [String]
-        slug_contains: String
-        slug_not_contains: String
-        slug_startsWith: String
-        slug_not_startsWith: String
-
+        values: CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInputValues
         AND: [CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInput!]
         OR: [CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInput!]
     }

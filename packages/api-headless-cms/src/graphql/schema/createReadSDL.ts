@@ -81,10 +81,11 @@ export const createReadSDL: CreateReadSDL = ({
             .join("\n")}
             
         input ${singularName}GetWhereInputValues {
-            ${getFilterFieldsRender || "_empty: String"}
+            ${getFilterFieldsRender.fieldFiltersAsString() || "_empty: String"}
         }
         
         input ${singularName}GetWhereInput {
+            ${getFilterFieldsRender.baseFiltersAsString()}
             values: ${singularName}GetWhereInputValues
         }
         

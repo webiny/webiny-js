@@ -21,7 +21,6 @@ interface RenderListFilterFieldsResponse {
     baseFiltersAsString(): string;
     fieldFilters: string[];
     fieldFiltersAsString(): string;
-
     allFiltersAsString(): string;
 }
 

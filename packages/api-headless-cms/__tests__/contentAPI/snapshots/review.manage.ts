@@ -2,6 +2,13 @@ export default /* GraphQL */ `
     """
     Product review
     """
+    type ReviewApiModelValues {
+        text: String
+        product: RefField
+        rating: Number
+        author: RefField
+    }
+
     type ReviewApiModel {
         id: ID!
         entryId: String!
@@ -35,12 +42,9 @@ export default /* GraphQL */ `
         revisionFirstPublishedBy: CmsIdentity
         revisionLastPublishedBy: CmsIdentity
         meta: ReviewApiModelMeta
-        text: String
-        product: RefField
-        rating: Number
-        author: RefField
-        # Advanced Content Organization - make required in 5.38.0
-        wbyAco_location: WbyAcoLocation
+        wbyAco_location: WbyAcoLocation!
+
+        values: ReviewApiModelValues!
     }
 
     type ReviewApiModelMeta {
@@ -62,6 +66,13 @@ export default /* GraphQL */ `
         Custom meta data stored in the root of the entry object.
         """
         data: JSON
+    }
+
+    input ReviewApiModelInputValues {
+        text: String
+        product: RefFieldInput
+        rating: Number
+        author: RefFieldInput
     }
 
     input ReviewApiModelInput {
@@ -101,22 +112,49 @@ export default /* GraphQL */ `
 
         wbyAco_location: WbyAcoLocationInput
 
+        values: ReviewApiModelInputValues
+    }
+
+    input ReviewApiModelGetWhereInputValues {
         text: String
-        product: RefFieldInput
         rating: Number
-        author: RefFieldInput
     }
 
     input ReviewApiModelGetWhereInput {
         id: ID
         entryId: String
+        values: ReviewApiModelGetWhereInputValues
+    }
+
+    input ReviewApiModelListWhereInputValues {
         text: String
+        text_not: String
+        text_in: [String]
+        text_not_in: [String]
+        text_contains: String
+        text_not_contains: String
+        text_startsWith: String
+        text_not_startsWith: String
+
+        product: RefFieldWhereInput
+
         rating: Number
+        rating_not: Number
+        rating_in: [Number]
+        rating_not_in: [Number]
+        rating_lt: Number
+        rating_lte: Number
+        rating_gt: Number
+        rating_gte: Number
+        # there must be two numbers sent in the array
+        rating_between: [Number!]
+        # there must be two numbers sent in the array
+        rating_not_between: [Number!]
+
+        author: RefFieldWhereInput
     }
 
     input ReviewApiModelListWhereInput {
-        state: ListWhereInputCmsEntryState
-        wbyAco_location: WbyAcoLocationWhereInput
         id: ID
         id_not: ID
         id_in: [ID!]
@@ -284,32 +322,10 @@ export default /* GraphQL */ `
         status_in: [String!]
         status_not_in: [String!]
 
-        text: String
-        text_not: String
-        text_in: [String]
-        text_not_in: [String]
-        text_contains: String
-        text_not_contains: String
-        text_startsWith: String
-        text_not_startsWith: String
+        state: ListWhereInputCmsEntryState
+        wbyAco_location: WbyAcoLocationWhereInput
 
-        product: RefFieldWhereInput
-
-        rating: Number
-        rating_not: Number
-        rating_in: [Number]
-        rating_not_in: [Number]
-        rating_lt: Number
-        rating_lte: Number
-        rating_gt: Number
-        rating_gte: Number
-        # there must be two numbers sent in the array
-        rating_between: [Number!]
-        # there must be two numbers sent in the array
-        rating_not_between: [Number!]
-
-        author: RefFieldWhereInput
-
+        values: ReviewApiModelListWhereInputValues
         AND: [ReviewApiModelListWhereInput!]
         OR: [ReviewApiModelListWhereInput!]
     }
@@ -425,7 +441,10 @@ export default /* GraphQL */ `
 
         moveReviewApiModel(revision: ID!, folderId: ID!): ReviewApiModelMoveResponse
 
-        deleteReviewApiModel(revision: ID!, options: CmsDeleteEntryOptions): CmsDeleteResponse
+        deleteReviewApiModel(
+            revision: ID!
+            options: CmsDeleteEntryOptions
+        ): CmsDeleteResponse
 
         restoreReviewApiModelFromBin(revision: ID!): ReviewApiModelResponse
 

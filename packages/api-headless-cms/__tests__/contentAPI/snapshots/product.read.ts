@@ -2,6 +2,23 @@ export default /* GraphQL */ `
     """
     Products being sold in our webshop
     """
+    type ProductApiSingularValues {
+        title: String
+        category(
+            populate: Boolean = true
+        ): CategoryApiNameWhichIsABitDifferentThanModelId
+        price: Number
+        inStock: Boolean
+        itemsInStock: Number
+        availableOn: Date
+        color: String
+        availableSizes: [String]
+        image: String
+        richText(format: String): JSON
+        variant: ProductApiSingular_Variant
+        fieldsObject: ProductApiSingular_FieldsObject
+    }
+    
     type ProductApiSingular {
         id: ID!
         entryId: String!
@@ -35,18 +52,7 @@ export default /* GraphQL */ `
         revisionRestoredBy: CmsIdentity
         revisionFirstPublishedBy: CmsIdentity
         revisionLastPublishedBy: CmsIdentity
-        title: String
-        category(populate: Boolean = true): CategoryApiNameWhichIsABitDifferentThanModelId
-        price: Number
-        inStock: Boolean
-        itemsInStock: Number
-        availableOn: Date
-        color: String
-        availableSizes: [String]
-        image: String
-        richText(format: String): JSON
-        variant: ProductApiSingular_Variant
-        fieldsObject: ProductApiSingular_FieldsObject
+        values: ProductApiSingularValues!
     }
 
     type ProductApiSingular_Variant_Options {
@@ -140,9 +146,7 @@ export default /* GraphQL */ `
         text_not_startsWith: String
     }
 
-    input ProductApiSingularGetWhereInput {
-        id: ID
-        entryId: String
+    input ProductApiSingularGetWhereInputValues {
         title: String
         price: Number
         inStock: Boolean
@@ -150,6 +154,84 @@ export default /* GraphQL */ `
         availableOn: Date
         color: String
         availableSizes: String
+    }
+
+    input ProductApiSingularGetWhereInput {
+        id: ID
+        entryId: String
+        values: ProductApiSingularGetWhereInputValues
+    }
+
+    input ProductApiSingularListWhereInputValues {
+        title: String
+        title_not: String
+        title_in: [String]
+        title_not_in: [String]
+        title_contains: String
+        title_not_contains: String
+        title_startsWith: String
+        title_not_startsWith: String
+
+        category: RefFieldWhereInput
+
+        price: Number
+        price_not: Number
+        price_in: [Number]
+        price_not_in: [Number]
+        price_lt: Number
+        price_lte: Number
+        price_gt: Number
+        price_gte: Number
+        # there must be two numbers sent in the array
+        price_between: [Number!]
+        # there must be two numbers sent in the array
+        price_not_between: [Number!]
+
+        inStock: Boolean
+        inStock_not: Boolean
+
+        itemsInStock: Number
+        itemsInStock_not: Number
+        itemsInStock_in: [Number]
+        itemsInStock_not_in: [Number]
+        itemsInStock_lt: Number
+        itemsInStock_lte: Number
+        itemsInStock_gt: Number
+        itemsInStock_gte: Number
+        # there must be two numbers sent in the array
+        itemsInStock_between: [Number!]
+        # there must be two numbers sent in the array
+        itemsInStock_not_between: [Number!]
+
+        availableOn: Date
+        availableOn_not: Date
+        availableOn_in: [Date]
+        availableOn_not_in: [Date]
+        availableOn_lt: Date
+        availableOn_lte: Date
+        availableOn_gt: Date
+        availableOn_gte: Date
+
+        color: String
+        color_not: String
+        color_in: [String]
+        color_not_in: [String]
+        color_contains: String
+        color_not_contains: String
+        color_startsWith: String
+        color_not_startsWith: String
+
+        availableSizes: String
+        availableSizes_not: String
+        availableSizes_in: [String]
+        availableSizes_not_in: [String]
+        availableSizes_contains: String
+        availableSizes_not_contains: String
+        availableSizes_startsWith: String
+        availableSizes_not_startsWith: String
+
+        variant: ProductApiSingular_VariantWhereInput
+        fieldsObject: ProductApiSingular_FieldsObjectWhereInput
     }
 
     input ProductApiSingularListWhereInput {
@@ -316,75 +398,7 @@ export default /* GraphQL */ `
         revisionLastPublishedBy_in: [ID!]
         revisionLastPublishedBy_not_in: [ID!]
 
-        title: String
-        title_not: String
-        title_in: [String]
-        title_not_in: [String]
-        title_contains: String
-        title_not_contains: String
-        title_startsWith: String
-        title_not_startsWith: String
-
-        category: RefFieldWhereInput
-
-        price: Number
-        price_not: Number
-        price_in: [Number]
-        price_not_in: [Number]
-        price_lt: Number
-        price_lte: Number
-        price_gt: Number
-        price_gte: Number
-        # there must be two numbers sent in the array
-        price_between: [Number!]
-        # there must be two numbers sent in the array
-        price_not_between: [Number!]
-
-        inStock: Boolean
-        inStock_not: Boolean
-
-        itemsInStock: Number
-        itemsInStock_not: Number
-        itemsInStock_in: [Number]
-        itemsInStock_not_in: [Number]
-        itemsInStock_lt: Number
-        itemsInStock_lte: Number
-        itemsInStock_gt: Number
-        itemsInStock_gte: Number
-        # there must be two numbers sent in the array
-        itemsInStock_between: [Number!]
-        # there must be two numbers sent in the array
-        itemsInStock_not_between: [Number!]
-
-        availableOn: Date
-        availableOn_not: Date
-        availableOn_in: [Date]
-        availableOn_not_in: [Date]
-        availableOn_lt: Date
-        availableOn_lte: Date
-        availableOn_gt: Date
-        availableOn_gte: Date
-
-        color: String
-        color_not: String
-        color_in: [String]
-        color_not_in: [String]
-        color_contains: String
-        color_not_contains: String
-        color_startsWith: String
-        color_not_startsWith: String
-
-        availableSizes: String
-        availableSizes_not: String
-        availableSizes_in: [String]
-        availableSizes_not_in: [String]
-        availableSizes_contains: String
-        availableSizes_not_contains: String
-        availableSizes_startsWith: String
-        availableSizes_not_startsWith: String
-
-        variant: ProductApiSingular_VariantWhereInput
-        fieldsObject: ProductApiSingular_FieldsObjectWhereInput
+        values: ProductApiSingularListWhereInputValues
         AND: [ProductApiSingularListWhereInput!]
         OR: [ProductApiSingularListWhereInput!]
     }

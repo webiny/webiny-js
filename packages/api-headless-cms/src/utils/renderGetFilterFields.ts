@@ -5,12 +5,22 @@ interface RenderGetFilterFieldsParams {
     fields: CmsModelField[];
     fieldTypePlugins: CmsFieldTypePlugins;
 }
-interface RenderGetFilterFields {
-    (params: RenderGetFilterFieldsParams): string;
+interface RenderGetFilterFieldsResponse {
+    baseFilters: string[];
+    baseFiltersAsString(): string;
+    fieldFilters: string[];
+    fieldFiltersAsString(): string;
+    allFiltersAsString(): string;
 }
 
-export const renderGetFilterFields: RenderGetFilterFields = ({ fields, fieldTypePlugins }) => {
-    const filters: string[] = ["id: ID", "entryId: String"];
+interface RenderGetFilterFields {
+    (params: RenderGetFilterFieldsParams): RenderGetFilterFieldsResponse;
+}
+
+export const renderGetFilterFields: RenderGetFilterFields = ({ fields, fieldTypePlugins }): RenderGetFilterFieldsResponse => {
+    const baseFilters: string[] = ["id: ID", "entryId: String"];
+    
+    const fieldFilters: string[] = [];
 
     for (const field of fields) {
         // Every time a client updates content model's fields, we check the type of each field. If a field plugin
@@ -27,8 +37,19 @@ export const renderGetFilterFields: RenderGetFilterFields = ({ fields, fieldType
         if (typeof createGetFilters !== "function") {
             continue;
         }
-        filters.push(createGetFilters({ field }));
+        fieldFilters.push(createGetFilters({ field }));
     }
-
-    return filters.filter(Boolean).join("\n");
+    return {
+        baseFilters,
+        fieldFilters,
+        baseFiltersAsString() {
+            return baseFilters.join("\n");
+        },
+        fieldFiltersAsString() {
+            return fieldFilters.join("\n");
+        },
+        allFiltersAsString() {
+            return [...baseFilters, ...fieldFilters].join("\n");
+        }
+    };
 };

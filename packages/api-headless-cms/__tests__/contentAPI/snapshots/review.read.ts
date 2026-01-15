@@ -2,6 +2,13 @@ export default /* GraphQL */ `
     """
     Product review
     """
+    type ReviewApiModelValues {
+        text: String
+        product(populate: Boolean = true): ProductApiSingular
+        rating: Number
+        author(populate: Boolean = true): AuthorApiModel
+    }
+
     type ReviewApiModel {
         id: ID!
         entryId: String!
@@ -35,17 +42,46 @@ export default /* GraphQL */ `
         revisionRestoredBy: CmsIdentity
         revisionFirstPublishedBy: CmsIdentity
         revisionLastPublishedBy: CmsIdentity
+        values: ReviewApiModelValues!
+    }
+
+    input ReviewApiModelGetWhereInputValues {
         text: String
-        product(populate: Boolean = true): ProductApiSingular
         rating: Number
-        author(populate: Boolean = true): AuthorApiModel
     }
 
     input ReviewApiModelGetWhereInput {
         id: ID
         entryId: String
+        values: ReviewApiModelGetWhereInputValues
+    }
+
+    input ReviewApiModelListWhereInputValues {
         text: String
+        text_not: String
+        text_in: [String]
+        text_not_in: [String]
+        text_contains: String
+        text_not_contains: String
+        text_startsWith: String
+        text_not_startsWith: String
+
+        product: RefFieldWhereInput
+
         rating: Number
+        rating_not: Number
+        rating_in: [Number]
+        rating_not_in: [Number]
+        rating_lt: Number
+        rating_lte: Number
+        rating_gt: Number
+        rating_gte: Number
+        # there must be two numbers sent in the array
+        rating_between: [Number!]
+        # there must be two numbers sent in the array
+        rating_not_between: [Number!]
+
+        author: RefFieldWhereInput
     }
 
     input ReviewApiModelListWhereInput {
@@ -212,32 +248,7 @@ export default /* GraphQL */ `
         revisionLastPublishedBy_in: [ID!]
         revisionLastPublishedBy_not_in: [ID!]
 
-        text: String
-        text_not: String
-        text_in: [String]
-        text_not_in: [String]
-        text_contains: String
-        text_not_contains: String
-        text_startsWith: String
-        text_not_startsWith: String
-
-        product: RefFieldWhereInput
-
-        rating: Number
-        rating_not: Number
-        rating_in: [Number]
-        rating_not_in: [Number]
-        rating_lt: Number
-        rating_lte: Number
-        rating_gt: Number
-        rating_gte: Number
-        # there must be two numbers sent in the array
-        rating_between: [Number!]
-        # there must be two numbers sent in the array
-        rating_not_between: [Number!]
-
-        author: RefFieldWhereInput
-
+        values: ReviewApiModelListWhereInputValues
         AND: [ReviewApiModelListWhereInput!]
         OR: [ReviewApiModelListWhereInput!]
     }
