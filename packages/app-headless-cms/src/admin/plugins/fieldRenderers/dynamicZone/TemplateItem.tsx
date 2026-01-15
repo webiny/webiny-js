@@ -48,7 +48,7 @@ export const TemplateItem = makeDecoratable(
                             className="absolute inset-0 flex items-center justify-center bg-white/80 cursor-pointer"
                             onClick={() => onTemplate(template)}
                         >
-                            <Button size={"lg"} variant="primary" icon={<PlusIcon/>}>
+                            <Button size={"lg"} variant="primary" icon={<PlusIcon />}>
                                 Insert
                             </Button>
                         </div>

@@ -39,7 +39,6 @@ export const AddTemplateButton = (props: AddTemplateProps) => {
             >
                 <TemplateGallery onTemplate={onTemplate} onClose={() => {}} />
             </Dialog>
-
         </div>
     );
 };
