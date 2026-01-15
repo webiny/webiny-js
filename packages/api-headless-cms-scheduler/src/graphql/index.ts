@@ -165,9 +165,13 @@ export const createSchedulerGraphQL = () => {
                             });
                         }
 
-                        const action = actions.value.items[0];
+                        const { items } = actions.value;
 
-                        return new Response(ActionMapper.fromScheduledAction(args.modelId, action));
+                        if (!items.length) {
+                            return null;
+                        }
+
+                        return ActionMapper.fromScheduledAction(items[0]);
                     });
                 },
                 async listCmsSchedules(_, args, context) {
@@ -198,7 +202,9 @@ export const createSchedulerGraphQL = () => {
                         }
 
                         return {
-                            data: actions.value.items,
+                            data: actions.value.items.map(item =>
+                                ActionMapper.fromScheduledAction(item)
+                            ),
                             meta: actions.value.meta
                         };
                     });
@@ -227,7 +233,7 @@ export const createSchedulerGraphQL = () => {
                             throw result.error;
                         }
 
-                        return ActionMapper.fromScheduledAction(data.modelId, result.value);
+                        return ActionMapper.fromScheduledAction(result.value);
                     });
                 },
                 async updateCmsSchedule(_, args, context) {
@@ -252,7 +258,7 @@ export const createSchedulerGraphQL = () => {
                             throw result.error;
                         }
 
-                        return ActionMapper.fromScheduledAction(data.modelId, result.value);
+                        return ActionMapper.fromScheduledAction(result.value);
                     });
                 },
                 async cancelCmsSchedule(_, args, context) {
