@@ -23,7 +23,7 @@ export const Container = ({
         <Wrapper>
             <div
                 className={cn(
-                    ["bg-neutral-light", "fixed z-15 top-0 left-0", "w-full h-screen"],
+                    ["bg-neutral-light", "fixed z-overlay top-0 left-0", "w-full h-screen"],
                     className
                 )}
                 {...props}

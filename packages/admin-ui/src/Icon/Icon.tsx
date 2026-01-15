@@ -11,13 +11,13 @@ const iconVariants = cva("shrink-0", {
             lg: "size-lg"
         },
         color: {
-            inherit: "!fill-inherit !text-inherit",
-            accent: "!fill-accent-default !text-accent-default",
-            "neutral-light": "!fill-neutral-strong !text-neutral-strong",
-            "neutral-strong": "!fill-neutral-xstrong !text-neutral-xstrong",
-            "neutral-strong-transparent": "!fill-neutral-xstrong/30 !text-neutral-xstrong/30",
-            "neutral-base": "!fill-neutral-base !text-neutral-base",
-            "neutral-negative": "!fill-neutral-base/50 !text-neutral-base/50"
+            inherit: "fill-inherit text-inherit",
+            accent: "fill-accent-default text-accent-default",
+            "neutral-light": "fill-neutral-strong text-neutral-strong",
+            "neutral-strong": "fill-neutral-xstrong text-neutral-xstrong",
+            "neutral-strong-transparent": "fill-neutral-xstrong/30 text-neutral-xstrong/30",
+            "neutral-base": "fill-neutral-base text-neutral-base",
+            "neutral-negative": "fill-neutral-base/50 text-neutral-base/50"
         }
     },
     defaultVariants: {

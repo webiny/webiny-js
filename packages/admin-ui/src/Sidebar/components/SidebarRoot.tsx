@@ -9,7 +9,7 @@ interface SidebarRootProps extends React.ComponentProps<"div"> {
 const variants = cva("group peer block border-r-sm border-neutral-dimmed bg-neutral-light", {
     variants: {
         pinned: {
-            false: "fixed top-0 z-10 "
+            false: "fixed top-0 z-sidebar "
         }
     }
 });
@@ -78,7 +78,7 @@ const SidebarRoot = ({ side = "left", className, children, ...props }: SidebarRo
             />
             <div
                 className={cn(
-                    "duration-175 fixed inset-y-0 z-10 h-svh w-sidebar-expanded transition-[width] ease-linear md:flex",
+                    "duration-175 fixed inset-y-0 z-sidebar h-svh w-sidebar-expanded transition-[width] ease-linear md:flex",
                     side === "left" ? "left-0" : "right-0",
                     "group-data-[state=collapsed]:w-sidebar-collapsed group-data-[side=left]:border-r-px group-data-[side=right]:border-l-px",
                     className
