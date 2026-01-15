@@ -60,6 +60,7 @@ const ContentEntriesMultiAutocomplete = ({ bind, field }: ContentEntriesMultiAut
             onChange([...entries, value]);
             setShowNewEntryModal(false);
         },
+
         [onChange, entries]
     );
 
