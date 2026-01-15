@@ -9,14 +9,19 @@ import { useProductManageHandler } from "~tests/testHelpers/useProductManageHand
 
 interface Category {
     id: string;
-    title: string;
-    slug: string;
+    values: {
+        title: string;
+        slug: string;
+    };
 }
 const createCategory = (input?: Partial<Category>): Category => {
     return {
         id: "61b48412-d616-4f36-babd-4c6a67d7bd03",
-        title: "Category with defined ID",
-        slug: "category-with-defined-id",
+        values: {
+            title: "Category with defined ID",
+            slug: "category-with-defined-id",
+            ...input?.values
+        },
         ...input
     };
 };
@@ -41,7 +46,9 @@ describe("Content entry with user defined ID", () => {
          * Create entry and check that it really is created.
          */
         const [createResponse] = await categoryManageHandler.createCategory({
-            data: category
+            data: {
+                ...category
+            }
         });
 
         const id = `${category.id}#0001`;
@@ -85,8 +92,10 @@ describe("Content entry with user defined ID", () => {
         const [updateResponse] = await categoryManageHandler.updateCategory({
             revision: id,
             data: {
-                title: updatedTitle,
-                slug: category.slug
+                values: {
+                    title: updatedTitle,
+                    slug: category.values.slug
+                }
             }
         });
         expect(updateResponse).toMatchObject({
@@ -94,9 +103,12 @@ describe("Content entry with user defined ID", () => {
                 updateCategory: {
                     data: {
                         ...category,
+                        values: {
+                            ...category.values,
+                            title: updatedTitle
+                        },
                         entryId: category.id,
                         id,
-                        title: updatedTitle,
                         meta: {
                             version: 1,
                             status: "draft"
@@ -115,7 +127,10 @@ describe("Content entry with user defined ID", () => {
                 getCategory: {
                     data: {
                         ...category,
-                        title: updatedTitle,
+                        values: {
+                            ...category.values,
+                            title: updatedTitle
+                        },
                         entryId: category.id,
                         id,
                         meta: {
@@ -139,7 +154,10 @@ describe("Content entry with user defined ID", () => {
                 publishCategory: {
                     data: {
                         ...category,
-                        title: updatedTitle,
+                        values: {
+                            ...category.values,
+                            title: updatedTitle
+                        },
                         id,
                         entryId: category.id,
                         meta: {
@@ -160,7 +178,10 @@ describe("Content entry with user defined ID", () => {
                 getCategory: {
                     data: {
                         ...category,
-                        title: updatedTitle,
+                        values: {
+                            ...category.values,
+                            title: updatedTitle
+                        },
                         entryId: category.id,
                         id,
                         meta: {
@@ -178,8 +199,10 @@ describe("Content entry with user defined ID", () => {
         const [updateAfterPublishResponse] = await categoryManageHandler.updateCategory({
             revision: id,
             data: {
-                title: "This should not work",
-                slug: "this-should-not-work"
+                values: {
+                    title: "This should not work",
+                    slug: "this-should-not-work"
+                }
             }
         });
         expect(updateAfterPublishResponse).toEqual({
@@ -206,7 +229,10 @@ describe("Content entry with user defined ID", () => {
                 unpublishCategory: {
                     data: {
                         ...category,
-                        title: updatedTitle,
+                        values: {
+                            ...category.values,
+                            title: updatedTitle
+                        },
                         id,
                         entryId: category.id,
                         meta: {
@@ -227,7 +253,10 @@ describe("Content entry with user defined ID", () => {
                 getCategory: {
                     data: {
                         ...category,
-                        title: updatedTitle,
+                        values: {
+                            ...category.values,
+                            title: updatedTitle
+                        },
                         entryId: category.id,
                         id,
                         meta: {
@@ -245,8 +274,10 @@ describe("Content entry with user defined ID", () => {
         const [updateAfterUnpublishResponse] = await categoryManageHandler.updateCategory({
             revision: id,
             data: {
-                title: "This should not work",
-                slug: "this-should-not-work"
+                values: {
+                    title: "This should not work",
+                    slug: "this-should-not-work"
+                }
             }
         });
         expect(updateAfterUnpublishResponse).toEqual({

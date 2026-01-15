@@ -318,8 +318,9 @@ export const useCategoryManageHandler = (params: GraphQLHandlerParams) => {
             headers: Record<string, any> = {},
             extraFields: string[] = []
         ) {
+            const query = createCategoryMutation(model, extraFields);
             return await contentHandler.invoke({
-                body: { query: createCategoryMutation(model, extraFields), variables },
+                body: { query, variables },
                 headers
             });
         },
