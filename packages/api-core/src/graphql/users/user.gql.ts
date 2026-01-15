@@ -117,7 +117,7 @@ export const createUsersGraphQL = () => {
 
                         if (userResult.isFail()) {
                             const error = userResult.error;
-                            if (error.code === "USER_NOT_FOUND") {
+                            if (error.code === "AdminUser/NotFound") {
                                 return new NotFoundResponse(
                                     `User "${JSON.stringify(where)}" was not found!`
                                 );
@@ -135,7 +135,7 @@ export const createUsersGraphQL = () => {
                     getCurrentUser: async (_, __, context) => {
                         const identity = context.security.getIdentity();
 
-                        if (identity.isAnonymous()) {
+                        if (!identity.isAdmin()) {
                             throw new NotAuthorizedResponse();
                         }
 
@@ -153,7 +153,7 @@ export const createUsersGraphQL = () => {
 
                         if (userResponse.isFail()) {
                             const error = userResponse.error;
-                            if (error.code === "USER_NOT_FOUND") {
+                            if (error.code === "AdminUser/NotFound") {
                                 return new NotFoundResponse(
                                     `User with ID ${identity.id} was not found!`
                                 );

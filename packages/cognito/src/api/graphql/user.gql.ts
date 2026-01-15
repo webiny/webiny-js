@@ -78,7 +78,7 @@ class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                     const updateUserUseCase = context.container.resolve(UpdateUserUseCase);
 
                     const identity = identityContext.getIdentity();
-                    if (identity.isAnonymous()) {
+                    if (!identity.isAdmin()) {
                         return new NotAuthorizedResponse();
                     }
 
