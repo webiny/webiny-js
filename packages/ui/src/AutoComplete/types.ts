@@ -23,9 +23,14 @@ export interface AutoCompleteBaseProps extends FormComponentProps {
     options: Array<any>;
 
     /**
-     * Description beneath the autoComplete.
+     * Description above the autoComplete.
      */
     description?: React.ReactNode;
+
+    /**
+     * Note beneath the autoComplete.
+     */
+    note?: React.ReactNode;
 
     /**
      * Placeholder text for the form control. Set to a blank string to create a non-floating placeholder label.
