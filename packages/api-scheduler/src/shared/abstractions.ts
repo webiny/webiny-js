@@ -13,7 +13,7 @@ export interface Identity {
 /**
  * Scheduled Action Record - The data stored for a scheduled action
  */
-export interface IScheduledAction {
+export interface IScheduledAction<TPayload = any> {
     id: string;
     namespace: string; // Resource scope: "Cms/Entry/Article", "Mailer/Email"
     actionType: string; // Operation: "Publish", "Unpublish", "Send", "Delete"
@@ -21,7 +21,7 @@ export interface IScheduledAction {
     scheduledBy: Identity;
     scheduledOn: string;
     title?: string;
-    payload?: any; // Action-specific data
+    payload?: TPayload; // Action-specific data
     error?: string; // Error if execution failed
 }
 
