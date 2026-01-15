@@ -47,8 +47,10 @@ export const fields = /* GraphQL */ `{
 
         revisions {
             id
-            title
-            slug
+            values {
+                title
+                slug
+            }
             meta {
                 status
                 version
@@ -59,8 +61,10 @@ export const fields = /* GraphQL */ `{
     wbyAco_location {
         folderId
     }
-    title
-    slug
+    values {
+        title
+        slug
+    }
 }`;
 
 export const GET_TEST_ENTRY = /* GraphQL */ `

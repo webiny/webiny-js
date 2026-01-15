@@ -23,11 +23,13 @@ const fields = `
         status
     }
     # user defined fields
-    title
-    references {
-        modelId
-        id
-        entryId
+    values {
+        title
+        references {
+            modelId
+            id
+            entryId
+        }
     }
 `;
 

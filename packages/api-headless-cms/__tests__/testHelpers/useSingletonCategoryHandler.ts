@@ -28,8 +28,10 @@ const categoryFields = `
     deletedBy ${identityFields}
     restoredBy ${identityFields}
     # user fields
-    title
-    slug
+    values {
+        title
+        slug
+    }
 `;
 
 const errorFields = `

@@ -21,7 +21,7 @@ interface RenderListFilterFieldsResponse {
     baseFiltersAsString(): string;
     fieldFilters: string[];
     fieldFiltersAsString(): string;
-    
+
     allFiltersAsString(): string;
 }
 
@@ -33,7 +33,9 @@ type CreateListFiltersType =
     | CmsModelFieldToGraphQLPlugin["read"]["createListFilters"]
     | CmsModelFieldToGraphQLPlugin["manage"]["createListFilters"];
 
-export const renderListFilterFields: RenderListFilterFields = (params): RenderListFilterFieldsResponse => {
+export const renderListFilterFields: RenderListFilterFields = (
+    params
+): RenderListFilterFieldsResponse => {
     const { model, fields, type, fieldTypePlugins, excludeFields = [] } = params;
     const baseFilters: string[] = [
         "id: ID",
@@ -64,11 +66,13 @@ export const renderListFilterFields: RenderListFilterFields = (params): RenderLi
                 `${field}_in: [ID!]`,
                 `${field}_not_in: [ID!]`
             ];
-        }).flat().filter(field => {
-            return !excludeFields.some(excl => {
-                return field.startsWith(`${excl}_`) || field.startsWith(`${excl}: `);
-            });
         })
+            .flat()
+            .filter(field => {
+                return !excludeFields.some(excl => {
+                    return field.startsWith(`${excl}_`) || field.startsWith(`${excl}: `);
+                });
+            })
     ];
     /**
      * We can find different statuses only in the manage API endpoint.
@@ -81,8 +85,7 @@ export const renderListFilterFields: RenderListFilterFields = (params): RenderLi
             "status_not_in: [String!]"
         );
     }
-    
-    
+
     const fieldFilters: string[] = [];
 
     for (const field of fields) {
@@ -99,8 +102,7 @@ export const renderListFilterFields: RenderListFilterFields = (params): RenderLi
         }
         fieldFilters.push(createListFilters({ model, field, plugins: fieldTypePlugins }));
     }
-    
-    
+
     return {
         baseFilters,
         fieldFilters,
@@ -113,5 +115,5 @@ export const renderListFilterFields: RenderListFilterFields = (params): RenderLi
         allFiltersAsString() {
             return [...baseFilters, ...fieldFilters].join("\n");
         }
-    }
+    };
 };

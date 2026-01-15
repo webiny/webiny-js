@@ -24,22 +24,26 @@ const reviewFields = `
         status
         revisions {
             id
-            text
+            values {
+                text
+            }
         }
     }
     # user defined fields
-    text
-    product {
-        modelId
-        entryId
-        id
+    values {
+        text
+        product {
+            modelId
+            entryId
+            id
+        }
+        author {
+            modelId
+            entryId
+            id
+        }
+        rating
     }
-    author {
-        modelId
-        entryId
-        id
-    }
-    rating
 `;
 
 const errorFields = `

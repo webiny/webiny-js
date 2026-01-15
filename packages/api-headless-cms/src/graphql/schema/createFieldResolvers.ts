@@ -112,6 +112,19 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
                 return await resolver(isRoot ? parent.values : parent, args, context, info);
             };
         }
+        /**
+         * Difference between root and non-root is that root has a values wrapper.
+         * Subtypes must not have it.
+         */
+        if (!isRoot) {
+            return {
+                [graphQLType]: {
+                    ...fieldResolvers,
+                    ...extraResolvers
+                },
+                ...typeResolvers
+            };
+        }
 
         return {
             [graphQLType]: {

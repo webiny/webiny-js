@@ -57,12 +57,17 @@ export const createSingularSDL: CreateSingularSDL = ({
     // Had to remove /* GraphQL */ because prettier would not format the code correctly.
     const read = `
         """${model.description || singularName}"""
+        
+        type ${singularName}Values {
+            ${fields.map(f => f.fields).join("\n") || "_empty: String"}
+        }
+        
         type ${singularName} {
             id: ID!
             entryId: String!
             
             ${onByMetaGqlFields}
-            ${fields.map(f => f.fields).join("\n")}
+            values: ${singularName}Values!
         }
 
         ${fields.map(f => f.typeDefs).join("\n")}
@@ -89,9 +94,13 @@ export const createSingularSDL: CreateSingularSDL = ({
     
         ${inputFields.map(f => f.typeDefs).join("\n")}
         
+        input ${singularName}InputValues {
+            ${inputGqlFields || "_empty: String"}
+        }
+        
         input ${singularName}Input {
             ${onByMetaInputGqlFields}
-            ${inputGqlFields}
+            values: ${singularName}InputValues!
         }
     
         extend type Mutation {

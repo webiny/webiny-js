@@ -23,10 +23,12 @@ const bugFields = `
         status
     }
     # user defined fields
-    name
-    bugType
-    bugValue
-    bugFixed
+    values {
+        name
+        bugType
+        bugValue
+        bugFixed
+    }
 `;
 
 const errorFields = `

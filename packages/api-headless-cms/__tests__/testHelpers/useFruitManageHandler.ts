@@ -24,24 +24,28 @@ const fruitFields = `
         status
         revisions {
             id
-            name
+            values {
+                name
+            }
         }
     }
     # user defined fields
-    name
-    numbers
-    email
-    url
-    lowerCase
-    upperCase
-    date
-    dateTime
-    dateTimeZ
-    time
-    rating
-    isSomething
-    description
-    slug
+    values {
+        name
+        numbers
+        email
+        url
+        lowerCase
+        upperCase
+        date
+        dateTime
+        dateTimeZ
+        time
+        rating
+        isSomething
+        description
+        slug
+    }
 `;
 
 const errorFields = `

@@ -24,11 +24,15 @@ const authorFields = `
         status
         revisions {
             id
-            fullName
+            values {
+                fullName
+            }
         }
     }
     # user defined fields
-    fullName
+    values {
+        fullName
+    }
 `;
 
 const errorFields = `
