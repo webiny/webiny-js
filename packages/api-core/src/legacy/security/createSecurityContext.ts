@@ -5,13 +5,9 @@ import { SecurityRolePlugin } from "~/legacy/security/plugins/SecurityRolePlugin
 import { SecurityTeamPlugin } from "~/legacy/security/plugins/SecurityTeamPlugin.js";
 import { LegacyContext } from "~/legacy/security/LegacyContext.js";
 import { createSecurityGraphQL } from "~/graphql/security/index.js";
-import { WcpContext } from "~/features/wcp/WcpContext/index.js";
 
 export const createSecurityContext = () => {
     return new ContextPlugin<ApiCoreContext>(async context => {
-        const wcp = context.container.resolve(WcpContext);
-        const teams = wcp.canUseTeams();
-
         // Register roles and teams providers for plugin-defined roles/teams
         context.container.registerFactory(RolesProvider, () => {
             return async () =>
@@ -31,6 +27,6 @@ export const createSecurityContext = () => {
         context.security = new LegacyContext(context.container);
 
         // Register GraphQL plugins
-        context.plugins.register(createSecurityGraphQL({ teams }));
+        context.plugins.register(createSecurityGraphQL());
     });
 };

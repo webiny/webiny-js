@@ -26,10 +26,15 @@ export interface UpdateUserInput {
     password?: string; // Only for Cognito
 }
 
-export interface GetUserInput {
-    id?: string;
-    email?: string;
-}
+export type GetUserInput =
+    | {
+          id: string;
+          email?: never;
+      }
+    | {
+          id?: never;
+          email: string;
+      };
 
 export interface ListUsersInput {
     where?: {

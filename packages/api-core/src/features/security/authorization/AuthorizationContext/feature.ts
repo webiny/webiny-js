@@ -7,7 +7,11 @@ export const AuthorizationContextFeature = createFeature({
     name: "AuthorizationContext",
     register(container) {
         const authorizationContext = new AuthorizationContext(() => {
-            return container.resolveAll(Authorizer);
+            try {
+                return container.resolveAll(Authorizer);
+            } catch (err) {
+                const a = err;
+            }
         });
 
         container.registerInstance(Abstraction, authorizationContext);

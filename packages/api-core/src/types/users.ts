@@ -18,7 +18,7 @@ export interface BaseUserAttributes {
 
     // Required field, but, note that some users coming with a 3rd party IdP might not
     // be able to provide it. In that case, we assign the identity's ID as the email.
-    // Check `api-security-okta` package for an example.
+    // Check `okta` package for an example.
     email: string;
 
     roles?: string[];
