@@ -9,7 +9,7 @@ export interface IAdminUsersRepositoryErrors {
     base: UserNotFoundError | UserStorageError;
 }
 
-type RepositoryError = IAdminUsersRepositoryErrors[keyof IAdminUsersRepositoryErrors];
+export type RepositoryError = IAdminUsersRepositoryErrors[keyof IAdminUsersRepositoryErrors];
 
 // Repository interface
 export interface IAdminUsersRepository {

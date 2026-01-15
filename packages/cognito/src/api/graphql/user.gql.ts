@@ -2,11 +2,11 @@ import { ErrorResponse, NotFoundResponse, Response } from "@webiny/handler-graph
 import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
 import { GetUserUseCase } from "@webiny/api-core/features/GetUser";
-import { CreateUserUseCase } from "@webiny/api-core/features/CreateUser";
-import { UpdateUserUseCase } from "@webiny/api-core/features/UpdateUser";
-import { DeleteUserUseCase } from "@webiny/api-core/features/DeleteUser";
 import NotAuthorizedResponse from "@webiny/api-core/graphql/security/NotAuthorizedResponse.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
+import { CreateAdminUserUseCase } from "~/api/features/CreateAdminUser/index.js";
+import { UpdateAdminUserUseCase } from "~/api/features/UpdateAdminUser/index.js";
+import { DeleteAdminUserUseCase } from "~/api/features/DeleteAdminUser/index.js";
 
 class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
     execute(): CoreGraphQLSchemaFactory.Return {
@@ -75,7 +75,7 @@ class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                 updateCurrentUser: async (_, args: any, context) => {
                     const identityContext = context.container.resolve(IdentityContext);
                     const getUserUseCase = context.container.resolve(GetUserUseCase);
-                    const updateUserUseCase = context.container.resolve(UpdateUserUseCase);
+                    const updateUserUseCase = context.container.resolve(UpdateAdminUserUseCase);
 
                     const identity = identityContext.getIdentity();
                     if (!identity.isAdmin()) {
@@ -106,9 +106,10 @@ class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                     });
                 },
                 createUser: async (_, { data }: any, context) => {
-                    const createUserUseCase = context.container.resolve(CreateUserUseCase);
+                    const createAdminUserUseCase =
+                        context.container.resolve(CreateAdminUserUseCase);
 
-                    const result = await createUserUseCase.execute(data);
+                    const result = await createAdminUserUseCase.execute(data);
                     if (result.isFail()) {
                         return new ErrorResponse({
                             message: result.error.message,
@@ -120,9 +121,10 @@ class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                     return new Response(result.value);
                 },
                 updateUser: async (_, { data, id }: any, context) => {
-                    const updateUserUseCase = context.container.resolve(UpdateUserUseCase);
+                    const updateAdminUserUseCase =
+                        context.container.resolve(UpdateAdminUserUseCase);
 
-                    const result = await updateUserUseCase.execute(id, data);
+                    const result = await updateAdminUserUseCase.execute(id, data);
                     if (result.isFail()) {
                         return new ErrorResponse({
                             message: result.error.message,
@@ -133,9 +135,10 @@ class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                     return new Response(result.value);
                 },
                 deleteUser: async (_, { id }: any, context) => {
-                    const deleteUserUseCase = context.container.resolve(DeleteUserUseCase);
+                    const deleteAdminUserUseCase =
+                        context.container.resolve(DeleteAdminUserUseCase);
 
-                    const result = await deleteUserUseCase.execute(id);
+                    const result = await deleteAdminUserUseCase.execute(id);
                     if (result.isFail()) {
                         return new ErrorResponse({
                             message: result.error.message,
