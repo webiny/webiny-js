@@ -154,8 +154,8 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         // Update CMS entry
-        const existingId = ScheduledActionIdWithVersion.from(existing.id);
-        const updateResult = await this.updateEntryUseCase.execute(this.model, existingId, {
+        const existingEntryId = ScheduledActionIdWithVersion.from(existing.id);
+        const updateResult = await this.updateEntryUseCase.execute(this.model, existingEntryId, {
             scheduledBy: identity,
             scheduledOn: input.scheduleOn,
             payload
@@ -170,7 +170,7 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         // Update EventBridge schedule
         try {
             await this.schedulerService.update({
-                id: existingId,
+                id: existing.id,
                 scheduleOn: new Date(input.scheduleOn)
             });
         } catch (error) {
