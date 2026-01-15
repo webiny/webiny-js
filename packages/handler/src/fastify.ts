@@ -45,7 +45,12 @@ const modifyResponseHeaders = (app: FastifyInstance, request: Request, reply: Re
         plugin.modify(request, headers);
     });
 
-    reply.headers(headers.getHeaders());
+    // Exclude 'set-cookie' header to avoid duplication.
+    // Cookies are managed by @fastify/cookie and calling reply.headers() with 'set-cookie' duplicates them.
+    const headersToSet = headers.getHeaders();
+    delete headersToSet["set-cookie"];
+
+    reply.headers(headersToSet);
 };
 
 export interface CreateHandlerParams {
