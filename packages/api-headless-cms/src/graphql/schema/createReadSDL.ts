@@ -1,4 +1,4 @@
-import type { CmsModel, CmsFieldTypePlugins, ApiEndpoint } from "~/types/index.js";
+import type { ApiEndpoint, CmsFieldTypePlugins, CmsModel } from "~/types/index.js";
 import { renderListFilterFields } from "~/utils/renderListFilterFields.js";
 import { renderSortEnum } from "~/utils/renderSortEnum.js";
 import { renderFields } from "~/utils/renderFields.js";
@@ -89,10 +89,12 @@ export const createReadSDL: CreateReadSDL = ({
         }
         
         input ${singularName}ListWhereInputValues {
-            ${listFilterFieldsRender || "_empty: String"}
+            ${listFilterFieldsRender.fieldFiltersAsString() || "_empty: String"}
         }
         
         input ${singularName}ListWhereInput {
+            ${listFilterFieldsRender.baseFiltersAsString()}
+            
             values: ${singularName}ListWhereInputValues
             AND: [${singularName}ListWhereInput!]
             OR: [${singularName}ListWhereInput!]

@@ -121,7 +121,7 @@ export const createFilesTypeDefs = (params: CreateFilesTypeDefsParams): string =
         }
 
         input FmFileListWhereInput {
-            ${listFilterFieldsRender}
+            ${listFilterFieldsRender.allFiltersAsString()}
             AND: [FmFileListWhereInput!]
             OR: [FmFileListWhereInput!]
         }

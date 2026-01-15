@@ -143,10 +143,12 @@ export const createManageSDL: CreateManageSDL = ({
         }
         
         input ${singularName}ListWhereInputValues {
-            ${listFilterFieldsRender}
+            ${listFilterFieldsRender.fieldFiltersAsString() || "_empty: String"}
         }
 
         input ${singularName}ListWhereInput {
+            ${listFilterFieldsRender.baseFiltersAsString()}
+
             state: ListWhereInputCmsEntryState
             wbyAco_location: WbyAcoLocationWhereInput
             values: ${singularName}ListWhereInputValues

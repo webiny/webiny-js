@@ -117,7 +117,7 @@ const createGraphQL = () => {
                     data: JSON
                     stack: String
                 }
-                
+
                 ${taskFields.map(f => f.typeDefs).join("\n")}
                 ${logFields.map(f => f.typeDefs).join("\n")}
 
@@ -150,7 +150,7 @@ const createGraphQL = () => {
                     meta: WebinyBackgroundTaskMeta
                     error: WebinyBackgroundTaskError
                 }
-                
+
                 type WebinyBackgroundTaskLog {
                     id: String!
                     createdOn: DateTime!
@@ -158,7 +158,7 @@ const createGraphQL = () => {
                     task: WebinyBackgroundTask!
                     ${logFields.map(f => f.fields).join("\n")}
                 }
-                
+
                 type WebinyBackgroundTaskLogListResponse {
                     data: [WebinyBackgroundTaskLog!]
                     meta: WebinyBackgroundTaskMeta
@@ -193,17 +193,17 @@ const createGraphQL = () => {
                 }
 
                 input WebinyBackgroundTaskListWhereInput {
-                    ${listTasksFilterFieldsRender}
+                    ${listTasksFilterFieldsRender.allFiltersAsString() || "_empty: String"}
                 }
-                
+
                 input WebinyBackgroundTaskLogListWhereInput {
-                    ${listLogsFilterFieldsRender}
+                    ${listLogsFilterFieldsRender.allFiltersAsString() || "_empty: String"}
                 }
 
                 enum WebinyBackgroundTaskListSorter {
                     ${sortTasksEnumRender}
                 }
-                
+
                 enum WebinyBackgroundTaskLogListSorter {
                     ${sortLogsEnumRender}
                 }
@@ -238,7 +238,7 @@ const createGraphQL = () => {
                         search: String
                     ): WebinyBackgroundTaskListResponse!
                     listDefinitions: WebinyBackgroundTaskListDefinitionsResponse!
-                    
+
                     listLogs(
                         where: WebinyBackgroundTaskLogListWhereInput
                         sort: [WebinyBackgroundTaskLogListSorter!]

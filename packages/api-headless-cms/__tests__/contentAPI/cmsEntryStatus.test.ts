@@ -116,8 +116,10 @@ describe("cms entry status filtering", () => {
                     publishCategory: {
                         data: {
                             id,
-                            title,
-                            slug,
+                            values: {
+                                title,
+                                slug
+                            },
                             meta: {
                                 status: "published",
                                 version: 1
@@ -139,8 +141,10 @@ describe("cms entry status filtering", () => {
                 listCategories: {
                     data: categories.map((title, index) => {
                         return {
-                            title,
-                            slug: camelCase(title),
+                            values: {
+                                title,
+                                slug: camelCase(title)
+                            },
                             meta: {
                                 status: Number(index) % 2 === 0 ? "draft" : "published",
                                 version: 1,
@@ -173,8 +177,10 @@ describe("cms entry status filtering", () => {
                 listCategories: {
                     data: draftCategoriesList.map(title => {
                         return {
-                            title,
-                            slug: camelCase(title),
+                            values: {
+                                title,
+                                slug: camelCase(title)
+                            },
                             meta: {
                                 status: "draft",
                                 version: 1,
@@ -207,8 +213,10 @@ describe("cms entry status filtering", () => {
                 listCategories: {
                     data: publishedCategoriesList.map(title => {
                         return {
-                            title,
-                            slug: camelCase(title),
+                            values: {
+                                title,
+                                slug: camelCase(title)
+                            },
                             meta: {
                                 status: "published",
                                 version: 1,
