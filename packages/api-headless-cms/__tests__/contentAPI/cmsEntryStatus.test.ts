@@ -79,10 +79,12 @@ describe("cms entry status filtering", () => {
             const title = categories[i];
             const slug = camelCase(title);
             const [response] = await createCategory({
-                data: {
-                    values: {
-                        title,
-                        slug
+                variables: {
+                    data: {
+                        values: {
+                            title,
+                            slug
+                        }
                     }
                 }
             });
@@ -107,9 +109,11 @@ describe("cms entry status filtering", () => {
             if (Number(i) % 2 === 0) {
                 continue;
             }
-            const id = response.data.createCategory.data.id;
+            const id = response.data.createCategory.data!.id;
             const [publishResponse] = await publishCategory({
-                revision: id
+                variables: {
+                    revision: id
+                }
             });
             expect(publishResponse).toMatchObject({
                 data: {
@@ -132,8 +136,10 @@ describe("cms entry status filtering", () => {
         }
 
         const [listCategoriesResponse] = await listCategories({
-            sort: ["createdOn_ASC"],
-            limit: 100
+            variables: {
+                sort: ["createdOn_ASC"],
+                limit: 100
+            }
         });
 
         expect(listCategoriesResponse).toMatchObject({
@@ -162,10 +168,12 @@ describe("cms entry status filtering", () => {
         });
 
         const [listCategoriesDraftResponse] = await listCategories({
-            sort: ["createdOn_ASC"],
-            limit: 100,
-            where: {
-                status: "draft"
+            variables: {
+                sort: ["createdOn_ASC"],
+                limit: 100,
+                where: {
+                    status: "draft"
+                }
             }
         });
 
@@ -198,10 +206,12 @@ describe("cms entry status filtering", () => {
         });
 
         const [listCategoriesPublishedResponse] = await listCategories({
-            sort: ["createdOn_ASC"],
-            limit: 100,
-            where: {
-                status: "published"
+            variables: {
+                sort: ["createdOn_ASC"],
+                limit: 100,
+                where: {
+                    status: "published"
+                }
             }
         });
 

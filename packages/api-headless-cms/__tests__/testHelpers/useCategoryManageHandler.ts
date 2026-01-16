@@ -77,22 +77,22 @@ export const useCategoryManageHandler = (params: GraphQLHandlerParams) => {
                 headers: params.headers
             });
         },
-        async listCategories(params: IMutationParams<IListCategoriesQueryVariables>) {
+        async listCategories(params?: IMutationParams<IListCategoriesQueryVariables>) {
             return await contentHandler.invoke<IListCategoriesQueryResponse>({
                 body: {
                     query: listCategoriesQuery(model),
-                    variables: params.variables
+                    variables: params?.variables
                 },
-                headers: params.headers
+                headers: params?.headers
             });
         },
-        async listDeletedCategories(params: IMutationParams<IListDeletedCategoriesQueryVariables>) {
+        async listDeletedCategories(params?: IMutationParams<IListDeletedCategoriesQueryVariables>) {
             return await contentHandler.invoke<IListDeletedCategoriesQueryResponse>({
                 body: {
                     query: listDeletedCategoriesQuery(model),
-                    variables: params.variables
+                    variables: params?.variables
                 },
-                headers: params.headers
+                headers: params?.headers
             });
         },
         async createCategory(params: IMutationParams<ICreateCategoryMutationVariables>) {

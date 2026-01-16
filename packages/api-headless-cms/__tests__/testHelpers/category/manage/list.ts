@@ -8,12 +8,7 @@ import {
 } from "~tests/testHelpers/fields/index.js";
 import { categoryFields } from "./fields.js";
 
-export interface IListCategoriesQueryVariables {
-    where?: CmsEntryListParams | null
-    sort?: string[];
-    limit?: number;
-    after?: string;
-}
+export interface IListCategoriesQueryVariables extends CmsEntryListParams {}
 
 export interface IListCategoriesQueryResponse {
     listCategories: {

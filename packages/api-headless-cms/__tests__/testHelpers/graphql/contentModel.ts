@@ -114,15 +114,12 @@ export interface CreateContentModelFromMutationVariables {
 }
 
 export interface CreateContentModelMutationResponse {
-    errors?: any[];
-    data: {
-        createContentModel: {
-            data: CmsModel;
-            error: {
-                message: string;
-                code: any;
-                data: any;
-            };
+    createContentModel: {
+        data: CmsModel;
+        error: {
+            message: string;
+            code: any;
+            data: any;
         };
     };
 }
