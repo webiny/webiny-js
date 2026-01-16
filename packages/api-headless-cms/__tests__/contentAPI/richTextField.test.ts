@@ -5,7 +5,6 @@ import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandle
 import { useProductReadHandler } from "../testHelpers/useProductReadHandler";
 import { setupGroupAndModels } from "~tests/testHelpers/setup.js";
 
-
 const richTextMock = [
     {
         tag: "h1",

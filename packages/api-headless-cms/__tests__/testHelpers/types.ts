@@ -4,7 +4,6 @@ import type { IGraphQLIdentityResponse } from "~tests/testHelpers/fields/index.j
 
 export type TestContext = ApiCoreContext;
 
-
 /**
  * Query and reader related interfaces
  */
@@ -96,4 +95,3 @@ export interface IManageQueryBaseResponse<T> {
     wbyAco_location: IManageQueryBaseResponseLocation;
     values: T;
 }
-

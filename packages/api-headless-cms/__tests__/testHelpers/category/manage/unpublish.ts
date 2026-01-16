@@ -15,7 +15,6 @@ export interface IUnpublishCategoryMutationResponse {
     };
 }
 
-
 export const unpublishCategoryMutation = (model: Pick<CmsModel, "singularApiName">) => {
     return /* GraphQL */ `
         mutation UnpublishCategory($revision: ID!) {

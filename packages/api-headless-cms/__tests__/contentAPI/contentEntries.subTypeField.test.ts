@@ -8,9 +8,8 @@ describe("content entries with subtype field", () => {
     };
 
     const manager = useCategoryManageHandler(manageOpts);
-    
+
     const { createCategory, listCategories } = manager;
-    
 
     beforeEach(async () => {
         await setupGroupAndModels({

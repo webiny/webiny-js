@@ -1,20 +1,20 @@
 import { describe, expect, it, vi } from "vitest";
-import { setupContentModelGroup, setupContentModels } from "~tests/testHelpers/setup";
+import { setupGroupAndModels } from "~tests/testHelpers/setup";
 import { useCategoryManageHandler } from "~tests/testHelpers/useCategoryManageHandler";
 import { useCategoryReadHandler } from "~tests/testHelpers/useCategoryReadHandler";
-import type { CmsEntry } from "~/types";
 import { toSlug } from "~/utils/toSlug";
 import { ROOT_FOLDER } from "~/constants";
+import type {
+    ICategoryInputValues,
+    ICategoryResponseValues
+} from "~tests/testHelpers/category/manage/types.js";
+import type { IManageQueryBaseResponse } from "~tests/testHelpers/types.js";
 
 vi.setConfig({
     testTimeout: 100_000
 });
 
-interface CreateCategoryParams {
-    title: string;
-    slug: string;
-}
-type Categories = CmsEntry[];
+type ICategory = IManageQueryBaseResponse<ICategoryResponseValues>;
 
 describe("restore entries", () => {
     const manager = useCategoryManageHandler({
@@ -24,19 +24,25 @@ describe("restore entries", () => {
         path: "read"
     });
 
-    const createCategory = async (data: CreateCategoryParams) => {
+    const createCategory = async (values: ICategoryInputValues) => {
         const [response] = await manager.createCategory({
-            data
+            variables: {
+                data: {
+                    values
+                }
+            }
         });
 
-        const createdCategory = response.data.createCategory.data;
+        const createdCategory = response.data.createCategory.data!;
 
         if (response.data.createCategory.error) {
             throw new Error(response.data.createCategory.error.message);
         }
 
         const [publish] = await manager.publishCategory({
-            revision: createdCategory.id
+            variables: {
+                revision: createdCategory.id
+            }
         });
         if (publish.data.publishCategory.error) {
             throw new Error(publish.data.publishCategory.error.message);
@@ -63,12 +69,15 @@ describe("restore entries", () => {
     ];
 
     const createCategories = async () => {
-        const results: Categories = [];
+        const results: ICategory[] = [];
         for (const title of titles) {
             const result = await createCategory({
                 title,
                 slug: toSlug(title)
             });
+            if (!result) {
+                continue;
+            }
             results.push(result);
         }
 
@@ -76,9 +85,11 @@ describe("restore entries", () => {
     };
 
     const setupCategories = async () => {
-        const group = await setupContentModelGroup(manager);
-        await setupContentModels(manager, group, ["category"]);
-        return createCategories();
+        await setupGroupAndModels({
+            manager,
+            models: ["category"]
+        });
+        return await createCategories();
     };
 
     it("should move an entry to trash bin and then restore it", async () => {
@@ -95,9 +106,11 @@ describe("restore entries", () => {
          * Let's move one entry to the trash bin.
          */
         const [deleteResponse] = await manager.deleteCategory({
-            revision: categoryToRestore.entryId,
-            options: {
-                permanently: false
+            variables: {
+                revision: categoryToRestore.entryId,
+                options: {
+                    permanently: false
+                }
             }
         });
         expect(deleteResponse).toMatchObject({
@@ -113,7 +126,7 @@ describe("restore entries", () => {
          * Let's check that has been removed from the list.
          */
         const [listAfterDeleteManageResponse] = await manager.listCategories();
-        expect(listAfterDeleteManageResponse.data.listCategories.meta.totalCount).toBe(
+        expect(listAfterDeleteManageResponse.data.listCategories.meta!.totalCount).toBe(
             titles.length - 1
         );
         const [listAfterDeleteReadResponse] = await reader.listCategories();
@@ -125,10 +138,14 @@ describe("restore entries", () => {
          * ...and we should not be able to get the entry anymore.
          */
         const [getAfterDeleteManageResponse] = await manager.getCategory({
-            revision: categoryToRestore.id
+            variables: {
+                revision: categoryToRestore.id
+            }
         });
         const [getAfterDeleteReadResponse] = await manager.getCategory({
-            revision: categoryToRestore.id
+            variables: {
+                revision: categoryToRestore.id
+            }
         });
         expect(getAfterDeleteManageResponse).toMatchObject({
             data: {
@@ -181,7 +198,9 @@ describe("restore entries", () => {
          * Let's try to restore an entry from the bin, we should get the success response...
          */
         const [restoreBinItemResponse] = await manager.restoreCategoryFromBin({
-            revision: categoryToRestore.entryId
+            variables: {
+                revision: categoryToRestore.entryId
+            }
         });
 
         expect(restoreBinItemResponse).toMatchObject({
@@ -211,7 +230,9 @@ describe("restore entries", () => {
          * ...but, if we try to repeat the operation, it should fail.
          */
         const [restoreAgainBinItemResponse] = await manager.restoreCategoryFromBin({
-            revision: categoryToRestore.entryId
+            variables: {
+                revision: categoryToRestore.entryId
+            }
         });
         expect(restoreAgainBinItemResponse).toMatchObject({
             data: {
@@ -230,7 +251,7 @@ describe("restore entries", () => {
          * Let's check that has been restored from the trash bin.
          */
         const [listAfterRestoreManageResponse] = await manager.listCategories();
-        expect(listAfterRestoreManageResponse.data.listCategories.meta.totalCount).toBe(
+        expect(listAfterRestoreManageResponse.data.listCategories.meta!.totalCount).toBe(
             titles.length
         );
         const [listAfterRestoreReadResponse] = await reader.listCategories();
@@ -240,10 +261,14 @@ describe("restore entries", () => {
          * ...and we should be able to get the entry.
          */
         const [getAfterRestoreManageResponse] = await manager.getCategory({
-            revision: categoryToRestore.id
+            variables: {
+                revision: categoryToRestore.id
+            }
         });
         const [getAfterRestoreReadResponse] = await manager.getCategory({
-            revision: categoryToRestore.id
+            variables: {
+                revision: categoryToRestore.id
+            }
         });
         expect(getAfterRestoreManageResponse).toMatchObject({
             data: {
@@ -294,7 +319,9 @@ describe("restore entries", () => {
          * We should NOT be able to restore an entry that has not been moved to the trash bin.
          */
         const [restoreItemNotInTrashResponse] = await manager.restoreCategoryFromBin({
-            revision: categoryToRestore.entryId
+            variables: {
+                revision: categoryToRestore.entryId
+            }
         });
         expect(restoreItemNotInTrashResponse).toMatchObject({
             data: {
@@ -323,8 +350,10 @@ describe("restore entries", () => {
          * Let's now move the entry into a different folder.
          */
         const [moveResponse] = await manager.moveCategory({
-            revision: categoryToRestore.id,
-            folderId: newFolderId
+            variables: {
+                revision: categoryToRestore.id,
+                folderId: newFolderId
+            }
         });
 
         expect(moveResponse).toMatchObject({
@@ -340,7 +369,9 @@ describe("restore entries", () => {
          * ...let's check the new location.
          */
         const [getAfterMoveManageResponse] = await manager.getCategory({
-            revision: categoryToRestore.id
+            variables: {
+                revision: categoryToRestore.id
+            }
         });
 
         expect(getAfterMoveManageResponse).toMatchObject({
@@ -361,9 +392,11 @@ describe("restore entries", () => {
          * Let's now move the entry into the bin.
          */
         const [deleteResponse] = await manager.deleteCategory({
-            revision: categoryToRestore.entryId,
-            options: {
-                permanently: false
+            variables: {
+                revision: categoryToRestore.entryId,
+                options: {
+                    permanently: false
+                }
             }
         });
         expect(deleteResponse).toMatchObject({
@@ -406,7 +439,9 @@ describe("restore entries", () => {
          * Let's try to restore an entry from the bin, we should get it with the original location
          */
         const [restoreBinItemResponse] = await manager.restoreCategoryFromBin({
-            revision: categoryToRestore.entryId
+            variables: {
+                revision: categoryToRestore.entryId
+            }
         });
 
         expect(restoreBinItemResponse).toMatchObject({

@@ -20,7 +20,7 @@ export interface Fruit {
         time: string;
         description: string;
         slug?: string | null;
-    }
+    };
 }
 
 const ids = {

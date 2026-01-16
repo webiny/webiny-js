@@ -47,7 +47,6 @@ import {
 } from "./category/manage/index.js";
 import type { IMutationParams, IQueryParams } from "./types.js";
 
-
 export const useCategoryManageHandler = (params: GraphQLHandlerParams) => {
     const contentHandler = useGraphQLHandler(params);
 

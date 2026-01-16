@@ -27,7 +27,7 @@ export const createReadResolvers: CreateReadResolvers = ({ models, model, fieldT
         fields: model.fields,
         isRoot: true
     });
-    
+
     const key = model.singularApiName as keyof typeof fieldResolvers;
     // @ts-expect-error
     if (!fieldResolvers[key].modelId) {

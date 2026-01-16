@@ -1,6 +1,5 @@
 import { IDENTITY_FIELDS } from "~tests/testHelpers/fields/index.js";
 
-
 export const categoryFields = /* GraphQL */ `
     {
         id

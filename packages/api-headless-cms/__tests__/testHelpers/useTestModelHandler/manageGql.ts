@@ -227,7 +227,7 @@ export interface ITestMutationData {
 }
 
 export interface ICreateTestEntryMutationVariables {
-    data?: ITestMutationData
+    data?: ITestMutationData;
 }
 
 export const CREATE_TEST_ENTRY = /* GraphQL */ `
@@ -241,7 +241,7 @@ export const CREATE_TEST_ENTRY = /* GraphQL */ `
 
 export interface ICreateTestEntryFromMutationVariables {
     revision: string;
-    data?: ITestMutationData
+    data?: ITestMutationData;
 }
 
 export const CREATE_TEST_ENTRY_FROM = /* GraphQL */ `
@@ -255,7 +255,7 @@ export const CREATE_TEST_ENTRY_FROM = /* GraphQL */ `
 
 export interface IUpdateTestEntryMutationVariables {
     revision: string;
-    data: ITestMutationData
+    data: ITestMutationData;
 }
 
 export const UPDATE_TEST_ENTRY = /* GraphQL */ `

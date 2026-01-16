@@ -1,3 +1,3 @@
-export * from "./error.js"
-export * from "./identity.js"
-export * from "./meta.js"
+export * from "./error.js";
+export * from "./identity.js";
+export * from "./meta.js";

@@ -79,15 +79,14 @@ export const useTestModelHandler = (params: UseTestModelHandlerParams) => {
                     .then(extractGqlResponseData);
             },
             async listTestEntries(params?: IQueryParams<IReadListTestEntryVariables>) {
-                const result = await readGqlHandler
-                    .invoke({
-                        body: {
-                            query: readGql.LIST_TEST_ENTRIES,
-                            variables: params?.variables
-                        },
-                        headers: params?.headers
-                    })
-                    
+                const result = await readGqlHandler.invoke({
+                    body: {
+                        query: readGql.LIST_TEST_ENTRIES,
+                        variables: params?.variables
+                    },
+                    headers: params?.headers
+                });
+
                 return extractGqlResponseData(result);
             }
         },
@@ -153,15 +152,14 @@ export const useTestModelHandler = (params: UseTestModelHandlerParams) => {
                     };
                 }
 
-                const result = await manageGqlHandler
-                    .invoke({
-                        body: {
-                            query: manageGql.CREATE_TEST_ENTRY,
-                            variables
-                        },
-                        headers: params?.headers
-                    });
-                
+                const result = await manageGqlHandler.invoke({
+                    body: {
+                        query: manageGql.CREATE_TEST_ENTRY,
+                        variables
+                    },
+                    headers: params?.headers
+                });
+
                 return extractGqlResponseData(result);
             },
             async createTestEntryFrom(
