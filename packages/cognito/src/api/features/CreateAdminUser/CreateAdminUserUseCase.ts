@@ -33,22 +33,24 @@ class CreateAdminUserUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const username = Username.fromUser(data);
 
-        // 2. Check if user exists in Cognito
-        const userExists = await this.cognitoService.userExists(username);
-        if (userExists) {
-            return Result.fail(new CognitoAccountExistsError(data.email));
-        }
+        let user: AdminUser | undefined = undefined;
 
-        // 3. Create user in api-core
-        const createUserResult = await this.createUserUseCase.execute(userDataWithoutPassword);
-        if (createUserResult.isFail()) {
-            return Result.fail(createUserResult.error);
-        }
-
-        const user = createUserResult.value;
-
-        // 4. Create user in Cognito
         try {
+            // 2. Check if user exists in Cognito
+            const userExists = await this.cognitoService.userExists(username);
+            if (userExists) {
+                return Result.fail(new CognitoAccountExistsError(data.email));
+            }
+
+            // 3. Create user in api-core
+            const createUserResult = await this.createUserUseCase.execute(userDataWithoutPassword);
+            if (createUserResult.isFail()) {
+                return Result.fail(createUserResult.error);
+            }
+
+            user = createUserResult.value;
+
+            // 4. Create user in Cognito
             await this.cognitoService.createUser({
                 username,
                 temporaryPassword: password,
@@ -79,13 +81,14 @@ class CreateAdminUserUseCaseImpl implements UseCaseAbstraction.Interface {
 
             return Result.ok(user);
         } catch (cognitoError) {
-            // 7. Rollback: Delete user from api-core if Cognito creation failed
-            try {
-                await this.repository.delete(user);
-            } catch (rollbackError) {
-                console.error("Failed to rollback user creation:", rollbackError);
+            if (user) {
+                // 7. Rollback: Delete user from api-core if Cognito creation failed
+                try {
+                    await this.repository.delete(user);
+                } catch (rollbackError) {
+                    console.error("Failed to rollback user creation:", rollbackError);
+                }
             }
-
             return Result.fail(new CognitoCreateUserError(cognitoError as Error));
         }
     }
