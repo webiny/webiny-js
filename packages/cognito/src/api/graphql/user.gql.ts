@@ -93,6 +93,7 @@ class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
 
                         const user = getUserResult.value;
 
+                        // TODO: UpdateCurrentUser should be a dedicated use case
                         const updateResult = await updateUserUseCase.execute(user.id, args.data);
                         if (updateResult.isFail()) {
                             return new ErrorResponse({
@@ -123,6 +124,16 @@ class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                 updateUser: async (_, { data, id }: any, context) => {
                     const updateAdminUserUseCase =
                         context.container.resolve(UpdateAdminUserUseCase);
+
+                    const identityContext = context.container.resolve(IdentityContext);
+
+                    if (id === identityContext.getIdentity().id) {
+                        return new ErrorResponse({
+                            message:
+                                "You're not allowed to update your own account using this API.",
+                            code: "AdminUser/GraphQL/UpdateSelf"
+                        });
+                    }
 
                     const result = await updateAdminUserUseCase.execute(id, data);
                     if (result.isFail()) {

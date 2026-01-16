@@ -2,7 +2,10 @@ import { Result } from "@webiny/feature/api";
 import { CreateUserUseCase } from "@webiny/api-core/features/CreateUser";
 import { ListUsersUseCase } from "@webiny/api-core/features/ListUsers";
 import { AdminUsersRepository } from "@webiny/api-core/features/users/shared/abstractions.js";
-import { UserValidationError } from "@webiny/api-core/features/users/shared/errors.js";
+import {
+    NotAuthorizedError,
+    UserValidationError
+} from "@webiny/api-core/features/users/shared/errors.js";
 import { CreateAdminUserUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { CognitoService } from "../shared/abstractions.js";
 import { Username } from "~/api/domain/Username.js";
@@ -10,9 +13,11 @@ import { CognitoAccountExistsError, CognitoCreateUserError } from "~/api/domain/
 import { createAdminUserValidation } from "./schema.js";
 import type { AdminUser } from "@webiny/api-core/types/users.js";
 import type { CreateAdminUserInput } from "./abstractions.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 class CreateAdminUserUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
+        private identityContext: IdentityContext.Interface,
         private cognitoService: CognitoService.Interface,
         private createUserUseCase: CreateUserUseCase.Interface,
         private listUsersUseCase: ListUsersUseCase.Interface,
@@ -22,7 +27,12 @@ class CreateAdminUserUseCaseImpl implements UseCaseAbstraction.Interface {
     async execute(
         input: CreateAdminUserInput
     ): Promise<Result<AdminUser, UseCaseAbstraction.Error>> {
-        // 1. Validate input (including password)
+        const permission = await this.identityContext.getPermission("adminUsers.user");
+        if (!permission) {
+            return Result.fail(new NotAuthorizedError());
+        }
+
+        // Validate input (including password)
         const validation = createAdminUserValidation.safeParse(input);
         if (!validation.success) {
             return Result.fail(new UserValidationError(validation.error.errors[0].message));
@@ -33,16 +43,21 @@ class CreateAdminUserUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const username = Username.fromUser(data);
 
+        // Check if user exists in database (faster than Cognito check)
+        const existingUserResult = await this.repository.get({ email: data.email });
+        if (existingUserResult.isOk()) {
+            return Result.fail(new CognitoAccountExistsError(data.email));
+        }
+
         let user: AdminUser | undefined = undefined;
 
         try {
-            // 2. Check if user exists in Cognito
+            // Check if user exists in Cognito
             const userExists = await this.cognitoService.userExists(username);
             if (userExists) {
                 return Result.fail(new CognitoAccountExistsError(data.email));
             }
-
-            // 3. Create user in api-core
+            // Create user in api-core
             const createUserResult = await this.createUserUseCase.execute(userDataWithoutPassword);
             if (createUserResult.isFail()) {
                 return Result.fail(createUserResult.error);
@@ -50,7 +65,7 @@ class CreateAdminUserUseCaseImpl implements UseCaseAbstraction.Interface {
 
             user = createUserResult.value;
 
-            // 4. Create user in Cognito
+            // Create user in Cognito
             await this.cognitoService.createUser({
                 username,
                 temporaryPassword: password,
@@ -63,10 +78,10 @@ class CreateAdminUserUseCaseImpl implements UseCaseAbstraction.Interface {
                 }
             });
 
-            // 5. Set email as verified
+            // Set email as verified
             await this.cognitoService.setEmailVerified(username);
 
-            // 6. Check if this is the first user in the system, and if so, set permanent password
+            // Check if this is the first user in the system, and if so, set permanent password
             const usersResult = await this.listUsersUseCase.execute();
             if (usersResult.isFail()) {
                 // Log error but don't fail the operation
@@ -82,7 +97,7 @@ class CreateAdminUserUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.ok(user);
         } catch (cognitoError) {
             if (user) {
-                // 7. Rollback: Delete user from api-core if Cognito creation failed
+                // Rollback: Delete user from api-core if Cognito creation failed
                 try {
                     await this.repository.delete(user);
                 } catch (rollbackError) {
@@ -96,5 +111,11 @@ class CreateAdminUserUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const CreateAdminUserUseCase = UseCaseAbstraction.createImplementation({
     implementation: CreateAdminUserUseCaseImpl,
-    dependencies: [CognitoService, CreateUserUseCase, ListUsersUseCase, AdminUsersRepository]
+    dependencies: [
+        IdentityContext,
+        CognitoService,
+        CreateUserUseCase,
+        ListUsersUseCase,
+        AdminUsersRepository
+    ]
 });

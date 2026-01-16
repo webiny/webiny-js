@@ -90,8 +90,6 @@ describe("Admin Users (Cognito)", () => {
     });
 
     it("should fail to create admin user if Cognito throws error", async () => {
-        // Note: This test is skipped due to vitest error detection issues
-        // The use case correctly handles Cognito errors and returns Result.fail
         const createAdminUser = container.resolve(CreateAdminUserUseCase);
 
         const cognitoError: Error = {

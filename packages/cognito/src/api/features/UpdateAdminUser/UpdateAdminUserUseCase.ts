@@ -1,7 +1,10 @@
 import { Result } from "@webiny/feature/api";
 import { UpdateUserUseCase } from "@webiny/api-core/features/UpdateUser";
 import { GetUserUseCase } from "@webiny/api-core/features/GetUser";
-import { UserValidationError } from "@webiny/api-core/features/users/shared/errors.js";
+import {
+    NotAuthorizedError,
+    UserValidationError
+} from "@webiny/api-core/features/users/shared/errors.js";
 import { UpdateAdminUserUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { CognitoService } from "../shared/abstractions.js";
 import { Username } from "~/api/domain/Username.js";
@@ -9,6 +12,7 @@ import { CognitoUpdateUserError } from "~/api/domain/errors.js";
 import { updateAdminUserValidation } from "./schema.js";
 import type { AdminUser } from "@webiny/api-core/types/users.js";
 import type { UpdateAdminUserInput } from "./abstractions.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 type MappedAttrType = (user: AdminUser) => string | keyof AdminUser;
 
@@ -22,6 +26,7 @@ class UpdateAdminUserUseCaseImpl implements UseCaseAbstraction.Interface {
     private updateAttributes: Record<string, string | MappedAttrType>;
 
     constructor(
+        private identityContext: IdentityContext.Interface,
         private cognitoService: CognitoService.Interface,
         private updateUserUseCase: UpdateUserUseCase.Interface,
         private getUserUseCase: GetUserUseCase.Interface
@@ -33,7 +38,12 @@ class UpdateAdminUserUseCaseImpl implements UseCaseAbstraction.Interface {
         id: string,
         input: UpdateAdminUserInput
     ): Promise<Result<AdminUser, UseCaseAbstraction.Error>> {
-        // 1. Validate input (including password)
+        const permission = await this.identityContext.getPermission("adminUsers.user");
+        if (!permission) {
+            return Result.fail(new NotAuthorizedError());
+        }
+
+        // Validate input (including password)
         const validation = updateAdminUserValidation.safeParse(input);
         if (!validation.success) {
             return Result.fail(new UserValidationError(validation.error.errors[0].message));
@@ -42,7 +52,7 @@ class UpdateAdminUserUseCaseImpl implements UseCaseAbstraction.Interface {
         const data = validation.data;
         const { password, ...userDataWithoutPassword } = data;
 
-        // 2. Get original user to know the email before update
+        // Get original user to know the email before update
         const getUserResult = await this.getUserUseCase.execute({ id });
         if (getUserResult.isFail()) {
             return Result.fail(getUserResult.error);
@@ -50,8 +60,7 @@ class UpdateAdminUserUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const originalUser = getUserResult.value;
 
-
-        // 3. Update user in api-core
+        // Update user in api-core
         const updateUserResult = await this.updateUserUseCase.execute(id, userDataWithoutPassword);
         if (updateUserResult.isFail()) {
             return Result.fail(updateUserResult.error);
@@ -59,7 +68,7 @@ class UpdateAdminUserUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const updatedUser = updateUserResult.value;
 
-        // 4. Update user in Cognito
+        // Update user in Cognito
         try {
             // Build new attributes
             const attributes: Record<string, string> = {};
@@ -85,7 +94,7 @@ class UpdateAdminUserUseCaseImpl implements UseCaseAbstraction.Interface {
                 attributes
             );
 
-            // 5. Update password if provided
+            // Update password if provided
             if (password) {
                 await this.cognitoService.setPermanentPassword(
                     Username.fromUser(updatedUser),
@@ -102,5 +111,5 @@ class UpdateAdminUserUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const UpdateAdminUserUseCase = UseCaseAbstraction.createImplementation({
     implementation: UpdateAdminUserUseCaseImpl,
-    dependencies: [CognitoService, UpdateUserUseCase, GetUserUseCase]
+    dependencies: [IdentityContext, CognitoService, UpdateUserUseCase, GetUserUseCase]
 });
