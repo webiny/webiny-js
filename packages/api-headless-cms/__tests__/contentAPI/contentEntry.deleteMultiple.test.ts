@@ -1,24 +1,24 @@
-import { describe, it, expect, vi } from "vitest";
-import { setupContentModelGroup, setupContentModels } from "~tests/testHelpers/setup";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { setupGroupAndModels } from "~tests/testHelpers/setup";
 import { useCategoryManageHandler } from "~tests/testHelpers/useCategoryManageHandler";
-import type { CmsEntry } from "~/types";
 import { toSlug } from "~/utils/toSlug";
 import { useCategoryReadHandler } from "~tests/testHelpers/useCategoryReadHandler";
 import { parseIdentifier } from "@webiny/utils";
+import type { IManageQueryBaseResponse } from "~tests/testHelpers/types.js";
+import type {
+    ICategoryInputValues,
+    ICategoryResponseValues
+} from "~tests/testHelpers/category/manage/types.js";
 
 vi.setConfig({
     testTimeout: 100_000
 });
 
-interface CreateCategoryParams {
-    amount?: number;
-    title: string;
-    slug: string;
-}
-type Categories = Result[];
+type ICategory = IManageQueryBaseResponse<ICategoryResponseValues>;
+
 interface Result {
-    category: CmsEntry;
-    revisions: CmsEntry[];
+    category: ICategory;
+    revisions: ICategory[];
 }
 
 describe("delete multiple entries", () => {
@@ -29,31 +29,49 @@ describe("delete multiple entries", () => {
         path: "read"
     });
 
-    const createCategory = async (input: CreateCategoryParams) => {
-        const { amount, ...data } = input;
+    beforeEach(async () => [
+        await setupGroupAndModels({
+            manager,
+            models: ["category"]
+        })
+    ]);
+
+    const createCategory = async (input: ICategoryInputValues & { amount: number }) => {
+        const { amount, ...values } = input;
         const [createResponse] = await manager.createCategory({
-            data: {
-                ...data
+            variables: {
+                data: {
+                    values: values
+                }
             }
         });
-        const category = createResponse.data.createCategory.data;
+        const category = createResponse.data.createCategory.data!;
         if (!amount) {
-            return { category, revisions: [] };
+            return {
+                category,
+                revisions: []
+            };
         }
         let prev = category;
-        const revisions: CmsEntry[] = [];
+        const revisions: ICategory[] = [];
         for (let current = 1; current <= amount; current++) {
             await manager.publishCategory({
-                revision: prev.id
-            });
-            const [createFromResponse] = await manager.createCategoryFrom({
-                revision: prev.id,
-                data: {
-                    title: `${data.title} ${current}`,
-                    slug: `${data.slug}-${current}`
+                variables: {
+                    revision: prev.id
                 }
             });
-            const revision = createFromResponse.data.createCategoryFrom.data;
+            const [createFromResponse] = await manager.createCategoryFrom({
+                variables: {
+                    revision: prev.id,
+                    data: {
+                        values: {
+                            title: `${values.title} ${current}`,
+                            slug: `${values.slug}-${current}`
+                        }
+                    }
+                }
+            });
+            const revision = createFromResponse.data.createCategoryFrom.data!;
             prev = revision;
             revisions.push(revision);
         }
@@ -81,7 +99,7 @@ describe("delete multiple entries", () => {
     ];
 
     const createCategories = async () => {
-        const results: Categories = [];
+        const results: Result[] = [];
         for (const title of titles) {
             const result = await createCategory({
                 amount: 3,
@@ -94,13 +112,12 @@ describe("delete multiple entries", () => {
     };
 
     it("should delete all entries with the given IDs", async () => {
-        const group = await setupContentModelGroup(manager);
-        await setupContentModels(manager, group, ["category"]);
-
         const results = await createCategories();
 
         const [validateLatestResponse] = await manager.listCategories({
-            limit: 100
+            variables: {
+                limit: 100
+            }
         });
         expect(validateLatestResponse.data.listCategories.data).toHaveLength(titles.length);
         const [validatePublishedResponse] = await reader.listCategories({
@@ -112,7 +129,11 @@ describe("delete multiple entries", () => {
         /**
          * Let's now delete all the entries.
          */
-        const [deleteResponse] = await manager.deleteCategories(entries);
+        const [deleteResponse] = await manager.deleteCategories({
+            variables: {
+                entries
+            }
+        });
         /**
          * ... and check that all are deleted (response).
          */
@@ -125,7 +146,7 @@ describe("delete multiple entries", () => {
         });
         expect(deleteResponse.data.deleteCategories.data).toHaveLength(entries.length);
 
-        for (const { id } of deleteResponse.data.deleteCategories.data) {
+        for (const { id } of deleteResponse.data.deleteCategories.data!) {
             const { id: entryId } = parseIdentifier(id);
             const exists = results.some(result => {
                 return entryId === result.category.entryId;
@@ -138,7 +159,11 @@ describe("delete multiple entries", () => {
          */
         const revisions = results.map(r => r.revisions).flat();
         for (const revision of revisions) {
-            const [result] = await manager.getCategory({ revision: revision.id });
+            const [result] = await manager.getCategory({
+                variables: {
+                    revision: revision.id
+                }
+            });
             expect(result).toMatchObject({
                 data: {
                     getCategory: {
