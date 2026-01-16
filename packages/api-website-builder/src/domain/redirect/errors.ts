@@ -1,15 +1,5 @@
 import { BaseError } from "@webiny/feature/api";
 
-export class RedirectModelNotFoundError extends BaseError {
-    override readonly code = "WebsiteBuilder/Redirect/ModelNotFound" as const;
-
-    constructor() {
-        super({
-            message: "Redirect model not found!"
-        });
-    }
-}
-
 export class RedirectNotFoundError extends BaseError {
     override readonly code = "WebsiteBuilder/Redirect/NotFound" as const;
 
@@ -38,5 +28,13 @@ export class RedirectValidationError extends BaseError {
         super({
             message: `Redirect validation error: ${message}`
         });
+    }
+}
+
+export class RedirectNotAuthorizedError extends BaseError {
+    override readonly code = "WebsiteBuilder/Redirect/NotAuthorized" as const;
+
+    constructor() {
+        super({ message: "Not authorized!" });
     }
 }
