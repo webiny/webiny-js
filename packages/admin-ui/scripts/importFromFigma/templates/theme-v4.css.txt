@@ -46,7 +46,8 @@
   {THEME_SPACING}
   --spacing-sidebar-collapsed: 44px;
   --spacing-sidebar-expanded: 256px;
-  --spacing-main-content: calc(100vh - 45px);
+  --spacing-header: 45px;
+  --spacing-main-content: calc(100vh - var(--spacing-header));
 
   /* With TW4, `leading-none` maps to `--spacing-none`, which is 0px. So, we
      need to redefine it here to be 1 to avoid issues with line-height. */
