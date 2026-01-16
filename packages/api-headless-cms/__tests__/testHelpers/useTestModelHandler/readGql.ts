@@ -38,7 +38,7 @@ export interface IReadListTestEntryVariables {
     where?: CmsEntryListWhere;
     sort?: string[];
     limit?: number;
-    after?: string;
+    after?: string | null;
 }
 
 export const LIST_TEST_ENTRIES = `
