@@ -14,9 +14,3 @@ export interface ICategoryResponseValues {
     slug: string;
     separator: string | null | undefined;
 }
-
-export interface ICategoryResponse {
-    id: string;
-    entryId: string;
-    values: ICategoryResponseValues;
-}

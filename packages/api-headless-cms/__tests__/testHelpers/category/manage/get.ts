@@ -1,9 +1,6 @@
 import type { CmsEntryStatus, CmsModel } from "~/types/index.js";
 import { categoryFields } from "./fields.js";
-import type {
-    ICategoryResponse,
-    ICategoryResponseValues
-} from "~tests/testHelpers/category/manage/types.js";
+import type { ICategoryResponseValues } from "~tests/testHelpers/category/manage/types.js";
 import { ERROR_FIELDS, type IGraphQLErrorResponse } from "~tests/testHelpers/fields/index.js";
 import type { IManageQueryBaseResponse } from "~tests/testHelpers/types.js";
 
