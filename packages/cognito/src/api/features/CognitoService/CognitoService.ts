@@ -16,7 +16,7 @@ class CognitoServiceImpl implements ServiceAbstraction.Interface {
                 UserPoolId: this.config.userPoolId
             });
             return true;
-        } catch (error) {
+        } catch {
             // User does not exist
             return false;
         }

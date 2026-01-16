@@ -17,7 +17,7 @@ import {
 } from "@webiny/app-admin";
 import { CenteredView } from "@webiny/app-admin";
 import { usePasswordValidator } from "~/admin/presentation/shared/usePasswordValidator.js";
-import { Alert, Button, Grid, Input, OverlayLoader, Toast, useToast } from "@webiny/admin-ui";
+import { Alert, Button, Grid, Input, OverlayLoader, useToast } from "@webiny/admin-ui";
 
 const t = i18n.ns("app-security-admin-users/account-form");
 
