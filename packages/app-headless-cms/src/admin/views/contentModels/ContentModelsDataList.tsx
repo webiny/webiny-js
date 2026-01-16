@@ -7,7 +7,7 @@ import { useRouter, SearchUI } from "@webiny/app-admin";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { ReactComponent as DownloadFileIcon } from "@webiny/icons/file_download.svg";
 import { ReactComponent as UploadFileIcon } from "@webiny/icons/file_upload.svg";
-import { ReactComponent as FullscreenIcon } from "@webiny/icons/fullscreen.svg";
+import { ReactComponent as ListIcon } from "@webiny/icons/list.svg";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
 import { ReactComponent as MoreVertIcon } from "@webiny/icons/more_vert.svg";
 import { ReactComponent as ExportIcon } from "@webiny/icons/file_download.svg";
@@ -251,8 +251,8 @@ const ContentModelsDataList = ({
                                                         content={getMessage()}
                                                         trigger={
                                                             <Button
-                                                                text={"View"}
-                                                                icon={<FullscreenIcon />}
+                                                                text={"View entries"}
+                                                                icon={<ListIcon />}
                                                                 variant={"secondary"}
                                                                 size={"sm"}
                                                                 data-testid={

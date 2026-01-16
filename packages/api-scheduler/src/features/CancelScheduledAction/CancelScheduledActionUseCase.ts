@@ -62,7 +62,7 @@ class CancelScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
             );
         }
 
-        return Result.ok(undefined);
+        return Result.ok();
     }
 }
 

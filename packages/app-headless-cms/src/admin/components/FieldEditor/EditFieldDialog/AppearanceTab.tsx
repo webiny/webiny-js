@@ -3,9 +3,7 @@ import { i18n } from "@webiny/app/i18n/index.js";
 import { css } from "@emotion/css";
 import { validation } from "@webiny/validation";
 import { useBind } from "@webiny/form";
-import { allowCmsLegacyRichTextInput } from "~/utils/allowCmsLegacyRichTextInput.js";
 import { RendererOptions } from "./AppearanceTab/RendererOptions.js";
-import { LegacyRichTextInput } from "./AppearanceTab/LegacyRichTextInput.js";
 import { useRendererPlugins } from "./useRendererPlugins.js";
 import { useModelField } from "~/admin/components/ModelFieldProvider/index.js";
 import { RadioGroup, Text, Grid, Heading } from "@webiny/admin-ui";
@@ -65,11 +63,6 @@ const AppearanceTab = () => {
         <>
             <Grid>
                 <>
-                    {allowCmsLegacyRichTextInput && (
-                        <Grid.Column span={6}>
-                            <LegacyRichTextInput />
-                        </Grid.Column>
-                    )}
                     <Grid.Column span={12}>
                         <Heading level={5}>Field renderer</Heading>
                         <Text size={"sm"}>Choose a component that will render the field.</Text>

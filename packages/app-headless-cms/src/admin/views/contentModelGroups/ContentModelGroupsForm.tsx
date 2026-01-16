@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import isEmpty from "lodash/isEmpty.js";
 import get from "lodash/get.js";
-import type { FormRenderPropParams } from "@webiny/form";
+import { Bind, type FormRenderPropParams, useForm, useGenerateSlug } from "@webiny/form";
 import { ReactComponent as DevicesIcon } from "@webiny/icons/devices_other.svg";
 import { Form } from "@webiny/form";
 import { i18n } from "@webiny/app/i18n/index.js";
@@ -114,6 +114,7 @@ const ContentModelGroupsForm = ({ canCreate }: ContentModelGroupsFormProps) => {
                     variables: {
                         data: {
                             name: group.name,
+                            slug: group.slug,
                             description: group.description,
                             icon: group.icon
                         }
@@ -194,44 +195,12 @@ const ContentModelGroupsForm = ({ canCreate }: ContentModelGroupsFormProps) => {
 
     return (
         <Form onSubmit={onSubmit} data={data || { icon: "fas/star" }}>
-            {({ data, form, Bind }: FormRenderPropParams<CmsGroup>) => (
+            {({ data, form }: FormRenderPropParams<CmsGroup>) => (
                 <SimpleForm data-testid={"pb-content-model-groups-form"}>
                     <SimpleFormHeader title={data.name ? data.name : t`New content model group`} />
                     {loading && <OverlayLoader />}
                     <SimpleFormContent>
-                        <Grid>
-                            <Grid.Column span={12}>
-                                <Bind
-                                    name="name"
-                                    validators={validation.create("required,maxLength:100")}
-                                >
-                                    <Input
-                                        size={"lg"}
-                                        data-testid={"cms.form.group.name"}
-                                        label={t`Name`}
-                                    />
-                                </Bind>
-                            </Grid.Column>
-
-                            <Grid.Column span={12}>
-                                <Bind name="icon" validators={validation.create("required")}>
-                                    <IconPicker
-                                        label={t`Group icon`}
-                                        description={t`Icon that will be displayed in the main menu.`}
-                                    />
-                                </Bind>
-                            </Grid.Column>
-                            <Grid.Column span={12}>
-                                <Bind name="description">
-                                    <Textarea
-                                        size={"lg"}
-                                        data-testid={"cms.form.group.description"}
-                                        rows={5}
-                                        label={t`Description`}
-                                    />
-                                </Bind>
-                            </Grid.Column>
-                        </Grid>
+                        <FormContent newEntry={newEntry} />
                     </SimpleFormContent>
                     <SimpleFormFooter>
                         <Button
@@ -248,9 +217,7 @@ const ContentModelGroupsForm = ({ canCreate }: ContentModelGroupsFormProps) => {
                                     <Button
                                         variant={"primary"}
                                         text={t`Save`}
-                                        onClick={ev => {
-                                            form.submit(ev);
-                                        }}
+                                        onClick={form.submit}
                                         data-testid={"cms.form.group.submit"}
                                     />
                                 ) : (
@@ -272,6 +239,53 @@ const ContentModelGroupsForm = ({ canCreate }: ContentModelGroupsFormProps) => {
                 </SimpleForm>
             )}
         </Form>
+    );
+};
+
+interface FormContentProps {
+    newEntry: boolean;
+}
+
+const FormContent = ({ newEntry }: FormContentProps) => {
+    const form = useForm();
+    const { generateSlug } = useGenerateSlug(form, "name", "slug");
+
+    return (
+        <Grid>
+            <Grid.Column span={12}>
+                <Bind name="name" validators={validation.create("required,maxLength:100")}>
+                    <Input
+                        data-testid={"cms.form.group.name"}
+                        label={t`Name`}
+                        onBlur={generateSlug}
+                        required
+                    />
+                </Bind>
+            </Grid.Column>
+            <Grid.Column span={12}>
+                <Bind name={"slug"} validators={[validation.create("required,slug")]}>
+                    <Input label={"Slug"} required disabled={!newEntry} />
+                </Bind>
+            </Grid.Column>
+
+            <Grid.Column span={12}>
+                <Bind name="icon" validators={validation.create("required")}>
+                    <IconPicker
+                        label={t`Group icon`}
+                        description={t`Icon that will be displayed in the main menu.`}
+                    />
+                </Bind>
+            </Grid.Column>
+            <Grid.Column span={12}>
+                <Bind name="description" defaultValue={""}>
+                    <Textarea
+                        data-testid={"cms.form.group.description"}
+                        rows={5}
+                        label={t`Description`}
+                    />
+                </Bind>
+            </Grid.Column>
+        </Grid>
     );
 };
 

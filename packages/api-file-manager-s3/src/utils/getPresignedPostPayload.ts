@@ -3,6 +3,7 @@ import { S3Client, createPresignedPost } from "@webiny/aws-sdk/client-s3/index.j
 import { validation } from "@webiny/validation";
 import type { FileData, PresignedPostPayloadDataResponse } from "~/types.js";
 import type { FileManagerSettings } from "@webiny/api-file-manager/domain/settings/types.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 
 const S3_BUCKET = process.env.S3_BUCKET;
 const UPLOAD_MAX_FILE_SIZE_DEFAULT = 1099511627776; // 1TB
@@ -19,7 +20,8 @@ const sanitizeFileSizeValue = (value: number, defaultValue: number): number => {
 
 export const getPresignedPostPayload = async (
     file: FileData,
-    settings: FileManagerSettings
+    settings: FileManagerSettings,
+    tenantContext: TenantContext.Interface
 ): Promise<PresignedPostPayloadDataResponse> => {
     const uploadMinFileSize = sanitizeFileSizeValue(settings.uploadMinFileSize, 0);
     const uploadMaxFileSize = sanitizeFileSizeValue(
@@ -27,8 +29,11 @@ export const getPresignedPostPayload = async (
         UPLOAD_MAX_FILE_SIZE_DEFAULT
     );
 
+    const tenant = tenantContext.getTenant();
+    const storageKey = `tenants/${tenant.id}/files/${file.key}`;
+
     const params = {
-        Key: file.key,
+        Key: storageKey,
         Expires: 60,
         Bucket: S3_BUCKET as string,
         Conditions: [

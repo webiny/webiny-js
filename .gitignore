@@ -37,8 +37,8 @@ globalConfig.json
 .graphqlconfig
 schema.graphql
 .tmp/
-.nx/*
 .swc/
+.nx/*
 # yarn2 files
 .yarn/*
 !.yarn/releases
@@ -54,7 +54,8 @@ packages/*/README.md
 *storybook.log
 .normalizedFigmaExport.json
 .normalizedPrimitivesFigmaExport.json
+packages/tasks/tpl/*
 nextjs
-.claude/
-CLAUDE.local.md
-packages/webiny/src/global.d.ts
+
+CLAUDE*.md
+.claude/*

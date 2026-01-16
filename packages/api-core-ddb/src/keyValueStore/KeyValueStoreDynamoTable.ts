@@ -6,11 +6,6 @@ interface CreateKeysParams {
     scopedKey: string;
 }
 
-interface CreateGsiKeysParams {
-    scope: string;
-    scopedKey: string;
-}
-
 export class KeyValueStoreDynamoTable<T extends GenericRecord> {
     private readonly entity;
 
@@ -32,13 +27,6 @@ export class KeyValueStoreDynamoTable<T extends GenericRecord> {
         return {
             PK: `KV#${scopedKey}`,
             SK: `A`
-        };
-    }
-
-    createGsiKeys({ scope, scopedKey }: CreateGsiKeysParams) {
-        return {
-            GSI1_PK: `KV#${scope}`,
-            GSI1_SK: `KEY#${scopedKey}`
         };
     }
 

@@ -28,8 +28,6 @@ const SidebarMenuSubItem = ({
         return btoa(`sidebar-item-${currentLevel}-${buttonProps.text}`);
     }, [buttonProps.text, currentLevel]);
 
-    const effectiveIcon = buttonProps.icon || parentIcon;
-
     const isSectionExpanded = useMemo(() => {
         return sidebar.isSectionExpanded(menuItemId);
     }, [sidebar.expandedSections]);
@@ -40,6 +38,15 @@ const SidebarMenuSubItem = ({
 
     const isPinned = sidebar.isItemPinned(menuItemId);
 
+    // Icon to use when this item is pinned
+    const pinnedItemIcon = useMemo(() => {
+        if (buttonProps.pinnedIcon) {
+            return buttonProps.pinnedIcon;
+        }
+
+        return buttonProps.icon || parentIcon;
+    }, [buttonProps.pinnedIcon, buttonProps.icon, parentIcon]);
+
     // Register on mount if already pinned, unregister on unmount
     // Re-register when active state changes to keep pinned items in sync
     React.useEffect(() => {
@@ -47,7 +54,7 @@ const SidebarMenuSubItem = ({
             sidebar.registerPinnedItem({
                 id: menuItemId,
                 text: buttonProps.text,
-                icon: effectiveIcon,
+                icon: pinnedItemIcon,
                 to: buttonProps.to,
                 onClick: buttonProps.onClick,
                 active: buttonProps.active
@@ -59,7 +66,7 @@ const SidebarMenuSubItem = ({
                 sidebar.unregisterPinnedItem(menuItemId);
             }
         };
-    }, [pinnable, isPinned, menuItemId, buttonProps.active]);
+    }, [pinnable, isPinned, pinnedItemIcon, menuItemId, buttonProps.active]);
 
     const pinAction = useMemo(() => {
         if (!pinnable) {
@@ -76,7 +83,7 @@ const SidebarMenuSubItem = ({
                 sidebar.registerPinnedItem({
                     id: menuItemId,
                     text: buttonProps.text,
-                    icon: effectiveIcon,
+                    icon: pinnedItemIcon,
                     to: buttonProps.to,
                     onClick: buttonProps.onClick,
                     active: buttonProps.active
@@ -106,7 +113,7 @@ const SidebarMenuSubItem = ({
         }
 
         return pinButton;
-    }, [pinnable, isPinned, action, sidebar, menuItemId]);
+    }, [pinnable, isPinned, pinnedItemIcon, action, sidebar, menuItemId]);
 
     useEffect(() => {
         if (sidebar.expanded) {

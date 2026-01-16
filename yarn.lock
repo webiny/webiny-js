@@ -13572,6 +13572,7 @@ __metadata:
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^0.2.3"
     "@webiny/error": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
@@ -14494,7 +14495,6 @@ __metadata:
     "@webiny/app-trash-bin": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
-    "@webiny/feature-flags": "npm:0.0.0"
     "@webiny/form": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
     "@webiny/lexical-editor": "npm:0.0.0"
@@ -15073,7 +15073,7 @@ __metadata:
     "@webiny/app-admin": "npm:*"
     "@webiny/aws-sdk": "npm:*"
     "@webiny/build-tools": "npm:*"
-    "@webiny/error": "npm:*"
+    "@webiny/di": "npm:*"
     "@webiny/feature": "npm:*"
     "@webiny/form": "npm:*"
     "@webiny/handler-graphql": "npm:*"
@@ -15081,8 +15081,10 @@ __metadata:
     "@webiny/plugins": "npm:*"
     "@webiny/project": "npm:*"
     "@webiny/project-aws": "npm:*"
+    "@webiny/project-utils": "npm:*"
     "@webiny/ui": "npm:*"
     "@webiny/validation": "npm:*"
+    "@webiny/wcp": "npm:*"
     graphql: "npm:^16.12.0"
     graphql-tag: "npm:^2.12.6"
     jsonwebtoken: "npm:^9.0.3"
@@ -15090,6 +15092,8 @@ __metadata:
     mobx: "npm:^6.15.0"
     mobx-react-lite: "npm:^3.4.3"
     react: "npm:18.2.0"
+    vitest: "npm:^3.2.4"
+    zod: "npm:^3.25.76"
   languageName: unknown
   linkType: soft
 
@@ -15169,7 +15173,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/di@npm:^0.2.3":
+"@webiny/di@npm:*, @webiny/di@npm:^0.2.3":
   version: 0.2.3
   resolution: "@webiny/di@npm:0.2.3"
   dependencies:
@@ -15178,7 +15182,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@webiny/error@npm:*, @webiny/error@npm:0.0.0, @webiny/error@workspace:packages/error":
+"@webiny/error@npm:0.0.0, @webiny/error@workspace:packages/error":
   version: 0.0.0-use.local
   resolution: "@webiny/error@workspace:packages/error"
   dependencies:
@@ -15188,7 +15192,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/feature-flags@npm:0.0.0, @webiny/feature-flags@workspace:packages/feature-flags":
+"@webiny/feature-flags@workspace:packages/feature-flags":
   version: 0.0.0-use.local
   resolution: "@webiny/feature-flags@workspace:packages/feature-flags"
   dependencies:
@@ -15224,6 +15228,7 @@ __metadata:
     mobx: "npm:^6.15.0"
     mobx-react-lite: "npm:^3.4.3"
     rimraf: "npm:^6.1.2"
+    slugify: "npm:^1.6.6"
     typescript: "npm:5.9.3"
     vitest: "npm:^3.2.4"
   peerDependencies:
@@ -15625,7 +15630,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/project-utils@npm:0.0.0, @webiny/project-utils@workspace:packages/project-utils":
+"@webiny/project-utils@npm:*, @webiny/project-utils@npm:0.0.0, @webiny/project-utils@workspace:packages/project-utils":
   version: 0.0.0-use.local
   resolution: "@webiny/project-utils@workspace:packages/project-utils"
   dependencies:
@@ -15960,7 +15965,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/wcp@npm:0.0.0, @webiny/wcp@workspace:packages/wcp":
+"@webiny/wcp@npm:*, @webiny/wcp@npm:0.0.0, @webiny/wcp@workspace:packages/wcp":
   version: 0.0.0-use.local
   resolution: "@webiny/wcp@workspace:packages/wcp"
   dependencies:

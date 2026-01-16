@@ -219,7 +219,7 @@ export const validateModels = async (params: Params): Promise<ValidatedCmsModelR
                 };
             }
             const data = result.data as unknown as ValidatedCmsModel;
-            const group = groups.find(g => g.id === data.group || g.target === data.group);
+            const group = groups.find(g => g.slug === data.group || g.target === data.group);
             if (!group) {
                 return {
                     model: data,

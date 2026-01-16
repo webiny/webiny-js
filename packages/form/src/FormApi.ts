@@ -1,6 +1,7 @@
 import type { FormPresenter } from "~/FormPresenter.js";
 import type {
     BindComponentProps,
+    FormOnAfterSubmit,
     FormOnSubmit,
     FormPropsState,
     FormValidationOptions,
@@ -10,6 +11,7 @@ import type {
 
 export interface FormApiOptions<T extends GenericFormData = GenericFormData> {
     onSubmit: FormOnSubmit<T>;
+    onAfterSubmit: FormOnAfterSubmit<T>;
     isFormDisabled: boolean | ((state: FormPropsState<T>) => boolean);
     validateOnFirstSubmit: boolean;
 }
@@ -103,7 +105,14 @@ export class FormAPI<T extends GenericFormData = GenericFormData> {
         this.wasSubmitted = true;
         const isValid = await this.presenter.validate(options);
         if (isValid) {
-            return this.options.onSubmit(this.presenter.vm.data, this);
+            return Promise.resolve(this.options.onSubmit(this.presenter.vm.data, this)).then(
+                (data: any) => {
+                    // This will set the presenter to "pristine" state
+                    this.presenter.setData(this.presenter.vm.data);
+                    this.options.onAfterSubmit(data, this);
+                    return data;
+                }
+            );
         }
 
         return undefined;

@@ -15,6 +15,7 @@ export const DataList = () => {
     if (!groups) {
         return null;
     }
+
     return (
         <>
             {groups.map((group, index) => {

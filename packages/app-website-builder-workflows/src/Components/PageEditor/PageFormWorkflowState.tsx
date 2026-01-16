@@ -16,24 +16,24 @@ const StoreAlert = ({ state }: IStoreAlertProps) => {
         return null;
     }
     return (
-        <Alert className={"mb-md mt-md"} type="danger">
-            Any changes you do on the page will not be stored!
-        </Alert>
+        <div className={"max-w-screen bg-white p-sm"}>
+            <Grid className={"w-full"}>
+                <Grid.Column span={12}>
+                    <Alert className={"mb-md mt-md"} type="danger">
+                        Any changes you do on the page will not be stored!
+                    </Alert>
+                </Grid.Column>
+            </Grid>
+        </div>
     );
 };
 
 export const PageFormWorkflowState = () => {
     return (
-        <div className={"max-w-screen bg-white p-sm"}>
-            <Grid className={"w-full"}>
-                <Grid.Column span={12}>
-                    <WorkflowStateBar>
-                        {({ state }) => {
-                            return <StoreAlert state={state} />;
-                        }}
-                    </WorkflowStateBar>
-                </Grid.Column>
-            </Grid>
-        </div>
+        <WorkflowStateBar>
+            {({ state }) => {
+                return <StoreAlert state={state} />;
+            }}
+        </WorkflowStateBar>
     );
 };

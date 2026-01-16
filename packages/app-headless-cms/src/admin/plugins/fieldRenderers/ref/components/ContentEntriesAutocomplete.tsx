@@ -10,9 +10,6 @@ import { renderItem } from "./renderItem.js";
 import { createEntryUrl } from "./createEntryUrl.js";
 import type { CmsModelField } from "~/types.js";
 import type { BindComponentRenderProp } from "@webiny/form";
-import type { OptionItem } from "./types.js";
-import { EntryStatus } from "./EntryStatus.js";
-import { parseIdentifier } from "@webiny/utils";
 import { useModels } from "~/admin/hooks/index.js";
 import { NewReferencedEntryDialog } from "~/admin/plugins/fieldRenderers/ref/components/NewReferencedEntryDialog.js";
 
@@ -20,14 +17,6 @@ const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
 const unpublishedLabel = t`Selected content entry is not published. Make sure to {publishItLink} before publishing the main content entry.`;
 const publishedLabel = t`Selected content entry is published. You can view it {here}.`;
-
-const getItemOption = (options: OptionItem[], id?: string | null): OptionItem | null => {
-    if (!id || !options || options.length === 0) {
-        return null;
-    }
-    const { id: entryId } = parseIdentifier(id);
-    return options.find(item => item.entryId === entryId) || null;
-};
 
 interface ContentEntriesAutocompleteProps {
     bind: BindComponentRenderProp;
@@ -56,8 +45,6 @@ const ContentEntriesAutocomplete = ({ bind, field }: ContentEntriesAutocompleteP
     const { renderNewEntryModal, refModelId, helpText } = useNewRefEntry({ field });
     const model = models.find(model => model.modelId === refModelId);
 
-    const item = getItemOption(options, bind.value ? bind.value.id : null);
-
     /*
      * Wrap AutoComplete input in NewRefEntry modal.
      */
@@ -82,13 +69,9 @@ const ContentEntriesAutocomplete = ({ bind, field }: ContentEntriesAutocompleteP
                     value={value || undefined}
                     options={options}
                     label={field.label}
+                    note={entryInfo}
                     data-testid={`fr.input.autocomplete.${field.label}`}
-                    description={
-                        <>
-                            {field.helpText}
-                            <EntryStatus item={item}>{entryInfo}</EntryStatus>
-                        </>
-                    }
+                    description={<>{field.helpText}</>}
                     onInput={debounce(search => setSearch(search), 250)}
                     noResultFound={<NewEntryButton onClick={() => setShowNewEntryModal(true)} />}
                 />
@@ -105,12 +88,8 @@ const ContentEntriesAutocomplete = ({ bind, field }: ContentEntriesAutocompleteP
             value={value || undefined}
             options={options}
             label={field.label}
-            description={
-                <>
-                    {field.helpText}
-                    <EntryStatus item={item}>{entryInfo}</EntryStatus>
-                </>
-            }
+            description={<>{field.helpText}</>}
+            note={entryInfo}
             onInput={debounce(search => setSearch(search), 250)}
             noResultFound={helpText}
         />

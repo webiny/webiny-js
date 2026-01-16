@@ -4,7 +4,6 @@ import { EditorConfig } from "./EditorConfig.js";
 import styled from "@emotion/styled";
 
 const EditorLayoutContainer = styled.div`
-    background-color: #f2f2f2;
     height: 100%;
     overflow: hidden;
 `;

@@ -1,23 +1,8 @@
 import React from "react";
-import styled from "@emotion/styled";
 import Files from "react-butterfiles";
+import { Text } from "@webiny/admin-ui";
 import { getError } from "./Errors.js";
 import { useImport } from "~/admin/views/contentModels/importing/useImport.js";
-
-const Container = styled("div")({
-    width: "100%",
-    margin: "0 auto",
-    backgroundColor: "var(--mdc-theme-background)",
-    border: "1px dashed var(--mdc-theme-on-background)",
-    cursor: "pointer"
-});
-
-const Text = styled("p")({
-    width: "100%",
-    padding: "15px 0",
-    textAlign: "center",
-    display: "block"
-});
 
 export const FileUpload = () => {
     const { onFile, onFileError, file } = useImport();
@@ -52,9 +37,15 @@ export const FileUpload = () => {
             {({ browseFiles, getDropZoneProps }) => {
                 return (
                     <>
-                        <Container onClick={() => browseFiles()} {...getDropZoneProps()}>
+                        <div
+                            className={
+                                "w-full mx-auto my-0 border-sm border-dashed cursor-pointer border-neutral-muted bg-neutral-base text-center p-md "
+                            }
+                            onClick={() => browseFiles()}
+                            {...getDropZoneProps()}
+                        >
                             <Text>{fileName || "Drop a file here, or click to select one."}</Text>
-                        </Container>
+                        </div>
                     </>
                 );
             }}

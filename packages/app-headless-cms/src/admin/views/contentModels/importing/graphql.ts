@@ -34,6 +34,7 @@ export const VALIDATE_IMPORT_STRUCTURE = gql`
                     group {
                         id
                         name
+                        slug
                     }
                     action
                     ${ERROR}

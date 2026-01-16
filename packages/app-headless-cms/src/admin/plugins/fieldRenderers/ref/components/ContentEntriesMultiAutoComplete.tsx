@@ -60,6 +60,7 @@ const ContentEntriesMultiAutocomplete = ({ bind, field }: ContentEntriesMultiAut
             onChange([...entries, value]);
             setShowNewEntryModal(false);
         },
+
         [onChange, entries]
     );
 
@@ -87,12 +88,8 @@ const ContentEntriesMultiAutocomplete = ({ bind, field }: ContentEntriesMultiAut
                     options={options}
                     label={field.label}
                     onInput={debounce(setSearch, 250)}
-                    description={
-                        <>
-                            {field.helpText}
-                            {warning}
-                        </>
-                    }
+                    description={<>{field.helpText}</>}
+                    note={warning}
                     noResultFound={<NewEntryButton onClick={() => setShowNewEntryModal(true)} />}
                 />
             </>
@@ -112,12 +109,8 @@ const ContentEntriesMultiAutocomplete = ({ bind, field }: ContentEntriesMultiAut
             options={options}
             label={field.label}
             onInput={debounce(setSearch, 250)}
-            description={
-                <>
-                    {field.helpText}
-                    {warning}
-                </>
-            }
+            description={<>{field.helpText}</>}
+            note={warning}
             noResultFound={helpText}
         />
     );

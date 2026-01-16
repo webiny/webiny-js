@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import get from "lodash/get.js";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { Form } from "@webiny/form";
+import { Bind, Form, useForm, useGenerateSlug } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import {
     SimpleForm,
@@ -126,7 +126,7 @@ export const RolesForm = ({ id, newEntry }: RolesFormProps) => {
     const data: Role = loading ? {} : get(getQuery, "data.security.role.data", {});
 
     const systemRole = data.slug === "full-access" || data.system;
-    const pluginRole = data.plugin;
+    const pluginRole = data.plugin ?? false;
     const canModifyRole = !systemRole && !pluginRole;
 
     const showEmptyView = !newEntry && !loading && isEmpty(data);
@@ -158,61 +158,11 @@ export const RolesForm = ({ id, newEntry }: RolesFormProps) => {
                         {loading && <OverlayLoader />}
                         <SimpleFormHeader title={data.name ? data.name : "Untitled"} />
                         <SimpleFormContent>
-                            <Grid>
-                                <>
-                                    {pluginRole && (
-                                        <Grid.Column span={12}>
-                                            <Alert
-                                                type={"warning"}
-                                                title={"Permissions are locked"}
-                                            >
-                                                This role is registered via an extension, and cannot
-                                                be modified.
-                                            </Alert>
-                                        </Grid.Column>
-                                    )}
-                                    <Grid.Column span={6}>
-                                        <Bind
-                                            name="name"
-                                            validators={validation.create("required,minLength:3")}
-                                        >
-                                            <Input
-                                                size={"lg"}
-                                                label={t`Name`}
-                                                disabled={!canModifyRole}
-                                                data-testid="admin.am.role.new.name"
-                                            />
-                                        </Bind>
-                                    </Grid.Column>
-                                    <Grid.Column span={6}>
-                                        <Bind
-                                            name="slug"
-                                            validators={validation.create("required,minLength:3")}
-                                        >
-                                            <Input
-                                                size={"lg"}
-                                                disabled={!canModifyRole || !newEntry}
-                                                label={t`Slug`}
-                                                data-testid="admin.am.role.new.slug"
-                                            />
-                                        </Bind>
-                                    </Grid.Column>
-                                    <Grid.Column span={12}>
-                                        <Bind
-                                            name="description"
-                                            validators={validation.create("maxLength:500")}
-                                        >
-                                            <Textarea
-                                                size={"lg"}
-                                                label={t`Description`}
-                                                rows={3}
-                                                disabled={!canModifyRole}
-                                                data-testid="admin.am.role.new.description"
-                                            />
-                                        </Bind>
-                                    </Grid.Column>
-                                </>
-                            </Grid>
+                            <FormContent
+                                pluginRole={pluginRole}
+                                canModifyRole={canModifyRole}
+                                newEntry={newEntry}
+                            />
                         </SimpleFormContent>
                         <SimpleFormHeader title={"Permissions"} rounded={false}>
                             <div className={"flex justify-end"}>
@@ -281,5 +231,66 @@ export const RolesForm = ({ id, newEntry }: RolesFormProps) => {
                 );
             }}
         </Form>
+    );
+};
+
+interface FormContentProps {
+    pluginRole: boolean;
+    canModifyRole: boolean;
+    newEntry: boolean;
+}
+
+const FormContent = (props: FormContentProps) => {
+    const { pluginRole, canModifyRole, newEntry } = props;
+    const form = useForm();
+    const { generateSlug } = useGenerateSlug(form, "name", "slug");
+
+    return (
+        <Grid>
+            <>
+                {pluginRole && (
+                    <Grid.Column span={12}>
+                        <Alert type={"warning"} title={"Permissions are locked"}>
+                            This role is registered via an extension, and cannot be modified.
+                        </Alert>
+                    </Grid.Column>
+                )}
+                <Grid.Column span={6}>
+                    <Bind name="name" validators={validation.create("required,minLength:1")}>
+                        <Input
+                            required
+                            label={t`Name`}
+                            disabled={!canModifyRole}
+                            onBlur={generateSlug}
+                            data-testid="admin.am.role.new.name"
+                        />
+                    </Bind>
+                </Grid.Column>
+                <Grid.Column span={6}>
+                    <Bind name="slug" validators={validation.create("required,minLength:1")}>
+                        <Input
+                            required
+                            disabled={!canModifyRole || !newEntry}
+                            label={t`Slug`}
+                            data-testid="admin.am.role.new.slug"
+                        />
+                    </Bind>
+                </Grid.Column>
+                <Grid.Column span={12}>
+                    <Bind
+                        name="description"
+                        validators={validation.create("maxLength:500")}
+                        defaultValue={""}
+                    >
+                        <Textarea
+                            label={t`Description`}
+                            rows={3}
+                            disabled={!canModifyRole}
+                            data-testid="admin.am.role.new.description"
+                        />
+                    </Bind>
+                </Grid.Column>
+            </>
+        </Grid>
     );
 };

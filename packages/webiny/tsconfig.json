@@ -143,6 +143,8 @@
       "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/cli-core/*": ["../cli-core/src/*"],
       "@webiny/cli-core": ["../cli-core/src"],
+      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
+      "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/project/*": ["../project/src/*"],
       "@webiny/project": ["../project/src"],
       "@webiny/project-aws/*": ["../project-aws/src/*"],

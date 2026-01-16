@@ -1,20 +1,28 @@
 import objectHash from "object-hash";
+import path from "node:path";
 
 const SUPPORTED_TRANSFORMABLE_IMAGES = ["jpg", "jpeg", "png", "webp"];
-const OPTIMIZED_TRANSFORMED_IMAGE_PREFIX = "img-o-t-";
-const OPTIMIZED_IMAGE_PREFIX = "img-o-";
+
+const parseKey = (key: string) => {
+    const filename = path.basename(key);
+    const dirname = path.dirname(key);
+
+    return { filename, dirname };
+};
 
 const getOptimizedImageKeyPrefix = (key: string): string => {
-    const [id, name] = key.split("/");
-    return `${id}/${OPTIMIZED_IMAGE_PREFIX}${name}`;
+    const { filename, dirname } = parseKey(key);
+
+    return `${dirname}/optimized/${filename}`;
 };
 
 const getOptimizedTransformedImageKeyPrefix = (
     key: string,
     transformationsHash: string
 ): string => {
-    const [id, name] = key.split("/");
-    return `${id}/${OPTIMIZED_TRANSFORMED_IMAGE_PREFIX}${transformationsHash}-${name}`;
+    const { filename, dirname } = parseKey(key);
+
+    return `${dirname}/optimized/${transformationsHash}-${filename}`;
 };
 
 interface GetImageKeyParams {
@@ -32,8 +40,6 @@ const getImageKey = ({ key, transformations }: GetImageKeyParams): string => {
 
 export {
     SUPPORTED_TRANSFORMABLE_IMAGES,
-    OPTIMIZED_TRANSFORMED_IMAGE_PREFIX,
-    OPTIMIZED_IMAGE_PREFIX,
     getImageKey,
     getOptimizedImageKeyPrefix,
     getOptimizedTransformedImageKeyPrefix

@@ -44,6 +44,7 @@ function FormInner<T extends GenericFormData = GenericFormData>(
     const formApi = useMemo(() => {
         return new FormAPI(presenter, {
             onSubmit: props.onSubmit ?? lodashNoop,
+            onAfterSubmit: props.onAfterSubmit ?? lodashNoop,
             isFormDisabled: props.disabled ?? false,
             validateOnFirstSubmit: props.validateOnFirstSubmit ?? true
         });

@@ -78,7 +78,7 @@ class ExecuteScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface 
                 );
             }
 
-            return Result.ok(undefined);
+            return Result.ok();
         } catch (error) {
             const executionError = new ExecutionFailedError(
                 `Failed to execute scheduled action: ${(error as Error).message}`,

@@ -90,7 +90,7 @@ export const ValueSelector = (props: ValueSelectorProps) => {
     const classNames = cn([
         "cursor-pointer bg-neutral-base",
         "border-sm border-solid border-neutral-muted",
-        props.overridden && props.inheritedFrom && "bg-success-default text-neutral-light",
+        props.overridden && props.inheritedFrom && "bg-success text-neutral-light",
         props.disabled && "bg-neutral-disabled text-neutral-disabled pointer-events-none",
         "flex flex-row text-sm mx-auto justify-center rounded-sm py-px px-xxs"
     ]);

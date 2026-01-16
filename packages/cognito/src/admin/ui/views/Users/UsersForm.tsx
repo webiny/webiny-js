@@ -9,17 +9,20 @@ import {
     SimpleFormContent,
     EmptyView,
     RolesMultiAutocomplete,
-    TeamsMultiAutocomplete
+    TeamsMultiAutocomplete,
+    useAuthentication,
+    useRouter
 } from "@webiny/app-admin";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { ReactComponent as SecurityIcon } from "@webiny/icons/gpp_maybe.svg";
 import { ReactComponent as SecurityTeamsIcon } from "@webiny/icons/admin_panel_settings.svg";
 import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
-import { Accordion, Alert, OverlayLoader, Button, Input, Grid } from "@webiny/admin-ui";
+import { Accordion, Alert, OverlayLoader, Button, Input, Grid, Link } from "@webiny/admin-ui";
 import { config as appConfig } from "@webiny/app/config.js";
 import { AvatarImage } from "../../components/AvatarImage/index.js";
 import { useUserForm } from "~/admin/ui/views/Users/hooks/useUserForm.js";
 import { usePasswordValidator } from "~/admin/presentation/shared/usePasswordValidator.js";
+import { Routes } from "~/admin/routes.js";
 
 const t = i18n.ns("app-security-admin-users/account-form");
 
@@ -28,8 +31,10 @@ export interface UserFormProps {
 }
 
 export const UserForm = ({ teams }: UserFormProps) => {
+    const { identity } = useAuthentication();
     const userForm = useUserForm();
     const passwordValidator = usePasswordValidator();
+    const { getLink } = useRouter();
 
     const isExternal = userForm.user?.external === true;
     const formTitle = userForm.isNewUser ? "New User" : userForm.fullName;
@@ -43,6 +48,8 @@ export const UserForm = ({ teams }: UserFormProps) => {
     const groupValidators = useMemo(() => {
         return teams ? [] : [validation.create("required")];
     }, [teams]);
+
+    const accountLink = getLink(Routes.Users.Account);
 
     // Render "No content" selected view.
     if (userForm.showEmptyView) {
@@ -62,6 +69,9 @@ export const UserForm = ({ teams }: UserFormProps) => {
         );
     }
 
+    const isSelf = userForm.user.id === identity.id;
+    const isDisabled = isExternal || isSelf;
+
     return (
         <Form data={userForm.user} onSubmit={userForm.onSubmit}>
             {({ data, form, Bind }) => (
@@ -69,7 +79,7 @@ export const UserForm = ({ teams }: UserFormProps) => {
                     {userForm.loading && <OverlayLoader />}
                     <div className={"mb-xl"}>
                         <Bind name="avatar">
-                            <AvatarImage round disabled={isExternal} />
+                            <AvatarImage round disabled={isDisabled} />
                         </Bind>
                     </div>
                     <SimpleFormHeader title={formTitle} />
@@ -79,6 +89,16 @@ export const UserForm = ({ teams }: UserFormProps) => {
                                 <Grid.Column span={12}>
                                     <Alert type={"info"} title={"External User"}>
                                         This user is an external user and cannot be edited.
+                                    </Alert>
+                                </Grid.Column>
+                            </Grid>
+                        )}
+                        {isSelf && (
+                            <Grid className={"mb-lg"}>
+                                <Grid.Column span={12}>
+                                    <Alert type={"info"} title={"Own Profile"}>
+                                        You cannot edit your own profile using this form. Please use
+                                        the <Link to={accountLink}>account settings</Link> instead.
                                     </Alert>
                                 </Grid.Column>
                             </Grid>
@@ -98,7 +118,7 @@ export const UserForm = ({ teams }: UserFormProps) => {
                                         >
                                             <Input
                                                 label={t`First Name`}
-                                                disabled={isExternal}
+                                                disabled={isDisabled}
                                                 data-testid="account.firstname"
                                             />
                                         </Bind>
@@ -110,7 +130,7 @@ export const UserForm = ({ teams }: UserFormProps) => {
                                         >
                                             <Input
                                                 label={t`Last Name`}
-                                                disabled={isExternal}
+                                                disabled={isDisabled}
                                                 data-testid="account.lastname"
                                             />
                                         </Bind>
@@ -123,7 +143,7 @@ export const UserForm = ({ teams }: UserFormProps) => {
                                             <Input
                                                 value={data.email}
                                                 label={t`Email`}
-                                                disabled={emailIsDisabled || isExternal}
+                                                disabled={emailIsDisabled || isDisabled}
                                                 data-testid="account.email"
                                                 autoComplete="new-password"
                                                 description={
@@ -136,7 +156,7 @@ export const UserForm = ({ teams }: UserFormProps) => {
                                         <Bind name="password" validators={passwordValidator}>
                                             <Input
                                                 autoComplete="new-password"
-                                                disabled={data.external}
+                                                disabled={isDisabled}
                                                 description={
                                                     data.id && "Type a new password to reset it."
                                                 }
@@ -159,7 +179,7 @@ export const UserForm = ({ teams }: UserFormProps) => {
                                             <RolesMultiAutocomplete
                                                 label={"Roles"}
                                                 data-testid="roles-autocomplete"
-                                                disabled={isExternal}
+                                                disabled={isDisabled}
                                             />
                                         </Bind>
                                     </Grid.Column>
@@ -177,7 +197,7 @@ export const UserForm = ({ teams }: UserFormProps) => {
                                                 <TeamsMultiAutocomplete
                                                     label={"Teams"}
                                                     data-testid="teams-autocomplete"
-                                                    disabled={isExternal}
+                                                    disabled={isDisabled}
                                                 />
                                             </Bind>
                                         </Grid.Column>
@@ -195,7 +215,7 @@ export const UserForm = ({ teams }: UserFormProps) => {
                         <Button
                             variant={"primary"}
                             text={isNewUser ? t`Create user` : t`Update user`}
-                            disabled={isExternal}
+                            disabled={isDisabled}
                             onClick={form.submit}
                         />
                     </SimpleFormFooter>

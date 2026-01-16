@@ -9,13 +9,11 @@ export const AdminLogo = () => {
     return (
         <>
             <AdminConfig.Public>
-                <Tenant>
-                    <Tenant.Name value={"Webiny"} />
-                    <Tenant.Logo
-                        squareLogo={<SquareLogo />}
-                        horizontalLogo={<HorizontalLogo width={180} />}
-                    />
-                </Tenant>
+                <Tenant.Name value={"Webiny"} />
+                <Tenant.Logo
+                    squareLogo={<SquareLogo />}
+                    horizontalLogo={<HorizontalLogo width={180} />}
+                />
             </AdminConfig.Public>
         </>
     );
