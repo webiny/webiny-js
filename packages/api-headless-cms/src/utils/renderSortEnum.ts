@@ -34,8 +34,8 @@ export const renderSortEnum: RenderSortEnum = ({
         if (!plugin?.isSortable) {
             continue;
         }
-        sorters.push(`${field.fieldId}_ASC`);
-        sorters.push(`${field.fieldId}_DESC`);
+        sorters.push(`values_${field.fieldId}_ASC`);
+        sorters.push(`values_${field.fieldId}_DESC`);
     }
     if (!sorterPlugins) {
         return sorters.join("\n");

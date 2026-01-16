@@ -62,6 +62,10 @@ export const sort = <T extends CmsEntryValues = CmsEntryValues>(
         if (item) {
             return item;
         }
+        /**
+         * This is impossible to happen because sorting items does not remove the items.
+         * BUT, we need to have this check just in case for development purposes.
+         */
         throw new WebinyError(
             "Could not find item by given id after the sorting.",
             "SORTING_ITEMS_ERROR",
