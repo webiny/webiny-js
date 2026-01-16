@@ -2,10 +2,10 @@ import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { ApiKey, UpdateApiKeyInput } from "../shared/types.js";
 import { ApiKeysRepository } from "../shared/abstractions.js";
-import { NotAuthorizedError, ApiKeyValidationError } from "../shared/errors.js";
+import { ApiKeyNotAuthorizedError, ApiKeyValidationError } from "../shared/errors.js";
 
 export interface IUpdateApiKeyErrors {
-    notAuthorized: NotAuthorizedError;
+    notAuthorized: ApiKeyNotAuthorizedError;
     validation: ApiKeyValidationError;
 }
 

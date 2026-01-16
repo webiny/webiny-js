@@ -5,7 +5,7 @@ import { DeleteApiKey } from "./abstractions.js";
 import { ApiKeysRepository } from "../shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";
 import { ApiKeyBeforeDeleteEvent, ApiKeyAfterDeleteEvent } from "./events.js";
-import { NotAuthorizedError } from "~/features/security/apiKeys/shared/errors.js";
+import { ApiKeyNotAuthorizedError } from "~/features/security/apiKeys/shared/errors.js";
 
 export class DeleteApiKeyUseCase implements DeleteApiKey.Interface {
     private repository: ApiKeysRepository.Interface;
@@ -25,7 +25,7 @@ export class DeleteApiKeyUseCase implements DeleteApiKey.Interface {
     async execute(id: string): Promise<Result<void, DeleteApiKey.Error>> {
         const hasPermission = await this.identityContext.getPermission("security.apiKey");
         if (!hasPermission) {
-            return Result.fail(new NotAuthorizedError());
+            return Result.fail(new ApiKeyNotAuthorizedError());
         }
 
         const existingResult = await this.repository.get(id);

@@ -3,6 +3,7 @@ import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 import { ApiKeyFactory } from "./abstractions.js";
 import { ApiKeyProvider as ProviderAbstraction } from "./abstractions.js";
 import type { ApiKey } from "./types.js";
+import { SystemIdentityValue } from "~/domain/identity/SystemIdentityValue.js";
 
 class ApiKeyProviderImpl implements ProviderAbstraction.Interface {
     private cache: ApiKey[] | undefined;
@@ -13,7 +14,22 @@ class ApiKeyProviderImpl implements ProviderAbstraction.Interface {
     ) {}
 
     async getByToken(token: string): Promise<ApiKey | null> {
-        // Lazy load and cache API keys from factories
+        const cache = await this.getCache();
+
+        // Search for the API key by token in the cached array
+        const apiKey = cache.find(key => key.token === token);
+        return apiKey || null;
+    }
+
+    async getBySlug(slug: string): Promise<ApiKey | null> {
+        const cache = await this.getCache();
+
+        // Search for the API key by token in the cached array
+        const apiKey = cache.find(key => key.slug === slug);
+        return apiKey || null;
+    }
+
+    private async getCache(): Promise<ApiKey[]> {
         if (this.cache === undefined) {
             const results = await Promise.all(
                 this.apiKeyFactories.map(factory => factory.execute())
@@ -21,22 +37,17 @@ class ApiKeyProviderImpl implements ProviderAbstraction.Interface {
             this.cache = results.flat().map<ApiKey>(codeKey => {
                 return {
                     ...codeKey,
-                    id: codeKey.name,
+                    id: codeKey.slug,
+                    slug: codeKey.slug,
                     description: "",
                     tenant: this.tenantContext.getTenant().id,
                     createdOn: new Date().toISOString(),
-                    createdBy: {
-                        id: "system",
-                        type: "admin",
-                        displayName: "System"
-                    }
+                    createdBy: SystemIdentityValue.create()
                 };
             });
         }
 
-        // Search for the API key by token in the cached array
-        const apiKey = this.cache.find(key => key.token === token);
-        return apiKey || null;
+        return this.cache;
     }
 }
 

@@ -3,10 +3,10 @@ import { Result } from "@webiny/feature/api";
 import type { ListApiKeysInput } from "../shared/types.js";
 import type { ApiKey } from "~/types/security.js";
 import { ApiKeysRepository } from "../shared/abstractions.js";
-import { NotAuthorizedError, ApiKeyValidationError } from "../shared/errors.js";
+import { ApiKeyNotAuthorizedError, ApiKeyValidationError } from "../shared/errors.js";
 
 export interface IListApiKeysErrors {
-    notAuthorized: NotAuthorizedError;
+    notAuthorized: ApiKeyNotAuthorizedError;
     validation: ApiKeyValidationError;
 }
 

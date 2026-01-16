@@ -7,6 +7,7 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
         type SecurityApiKey {
             id: ID
             name: String
+            slug: String
             description: String
             token: String
             permissions: [JSON]
@@ -17,6 +18,7 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
         input SecurityApiKeyInput {
             id: ID
             name: String!
+            slug: String
             description: String
             token: String
             permissions: [JSON]!

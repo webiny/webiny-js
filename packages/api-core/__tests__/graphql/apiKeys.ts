@@ -5,6 +5,7 @@ export const CREATE_API_KEY = /* GraphQL */ `
                 data {
                     id
                     name
+                    slug
                     description
                     token
                     permissions
@@ -27,6 +28,7 @@ export const LIST_API_KEYS = /* GraphQL */ `
                 data {
                     id
                     name
+                    slug
                     description
                     token
                     permissions
@@ -48,6 +50,7 @@ export const GET_API_KEY = /* GraphQL */ `
                 data {
                     id
                     name
+                    slug
                     description
                     token
                     permissions
@@ -69,6 +72,7 @@ export const UPDATE_API_KEY = /* GraphQL */ `
                 data {
                     id
                     name
+                    slug
                     description
                     token
                     permissions

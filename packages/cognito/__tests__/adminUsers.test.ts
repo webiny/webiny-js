@@ -5,7 +5,7 @@ import { getStorageOps } from "@webiny/project-utils/testing/environment/index.j
 import { License } from "@webiny/wcp";
 import { WcpContextFeature } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { ApiCoreFeature } from "@webiny/api-core/ApiCoreFeature.js";
-import { RootTenant } from "@webiny/api-core/domain/tenancy/RootTenant.js";
+import { RootTenantValue } from "@webiny/api-core/domain/tenancy/RootTenantValue.js";
 import { RolesProvider, TeamsProvider } from "@webiny/api-core/features/security/shared/index.js";
 import { Authorizer } from "@webiny/api-core/features/security/authorization/Authorizer/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
@@ -44,7 +44,7 @@ describe("Admin Users (Cognito)", () => {
 
         // Set tenant context
         const tenantContext = container.resolve(TenantContext);
-        tenantContext.setTenant(RootTenant.create());
+        tenantContext.setTenant(RootTenantValue.create());
 
         // Create and register mock Cognito service
         mockCognitoService = new MockCognitoService();

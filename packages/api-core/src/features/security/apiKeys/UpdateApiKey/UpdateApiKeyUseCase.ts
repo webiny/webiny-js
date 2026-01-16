@@ -1,13 +1,12 @@
-import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import { UpdateApiKey } from "./abstractions.js";
 import { ApiKeysRepository } from "../shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";
 import { EventPublisher } from "~/features/eventPublisher/index.js";
-import { apiKeyInputSchema } from "../shared/schemas.js";
+import { updateApiKeyInputSchema } from "../shared/schemas.js";
 import { ApiKeyBeforeUpdateEvent, ApiKeyAfterUpdateEvent } from "./events.js";
 import type { ApiKey, UpdateApiKeyInput } from "../shared/types.js";
-import { NotAuthorizedError, ApiKeyValidationError } from "../shared/errors.js";
+import { ApiKeyNotAuthorizedError, ApiKeyValidationError } from "../shared/errors.js";
 
 export class UpdateApiKeyUseCase implements UpdateApiKey.Interface {
     private repository: ApiKeysRepository.Interface;
@@ -30,10 +29,10 @@ export class UpdateApiKeyUseCase implements UpdateApiKey.Interface {
     ): Promise<Result<ApiKey, UpdateApiKey.Error>> {
         const hasPermission = await this.identityContext.getPermission("security.apiKey");
         if (!hasPermission) {
-            return Result.fail(new NotAuthorizedError());
+            return Result.fail(new ApiKeyNotAuthorizedError());
         }
 
-        const validation = apiKeyInputSchema.safeParse(input);
+        const validation = updateApiKeyInputSchema.safeParse(input);
         if (!validation.success) {
             return Result.fail(new ApiKeyValidationError(validation.error.errors[0].message));
         }
@@ -76,8 +75,7 @@ export class UpdateApiKeyUseCase implements UpdateApiKey.Interface {
     }
 }
 
-export const UpdateApiKeyUseCaseImpl = createImplementation({
-    abstraction: UpdateApiKey,
+export const UpdateApiKeyUseCaseImpl = UpdateApiKey.createImplementation({
     implementation: UpdateApiKeyUseCase,
     dependencies: [ApiKeysRepository, IdentityContext, EventPublisher]
 });
