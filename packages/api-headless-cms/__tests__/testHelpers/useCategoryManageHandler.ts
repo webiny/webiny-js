@@ -1,273 +1,56 @@
-import type { GraphQLHandlerParams } from "./useGraphQLHandler";
-import { useGraphQLHandler } from "./useGraphQLHandler";
-import type { CmsEntryListParams, CmsModel } from "~/types";
-import { getCmsModel } from "~tests/contentAPI/mocks/contentModels";
+import type { GraphQLHandlerParams } from "./useGraphQLHandler.js";
+import { useGraphQLHandler } from "./useGraphQLHandler.js";
+import { getCmsModel } from "~tests/contentAPI/mocks/contentModels.js";
+import type { GenericRecord } from "@webiny/api/types.js";
+import {
+    createCategoryFromMutation,
+    createCategoryMutation,
+    deleteCategoriesMutation,
+    deleteCategoryMutation,
+    getCategoriesByIdsQuery,
+    getCategoryQuery,
+    type ICreateCategoryFromMutationResponse,
+    ICreateCategoryFromMutationVariables,
+    type ICreateCategoryMutationResponse,
+    type ICreateCategoryMutationVariables,
+    type IDeleteCategoriesMutationResponse,
+    type IDeleteCategoriesMutationVariables,
+    type IDeleteCategoryMutationResponse,
+    type IDeleteCategoryMutationVariables,
+    type IGetCategoriesByIdsQueryResponse,
+    IGetCategoriesByIdsQueryVariables,
+    type IGetCategoryQueryResponse,
+    type IGetCategoryQueryVariables,
+    type IListCategoriesQueryResponse,
+    type IListCategoriesQueryVariables,
+    type IListDeletedCategoriesQueryResponse,
+    type IListDeletedCategoriesQueryVariables,
+    IMoveCategoryMutationResponse,
+    IMoveCategoryMutationVariables,
+    type IPublishCategoryMutationResponse,
+    type IPublishCategoryMutationVariables,
+    type IRepublishCategoryMutationResponse,
+    type IRepublishCategoryMutationVariables,
+    type IRestoreCategoryMutationResponse,
+    type IRestoreCategoryMutationVariables,
+    type IUnpublishCategoryMutationResponse,
+    type IUnpublishCategoryMutationVariables,
+    IUpdateCategoryMutationResponse,
+    type IUpdateCategoryMutationVariables,
+    listCategoriesQuery,
+    listDeletedCategoriesQuery,
+    moveCategoryMutation,
+    publishCategoryMutation,
+    republishCategoryMutation,
+    restoreCategoryFromBinMutation,
+    unpublishCategoryMutation,
+    updateCategoryMutation
+} from "./category/manage/index.js";
 
-const identityFields = /* GraphQL */ `
-    {
-        id
-        displayName
-        type
-    }
-`;
-
-const categoryFields = `
-    id
-    entryId
-    createdOn
-    modifiedOn
-    savedOn
-    firstPublishedOn
-    lastPublishedOn
-    deletedOn
-    restoredOn
-    createdBy ${identityFields}
-    modifiedBy ${identityFields}
-    savedBy ${identityFields}
-    deletedBy ${identityFields}
-    restoredBy ${identityFields}
-    meta {
-        title
-        modelId
-        version
-        locked
-        status
-
-        revisions {
-            id
-            values {
-                title
-                slug
-            }
-            meta {
-                status
-                version
-            }
-        }
-        data
-    }
-    wbyAco_location {
-        folderId
-    }
-    # user defined fields
-    values {
-        title
-        slug
-    }
-`;
-
-const errorFields = `
-    error {
-        code
-        message
-        data
-    }
-`;
-
-const getCategoryQuery = (model: CmsModel) => {
-    return /* GraphQL */ `
-        query GetCategory($revision: ID, $entryId: ID, $status: CmsEntryStatusType) {
-            getCategory: get${model.singularApiName}(revision: $revision, entryId: $entryId, status: $status) {
-                data {
-                    ${categoryFields}
-                }
-                ${errorFields}
-            }
-        }
-    `;
-};
-
-const getCategoriesByIdsQuery = (model: CmsModel) => {
-    return /* GraphQL */ `
-        query GetCategories($revisions: [ID!]!) {
-            getCategoriesByIds: get${model.pluralApiName}ByIds(revisions: $revisions) {
-                data {
-                    ${categoryFields}
-                }
-                ${errorFields}
-            }
-        }
-    `;
-};
-
-const listCategoriesQuery = (model: CmsModel, extraFields: string[] = []) => {
-    return /* GraphQL */ `
-        query ListCategories(
-            $where: ${model.singularApiName}ListWhereInput
-            $sort: [${model.singularApiName}ListSorter]
-            $limit: Int
-            $after: String
-        ) {
-            listCategories: list${model.pluralApiName}(where: $where, sort: $sort, limit: $limit, after: $after) {
-                data {
-                    ${categoryFields}
-                    ${extraFields.join("\n")}
-                }
-                meta {
-                    cursor
-                    hasMoreItems
-                    totalCount
-                }
-                ${errorFields}
-            }
-        }
-    `;
-};
-
-const listDeletedCategoriesQuery = (model: CmsModel) => {
-    return /* GraphQL */ `
-        query ListDeletedCategories(
-            $where: ${model.singularApiName}ListWhereInput
-            $sort: [${model.singularApiName}ListSorter]
-            $limit: Int
-            $after: String
-        ) {
-            listDeletedCategories: listDeleted${model.pluralApiName}(where: $where, sort: $sort, limit: $limit, after: $after) {
-                data {
-                    ${categoryFields}
-                }
-                meta {
-                    cursor
-                    hasMoreItems
-                    totalCount
-                }
-                ${errorFields}
-            }
-        }
-    `;
-};
-
-const createCategoryMutation = (model: CmsModel, extraFields: string[] = []) => {
-    return /* GraphQL */ `
-        mutation CreateCategory($data: ${model.singularApiName}Input!) {
-            createCategory: create${model.singularApiName}(data: $data) {
-                data {
-                    ${categoryFields}
-                    ${extraFields.join("\n")}
-                }
-                ${errorFields}
-            }
-        }
-    `;
-};
-
-const createCategoryFromMutation = (model: CmsModel) => {
-    return /* GraphQL */ `
-        mutation CreateCategoryFrom($revision: ID!, $data: ${model.singularApiName}Input) {
-            createCategoryFrom: create${model.singularApiName}From(revision: $revision, data: $data) {
-                data {
-                    ${categoryFields}
-                }
-                ${errorFields}
-            }
-        }
-    `;
-};
-
-const updateCategoryMutation = (model: CmsModel) => {
-    return /* GraphQL */ `
-        mutation UpdateCategory($revision: ID!, $data: ${model.singularApiName}Input!) {
-            updateCategory: update${model.singularApiName}(revision: $revision, data: $data) {
-                data {
-                    ${categoryFields}
-                }
-                ${errorFields}
-            }
-        }
-    `;
-};
-
-export interface MoveCategoryVariables {
-    revision: string;
-    folderId: string;
+interface IMutationParams<T> {
+    variables: T;
+    headers?: GenericRecord<string, string>;
 }
-
-const moveCategoryMutation = (model: CmsModel) => {
-    return /* GraphQL */ `
-        mutation MoveCategory($revision: ID!, $folderId: ID!) {
-            moveCategory: move${model.singularApiName}(revision: $revision, folderId: $folderId) {
-                data
-                ${errorFields}
-            }
-        }
-    `;
-};
-
-const deleteCategoryMutation = (model: CmsModel) => {
-    return /* GraphQL */ `
-        mutation DeleteCategory($revision: ID!, $options: CmsDeleteEntryOptions) {
-            deleteCategory: delete${model.singularApiName}(revision: $revision, options: $options) {
-                data
-                ${errorFields}
-            }
-        }
-    `;
-};
-
-const restoreCategoryFromBinMutation = (model: CmsModel) => {
-    return /* GraphQL */ `
-        mutation RestoreCategoryFromBin($revision: ID!) {
-            restoreCategoryFromBin: restore${model.singularApiName}FromBin(revision: $revision) {
-                data {
-                    ${categoryFields}
-                }
-                ${errorFields}
-            }
-        }
-    `;
-};
-
-const deleteCategoriesMutation = (model: CmsModel) => {
-    return /* GraphQL */ `
-        mutation DeleteCategories($entries: [ID!]!) {
-            deleteCategories: deleteMultiple${model.pluralApiName}(entries: $entries) {
-                data {
-                    id
-                }
-                ${errorFields}
-            }
-        }
-    `;
-};
-
-const publishCategoryMutation = (model: CmsModel) => {
-    return /* GraphQL */ `
-        mutation PublishCategory($revision: ID!) {
-            publishCategory: publish${model.singularApiName}(revision: $revision) {
-                data {
-                    ${categoryFields}
-                }
-                ${errorFields}
-            }
-        }
-    `;
-};
-
-const republishCategoryMutation = (model: CmsModel) => {
-    return /* GraphQL */ `
-        mutation RepublishCategory($revision: ID!) {
-            republishCategory: republish${model.singularApiName}(revision: $revision) {
-                data {
-                    ${categoryFields}
-                }
-                ${errorFields}
-            }
-        }
-    `;
-};
-
-const unpublishCategoryMutation = (model: CmsModel) => {
-    return /* GraphQL */ `
-        mutation UnpublishCategory($revision: ID!) {
-            unpublishCategory: unpublish${model.singularApiName}(revision: $revision) {
-                data {
-                    ${categoryFields}
-                }
-                ${errorFields}
-            }
-        }
-    `;
-};
 
 export const useCategoryManageHandler = (params: GraphQLHandlerParams) => {
     const contentHandler = useGraphQLHandler(params);
@@ -276,134 +59,131 @@ export const useCategoryManageHandler = (params: GraphQLHandlerParams) => {
 
     return {
         ...contentHandler,
-        async getCategory(variables: Record<string, any>, headers: Record<string, any> = {}) {
-            return await contentHandler.invoke({
+        async getCategory(params: IMutationParams<IGetCategoryQueryVariables>) {
+            return await contentHandler.invoke<IGetCategoryQueryResponse>({
                 body: {
                     query: getCategoryQuery(model),
-                    variables
+                    variables: params.variables
                 },
-                headers
+                headers: params.headers
             });
         },
-        async getCategoriesByIds(
-            variables: Record<string, any>,
-            headers: Record<string, any> = {}
-        ) {
-            return await contentHandler.invoke({
-                body: { query: getCategoriesByIdsQuery(model), variables },
-                headers
+        async getCategoriesByIds(params: IMutationParams<IGetCategoriesByIdsQueryVariables>) {
+            return await contentHandler.invoke<IGetCategoriesByIdsQueryResponse>({
+                body: {
+                    query: getCategoriesByIdsQuery(model),
+                    variables: params.variables
+                },
+                headers: params.headers
             });
         },
-        async listCategories(
-            variables: CmsEntryListParams = {},
-            headers: Record<string, any> = {},
-            extraFields: string[] = []
-        ) {
-            return await contentHandler.invoke({
-                body: { query: listCategoriesQuery(model, extraFields), variables },
-                headers
+        async listCategories(params: IMutationParams<IListCategoriesQueryVariables>) {
+            return await contentHandler.invoke<IListCategoriesQueryResponse>({
+                body: {
+                    query: listCategoriesQuery(model),
+                    variables: params.variables
+                },
+                headers: params.headers
             });
         },
-        async listDeletedCategories(
-            variables: CmsEntryListParams = {},
-            headers: Record<string, any> = {}
-        ) {
-            return await contentHandler.invoke({
-                body: { query: listDeletedCategoriesQuery(model), variables },
-                headers
+        async listDeletedCategories(params: IMutationParams<IListDeletedCategoriesQueryVariables>) {
+            return await contentHandler.invoke<IListDeletedCategoriesQueryResponse>({
+                body: {
+                    query: listDeletedCategoriesQuery(model),
+                    variables: params.variables
+                },
+                headers: params.headers
             });
         },
-        async createCategory(
-            variables: Record<string, any>,
-            headers: Record<string, any> = {},
-            extraFields: string[] = []
-        ) {
-            const query = createCategoryMutation(model, extraFields);
-            return await contentHandler.invoke({
-                body: { query, variables },
-                headers
+        async createCategory(params: IMutationParams<ICreateCategoryMutationVariables>) {
+            const query = createCategoryMutation(model);
+            return await contentHandler.invoke<ICreateCategoryMutationResponse>({
+                body: {
+                    query,
+                    variables: params.variables
+                },
+                headers: params.headers
             });
         },
-        async createCategoryFrom(
-            variables: Record<string, any>,
-            headers: Record<string, any> = {}
-        ) {
-            return await contentHandler.invoke({
-                body: { query: createCategoryFromMutation(model), variables },
-                headers
+        async createCategoryFrom(params: IMutationParams<ICreateCategoryFromMutationVariables>) {
+            return await contentHandler.invoke<ICreateCategoryFromMutationResponse>({
+                body: {
+                    query: createCategoryFromMutation(model),
+                    variables: params.variables
+                },
+                headers: params.headers
             });
         },
-        async updateCategory(variables: Record<string, any>, headers: Record<string, any> = {}) {
-            return await contentHandler.invoke({
+        async updateCategory(params: IMutationParams<IUpdateCategoryMutationVariables>) {
+            return await contentHandler.invoke<IUpdateCategoryMutationResponse>({
                 body: {
                     query: updateCategoryMutation(model),
-                    variables
+                    variables: params.variables
                 },
-                headers
+                headers: params.headers
             });
         },
-        async moveCategory(variables: MoveCategoryVariables, headers: Record<string, any> = {}) {
-            return await contentHandler.invoke({
+        async moveCategory(params: IMutationParams<IMoveCategoryMutationVariables>) {
+            return await contentHandler.invoke<IMoveCategoryMutationResponse>({
                 body: {
                     query: moveCategoryMutation(model),
-                    variables
+                    variables: params.variables
                 },
-                headers
+                headers: params.headers
             });
         },
-        async deleteCategory(variables: Record<string, any>, headers: Record<string, any> = {}) {
-            return await contentHandler.invoke({
+        async deleteCategory(params: IMutationParams<IDeleteCategoryMutationVariables>) {
+            return await contentHandler.invoke<IDeleteCategoryMutationResponse>({
                 body: {
                     query: deleteCategoryMutation(model),
-                    variables
+                    variables: params.variables
                 },
-                headers
+                headers: params.headers
             });
         },
-        async restoreCategoryFromBin(
-            variables: Record<string, any>,
-            headers: Record<string, any> = {}
-        ) {
-            return await contentHandler.invoke({
-                body: { query: restoreCategoryFromBinMutation(model), variables },
-                headers
+        async restoreCategoryFromBin(params: IMutationParams<IRestoreCategoryMutationVariables>) {
+            return await contentHandler.invoke<IRestoreCategoryMutationResponse>({
+                body: {
+                    query: restoreCategoryFromBinMutation(model),
+                    variables: params.variables
+                },
+                headers: params.headers
             });
         },
-        async deleteCategories(entries: string[]) {
-            return await contentHandler.invoke({
+        async deleteCategories(params: IMutationParams<IDeleteCategoriesMutationVariables>) {
+            return await contentHandler.invoke<IDeleteCategoriesMutationResponse>({
                 body: {
                     query: deleteCategoriesMutation(model),
-                    variables: {
-                        entries
-                    }
-                }
+                    variables: params.variables
+                },
+                headers: params.headers
             });
         },
-        async publishCategory(variables: Record<string, any>, headers: Record<string, any> = {}) {
-            return await contentHandler.invoke({
+        async publishCategory(params: IMutationParams<IPublishCategoryMutationVariables>) {
+            return await contentHandler.invoke<IPublishCategoryMutationResponse>({
                 body: {
                     query: publishCategoryMutation(model),
-                    variables
+                    variables: params.variables
                 },
-                headers
+                headers: params.headers
             });
         },
-        async republishCategory(variables: Record<string, any>, headers: Record<string, any> = {}) {
-            return await contentHandler.invoke({
+        async republishCategory(params: IMutationParams<IRepublishCategoryMutationVariables>) {
+            return await contentHandler.invoke<IRepublishCategoryMutationResponse>({
                 body: {
                     query: republishCategoryMutation(model),
-                    variables
+                    variables: params.variables
                 },
-                headers
+                headers: params.headers
             });
         },
-        async unpublishCategory(variables: Record<string, any>, headers: Record<string, any> = {}) {
-            return await contentHandler.invoke({
+        async unpublishCategory(params: IMutationParams<IUnpublishCategoryMutationVariables>) {
+            return await contentHandler.invoke<IUnpublishCategoryMutationResponse>({
                 body: {
                     query: unpublishCategoryMutation(model),
-                    variables
+                    variables: params.variables
                 },
-                headers
+                headers: params.headers
             });
         }
     };
