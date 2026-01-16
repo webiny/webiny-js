@@ -14,9 +14,9 @@ export interface IGetApiKey {
     execute(id: string): Promise<Result<ApiKey | null, GetApiKeyError>>;
 }
 
-export const GetApiKey = createAbstraction<IGetApiKey>("GetApiKey");
+export const GetApiKeyUseCase = createAbstraction<IGetApiKey>("GetApiKeyUseCase");
 
-export namespace GetApiKey {
+export namespace GetApiKeyUseCase {
     export type Interface = IGetApiKey;
     export type Error = GetApiKeyError;
 }

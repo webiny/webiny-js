@@ -11,9 +11,9 @@ import { RolesProvider, TeamsProvider } from "~/features/security/shared/index.j
 import type { SecurityPermission } from "~/types/security.js";
 import { Authorizer } from "~/features/security/authorization/Authorizer/index.js";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
-import { CreateApiKey } from "~/features/security/apiKeys/CreateApiKey/index.js";
-import { GetApiKeyBySlug } from "~/features/security/apiKeys/GetApiKeyBySlug/index.js";
-import { GetApiKeyByToken } from "~/features/security/apiKeys/GetApiKeyByToken/index.js";
+import { CreateApiKeyUseCase } from "~/features/security/apiKeys/CreateApiKey/index.js";
+import { GetApiKeyBySlugUseCase } from "~/features/security/apiKeys/GetApiKeyBySlug/index.js";
+import { GetApiKeyByTokenUseCase } from "~/features/security/apiKeys/GetApiKeyByToken/index.js";
 import { ApiKeyFactory } from "~/features/security/apiKeys/shared/abstractions.js";
 import type { CodeApiKey } from "~/features/security/apiKeys/shared/abstractions.js";
 
@@ -70,7 +70,7 @@ describe("API Keys", function () {
 
     it("should create an API key", async () => {
         const container = setupContainerWithApiKeys();
-        const createApiKey = container.resolve(CreateApiKey);
+        const createApiKey = container.resolve(CreateApiKeyUseCase);
 
         const result = await createApiKey.execute({
             name: "Test API Key",
@@ -95,8 +95,8 @@ describe("API Keys", function () {
 
     it("should get API key by slug", async () => {
         const container = setupContainerWithApiKeys();
-        const createApiKey = container.resolve(CreateApiKey);
-        const getApiKeyBySlug = container.resolve(GetApiKeyBySlug);
+        const createApiKey = container.resolve(CreateApiKeyUseCase);
+        const getApiKeyBySlug = container.resolve(GetApiKeyBySlugUseCase);
 
         // Create an API key
         const createResult = await createApiKey.execute({
@@ -124,8 +124,8 @@ describe("API Keys", function () {
 
     it("should get API key by token", async () => {
         const container = setupContainerWithApiKeys();
-        const createApiKey = container.resolve(CreateApiKey);
-        const getApiKeyByToken = container.resolve(GetApiKeyByToken);
+        const createApiKey = container.resolve(CreateApiKeyUseCase);
+        const getApiKeyByToken = container.resolve(GetApiKeyByTokenUseCase);
 
         // Create an API key
         const createResult = await createApiKey.execute({
@@ -153,7 +153,7 @@ describe("API Keys", function () {
 
     it("should return error when getting non-existent API key by slug", async () => {
         const container = setupContainerWithApiKeys();
-        const getApiKeyBySlug = container.resolve(GetApiKeyBySlug);
+        const getApiKeyBySlug = container.resolve(GetApiKeyBySlugUseCase);
 
         const result = await getApiKeyBySlug.execute("non-existent-slug");
 
@@ -163,7 +163,7 @@ describe("API Keys", function () {
 
     it("should return error when getting non-existent API key by token", async () => {
         const container = setupContainerWithApiKeys();
-        const getApiKeyByToken = container.resolve(GetApiKeyByToken);
+        const getApiKeyByToken = container.resolve(GetApiKeyByTokenUseCase);
 
         const result = await getApiKeyByToken.execute("wat_non_existent_token");
 
@@ -173,7 +173,7 @@ describe("API Keys", function () {
 
     it("should get factory API key by slug", async () => {
         const container = setupContainerWithApiKeys();
-        const getApiKeyBySlug = container.resolve(GetApiKeyBySlug);
+        const getApiKeyBySlug = container.resolve(GetApiKeyBySlugUseCase);
 
         const result = await getApiKeyBySlug.execute("factory-key-1");
 
@@ -188,7 +188,7 @@ describe("API Keys", function () {
 
     it("should get factory API key by token", async () => {
         const container = setupContainerWithApiKeys();
-        const getApiKeyByToken = container.resolve(GetApiKeyByToken);
+        const getApiKeyByToken = container.resolve(GetApiKeyByTokenUseCase);
 
         const result = await getApiKeyByToken.execute("wat_factory_token_2");
 
@@ -203,7 +203,7 @@ describe("API Keys", function () {
 
     it("should prevent creating API key with duplicate slug from database", async () => {
         const container = setupBaseContainer();
-        const createApiKey = container.resolve(CreateApiKey);
+        const createApiKey = container.resolve(CreateApiKeyUseCase);
 
         // Create first API key
         const createResult1 = await createApiKey.execute({
@@ -232,7 +232,7 @@ describe("API Keys", function () {
 
     it("should prevent creating API key with duplicate slug from factory", async () => {
         const container = setupContainerWithApiKeys();
-        const createApiKey = container.resolve(CreateApiKey);
+        const createApiKey = container.resolve(CreateApiKeyUseCase);
 
         // Try to create API key with same slug as factory key
         const createResult = await createApiKey.execute({
@@ -253,7 +253,7 @@ describe("API Keys", function () {
         // Setup: Create DB key WITHOUT factory registered yet
         const container = setupBaseContainer();
 
-        const createApiKey = container.resolve(CreateApiKey);
+        const createApiKey = container.resolve(CreateApiKeyUseCase);
 
         // Create a database API key first
         const createResult = await createApiKey.execute({
@@ -268,7 +268,7 @@ describe("API Keys", function () {
         // Now register the factory with the same slug
         const container2 = setupContainerWithApiKeys();
 
-        const getApiKeyBySlug = container2.resolve(GetApiKeyBySlug);
+        const getApiKeyBySlug = container2.resolve(GetApiKeyBySlugUseCase);
 
         // Get by slug - should return the database key, not the factory key
         const getResult = await getApiKeyBySlug.execute("factory-key-1");
@@ -285,7 +285,7 @@ describe("API Keys", function () {
     it("should prevent UI user from creating key with same slug as factory key", async () => {
         const container = setupContainerWithApiKeys();
         // Factory is already registered (default beforeEach setup)
-        const createApiKey = container.resolve(CreateApiKey);
+        const createApiKey = container.resolve(CreateApiKeyUseCase);
 
         // Try to create database key with same slug as existing factory key
         const createResult = await createApiKey.execute({

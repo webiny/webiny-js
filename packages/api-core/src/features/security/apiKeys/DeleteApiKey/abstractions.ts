@@ -14,9 +14,9 @@ export interface IDeleteApiKey {
     execute(id: string): Promise<Result<void, DeleteApiKeyError>>;
 }
 
-export const DeleteApiKey = createAbstraction<IDeleteApiKey>("DeleteApiKey");
+export const DeleteApiKeyUseCase = createAbstraction<IDeleteApiKey>("DeleteApiKeyUseCase");
 
-export namespace DeleteApiKey {
+export namespace DeleteApiKeyUseCase {
     export type Interface = IDeleteApiKey;
     export type Error = DeleteApiKeyError;
 }

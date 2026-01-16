@@ -1,7 +1,7 @@
 import { mdbid } from "@webiny/utils";
 import { Result } from "@webiny/feature/api";
 import { EventPublisher } from "~/features/eventPublisher/index.js";
-import { CreateApiKey } from "./abstractions.js";
+import { CreateApiKeyUseCase as CreateApiKeyUseCaseAbstraction } from "./abstractions.js";
 import { ApiKeysRepository } from "../shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";
 import { createApiKeyInputSchema } from "../shared/schemas.js";
@@ -11,14 +11,16 @@ import type { ApiKeyPermission } from "~/types/security.js";
 import { generateToken } from "../shared/generateToken.js";
 import { ApiKeyValidationError, ApiKeyNotAuthorizedError } from "../shared/errors.js";
 
-export class CreateApiKeyUseCase {
+class CreateApiKeyUseCaseImpl implements CreateApiKeyUseCaseAbstraction.Interface {
     constructor(
         private identityContext: IdentityContext.Interface,
         private eventPublisher: EventPublisher.Interface,
         private repository: ApiKeysRepository.Interface
     ) {}
 
-    async execute(input: CreateApiKeyInput): Promise<Result<ApiKey, CreateApiKey.Error>> {
+    async execute(
+        input: CreateApiKeyInput
+    ): Promise<Result<ApiKey, CreateApiKeyUseCaseAbstraction.Error>> {
         const hasPermission =
             await this.identityContext.getPermission<ApiKeyPermission>("security.apiKey");
 
@@ -68,7 +70,7 @@ export class CreateApiKeyUseCase {
     }
 }
 
-export const CreateApiKeyUseCaseImpl = CreateApiKey.createImplementation({
-    implementation: CreateApiKeyUseCase,
+export const CreateApiKeyUseCase = CreateApiKeyUseCaseAbstraction.createImplementation({
+    implementation: CreateApiKeyUseCaseImpl,
     dependencies: [IdentityContext, EventPublisher, ApiKeysRepository]
 });

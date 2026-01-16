@@ -13,12 +13,12 @@ export interface IListApiKeysErrors {
 type ListApiKeysError = IListApiKeysErrors[keyof IListApiKeysErrors] | ApiKeysRepository.Error;
 
 export interface IListApiKeys {
-    execute(params: ListApiKeysInput): Promise<Result<ApiKey[], ListApiKeysError>>;
+    execute(params?: ListApiKeysInput): Promise<Result<ApiKey[], ListApiKeysError>>;
 }
 
-export const ListApiKeys = createAbstraction<IListApiKeys>("ListApiKeys");
+export const ListApiKeysUseCase = createAbstraction<IListApiKeys>("ListApiKeysUseCase");
 
-export namespace ListApiKeys {
+export namespace ListApiKeysUseCase {
     export type Interface = IListApiKeys;
     export type Error = ListApiKeysError;
 }

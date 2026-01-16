@@ -1,6 +1,11 @@
-import { Response, ErrorResponse, ListResponse } from "@webiny/handler-graphql/responses.js";
+import { Response, ErrorResponse } from "@webiny/handler-graphql/responses.js";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin.js";
 import type { ApiCoreContext } from "~/types/core.js";
+import { CreateApiKeyUseCase } from "~/features/security/apiKeys/CreateApiKey/index.js";
+import { UpdateApiKeyUseCase } from "~/features/security/apiKeys/UpdateApiKey/index.js";
+import { DeleteApiKeyUseCase } from "~/features/security/apiKeys/DeleteApiKey/index.js";
+import { ListApiKeysUseCase } from "~/features/security/apiKeys/ListApiKeys/index.js";
+import { GetApiKeyUseCase } from "~/features/security/apiKeys/GetApiKey/index.js";
 
 export default new GraphQLSchemaPlugin<ApiCoreContext>({
     typeDefs: /* GraphQL */ `
@@ -30,7 +35,7 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
         }
 
         type SecurityApiKeyListResponse {
-            data: [SecurityApiKey]
+            data: [SecurityApiKey!]
             error: SecurityError
         }
 
@@ -48,51 +53,51 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
     resolvers: {
         SecurityQuery: {
             async listApiKeys(_, __, context) {
-                try {
-                    const apiKeys = await context.security.listApiKeys();
+                const list = context.container.resolve(ListApiKeysUseCase);
+                const result = await list.execute();
 
-                    return new ListResponse(apiKeys);
-                } catch (error) {
-                    return new ErrorResponse(error);
+                if (result.isOk()) {
+                    return new Response(result.value);
                 }
+                return new ErrorResponse(result.error);
             },
             async getApiKey(_, args: any, context) {
-                try {
-                    const apiKey = await context.security.getApiKey(args.id);
+                const getById = context.container.resolve(GetApiKeyUseCase);
+                const result = await getById.execute(args.id);
 
-                    return new Response(apiKey);
-                } catch (error) {
-                    return new ErrorResponse(error);
+                if (result.isOk()) {
+                    return new Response(result.value);
                 }
+                return new ErrorResponse(result.error);
             }
         },
         SecurityMutation: {
             async createApiKey(_, args: any, context) {
-                try {
-                    const apiKey = await context.security.createApiKey(args.data);
+                const createApiKey = context.container.resolve(CreateApiKeyUseCase);
+                const result = await createApiKey.execute(args.data);
 
-                    return new Response(apiKey);
-                } catch (error) {
-                    return new ErrorResponse(error);
+                if (result.isOk()) {
+                    return new Response(result.value);
                 }
+                return new ErrorResponse(result.error);
             },
             async updateApiKey(_, args: any, context) {
-                try {
-                    const apiKey = await context.security.updateApiKey(args.id, args.data);
+                const updateApiKey = context.container.resolve(UpdateApiKeyUseCase);
+                const result = await updateApiKey.execute(args.id, args.data);
 
-                    return new Response(apiKey);
-                } catch (error) {
-                    return new ErrorResponse(error);
+                if (result.isOk()) {
+                    return new Response(result.value);
                 }
+                return new ErrorResponse(result.error);
             },
             async deleteApiKey(_, args: any, context) {
-                try {
-                    await context.security.deleteApiKey(args.id);
+                const deleteApiKey = context.container.resolve(DeleteApiKeyUseCase);
+                const result = await deleteApiKey.execute(args.id);
 
+                if (result.isOk()) {
                     return new Response(true);
-                } catch (error) {
-                    return new ErrorResponse(error);
                 }
+                return new ErrorResponse(result.error);
             }
         }
     }

@@ -15,9 +15,9 @@ export interface ICreateApiKey {
     execute(input: CreateApiKeyInput): Promise<Result<ApiKey, CreateApiKeyError>>;
 }
 
-export const CreateApiKey = createAbstraction<ICreateApiKey>("CreateApiKey");
+export const CreateApiKeyUseCase = createAbstraction<ICreateApiKey>("CreateApiKeyUseCase");
 
-export namespace CreateApiKey {
+export namespace CreateApiKeyUseCase {
     export type Interface = ICreateApiKey;
     export type Error = CreateApiKeyError;
 }

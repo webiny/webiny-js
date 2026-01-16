@@ -15,9 +15,9 @@ export interface IUpdateApiKey {
     execute(id: string, input: UpdateApiKeyInput): Promise<Result<ApiKey, UpdateApiKeyError>>;
 }
 
-export const UpdateApiKey = createAbstraction<IUpdateApiKey>("UpdateApiKey");
+export const UpdateApiKeyUseCase = createAbstraction<IUpdateApiKey>("UpdateApiKeyUseCase");
 
-export namespace UpdateApiKey {
+export namespace UpdateApiKeyUseCase {
     export type Interface = IUpdateApiKey;
     export type Error = UpdateApiKeyError;
 }

@@ -1,11 +1,11 @@
 import { Result } from "@webiny/feature/api";
-import { GetApiKey } from "./abstractions.js";
+import { GetApiKeyUseCase as GetApiKeyUseCaseAbstraction } from "./abstractions.js";
 import { ApiKeysRepository } from "../shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";
 import type { ApiKey } from "../shared/types.js";
 import { ApiKeyNotAuthorizedError } from "~/features/security/apiKeys/shared/errors.js";
 
-export class GetApiKeyUseCase implements GetApiKey.Interface {
+class GetApiKeyUseCaseImpl implements GetApiKeyUseCaseAbstraction.Interface {
     private repository: ApiKeysRepository.Interface;
     private identityContext: IdentityContext.Interface;
 
@@ -17,7 +17,7 @@ export class GetApiKeyUseCase implements GetApiKey.Interface {
         this.identityContext = identityContext;
     }
 
-    async execute(id: string): Promise<Result<ApiKey | null, GetApiKey.Error>> {
+    async execute(id: string): Promise<Result<ApiKey | null, GetApiKeyUseCaseAbstraction.Error>> {
         const hasPermission = await this.identityContext.getPermission("security.apiKey");
         if (!hasPermission) {
             return Result.fail(new ApiKeyNotAuthorizedError());
@@ -27,7 +27,7 @@ export class GetApiKeyUseCase implements GetApiKey.Interface {
     }
 }
 
-export const GetApiKeyUseCaseImpl = GetApiKey.createImplementation({
-    implementation: GetApiKeyUseCase,
+export const GetApiKeyUseCase = GetApiKeyUseCaseAbstraction.createImplementation({
+    implementation: GetApiKeyUseCaseImpl,
     dependencies: [ApiKeysRepository, IdentityContext]
 });

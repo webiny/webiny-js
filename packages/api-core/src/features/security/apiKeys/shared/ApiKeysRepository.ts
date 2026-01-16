@@ -101,7 +101,7 @@ class ApiKeysRepositoryImpl implements RepositoryAbstraction.Interface {
             // If we found a key, it's a duplicate slug - return validation error
             if (existingKeyResult.isOk()) {
                 return Result.fail(
-                    new ApiKeyValidationError(`API key with slug "${apiKey.slug}" already exists`)
+                    new ApiKeyValidationError(`API key with slug "${apiKey.slug}" already exists.`)
                 );
             }
 
