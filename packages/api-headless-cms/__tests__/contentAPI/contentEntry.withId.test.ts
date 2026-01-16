@@ -8,8 +8,7 @@ import { useProductManageHandler } from "~tests/testHelpers/useProductManageHand
 import type { ICategoryInput } from "~tests/testHelpers/category/manage/types.js";
 import { setupGroupAndModels } from "~tests/testHelpers/setup.js";
 
-
-const createCategory = (input?: Partial<ICategoryInput>): Required<ICategoryInput> => {
+const createCategory = (input?: Partial<ICategoryInput>): ICategoryInput => {
     return {
         id: "61b48412-d616-4f36-babd-4c6a67d7bd03",
         values: {

@@ -5,14 +5,13 @@ import { CmsEntryFieldSortingPlugin } from "~/plugins/index.js";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 
 const extractSortInfo = (sortBy: string) => {
-    
     const rootSorting = sortBy.match(/^([a-zA-Z]+)_(ASC|DESC)$/);
     if (rootSorting) {
         return {
             fieldId: rootSorting[1],
             isValues: false,
             order: rootSorting[2] as "ASC" | "DESC"
-        }
+        };
     }
     const valuesSorting = sortBy.match(/^values_([a-zA-Z0-9]+)_(ASC|DESC)$/);
     if (valuesSorting) {
@@ -20,7 +19,7 @@ const extractSortInfo = (sortBy: string) => {
             fieldId: valuesSorting[1],
             isValues: true,
             order: valuesSorting[2] as "ASC" | "DESC"
-        }
+        };
     }
     throw new WebinyError(
         "Problem in determining the sorting for the entry items.",
@@ -29,9 +28,6 @@ const extractSortInfo = (sortBy: string) => {
             sortBy
         }
     );
-    
-    
-    
 };
 
 interface IResponse {

@@ -27,7 +27,7 @@ describe("content entry custom dates", () => {
                     ...createValues,
                     values: {
                         title: "Fruits",
-                        slug: "fruits",
+                        slug: "fruits"
                     }
                 }
             }

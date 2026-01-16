@@ -1,4 +1,3 @@
-import type { GenericRecord } from "@webiny/api/types.js";
 import type { CmsEntryListWhere } from "~/types/index.js";
 
 const data = /* GraphQL */ `

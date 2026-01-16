@@ -378,7 +378,6 @@ describe("filtering", () => {
     });
 
     describe("GraphQL Data Filtering Tests", () => {
-        
         it("should be able to filter fruits by a boolean attribute", async () => {
             await setupFruits();
 
@@ -458,7 +457,7 @@ describe("filtering", () => {
                 });
             });
         });
-        
+
         it("should be able to filter fruits by a number attribute", async () => {
             await setupFruits();
 
@@ -1438,7 +1437,7 @@ describe("filtering", () => {
             }
         });
     });
-    
+
     it("should filter entries by entryId", async () => {
         const articleManager = useArticleManageHandler(manageOpts);
         const articleReader = useArticleReadHandler(readOpts);

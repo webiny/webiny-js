@@ -942,7 +942,7 @@ describe("content model test", () => {
                 layout: initialLayouts
             }
         });
-        
+
         expect(updatedBugModelResponse).toMatchObject({
             data: {
                 updateContentModel: {

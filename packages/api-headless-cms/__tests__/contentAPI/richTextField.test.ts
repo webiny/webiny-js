@@ -37,7 +37,7 @@ describe("richTextField", () => {
     const mainManager = useGraphQLHandler(manageOpts);
 
     beforeEach(async () => {
-        const r = await setupGroupAndModels({
+        await setupGroupAndModels({
             manager: mainManager,
             models: ["category", "product", "review", "author"]
         });
@@ -155,6 +155,17 @@ describe("richTextField", () => {
 
         const [publishedResult] = await publishProduct({
             revision: product.id
+        });
+
+        expect(publishedResult).toMatchObject({
+            data: {
+                publishProduct: {
+                    data: {
+                        id: product.id
+                    },
+                    error: null
+                }
+            }
         });
 
         const [response] = await getProduct({

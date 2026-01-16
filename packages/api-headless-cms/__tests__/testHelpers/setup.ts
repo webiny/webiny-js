@@ -64,7 +64,7 @@ export const setupGroupAndModels = async (params: SetupGroupAndModelsParams) => 
                 console.log(`[setupGroupAndModels] There is no model "${modelId}" defined.`);
                 process.exit(1);
             }
-        }
+        };
     }
     const models = initialModels || allModels.map(m => m.modelId);
 

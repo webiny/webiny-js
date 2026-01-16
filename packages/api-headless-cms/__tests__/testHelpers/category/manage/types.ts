@@ -6,9 +6,7 @@ export interface ICategoryInputValues {
     separator?: string;
 }
 
-export interface ICategoryInput extends IManageMutationBaseEntry<ICategoryInputValues>{
-
-}
+export interface ICategoryInput extends IManageMutationBaseEntry<ICategoryInputValues> {}
 
 export interface ICategoryResponseValues {
     title: string;
