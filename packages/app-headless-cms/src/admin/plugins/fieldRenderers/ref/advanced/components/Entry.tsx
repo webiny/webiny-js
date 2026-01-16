@@ -13,6 +13,7 @@ import type { CmsModel } from "~/types.js";
 import { Tag, TimeAgo, Text, Sidebar, DropdownMenu, IconButton } from "@webiny/admin-ui";
 import { ReactComponent as MoreVertIcon } from "@webiny/icons/more_vert.svg";
 import { ReactComponent as OpenInNewIcon } from "@webiny/icons/open_in_new.svg";
+import { ReactComponent as RemoveIcon } from "@webiny/icons/close.svg";
 
 interface EntryProps {
     model: CmsModel;
@@ -128,8 +129,15 @@ export const Entry = ({
                         }
                         className={"w-[225px]"}
                     >
-                        <DropdownMenu.Item icon={<OpenInNewIcon />} text={"Open In New Window"} />
-                        <DropdownMenu.Item icon={<OpenInNewIcon />} text={"Delete"} />
+                        <DropdownMenu.Item icon={<OpenInNewIcon />} text={"Open in new window"} />
+
+                        {onRemove && (
+                            <DropdownMenu.Item
+                                icon={<RemoveIcon />}
+                                text={"Remove from list"}
+                                onClick={() => onRemove(entry.id)}
+                            />
+                        )}
                     </DropdownMenu>
                 </div>
                 {/*<div className={"flex items-center gap-sm pr-sm-extra h-lg"}>
