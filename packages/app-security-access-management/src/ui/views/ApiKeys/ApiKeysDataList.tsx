@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 import orderBy from "lodash/orderBy.js";
-import { Button, Grid, Select } from "@webiny/admin-ui";
+import { Button, Grid, Select, useToast } from "@webiny/admin-ui";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { i18n } from "@webiny/app/i18n/index.js";
 import {
@@ -20,7 +20,7 @@ import { useQuery, useMutation } from "@apollo/react-hooks";
 import * as GQL from "./graphql.js";
 import { deserializeSorters } from "../utils.js";
 import type { ApiKey } from "~/types.js";
-import { useSnackbar, useConfirmationDialog, useRouter, SearchUI } from "@webiny/app-admin";
+import { useConfirmationDialog, useRouter, SearchUI } from "@webiny/app-admin";
 import { Routes } from "~/routes.js";
 
 const t = i18n.ns("app-security/admin/roles/data-list");
@@ -51,7 +51,7 @@ export const ApiKeysDataList = ({ activeId }: ApiKeysDataListProps) => {
     const { goToRoute } = useRouter();
     const [filter, setFilter] = useState("");
     const [sort, setSort] = useState<string>(SORTERS[0].sorter);
-    const { showSnackbar } = useSnackbar();
+    const toast = useToast();
     const { showConfirmation } = useConfirmationDialog({
         dataTestId: "default-data-list.delete-dialog"
     });
@@ -96,10 +96,15 @@ export const ApiKeysDataList = ({ activeId }: ApiKeysDataListProps) => {
 
                 const { error } = data.security.deleteApiKey;
                 if (error) {
-                    return showSnackbar(error.message);
+                    toast.showWarningToast({
+                        title: error.message
+                    });
+                    return;
                 }
 
-                showSnackbar(t`Api key "{id}" deleted.`({ id: item.id }));
+                toast.showSuccessToast({
+                    title: t`Api key "{name}" was deleted.`({ name: item.name })
+                });
 
                 if (activeId === item.id) {
                     goToRoute(Routes.ApiKeys.List);

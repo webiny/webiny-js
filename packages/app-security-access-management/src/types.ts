@@ -23,6 +23,7 @@ export interface Team {
 
 export interface ApiKey {
     id: string;
+    slug: string;
     token: string;
     name: string;
     description: string;
