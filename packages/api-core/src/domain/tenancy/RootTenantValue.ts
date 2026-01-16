@@ -1,6 +1,6 @@
 import type { Tenant } from "~/types/tenancy.js";
 
-export class RootTenant {
+export class RootTenantValue {
     static create(): Tenant {
         return {
             id: "root",

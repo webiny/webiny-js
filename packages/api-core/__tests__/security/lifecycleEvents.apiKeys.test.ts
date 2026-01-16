@@ -15,7 +15,12 @@ describe("API Key Lifecycle Events", () => {
 
     it("should trigger create lifecycle events", async () => {
         const [createResponse] = await securityApiKeys.create({
-            data: { name: "Github Actions", description: "Github Actions Token", permissions: [] }
+            data: {
+                name: "Github Actions",
+                slug: "github-actions",
+                description: "Github Actions Token",
+                permissions: []
+            }
         });
         expect(createResponse).toEqual({
             data: {
@@ -24,6 +29,7 @@ describe("API Key Lifecycle Events", () => {
                         data: {
                             id: expect.any(String),
                             name: "Github Actions",
+                            slug: "github-actions",
                             description: "Github Actions Token",
                             token: expect.any(String),
                             permissions: [],
@@ -45,7 +51,12 @@ describe("API Key Lifecycle Events", () => {
 
     it("should trigger update lifecycle events", async () => {
         const [createResponse] = await securityApiKeys.create({
-            data: { name: "Github Actions", description: "Github Actions Token", permissions: [] }
+            data: {
+                name: "Github Actions",
+                slug: "github-actions",
+                description: "Github Actions Token",
+                permissions: []
+            }
         });
         tracker.reset();
 
@@ -63,6 +74,7 @@ describe("API Key Lifecycle Events", () => {
                         data: {
                             id: token.id,
                             name: "Renamed token",
+                            slug: "github-actions",
                             description: "Updated description",
                             token: token.token,
                             permissions: []
@@ -83,7 +95,12 @@ describe("API Key Lifecycle Events", () => {
 
     it("should trigger delete lifecycle events", async () => {
         const [createResponse] = await securityApiKeys.create({
-            data: { name: "Github Actions", description: "Github Actions Token", permissions: [] }
+            data: {
+                name: "Github Actions",
+                slug: "github-actions",
+                description: "Github Actions Token",
+                permissions: []
+            }
         });
         tracker.reset();
 

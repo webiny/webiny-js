@@ -1,6 +1,6 @@
 import type { SecurityStorageParams } from "./types.js";
 import type {
-    ApiKey,
+    StorageApiKey,
     Role,
     SecurityStorageOperations,
     Team
@@ -25,11 +25,22 @@ export const createStorageOperations = (
         teams: createTeamEntity(table.table)
     };
 
-    const createApiKeyKeys = ({ id, tenant }: Pick<ApiKey, "id" | "tenant">) => ({
+    const createApiKeyKeys = ({ id, tenant }: Pick<StorageApiKey, "id" | "tenant">) => ({
         PK: `T#${tenant}#API_KEY#${id}`,
         SK: `A`,
         GSI_TENANT: tenant,
         TYPE: "security.apiKey"
+    });
+
+    const createApiKeyGsiKeys = ({
+        slug,
+        token,
+        tenant
+    }: Pick<StorageApiKey, "slug" | "tenant" | "token">) => ({
+        GSI1_PK: `T#${tenant}#API_KEYS`,
+        GSI1_SK: token,
+        GSI2_PK: `T#${tenant}#API_KEYS`,
+        GSI2_SK: slug
     });
 
     const createRoleKeys = (role: Pick<Role, "tenant" | "id">) => ({
@@ -60,8 +71,7 @@ export const createStorageOperations = (
         async createApiKey({ apiKey }): Promise<void> {
             const keys = {
                 ...createApiKeyKeys(apiKey),
-                GSI1_PK: `T#${apiKey.tenant}#API_KEYS`,
-                GSI1_SK: apiKey.token
+                ...createApiKeyGsiKeys(apiKey)
             };
 
             try {
@@ -189,6 +199,26 @@ export const createStorageOperations = (
                 });
             }
         },
+        async getApiKeyBySlug({ tenant, slug }) {
+            const queryParams: IEntityQueryOneParams = {
+                partitionKey: `T#${tenant}#API_KEYS`,
+                options: {
+                    eq: slug,
+                    index: "GSI2"
+                }
+            };
+
+            try {
+                const result = await entities.apiKeys.queryOne(queryParams);
+                return result?.data || null;
+            } catch (err) {
+                throw WebinyError.from(err, {
+                    message: "Could not load api key by slug.",
+                    code: "GET_BY_SLUG_API_KEY_ERROR",
+                    data: { partitionKey: queryParams.partitionKey, options: queryParams.options }
+                });
+            }
+        },
         async getRole({ where: { tenant, id, slug } }) {
             try {
                 if (id) {
@@ -237,7 +267,7 @@ export const createStorageOperations = (
                 });
             }
         },
-        async listApiKeys({ where: { tenant }, sort }): Promise<ApiKey[]> {
+        async listApiKeys({ where: { tenant }, sort }): Promise<StorageApiKey[]> {
             let items;
             try {
                 items = await entities.apiKeys.queryAll({
@@ -316,8 +346,7 @@ export const createStorageOperations = (
         async updateApiKey({ apiKey }): Promise<void> {
             const keys = {
                 ...createApiKeyKeys(apiKey),
-                GSI1_PK: `T#${apiKey.tenant}#API_KEYS`,
-                GSI1_SK: apiKey.token
+                ...createApiKeyGsiKeys(apiKey)
             };
 
             try {

@@ -1,7 +1,8 @@
 import { z } from "zod";
 
-export const apiKeyInputSchema = z.object({
-    name: z.string(),
+export const createApiKeyInputSchema = z.object({
+    name: z.string().min(1),
+    slug: z.string().min(1),
     description: z.string(),
     permissions: z
         .array(z.object({ name: z.string() }).passthrough())
@@ -9,14 +10,13 @@ export const apiKeyInputSchema = z.object({
         .default([])
 });
 
-export const createApiKeyInputSchema = apiKeyInputSchema.extend({
-    id: z.string().optional(),
-    token: z
-        .string()
+export const updateApiKeyInputSchema = z.object({
+    name: z.string().min(1).optional(),
+    description: z.string().optional(),
+    permissions: z
+        .array(z.object({ name: z.string() }).passthrough())
         .optional()
-        .refine(val => !val || val.startsWith("a"), {
-            message: 'Token must start with letter "a"'
-        })
+        .default([])
 });
 
 export const listApiKeysInputSchema = z.object({

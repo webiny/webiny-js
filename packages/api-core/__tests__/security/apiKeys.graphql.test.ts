@@ -38,7 +38,12 @@ describe("Security API Key Test", () => {
     test("should create, list, update and delete an API key", async () => {
         // Create a token
         const [createResponse] = await securityApiKeys.create({
-            data: { name: "Github Actions", description: "Github Actions Token", permissions: [] }
+            data: {
+                name: "Github Actions",
+                slug: "github-actions",
+                description: "Github Actions Token",
+                permissions: []
+            }
         });
 
         expect(createResponse).toEqual({
@@ -48,6 +53,7 @@ describe("Security API Key Test", () => {
                         data: {
                             id: expect.any(String),
                             name: "Github Actions",
+                            slug: "github-actions",
                             description: "Github Actions Token",
                             token: expect.any(String),
                             permissions: [],
@@ -72,6 +78,7 @@ describe("Security API Key Test", () => {
                             {
                                 id: token.id,
                                 name: "Github Actions",
+                                slug: "github-actions",
                                 token: token.token,
                                 description: "Github Actions Token",
                                 permissions: []
@@ -93,6 +100,7 @@ describe("Security API Key Test", () => {
                         data: {
                             id: token.id,
                             name: "Github Actions",
+                            slug: "github-actions",
                             token: token.token,
                             description: "Github Actions Token",
                             permissions: []
@@ -116,6 +124,7 @@ describe("Security API Key Test", () => {
                         data: {
                             id: token.id,
                             name: "Renamed token",
+                            slug: "github-actions",
                             description: "Updated description",
                             token: token.token,
                             permissions: []
@@ -137,6 +146,7 @@ describe("Security API Key Test", () => {
                             {
                                 id: token.id,
                                 name: "Renamed token",
+                                slug: "github-actions",
                                 token: token.token,
                                 description: "Updated description",
                                 permissions: []
@@ -178,6 +188,7 @@ describe("Security API Key Test", () => {
         const [createResponse] = await securityApiKeys.create({
             data: {
                 name: "API Key",
+                slug: "api-key",
                 description: "API key description",
                 permissions: [{ name: "security.role" }]
             }
@@ -192,6 +203,7 @@ describe("Security API Key Test", () => {
                         data: {
                             id: expect.any(String),
                             name: "API Key",
+                            slug: "api-key",
                             description: "API key description",
                             permissions: [{ name: "security.role" }],
                             token: expect.stringMatching(/wat_[a-f0-9]{36}/),

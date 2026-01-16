@@ -12,7 +12,7 @@ import { ListUsersUseCase } from "~/features/users/ListUsers/index.js";
 import { users } from "~tests/mocks/users.js";
 import { ApiCoreFeature } from "~/ApiCoreFeature.js";
 import type { ApiCoreStorageOperations } from "~/types/core.js";
-import { RootTenant } from "~/domain/tenancy/RootTenant.js";
+import { RootTenantValue } from "~/domain/tenancy/RootTenantValue.js";
 import { RolesProvider, TeamsProvider } from "~/features/security/shared/index.js";
 import type { SecurityPermission } from "~/types/security.js";
 import { Authorizer } from "~/features/security/authorization/Authorizer/index.js";
@@ -41,7 +41,7 @@ describe("Users", function () {
         container.registerInstance(Authorizer, new TestAuthorizer());
 
         const tenantContext = container.resolve(TenantContext);
-        tenantContext.setTenant(RootTenant.create());
+        tenantContext.setTenant(RootTenantValue.create());
     });
 
     it("should create, read, update and delete users", async () => {
