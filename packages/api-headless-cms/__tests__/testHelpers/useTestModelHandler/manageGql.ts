@@ -1,5 +1,6 @@
 import type { CmsEntryListParams, CmsEntryStatus } from "~/types/index.js";
 import type { GenericRecord } from "@webiny/api/types.js";
+import type { IGraphQLIdentityInput } from "~tests/testHelpers/fields/index.js";
 
 export const identityFields = /* GraphQL */ `
     {
@@ -212,10 +213,21 @@ export const LIST_TEST_ENTRIES = /* GraphQL */ `
     }
 `;
 
+export interface ITestMutationData {
+    status?: CmsEntryStatus;
+    revisionFirstPublishedOn?: string;
+    revisionLastPublishedOn?: string;
+    revisionFirstPublishedBy?: IGraphQLIdentityInput;
+    revisionLastPublishedBy?: IGraphQLIdentityInput;
+    firstPublishedOn?: string;
+    lastPublishedOn?: string;
+    firstPublishedBy?: IGraphQLIdentityInput;
+    lastPublishedBy?: IGraphQLIdentityInput;
+    values: ITestEntryValues;
+}
+
 export interface ICreateTestEntryMutationVariables {
-    data?: {
-        values: ITestEntryValues;
-    };
+    data?: ITestMutationData
 }
 
 export const CREATE_TEST_ENTRY = /* GraphQL */ `
@@ -229,9 +241,7 @@ export const CREATE_TEST_ENTRY = /* GraphQL */ `
 
 export interface ICreateTestEntryFromMutationVariables {
     revision: string;
-    data?: {
-        values: ITestEntryValues;
-    };
+    data?: ITestMutationData
 }
 
 export const CREATE_TEST_ENTRY_FROM = /* GraphQL */ `
@@ -245,9 +255,7 @@ export const CREATE_TEST_ENTRY_FROM = /* GraphQL */ `
 
 export interface IUpdateTestEntryMutationVariables {
     revision: string;
-    data: {
-        values: ITestEntryValues;
-    };
+    data: ITestMutationData
 }
 
 export const UPDATE_TEST_ENTRY = /* GraphQL */ `

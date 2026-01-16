@@ -130,9 +130,9 @@ export const useTestModelHandler = (params: UseTestModelHandlerParams) => {
                     })
                     .then(extractGqlResponseListData);
             },
-            async createTestEntry(params: IMutationParams<ICreateTestEntryMutationVariables>) {
+            async createTestEntry(params?: IMutationParams<ICreateTestEntryMutationVariables>) {
                 const variables = {
-                    ...(params.variables || {})
+                    ...(params?.variables || {})
                 };
                 const titleSlug = generateAlphaLowerCaseId(10);
                 if (!variables?.data?.values?.title) {
@@ -159,7 +159,7 @@ export const useTestModelHandler = (params: UseTestModelHandlerParams) => {
                             query: manageGql.CREATE_TEST_ENTRY,
                             variables
                         },
-                        headers: params.headers
+                        headers: params?.headers
                     });
                 
                 return extractGqlResponseData(result);
