@@ -9,14 +9,17 @@ import { ProjectError } from "~/ProjectError.js";
  * 1. An absolute path (e.g., starts with "/" on Unix or a drive letter on Windows)
  * 2. A path starting with "/" (from project root)
  *
- * Rejects relative paths like "./file.ts" or "../folder/file.ts"
+ * Rejects all relative paths:
+ * - "./file.ts" or "../folder/file.ts" (explicitly relative)
+ * - "folder/file.ts" (implicitly relative)
  */
 export const zodAbsoluteOrRootPath = (project: IProjectModel) => {
     return z
         .string()
         .describe(`Absolute path or path starting from project root (e.g., "/extensions/MyFile.ts")`)
         .superRefine(async (src, ctx) => {
-            // Check if the path is relative (starts with ./ or ../ or doesn't start with /)
+            // First, check for explicitly relative paths (starts with ./ or ../)
+            // This provides a more specific error message
             if (src.startsWith("./") || src.startsWith("../")) {
                 ctx.addIssue({
                     code: z.ZodIssueCode.custom,
@@ -28,7 +31,8 @@ export const zodAbsoluteOrRootPath = (project: IProjectModel) => {
                 return;
             }
 
-            // If it doesn't start with "/" and is not an absolute path, reject it
+            // Then, check if path is either absolute or starts with "/"
+            // This catches all other relative paths (e.g., "folder/file.ts")
             if (!src.startsWith("/") && !path.isAbsolute(src)) {
                 ctx.addIssue({
                     code: z.ZodIssueCode.custom,
