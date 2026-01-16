@@ -2,7 +2,7 @@ import { defineExtension, zodPathToAbstraction } from "@webiny/project/extension
 import { CliCommandFactory as CliCommandFactoryAbstraction } from "~/abstractions/index.js";
 import { z } from "zod";
 
-export const CliCommandFactory = defineExtension({
+export const CliCommand = defineExtension({
     type: "Cli/Command",
     tags: { runtimeContext: "cli" },
     description: "An extension for defining CLI commands.",
