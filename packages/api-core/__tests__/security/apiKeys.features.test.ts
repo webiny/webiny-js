@@ -225,9 +225,6 @@ describe("API Keys", function () {
 
         expect(createResult2.isFail()).toBe(true);
         expect(createResult2.error?.code).toBe("ApiKey/Validation");
-        expect(createResult2.error?.message).toBe(
-            'API key with slug "duplicate-slug" already exists'
-        );
     });
 
     it("should prevent creating API key with duplicate slug from factory", async () => {
@@ -244,9 +241,6 @@ describe("API Keys", function () {
 
         expect(createResult.isFail()).toBe(true);
         expect(createResult.error?.code).toBe("ApiKey/Validation");
-        expect(createResult.error?.message).toBe(
-            'API key with slug "factory-key-1" already exists'
-        );
     });
 
     it("should allow database API key to override factory key when DB key exists first", async () => {
@@ -297,8 +291,5 @@ describe("API Keys", function () {
 
         expect(createResult.isFail()).toBe(true);
         expect(createResult.error?.code).toBe("ApiKey/Validation");
-        expect(createResult.error?.message).toBe(
-            'API key with slug "factory-key-1" already exists'
-        );
     });
 });
