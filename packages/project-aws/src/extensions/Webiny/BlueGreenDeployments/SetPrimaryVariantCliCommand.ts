@@ -1,4 +1,4 @@
-import { CliCommand, GetProjectSdkService } from "@webiny/cli-core/abstractions/index.js";
+import { CliCommandFactory, GetProjectSdkService } from "@webiny/cli-core/abstractions/index.js";
 
 export interface ISetPrimaryVariantCommandParams {
     env: string;
@@ -11,11 +11,11 @@ export interface ISetPrimaryVariantCommandParams {
  * Command to set a primary variant does not require a region because it is already contained inside the stack output.
  */
 export class SetPrimaryVariantCommandImpl
-    implements CliCommand.Interface<ISetPrimaryVariantCommandParams>
+    implements CliCommandFactory.Interface<ISetPrimaryVariantCommandParams>
 {
     constructor(private getProjectSdkService: GetProjectSdkService.Interface) {}
 
-    async execute(): Promise<CliCommand.CommandDefinition<ISetPrimaryVariantCommandParams>> {
+    async execute(): Promise<CliCommandFactory.CommandDefinition<ISetPrimaryVariantCommandParams>> {
         const projectSdk = await this.getProjectSdkService.execute();
 
         return {
@@ -71,7 +71,7 @@ export class SetPrimaryVariantCommandImpl
     }
 }
 
-export const SetPrimaryVariantCliCommand = CliCommand.createImplementation({
+export const SetPrimaryVariantCliCommand = CliCommandFactory.createImplementation({
     implementation: SetPrimaryVariantCommandImpl,
     dependencies: [GetProjectSdkService]
 });

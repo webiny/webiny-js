@@ -1,6 +1,6 @@
 import { createImplementation } from "@webiny/di";
 import {
-    CliCommand,
+    CliCommandFactory,
     CommandsRegistryService,
     GetArgvService,
     GetCliRunnerService,
@@ -154,7 +154,7 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
                 yargsCommand,
                 description,
                 yargs => {
-                    params.forEach((param: CliCommand.ParamDefinition<unknown>) => {
+                    params.forEach((param: CliCommandFactory.ParamDefinition<unknown>) => {
                         const { name, required, validation, array, ...rest } = param;
 
                         const yargsParam = yargs.positional(name, {
@@ -168,7 +168,7 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
                         }
                     });
 
-                    options.forEach((option: CliCommand.OptionDefinition<unknown>) => {
+                    options.forEach((option: CliCommandFactory.OptionDefinition<unknown>) => {
                         const { name, required, validation, ...rest } = option;
 
                         const yargsOption = yargs.option(name, {

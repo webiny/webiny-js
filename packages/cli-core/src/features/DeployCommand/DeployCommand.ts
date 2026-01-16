@@ -1,5 +1,5 @@
 import { createImplementation } from "@webiny/di";
-import { CliCommand, GetProjectSdkService, StdioService, UiService } from "~/abstractions/index.js";
+import { CliCommandFactory, GetProjectSdkService, StdioService, UiService } from "~/abstractions/index.js";
 import { DeployOutput } from "./deployOutputs/DeployOutput.js";
 import { AppName } from "@webiny/project";
 import { BuildRunner } from "~/features/BuildCommand/buildRunners/BuildRunner.js";
@@ -34,14 +34,14 @@ export interface IDeploySingleAppParams {
 
 const sleep = (ms: number = 1500) => setTimeout(ms);
 
-export class DeployCommand implements CliCommand.Interface<IDeployCommandParams> {
+export class DeployCommand implements CliCommandFactory.Interface<IDeployCommandParams> {
     constructor(
         private getProjectSdkService: GetProjectSdkService.Interface,
         private uiService: UiService.Interface,
         private stdioService: StdioService.Interface
     ) {}
 
-    async execute(): Promise<CliCommand.CommandDefinition<IDeployCommandParams>> {
+    async execute(): Promise<CliCommandFactory.CommandDefinition<IDeployCommandParams>> {
         const projectSdk = await this.getProjectSdkService.execute();
         const ui = this.uiService;
 
@@ -224,7 +224,7 @@ export class DeployCommand implements CliCommand.Interface<IDeployCommandParams>
 }
 
 export const deployCommand = createImplementation({
-    abstraction: CliCommand,
+    abstraction: CliCommandFactory,
     implementation: DeployCommand,
     dependencies: [GetProjectSdkService, UiService, StdioService]
 });

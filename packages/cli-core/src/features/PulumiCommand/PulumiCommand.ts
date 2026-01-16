@@ -1,5 +1,5 @@
 import { createImplementation } from "@webiny/di";
-import { CliCommand, GetProjectSdkService, StdioService, UiService } from "~/abstractions/index.js";
+import { CliCommandFactory, GetProjectSdkService, StdioService, UiService } from "~/abstractions/index.js";
 import { ManuallyReportedError } from "~/utils/ManuallyReportedError.js";
 import { IBaseAppParams } from "~/abstractions/features/types.js";
 import { createBaseAppOptions } from "~/features/common/index.js";
@@ -8,14 +8,14 @@ export interface IPulumiCommandParams extends IBaseAppParams {
     command: string[];
 }
 
-export class PulumiCommand implements CliCommand.Interface<IPulumiCommandParams> {
+export class PulumiCommand implements CliCommandFactory.Interface<IPulumiCommandParams> {
     constructor(
         private getProjectSdkService: GetProjectSdkService.Interface,
         private uiService: UiService.Interface,
         private stdioService: StdioService.Interface
     ) {}
 
-    async execute(): Promise<CliCommand.CommandDefinition<IPulumiCommandParams>> {
+    async execute(): Promise<CliCommandFactory.CommandDefinition<IPulumiCommandParams>> {
         const projectSdk = await this.getProjectSdkService.execute();
 
         return {
@@ -55,7 +55,7 @@ export class PulumiCommand implements CliCommand.Interface<IPulumiCommandParams>
 }
 
 export const pulumiCommand = createImplementation({
-    abstraction: CliCommand,
+    abstraction: CliCommandFactory,
     implementation: PulumiCommand,
     dependencies: [GetProjectSdkService, UiService, StdioService]
 });

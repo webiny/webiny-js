@@ -1,18 +1,18 @@
 import { createImplementation } from "@webiny/di";
-import { CliCommand, GetProjectSdkService, UiService } from "~/abstractions/index.js";
+import { CliCommandFactory, GetProjectSdkService, UiService } from "~/abstractions/index.js";
 import { IBaseAppParams } from "~/abstractions/features/types.js";
 import { PrintInfoForEnv } from "./PrintInfoForEnv.js";
 import { createBaseAppOptions } from "~/features/common/index.js";
 
 export type IInfoCommandParams = Omit<IBaseAppParams, "app">;
 
-export class InfoCommand implements CliCommand.Interface<IInfoCommandParams> {
+export class InfoCommand implements CliCommandFactory.Interface<IInfoCommandParams> {
     constructor(
         private getProjectSdkService: GetProjectSdkService.Interface,
         private uiService: UiService.Interface
     ) {}
 
-    async execute(): Promise<CliCommand.CommandDefinition<IInfoCommandParams>> {
+    async execute(): Promise<CliCommandFactory.CommandDefinition<IInfoCommandParams>> {
         const projectSdk = await this.getProjectSdkService.execute();
 
         return {
@@ -68,7 +68,7 @@ export class InfoCommand implements CliCommand.Interface<IInfoCommandParams> {
 }
 
 export const infoCommand = createImplementation({
-    abstraction: CliCommand,
+    abstraction: CliCommandFactory,
     implementation: InfoCommand,
     dependencies: [GetProjectSdkService, UiService]
 });

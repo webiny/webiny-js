@@ -13,7 +13,7 @@ import {
     ProjectImplementation
 } from "@webiny/project/extensions/index.js";
 import { createPathResolver } from "@webiny/project";
-import { CliCommand } from "@webiny/cli-core/extensions/index.js";
+import { CliCommandFactory } from "@webiny/cli-core/extensions/index.js";
 import { Infra } from "~/index.js";
 
 const p = createPathResolver(import.meta.dirname);
@@ -48,7 +48,7 @@ export const Webiny = () => {
             <AdminBeforeWatch src={p("Webiny/SetAdminEnvVars/SetAdminEnvVarsBeforeWatch.js")} />
 
             {/* Blue-green */}
-            <CliCommand src={p("Webiny/BlueGreenDeployments/SetPrimaryVariantCliCommand.js")} />
+            <CliCommandFactory src={p("Webiny/BlueGreenDeployments/SetPrimaryVariantCliCommand.js")} />
             <BeforeDeploy src={p("Webiny/BlueGreenDeployments/EnsureVariantBeforeDeploy.js")} />
             <AfterDeploy src={p("Webiny/BlueGreenDeployments/PrintDeploymentInfoAfterDeploy.js")} />
         </>
