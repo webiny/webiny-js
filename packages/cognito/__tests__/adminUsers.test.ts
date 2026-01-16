@@ -11,7 +11,6 @@ import { Authorizer } from "@webiny/api-core/features/security/authorization/Aut
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import { CognitoApiFeature } from "~/api/CognitoApiFeature.js";
-import { CognitoService } from "~/api/features/shared/abstractions.js";
 import { CreateUserUseCase } from "~/api/features/CreateUser/index.js";
 import { UpdateUserUseCase } from "~/api/features/UpdateUser/index.js";
 import { DeleteUserUseCase } from "~/api/features/DeleteUser/index.js";
@@ -23,6 +22,7 @@ import {
 } from "~/api/domain/errors.js";
 import { MockCognitoService } from "./mocks/MockCognitoService.js";
 import { MockAuthorizer } from "./mocks/MockAuthorizer.js";
+import { CognitoService } from "~/api/features/CognitoService/index.js";
 
 describe("Admin Users (Cognito)", () => {
     let container: Container;

@@ -16,8 +16,7 @@ export interface IDeleteUserUseCase {
     execute(id: string): Promise<Result<void, IDeleteAdminUserError>>;
 }
 
-export const DeleteUserUseCase =
-    createAbstraction<IDeleteUserUseCase>("DeleteUserUseCase");
+export const DeleteUserUseCase = createAbstraction<IDeleteUserUseCase>("DeleteUserUseCase");
 
 export namespace DeleteUserUseCase {
     export type Interface = IDeleteUserUseCase;

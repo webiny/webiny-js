@@ -5,9 +5,9 @@ import { GetUserUseCase } from "@webiny/api-core/features/GetUser";
 import { NotAuthorizedError } from "@webiny/api-core/features/users/shared/errors.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { DeleteUserUseCase as UseCaseAbstraction } from "./abstractions.js";
-import { CognitoService } from "../shared/abstractions.js";
 import { Username } from "~/api/domain/Username.js";
 import { CognitoDeleteUserError } from "~/api/domain/errors.js";
+import { CognitoService } from "../CognitoService/abstractions.js";
 
 class DeleteUserUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(

@@ -36,8 +36,7 @@ export interface ICreateUserUseCase {
     execute(input: CreateAdminUserInput): Promise<Result<AdminUser, CreateAdminUserError>>;
 }
 
-export const CreateUserUseCase =
-    createAbstraction<ICreateUserUseCase>("CreateUserUseCase");
+export const CreateUserUseCase = createAbstraction<ICreateUserUseCase>("CreateUserUseCase");
 
 export namespace CreateUserUseCase {
     export type Interface = ICreateUserUseCase;

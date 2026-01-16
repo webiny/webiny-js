@@ -10,11 +10,11 @@ import { CreateUserUseCase as CoreCreateUser } from "@webiny/api-core/features/u
 import { ListUsersUseCase } from "@webiny/api-core/features/users/ListUsers/index.js";
 
 import { CreateUserUseCase as UseCaseAbstraction } from "./abstractions.js";
-import { CognitoService } from "../shared/abstractions.js";
 import { Username } from "~/api/domain/Username.js";
 import { CognitoAccountExistsError, CognitoCreateUserError } from "~/api/domain/errors.js";
 import { createAdminUserValidation } from "./schema.js";
 import type { CreateAdminUserInput } from "./abstractions.js";
+import { CognitoService } from "~/api/features/CognitoService/index.js";
 
 class CreateUserUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(

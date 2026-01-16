@@ -8,11 +8,11 @@ import {
 import type { AdminUser } from "@webiny/api-core/types/users.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { UpdateUserUseCase as UseCaseAbstraction } from "./abstractions.js";
-import { CognitoService } from "../shared/abstractions.js";
 import { Username } from "~/api/domain/Username.js";
 import { CognitoUpdateUserError } from "~/api/domain/errors.js";
 import { updateAdminUserValidation } from "./schema.js";
 import type { UpdateAdminUserInput } from "./abstractions.js";
+import { CognitoService } from "~/api/features/CognitoService/index.js";
 
 type MappedAttrType = (user: AdminUser) => string | keyof AdminUser;
 

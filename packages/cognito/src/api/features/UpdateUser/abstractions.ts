@@ -37,8 +37,7 @@ export interface IUpdateUserUseCase {
     ): Promise<Result<AdminUser, IUpdateAdminUserError>>;
 }
 
-export const UpdateUserUseCase =
-    createAbstraction<IUpdateUserUseCase>("UpdateUserUseCase");
+export const UpdateUserUseCase = createAbstraction<IUpdateUserUseCase>("UpdateUserUseCase");
 
 export namespace UpdateUserUseCase {
     export type Interface = IUpdateUserUseCase;
