@@ -4,7 +4,7 @@ import { setupGroupAndModels } from "../testHelpers/setup";
 import { usePageManageHandler } from "../testHelpers/usePageManageHandler";
 import { usePageReadHandler } from "../testHelpers/usePageReadHandler";
 import { useAuthorManageHandler } from "~tests/testHelpers/useAuthorManageHandler";
-import type { CmsModel } from "~tests/types";
+import type { TestCmsModel } from "~tests/types";
 import { ContextPlugin } from "@webiny/api";
 import type { CmsContext, CmsEntry } from "~/types";
 import {
@@ -396,7 +396,7 @@ describe("dynamicZone field", () => {
     beforeEach(async () => {
         await setupGroupAndModels({
             manager: manage,
-            models: ["author", pageModel as unknown as CmsModel]
+            models: ["author", pageModel as unknown as TestCmsModel]
         });
         await setupAuthor({
             manager: authorManager

@@ -1,6 +1,6 @@
 import type { CmsGroup } from "~/types";
 import WebinyError from "@webiny/error";
-import type { CmsModel } from "../types";
+import type { TestCmsModel } from "../types";
 
 const createGroup = async (handler: any): Promise<CmsGroup> => {
     const [response] = await handler.createContentModelGroupMutation({
@@ -23,7 +23,7 @@ const createGroup = async (handler: any): Promise<CmsGroup> => {
 };
 
 interface Params {
-    createModelValues: (group: CmsGroup) => CmsModel;
+    createModelValues: (group: CmsGroup) => TestCmsModel;
     handler: any;
 }
 export const createModel = async (params: Params) => {
@@ -40,7 +40,7 @@ export const createModel = async (params: Params) => {
     if (error) {
         throw new WebinyError(error.message, error.code, error.data);
     }
-    const model = response.data?.createContentModel?.data as CmsModel;
+    const model = response.data?.createContentModel?.data as TestCmsModel;
     if (!model) {
         throw new WebinyError(`There is no model data!`);
     }

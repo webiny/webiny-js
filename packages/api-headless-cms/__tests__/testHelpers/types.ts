@@ -45,6 +45,35 @@ export interface IMutationParams<T> {
     headers?: GenericRecord<string, string>;
 }
 
+export interface IManageMutationBaseProperties {
+    id: string;
+    entryId: string;
+    createdOn: string;
+    modifiedOn: string;
+    savedOn: string;
+    firstPublishedOn: string | null;
+    lastPublishedOn: string | null;
+    createdBy: IGraphQLIdentityResponse;
+    modifiedBy: IGraphQLIdentityResponse;
+    savedBy: IGraphQLIdentityResponse;
+    firstPublishedBy: IGraphQLIdentityResponse | null;
+    lastPublishedBy: IGraphQLIdentityResponse | null;
+    revisionCreatedOn: string;
+    revisionModifiedOn: string;
+    revisionSavedOn: string;
+    revisionFirstPublishedOn: string | null;
+    revisionLastPublishedOn: string | null;
+    revisionCreatedBy: IGraphQLIdentityResponse;
+    revisionModifiedBy: IGraphQLIdentityResponse;
+    revisionSavedBy: IGraphQLIdentityResponse;
+    revisionFirstPublishedBy: IGraphQLIdentityResponse | null;
+    revisionLastPublishedBy: IGraphQLIdentityResponse | null;
+}
+
+export interface IManageMutationBaseEntry<T> extends Partial<IManageMutationBaseProperties> {
+    values: T;
+}
+
 export interface IManageQueryBaseResponseMetaRevision<T> {
     id: string;
     values: T;

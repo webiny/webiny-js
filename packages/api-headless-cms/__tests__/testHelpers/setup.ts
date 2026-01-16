@@ -1,11 +1,11 @@
-import type { CmsGroup } from "~/types";
+import type { CmsGroup, CmsModel } from "~/types";
 import allModels from "../contentAPI/mocks/contentModels";
 import type { useGraphQLHandler } from "./useGraphQLHandler";
-import type { CmsModel } from "../types";
+import type { TestCmsModel } from "../types";
 
 interface SetupContentModelParams {
     manager: ReturnType<typeof useGraphQLHandler>;
-    model: CmsModel;
+    model: TestCmsModel;
     group: CmsGroup;
 }
 
@@ -35,7 +35,7 @@ const setupContentModel = async (params: SetupContentModelParams) => {
     return createResponse.data.createContentModel.data;
 };
 
-export const getModel = (item: CmsModel | string): CmsModel => {
+export const getModel = (item: TestCmsModel | string): TestCmsModel => {
     if (typeof item === "string") {
         const model = allModels.find(m => m.modelId === item);
         if (!model) {
@@ -49,7 +49,7 @@ export const getModel = (item: CmsModel | string): CmsModel => {
 
 interface SetupGroupAndModelsParams {
     manager: ReturnType<typeof useGraphQLHandler>;
-    models: (CmsModel | string)[] | undefined;
+    models: (TestCmsModel | string)[] | undefined;
 }
 
 export const setupGroupAndModels = async (params: SetupGroupAndModelsParams) => {

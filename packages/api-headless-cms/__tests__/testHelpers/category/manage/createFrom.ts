@@ -1,4 +1,4 @@
-import type { CmsModel } from "~tests/types.js";
+import type { TestCmsModel } from "~tests/types.js";
 import { categoryFields } from "~tests/testHelpers/category/manage/fields.js";
 import { ERROR_FIELDS, type IGraphQLErrorResponse } from "~tests/testHelpers/fields/index.js";
 import type {
@@ -9,7 +9,7 @@ import type { IManageQueryBaseResponse } from "~tests/testHelpers/types.js";
 
 export interface ICreateCategoryFromMutationVariables {
     revision: string;
-    data?: ICategoryInput;
+    data?: Partial<ICategoryInput>;
 }
 
 export interface ICreateCategoryFromMutationResponse {
@@ -19,7 +19,7 @@ export interface ICreateCategoryFromMutationResponse {
     };
 }
 
-export const createCategoryFromMutation = (model: Pick<CmsModel, "singularApiName">) => {
+export const createCategoryFromMutation = (model: Pick<TestCmsModel, "singularApiName">) => {
     return /* GraphQL */ `
         mutation CreateCategoryFrom($revision: ID!, $data: ${model.singularApiName}Input) {
             createCategoryFrom: create${model.singularApiName}From(revision: $revision, data: $data) {

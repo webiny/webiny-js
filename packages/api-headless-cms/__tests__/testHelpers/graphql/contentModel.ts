@@ -2,6 +2,7 @@ import type { CmsModel, CmsModelField } from "~/types";
 
 const DATA_FIELD = /* GraphQL*/ `
     {
+        tenant
         modelId
         singularApiName
         pluralApiName

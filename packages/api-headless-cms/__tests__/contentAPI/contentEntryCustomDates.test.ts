@@ -22,10 +22,14 @@ describe("content entry custom dates", () => {
             lastPublishedOn: "1999-01-01T00:00:00.000Z"
         };
         const [createResponse] = await manager.createCategory({
-            data: {
-                title: "Fruits",
-                slug: "fruits",
-                ...createValues
+            variables: {
+                data: {
+                    ...createValues,
+                    values: {
+                        title: "Fruits",
+                        slug: "fruits",
+                    }
+                }
             }
         });
 
@@ -41,7 +45,7 @@ describe("content entry custom dates", () => {
                 }
             }
         });
-        const entryId = createResponse.data.createCategory.data.entryId;
+        const entryId = createResponse.data.createCategory.data!.entryId;
 
         const createFromValues = {
             createdOn: "1997-02-01T00:00:00.000Z",
@@ -49,9 +53,11 @@ describe("content entry custom dates", () => {
             lastPublishedOn: "1999-02-01T00:00:00.000Z"
         };
         const [createFromResponse] = await manager.createCategoryFrom({
-            revision: `${entryId}#0001`,
-            data: {
-                ...createFromValues
+            variables: {
+                revision: `${entryId}#0001`,
+                data: {
+                    ...createFromValues
+                }
             }
         });
         expect(createFromResponse).toMatchObject({
@@ -73,9 +79,11 @@ describe("content entry custom dates", () => {
             lastPublishedOn: "1999-03-01T00:00:00.000Z"
         };
         const [updateResponse] = await manager.updateCategory({
-            revision: `${entryId}#0002`,
-            data: {
-                ...updateValues
+            variables: {
+                revision: `${entryId}#0002`,
+                data: {
+                    ...updateValues
+                }
             }
         });
         expect(updateResponse).toMatchObject({

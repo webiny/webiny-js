@@ -87,7 +87,7 @@ export const createManageSDL: CreateManageSDL = ({
             
             ${onByMetaGqlFields}
             meta: ${singularName}Meta
-            wbyAco_location: WbyAcoLocation!
+            wbyAco_location: WbyAcoLocation
             
             values: ${singularName}Values!
         }

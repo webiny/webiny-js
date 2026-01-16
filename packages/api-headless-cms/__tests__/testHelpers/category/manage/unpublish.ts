@@ -1,4 +1,4 @@
-import type { CmsModel } from "~tests/types.js";
+import type { TestCmsModel } from "~tests/types.js";
 import { categoryFields } from "~tests/testHelpers/category/manage/fields.js";
 import { ERROR_FIELDS, type IGraphQLErrorResponse } from "~tests/testHelpers/fields/index.js";
 import type { ICategoryResponseValues } from "~tests/testHelpers/category/manage/types.js";
@@ -15,7 +15,7 @@ export interface IUnpublishCategoryMutationResponse {
     };
 }
 
-export const unpublishCategoryMutation = (model: Pick<CmsModel, "singularApiName">) => {
+export const unpublishCategoryMutation = (model: Pick<TestCmsModel, "singularApiName">) => {
     return /* GraphQL */ `
         mutation UnpublishCategory($revision: ID!) {
             unpublishCategory: unpublish${model.singularApiName}(revision: $revision) {

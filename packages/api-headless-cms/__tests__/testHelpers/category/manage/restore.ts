@@ -1,4 +1,4 @@
-import type { CmsModel } from "~tests/types.js";
+import type { TestCmsModel } from "~tests/types.js";
 import { categoryFields } from "~tests/testHelpers/category/manage/fields.js";
 import { ERROR_FIELDS, type IGraphQLErrorResponse } from "~tests/testHelpers/fields/index.js";
 import type { ICategoryResponseValues } from "~tests/testHelpers/category/manage/types.js";
@@ -15,7 +15,7 @@ export interface IRestoreCategoryMutationResponse {
     };
 }
 
-export const restoreCategoryFromBinMutation = (model: Pick<CmsModel, "singularApiName">) => {
+export const restoreCategoryFromBinMutation = (model: Pick<TestCmsModel, "singularApiName">) => {
     return /* GraphQL */ `
         mutation RestoreCategoryFromBin($revision: ID!) {
             restoreCategoryFromBin: restore${model.singularApiName}FromBin(revision: $revision) {
