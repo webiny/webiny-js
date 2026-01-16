@@ -81,6 +81,10 @@ export abstract class Identity {
      */
     abstract isAnonymous(): boolean;
 
+    isAdmin(): boolean {
+        return this.type === "admin";
+    }
+
     toJson(): Required<Omit<IdentityData, "context">> {
         return {
             id: this.id,

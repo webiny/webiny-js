@@ -15073,7 +15073,7 @@ __metadata:
     "@webiny/app-admin": "npm:*"
     "@webiny/aws-sdk": "npm:*"
     "@webiny/build-tools": "npm:*"
-    "@webiny/error": "npm:*"
+    "@webiny/di": "npm:*"
     "@webiny/feature": "npm:*"
     "@webiny/form": "npm:*"
     "@webiny/handler-graphql": "npm:*"
@@ -15081,8 +15081,10 @@ __metadata:
     "@webiny/plugins": "npm:*"
     "@webiny/project": "npm:*"
     "@webiny/project-aws": "npm:*"
+    "@webiny/project-utils": "npm:*"
     "@webiny/ui": "npm:*"
     "@webiny/validation": "npm:*"
+    "@webiny/wcp": "npm:*"
     graphql: "npm:^16.12.0"
     graphql-tag: "npm:^2.12.6"
     jsonwebtoken: "npm:^9.0.3"
@@ -15090,6 +15092,8 @@ __metadata:
     mobx: "npm:^6.15.0"
     mobx-react-lite: "npm:^3.4.3"
     react: "npm:18.2.0"
+    vitest: "npm:^3.2.4"
+    zod: "npm:^3.25.76"
   languageName: unknown
   linkType: soft
 
@@ -15169,7 +15173,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/di@npm:^0.2.3":
+"@webiny/di@npm:*, @webiny/di@npm:^0.2.3":
   version: 0.2.3
   resolution: "@webiny/di@npm:0.2.3"
   dependencies:
@@ -15178,7 +15182,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@webiny/error@npm:*, @webiny/error@npm:0.0.0, @webiny/error@workspace:packages/error":
+"@webiny/error@npm:0.0.0, @webiny/error@workspace:packages/error":
   version: 0.0.0-use.local
   resolution: "@webiny/error@workspace:packages/error"
   dependencies:
@@ -15626,7 +15630,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/project-utils@npm:0.0.0, @webiny/project-utils@workspace:packages/project-utils":
+"@webiny/project-utils@npm:*, @webiny/project-utils@npm:0.0.0, @webiny/project-utils@workspace:packages/project-utils":
   version: 0.0.0-use.local
   resolution: "@webiny/project-utils@workspace:packages/project-utils"
   dependencies:
@@ -15961,7 +15965,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/wcp@npm:0.0.0, @webiny/wcp@workspace:packages/wcp":
+"@webiny/wcp@npm:*, @webiny/wcp@npm:0.0.0, @webiny/wcp@workspace:packages/wcp":
   version: 0.0.0-use.local
   resolution: "@webiny/wcp@workspace:packages/wcp"
   dependencies:

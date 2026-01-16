@@ -2,11 +2,11 @@ import { ErrorResponse, NotFoundResponse, Response } from "@webiny/handler-graph
 import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
 import { GetUserUseCase } from "@webiny/api-core/features/GetUser";
-import { CreateUserUseCase } from "@webiny/api-core/features/CreateUser";
-import { UpdateUserUseCase } from "@webiny/api-core/features/UpdateUser";
-import { DeleteUserUseCase } from "@webiny/api-core/features/DeleteUser";
 import NotAuthorizedResponse from "@webiny/api-core/graphql/security/NotAuthorizedResponse.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
+import { CreateUserUseCase } from "~/api/features/CreateUser/index.js";
+import { UpdateUserUseCase } from "~/api/features/UpdateUser/index.js";
+import { DeleteUserUseCase } from "~/api/features/DeleteUser/index.js";
 
 class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
     execute(): CoreGraphQLSchemaFactory.Return {
@@ -78,7 +78,7 @@ class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                     const updateUserUseCase = context.container.resolve(UpdateUserUseCase);
 
                     const identity = identityContext.getIdentity();
-                    if (identity.isAnonymous()) {
+                    if (!identity.isAdmin()) {
                         return new NotAuthorizedResponse();
                     }
 
@@ -93,6 +93,7 @@ class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
 
                         const user = getUserResult.value;
 
+                        // TODO: UpdateCurrentUser should be a dedicated use case
                         const updateResult = await updateUserUseCase.execute(user.id, args.data);
                         if (updateResult.isFail()) {
                             return new ErrorResponse({
@@ -121,6 +122,16 @@ class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                 },
                 updateUser: async (_, { data, id }: any, context) => {
                     const updateUserUseCase = context.container.resolve(UpdateUserUseCase);
+
+                    const identityContext = context.container.resolve(IdentityContext);
+
+                    if (id === identityContext.getIdentity().id) {
+                        return new ErrorResponse({
+                            message:
+                                "You're not allowed to update your own account using this API.",
+                            code: "AdminUser/GraphQL/UpdateSelf"
+                        });
+                    }
 
                     const result = await updateUserUseCase.execute(id, data);
                     if (result.isFail()) {

@@ -64,12 +64,16 @@ export const RequireNewPassword = (props: RequireNewPasswordProps) => {
                             )}
 
                             <Grid.Column span={12}>
-                                <Button
-                                    text={"Confirm"}
-                                    onClick={submit}
-                                    size="lg"
-                                    disabled={vm.isLoading}
-                                />
+                                <div
+                                    className={"flex flex-row-reverse items-center justify-between"}
+                                >
+                                    <Button
+                                        text={"Confirm"}
+                                        onClick={submit}
+                                        size="lg"
+                                        disabled={vm.isLoading}
+                                    />
+                                </div>
                             </Grid.Column>
                         </Grid>
                     </View.Content>

@@ -1,1 +1,1 @@
-export { default as Account } from "./Account.js";
+export { UserAccountForm } from "./Account.js";

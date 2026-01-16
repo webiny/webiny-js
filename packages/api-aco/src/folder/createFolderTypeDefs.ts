@@ -56,11 +56,6 @@ export const createFolderTypeDefs = (params: CreateFolderTypeDefsParams): string
     return /* GraphQL */ `
         ${fieldTypes.map(f => f.typeDefs).join("\n")}
        
-        type CompressedResponse {
-            compression: String
-            value: String
-        }
-
         type Folder {
             id: ID!
             # Tells us if the current user can manage folder structure.
@@ -132,11 +127,6 @@ export const createFolderTypeDefs = (params: CreateFolderTypeDefsParams): string
             meta: AcoMeta
         }
 
-        type FoldersListCompressedResponse {
-            data: CompressedResponse
-            error: AcoError
-        }
-        
         type FoldersHierarchyData {
             parents: [Folder]
             siblings: [Folder]
@@ -179,12 +169,6 @@ export const createFolderTypeDefs = (params: CreateFolderTypeDefsParams): string
                 after: String
                 sort: AcoSort
             ): FoldersListResponse
-            listFoldersCompressed(
-                where: FoldersListWhereInput!
-                limit: Int
-                after: String
-                sort: AcoSort
-            ): FoldersListCompressedResponse
             getFolderHierarchy(type: String!, id: ID!): FoldersHierarchyResponse
             listFolderLevelPermissionsTargets: FolderLevelPermissionsTargetsListResponse
         }
@@ -194,6 +178,8 @@ export const createFolderTypeDefs = (params: CreateFolderTypeDefsParams): string
             updateFolder(id: ID!, data: FolderUpdateInput!): FolderResponse
             deleteFolder(id: ID!): AcoBooleanResponse
         }
+        
+        # The base type is dynamically generated from a Folder model
         
         extend type AcoFolder_Permissions {
              inheritedFrom: ID

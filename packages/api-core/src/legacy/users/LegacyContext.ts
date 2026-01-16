@@ -14,16 +14,20 @@ import { ListUserTeamsUseCase } from "~/features/users/ListUserTeams/index.js";
 import { CreateUserUseCase } from "~/features/users/CreateUser/index.js";
 import { UpdateUserUseCase } from "~/features/users/UpdateUser/index.js";
 import { DeleteUserUseCase } from "~/features/users/DeleteUser/index.js";
+import type { GetUserInput } from "~/features/users/shared/types.js";
 
 export class LegacyContext implements AdminUsers {
     constructor(private container: Container) {}
 
     async getUser<TUser extends AdminUser = AdminUser>(params: GetUserParams): Promise<TUser> {
         const useCase = this.container.resolve(GetUserUseCase);
-        const result = await useCase.execute({
-            id: params.where.id,
-            email: params.where.email
-        });
+        let input: GetUserInput;
+        if (params.where.id) {
+            input = { id: params.where.id! };
+        } else {
+            input = { email: params.where.email! };
+        }
+        const result = await useCase.execute(input);
 
         if (result.isFail()) {
             throw new Error(result.error.message);
