@@ -4,14 +4,15 @@ import type {
     CmsReferenceValue
 } from "~/admin/plugins/fieldRenderers/ref/components/types.js";
 import { Image } from "./entry/Image.js";
-import { Title } from "./entry/Title.js";
 import { View } from "./entry/View.js";
 import { Select } from "./entry/Select.js";
 import { Remove } from "./entry/Remove.js";
 import { MoveUp } from "./entry/MoveUp.js";
 import { MoveDown } from "./entry/MoveDown.js";
-import { Excerpt } from "./entry/Excerpt.js";
 import type { CmsModel } from "~/types.js";
+import { Tag, TimeAgo, Text, Sidebar, DropdownMenu, IconButton } from "@webiny/admin-ui";
+import { ReactComponent as MoreVertIcon } from "@webiny/icons/more_vert.svg";
+import { ReactComponent as OpenInNewIcon } from "@webiny/icons/open_in_new.svg";
 
 interface EntryProps {
     model: CmsModel;
@@ -69,20 +70,69 @@ export const Entry = ({
 
     const icon = model.icon;
 
+    const entryStatusLabel = entry.status.charAt(0).toUpperCase() + entry.status.slice(1);
+    const entryRevision = "v2";
+
     return (
-        <div className={"w-full rounded-md bg-neutral-dimmed"}>
-            <div className="flex items-center justify-between gap-sm-extra min-w-0">
+        <div data-role="ref-field-entry" className={"w-full rounded-md bg-neutral-light"}>
+            <div className="flex items-center justify-between gap-lg min-w-0 p-sm-extra pr-lg">
                 <Image title={entry.title} src={entry.image} icon={icon} />
-                <div className={"flex flex-col gap-xxs overflow-hidden flex-1 min-w-0"}>
-                    <Title title={entry.title} />
-                    <Excerpt
-                        modelName={entry.model.name}
-                        createdBy={entry.createdBy}
-                        createdOn={entry.createdOn}
-                        status={entry.status}
-                    />
+                <div
+                    className={
+                        "flex flex-col gap-xxs overflow-hidden flex-1 min-w-0 text-sm text-neutral-muted"
+                    }
+                >
+                    <div>{entry.model.name}</div>
+
+                    <div className={"text-md text-neutral-primary font-semibold mb-sm"}>
+                        {entry.title}
+                    </div>
+
+                    <div>
+                        <span className={"w-[60px] inline-block"}>Created:</span>
+                        <span>
+                            {entry.createdBy.displayName}, <TimeAgo datetime={entry.createdOn} />
+                        </span>
+                    </div>
+                    <div>
+                        <span className={"w-[60px] inline-block"}>Source:</span>
+                        <span>
+                            Home / Content / Preview / ... / Manage / Retail / Local / Products
+                        </span>
+                    </div>
                 </div>
-                <div className={"flex items-center gap-sm pr-sm-extra h-lg"}>
+                <div className={"flex items-center gap-sm"}>
+                    <Tag
+                        content={
+                            <>
+                                {entryStatusLabel}&nbsp;
+                                <Text size={"sm"} className={"text-neutral-muted"}>
+                                    ({entryRevision})
+                                </Text>
+                            </>
+                        }
+                        variant={"neutral-base-outline"}
+                    />
+                    <DropdownMenu
+                        trigger={
+                            <IconButton
+                                variant={"ghost"}
+                                size={"sm"}
+                                icon={
+                                    <Sidebar.Item.Icon
+                                        label="Settings"
+                                        element={<MoreVertIcon />}
+                                    />
+                                }
+                            />
+                        }
+                        className={"w-[225px]"}
+                    >
+                        <DropdownMenu.Item icon={<OpenInNewIcon />} text={"Open In New Window"} />
+                        <DropdownMenu.Item icon={<OpenInNewIcon />} text={"Delete"} />
+                    </DropdownMenu>
+                </div>
+                {/*<div className={"flex items-center gap-sm pr-sm-extra h-lg"}>
                     {placement == "multiRef" && (
                         <>
                             <MoveUp
@@ -98,7 +148,7 @@ export const Entry = ({
                     <View entry={entry} />
                     {onChange && <Select entry={entry} onChange={onChange} selected={selected} />}
                     {onRemove && <Remove entry={entry} onRemove={onRemove} />}
-                </div>
+                </div>*/}
             </div>
         </div>
     );
