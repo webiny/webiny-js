@@ -83,15 +83,26 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
             }
 
             const { fieldId } = field;
+
+            const getValue = (parent: any) => {
+                if (!parent?.values || !parent?.values[fieldId]) {
+                    return {
+                        isRoot: false,
+                        value: parent?.[fieldId],
+                    };
+                }
+                return {
+                    isRoot: true,
+                    value: parent.values[fieldId],
+                };
+            };
+
             fieldResolvers[fieldId] = async (parent, args, context: CmsContext, info) => {
                 /**
                  * This is required because due to ref field can be requested without the populated data.
                  * At that point there is no .values  no fieldId property on the parent
                  */
-                const value =
-                    parent?.values?.[fieldId] === undefined
-                        ? parent?.[fieldId]
-                        : parent?.values?.[fieldId];
+                const {isRoot: valueIsRoot, value} = getValue(parent);
                 if (value === undefined) {
                     return undefined;
                 }
@@ -100,18 +111,19 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
                     context,
                     model,
                     field,
-                    value: isRoot ? parent.values?.[fieldId] : parent[fieldId]
+                    value
                 });
 
-                set(isRoot ? parent.values : parent, fieldId, transformedValue);
+                set(valueIsRoot && parent.values ? parent.values : parent, fieldId, transformedValue);
 
                 if (!resolver) {
-                    return isRoot ? parent.values[fieldId] : parent[fieldId];
+                    return valueIsRoot && parent.values[fieldId] ? parent.values[fieldId] : parent[fieldId];
                 }
 
-                return await resolver(isRoot ? parent.values : parent, args, context, info);
+                return await resolver(valueIsRoot ? parent.values : parent, args, context, info);
             };
         }
+
         /**
          * Difference between root and non-root is that root has a values wrapper.
          * Subtypes must not have it.
@@ -131,6 +143,7 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
                 values: fieldResolvers,
                 ...extraResolvers
             },
+            [`${graphQLType}Values`]: fieldResolvers,
             ...typeResolvers
         };
     };

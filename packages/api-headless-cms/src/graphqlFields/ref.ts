@@ -151,8 +151,17 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
                         })
                     );
                 }
+                /**
+                 * Get value either from values or root - just in case.
+                 */
+                const getValue = (parent: any): RefFieldValue | RefFieldValue[] => {
+                    if (parent.values) {
+                        return parent.values[field.fieldId];
+                    }
+                    return parent[field.fieldId];
+                };
 
-                return async (parent, args, context: CmsContext) => {
+                return async (parent: CmsEntry, args: any, context: CmsContext) => {
                     const { cms, container } = context;
 
                     const getModel = container.resolve(GetModelUseCase);
@@ -160,7 +169,7 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
                     const getLatestByIds = container.resolve(GetLatestEntriesByIdsUseCase);
 
                     // Get field value for this entry
-                    const initialValue = parent[field.fieldId] as RefFieldValue | RefFieldValue[];
+                    const initialValue = getValue(parent);
 
                     if (!initialValue) {
                         return null;

@@ -16,7 +16,9 @@ const productFields = `
         title
         category {
             id
-            title
+            values {
+                title
+            }
         }
         image
         price
@@ -32,7 +34,9 @@ const productFields = `
             images
             category {
                 id
-                title
+                values {
+                    title
+                }
             }
             options {
                 name
@@ -41,11 +45,15 @@ const productFields = `
                 longText
                 category {
                     id
-                    title
+                    values {
+                        title
+                    }
                 }
                 categories {
                     id
-                    title
+                    values {
+                        title
+                    }
                 }
             }
         }
