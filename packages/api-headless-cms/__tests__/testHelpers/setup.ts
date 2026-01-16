@@ -56,6 +56,16 @@ export const setupGroupAndModels = async (params: SetupGroupAndModelsParams) => 
     const { manager, models: initialModels } = params;
     const group = await setupContentModelGroup(manager);
 
+    if (!initialModels) {
+        return {
+            group,
+            models: [],
+            getModel(modelId: string) {
+                console.log(`[setupGroupAndModels] There is no model "${modelId}" defined.`);
+                process.exit(1);
+            }
+        }
+    }
     const models = initialModels || allModels.map(m => m.modelId);
 
     const results: CmsModel[] = [];

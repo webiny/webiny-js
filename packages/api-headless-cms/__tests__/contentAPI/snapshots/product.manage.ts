@@ -50,7 +50,7 @@ export default /* GraphQL */ `
         revisionFirstPublishedBy: CmsIdentity
         revisionLastPublishedBy: CmsIdentity
         meta: ProductApiSingularMeta
-        wbyAco_location: WbyAcoLocation!
+        wbyAco_location: WbyAcoLocation
 
         values: ProductApiSingularValues!
     }

@@ -66,7 +66,7 @@ describe("content model test", () => {
         pubSubTracker.reset();
     });
 
-    it.skip("base schema should only contain relevant queries and mutations", async () => {
+    it("base schema should only contain relevant queries and mutations", async () => {
         // create a "read" and "manage" endpoints
         const readAPI = useGraphQLHandler(readHandlerOpts);
         const manageAPI = useGraphQLHandler(manageHandlerOpts);
@@ -111,7 +111,7 @@ describe("content model test", () => {
         ]);
     });
 
-    it.skip("create, read, update, delete and list content models", async () => {
+    it("create, read, update, delete and list content models", async () => {
         const {
             createContentModelMutation,
             getContentModelQuery,
@@ -251,7 +251,7 @@ describe("content model test", () => {
         });
     });
 
-    it.skip("delete existing content model", async () => {
+    it("delete existing content model", async () => {
         const { createContentModelMutation, deleteContentModelMutation } =
             useGraphQLHandler(manageHandlerOpts);
 
@@ -281,7 +281,7 @@ describe("content model test", () => {
         });
     });
 
-    it(.skip"cannot delete content model that has entries", async () => {
+    it("cannot delete content model that has entries", async () => {
         const {
             createContentModelMutation,
             updateContentModelMutation,
@@ -418,7 +418,7 @@ describe("content model test", () => {
                 }
             }
         });
-        
+
         expect(deleteCategoryResponse).toEqual({
             data: {
                 deleteCategory: {
@@ -442,7 +442,7 @@ describe("content model test", () => {
         });
     });
 
-    it(.skip"get existing content model", async () => {
+    it("get existing content model", async () => {
         const { createContentModelMutation, getContentModelQuery } =
             useGraphQLHandler(manageHandlerOpts);
 
@@ -475,7 +475,7 @@ describe("content model test", () => {
         });
     });
 
-    it.skip("error when getting non-existing model", async () => {
+    it("error when getting non-existing model", async () => {
         const { getContentModelQuery } = useGraphQLHandler(manageHandlerOpts);
         const modelId = "nonExistingId";
         const [response] = await getContentModelQuery({
@@ -496,7 +496,7 @@ describe("content model test", () => {
         });
     });
 
-    it.skip("error when updating non-existing model", async () => {
+    it("error when updating non-existing model", async () => {
         const { updateContentModelMutation } = useGraphQLHandler(manageHandlerOpts);
         const modelId = "nonExistingId";
         const [response] = await updateContentModelMutation({
@@ -522,7 +522,7 @@ describe("content model test", () => {
         });
     });
 
-    it.skip("error when deleting non-existing model", async () => {
+    it("error when deleting non-existing model", async () => {
         const { deleteContentModelMutation } = useGraphQLHandler(manageHandlerOpts);
 
         const modelId = "nonExistingId";
@@ -544,7 +544,7 @@ describe("content model test", () => {
         });
     });
 
-    it.skip("update content model with new fields", async () => {
+    it("update content model with new fields", async () => {
         const { createContentModelMutation, updateContentModelMutation } =
             useGraphQLHandler(manageHandlerOpts);
         const modelData: Pick<CmsModel, "name" | "modelId" | "singularApiName" | "pluralApiName"> =
@@ -666,7 +666,7 @@ describe("content model test", () => {
         });
     });
 
-    it.skip("when assigning `titleFieldId` to a non-existing field, fall back to the first applicable field", async () => {
+    it("when assigning `titleFieldId` to a non-existing field, fall back to the first applicable field", async () => {
         const { createContentModelMutation, updateContentModelMutation } =
             useGraphQLHandler(manageHandlerOpts);
         const [createResponse] = await createContentModelMutation({
@@ -722,7 +722,7 @@ describe("content model test", () => {
         });
     });
 
-    it.skip("should execute hooks on create", async () => {
+    it("should execute hooks on create", async () => {
         const { createContentModelMutation } = useGraphQLHandler({
             ...manageHandlerOpts,
             plugins: [assignModelEvents()]
@@ -756,7 +756,7 @@ describe("content model test", () => {
         expect(pubSubTracker.isExecutedOnce("contentModel:afterDelete")).toEqual(false);
     });
 
-    it.skip("should execute hooks on create from", async () => {
+    it("should execute hooks on create from", async () => {
         const { createContentModelMutation, createContentModelFromMutation } = useGraphQLHandler({
             ...manageHandlerOpts,
             plugins: [assignModelEvents()]
@@ -814,7 +814,7 @@ describe("content model test", () => {
         expect(pubSubTracker.isExecutedOnce("contentModel:afterDelete")).toEqual(false);
     });
 
-    it.skip("should execute hooks on update", async () => {
+    it("should execute hooks on update", async () => {
         const { createContentModelMutation, updateContentModelMutation } = useGraphQLHandler({
             ...manageHandlerOpts,
             plugins: [assignModelEvents()]
@@ -861,7 +861,7 @@ describe("content model test", () => {
         expect(pubSubTracker.isExecutedOnce("contentModel:afterDelete")).toEqual(false);
     });
 
-    it.skip("should execute hooks on delete", async () => {
+    it("should execute hooks on delete", async () => {
         const { createContentModelMutation, deleteContentModelMutation } = useGraphQLHandler({
             ...manageHandlerOpts,
             plugins: [assignModelEvents()]
@@ -948,7 +948,12 @@ describe("content model test", () => {
                 updateContentModel: {
                     data: {
                         modelId: createBugModelResponse.data.createContentModel.data.modelId,
-                        fields: [...initialFields],
+                        fields: initialFields.map(field => {
+                            return {
+                                id: field.id,
+                                fieldId: field.fieldId
+                            };
+                        }),
                         layout: [...initialLayouts]
                     },
                     error: null
@@ -964,14 +969,14 @@ describe("content model test", () => {
         });
 
         // should not be able to query bugType or bugValue fields (they are defined in the graphql query)
-        expect(listResponse).toEqual({
+        expect(listResponse).toMatchObject({
             errors: [
                 {
-                    message: `Cannot query field "${removedFields[0].fieldId}" on type "${bugModel.singularApiName}". Did you mean "bugType"?`,
+                    message: `Cannot query field "${removedFields[1].fieldId}" on type "${bugModel.singularApiName}Values". Did you mean "bugType"?`,
                     locations: expect.any(Array)
                 },
                 {
-                    message: `Cannot query field "${removedFields[1].fieldId}" on type "${bugModel.singularApiName}". Did you mean "bugType"?`,
+                    message: `Cannot query field "${removedFields[0].fieldId}" on type "${bugModel.singularApiName}Values". Did you mean "bugType"?`,
                     locations: expect.any(Array)
                 }
             ]
@@ -998,10 +1003,12 @@ describe("content model test", () => {
         // make sure that we can query newly added fields
         const [listResponseAfterUpdate] = await listBugs({
             where: {
-                name: "test",
-                bugType: "t1",
-                bugValue: 3,
-                bugFixed: 2
+                values: {
+                    name: "test",
+                    bugType: "t1",
+                    bugValue: 3,
+                    bugFixed: 2
+                }
             },
             sort: ["createdOn_DESC"]
         });
@@ -1021,7 +1028,7 @@ describe("content model test", () => {
         });
     });
 
-    it.skip("should list only specific content models", async () => {
+    it("should list only specific content models", async () => {
         const { createContentModelMutation } = useGraphQLHandler(manageHandlerOpts);
 
         const createdContentModels = [];
@@ -1053,7 +1060,7 @@ describe("content model test", () => {
         expect(response.data.listContentModels.data.length).toEqual(1);
     });
 
-    it.skip("error when getting model without specific group permission", async () => {
+    it("error when getting model without specific group permission", async () => {
         const { createContentModelMutation } = useGraphQLHandler(manageHandlerOpts);
 
         const createdContentModels = [];
@@ -1092,7 +1099,7 @@ describe("content model test", () => {
         });
     });
 
-    it.skip("should be able to get model with specific group permission", async () => {
+    it("should be able to get model with specific group permission", async () => {
         const { createContentModelMutation } = useGraphQLHandler(manageHandlerOpts);
 
         const createdContentModels = [];
@@ -1131,7 +1138,7 @@ describe("content model test", () => {
         expect(response.data.getContentModel.error).toEqual(null);
     });
 
-    it.skip("should allow to update a model with description set to null", async () => {
+    it("should allow to update a model with description set to null", async () => {
         const { createContentModelMutation, updateContentModelMutation } =
             useGraphQLHandler(manageHandlerOpts);
 
@@ -1223,7 +1230,7 @@ describe("content model test", () => {
         });
     });
 
-    it.skip("should assign description field", async () => {
+    it("should assign description field", async () => {
         const { createContentModelMutation, getContentModelQuery, updateContentModelMutation } =
             useGraphQLHandler(manageHandlerOpts);
         const field = createModelField({
@@ -1335,7 +1342,7 @@ describe("content model test", () => {
         });
     });
 
-    it.skip("should assign image field", async () => {
+    it("should assign image field", async () => {
         const { createContentModelMutation, getContentModelQuery, updateContentModelMutation } =
             useGraphQLHandler(manageHandlerOpts);
         const field = createModelField({
@@ -1450,7 +1457,7 @@ describe("content model test", () => {
         });
     });
 
-    it.skip("should create a model in a group with custom ID", async () => {
+    it("should create a model in a group with custom ID", async () => {
         await createContentModelGroupMutation({
             data: {
                 id: "a-custom-group-id",
@@ -1485,7 +1492,7 @@ describe("content model test", () => {
         });
     });
 
-    it.skip("should create and update a model with steps in settings", async () => {
+    it("should create and update a model with steps in settings", async () => {
         const { createContentModelMutation, updateContentModelMutation } =
             useGraphQLHandler(manageHandlerOpts);
         const field = createModelField({

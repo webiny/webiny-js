@@ -45,7 +45,7 @@ export default /* GraphQL */ `
         revisionFirstPublishedBy: CmsIdentity
         revisionLastPublishedBy: CmsIdentity
         meta: PageModelApiNameMeta
-        wbyAco_location: WbyAcoLocation!
+        wbyAco_location: WbyAcoLocation
 
         values: PageModelApiNameValues!
     }

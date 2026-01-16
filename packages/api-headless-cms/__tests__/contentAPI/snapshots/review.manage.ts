@@ -42,7 +42,7 @@ export default /* GraphQL */ `
         revisionFirstPublishedBy: CmsIdentity
         revisionLastPublishedBy: CmsIdentity
         meta: ReviewApiModelMeta
-        wbyAco_location: WbyAcoLocation!
+        wbyAco_location: WbyAcoLocation
 
         values: ReviewApiModelValues!
     }

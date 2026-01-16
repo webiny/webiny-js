@@ -4,6 +4,7 @@ export default /* GraphQL */ `
     """
     type CategoryApiNameWhichIsABitDifferentThanModelIdValues {
         title: String
+        separator: String
         slug: String
     }
 
@@ -40,7 +41,7 @@ export default /* GraphQL */ `
         revisionFirstPublishedBy: CmsIdentity
         revisionLastPublishedBy: CmsIdentity
         meta: CategoryApiNameWhichIsABitDifferentThanModelIdMeta
-        wbyAco_location: WbyAcoLocation!
+        wbyAco_location: WbyAcoLocation
 
         values: CategoryApiNameWhichIsABitDifferentThanModelIdValues!
     }
@@ -68,6 +69,7 @@ export default /* GraphQL */ `
 
     input CategoryApiNameWhichIsABitDifferentThanModelIdInputValues {
         title: String
+        separator: String
         slug: String
     }
 
@@ -113,6 +115,7 @@ export default /* GraphQL */ `
 
     input CategoryApiNameWhichIsABitDifferentThanModelIdGetWhereInputValues {
         title: String
+        separator: String
         slug: String
     }
 
@@ -131,6 +134,15 @@ export default /* GraphQL */ `
         title_not_contains: String
         title_startsWith: String
         title_not_startsWith: String
+
+        separator: String
+        separator_not: String
+        separator_in: [String]
+        separator_not_in: [String]
+        separator_contains: String
+        separator_not_contains: String
+        separator_startsWith: String
+        separator_not_startsWith: String
 
         slug: String
         slug_not: String
@@ -372,6 +384,8 @@ export default /* GraphQL */ `
         revisionLastPublishedOn_DESC
         title_ASC
         title_DESC
+        separator_ASC
+        separator_DESC
         slug_ASC
         slug_DESC
     }
