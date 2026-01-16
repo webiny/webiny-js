@@ -1,4 +1,5 @@
 import React from "react";
+import { plugins } from "@webiny/plugins";
 import { AdminConfig, useContainer } from "@webiny/app-admin";
 import { HasPermission } from "@webiny/app-admin";
 import { ReactComponent as PagesIcon } from "@webiny/icons/table_chart.svg";
@@ -13,6 +14,7 @@ import { Routes } from "~/routes.js";
 import { useRouter } from "@webiny/app-admin";
 import { PagesWidget } from "~/modules/widgets/PagesWidget.js";
 import { PageListFeature } from "~/presentation/pages/PageList/feature.js";
+import { permissionRenderer } from "~/plugins/permissionRenderer.js";
 
 const { Menu, Route, Dashboard } = AdminConfig;
 
@@ -20,6 +22,7 @@ export const Extension = () => {
     const router = useRouter();
     const container = useContainer();
 
+    plugins.register(permissionRenderer);
     PageListFeature.register(container);
 
     return (

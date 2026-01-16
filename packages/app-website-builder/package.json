@@ -31,6 +31,7 @@
     "@webiny/lexical-editor": "0.0.0",
     "@webiny/lexical-nodes": "0.0.0",
     "@webiny/lexical-theme": "0.0.0",
+    "@webiny/plugins": "0.0.0",
     "@webiny/react-composition": "0.0.0",
     "@webiny/react-properties": "0.0.0",
     "@webiny/ui": "0.0.0",

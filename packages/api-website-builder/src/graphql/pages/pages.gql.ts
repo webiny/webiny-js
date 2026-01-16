@@ -249,9 +249,10 @@ export const createPagesSchema = () => {
                         return true;
                     });
                 },
+                // TODO: move these settings updates into dedicated use cases
                 updateSettings: async (_, args, context) => {
                     return resolve(async () => {
-                        ensureAuthentication(context);
+                        ensureAuthentication(context, { permission: "wb.settings" });
                         const keyValueStore = context.container.resolve(KeyValueStore);
                         await keyValueStore.set(WEBSITE_BUILDER_SETTINGS, args.data);
 
@@ -260,7 +261,7 @@ export const createPagesSchema = () => {
                 },
                 updateIntegrations: async (_, args, context) => {
                     return resolve(async () => {
-                        ensureAuthentication(context);
+                        ensureAuthentication(context, { permission: "wb.settings" });
                         const keyValueStore = context.container.resolve(KeyValueStore);
                         await keyValueStore.set(WEBSITE_BUILDER_INTEGRATIONS, args.data);
 

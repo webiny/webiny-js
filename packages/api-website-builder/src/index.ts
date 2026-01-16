@@ -27,18 +27,22 @@ import { createRedirectModel, REDIRECT_MODEL_ID } from "~/domain/redirect/redire
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { PageModel } from "~/domain/page/abstractions.js";
 import { RedirectModel } from "~/domain/redirect/abstractions.js";
+import { PagePermissionsFeature } from "~/features/pages/PagePermissions/feature.js";
+import { RedirectPermissionsFeature } from "~/features/redirects/RedirectPermissions/feature.js";
 
 const createContext = () => {
     return createContextPlugin(
         async context => {
+            const container = context.container;
+
             // Register models
             const pageModel = createPageModel();
             const redirectModel = createRedirectModel();
 
             context.plugins.register(pageModel, redirectModel);
 
-            const identityContext = context.container.resolve(IdentityContext);
-            const getModel = context.container.resolve(GetModelUseCase);
+            const identityContext = container.resolve(IdentityContext);
+            const getModel = container.resolve(GetModelUseCase);
 
             await identityContext.withoutAuthorization(async () => {
                 const [pageModel, redirectModel] = await Promise.all([
@@ -46,31 +50,33 @@ const createContext = () => {
                     getModel.execute(REDIRECT_MODEL_ID)
                 ]);
 
-                context.container.registerInstance(PageModel, pageModel.value);
-                context.container.registerInstance(RedirectModel, redirectModel.value);
+                container.registerInstance(PageModel, pageModel.value);
+                container.registerInstance(RedirectModel, redirectModel.value);
             });
 
             // Register features
-            GetRedirectByIdFeature.register(context.container);
-            ListRedirectsFeature.register(context.container);
-            GetActiveRedirectsFeature.register(context.container);
-            CreateRedirectFeature.register(context.container);
-            UpdateRedirectFeature.register(context.container);
-            DeleteRedirectFeature.register(context.container);
-            MoveRedirectFeature.register(context.container);
-            InvalidateRedirectsCacheFeature.register(context.container);
-            GetPageByIdFeature.register(context.container);
-            GetPageByPathFeature.register(context.container);
-            GetPageRevisionsFeature.register(context.container);
-            ListPagesFeature.register(context.container);
-            CreatePageFeature.register(context.container);
-            CreatePageRevisionFromFeature.register(context.container);
-            DeletePageFeature.register(context.container);
-            UpdatePageFeature.register(context.container);
-            PublishPageFeature.register(context.container);
-            UnpublishPageFeature.register(context.container);
-            DuplicatePageFeature.register(context.container);
-            MovePageFeature.register(context.container);
+            GetRedirectByIdFeature.register(container);
+            ListRedirectsFeature.register(container);
+            GetActiveRedirectsFeature.register(container);
+            CreateRedirectFeature.register(container);
+            UpdateRedirectFeature.register(container);
+            DeleteRedirectFeature.register(container);
+            MoveRedirectFeature.register(container);
+            InvalidateRedirectsCacheFeature.register(container);
+            GetPageByIdFeature.register(container);
+            GetPageByPathFeature.register(container);
+            GetPageRevisionsFeature.register(container);
+            ListPagesFeature.register(container);
+            CreatePageFeature.register(container);
+            CreatePageRevisionFromFeature.register(container);
+            DeletePageFeature.register(container);
+            UpdatePageFeature.register(container);
+            PublishPageFeature.register(container);
+            UnpublishPageFeature.register(container);
+            DuplicatePageFeature.register(container);
+            MovePageFeature.register(container);
+            PagePermissionsFeature.register(container);
+            RedirectPermissionsFeature.register(container);
         },
         { name: "wb.createContext" }
     );
