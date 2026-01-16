@@ -21,11 +21,19 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
     it("revision and entry-level fields should be populated correctly on publish", async () => {
         let { data: rev } = await manageApiIdentityA.createTestEntry();
 
-        const publish = await manageApiIdentityA.publishTestEntry({ revision: rev.id });
+        const publish = await manageApiIdentityA.publishTestEntry({
+            variables: {
+                revision: rev.id
+            }
+        });
         expect(publish.error).toBeNull();
 
         // Refresh.
-        ({ data: rev } = await manageApiIdentityA.getTestEntry({ revision: rev.id }));
+        ({ data: rev } = await manageApiIdentityA.getTestEntry({
+            variables: {
+                revision: rev.id
+            }
+        }));
 
         const { data: entriesList } = await manageApiIdentityA.listTestEntries();
 
@@ -54,18 +62,40 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
         let { data: rev1 } = await manageApiIdentityA.createTestEntry();
 
         let { data: rev2 } = await manageApiIdentityA.createTestEntryFrom({
-            revision: rev1.id
+            variables: {
+                revision: rev1.id
+            }
         });
 
-        ({ data: rev1 } = await manageApiIdentityA.getTestEntry({ revision: rev1.id }));
-        ({ data: rev2 } = await manageApiIdentityA.getTestEntry({ revision: rev2.id }));
+        ({ data: rev1 } = await manageApiIdentityA.getTestEntry({
+            variables: {
+                revision: rev1.id
+            }
+        }));
+        ({ data: rev2 } = await manageApiIdentityA.getTestEntry({
+            variables: {
+                revision: rev2.id
+            }
+        }));
 
-        const publish = await manageApiIdentityB.publishTestEntry({ revision: rev2.id });
+        const publish = await manageApiIdentityB.publishTestEntry({
+            variables: {
+                revision: rev2.id
+            }
+        });
         expect(publish.error).toBeNull();
 
         // Refresh.
-        ({ data: rev1 } = await manageApiIdentityA.getTestEntry({ revision: rev1.id }));
-        ({ data: rev2 } = await manageApiIdentityA.getTestEntry({ revision: rev2.id }));
+        ({ data: rev1 } = await manageApiIdentityA.getTestEntry({
+            variables: {
+                revision: rev1.id
+            }
+        }));
+        ({ data: rev2 } = await manageApiIdentityA.getTestEntry({
+            variables: {
+                revision: rev2.id
+            }
+        }));
         const { data: entriesList } = await manageApiIdentityA.listTestEntries();
 
         expect(rev1).toMatchObject({
@@ -103,27 +133,41 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
         const { data: rev1 } = await manageApiIdentityA.createTestEntry();
 
         const { data: rev2 } = await manageApiIdentityA.createTestEntryFrom({
-            revision: rev1.id
+            variables: {
+                revision: rev1.id
+            }
         });
 
         const { data: rev3 } = await manageApiIdentityA.createTestEntryFrom({
-            revision: rev2.id
+            variables: {
+                revision: rev2.id
+            }
         });
 
         // Publish 1️⃣
         // Let's publish the first revision.
-        const publish1 = await manageApiIdentityB.publishTestEntry({ revision: rev1.id });
+        const publish1 = await manageApiIdentityB.publishTestEntry({
+            variables: {
+                revision: rev1.id
+            }
+        });
         expect(publish1.error).toBeNull();
 
         // Refresh.
         const { data: rev1AfterPublish1 } = await manageApiIdentityA.getTestEntry({
-            revision: rev1.id
+            variables: {
+                revision: rev1.id
+            }
         });
         const { data: rev2AfterPublish1 } = await manageApiIdentityA.getTestEntry({
-            revision: rev2.id
+            variables: {
+                revision: rev2.id
+            }
         });
         const { data: rev3AfterPublish1 } = await manageApiIdentityA.getTestEntry({
-            revision: rev3.id
+            variables: {
+                revision: rev3.id
+            }
         });
 
         const { data: entriesListAfterPublish1 } = await manageApiIdentityA.listTestEntries();
@@ -177,18 +221,28 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
 
         // Publish 2️⃣
         // Let's publish the second revision, this time with `identityA`.
-        const publish2 = await manageApiIdentityA.publishTestEntry({ revision: rev2.id });
+        const publish2 = await manageApiIdentityA.publishTestEntry({
+            variables: {
+                revision: rev2.id
+            }
+        });
         expect(publish2.error).toBeNull();
 
         // Refresh.
         const { data: rev1AfterPublish2 } = await manageApiIdentityA.getTestEntry({
-            revision: rev1.id
+            variables: {
+                revision: rev1.id
+            }
         });
         const { data: rev2AfterPublish2 } = await manageApiIdentityA.getTestEntry({
-            revision: rev2.id
+            variables: {
+                revision: rev2.id
+            }
         });
         const { data: rev3AfterPublish2 } = await manageApiIdentityA.getTestEntry({
-            revision: rev3.id
+            variables: {
+                revision: rev3.id
+            }
         });
 
         const { data: entriesListAfterPublish2 } = await manageApiIdentityA.listTestEntries();
@@ -257,18 +311,28 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
 
         // Publish 3️⃣
         // Let's publish the third revision, this time with `identityB`.
-        const publish3 = await manageApiIdentityB.publishTestEntry({ revision: rev3.id });
+        const publish3 = await manageApiIdentityB.publishTestEntry({
+            variables: {
+                revision: rev3.id
+            }
+        });
         expect(publish3.error).toBeNull();
 
         // Refresh.
         const { data: rev1AfterPublish3 } = await manageApiIdentityA.getTestEntry({
-            revision: rev1.id
+            variables: {
+                revision: rev1.id
+            }
         });
         const { data: rev2AfterPublish3 } = await manageApiIdentityA.getTestEntry({
-            revision: rev2.id
+            variables: {
+                revision: rev2.id
+            }
         });
         const { data: rev3AfterPublish3 } = await manageApiIdentityA.getTestEntry({
-            revision: rev3.id
+            variables: {
+                revision: rev3.id
+            }
         });
 
         const { data: entriesListAfterPublish3 } = await manageApiIdentityA.listTestEntries();
@@ -320,20 +384,32 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
     it("unpublishing and publishing a latest revision should update lastPublished meta fields", async () => {
         const { data: rev } = await manageApiIdentityA.createTestEntry();
 
-        const publish1 = await manageApiIdentityA.publishTestEntry({ revision: rev.id });
+        const publish1 = await manageApiIdentityA.publishTestEntry({
+            variables: {
+                revision: rev.id
+            }
+        });
         expect(publish1.error).toBeNull();
 
         // Refresh.
         const { data: revAfterPublish1 } = await manageApiIdentityA.getTestEntry({
-            revision: rev.id
+            variables: {
+                revision: rev.id
+            }
         });
 
-        const unpublish = await manageApiIdentityA.unpublishTestEntry({ revision: rev.id });
+        const unpublish = await manageApiIdentityA.unpublishTestEntry({
+            variables: {
+                revision: rev.id
+            }
+        });
         expect(unpublish.error).toBeNull();
 
         // Let's publish again, this time with `identityB`.
         const { data: revAfterPublish2 } = await manageApiIdentityB.publishTestEntry({
-            revision: rev.id
+            variables: {
+                revision: rev.id
+            }
         });
 
         const { data: entriesListAfterPublish2 } = await manageApiIdentityA.listTestEntries();
@@ -363,37 +439,57 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
         const { data: rev1 } = await manageApiIdentityA.createTestEntry();
 
         const { data: rev2 } = await manageApiIdentityA.createTestEntryFrom({
-            revision: rev1.id
+            variables: {
+                revision: rev1.id
+            }
         });
 
         const { data: rev3 } = await manageApiIdentityA.createTestEntryFrom({
-            revision: rev2.id
+            variables: {
+                revision: rev2.id
+            }
         });
 
         // Let's publish the first revision.
-        const publish1 = await manageApiIdentityA.publishTestEntry({ revision: rev1.id });
+        const publish1 = await manageApiIdentityA.publishTestEntry({
+            variables: {
+                revision: rev1.id
+            }
+        });
         expect(publish1.error).toBeNull();
 
         // Refresh.
         const { data: rev1AfterPublish1 } = await manageApiIdentityA.getTestEntry({
-            revision: rev1.id
+            variables: {
+                revision: rev1.id
+            }
         });
 
-        const unpublish = await manageApiIdentityA.unpublishTestEntry({ revision: rev1.id });
+        const unpublish = await manageApiIdentityA.unpublishTestEntry({
+            variables: {
+                revision: rev1.id
+            }
+        });
         expect(unpublish.error).toBeNull();
 
         // Let's publish again, this time with `identityB`.
         const publish2 = await manageApiIdentityB.publishTestEntry({
-            revision: rev1.id
+            variables: {
+                revision: rev1.id
+            }
         });
         expect(publish2.error).toBeNull();
 
         // Refresh.
         const { data: rev1AfterPublish2 } = await manageApiIdentityA.getTestEntry({
-            revision: rev1.id
+            variables: {
+                revision: rev1.id
+            }
         });
         const { data: rev3AfterPublish2 } = await manageApiIdentityA.getTestEntry({
-            revision: rev3.id
+            variables: {
+                revision: rev3.id
+            }
         });
 
         const { data: entriesListAfterPublish2 } = await manageApiIdentityA.listTestEntries();
@@ -427,20 +523,32 @@ describe("Content Entries - Publishing-related Entry Meta Fields", () => {
     it("republishing a latest revision should only change lastPublished meta fields", async () => {
         const { data: rev } = await manageApiIdentityA.createTestEntry();
 
-        const publish1 = await manageApiIdentityA.publishTestEntry({ revision: rev.id });
+        const publish1 = await manageApiIdentityA.publishTestEntry({
+            variables: {
+                revision: rev.id
+            }
+        });
         expect(publish1.error).toBeNull();
 
         // Refresh.
         const { data: revAfterPublish } = await manageApiIdentityA.getTestEntry({
-            revision: rev.id
+            variables: {
+                revision: rev.id
+            }
         });
 
-        const republish = await manageApiIdentityA.unpublishTestEntry({ revision: rev.id });
+        const republish = await manageApiIdentityA.unpublishTestEntry({
+            variables: {
+                revision: rev.id
+            }
+        });
         expect(republish.error).toBeNull();
 
         // Let's publish again, this time with `identityB`.
         const { data: revAfterRepublish } = await manageApiIdentityB.republishTestEntry({
-            revision: rev.id
+            variables: {
+                revision: rev.id
+            }
         });
 
         const { data: entriesListAfterRepublish } = await manageApiIdentityA.listTestEntries();
