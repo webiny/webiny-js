@@ -42,12 +42,12 @@ export const zodAbsoluteOrRootPath = (project: IProjectModel) => {
 
             // Convert to absolute path for file existence check
             let absoluteSrcPath = src;
-            if (!path.isAbsolute(src)) {
+            if (src.startsWith("/")) {
                 // For paths starting with "/", they're relative to project root
                 // Remove the leading "/" before joining with rootFolder
-                const relativePath = src.startsWith("/") ? src.slice(1) : src;
-                absoluteSrcPath = project.paths.rootFolder.join(relativePath).toString();
+                absoluteSrcPath = project.paths.rootFolder.join(src.slice(1)).toString();
             }
+            // Otherwise, src is already an absolute path
 
             if (!fs.existsSync(absoluteSrcPath)) {
                 ctx.addIssue({
@@ -57,9 +57,6 @@ export const zodAbsoluteOrRootPath = (project: IProjectModel) => {
                         src
                     )
                 });
-                return;
             }
-
-            return true;
         });
 };
