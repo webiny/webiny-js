@@ -27,4 +27,4 @@ export const permissionRenderer: AdminAppPermissionRendererPlugin = {
             </Accordion.Item>
         );
     }
-}
+};
