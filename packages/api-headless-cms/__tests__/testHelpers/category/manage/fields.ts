@@ -29,6 +29,7 @@ export const categoryFields = /* GraphQL */ `
                 values {
                     title
                     slug
+                    separator
                 }
                 meta {
                     status
@@ -44,6 +45,7 @@ export const categoryFields = /* GraphQL */ `
         values {
             title
             slug
+            separator
         }
     }
 `;

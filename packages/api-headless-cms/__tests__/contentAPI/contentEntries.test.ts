@@ -3,7 +3,6 @@ import { useFruitManageHandler } from "../testHelpers/useFruitManageHandler";
 import { Fruit } from "./mocks/contentModels";
 import { setupContentModelGroup, setupContentModels } from "../testHelpers/setup";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
-import type { RequiredDeep } from "type-fest";
 
 const appleData: Fruit = {
     values: {
@@ -129,9 +128,8 @@ describe("Content entries", () => {
 
     const createAndPublishFruit = async (data: Fruit): Promise<CmsEntry<Fruit>> => {
         const [response] = await createFruit({
-            data,
+            data
         });
-
 
         if (response.data.createFruit.error) {
             throw new Error(response.data.createFruit.error.message);

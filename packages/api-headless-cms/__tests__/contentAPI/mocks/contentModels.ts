@@ -27,6 +27,7 @@ const ids = {
     // product category
     field11: "title",
     field12: "slug",
+    field13: "separator",
     // product
     field201: "title",
     field202: "category",
@@ -173,7 +174,7 @@ const models: CmsModel[] = [
         singularApiName: "CategoryApiNameWhichIsABitDifferentThanModelId",
         pluralApiName: "CategoriesApiModel",
         group: "a-sample-content-model-group",
-        layout: [[ids.field11], [ids.field12]],
+        layout: [[ids.field11], [ids.field13], [ids.field12]],
         fields: [
             {
                 id: ids.field11,
@@ -205,6 +206,15 @@ const models: CmsModel[] = [
                 renderer: {
                     name: "renderer"
                 }
+            },
+            {
+                id: ids.field13,
+                type: "text:separator",
+                fieldId: "separator",
+                storageId: "text@separator",
+                label: "Separator",
+                listValidation: [],
+                validation: []
             },
             {
                 id: ids.field12,

@@ -3,6 +3,7 @@ export interface ICategoryInput {
     values: {
         title: string;
         slug: string;
+        separator?: string;
     };
 }
 

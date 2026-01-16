@@ -1,11 +1,16 @@
+import type { GenericRecord } from "@webiny/api/types.js";
+import type { CmsEntryListWhere } from "~/types/index.js";
+
 const data = /* GraphQL */ `
     {
         id
         entryId
         createdOn
         savedOn
-        title
-        slug
+        values {
+            title
+            slug
+        }
     }
 `;
 
@@ -17,6 +22,10 @@ const error = /* GraphQL */ `
     }
 `;
 
+export interface IReadGetTestEntryVariables {
+    where?: CmsEntryListWhere;
+}
+
 export const GET_TEST_ENTRY = `
     query GetTestEntry($where: TestEntryGetWhereInput!) {
         getTestEntry(where: $where) {
@@ -24,6 +33,13 @@ export const GET_TEST_ENTRY = `
             error ${error}
         }
     }`;
+
+export interface IReadListTestEntryVariables {
+    where?: CmsEntryListWhere;
+    sort?: string[];
+    limit?: number;
+    after?: string;
+}
 
 export const LIST_TEST_ENTRIES = `
     query ListTestEntries(

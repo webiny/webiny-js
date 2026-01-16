@@ -1,7 +1,6 @@
 import type { GraphQLHandlerParams } from "./useGraphQLHandler.js";
 import { useGraphQLHandler } from "./useGraphQLHandler.js";
 import { getCmsModel } from "~tests/contentAPI/mocks/contentModels.js";
-import type { GenericRecord } from "@webiny/api/types.js";
 import {
     createCategoryFromMutation,
     createCategoryMutation,
@@ -46,11 +45,8 @@ import {
     unpublishCategoryMutation,
     updateCategoryMutation
 } from "./category/manage/index.js";
+import type { IMutationParams, IQueryParams } from "./types.js";
 
-interface IMutationParams<T> {
-    variables: T;
-    headers?: GenericRecord<string, string>;
-}
 
 export const useCategoryManageHandler = (params: GraphQLHandlerParams) => {
     const contentHandler = useGraphQLHandler(params);
@@ -59,7 +55,7 @@ export const useCategoryManageHandler = (params: GraphQLHandlerParams) => {
 
     return {
         ...contentHandler,
-        async getCategory(params: IMutationParams<IGetCategoryQueryVariables>) {
+        async getCategory(params: IQueryParams<IGetCategoryQueryVariables>) {
             return await contentHandler.invoke<IGetCategoryQueryResponse>({
                 body: {
                     query: getCategoryQuery(model),
@@ -68,7 +64,7 @@ export const useCategoryManageHandler = (params: GraphQLHandlerParams) => {
                 headers: params.headers
             });
         },
-        async getCategoriesByIds(params: IMutationParams<IGetCategoriesByIdsQueryVariables>) {
+        async getCategoriesByIds(params: IQueryParams<IGetCategoriesByIdsQueryVariables>) {
             return await contentHandler.invoke<IGetCategoriesByIdsQueryResponse>({
                 body: {
                     query: getCategoriesByIdsQuery(model),
@@ -77,7 +73,7 @@ export const useCategoryManageHandler = (params: GraphQLHandlerParams) => {
                 headers: params.headers
             });
         },
-        async listCategories(params?: IMutationParams<IListCategoriesQueryVariables>) {
+        async listCategories(params?: IQueryParams<IListCategoriesQueryVariables>) {
             return await contentHandler.invoke<IListCategoriesQueryResponse>({
                 body: {
                     query: listCategoriesQuery(model),
@@ -86,7 +82,7 @@ export const useCategoryManageHandler = (params: GraphQLHandlerParams) => {
                 headers: params?.headers
             });
         },
-        async listDeletedCategories(params?: IMutationParams<IListDeletedCategoriesQueryVariables>) {
+        async listDeletedCategories(params?: IQueryParams<IListDeletedCategoriesQueryVariables>) {
             return await contentHandler.invoke<IListDeletedCategoriesQueryResponse>({
                 body: {
                     query: listDeletedCategoriesQuery(model),

@@ -17,7 +17,9 @@ export const setupContentModel = async (params: SetupContentModelParams) => {
             modelId: model.modelId,
             singularApiName: model.singularApiName,
             pluralApiName: model.pluralApiName,
-            group: group.slug
+            group: group.slug,
+            fields: model.fields,
+            layout: model.layout
         }
     });
 
@@ -30,22 +32,7 @@ export const setupContentModel = async (params: SetupContentModelParams) => {
         process.exit(1);
     }
 
-    const [updateResponse] = await manager.updateContentModelMutation({
-        modelId: createResponse.data.createContentModel.data.modelId,
-        data: {
-            fields: model.fields,
-            layout: model.layout
-        }
-    });
-
-    if (updateResponse.errors) {
-        console.log(`[setupContentModel] ${updateResponse.errors[0].message}`);
-        process.exit(updateResponse.errors[0].message);
-    } else if (updateResponse.data.updateContentModel.error) {
-        console.log(`[setupContentModel] ${updateResponse.data.updateContentModel.error.message}`);
-        process.exit(updateResponse.data.updateContentModel.error.message);
-    }
-    return updateResponse.data.updateContentModel.data;
+    return createResponse.data.createContentModel.data;
 };
 
 export const getModel = (item: CmsModel | string): CmsModel => {
@@ -83,6 +70,14 @@ export const setupGroupAndModels = async (params: SetupGroupAndModelsParams) => 
     }
     return {
         models: results,
+        getModel(modelId: string) {
+            const model = results.find(m => m.modelId === modelId);
+            if (!model) {
+                console.log(`[setupGroupAndModels] There is no model "${modelId}" defined.`);
+                process.exit(1);
+            }
+            return model;
+        },
         group
     };
 };
