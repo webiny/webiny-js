@@ -31,7 +31,6 @@ const createFieldCollection = (params: AddFieldsToCollectionParams): FieldCollec
         const transformPlugin = transformValuePlugins[fieldType];
         const valuePathPlugin = valuePathPlugins[fieldType];
 
-        const basePath = system ? [] : ["values"];
         /**
          * The required fieldId is a product of all of its parents and its own fieldId.
          */
@@ -60,8 +59,8 @@ const createFieldCollection = (params: AddFieldsToCollectionParams): FieldCollec
                     return valuePathPlugin.createPath(params);
                 }
 
-                return basePath
-                    .concat(parents.map(parent => parent.fieldId))
+                return parents
+                    .map(parent => parent.fieldId)
                     .concat([params.field.fieldId])
                     .join(".");
             },
@@ -128,7 +127,12 @@ export const createFields = (params: Params) => {
         fields,
         transformValuePlugins,
         valuePathPlugins,
-        parents: [],
+        parents: [
+            {
+                fieldId: "values",
+                multipleValues: false
+            }
+        ],
         system: false
     });
 

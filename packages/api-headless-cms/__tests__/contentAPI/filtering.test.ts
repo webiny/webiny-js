@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useFruitManageHandler } from "../testHelpers/useFruitManageHandler";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { useFruitReadHandler } from "../testHelpers/useFruitReadHandler";
@@ -7,58 +7,64 @@ import { useProductManageHandler } from "../testHelpers/useProductManageHandler"
 import { useProductReadHandler } from "../testHelpers/useProductReadHandler";
 import { useArticleManageHandler } from "../testHelpers/useArticleManageHandler";
 import { useArticleReadHandler } from "../testHelpers/useArticleReadHandler";
-import { setupContentModelGroup, setupContentModels } from "../testHelpers/setup";
+import { setupGroupAndModels } from "../testHelpers/setup";
 import { Fruit } from "./mocks/contentModels";
 
 const appleData: Fruit = {
-    name: "Apple",
-    isSomething: false,
-    rating: 400,
-    numbers: [5, 6, 7.2, 10.18, 12.05],
-    email: "john@doe.com",
-    url: "https://apple.test",
-    lowerCase: "apple",
-    upperCase: "APPLE",
-    date: "2020-12-15",
-    dateTime: new Date("2020-12-15T12:12:21").toISOString(),
-    dateTimeZ: "2020-12-15T14:52:41+01:00",
-    time: "11:39:58",
-    description: "fruit named apple",
-    slug: null
+    values: {
+        name: "Apple",
+        isSomething: false,
+        rating: 400,
+        numbers: [5, 6, 7.2, 10.18, 12.05],
+        email: "john@doe.com",
+        url: "https://apple.test",
+        lowerCase: "apple",
+        upperCase: "APPLE",
+        date: "2020-12-15",
+        dateTime: new Date("2020-12-15T12:12:21").toISOString(),
+        dateTimeZ: "2020-12-15T14:52:41+01:00",
+        time: "11:39:58",
+        description: "fruit named apple",
+        slug: null
+    }
 };
 
 const strawberryData: Fruit = {
-    name: "Strawberry",
-    isSomething: true,
-    rating: 500,
-    numbers: [5, 6, 7.2, 10.18, 12.05],
-    email: "john@doe.com",
-    url: "https://strawberry.test",
-    lowerCase: "strawberry",
-    upperCase: "STRAWBERRY",
-    date: "2020-12-18",
-    dateTime: new Date("2020-12-19T12:12:21").toISOString(),
-    dateTimeZ: "2020-12-25T14:52:41+01:00",
-    time: "12:44:55",
-    description: "strawberry named fruit",
-    slug: null
+    values: {
+        name: "Strawberry",
+        isSomething: true,
+        rating: 500,
+        numbers: [5, 6, 7.2, 10.18, 12.05],
+        email: "john@doe.com",
+        url: "https://strawberry.test",
+        lowerCase: "strawberry",
+        upperCase: "STRAWBERRY",
+        date: "2020-12-18",
+        dateTime: new Date("2020-12-19T12:12:21").toISOString(),
+        dateTimeZ: "2020-12-25T14:52:41+01:00",
+        time: "12:44:55",
+        description: "strawberry named fruit",
+        slug: null
+    }
 };
 
 const bananaData: Fruit = {
-    name: "Banana",
-    isSomething: false,
-    rating: 450,
-    numbers: [5, 6, 7.2, 10.18, 12.05],
-    email: "john@doe.com",
-    url: "https://banana.test",
-    lowerCase: "banana",
-    upperCase: "BANANA",
-    date: "2020-12-03",
-    dateTime: new Date("2020-12-03T12:12:21").toISOString(),
-    dateTimeZ: "2020-12-03T14:52:41+01:00",
-    time: "11:59:01",
-    description: "fruit banana named",
-    slug: null
+    values: {
+        name: "Banana",
+        isSomething: false,
+        rating: 450,
+        numbers: [5, 6, 7.2, 10.18, 12.05],
+        email: "john@doe.com",
+        url: "https://banana.test",
+        lowerCase: "banana",
+        upperCase: "BANANA",
+        date: "2020-12-03",
+        dateTime: new Date("2020-12-03T12:12:21").toISOString(),
+        dateTimeZ: "2020-12-03T14:52:41+01:00",
+        time: "11:59:01",
+        description: "fruit banana named",
+        slug: null
+    }
 };
 
 vi.setConfig({
@@ -70,6 +76,15 @@ describe("filtering", () => {
     const readOpts = { path: "read" };
 
     const mainManager = useGraphQLHandler(manageOpts);
+    
+    let setup: Awaited<ReturnType<typeof setupGroupAndModels>>;
+
+    beforeEach(async () => {
+        setup = await setupGroupAndModels({
+            manager: mainManager,
+            models: ["fruit", "category", "product", "article"]
+        });
+    });
 
     const { createFruit, publishFruit } = useFruitManageHandler({
         ...manageOpts
@@ -77,7 +92,7 @@ describe("filtering", () => {
 
     const filterOutFields = ["meta", "deletedOn", "deletedBy", "restoredOn", "restoredBy"];
 
-    const createAndPublishFruit = async (data: any): Promise<Fruit> => {
+    const createAndPublishFruit = async (data: any): Promise<Required<Fruit>> => {
         const [response] = await createFruit({
             data
         });
@@ -88,7 +103,7 @@ describe("filtering", () => {
             revision: createdFruit.id
         });
 
-        const fruit: Fruit = publish.data.publishFruit.data;
+        const fruit: Required<Fruit> = publish.data.publishFruit.data;
 
         for (const field of filterOutFields) {
             // @ts-expect-error
@@ -106,9 +121,8 @@ describe("filtering", () => {
     };
 
     const setupFruits = async () => {
-        const group = await setupContentModelGroup(mainManager);
-        await setupContentModels(mainManager, group, ["fruit"]);
-        return createFruits();
+
+        return await createFruits();
     };
 
     it("should filter fruits by date and sort asc", async () => {
@@ -121,7 +135,9 @@ describe("filtering", () => {
 
         const [response] = await listFruits({
             where: {
-                date_gte: "2020-12-15"
+                values: {
+                    date_gte: "2020-12-15"
+                }
             },
             sort: ["date_ASC"]
         });
@@ -151,7 +167,9 @@ describe("filtering", () => {
 
         const [response] = await listFruits({
             where: {
-                date_gte: "2020-12-15"
+                values: {
+                    date_gte: "2020-12-15"
+                }
             },
             sort: ["date_DESC"]
         });
@@ -181,8 +199,10 @@ describe("filtering", () => {
 
         const [response] = await listFruits({
             where: {
-                dateTime_gte: new Date("2020-12-03T01:01:01Z").toISOString(),
-                dateTime_lte: new Date("2020-12-04T01:01:01Z").toISOString()
+                values: {
+                    dateTime_gte: new Date("2020-12-03T01:01:01Z").toISOString(),
+                    dateTime_lte: new Date("2020-12-04T01:01:01Z").toISOString()
+                }
             },
             sort: ["dateTime_ASC"]
         });
@@ -315,6 +335,33 @@ describe("filtering", () => {
             data: {
                 listFruits: {
                     data: [apple, banana, strawberry],
+                    error: null,
+                    meta: {
+                        cursor: null,
+                        hasMoreItems: false,
+                        totalCount: 3
+                    }
+                }
+            }
+        });
+    });
+    
+    it("should sort by time desc", async () => {
+        const { apple, strawberry, banana } = await setupFruits();
+        
+        const handler = useFruitReadHandler({
+            ...readOpts
+        });
+        const { listFruits } = handler;
+        
+        const [response] = await listFruits({
+            sort: ["time_DESC"]
+        });
+        
+        expect(response).toEqual({
+            data: {
+                listFruits: {
+                    data: [strawberry, banana, apple],
                     error: null,
                     meta: {
                         cursor: null,
@@ -506,17 +553,17 @@ describe("filtering", () => {
         const categoryManager = useCategoryManageHandler(manageOpts);
         const productManager = useProductManageHandler(manageOpts);
         const productReader = useProductReadHandler(readOpts);
-
-        const group = await setupContentModelGroup(mainManager);
-        const { category: categoryModel } = await setupContentModels(mainManager, group, [
-            "category",
-            "product"
-        ]);
+        
+        const categoryModel = setup.getModel("category");
 
         const [createFruitResponse] = await categoryManager.createCategory({
-            data: {
-                title: "Fruit category 123",
-                slug: "fruit-category-123"
+            variables: {
+                data: {
+                    values: {
+                        title: "Fruit category 123",
+                        slug: "fruit-category-123"
+                    }
+                }
             }
         });
         expect(createFruitResponse).toEqual({
@@ -529,9 +576,13 @@ describe("filtering", () => {
         });
 
         const [createCarManufacturerResponse] = await categoryManager.createCategory({
-            data: {
-                title: "Car manufacturer",
-                slug: "car-manufacturer"
+            variables: {
+                data: {
+                    values: {
+                        title: "Car manufacturer",
+                        slug: "car-manufacturer"
+                    }
+                }
             }
         });
         expect(createCarManufacturerResponse).toEqual({
@@ -543,34 +594,41 @@ describe("filtering", () => {
             }
         });
 
-        const fruitCategoryId = createFruitResponse.data.createCategory.data.id;
-        const carManufacturerCategoryId = createCarManufacturerResponse.data.createCategory.data.id;
+        const fruitCategoryId = createFruitResponse.data.createCategory.data!.id;
+        const carManufacturerCategoryId =
+            createCarManufacturerResponse.data.createCategory.data!.id;
 
         await categoryManager.publishCategory({
-            revision: fruitCategoryId
+            variables: {
+                revision: fruitCategoryId
+            }
         });
         await categoryManager.publishCategory({
-            revision: carManufacturerCategoryId
+            variables: {
+                revision: carManufacturerCategoryId
+            }
         });
 
         const [createBananaResponse] = await productManager.createProduct({
             data: {
-                title: "Banana",
-                price: 100,
-                availableOn: "2021-04-19",
-                color: "red",
-                availableSizes: ["l"],
-                image: "banana.jpg",
-                category: {
-                    modelId: categoryModel.modelId,
-                    id: fruitCategoryId
-                },
-                variant: {
-                    images: null,
-                    options: {
-                        categories: null,
-                        image: null,
-                        longText: null
+                values: {
+                    title: "Banana",
+                    price: 100,
+                    availableOn: "2021-04-19",
+                    color: "red",
+                    availableSizes: ["l"],
+                    image: "banana.jpg",
+                    category: {
+                        modelId: categoryModel.modelId,
+                        id: fruitCategoryId
+                    },
+                    variant: {
+                        images: null,
+                        options: {
+                            categories: null,
+                            image: null,
+                            longText: null
+                        }
                     }
                 }
             }
@@ -1036,17 +1094,17 @@ describe("filtering", () => {
     it("should filter entries by empty datetime field", async () => {
         const categoryManager = useCategoryManageHandler(manageOpts);
         const productManager = useProductManageHandler(manageOpts);
-
-        const group = await setupContentModelGroup(mainManager);
-        const { category: categoryModel } = await setupContentModels(mainManager, group, [
-            "category",
-            "product"
-        ]);
+        
+        const categoryModel = setup.getModel("category");
 
         const [createFruitResponse] = await categoryManager.createCategory({
-            data: {
-                title: "Fruit category 123",
-                slug: "fruit-category-123"
+            variables: {
+                data: {
+                    values: {
+                        title: "Fruit category 123",
+                        slug: "fruit-category-123"
+                    }
+                }
             }
         });
         expect(createFruitResponse).toEqual({
@@ -1057,19 +1115,21 @@ describe("filtering", () => {
                 }
             }
         });
-        const fruitCategoryId = createFruitResponse.data.createCategory.data.id;
+        const fruitCategoryId = createFruitResponse.data.createCategory.data!.id;
 
         const [createBananaResponse] = await productManager.createProduct({
             data: {
-                title: "Banana",
-                price: 100,
-                availableOn: "2021-04-19",
-                color: "red",
-                availableSizes: ["l"],
-                image: "banana.jpg",
-                category: {
-                    modelId: categoryModel.modelId,
-                    id: fruitCategoryId
+                values: {
+                    title: "Banana",
+                    price: 100,
+                    availableOn: "2021-04-19",
+                    color: "red",
+                    availableSizes: ["l"],
+                    image: "banana.jpg",
+                    category: {
+                        modelId: categoryModel.modelId,
+                        id: fruitCategoryId
+                    }
                 }
             }
         });
@@ -1087,15 +1147,17 @@ describe("filtering", () => {
 
         const [createPlumResponse] = await productManager.createProduct({
             data: {
-                title: "Plum",
-                price: 100,
-                availableOn: "2021-04-22",
-                color: "white",
-                availableSizes: ["s"],
-                image: "plum.jpg",
-                category: {
-                    modelId: categoryModel.modelId,
-                    id: fruitCategoryId
+                values: {
+                    title: "Plum",
+                    price: 100,
+                    availableOn: "2021-04-22",
+                    color: "white",
+                    availableSizes: ["s"],
+                    image: "plum.jpg",
+                    category: {
+                        modelId: categoryModel.modelId,
+                        id: fruitCategoryId
+                    }
                 }
             }
         });
@@ -1113,15 +1175,17 @@ describe("filtering", () => {
 
         const [createAppleResponse] = await productManager.createProduct({
             data: {
-                title: "Apple",
-                price: 100,
-                availableOn: null,
-                color: "red",
-                availableSizes: ["s"],
-                image: "apple.jpg",
-                category: {
-                    modelId: categoryModel.modelId,
-                    id: fruitCategoryId
+                values: {
+                    title: "Apple",
+                    price: 100,
+                    availableOn: null,
+                    color: "red",
+                    availableSizes: ["s"],
+                    image: "apple.jpg",
+                    category: {
+                        modelId: categoryModel.modelId,
+                        id: fruitCategoryId
+                    }
                 }
             }
         });
@@ -1139,7 +1203,9 @@ describe("filtering", () => {
 
         const [listNullResponse] = await productManager.listProducts({
             where: {
-                availableOn: null
+                values: {
+                    availableOn: null
+                }
             },
             sort: ["createdOn_ASC"]
         });
@@ -1183,9 +1249,6 @@ describe("filtering", () => {
     it("should filter entries by entryId", async () => {
         const articleManager = useArticleManageHandler(manageOpts);
         const articleReader = useArticleReadHandler(readOpts);
-
-        const group = await setupContentModelGroup(mainManager);
-        await setupContentModels(mainManager, group, ["category", "article"]);
 
         const [createFruitResponse] = await articleManager.createArticle({
             data: {
@@ -1533,23 +1596,23 @@ describe("filtering", () => {
             }
         });
 
-        const group = await setupContentModelGroup(mainManager);
-
-        await setupContentModels(mainManager, group, ["category", "article"]);
-
         const [createFruitResponse] = await articleManager.createArticle({
             data: {
-                title: "Fruit 123",
-                body: null,
-                categories: []
+                values: {
+                    title: "Fruit 123",
+                    body: null,
+                    categories: []
+                }
             }
         });
 
         const [createAnimalResponse] = await articleAnotherManager.createArticle({
             data: {
-                title: "Animal 123",
-                body: null,
-                categories: []
+                values: {
+                    title: "Animal 123",
+                    body: null,
+                    categories: []
+                }
             }
         });
 
@@ -1694,22 +1757,23 @@ describe("filtering", () => {
             }
         });
 
-        const group = await setupContentModelGroup(mainManager);
-        await setupContentModels(mainManager, group, ["category", "article"]);
-
         const [createFruitResponse] = await articleManager.createArticle({
             data: {
-                title: "Fruit 123",
-                body: null,
-                categories: []
+                values: {
+                    title: "Fruit 123",
+                    body: null,
+                    categories: []
+                }
             }
         });
 
         const [createAnimalResponse] = await articleAnotherManager.createArticle({
             data: {
-                title: "Animal 123",
-                body: null,
-                categories: []
+                values: {
+                    title: "Animal 123",
+                    body: null,
+                    categories: []
+                }
             }
         });
 
@@ -1852,7 +1916,9 @@ describe("filtering", () => {
 
         const [fruitsContainsResponse] = await listFruits({
             where: {
-                description_contains: "fruit"
+                values: {
+                    description_contains: "fruit"
+                }
             },
             sort: ["createdOn_ASC"]
         });
@@ -1863,18 +1929,24 @@ describe("filtering", () => {
                     data: [
                         {
                             id: apple.id,
-                            name: apple.name,
-                            description: apple.description
+                            values: {
+                                name: apple.values.name,
+                                description: apple.values.description
+                            }
                         },
                         {
                             id: strawberry.id,
-                            name: strawberry.name,
-                            description: strawberry.description
+                            values: {
+                                name: strawberry.values.name,
+                                description: strawberry.values.description
+                            }
                         },
                         {
                             id: banana.id,
-                            name: banana.name,
-                            description: banana.description
+                            values: {
+                                name: banana.values.name,
+                                description: banana.values.description
+                            }
                         }
                     ],
                     error: null
@@ -1884,7 +1956,9 @@ describe("filtering", () => {
 
         const [fruitNotContainsResponse] = await listFruits({
             where: {
-                description_not_contains: "fruit"
+                values: {
+                    description_not_contains: "fruit"
+                }
             },
             sort: ["createdOn_ASC"]
         });
@@ -1900,7 +1974,9 @@ describe("filtering", () => {
 
         const [bananaContainsResponse] = await listFruits({
             where: {
-                description_contains: "banana"
+                values: {
+                    description_contains: "banana"
+                }
             },
             sort: ["createdOn_ASC"]
         });
@@ -1911,8 +1987,10 @@ describe("filtering", () => {
                     data: [
                         {
                             id: banana.id,
-                            name: banana.name,
-                            description: banana.description
+                            values: {
+                                name: banana.values.name,
+                                description: banana.values.description
+                            }
                         }
                     ],
                     error: null
@@ -1922,7 +2000,9 @@ describe("filtering", () => {
 
         const [appleNotContainsResponse] = await listFruits({
             where: {
-                description_not_contains: "apple"
+                values: {
+                    description_not_contains: "apple"
+                }
             },
             sort: ["createdOn_ASC"]
         });
@@ -1933,13 +2013,17 @@ describe("filtering", () => {
                     data: [
                         {
                             id: strawberry.id,
-                            name: strawberry.name,
-                            description: strawberry.description
+                            values: {
+                                name: strawberry.values.name,
+                                description: strawberry.values.description
+                            }
                         },
                         {
                             id: banana.id,
-                            name: banana.name,
-                            description: banana.description
+                            values: {
+                                name: banana.values.name,
+                                description: banana.values.description
+                            }
                         }
                     ],
                     error: null
@@ -1956,7 +2040,9 @@ describe("filtering", () => {
 
         const [filteredResponse] = await listFruits({
             where: {
-                name_startsWith: "ap"
+                values: {
+                    name_startsWith: "ap"
+                }
             }
         });
         expect(filteredResponse).toMatchObject({
@@ -1975,7 +2061,9 @@ describe("filtering", () => {
 
         const [response] = await listFruits({
             where: {
-                name_startsWith: ""
+                values: {
+                    name_startsWith: ""
+                }
             }
         });
         expect(response).toMatchObject({
@@ -2001,7 +2089,9 @@ describe("filtering", () => {
 
         const [filteredResponse] = await listFruits({
             where: {
-                name_not_startsWith: "ap"
+                values: {
+                    name_not_startsWith: "ap"
+                }
             }
         });
         expect(filteredResponse).toMatchObject({
@@ -2020,7 +2110,9 @@ describe("filtering", () => {
 
         const [response] = await listFruits({
             where: {
-                name_not_startsWith: ""
+                values: {
+                    name_not_startsWith: ""
+                }
             }
         });
         expect(response).toMatchObject({

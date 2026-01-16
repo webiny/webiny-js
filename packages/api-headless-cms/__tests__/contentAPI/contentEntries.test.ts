@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { useFruitManageHandler } from "../testHelpers/useFruitManageHandler";
 import { Fruit } from "./mocks/contentModels";
-import { setupContentModelGroup, setupContentModels } from "../testHelpers/setup";
+import { setupGroupAndModels } from "../testHelpers/setup";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 
 const appleData: Fruit = {
@@ -157,8 +157,10 @@ describe("Content entries", () => {
     };
 
     const setupFruits = async () => {
-        const group = await setupContentModelGroup(mainManager);
-        await setupContentModels(mainManager, group, ["fruit"]);
+        await setupGroupAndModels({
+            manager: mainManager,
+            models: ["fruit"]
+        });
         return createFruits();
     };
     it("should get content entry by modelId and id", async () => {

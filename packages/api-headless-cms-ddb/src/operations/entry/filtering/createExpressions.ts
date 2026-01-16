@@ -16,10 +16,6 @@ interface CreateExpressionParams {
     condition: ExpressionCondition;
 }
 
-interface CreateExpressionCb {
-    (params: CreateExpressionParams): Expression;
-}
-
 interface Params {
     plugins: PluginsContainer;
     where: Partial<CmsEntryListWhere>;
@@ -81,7 +77,7 @@ export const createExpressions = (params: Params): Expression => {
         );
     };
 
-    const createExpression: CreateExpressionCb = ({ where, condition }) => {
+    const createExpression = ({ where, condition }: CreateExpressionParams): Expression => {
         const expression: Expression = {
             filters: [],
             expressions: [],
