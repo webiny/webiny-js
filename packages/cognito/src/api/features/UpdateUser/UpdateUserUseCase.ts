@@ -1,18 +1,18 @@
 import { Result } from "@webiny/feature/api";
-import { UpdateUserUseCase } from "@webiny/api-core/features/UpdateUser";
+import { UpdateUserUseCase as CoreUpdateUser } from "@webiny/api-core/features/UpdateUser";
 import { GetUserUseCase } from "@webiny/api-core/features/GetUser";
 import {
     NotAuthorizedError,
     UserValidationError
 } from "@webiny/api-core/features/users/shared/errors.js";
-import { UpdateAdminUserUseCase as UseCaseAbstraction } from "./abstractions.js";
+import type { AdminUser } from "@webiny/api-core/types/users.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { UpdateUserUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { CognitoService } from "../shared/abstractions.js";
 import { Username } from "~/api/domain/Username.js";
 import { CognitoUpdateUserError } from "~/api/domain/errors.js";
 import { updateAdminUserValidation } from "./schema.js";
-import type { AdminUser } from "@webiny/api-core/types/users.js";
 import type { UpdateAdminUserInput } from "./abstractions.js";
-import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 type MappedAttrType = (user: AdminUser) => string | keyof AdminUser;
 
@@ -22,13 +22,13 @@ const defaultUpdateAttributes = {
     preferred_username: "email"
 };
 
-class UpdateAdminUserUseCaseImpl implements UseCaseAbstraction.Interface {
+class UpdateUserUseCaseImpl implements UseCaseAbstraction.Interface {
     private updateAttributes: Record<string, string | MappedAttrType>;
 
     constructor(
         private identityContext: IdentityContext.Interface,
         private cognitoService: CognitoService.Interface,
-        private updateUserUseCase: UpdateUserUseCase.Interface,
+        private updateUserUseCase: CoreUpdateUser.Interface,
         private getUserUseCase: GetUserUseCase.Interface
     ) {
         this.updateAttributes = defaultUpdateAttributes;
@@ -109,7 +109,7 @@ class UpdateAdminUserUseCaseImpl implements UseCaseAbstraction.Interface {
     }
 }
 
-export const UpdateAdminUserUseCase = UseCaseAbstraction.createImplementation({
-    implementation: UpdateAdminUserUseCaseImpl,
-    dependencies: [IdentityContext, CognitoService, UpdateUserUseCase, GetUserUseCase]
+export const UpdateUserUseCase = UseCaseAbstraction.createImplementation({
+    implementation: UpdateUserUseCaseImpl,
+    dependencies: [IdentityContext, CognitoService, CoreUpdateUser, GetUserUseCase]
 });

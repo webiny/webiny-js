@@ -1,19 +1,19 @@
 import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import { DeleteUserUseCase } from "@webiny/api-core/features/DeleteUser";
+import { DeleteUserUseCase as CoreDeleteUser } from "@webiny/api-core/features/DeleteUser";
 import { GetUserUseCase } from "@webiny/api-core/features/GetUser";
 import { NotAuthorizedError } from "@webiny/api-core/features/users/shared/errors.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { DeleteAdminUserUseCase as UseCaseAbstraction } from "./abstractions.js";
+import { DeleteUserUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { CognitoService } from "../shared/abstractions.js";
 import { Username } from "~/api/domain/Username.js";
 import { CognitoDeleteUserError } from "~/api/domain/errors.js";
 
-class DeleteAdminUserUseCaseImpl implements UseCaseAbstraction.Interface {
+class DeleteUserUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private identityContext: IdentityContext.Interface,
         private cognitoService: CognitoService.Interface,
-        private deleteUserUseCase: DeleteUserUseCase.Interface,
+        private deleteUserUseCase: CoreDeleteUser.Interface,
         private getUserUseCase: GetUserUseCase.Interface
     ) {}
 
@@ -48,8 +48,8 @@ class DeleteAdminUserUseCaseImpl implements UseCaseAbstraction.Interface {
     }
 }
 
-export const DeleteAdminUserUseCase = createImplementation({
+export const DeleteUserUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
-    implementation: DeleteAdminUserUseCaseImpl,
-    dependencies: [IdentityContext, CognitoService, DeleteUserUseCase, GetUserUseCase]
+    implementation: DeleteUserUseCaseImpl,
+    dependencies: [IdentityContext, CognitoService, CoreDeleteUser, GetUserUseCase]
 });

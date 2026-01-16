@@ -21,7 +21,7 @@ export interface CreateAdminUserInput {
     teams?: string[];
 }
 
-export interface ICreateAdminUserUseCaseErrors {
+export interface ICreateUserUseCaseErrors {
     authorization: NotAuthorizedError;
     validation: UserValidationError;
     emailTaken: EmailTakenError;
@@ -30,17 +30,17 @@ export interface ICreateAdminUserUseCaseErrors {
     cognitoCreateUser: CognitoCreateUserError;
 }
 
-type CreateAdminUserError = ICreateAdminUserUseCaseErrors[keyof ICreateAdminUserUseCaseErrors];
+type CreateAdminUserError = ICreateUserUseCaseErrors[keyof ICreateUserUseCaseErrors];
 
-export interface ICreateAdminUserUseCase {
+export interface ICreateUserUseCase {
     execute(input: CreateAdminUserInput): Promise<Result<AdminUser, CreateAdminUserError>>;
 }
 
-export const CreateAdminUserUseCase =
-    createAbstraction<ICreateAdminUserUseCase>("CreateAdminUserUseCase");
+export const CreateUserUseCase =
+    createAbstraction<ICreateUserUseCase>("CreateUserUseCase");
 
-export namespace CreateAdminUserUseCase {
-    export type Interface = ICreateAdminUserUseCase;
+export namespace CreateUserUseCase {
+    export type Interface = ICreateUserUseCase;
     export type Input = CreateAdminUserInput;
     export type Error = CreateAdminUserError;
 }

@@ -1,25 +1,26 @@
 import { Result } from "@webiny/feature/api";
-import { CreateUserUseCase } from "@webiny/api-core/features/CreateUser";
-import { ListUsersUseCase } from "@webiny/api-core/features/ListUsers";
 import { AdminUsersRepository } from "@webiny/api-core/features/users/shared/abstractions.js";
 import {
     NotAuthorizedError,
     UserValidationError
 } from "@webiny/api-core/features/users/shared/errors.js";
-import { CreateAdminUserUseCase as UseCaseAbstraction } from "./abstractions.js";
+import type { AdminUser } from "@webiny/api-core/types/users.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { CreateUserUseCase as CoreCreateUser } from "@webiny/api-core/features/users/CreateUser/index.js";
+import { ListUsersUseCase } from "@webiny/api-core/features/users/ListUsers/index.js";
+
+import { CreateUserUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { CognitoService } from "../shared/abstractions.js";
 import { Username } from "~/api/domain/Username.js";
 import { CognitoAccountExistsError, CognitoCreateUserError } from "~/api/domain/errors.js";
 import { createAdminUserValidation } from "./schema.js";
-import type { AdminUser } from "@webiny/api-core/types/users.js";
 import type { CreateAdminUserInput } from "./abstractions.js";
-import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
-class CreateAdminUserUseCaseImpl implements UseCaseAbstraction.Interface {
+class CreateUserUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private identityContext: IdentityContext.Interface,
         private cognitoService: CognitoService.Interface,
-        private createUserUseCase: CreateUserUseCase.Interface,
+        private createUserUseCase: CoreCreateUser.Interface,
         private listUsersUseCase: ListUsersUseCase.Interface,
         private repository: AdminUsersRepository.Interface
     ) {}
@@ -109,12 +110,12 @@ class CreateAdminUserUseCaseImpl implements UseCaseAbstraction.Interface {
     }
 }
 
-export const CreateAdminUserUseCase = UseCaseAbstraction.createImplementation({
-    implementation: CreateAdminUserUseCaseImpl,
+export const CreateUserUseCase = UseCaseAbstraction.createImplementation({
+    implementation: CreateUserUseCaseImpl,
     dependencies: [
         IdentityContext,
         CognitoService,
-        CreateUserUseCase,
+        CoreCreateUser,
         ListUsersUseCase,
         AdminUsersRepository
     ]

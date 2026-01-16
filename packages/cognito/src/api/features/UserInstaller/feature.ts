@@ -1,9 +1,9 @@
 import { createFeature } from "@webiny/feature/api";
-import { AdminUserInstaller } from "./AdminUserInstaller.js";
+import { UserInstaller } from "./UserInstaller.js";
 
 export const AdminUserInstallerFeature = createFeature({
     name: "AdminUserInstallerFeature",
     register(container) {
-        container.register(AdminUserInstaller);
+        container.register(UserInstaller);
     }
 });

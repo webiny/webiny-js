@@ -12,7 +12,7 @@ export interface IDeleteUserErrors {
 }
 
 // Combined error type (use case errors + repository errors)
-type DeleteUserError = IDeleteUserErrors[keyof IDeleteUserErrors] | AdminUsersRepository.Error;
+export type DeleteUserError = IDeleteUserErrors[keyof IDeleteUserErrors] | AdminUsersRepository.Error;
 
 // Use case interface
 export interface IDeleteUser {

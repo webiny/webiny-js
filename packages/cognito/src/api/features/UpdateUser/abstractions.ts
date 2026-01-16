@@ -20,7 +20,7 @@ export interface UpdateAdminUserInput {
     teams?: string[];
 }
 
-export interface IUpdateAdminUserUseCaseErrors {
+export interface IUpdateUserUseCaseErrors {
     authorization: NotAuthorizedError;
     validation: UserValidationError;
     emailTaken: EmailTakenError;
@@ -28,20 +28,20 @@ export interface IUpdateAdminUserUseCaseErrors {
     cognitoUpdateUser: CognitoUpdateUserError;
 }
 
-type IUpdateAdminUserError = IUpdateAdminUserUseCaseErrors[keyof IUpdateAdminUserUseCaseErrors];
+type IUpdateAdminUserError = IUpdateUserUseCaseErrors[keyof IUpdateUserUseCaseErrors];
 
-export interface IUpdateAdminUserUseCase {
+export interface IUpdateUserUseCase {
     execute(
         id: string,
         input: UpdateAdminUserInput
     ): Promise<Result<AdminUser, IUpdateAdminUserError>>;
 }
 
-export const UpdateAdminUserUseCase =
-    createAbstraction<IUpdateAdminUserUseCase>("UpdateAdminUserUseCase");
+export const UpdateUserUseCase =
+    createAbstraction<IUpdateUserUseCase>("UpdateUserUseCase");
 
-export namespace UpdateAdminUserUseCase {
-    export type Interface = IUpdateAdminUserUseCase;
+export namespace UpdateUserUseCase {
+    export type Interface = IUpdateUserUseCase;
     export type Input = UpdateAdminUserInput;
     export type Error = IUpdateAdminUserError;
 }

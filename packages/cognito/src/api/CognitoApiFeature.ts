@@ -3,9 +3,9 @@ import { AdminUsersSchema } from "~/api/graphql/user.gql.js";
 import { AdminUserInstallerFeature } from "./features/AdminUserInstaller/feature.js";
 import { CognitoIdpFeature } from "./features/CognitoIdp/index.js";
 import { CognitoService } from "./features/shared/CognitoService.js";
-import { CreateAdminUserFeature } from "./features/CreateAdminUser/index.js";
-import { UpdateAdminUserFeature } from "./features/UpdateAdminUser/index.js";
-import { DeleteAdminUserFeature } from "./features/DeleteAdminUser/index.js";
+import { CreateUserFeature } from "./features/CreateUser/index.js";
+import { UpdateUserFeature } from "./features/UpdateUser/index.js";
+import { DeleteUserFeature } from "./features/DeleteUser/index.js";
 import { CognitoConfig } from "./features/shared/abstractions.js";
 
 export const CognitoApiFeature = createFeature({
@@ -19,9 +19,9 @@ export const CognitoApiFeature = createFeature({
         container.register(CognitoService).inSingletonScope();
 
         // Register features
-        CreateAdminUserFeature.register(container);
-        UpdateAdminUserFeature.register(container);
-        DeleteAdminUserFeature.register(container);
+        CreateUserFeature.register(container);
+        UpdateUserFeature.register(container);
+        DeleteUserFeature.register(container);
         AdminUserInstallerFeature.register(container);
         CognitoIdpFeature.register(container);
 

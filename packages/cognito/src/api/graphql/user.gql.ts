@@ -4,9 +4,9 @@ import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
 import { GetUserUseCase } from "@webiny/api-core/features/GetUser";
 import NotAuthorizedResponse from "@webiny/api-core/graphql/security/NotAuthorizedResponse.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
-import { CreateAdminUserUseCase } from "~/api/features/CreateAdminUser/index.js";
-import { UpdateAdminUserUseCase } from "~/api/features/UpdateAdminUser/index.js";
-import { DeleteAdminUserUseCase } from "~/api/features/DeleteAdminUser/index.js";
+import { CreateUserUseCase } from "~/api/features/CreateUser/index.js";
+import { UpdateUserUseCase } from "~/api/features/UpdateUser/index.js";
+import { DeleteUserUseCase } from "~/api/features/DeleteUser/index.js";
 
 class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
     execute(): CoreGraphQLSchemaFactory.Return {
@@ -75,7 +75,7 @@ class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                 updateCurrentUser: async (_, args: any, context) => {
                     const identityContext = context.container.resolve(IdentityContext);
                     const getUserUseCase = context.container.resolve(GetUserUseCase);
-                    const updateUserUseCase = context.container.resolve(UpdateAdminUserUseCase);
+                    const updateUserUseCase = context.container.resolve(UpdateUserUseCase);
 
                     const identity = identityContext.getIdentity();
                     if (!identity.isAdmin()) {
@@ -107,10 +107,9 @@ class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                     });
                 },
                 createUser: async (_, { data }: any, context) => {
-                    const createAdminUserUseCase =
-                        context.container.resolve(CreateAdminUserUseCase);
+                    const createUserUseCase = context.container.resolve(CreateUserUseCase);
 
-                    const result = await createAdminUserUseCase.execute(data);
+                    const result = await createUserUseCase.execute(data);
                     if (result.isFail()) {
                         return new ErrorResponse({
                             message: result.error.message,
@@ -122,8 +121,7 @@ class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                     return new Response(result.value);
                 },
                 updateUser: async (_, { data, id }: any, context) => {
-                    const updateAdminUserUseCase =
-                        context.container.resolve(UpdateAdminUserUseCase);
+                    const updateUserUseCase = context.container.resolve(UpdateUserUseCase);
 
                     const identityContext = context.container.resolve(IdentityContext);
 
@@ -135,7 +133,7 @@ class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                         });
                     }
 
-                    const result = await updateAdminUserUseCase.execute(id, data);
+                    const result = await updateUserUseCase.execute(id, data);
                     if (result.isFail()) {
                         return new ErrorResponse({
                             message: result.error.message,
@@ -146,10 +144,9 @@ class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                     return new Response(result.value);
                 },
                 deleteUser: async (_, { id }: any, context) => {
-                    const deleteAdminUserUseCase =
-                        context.container.resolve(DeleteAdminUserUseCase);
+                    const deleteUserUseCase = context.container.resolve(DeleteUserUseCase);
 
-                    const result = await deleteAdminUserUseCase.execute(id);
+                    const result = await deleteUserUseCase.execute(id);
                     if (result.isFail()) {
                         return new ErrorResponse({
                             message: result.error.message,

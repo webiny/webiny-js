@@ -12,9 +12,9 @@ import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/i
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import { CognitoApiFeature } from "~/api/CognitoApiFeature.js";
 import { CognitoService } from "~/api/features/shared/abstractions.js";
-import { CreateAdminUserUseCase } from "~/api/features/CreateAdminUser/index.js";
-import { UpdateAdminUserUseCase } from "~/api/features/UpdateAdminUser/index.js";
-import { DeleteAdminUserUseCase } from "~/api/features/DeleteAdminUser/index.js";
+import { CreateUserUseCase } from "~/api/features/CreateUser/index.js";
+import { UpdateUserUseCase } from "~/api/features/UpdateUser/index.js";
+import { DeleteUserUseCase } from "~/api/features/DeleteUser/index.js";
 import { adminUsers } from "~tests/mocks/users.js";
 import {
     CognitoCreateUserError,
@@ -54,7 +54,7 @@ describe("Admin Users (Cognito)", () => {
     });
 
     it("should create admin user in both api-core and Cognito", async () => {
-        const createAdminUser = container.resolve(CreateAdminUserUseCase);
+        const createAdminUser = container.resolve(CreateUserUseCase);
 
         const result = await createAdminUser.execute(adminUsers.userA);
 
@@ -72,7 +72,7 @@ describe("Admin Users (Cognito)", () => {
     });
 
     it("should fail to create admin user if account already exists in Cognito", async () => {
-        const createAdminUser = container.resolve(CreateAdminUserUseCase);
+        const createAdminUser = container.resolve(CreateUserUseCase);
 
         // Create first user
         const firstResult = await createAdminUser.execute(adminUsers.userA);
@@ -90,7 +90,7 @@ describe("Admin Users (Cognito)", () => {
     });
 
     it("should fail to create admin user if Cognito throws error", async () => {
-        const createAdminUser = container.resolve(CreateAdminUserUseCase);
+        const createAdminUser = container.resolve(CreateUserUseCase);
 
         const cognitoError: Error = {
             name: "CognitoError",
@@ -106,8 +106,8 @@ describe("Admin Users (Cognito)", () => {
     });
 
     it("should update admin user in both api-core and Cognito", async () => {
-        const createAdminUser = container.resolve(CreateAdminUserUseCase);
-        const updateAdminUser = container.resolve(UpdateAdminUserUseCase);
+        const createAdminUser = container.resolve(CreateUserUseCase);
+        const updateAdminUser = container.resolve(UpdateUserUseCase);
 
         // Create user
         const createResult = await createAdminUser.execute(adminUsers.userA);
@@ -135,8 +135,8 @@ describe("Admin Users (Cognito)", () => {
     });
 
     it("should update password in Cognito when password is provided", async () => {
-        const createAdminUser = container.resolve(CreateAdminUserUseCase);
-        const updateAdminUser = container.resolve(UpdateAdminUserUseCase);
+        const createAdminUser = container.resolve(CreateUserUseCase);
+        const updateAdminUser = container.resolve(UpdateUserUseCase);
 
         // Create user
         const createResult = await createAdminUser.execute(adminUsers.userA);
@@ -160,8 +160,8 @@ describe("Admin Users (Cognito)", () => {
     });
 
     it("should fail to update admin user if Cognito throws error", async () => {
-        const createAdminUser = container.resolve(CreateAdminUserUseCase);
-        const updateAdminUser = container.resolve(UpdateAdminUserUseCase);
+        const createAdminUser = container.resolve(CreateUserUseCase);
+        const updateAdminUser = container.resolve(UpdateUserUseCase);
 
         // Create user
         const createResult = await createAdminUser.execute(adminUsers.userA);
@@ -183,8 +183,8 @@ describe("Admin Users (Cognito)", () => {
     });
 
     it("should delete admin user from both api-core and Cognito", async () => {
-        const createAdminUser = container.resolve(CreateAdminUserUseCase);
-        const deleteAdminUser = container.resolve(DeleteAdminUserUseCase);
+        const createAdminUser = container.resolve(CreateUserUseCase);
+        const deleteAdminUser = container.resolve(DeleteUserUseCase);
 
         // Create user
         const createResult = await createAdminUser.execute(adminUsers.userA);
@@ -209,8 +209,8 @@ describe("Admin Users (Cognito)", () => {
     });
 
     it("should fail to delete admin user if Cognito throws error", async () => {
-        const createAdminUser = container.resolve(CreateAdminUserUseCase);
-        const deleteAdminUser = container.resolve(DeleteAdminUserUseCase);
+        const createAdminUser = container.resolve(CreateUserUseCase);
+        const deleteAdminUser = container.resolve(DeleteUserUseCase);
 
         // Create user
         const createResult = await createAdminUser.execute(adminUsers.userA);
@@ -231,7 +231,7 @@ describe("Admin Users (Cognito)", () => {
     });
 
     it("should set email as verified when creating first user", async () => {
-        const createAdminUser = container.resolve(CreateAdminUserUseCase);
+        const createAdminUser = container.resolve(CreateUserUseCase);
 
         // Spy on setEmailVerified
         const setEmailVerifiedSpy = vi.spyOn(mockCognitoService, "setEmailVerified");
@@ -244,7 +244,7 @@ describe("Admin Users (Cognito)", () => {
     });
 
     it("should set permanent password for first user in the system", async () => {
-        const createAdminUser = container.resolve(CreateAdminUserUseCase);
+        const createAdminUser = container.resolve(CreateUserUseCase);
 
         // Spy on setPermanentPassword
         const setPermanentPasswordSpy = vi.spyOn(mockCognitoService, "setPermanentPassword");
@@ -260,8 +260,8 @@ describe("Admin Users (Cognito)", () => {
     });
 
     it("should call Cognito updateUserAttributes when email changes", async () => {
-        const createAdminUser = container.resolve(CreateAdminUserUseCase);
-        const updateAdminUser = container.resolve(UpdateAdminUserUseCase);
+        const createAdminUser = container.resolve(CreateUserUseCase);
+        const updateAdminUser = container.resolve(UpdateUserUseCase);
 
         // Create user
         const createResult = await createAdminUser.execute(adminUsers.userA);
@@ -289,7 +289,7 @@ describe("Admin Users (Cognito)", () => {
     });
 
     it("should validate input before creating user", async () => {
-        const createAdminUser = container.resolve(CreateAdminUserUseCase);
+        const createAdminUser = container.resolve(CreateUserUseCase);
 
         // Try to create user with invalid email
         const result = await createAdminUser.execute({
@@ -304,7 +304,7 @@ describe("Admin Users (Cognito)", () => {
     });
 
     it("should validate password requirements when creating user", async () => {
-        const createAdminUser = container.resolve(CreateAdminUserUseCase);
+        const createAdminUser = container.resolve(CreateUserUseCase);
 
         // Try to create user with short password
         const result = await createAdminUser.execute({
