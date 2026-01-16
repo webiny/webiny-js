@@ -1,9 +1,9 @@
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import type { AdminUser } from "@webiny/api-core/types/users.js";
 import { AppInstaller } from "@webiny/api-core/features/InstallTenant";
-import { CreateUserUseCase } from "@webiny/api-core/features/CreateUser";
-import { DeleteUserUseCase } from "@webiny/api-core/features/DeleteUser";
 import { GetRoleUseCase } from "@webiny/api-core/features/GetRole";
+import { DeleteUserUseCase } from "~/api/features/DeleteUser/index.js";
+import { CreateUserUseCase } from "~/api/features/CreateUser/index.js";
 
 interface UserInstallationData {
     firstName: string;

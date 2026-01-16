@@ -80,7 +80,7 @@ class InstallTenantUseCaseImpl implements UseCaseAbstraction.Interface {
                 })
             );
 
-            return Result.ok(undefined);
+            return Result.ok();
         } catch (error) {
             // Unexpected error during installation loop
             await this.rollback(tenant, installedApps);
