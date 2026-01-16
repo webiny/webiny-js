@@ -83,17 +83,20 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
             }
 
             const { fieldId } = field;
-
+            /**
+             * Figure out a better way to extract value from parent.
+             * // TODO fix
+             */
             const getValue = (parent: any) => {
                 if (!parent?.values || !parent?.values[fieldId]) {
                     return {
                         isRoot: false,
-                        value: parent?.[fieldId],
+                        value: parent?.[fieldId]
                     };
                 }
                 return {
                     isRoot: true,
-                    value: parent.values[fieldId],
+                    value: parent.values[fieldId]
                 };
             };
 
@@ -102,7 +105,7 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
                  * This is required because due to ref field can be requested without the populated data.
                  * At that point there is no .values  no fieldId property on the parent
                  */
-                const {isRoot: valueIsRoot, value} = getValue(parent);
+                const { isRoot: valueIsRoot, value } = getValue(parent);
                 if (value === undefined) {
                     return undefined;
                 }
@@ -114,10 +117,16 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
                     value
                 });
 
-                set(valueIsRoot && parent.values ? parent.values : parent, fieldId, transformedValue);
+                set(
+                    valueIsRoot && parent.values ? parent.values : parent,
+                    fieldId,
+                    transformedValue
+                );
 
                 if (!resolver) {
-                    return valueIsRoot && parent.values[fieldId] ? parent.values[fieldId] : parent[fieldId];
+                    return valueIsRoot && parent.values[fieldId]
+                        ? parent.values[fieldId]
+                        : parent[fieldId];
                 }
 
                 return await resolver(valueIsRoot ? parent.values : parent, args, context, info);
