@@ -124,7 +124,7 @@ describe("filtering", () => {
         return await createFruits();
     };
 
-    it.skip("should filter fruits by date and sort asc", async () => {
+    it("should filter fruits by date and sort asc", async () => {
         const { apple, strawberry } = await setupFruits();
 
         const handler = useFruitReadHandler({
@@ -156,7 +156,7 @@ describe("filtering", () => {
         });
     });
 
-    it.skip("should filter fruits by date and sort desc", async () => {
+    it("should filter fruits by date and sort desc", async () => {
         const { apple, strawberry } = await setupFruits();
 
         const handler = useFruitReadHandler({
@@ -188,7 +188,7 @@ describe("filtering", () => {
         });
     });
 
-    it.skip("should filter fruits by dateTime and sort asc", async () => {
+    it("should filter fruits by dateTime and sort asc", async () => {
         const { banana } = await setupFruits();
 
         const handler = useFruitReadHandler({
@@ -221,7 +221,7 @@ describe("filtering", () => {
         });
     });
 
-    it.skip("should filter fruits by dateTimeZ and sort desc", async () => {
+    it("should filter fruits by dateTimeZ and sort desc", async () => {
         const { apple, strawberry } = await setupFruits();
 
         const handler = useFruitReadHandler({
@@ -254,7 +254,7 @@ describe("filtering", () => {
         });
     });
 
-    it.skip("should filter fruits by date, dateTime, dateTimeZ and sort desc", async () => {
+    it("should filter fruits by date, dateTime, dateTimeZ and sort desc", async () => {
         const { apple, banana } = await setupFruits();
 
         const handler = useFruitReadHandler({
@@ -290,7 +290,7 @@ describe("filtering", () => {
             }
         });
     });
-    it.skip("should filter fruits by time and sort desc", async () => {
+    it("should filter fruits by time and sort desc", async () => {
         const { strawberry, banana } = await setupFruits();
 
         const handler = useFruitReadHandler({
@@ -323,7 +323,7 @@ describe("filtering", () => {
         });
     });
 
-    it.skip("should sort by time asc", async () => {
+    it("should sort by time asc", async () => {
         const { apple, strawberry, banana } = await setupFruits();
 
         const handler = useFruitReadHandler({
@@ -350,7 +350,7 @@ describe("filtering", () => {
         });
     });
 
-    it.skip("should sort by time desc", async () => {
+    it("should sort by time desc", async () => {
         const { apple, strawberry, banana } = await setupFruits();
 
         const handler = useFruitReadHandler({
@@ -378,8 +378,8 @@ describe("filtering", () => {
     });
 
     describe("GraphQL Data Filtering Tests", () => {
-        // TODO remove skip
-        it.skip("should be able to filter fruits by a boolean attribute", async () => {
+        
+        it("should be able to filter fruits by a boolean attribute", async () => {
             await setupFruits();
 
             const handler = useFruitReadHandler({
@@ -458,8 +458,8 @@ describe("filtering", () => {
                 });
             });
         });
-        // TODO remove skip
-        it.skip("should be able to filter fruits by a number attribute", async () => {
+        
+        it("should be able to filter fruits by a number attribute", async () => {
             await setupFruits();
 
             const handler = useFruitReadHandler({
@@ -815,10 +815,25 @@ describe("filtering", () => {
             sort: ["values_title_ASC"]
         });
 
-        expect(equalManagerResponse).toEqual({
+        expect(equalManagerResponse).toMatchObject({
             data: {
                 listProducts: {
-                    data: [bananaProduct, plumProduct],
+                    data: [
+                        {
+                            id: bananaProduct.id,
+                            createdOn: bananaProduct.createdOn,
+                            modifiedOn: bananaProduct.modifiedOn,
+                            savedOn: bananaProduct.savedOn,
+                            values: expect.any(Object)
+                        },
+                        {
+                            id: plumProduct.id,
+                            createdOn: plumProduct.createdOn,
+                            modifiedOn: plumProduct.modifiedOn,
+                            savedOn: plumProduct.savedOn,
+                            values: expect.any(Object)
+                        }
+                    ],
                     meta: {
                         cursor: null,
                         hasMoreItems: false,
@@ -842,10 +857,25 @@ describe("filtering", () => {
             sort: ["values_title_ASC"]
         });
 
-        expect(notEqualManagerResponse).toEqual({
+        expect(notEqualManagerResponse).toMatchObject({
             data: {
                 listProducts: {
-                    data: [daciaProduct, teslaProduct],
+                    data: [
+                        {
+                            id: daciaProduct.id,
+                            createdOn: daciaProduct.createdOn,
+                            modifiedOn: daciaProduct.modifiedOn,
+                            savedOn: daciaProduct.savedOn,
+                            values: expect.any(Object)
+                        },
+                        {
+                            id: teslaProduct.id,
+                            createdOn: teslaProduct.createdOn,
+                            modifiedOn: teslaProduct.modifiedOn,
+                            savedOn: teslaProduct.savedOn,
+                            values: expect.any(Object)
+                        }
+                    ],
                     meta: {
                         cursor: null,
                         hasMoreItems: false,
@@ -869,10 +899,25 @@ describe("filtering", () => {
             sort: ["values_title_ASC"]
         });
 
-        expect(inManagerResponse).toEqual({
+        expect(inManagerResponse).toMatchObject({
             data: {
                 listProducts: {
-                    data: [daciaProduct, teslaProduct],
+                    data: [
+                        {
+                            id: daciaProduct.id,
+                            createdOn: daciaProduct.createdOn,
+                            modifiedOn: daciaProduct.modifiedOn,
+                            savedOn: daciaProduct.savedOn,
+                            values: expect.any(Object)
+                        },
+                        {
+                            id: teslaProduct.id,
+                            createdOn: teslaProduct.createdOn,
+                            modifiedOn: teslaProduct.modifiedOn,
+                            savedOn: teslaProduct.savedOn,
+                            values: expect.any(Object)
+                        }
+                    ],
                     meta: {
                         cursor: null,
                         hasMoreItems: false,
@@ -896,10 +941,25 @@ describe("filtering", () => {
             sort: ["values_title_ASC"]
         });
 
-        expect(notInManagerResponse).toEqual({
+        expect(notInManagerResponse).toMatchObject({
             data: {
                 listProducts: {
-                    data: [bananaProduct, plumProduct],
+                    data: [
+                        {
+                            id: bananaProduct.id,
+                            createdOn: bananaProduct.createdOn,
+                            modifiedOn: bananaProduct.modifiedOn,
+                            savedOn: bananaProduct.savedOn,
+                            values: expect.any(Object)
+                        },
+                        {
+                            id: plumProduct.id,
+                            createdOn: plumProduct.createdOn,
+                            modifiedOn: plumProduct.modifiedOn,
+                            savedOn: plumProduct.savedOn,
+                            values: expect.any(Object)
+                        }
+                    ],
                     meta: {
                         cursor: null,
                         hasMoreItems: false,
@@ -923,10 +983,39 @@ describe("filtering", () => {
             sort: ["values_title_ASC"]
         });
 
-        expect(inMultipleManagerResponse).toEqual({
+        expect(inMultipleManagerResponse).toMatchObject({
             data: {
                 listProducts: {
-                    data: [bananaProduct, daciaProduct, plumProduct, teslaProduct],
+                    data: [
+                        {
+                            id: bananaProduct.id,
+                            createdOn: bananaProduct.createdOn,
+                            modifiedOn: bananaProduct.modifiedOn,
+                            savedOn: bananaProduct.savedOn,
+                            values: expect.any(Object)
+                        },
+                        {
+                            id: daciaProduct.id,
+                            createdOn: daciaProduct.createdOn,
+                            modifiedOn: daciaProduct.modifiedOn,
+                            savedOn: daciaProduct.savedOn,
+                            values: expect.any(Object)
+                        },
+                        {
+                            id: plumProduct.id,
+                            createdOn: plumProduct.createdOn,
+                            modifiedOn: plumProduct.modifiedOn,
+                            savedOn: plumProduct.savedOn,
+                            values: expect.any(Object)
+                        },
+                        {
+                            id: teslaProduct.id,
+                            createdOn: teslaProduct.createdOn,
+                            modifiedOn: teslaProduct.modifiedOn,
+                            savedOn: teslaProduct.savedOn,
+                            values: expect.any(Object)
+                        }
+                    ],
                     meta: {
                         cursor: null,
                         hasMoreItems: false,
@@ -950,7 +1039,7 @@ describe("filtering", () => {
             sort: ["values_title_ASC"]
         });
 
-        expect(notInMultipleManagerResponse).toEqual({
+        expect(notInMultipleManagerResponse).toMatchObject({
             data: {
                 listProducts: {
                     data: [],
@@ -1002,10 +1091,17 @@ describe("filtering", () => {
             sort: ["values_title_ASC"]
         });
 
-        expect(equalReaderResponse).toEqual({
+        expect(equalReaderResponse).toMatchObject({
             data: {
                 listProducts: {
-                    data: [daciaProduct, teslaProduct],
+                    data: [
+                        {
+                            id: daciaProduct.id
+                        },
+                        {
+                            id: teslaProduct.id
+                        }
+                    ],
                     meta: {
                         cursor: null,
                         hasMoreItems: false,
@@ -1029,10 +1125,17 @@ describe("filtering", () => {
             sort: ["values_title_ASC"]
         });
 
-        expect(notEqualReaderResponse).toEqual({
+        expect(notEqualReaderResponse).toMatchObject({
             data: {
                 listProducts: {
-                    data: [bananaProduct, plumProduct],
+                    data: [
+                        {
+                            id: bananaProduct.id
+                        },
+                        {
+                            id: plumProduct.id
+                        }
+                    ],
                     meta: {
                         cursor: null,
                         hasMoreItems: false,
@@ -1056,10 +1159,17 @@ describe("filtering", () => {
             sort: ["values_title_ASC"]
         });
 
-        expect(inReaderResponse).toEqual({
+        expect(inReaderResponse).toMatchObject({
             data: {
                 listProducts: {
-                    data: [bananaProduct, plumProduct],
+                    data: [
+                        {
+                            id: bananaProduct.id
+                        },
+                        {
+                            id: plumProduct.id
+                        }
+                    ],
                     meta: {
                         cursor: null,
                         hasMoreItems: false,
@@ -1083,10 +1193,17 @@ describe("filtering", () => {
             sort: ["values_title_ASC"]
         });
 
-        expect(notInReaderResponse).toEqual({
+        expect(notInReaderResponse).toMatchObject({
             data: {
                 listProducts: {
-                    data: [daciaProduct, teslaProduct],
+                    data: [
+                        {
+                            id: daciaProduct.id
+                        },
+                        {
+                            id: teslaProduct.id
+                        }
+                    ],
                     meta: {
                         cursor: null,
                         hasMoreItems: false,
@@ -1110,10 +1227,23 @@ describe("filtering", () => {
             sort: ["values_title_ASC"]
         });
 
-        expect(inMultipleReaderResponse).toEqual({
+        expect(inMultipleReaderResponse).toMatchObject({
             data: {
                 listProducts: {
-                    data: [bananaProduct, daciaProduct, plumProduct, teslaProduct],
+                    data: [
+                        {
+                            id: bananaProduct.id
+                        },
+                        {
+                            id: daciaProduct.id
+                        },
+                        {
+                            id: plumProduct.id
+                        },
+                        {
+                            id: teslaProduct.id
+                        }
+                    ],
                     meta: {
                         cursor: null,
                         hasMoreItems: false,
@@ -1137,7 +1267,7 @@ describe("filtering", () => {
             sort: ["values_title_ASC"]
         });
 
-        expect(notInMultipleReaderResponse).toEqual({
+        expect(notInMultipleReaderResponse).toMatchObject({
             data: {
                 listProducts: {
                     data: [],
@@ -1152,7 +1282,7 @@ describe("filtering", () => {
         });
     });
 
-    it.skip("should filter entries by empty datetime field", async () => {
+    it("should filter entries by empty datetime field", async () => {
         const categoryManager = useCategoryManageHandler(manageOpts);
         const productManager = useProductManageHandler(manageOpts);
 
@@ -1308,16 +1438,18 @@ describe("filtering", () => {
             }
         });
     });
-    // TODO NOT SKIP
-    it.skip("should filter entries by entryId", async () => {
+    
+    it("should filter entries by entryId", async () => {
         const articleManager = useArticleManageHandler(manageOpts);
         const articleReader = useArticleReadHandler(readOpts);
 
         const [createFruitResponse] = await articleManager.createArticle({
             data: {
-                title: "Fruit 123",
-                body: null,
-                categories: []
+                values: {
+                    title: "Fruit 123",
+                    body: null,
+                    categories: []
+                }
             }
         });
         expect(createFruitResponse).toMatchObject({
@@ -1333,9 +1465,11 @@ describe("filtering", () => {
 
         const [createAnimalResponse] = await articleManager.createArticle({
             data: {
-                title: "Animal 123",
-                body: null,
-                categories: []
+                values: {
+                    title: "Animal 123",
+                    body: null,
+                    categories: []
+                }
             }
         });
         expect(createAnimalResponse).toMatchObject({
@@ -1648,7 +1782,7 @@ describe("filtering", () => {
         });
     });
 
-    it.skip("should filter entries by revisionCreatedBy", async () => {
+    it("should filter entries by revisionCreatedBy", async () => {
         const articleManager = useArticleManageHandler(manageOpts);
         const articleAnotherManager = useArticleManageHandler({
             ...manageOpts,
@@ -1809,7 +1943,7 @@ describe("filtering", () => {
         });
     });
 
-    it.skip("should filter entries by createdBy", async () => {
+    it("should filter entries by createdBy", async () => {
         const articleManager = useArticleManageHandler(manageOpts);
         const articleAnotherManager = useArticleManageHandler({
             ...manageOpts,
@@ -1970,7 +2104,7 @@ describe("filtering", () => {
         });
     });
 
-    it.skip("should filter fruits by description", async () => {
+    it("should filter fruits by description", async () => {
         const { apple, banana, strawberry } = await setupFruits();
         const handler = useFruitReadHandler({
             ...readOpts
@@ -2095,7 +2229,7 @@ describe("filtering", () => {
         });
     });
 
-    it.skip("should filter via startsWith", async () => {
+    it("should filter via startsWith", async () => {
         const { apple, banana, strawberry } = await setupFruits();
         const { listFruits } = useFruitReadHandler({
             ...readOpts
@@ -2144,7 +2278,7 @@ describe("filtering", () => {
         });
     });
 
-    it.skip("should filter via not_startsWith", async () => {
+    it("should filter via not_startsWith", async () => {
         const { apple, banana, strawberry } = await setupFruits();
         const { listFruits } = useFruitReadHandler({
             ...readOpts

@@ -24,13 +24,17 @@ const fields = `
             id
             entryId
             modelId
-            title
+            values {
+                title
+            }
         }
         category {
             id
             entryId
             modelId
-            title
+            values {
+                title
+            }
         }
     }
 `;
