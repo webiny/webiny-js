@@ -105,12 +105,14 @@ export class FormAPI<T extends GenericFormData = GenericFormData> {
         this.wasSubmitted = true;
         const isValid = await this.presenter.validate(options);
         if (isValid) {
-            return this.options.onSubmit(this.presenter.vm.data, this).then((data: any) => {
-                // This will set the presenter to "pristine" state
-                this.presenter.setData(this.presenter.vm.data);
-                this.options.onAfterSubmit(data, this);
-                return data;
-            });
+            return Promise.resolve(this.options.onSubmit(this.presenter.vm.data, this)).then(
+                (data: any) => {
+                    // This will set the presenter to "pristine" state
+                    this.presenter.setData(this.presenter.vm.data);
+                    this.options.onAfterSubmit(data, this);
+                    return data;
+                }
+            );
         }
 
         return undefined;
