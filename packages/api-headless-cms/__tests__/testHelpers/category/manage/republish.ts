@@ -1,7 +1,8 @@
 import type { CmsModel } from "~tests/types.js";
 import { categoryFields } from "~tests/testHelpers/category/manage/fields.js";
 import { ERROR_FIELDS, type IGraphQLErrorResponse } from "~tests/testHelpers/fields/index.js";
-import type { ICategoryResponse } from "~tests/testHelpers/category/manage/types.js";
+import type { ICategoryResponseValues } from "~tests/testHelpers/category/manage/types.js";
+import type { IManageQueryBaseResponse } from "~tests/testHelpers/types.js";
 
 export interface IRepublishCategoryMutationVariables {
     revision: string;
@@ -9,7 +10,7 @@ export interface IRepublishCategoryMutationVariables {
 
 export interface IRepublishCategoryMutationResponse {
     republishCategory: {
-        data: ICategoryResponse | null;
+        data: IManageQueryBaseResponse<ICategoryResponseValues> | null;
         error: IGraphQLErrorResponse | null;
     };
 }

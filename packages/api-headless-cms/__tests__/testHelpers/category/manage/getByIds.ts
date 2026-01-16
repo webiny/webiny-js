@@ -1,13 +1,14 @@
 import type { CmsEntryListParams, CmsModel } from "~/types/index.js";
-import type { ICategoryResponse } from "~tests/testHelpers/category/manage/types.js";
+import type { ICategoryResponseValues } from "~tests/testHelpers/category/manage/types.js";
 import { categoryFields } from "./fields.js";
 import { ERROR_FIELDS, type IGraphQLErrorResponse } from "~tests/testHelpers/fields/index.js";
+import type { IManageQueryBaseResponse } from "~tests/testHelpers/types.js";
 
 export interface IGetCategoriesByIdsQueryVariables extends Partial<CmsEntryListParams> {}
 
 export interface IGetCategoriesByIdsQueryResponse {
     getCategoriesByIds: {
-        data: ICategoryResponse[] | null;
+        data: IManageQueryBaseResponse<ICategoryResponseValues>[] | null;
         error: IGraphQLErrorResponse | null;
     };
 }

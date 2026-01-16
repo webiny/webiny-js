@@ -1,5 +1,5 @@
 import type { CmsEntryListParams, CmsModel } from "~/types/index.js";
-import type { ICategoryResponse } from "~tests/testHelpers/category/manage/types.js";
+import type { ICategoryResponseValues } from "~tests/testHelpers/category/manage/types.js";
 import {
     ERROR_FIELDS,
     type IGraphQLErrorResponse,
@@ -7,12 +7,13 @@ import {
     META_FIELDS
 } from "~tests/testHelpers/fields/index.js";
 import { categoryFields } from "./fields.js";
+import type { IManageQueryBaseResponse } from "~tests/testHelpers/types.js";
 
 export interface IListDeletedCategoriesQueryVariables extends CmsEntryListParams {}
 
 export interface IListDeletedCategoriesQueryResponse {
     listDeletedCategories: {
-        data: ICategoryResponse[] | null;
+        data: IManageQueryBaseResponse<ICategoryResponseValues>[] | null;
         meta: IGraphQLMetaResponse | null;
         error: IGraphQLErrorResponse | null;
     };

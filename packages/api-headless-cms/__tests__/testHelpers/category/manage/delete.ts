@@ -1,6 +1,7 @@
 import type { CmsModel } from "~/types/index.js";
-import type { ICategoryResponse } from "./types.js";
+import type { ICategoryResponseValues } from "./types.js";
 import { ERROR_FIELDS, type IGraphQLErrorResponse } from "~tests/testHelpers/fields/index.js";
+import type { IManageQueryBaseResponse } from "~tests/testHelpers/types.js";
 
 export interface IDeleteCategoryMutationVariablesOptions {
     force?: boolean;
@@ -14,7 +15,7 @@ export interface IDeleteCategoryMutationVariables {
 
 export interface IDeleteCategoryMutationResponse {
     deleteCategory: {
-        data: ICategoryResponse | null;
+        data: IManageQueryBaseResponse<ICategoryResponseValues> | null;
         error: IGraphQLErrorResponse | null;
     };
 }

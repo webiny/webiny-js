@@ -1,7 +1,11 @@
 import type { CmsEntryStatus, CmsModel } from "~/types/index.js";
 import { categoryFields } from "./fields.js";
-import type { ICategoryResponse } from "~tests/testHelpers/category/manage/types.js";
+import type {
+    ICategoryResponse,
+    ICategoryResponseValues
+} from "~tests/testHelpers/category/manage/types.js";
 import { ERROR_FIELDS, type IGraphQLErrorResponse } from "~tests/testHelpers/fields/index.js";
+import type { IManageQueryBaseResponse } from "~tests/testHelpers/types.js";
 
 export interface IGetCategoryQueryVariables {
     revision?: string;
@@ -11,7 +15,7 @@ export interface IGetCategoryQueryVariables {
 
 export interface IGetCategoryQueryResponse {
     getCategory: {
-        data: ICategoryResponse | null;
+        data: IManageQueryBaseResponse<ICategoryResponseValues> | null;
         error: IGraphQLErrorResponse | null;
     };
 }

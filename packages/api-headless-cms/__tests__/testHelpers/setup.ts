@@ -9,7 +9,7 @@ interface SetupContentModelParams {
     group: CmsGroup;
 }
 
-export const setupContentModel = async (params: SetupContentModelParams) => {
+const setupContentModel = async (params: SetupContentModelParams) => {
     const { manager, model, group } = params;
     const [createResponse] = await manager.createContentModelMutation({
         data: {
@@ -82,7 +82,7 @@ export const setupGroupAndModels = async (params: SetupGroupAndModelsParams) => 
     };
 };
 
-export interface SetupContentModelGroupGqlVars {
+interface SetupContentModelGroupGqlVars {
     data: {
         name: string;
         slug: string;
@@ -91,7 +91,7 @@ export interface SetupContentModelGroupGqlVars {
     };
 }
 
-export const setupContentModelGroup = async (
+const setupContentModelGroup = async (
     manager: ReturnType<typeof useGraphQLHandler>,
     vars?: SetupContentModelGroupGqlVars
 ): Promise<CmsGroup> => {
@@ -117,26 +117,26 @@ export const setupContentModelGroup = async (
     return response.data.createContentModelGroup.data;
 };
 
-export const setupContentModels = async (
-    manager: ReturnType<typeof useGraphQLHandler>,
-    group: CmsGroup,
-    modelsList: string[]
-): Promise<Record<string, any>> => {
-    const items = modelsList.reduce<Record<string, any>>((acc, m) => ({ ...acc, [m]: null }), {});
-    for (const name in items) {
-        if (items.hasOwnProperty(name) === false) {
-            continue;
-        }
-        const model = allModels.find(m => m.modelId === name);
-        if (!model) {
-            console.log(`[setupContentModel] There is no model "${name}" defined.`);
-            process.exit(1);
-        }
-        items[name] = await setupContentModel({
-            manager,
-            group,
-            model
-        });
-    }
-    return items;
-};
+// export const setupContentModels = async (
+//     manager: ReturnType<typeof useGraphQLHandler>,
+//     group: CmsGroup,
+//     modelsList: string[]
+// ): Promise<Record<string, any>> => {
+//     const items = modelsList.reduce<Record<string, any>>((acc, m) => ({ ...acc, [m]: null }), {});
+//     for (const name in items) {
+//         if (items.hasOwnProperty(name) === false) {
+//             continue;
+//         }
+//         const model = allModels.find(m => m.modelId === name);
+//         if (!model) {
+//             console.log(`[setupContentModel] There is no model "${name}" defined.`);
+//             process.exit(1);
+//         }
+//         items[name] = await setupContentModel({
+//             manager,
+//             group,
+//             model
+//         });
+//     }
+//     return items;
+// };

@@ -1,7 +1,11 @@
 import type { CmsModel } from "~tests/types.js";
 import { categoryFields } from "~tests/testHelpers/category/manage/fields.js";
 import { ERROR_FIELDS, type IGraphQLErrorResponse } from "~tests/testHelpers/fields/index.js";
-import type { ICategoryInput, ICategoryResponse } from "~tests/testHelpers/category/manage/types.js";
+import type {
+    ICategoryInput,
+    ICategoryResponseValues
+} from "~tests/testHelpers/category/manage/types.js";
+import type { IManageQueryBaseResponse } from "~tests/testHelpers/types.js";
 
 export interface ICreateCategoryFromMutationVariables {
     revision: string;
@@ -10,7 +14,7 @@ export interface ICreateCategoryFromMutationVariables {
 
 export interface ICreateCategoryFromMutationResponse {
     createCategoryFrom: {
-        data: ICategoryResponse | null;
+        data: IManageQueryBaseResponse<ICategoryResponseValues> | null;
         error: IGraphQLErrorResponse | null;
     };
 }
