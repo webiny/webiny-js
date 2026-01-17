@@ -577,8 +577,31 @@ export interface CmsEntryListWhereRef {
     entryId_not?: string;
     entryId_in?: string[];
     entryId_not_in?: string[];
+    modelId?: string;
+    modelId_not?: string;
+    modelId_in?: string[];
+    modelId_not_in?: string[];
 }
 
+
+
+export interface CmsEntryListWhereValues {
+    /**
+     * This is to allow querying by any content model field defined by the user.
+     */
+    [key: string]:
+        | string
+        | number
+        | boolean
+        | Date
+        | undefined
+        | string[]
+        | number[]
+        | null
+        | CmsEntryListWhereValues[]
+        | CmsEntryListWhereValues
+        | CmsEntryListWhereRef;
+}
 /**
  * Entry listing where params.
  *
@@ -701,21 +724,7 @@ export interface CmsEntryListWhere {
         OR?: CmsEntryListWhere[];
     };
 
-    /**
-     * This is to allow querying by any content model field defined by the user.
-     */
-    [key: string]:
-        | string
-        | number
-        | boolean
-        | Date
-        | undefined
-        | string[]
-        | number[]
-        | null
-        | CmsEntryListWhere[]
-        | CmsEntryListWhere
-        | CmsEntryListWhereRef;
+    values?: CmsEntryListWhereValues;
 
     /**
      * To allow querying via nested queries, we added the AND / OR properties.

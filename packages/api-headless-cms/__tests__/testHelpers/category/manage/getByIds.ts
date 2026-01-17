@@ -1,10 +1,12 @@
-import type { CmsEntryListParams, CmsModel } from "~/types/index.js";
+import type { CmsModel } from "~/types/index.js";
 import type { ICategoryResponseValues } from "~tests/testHelpers/category/manage/types.js";
 import { categoryFields } from "./fields.js";
 import { ERROR_FIELDS, type IGraphQLErrorResponse } from "~tests/testHelpers/fields/index.js";
 import type { IManageQueryBaseResponse } from "~tests/testHelpers/types.js";
 
-export interface IGetCategoriesByIdsQueryVariables extends Partial<CmsEntryListParams> {}
+export interface IGetCategoriesByIdsQueryVariables {
+    revisions: string[];
+}
 
 export interface IGetCategoriesByIdsQueryResponse {
     getCategoriesByIds: {
