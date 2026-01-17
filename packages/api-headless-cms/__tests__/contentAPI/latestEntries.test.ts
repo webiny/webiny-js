@@ -20,7 +20,7 @@ describe("latest entries", function () {
         ...manageOpts
     });
 
-    const { createCategory, createCategoryFrom, updateCategory, publishCategory } = manager;
+    const { createCategory, createCategoryFrom, publishCategory } = manager;
 
     const createCategoryEntry = async ({ title, slug }: { title: string; slug: string }) => {
         const [response] = await createCategory({
@@ -297,7 +297,7 @@ describe("latest entries", function () {
                 }
             }
         });
-        const publishedFruitCategory = publishFruitResponse?.data?.publishCategory?.data!;
+        const publishedFruitCategory = publishFruitResponse.data.publishCategory.data!;
 
         const [listReadResponse] = await listArticles();
 

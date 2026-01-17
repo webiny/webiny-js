@@ -183,7 +183,7 @@ describe("READ - resolvers - api key", () => {
 
     it("cant get entry - missing whole permission", async () => {
         // Use "manage" API to create and publish entries
-        const { createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
+        const { createCategory } = useCategoryManageHandler(manageOpts);
 
         // Create an entry
         const [create] = await createCategory({
@@ -232,7 +232,7 @@ describe("READ - resolvers - api key", () => {
 
     it("cant list entries - missing whole permission", async () => {
         // Use "manage" API to create and publish entries
-        const { createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
+        const { createCategory } = useCategoryManageHandler(manageOpts);
 
         // Create an entry
         const [create] = await createCategory({
@@ -284,7 +284,7 @@ describe("READ - resolvers - api key", () => {
 
     it.each(notAllowedRwd)(`cant get entry - missing "r" permission - having "%s"`, async rwd => {
         // Use "manage" API to create and publish entries
-        const { createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
+        const { createCategory } = useCategoryManageHandler(manageOpts);
 
         // Create an entry
         const [create] = await createCategory({

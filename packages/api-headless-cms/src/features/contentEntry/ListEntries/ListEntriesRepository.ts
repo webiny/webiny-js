@@ -6,8 +6,7 @@ import type {
     CmsEntryMeta,
     CmsEntryStorageOperationsListParams,
     CmsEntryValues,
-    CmsModel,
-    ICmsEntryLocation
+    CmsModel
 } from "~/types/index.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
 import { EntryFromStorageTransform, SearchableFieldsProvider } from "~/legacy/abstractions.js";

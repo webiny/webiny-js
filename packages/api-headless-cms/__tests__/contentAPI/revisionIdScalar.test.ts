@@ -1,7 +1,4 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { createContentModelGroup } from "~tests/contentAPI/mocks/contentModelGroup";
-import models from "~tests/contentAPI/mocks/contentModels";
-import type { CmsGroup, CmsModel } from "~/types";
 import { useArticleManageHandler } from "~tests/testHelpers/useArticleManageHandler";
 import { setupGroupAndModels } from "~tests/testHelpers/setup.js";
 
@@ -9,7 +6,7 @@ describe("revision id scalar", () => {
     const manageHandlerOpts = { path: "manage" };
 
     const manager = useArticleManageHandler(manageHandlerOpts);
-    const { createContentModelGroupMutation, createContentModelMutation, createArticle } = manager;
+    const { createArticle } = manager;
 
     beforeEach(async () => {
         await setupGroupAndModels({

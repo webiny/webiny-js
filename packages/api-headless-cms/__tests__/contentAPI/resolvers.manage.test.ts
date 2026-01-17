@@ -4,7 +4,6 @@ import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../testHelpers/useCategoryReadHandler";
 import models from "./mocks/contentModels";
-import modelsWithoutValidation from "./mocks/contentModels.noValidation";
 import { useProductManageHandler } from "../testHelpers/useProductManageHandler";
 import { setupGroupAndModels } from "~tests/testHelpers/setup.js";
 import type { IManageQueryBaseResponse } from "~tests/testHelpers/types.js";
@@ -504,8 +503,6 @@ describe("MANAGE - Resolvers", () => {
     });
 
     it(`should create an entry (fields without validation)`, async () => {
-        const model = modelsWithoutValidation.find(m => m.modelId === "category");
-
         const { createCategory, listCategories } = useCategoryManageHandler(manageOpts);
         const [result] = await createCategory({
             variables: {
@@ -1163,8 +1160,6 @@ describe("MANAGE - Resolvers", () => {
     });
 
     it("should store and retrieve nested objects", async () => {
-        const model = models.find(model => model.modelId === "product");
-
         const { vegetables } = await createCategories();
 
         const { createProduct, listProducts } = useProductManageHandler({
@@ -1655,7 +1650,7 @@ describe("MANAGE - Resolvers", () => {
     });
 
     it("should get latest, published or exact category", async () => {
-        const { getCategory, createCategory, publishCategory, createCategoryFrom } =
+        const { getCategory, createCategory, createCategoryFrom } =
             useCategoryManageHandler(manageOpts);
 
         const title = "Webiny Serverless Framework";
