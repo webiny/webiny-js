@@ -45,7 +45,7 @@ export default /* GraphQL */ `
         revisionRestoredBy: CmsIdentity
         revisionFirstPublishedBy: CmsIdentity
         revisionLastPublishedBy: CmsIdentity
-        values: PageModelApiNameValues!
+        values: PageModelApiNameValues
     }
 
     union PageModelApiName_Content =

@@ -52,7 +52,7 @@ export default /* GraphQL */ `
         meta: ProductApiSingularMeta
         wbyAco_location: WbyAcoLocation
 
-        values: ProductApiSingularValues!
+        values: ProductApiSingularValues
     }
 
     type ProductApiSingularMeta {
@@ -559,20 +559,20 @@ export default /* GraphQL */ `
         revisionFirstPublishedOn_DESC
         revisionLastPublishedOn_ASC
         revisionLastPublishedOn_DESC
-        title_ASC
-        title_DESC
-        price_ASC
-        price_DESC
-        inStock_ASC
-        inStock_DESC
-        itemsInStock_ASC
-        itemsInStock_DESC
-        availableOn_ASC
-        availableOn_DESC
-        color_ASC
-        color_DESC
-        availableSizes_ASC
-        availableSizes_DESC
+        values_title_ASC
+        values_title_DESC
+        values_price_ASC
+        values_price_DESC
+        values_inStock_ASC
+        values_inStock_DESC
+        values_itemsInStock_ASC
+        values_itemsInStock_DESC
+        values_availableOn_ASC
+        values_availableOn_DESC
+        values_color_ASC
+        values_color_DESC
+        values_availableSizes_ASC
+        values_availableSizes_DESC
     }
 
     extend type Query {
@@ -584,7 +584,9 @@ export default /* GraphQL */ `
 
         getProductApiSingularRevisions(id: ID!): ProductApiSingularArrayResponse
 
-        getProductPluralApiNameByIds(revisions: [ID!]!): ProductApiSingularArrayResponse
+        getProductPluralApiNameByIds(
+            revisions: [ID!]!
+        ): ProductApiSingularArrayResponse
 
         listProductPluralApiName(
             where: ProductApiSingularListWhereInput
@@ -626,13 +628,21 @@ export default /* GraphQL */ `
             data: ProductApiSingularInput!
         ): CmsEntryValidationResponse!
 
-        moveProductApiSingular(revision: ID!, folderId: ID!): ProductApiSingularMoveResponse
+        moveProductApiSingular(
+            revision: ID!
+            folderId: ID!
+        ): ProductApiSingularMoveResponse
 
-        deleteProductApiSingular(revision: ID!, options: CmsDeleteEntryOptions): CmsDeleteResponse
+        deleteProductApiSingular(
+            revision: ID!
+            options: CmsDeleteEntryOptions
+        ): CmsDeleteResponse
 
         restoreProductApiSingularFromBin(revision: ID!): ProductApiSingularResponse
 
-        deleteMultipleProductPluralApiName(entries: [ID!]!): CmsDeleteMultipleResponse!
+        deleteMultipleProductPluralApiName(
+            entries: [ID!]!
+        ): CmsDeleteMultipleResponse!
 
         publishProductApiSingular(revision: ID!): ProductApiSingularResponse
 

@@ -42,7 +42,7 @@ export default /* GraphQL */ `
         revisionRestoredBy: CmsIdentity
         revisionFirstPublishedBy: CmsIdentity
         revisionLastPublishedBy: CmsIdentity
-        values: ReviewApiModelValues!
+        values: ReviewApiModelValues
     }
 
     input ReviewApiModelGetWhereInputValues {
@@ -284,10 +284,10 @@ export default /* GraphQL */ `
         revisionFirstPublishedOn_DESC
         revisionLastPublishedOn_ASC
         revisionLastPublishedOn_DESC
-        text_ASC
-        text_DESC
-        rating_ASC
-        rating_DESC
+        values_text_ASC
+        values_text_DESC
+        values_rating_ASC
+        values_rating_DESC
     }
 
     type ReviewApiModelResponse {

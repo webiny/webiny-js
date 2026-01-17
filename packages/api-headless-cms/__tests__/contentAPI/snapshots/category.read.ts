@@ -41,7 +41,7 @@ export default /* GraphQL */ `
         revisionRestoredBy: CmsIdentity
         revisionFirstPublishedBy: CmsIdentity
         revisionLastPublishedBy: CmsIdentity
-        values: CategoryApiNameWhichIsABitDifferentThanModelIdValues!
+        values: CategoryApiNameWhichIsABitDifferentThanModelIdValues
     }
 
     input CategoryApiNameWhichIsABitDifferentThanModelIdGetWhereInputValues {
@@ -285,12 +285,12 @@ export default /* GraphQL */ `
         revisionFirstPublishedOn_DESC
         revisionLastPublishedOn_ASC
         revisionLastPublishedOn_DESC
-        title_ASC
-        title_DESC
-        separator_ASC
-        separator_DESC
-        slug_ASC
-        slug_DESC
+        values_title_ASC
+        values_title_DESC
+        values_separator_ASC
+        values_separator_DESC
+        values_slug_ASC
+        values_slug_DESC
     }
 
     type CategoryApiNameWhichIsABitDifferentThanModelIdResponse {

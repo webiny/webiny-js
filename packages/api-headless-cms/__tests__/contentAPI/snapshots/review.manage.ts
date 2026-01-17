@@ -44,7 +44,7 @@ export default /* GraphQL */ `
         meta: ReviewApiModelMeta
         wbyAco_location: WbyAcoLocation
 
-        values: ReviewApiModelValues!
+        values: ReviewApiModelValues
     }
 
     type ReviewApiModelMeta {
@@ -382,10 +382,10 @@ export default /* GraphQL */ `
         revisionFirstPublishedOn_DESC
         revisionLastPublishedOn_ASC
         revisionLastPublishedOn_DESC
-        text_ASC
-        text_DESC
-        rating_ASC
-        rating_DESC
+        values_text_ASC
+        values_text_DESC
+        values_rating_ASC
+        values_rating_DESC
     }
 
     extend type Query {
@@ -441,7 +441,10 @@ export default /* GraphQL */ `
 
         moveReviewApiModel(revision: ID!, folderId: ID!): ReviewApiModelMoveResponse
 
-        deleteReviewApiModel(revision: ID!, options: CmsDeleteEntryOptions): CmsDeleteResponse
+        deleteReviewApiModel(
+            revision: ID!
+            options: CmsDeleteEntryOptions
+        ): CmsDeleteResponse
 
         restoreReviewApiModelFromBin(revision: ID!): ReviewApiModelResponse
 

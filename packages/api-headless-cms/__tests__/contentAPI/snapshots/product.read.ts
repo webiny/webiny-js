@@ -4,7 +4,9 @@ export default /* GraphQL */ `
     """
     type ProductApiSingularValues {
         title: String
-        category(populate: Boolean = true): CategoryApiNameWhichIsABitDifferentThanModelId
+        category(
+            populate: Boolean = true
+        ): CategoryApiNameWhichIsABitDifferentThanModelId
         price: Number
         inStock: Boolean
         itemsInStock: Number
@@ -50,15 +52,19 @@ export default /* GraphQL */ `
         revisionRestoredBy: CmsIdentity
         revisionFirstPublishedBy: CmsIdentity
         revisionLastPublishedBy: CmsIdentity
-        values: ProductApiSingularValues!
+        values: ProductApiSingularValues
     }
 
     type ProductApiSingular_Variant_Options {
         name: String
         price: Number
         image: String
-        category(populate: Boolean = true): CategoryApiNameWhichIsABitDifferentThanModelId
-        categories(populate: Boolean = true): [CategoryApiNameWhichIsABitDifferentThanModelId!]
+        category(
+            populate: Boolean = true
+        ): CategoryApiNameWhichIsABitDifferentThanModelId
+        categories(
+            populate: Boolean = true
+        ): [CategoryApiNameWhichIsABitDifferentThanModelId!]
         longText: [String]
     }
 
@@ -97,7 +103,9 @@ export default /* GraphQL */ `
         name: String
         price: Number
         images: [String]
-        category(populate: Boolean = true): CategoryApiNameWhichIsABitDifferentThanModelId
+        category(
+            populate: Boolean = true
+        ): CategoryApiNameWhichIsABitDifferentThanModelId
         options: [ProductApiSingular_Variant_Options!]
     }
 
@@ -432,20 +440,20 @@ export default /* GraphQL */ `
         revisionFirstPublishedOn_DESC
         revisionLastPublishedOn_ASC
         revisionLastPublishedOn_DESC
-        title_ASC
-        title_DESC
-        price_ASC
-        price_DESC
-        inStock_ASC
-        inStock_DESC
-        itemsInStock_ASC
-        itemsInStock_DESC
-        availableOn_ASC
-        availableOn_DESC
-        color_ASC
-        color_DESC
-        availableSizes_ASC
-        availableSizes_DESC
+        values_title_ASC
+        values_title_DESC
+        values_price_ASC
+        values_price_DESC
+        values_inStock_ASC
+        values_inStock_DESC
+        values_itemsInStock_ASC
+        values_itemsInStock_DESC
+        values_availableOn_ASC
+        values_availableOn_DESC
+        values_color_ASC
+        values_color_DESC
+        values_availableSizes_ASC
+        values_availableSizes_DESC
     }
 
     type ProductApiSingularResponse {
@@ -460,7 +468,9 @@ export default /* GraphQL */ `
     }
 
     extend type Query {
-        getProductApiSingular(where: ProductApiSingularGetWhereInput!): ProductApiSingularResponse
+        getProductApiSingular(
+            where: ProductApiSingularGetWhereInput!
+        ): ProductApiSingularResponse
 
         listProductPluralApiName(
             where: ProductApiSingularListWhereInput

@@ -43,7 +43,7 @@ export default /* GraphQL */ `
         meta: CategoryApiNameWhichIsABitDifferentThanModelIdMeta
         wbyAco_location: WbyAcoLocation
 
-        values: CategoryApiNameWhichIsABitDifferentThanModelIdValues!
+        values: CategoryApiNameWhichIsABitDifferentThanModelIdValues
     }
 
     type CategoryApiNameWhichIsABitDifferentThanModelIdMeta {
@@ -382,12 +382,12 @@ export default /* GraphQL */ `
         revisionFirstPublishedOn_DESC
         revisionLastPublishedOn_ASC
         revisionLastPublishedOn_DESC
-        title_ASC
-        title_DESC
-        separator_ASC
-        separator_DESC
-        slug_ASC
-        slug_DESC
+        values_title_ASC
+        values_title_DESC
+        values_separator_ASC
+        values_separator_DESC
+        values_slug_ASC
+        values_slug_DESC
     }
 
     extend type Query {

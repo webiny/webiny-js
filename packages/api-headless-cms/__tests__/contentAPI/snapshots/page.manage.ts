@@ -47,7 +47,7 @@ export default /* GraphQL */ `
         meta: PageModelApiNameMeta
         wbyAco_location: WbyAcoLocation
 
-        values: PageModelApiNameValues!
+        values: PageModelApiNameValues
     }
 
     type PageModelApiNameMeta {
