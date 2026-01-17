@@ -3,7 +3,6 @@ import type { CmsEntryListParams, CmsGroup } from "~/types/index.js";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../testHelpers/useCategoryReadHandler";
-import models from "./mocks/contentModels";
 import { useProductManageHandler } from "../testHelpers/useProductManageHandler";
 import { setupGroupAndModels } from "~tests/testHelpers/setup.js";
 import type { IManageQueryBaseResponse } from "~tests/testHelpers/types.js";

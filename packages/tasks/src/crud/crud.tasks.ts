@@ -403,7 +403,9 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
             const listLatestEntries = context.container.resolve(ListLatestEntriesUseCase);
             const result = await listLatestEntries.execute<ITaskLog>(model, {
                 where: {
-                    task: taskId
+                    values: {
+                        task: taskId
+                    }
                 },
                 sort: ["createdOn_DESC"],
                 limit: 1

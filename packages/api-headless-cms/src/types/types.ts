@@ -618,6 +618,7 @@ export interface CmsEntryListWhere {
      * Generated ID without the version.
      */
     entryId?: string;
+    entryId_gte?: string;
     entryId_not?: string;
     entryId_in?: string[];
     entryId_not_in?: string[];
@@ -684,6 +685,27 @@ export interface CmsEntryListWhere {
     lastPublishedBy_not?: string;
     lastPublishedBy_in?: string[];
     lastPublishedBy_not_in?: string[];
+    
+    createdOn?: string;
+    createdOn_gt?: string;
+    createdOn_gte?: string;
+    createdOn_lt?: string;
+    createdOn_lte?: string;
+    createdOn_between?: [string, string];
+    
+    savedOn?: string;
+    savedOn_gt?: string;
+    savedOn_gte?: string;
+    savedOn_lt?: string;
+    savedOn_lte?: string;
+    savedOn_between?: [string, string];
+
+    deletedOn?: string;
+    deletedOn_gt?: string;
+    deletedOn_gte?: string;
+    deletedOn_lt?: string;
+    deletedOn_lte?: string;
+    deletedOn_between?: [string, string];
 
     /**
      * Version of the entry.

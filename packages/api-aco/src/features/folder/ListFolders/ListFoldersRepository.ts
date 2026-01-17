@@ -5,7 +5,7 @@ import {
 } from "./abstractions.js";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries";
 import { FolderModel } from "~/domain/folder/abstractions.js";
-import type { ListFoldersParams } from "~/folder/folder.types.js";
+import type { CmsEntryFolder, ListFoldersParams } from "~/folder/folder.types.js";
 import { EntryToFolderMapper } from "../shared/EntryToFolderMapper.js";
 import { FolderPersistenceError } from "~/domain/folder/errors.js";
 import { createListSort } from "~/utils/createListSort.js";
@@ -26,7 +26,7 @@ class ListFoldersRepositoryImpl implements IListFoldersRepository {
                 title: "ASC"
             } as unknown as ListSort);
 
-        const result = await this.listLatestEntries.execute(this.folderModel, {
+        const result = await this.listLatestEntries.execute<CmsEntryFolder>(this.folderModel, {
             ...params,
             sort: createListSort(listSort),
             where: {

@@ -259,7 +259,7 @@ describe("All Field Types Model", () => {
         expect(dynamicContentField?.settings?.templates![2].layout).toEqual([["stats"]]);
 
         // Verify nested object in dynamic zone template has stats with predefined values
-        const statsTemplate = dynamicContentField?.settings?.templates![2]!;
+        const statsTemplate = dynamicContentField!.settings!.templates![2]!;
         expect(statsTemplate?.fields).toHaveLength(1);
         const statsField = statsTemplate.fields[0]!;
         expect(statsField.fieldId).toBe("stats");

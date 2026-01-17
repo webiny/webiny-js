@@ -1,7 +1,16 @@
 import type { ListSort, User } from "~/types.js";
 import { type FolderPermission } from "~/types.js";
 
-export interface Folder {
+export interface CmsEntryFolder {
+    title: string;
+    slug: string;
+    permissions?: FolderPermission[];
+    type: string;
+    parentId?: string | null;
+    path: string;
+}
+
+export interface Folder extends CmsEntryFolder {
     id: string;
     entryId: string;
     createdOn: string;
@@ -10,12 +19,7 @@ export interface Folder {
     createdBy: User;
     modifiedBy: User | null;
     savedBy: User;
-    title: string;
-    slug: string;
-    permissions?: FolderPermission[];
-    type: string;
-    parentId?: string | null;
-    path: string;
+
     extensions?: Record<string, any>;
 }
 
