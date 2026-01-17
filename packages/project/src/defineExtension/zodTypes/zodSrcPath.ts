@@ -1,22 +1,44 @@
+import { type Abstraction, Metadata } from "@webiny/di";
 import { z } from "zod";
 import path from "path";
 import fs from "fs";
 import { type IProjectModel } from "~/abstractions/models/index.js";
 import { ProjectError } from "~/ProjectError.js";
 
+type ZodSrcPathOptions = {
+    project: IProjectModel;
+    abstraction?: Abstraction<any>;
+};
+
 /**
+ * Unified validator for src paths.
+ * 
  * Validates that a path is either:
  * 1. An absolute path (e.g., starts with "/" on Unix or a drive letter on Windows)
  * 2. A path starting with "/" (from project root)
  *
  * Rejects all relative paths:
- * - "./file.ts" or "../folder/file.ts" (explicitly relative)
- * - "folder/file.ts" (implicitly relative)
+ * - Explicitly relative: `./file.ts`, `../folder/file.ts`
+ * - Implicitly relative: `folder/file.ts`
+ * 
+ * If abstraction is provided, also validates that the file exports the correct abstraction.
  */
-export const zodAbsoluteOrRootPath = (project: IProjectModel) => {
+export const zodSrcPath = (options: ZodSrcPathOptions) => {
+    const { project, abstraction } = options;
+
+    const getTokenName = (token: symbol) => {
+        const str = token.toString();
+        return str.replace(/^Symbol\(/, "").replace(/\)$/, "");
+    };
+
+    const tokenName = abstraction ? getTokenName(abstraction.token) : undefined;
+    const description = abstraction
+        ? `Path to a file exporting ${tokenName}`
+        : `Absolute path or path starting from project root (e.g., "/extensions/MyFile.ts")`;
+
     return z
         .string()
-        .describe(`Absolute path or path starting from project root (e.g., "/extensions/MyFile.ts")`)
+        .describe(description)
         .superRefine(async (src, ctx) => {
             // First, check for explicitly relative paths (starts with ./ or ../)
             // This provides a more specific error message
@@ -61,6 +83,45 @@ export const zodAbsoluteOrRootPath = (project: IProjectModel) => {
                         src
                     )
                 });
+                return;
+            }
+
+            // If abstraction validation is required
+            if (abstraction) {
+                const exportName = path
+                    .basename(absoluteSrcPath)
+                    .replace(path.extname(absoluteSrcPath), "");
+
+                const importedModule = await import(absoluteSrcPath);
+                const exportedImplementation = importedModule?.[exportName];
+                if (!exportedImplementation) {
+                    ctx.addIssue({
+                        code: z.ZodIssueCode.custom,
+                        message: ProjectError.formatMessage(
+                            `The file %s must export a class named %s.`,
+                            src,
+                            exportName
+                        )
+                    });
+                    return;
+                }
+
+                const metadata = new Metadata(exportedImplementation);
+                const metadataName = metadata.getAbstraction().toString();
+                const defName = abstraction.toString();
+                const isCorrectAbstraction = metadataName === defName;
+
+                if (!isCorrectAbstraction) {
+                    ctx.addIssue({
+                        code: z.ZodIssueCode.custom,
+                        message: ProjectError.formatMessage(
+                            `The class %s in %s must implement the %s interface.`,
+                            exportName,
+                            src,
+                            tokenName
+                        )
+                    });
+                }
             }
         });
 };
