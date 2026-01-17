@@ -7,16 +7,19 @@ export interface IPositionOptions {
     before?: string;
     after?: string;
 }
-
 export interface IMarkdownContentBuilder {
     add(id: string, text: string, position?: IPositionOptions): this;
     remove(id: string): this;
     replace(id: string, text: string): this;
+    setVariable(key: string, value: string): this;
+    setVariables(vars: Record<string, string>): this;
+    getVariable(key: string): string | undefined;
     build(joinWith?: string): string;
 }
 
 export class MarkdownContentBuilder implements IMarkdownContentBuilder {
     private sections: ISection[] = [];
+    private variables: Map<string, string> = new Map();
 
     add(id: string, markdown: string, position?: IPositionOptions): this {
         const section: ISection = { id, content: markdown };
@@ -37,7 +40,6 @@ export class MarkdownContentBuilder implements IMarkdownContentBuilder {
             }
         }
 
-        // Default: append to end
         this.sections.push(section);
         return this;
     }
@@ -55,7 +57,37 @@ export class MarkdownContentBuilder implements IMarkdownContentBuilder {
         return this;
     }
 
+    setVariable(key: string, value: string): this {
+        this.variables.set(key, value);
+        return this;
+    }
+
+    setVariables(vars: Record<string, string>): this {
+        Object.entries(vars).forEach(([key, value]) => {
+            this.variables.set(key, value);
+        });
+        return this;
+    }
+
+    getVariable(key: string): string | undefined {
+        return this.variables.get(key);
+    }
+
+    private substituteVariables(text: string): string {
+        let result = text;
+        this.variables.forEach((value, key) => {
+            const regex = new RegExp(`\\{${this.escapeRegex(key)}\\}`, "g");
+            result = result.replace(regex, value);
+        });
+        return result;
+    }
+
+    private escapeRegex(str: string): string {
+        return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+
     build(joinWith = "\n"): string {
-        return this.sections.map(s => s.content).join(joinWith);
+        const content = this.sections.map(s => s.content).join(joinWith);
+        return this.substituteVariables(content);
     }
 }

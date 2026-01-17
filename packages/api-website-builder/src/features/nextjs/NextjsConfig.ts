@@ -15,22 +15,27 @@ class NextjsConfigImpl implements Abstraction.Interface {
         const apiKeyResult = await this.apiKeyRepo.getBySlug("website-builder");
         const apiKey = apiKeyResult.isOk() ? apiKeyResult.value : null;
 
-        const link = `https://github.com/webiny/website-builder-nextjs`;
-        const token = apiKey ? apiKey.token : "{API_KEY_TOKEN}";
-        const apiHost = await this.getApiHost();
-
-        const description = `This is a configuration for <a href="${link}" target="_blank">Webiny Next.js starter kit:</a>`;
         const envVars = [
             "```dotenv",
-            `NEXT_PUBLIC_WEBSITE_BUILDER_API_KEY=${token}`,
-            `NEXT_PUBLIC_WEBSITE_BUILDER_API_HOST=${apiHost}`,
-            `NEXT_PUBLIC_WEBSITE_BUILDER_API_TENANT=${tenant.id}`,
+            `NEXT_PUBLIC_WEBSITE_BUILDER_API_KEY={API_TOKEN}`,
+            `NEXT_PUBLIC_WEBSITE_BUILDER_API_HOST={API_HOST}`,
+            `NEXT_PUBLIC_WEBSITE_BUILDER_API_TENANT={TENANT_ID}`,
             "```"
         ];
 
         const builder = new MarkdownContentBuilder();
-        builder.add("description", description);
-        builder.add("config", envVars.join("\n"));
+        builder
+            .setVariables({
+                LINK: `https://github.com/webiny/website-builder-nextjs`,
+                API_TOKEN: apiKey ? apiKey.token : "{API_KEY_TOKEN}",
+                API_HOST: await this.getApiHost(),
+                TENANT_ID: tenant.id
+            })
+            .add(
+                "description",
+                `This is a configuration for <a href="{LINK}" target="_blank">Webiny Next.js starter kit:</a>`
+            )
+            .add("config", envVars.join("\n"));
 
         return builder;
     }
