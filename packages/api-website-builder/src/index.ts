@@ -29,6 +29,7 @@ import { PageModel } from "~/domain/page/abstractions.js";
 import { RedirectModel } from "~/domain/redirect/abstractions.js";
 import { PagePermissionsFeature } from "~/features/pages/PagePermissions/feature.js";
 import { RedirectPermissionsFeature } from "~/features/redirects/RedirectPermissions/feature.js";
+import { ApiKeyInstallerFeature } from "~/features/installer/feature.js";
 
 const createContext = () => {
     return createContextPlugin(
@@ -77,6 +78,7 @@ const createContext = () => {
             MovePageFeature.register(container);
             PagePermissionsFeature.register(container);
             RedirectPermissionsFeature.register(container);
+            ApiKeyInstallerFeature.register(container);
         },
         { name: "wb.createContext" }
     );
