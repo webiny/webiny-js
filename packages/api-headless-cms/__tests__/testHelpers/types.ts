@@ -9,7 +9,7 @@ export type TestContext = ApiCoreContext;
  * Query and reader related interfaces
  */
 export interface IQueryParams<T> {
-    variables: T;
+    variables?: T;
     headers?: GenericRecord<string, string>;
 }
 export interface IReadQueryBaseResponse<T> {
