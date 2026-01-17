@@ -1,16 +1,16 @@
-import { GraphQLSchemaFactory } from "webiny/api/graphql";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import NotAuthorizedResponse from "@webiny/api-core/graphql/security/NotAuthorizedResponse.js";
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
+import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.core.js";
 import { NextjsConfig } from "~/features/nextjs/index.js";
 
-class Schema implements GraphQLSchemaFactory.Interface {
+class Schema implements CoreGraphQLSchemaFactory.Interface {
     constructor(
         private identityContext: IdentityContext.Interface,
         private config: NextjsConfig.Interface
     ) {}
 
-    execute(): GraphQLSchemaFactory.Return {
+    execute(): CoreGraphQLSchemaFactory.Return {
         return [
             {
                 typeDefs: /* GraphQL */ `
@@ -52,7 +52,7 @@ class Schema implements GraphQLSchemaFactory.Interface {
     }
 }
 
-export const NextjsGraphQLSchema = GraphQLSchemaFactory.createImplementation({
+export const NextjsGraphQLSchema = CoreGraphQLSchemaFactory.createImplementation({
     implementation: Schema,
     dependencies: [IdentityContext, NextjsConfig]
 });
