@@ -1,6 +1,7 @@
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { IGraphQLIdentityResponse } from "~tests/testHelpers/fields/index.js";
+import type { CmsEntryStatus } from "~/types/index.js";
 
 export type TestContext = ApiCoreContext;
 
@@ -68,6 +69,7 @@ export interface IManageMutationBaseProperties {
     revisionSavedBy: IGraphQLIdentityResponse;
     revisionFirstPublishedBy: IGraphQLIdentityResponse | null;
     revisionLastPublishedBy: IGraphQLIdentityResponse | null;
+    status: CmsEntryStatus;
 }
 
 export interface IManageMutationBaseEntry<T> extends Partial<IManageMutationBaseProperties> {

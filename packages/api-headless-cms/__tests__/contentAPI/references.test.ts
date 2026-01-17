@@ -1,94 +1,86 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 import { useArticleManageHandler } from "../testHelpers/useArticleManageHandler";
 import { useArticleReadHandler } from "../testHelpers/useArticleReadHandler";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
-import { setupContentModelGroup, setupContentModels } from "../testHelpers/setup";
+import { setupGroupAndModels } from "../testHelpers/setup";
+import type { GenericRecord } from "@webiny/api/types.js";
+import type {
+    ICategoryInput,
+    ICategoryResponseValues
+} from "~tests/testHelpers/category/manage/types.js";
+import type { IManageQueryBaseResponse } from "~tests/testHelpers/types.js";
 
-const createCategoryItem = async ({ manager, from = null, publish, data }: any) => {
-    const [response] = await (from
-        ? manager.createCategoryFrom({ revision: from.id })
-        : manager.createCategory({ data }));
-    const category = from
-        ? response?.data?.createCategoryFrom?.data
-        : response?.data?.createCategory?.data;
-    const error = from
-        ? response?.data?.createCategoryFrom?.error
-        : response?.data?.createCategory?.error;
-    if (!category?.id || error) {
-        console.log(error.message);
-        console.log(JSON.stringify(error.data));
+
+interface ICreateCategoryItemParams {
+    manager: ReturnType<typeof useCategoryManageHandler>;
+    from?: GenericRecord | null;
+    data: ICategoryInput;
+}
+
+const createCategoryItem = async ({ manager, from, data }: ICreateCategoryItemParams) => {
+    if (from) {
+        const [result] = await manager.createCategoryFrom({
+            variables: {
+                revision: from.id,
+                data
+            }
+        });
+        if (result.data.createCategoryFrom.error) {
+            console.log(result.data.createCategoryFrom.error);
+            throw new Error("Could not create category.");
+        }
+        return result.data.createCategoryFrom.data;
+    }
+
+    const [result] = await manager.createCategory({
+        variables: {
+            data
+        }
+    });
+    if (result.data.createCategory.error) {
+        console.log(result.data.createCategory.error);
         throw new Error("Could not create category.");
     }
-    if (from) {
-        const [updateResponse] = await manager.updateCategory({
-            revision: category.id,
-            data
-        });
-        const updatedCategory = updateResponse?.data?.updateCategory?.data;
-        const updatedError = updateResponse?.data?.updateCategory?.error;
-        if (!updatedCategory?.id || updatedError) {
-            console.log(updatedError.message);
-            throw new Error("Could not update category.");
-        }
-    }
-    if (!publish) {
-        return category;
-    }
-    const [publishResponse] = await manager.publishCategory({
-        revision: category.id
-    });
-    if (publishResponse?.data?.publishCategory?.error) {
-        console.log(publishResponse?.data?.publishCategory?.error?.message);
-        throw new Error("Could not publish category.");
-    }
-    return publishResponse.data.publishCategory.data;
+    return result.data.createCategory.data;
 };
 
-const createArticleItem = async ({ manager, from = null, publish, data }: any) => {
-    const [response] = await (from
-        ? manager.createArticleFrom({ revision: from.id })
-        : manager.createArticle({ data }));
-    const article = from
-        ? response?.data?.createArticleFrom?.data
-        : response?.data?.createArticle?.data;
-    const error = from
-        ? response?.data?.createArticleFrom?.error
-        : response?.data?.createArticle?.error;
-    if (!article?.id || error) {
-        console.log(error.message);
-        console.log(JSON.stringify(error.data));
-        throw new Error("Could not create article.");
-    }
+interface ICreateArticleItemParams {
+    manager: ReturnType<typeof useArticleManageHandler>;
+    from?: GenericRecord | null;
+    data: GenericRecord;
+}
+
+const createArticleItem = async ({ manager, from, data }: ICreateArticleItemParams) => {
     if (from) {
-        const [updateResponse] = await manager.updateArticle({
-            revision: article.id,
+        const [result] = await manager.createArticleFrom({
+            revision: from.id,
             data
         });
-        const updatedArticle = updateResponse?.data?.updateArticle?.data;
-        const updatedError = updateResponse?.data?.updateArticle?.error;
-        if (!updatedArticle?.id || updatedError) {
-            console.log(updatedError.message);
-            throw new Error("Could not update article.");
+        if (result?.data?.createArticleFrom?.error) {
+            console.log(result.data.createArticleFrom.error);
+            throw new Error("Could not create article.");
         }
+        return result.data.createArticleFrom.data;
     }
-    if (!publish) {
-        return article;
-    }
-    const [publishResponse] = await manager.publishArticle({
-        revision: article.id
+
+    const [result] = await manager.createArticle({
+        data
     });
-    if (publishResponse?.data?.publishArticle?.error) {
-        console.log(publishResponse?.data?.publishArticle?.error?.message);
-        throw new Error("Could not publish article.");
+    if (result?.data?.createArticle?.error) {
+        console.log(result.data.createArticle.error);
+        throw new Error("Could not create article.");
     }
-    return publishResponse.data.publishArticle.data;
+    return result.data.createArticle.data;
 };
 
 /**
  * We need only certain values from the article data when created.
  */
-const extractReadArticle = (item: any, category?: any): Record<string, any> => {
+const extractReadArticle = (
+    item: IManageQueryBaseResponse<GenericRecord>,
+    category?: IManageQueryBaseResponse<ICategoryResponseValues>
+) => {
     return {
         id: item.id,
         entryId: item.entryId,
@@ -98,15 +90,15 @@ const extractReadArticle = (item: any, category?: any): Record<string, any> => {
         firstPublishedOn: expect.toBeDateString(),
         lastPublishedOn: expect.toBeDateString(),
         createdBy: item.createdBy,
-        title: item.title,
-        body: item.body,
+        title: item.values.title,
+        body: item.values.body,
         categories: category
             ? [
                   {
                       id: category.id,
                       entryId: category.entryId,
                       modelId: "category",
-                      title: category.title
+                      title: category.values.title
                   }
               ]
             : [],
@@ -115,7 +107,7 @@ const extractReadArticle = (item: any, category?: any): Record<string, any> => {
                   id: category.id,
                   entryId: category.entryId,
                   modelId: "category",
-                  title: category.title
+                  title: category.values.title
               }
             : null
     };
@@ -126,10 +118,14 @@ describe("entry references", () => {
     const readOpts = { path: "read" };
 
     const mainManager = useGraphQLHandler(manageOpts);
+    beforeEach(async () => {
+        await setupGroupAndModels({
+            manager: mainManager,
+            models: ["category", "article"]
+        });
+    });
 
     it("should get the published references on entries", async () => {
-        const group = await setupContentModelGroup(mainManager);
-        await setupContentModels(mainManager, group, ["category", "article"]);
 
         const categoryManager = useCategoryManageHandler(manageOpts);
         const articleManager = useArticleManageHandler(manageOpts);
@@ -138,10 +134,12 @@ describe("entry references", () => {
         const techCategory = await createCategoryItem({
             manager: categoryManager,
             data: {
-                title: "Tech category",
-                slug: "tech-category"
-            },
-            publish: true
+                values: {
+                    title: "Tech category",
+                    slug: "tech-category"
+                },
+                publish: true
+            }
         });
 
         const techArticle = await createArticleItem({

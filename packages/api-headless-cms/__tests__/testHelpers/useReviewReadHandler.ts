@@ -11,11 +11,15 @@ const reviewFields = `
         text
         product {
             id
-            title
+            values {
+                title
+            }
         }
         author {
             id
-            fullName
+            values {
+                fullName
+            }
         }
         rating
     }
