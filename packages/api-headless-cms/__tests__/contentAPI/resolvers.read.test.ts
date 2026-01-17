@@ -1111,7 +1111,6 @@ describe.sequential("READ - Resolvers", () => {
     });
 
     it("list entries that have price in given range", async () => {
-
         const { vegetables } = await categoryManagerHelper(categoryManager);
         const { createProduct, listProducts } = useProductManageHandler({
             ...manageOpts
@@ -1195,7 +1194,6 @@ describe.sequential("READ - Resolvers", () => {
     });
 
     it("sort entries by title", async () => {
-
         const { vegetables } = await categoryManagerHelper(categoryManager);
         const { createProduct, listProducts } = useProductManageHandler({
             ...manageOpts
@@ -1294,7 +1292,6 @@ describe.sequential("READ - Resolvers", () => {
     });
 
     it("should sort products by price", async () => {
-
         const { vegetables } = await categoryManagerHelper(categoryManager);
         const { createProduct, listProducts } = useProductManageHandler({
             ...manageOpts
@@ -1393,7 +1390,6 @@ describe.sequential("READ - Resolvers", () => {
     });
 
     it("should store and retrieve nested objects", async () => {
-
         const { vegetables } = await categoryManagerHelper(categoryManager);
 
         const { getProduct } = useProductReadHandler({ ...readOpts });
