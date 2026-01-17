@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { Container } from "@webiny/di";
 import { ModelBuilderFeature } from "~/features/modelBuilder/feature.js";
 import { ModelFactory, ModelsProvider } from "~/features/modelBuilder/index.js";
@@ -244,29 +244,32 @@ describe("All Field Types Model", () => {
         expect(dynamicContentField?.type).toBe("dynamicZone");
         expect(dynamicContentField?.multipleValues).toBe(true);
         expect(dynamicContentField?.settings?.templates).toHaveLength(3);
-        expect(dynamicContentField?.settings?.templates[0].gqlTypeName).toBe("TextBlock");
-        expect(dynamicContentField?.settings?.templates[0].layout).toEqual([["heading"], ["body"]]);
-        expect(dynamicContentField?.settings?.templates[1].gqlTypeName).toBe("ImageBlock");
-        expect(dynamicContentField?.settings?.templates[1].layout).toEqual([
+        expect(dynamicContentField?.settings?.templates![0].gqlTypeName).toBe("TextBlock");
+        expect(dynamicContentField?.settings?.templates![0].layout).toEqual([
+            ["heading"],
+            ["body"]
+        ]);
+        expect(dynamicContentField?.settings?.templates![1].gqlTypeName).toBe("ImageBlock");
+        expect(dynamicContentField?.settings?.templates![1].layout).toEqual([
             ["image"],
             ["caption"],
             ["altText"]
         ]);
-        expect(dynamicContentField?.settings?.templates[2].gqlTypeName).toBe("StatsBlock");
-        expect(dynamicContentField?.settings?.templates[2].layout).toEqual([["stats"]]);
+        expect(dynamicContentField?.settings?.templates![2].gqlTypeName).toBe("StatsBlock");
+        expect(dynamicContentField?.settings?.templates![2].layout).toEqual([["stats"]]);
 
         // Verify nested object in dynamic zone template has stats with predefined values
-        const statsTemplate = dynamicContentField?.settings?.templates[2];
+        const statsTemplate = dynamicContentField?.settings?.templates![2];
         expect(statsTemplate?.fields).toHaveLength(1);
-        const statsField = statsTemplate?.fields[0];
+        const statsField = statsTemplate?.fields[0]!;
         expect(statsField.fieldId).toBe("stats");
         expect(statsField.type).toBe("object");
         expect(statsField.multipleValues).toBe(true);
-        expect(statsField.settings.layout).toEqual([["label"], ["value"], ["trend"]]);
-        expect(statsField.settings.fields).toHaveLength(3);
-        const trendField = statsField.settings.fields.find((f: any) => f.fieldId === "trend");
-        expect(trendField.predefinedValues.enabled).toBe(true);
-        expect(trendField.predefinedValues.values).toHaveLength(3);
+        expect(statsField.settings!.layout).toEqual([["label"], ["value"], ["trend"]]);
+        expect(statsField.settings!.fields).toHaveLength(3);
+        const trendField = statsField.settings!.fields!.find((f: any) => f.fieldId === "trend");
+        expect(trendField!.predefinedValues!.enabled).toBe(true);
+        expect(trendField!.predefinedValues!.values).toHaveLength(3);
     });
 
     it("should support all public-model-specific methods", async () => {

@@ -47,8 +47,10 @@ describe("singleton model content entries", () => {
                             type: "admin"
                         },
                         savedOn: expect.toBeDateString(),
-                        slug: null,
-                        title: null
+                        values: {
+                            slug: null,
+                            title: null
+                        }
                     },
                     error: null
                 }
@@ -70,8 +72,10 @@ describe("singleton model content entries", () => {
 
     it("should update the singleton entry", async () => {
         const data = {
-            title: "New title",
-            slug: "new-title"
+            values: {
+                title: "New title",
+                slug: "new-title"
+            }
         };
         const [managerResponse] = await manager.updateCategory({
             data
@@ -113,8 +117,10 @@ describe("singleton model content entries", () => {
         const id = rootResponse.data.getCategory.data.id;
 
         const data = {
-            title: "New title",
-            slug: "new-title"
+            values: {
+                title: "New title",
+                slug: "new-title"
+            }
         };
         const [response1] = await manager.updateCategory({
             data
