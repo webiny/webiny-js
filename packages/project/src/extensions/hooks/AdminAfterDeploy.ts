@@ -1,5 +1,5 @@
 import { defineExtension } from "~/defineExtension/index.js";
-import { zodPathToAbstraction } from "~/defineExtension/zodTypes/zodPathToAbstraction.js";
+import { zodSrcPath } from "~/defineExtension/zodTypes/zodSrcPath.js";
 import { AdminAfterDeploy as AdminAfterDeployAbstraction } from "~/abstractions/index.js";
 import { z } from "zod";
 
@@ -10,7 +10,7 @@ export const AdminAfterDeploy = defineExtension({
     multiple: true,
     paramsSchema: ({ project }) => {
         return z.object({
-            src: zodPathToAbstraction(AdminAfterDeployAbstraction, project)
+            src: zodSrcPath({ project, abstraction: AdminAfterDeployAbstraction })
         });
     }
 });
