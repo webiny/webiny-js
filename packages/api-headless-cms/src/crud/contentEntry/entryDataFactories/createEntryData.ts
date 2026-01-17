@@ -141,7 +141,7 @@ export const createEntryData = async <TValues extends CmsEntryValues = CmsEntryV
     getTenant,
     accessControl
 }: CreateEntryDataParams<TValues>): Promise<ICreateEntryDataResponse<TValues>> => {
-    const initialValues = cleanInputValues<TValues>(model, rawInput.values);
+    const initialValues = cleanInputValues<TValues>(model, rawInput.values || {} as TValues);
 
     await validateModelEntryDataOrThrow({
         context,

@@ -85,7 +85,9 @@ describe("content entry picked validation", () => {
         });
         const [minLengthResponse] = await manager.create({
             data: {
-                title: "abc"
+                values: {
+                    title: "abc"
+                }
             }
         });
         expect(minLengthResponse).toMatchObject({
@@ -111,7 +113,9 @@ describe("content entry picked validation", () => {
         expect(minLengthResponse.data.create.error.data).toHaveLength(1);
         const [noMinLengthResponse] = await manager.create({
             data: {
-                title: "abc"
+                values: {
+                    title: "abc"
+                }
             },
             options: {
                 skipValidators: ["minLength"]
@@ -152,7 +156,9 @@ describe("content entry picked validation", () => {
         });
         const [maxLengthResponse] = await manager.create({
             data: {
-                title: "abcdefghijklmnopqrstabcdefghijklmnopqrst"
+                values: {
+                    title: "abcdefghijklmnopqrstabcdefghijklmnopqrst"
+                }
             }
         });
         expect(maxLengthResponse).toMatchObject({
@@ -178,7 +184,9 @@ describe("content entry picked validation", () => {
         expect(maxLengthResponse.data.create.error.data).toHaveLength(1);
         const [noMaxLengthResponse] = await manager.create({
             data: {
-                title: "abcdefghijklmnopqrstabcdefghijklmnopqrst"
+                values: {
+                    title: "abcdefghijklmnopqrstabcdefghijklmnopqrst"
+                }
             },
             options: {
                 skipValidators: ["maxLength"]
@@ -221,7 +229,9 @@ describe("content entry picked validation", () => {
         });
         const [patternResponse] = await manager.create({
             data: {
-                title: "r2d3r4d5r6d8"
+                values: {
+                    title: "r2d3r4d5r6d8"
+                }
             }
         });
         expect(patternResponse).toMatchObject({
@@ -248,7 +258,9 @@ describe("content entry picked validation", () => {
 
         const [noPatternResponse] = await manager.create({
             data: {
-                title: "r2d3r4d5r6d8"
+                values: {
+                    title: "r2d3r4d5r6d8"
+                }
             },
             options: {
                 skipValidators: ["pattern"]
@@ -289,7 +301,9 @@ describe("content entry picked validation", () => {
         });
         const [inResponse] = await manager.create({
             data: {
-                title: "green"
+                values: {
+                    title: "green"
+                }
             }
         });
         expect(inResponse).toMatchObject({
@@ -316,7 +330,9 @@ describe("content entry picked validation", () => {
 
         const [noInResponse] = await manager.create({
             data: {
-                title: "green"
+                values: {
+                    title: "green"
+                }
             },
             options: {
                 skipValidators: ["in"]
@@ -357,7 +373,9 @@ describe("content entry picked validation", () => {
         });
         const [gteResponse] = await manager.create({
             data: {
-                price: 56
+                values: {
+                    price: 56
+                }
             }
         });
         expect(gteResponse).toMatchObject({
@@ -384,7 +402,9 @@ describe("content entry picked validation", () => {
 
         const [noGteResponse] = await manager.create({
             data: {
-                price: 56
+                values: {
+                    price: 56
+                }
             },
             options: {
                 skipValidators: ["lte"]
@@ -413,7 +433,9 @@ describe("content entry picked validation", () => {
         });
         const [gteResponse] = await manager.create({
             data: {
-                price: 0
+                values: {
+                    price: 0
+                }
             }
         });
         expect(gteResponse).toMatchObject({
@@ -440,7 +462,9 @@ describe("content entry picked validation", () => {
 
         const [noGteResponse] = await manager.create({
             data: {
-                price: 0
+                values: {
+                    price: 0
+                }
             },
             options: {
                 skipValidators: ["gte"]
@@ -469,7 +493,9 @@ describe("content entry picked validation", () => {
         });
         const [dateLteResponse] = await manager.create({
             data: {
-                releaseDate: "2024-01-01"
+                values: {
+                    releaseDate: "2024-01-01"
+                }
             }
         });
         expect(dateLteResponse).toMatchObject({
@@ -496,7 +522,9 @@ describe("content entry picked validation", () => {
 
         const [noDateLteResponse] = await manager.create({
             data: {
-                releaseDate: "2024-01-01"
+                values: {
+                    releaseDate: "2024-01-01"
+                }
             },
             options: {
                 skipValidators: ["dateLte"]
@@ -525,7 +553,9 @@ describe("content entry picked validation", () => {
         });
         const [dateGteResponse] = await manager.create({
             data: {
-                releaseDate: "2019-01-01"
+                values: {
+                    releaseDate: "2019-01-01"
+                }
             }
         });
         expect(dateGteResponse).toMatchObject({
@@ -552,7 +582,9 @@ describe("content entry picked validation", () => {
 
         const [noDateGteResponse] = await manager.create({
             data: {
-                releaseDate: "2019-01-01"
+                values: {
+                    releaseDate: "2019-01-01"
+                }
             },
             options: {
                 skipValidators: ["dateGte"]
@@ -593,7 +625,9 @@ describe("content entry picked validation", () => {
         });
         const [timeLteResponse] = await manager.create({
             data: {
-                runningTime: "05:06"
+                values: {
+                    runningTime: "05:06"
+                }
             }
         });
         expect(timeLteResponse).toMatchObject({
@@ -620,7 +654,9 @@ describe("content entry picked validation", () => {
 
         const [noTimeLteResponse] = await manager.create({
             data: {
-                runningTime: "05:06"
+                values: {
+                    runningTime: "05:06"
+                }
             },
             options: {
                 skipValidators: ["timeLte"]
@@ -649,7 +685,9 @@ describe("content entry picked validation", () => {
         });
         const [timeGteResponse] = await manager.create({
             data: {
-                runningTime: "00:29"
+                values: {
+                    runningTime: "00:29"
+                }
             }
         });
         expect(timeGteResponse).toMatchObject({
@@ -676,7 +714,9 @@ describe("content entry picked validation", () => {
 
         const [noTimeGteResponse] = await manager.create({
             data: {
-                runningTime: "00:29"
+                values: {
+                    runningTime: "00:29"
+                }
             },
             options: {
                 skipValidators: ["timeGte"]

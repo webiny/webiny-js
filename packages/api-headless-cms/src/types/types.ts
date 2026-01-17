@@ -872,7 +872,7 @@ export interface CreateCmsEntryInput<TValues extends CmsEntryValues = CmsEntryVa
 
     state?: Partial<IEntryState>;
 
-    values: TValues;
+    values: TValues | undefined;
 }
 
 export interface CreateCmsEntryOptionsInput {
