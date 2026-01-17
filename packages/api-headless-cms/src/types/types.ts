@@ -718,11 +718,20 @@ export interface CmsEntryListWhere {
         folderId_not?: string;
         folderId_in?: string[];
         folderId_not_in?: string[];
-        AND?: CmsEntryListWhere[];
-        OR?: CmsEntryListWhere[];
+    };
+    location?: {
+        folderId?: string;
+        folderId_not?: string;
+        folderId_in?: string[];
+        folderId_not_in?: string[];
     };
 
     values?: CmsEntryListWhereValues;
+    /**
+     * Is the entry in the bin?
+     */
+    wbyDeleted?: boolean;
+    wbyDeleted_not?: boolean;
 
     /**
      * To allow querying via nested queries, we added the AND / OR properties.

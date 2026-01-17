@@ -33,7 +33,7 @@ class ListEntriesRepositoryImpl implements RepositoryAbstraction.Interface {
             const where: NonNullable<CmsEntryListParams["where"]> = params.where ?? {};
 
             if (where.location) {
-                where.wbyAco_location = where.location as ICmsEntryLocation;
+                where.wbyAco_location = where.location;
                 delete where.location;
             }
 
