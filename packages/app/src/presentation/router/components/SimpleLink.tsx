@@ -24,7 +24,8 @@ export const SimpleLink = makeDecoratable(
                 event.metaKey ||
                 event.altKey ||
                 event.ctrlKey ||
-                event.shiftKey
+                event.shiftKey ||
+                rest.target === "_blank"
             ) {
                 return;
             }

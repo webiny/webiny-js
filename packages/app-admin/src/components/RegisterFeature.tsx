@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useContainer } from "@webiny/app";
 import { createFeature } from "@webiny/feature/admin";
 
@@ -7,6 +8,8 @@ interface RegisterFeatureProps {
 
 export const RegisterFeature = ({ feature }: RegisterFeatureProps) => {
     const container = useContainer();
-    feature.register(container);
+    useEffect(() => {
+        feature.register(container);
+    }, []);
     return null;
 };

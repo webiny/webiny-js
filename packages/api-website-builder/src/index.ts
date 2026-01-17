@@ -29,6 +29,9 @@ import { PageModel } from "~/domain/page/abstractions.js";
 import { RedirectModel } from "~/domain/redirect/abstractions.js";
 import { PagePermissionsFeature } from "~/features/pages/PagePermissions/feature.js";
 import { RedirectPermissionsFeature } from "~/features/redirects/RedirectPermissions/feature.js";
+import { ApiKeyInstallerFeature } from "~/features/installer/feature.js";
+import { NextjsGraphQLSchema } from "~/graphql/nextjs/NextjsGraphQLSchema.js";
+import { NextjsFeature } from "~/features/nextjs/feature.js";
 
 const createContext = () => {
     return createContextPlugin(
@@ -77,6 +80,11 @@ const createContext = () => {
             MovePageFeature.register(container);
             PagePermissionsFeature.register(container);
             RedirectPermissionsFeature.register(container);
+            ApiKeyInstallerFeature.register(container);
+            NextjsFeature.register(container);
+
+            // Register GraphQL
+            container.register(NextjsGraphQLSchema);
         },
         { name: "wb.createContext" }
     );

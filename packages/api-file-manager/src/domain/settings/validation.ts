@@ -39,9 +39,9 @@ export const updateSettingsValidation = zod.object({
                     return "";
                 }
 
-                const { domainName } = manifest.api.cloudfront;
+                const { domain } = manifest.api.cloudfront;
 
-                return `https://${domainName}/files/`;
+                return `https://${domain}/files/`;
             }
             if (typeof value === "string") {
                 return value.endsWith("/") ? value : value + "/";

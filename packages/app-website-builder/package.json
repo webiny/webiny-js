@@ -49,6 +49,7 @@
     "graphql-tag": "^2.12.6",
     "is-hotkey": "^0.2.0",
     "lodash": "^4.17.21",
+    "markdown-to-jsx": "^9.5.7",
     "matcher": "^5.0.0",
     "mobx": "^6.15.0",
     "mobx-react-lite": "^3.4.3",
