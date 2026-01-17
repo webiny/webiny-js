@@ -90,7 +90,7 @@ export interface IManageQueryBaseResponseMeta<T> {
     modelId: string;
     version: number;
     locked: boolean;
-    status: string;
+    status: CmsEntryStatus;
     revisions: IManageQueryBaseResponseMetaRevision<T>[];
     data: GenericRecord;
 }
@@ -124,5 +124,6 @@ export interface IManageQueryBaseResponse<T> {
     revisionLastPublishedBy: IGraphQLIdentityResponse | null;
     meta: IManageQueryBaseResponseMeta<T>;
     wbyAco_location: IManageQueryBaseResponseLocation;
+    
     values: T;
 }
