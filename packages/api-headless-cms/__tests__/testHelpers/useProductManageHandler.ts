@@ -79,6 +79,7 @@ const errorFields = `
         code
         message
         data
+        stack
     }
 `;
 

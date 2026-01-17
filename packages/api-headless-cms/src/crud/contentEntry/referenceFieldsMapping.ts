@@ -3,6 +3,7 @@ import { parseIdentifier } from "@webiny/utils";
 import type { CmsContext, CmsEntryValues, CmsModel } from "~/types/index.js";
 import { buildReferenceFieldPaths } from "./references/buildPaths.js";
 import { validateReferencedEntries } from "~/crud/contentEntry/references/validateEntries.js";
+import { createIdentifier } from "@webiny/utils/createIdentifier.js";
 
 interface CmsRefEntry {
     id: string;
@@ -53,7 +54,7 @@ export const referenceFieldsMapping = async <TValues extends CmsEntryValues = Cm
      */
     for (const path of referenceFieldPaths) {
         // It is safe to cast here, because `referenceFieldPaths` array is generated from the `input`.
-        const refValue = dotPropImmutable.get(values, path);
+        const refValue = dotPropImmutable.get(values, path) as CmsRefEntry | undefined;
         if (!refValue) {
             continue;
         }
@@ -63,14 +64,17 @@ export const referenceFieldsMapping = async <TValues extends CmsEntryValues = Cm
          * compatibility. The latest valid structure of a `ref` field value is { id, modelId }, but we also need
          * to make sure that the legacy structure { entryId, modelId } is supported.
          */
-        const { id, modelId } = refValue as CmsRefEntry;
+        const { id: entryId, version } = parseIdentifier(refValue.id || refValue.entryId);
 
-        const { id: entryId } = parseIdentifier(id);
+        const id = createIdentifier({
+            version: version || 1,
+            id: entryId
+        });
 
         output = dotPropImmutable.set(output, path, {
             id,
             entryId,
-            modelId
+            modelId: refValue.modelId
         });
     }
 

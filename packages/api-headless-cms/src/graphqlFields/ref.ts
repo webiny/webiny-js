@@ -47,6 +47,10 @@ const createFilteringTypeDef = () => {
             entryId_not: String
             entryId_in: [String!]
             entryId_not_in: [String!]
+            modelId: String
+            modelId_not: String
+            modelId_in: [String!]
+            modelId_not_in: [String!]
         }
     `;
 };

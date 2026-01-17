@@ -1,12 +1,11 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { mdbid } from "@webiny/utils";
-import models from "./mocks/contentModels";
-import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
-import type { CmsEntry, CmsGroup, CmsModel, StorageOperationsCmsModel } from "~/types";
+import type { CmsEntry, CmsModel } from "~/types";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../testHelpers/useCategoryReadHandler";
 import { useProductManageHandler } from "../testHelpers/useProductManageHandler";
 import { createStorageOperationsContext } from "~tests/storageOperations/context";
+import { setupGroupAndModels } from "~tests/testHelpers/setup.js";
 
 interface CreateEntryResult {
     entry: CmsEntry;
@@ -17,108 +16,81 @@ describe("Republish entries", () => {
     const readOpts = { path: "read" };
     const manageOpts = { path: "manage" };
 
-    const {
-        createContentModelMutation,
-        updateContentModelMutation,
-        createContentModelGroupMutation
-    } = useGraphQLHandler(manageOpts);
+    const categoryManager = useCategoryManageHandler(manageOpts);
+    const { createCategory, publishCategory, republishCategory } = categoryManager;
+    
+    let categoryModel: CmsModel;
+    let productModel: CmsModel;
 
-    const { createCategory, publishCategory, republishCategory } =
-        useCategoryManageHandler(manageOpts);
-
-    // This function is not directly within `beforeEach` as we don't always create the same content model.
-    // We call this function manually at the beginning of each test, where needed.
-    const setupGroup = async (): Promise<CmsGroup> => {
-        const [createCMG] = await createContentModelGroupMutation({
-            data: {
-                name: "Group",
-                slug: "group",
-                icon: "ico/ico",
-                description: "description"
-            }
+    beforeEach(async () => {
+        const result = await setupGroupAndModels({
+            manager: categoryManager,
+            models: ["category", "product"]
         });
-        return createCMG.data.createContentModelGroup.data;
-    };
-
-    const setupModel = async (
-        contentModelGroup: CmsGroup,
-        modelId: string
-    ): Promise<StorageOperationsCmsModel> => {
-        const model = models.find(m => m.modelId === modelId);
-        if (!model) {
-            throw new Error(`Could not find model "${modelId}".`);
-        }
-        // Create initial record
-        const [create] = await createContentModelMutation({
-            data: {
-                name: model.name,
-                modelId: model.modelId,
-                singularApiName: model.singularApiName,
-                pluralApiName: model.pluralApiName,
-                group: contentModelGroup.id
-            }
-        });
-
-        if (create.errors) {
-            console.error(`[beforeEach] ${create.errors[0].message}`);
-            process.exit(1);
-        }
-
-        const [update] = await updateContentModelMutation({
-            modelId: create.data.createContentModel.data.modelId,
-            data: {
-                fields: model.fields,
-                layout: model.layout
-            }
-        });
-        return {
-            ...update.data.updateContentModel.data,
-            tenant: "root"
-        };
-    };
+        productModel = result.getModel("product");
+        categoryModel = result.getModel("category");
+    });
 
     const createPublishedCategories = async () => {
         /**
          * Create test categories.
          */
         const [appleResponse] = await createCategory({
-            data: {
-                title: "Apple",
-                slug: "apple"
+            variables: {
+                data: {
+                    values: {
+                        title: "Apple",
+                        slug: "apple"
+                    }
+                }
             }
         });
-        const appleOriginal = appleResponse.data.createCategory.data;
+        const appleOriginal = appleResponse.data.createCategory.data!;
         const [bananaResponse] = await createCategory({
-            data: {
-                title: "Banana",
-                slug: "banana"
+            variables: {
+                data: {
+                    values: {
+                        title: "Banana",
+                        slug: "banana"
+                    }
+                }
             }
         });
-        const bananaOriginal = bananaResponse.data.createCategory.data;
+        const bananaOriginal = bananaResponse.data.createCategory.data!;
         const [orangeResponse] = await createCategory({
-            data: {
-                title: "Orange",
-                slug: "orange"
+            variables: {
+                data: {
+                    values: {
+                        title: "Orange",
+                        slug: "orange"
+                    }
+                }
             }
         });
-        const orangeOriginal = orangeResponse.data.createCategory.data;
+        const orangeOriginal = orangeResponse.data.createCategory.data!;
 
         /**
          * Publish all the categories.
          */
         const [applePublishResponse] = await publishCategory({
-            revision: appleOriginal.id
+            variables: {
+                revision: appleOriginal.id
+            }
         });
-        const apple = applePublishResponse.data.publishCategory.data;
+        const apple = applePublishResponse.data.publishCategory.data!;
 
         const [bananaPublishResponse] = await publishCategory({
-            revision: bananaOriginal.id
+            variables: {
+                revision: bananaOriginal.id
+            }
         });
-        const banana = bananaPublishResponse.data.publishCategory.data;
+        const banana = bananaPublishResponse.data.publishCategory.data!;
         const [orangePublishResponse] = await publishCategory({
-            revision: orangeOriginal.id
+            variables: {
+                revision: orangeOriginal.id
+            }
         });
-        const orange = orangePublishResponse.data.publishCategory.data;
+        const orange = orangePublishResponse.data.publishCategory.data!;
 
         return {
             appleOriginal: appleOriginal,
@@ -161,12 +133,8 @@ describe("Republish entries", () => {
     };
 
     it("should republish entries without changing them", async () => {
-        const group = await setupGroup();
-        await setupModel(group, "category");
 
         const { listCategories } = useCategoryReadHandler(readOpts);
-
-        const categories = await createPublishedCategories();
 
         const {
             appleOriginal,
@@ -175,13 +143,16 @@ describe("Republish entries", () => {
             orangePublished,
             bananaPublished,
             bananaOriginal
-        } = categories;
+        } = await createPublishedCategories();
+        
 
         /**
          * Now we republish all categories and expect they did not change.
          */
         const [appleRepublishResponse] = await republishCategory({
-            revision: appleOriginal.id
+            variables: {
+                revision: appleOriginal.id
+            }
         });
         expect(appleRepublishResponse).toEqual({
             data: {
@@ -196,10 +167,12 @@ describe("Republish entries", () => {
                 }
             }
         });
-        applePublished.savedOn = appleRepublishResponse.data.republishCategory.data.savedOn;
+        applePublished.savedOn = appleRepublishResponse.data.republishCategory.data!.savedOn;
 
         const [bananaRepublishResponse] = await republishCategory({
-            revision: bananaOriginal.id
+            variables: {
+                revision: bananaOriginal.id
+            }
         });
         expect(bananaRepublishResponse).toEqual({
             data: {
@@ -214,10 +187,12 @@ describe("Republish entries", () => {
                 }
             }
         });
-        bananaPublished.savedOn = bananaRepublishResponse.data.republishCategory.data.savedOn;
+        bananaPublished.savedOn = bananaRepublishResponse.data.republishCategory.data!.savedOn;
 
         const [orangeRepublishResponse] = await republishCategory({
-            revision: orangeOriginal.id
+            variables: {
+                revision: orangeOriginal.id
+            }
         });
         expect(orangeRepublishResponse).toEqual({
             data: {
@@ -232,7 +207,7 @@ describe("Republish entries", () => {
                 }
             }
         });
-        orangePublished.savedOn = orangeRepublishResponse.data.republishCategory.data.savedOn;
+        orangePublished.savedOn = orangeRepublishResponse.data.republishCategory.data!.savedOn;
 
         const [response] = await listCategories({
             sort: ["createdOn_ASC"]
@@ -244,17 +219,23 @@ describe("Republish entries", () => {
                     data: [
                         {
                             id: applePublished.id,
-                            title: applePublished.title,
+                            values: {
+                                title: applePublished.values.title
+                            },
                             savedOn: applePublished.savedOn
                         },
                         {
                             id: bananaPublished.id,
-                            title: bananaPublished.title,
+                            values: {
+                                title: bananaPublished.values.title
+                            },
                             savedOn: bananaPublished.savedOn
                         },
                         {
                             id: orangePublished.id,
-                            title: orangePublished.title,
+                            values: {
+                                title: orangePublished.values.title
+                            },
                             savedOn: orangePublished.savedOn
                         }
                     ],
@@ -274,15 +255,9 @@ describe("Republish entries", () => {
      * We check in both latest and published records because in different storages that can be two different records.
      */
     it("storage operations - should republish entries without changing them", async () => {
-        const group = await setupGroup();
-        const categoryModel = await setupModel(group, "category");
-        const productModel = await setupModel(group, "product");
-
         const { applePublished, bananaPublished } = await createPublishedCategories();
-
         const { publishProduct, republishProduct } = useProductManageHandler(manageOpts);
-
-        const { storageOperations, plugins } = useCategoryManageHandler(manageOpts);
+        const { storageOperations, plugins } = categoryManager;
 
         await storageOperations.beforeInit(
             await createStorageOperationsContext({
