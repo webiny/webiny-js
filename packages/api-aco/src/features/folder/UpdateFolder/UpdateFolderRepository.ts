@@ -27,7 +27,10 @@ class UpdateFolderRepositoryImpl implements IUpdateFolderRepository {
         data: UpdateFolderParams
     ): Promise<Result<Folder, RepositoryAbstraction.Error>> {
         // Get the original folder
-        const originalResult = await this.getEntryById.execute<CmsEntryFolder>(this.folderModel, id);
+        const originalResult = await this.getEntryById.execute<CmsEntryFolder>(
+            this.folderModel,
+            id
+        );
 
         if (originalResult.isFail()) {
             return Result.fail(new FolderPersistenceError(originalResult.error));
@@ -122,7 +125,10 @@ class UpdateFolderRepositoryImpl implements IUpdateFolderRepository {
             return Result.ok(Path.create(slug));
         }
 
-        const parentResult = await this.getEntryById.execute<CmsEntryFolder>(this.folderModel, parentId);
+        const parentResult = await this.getEntryById.execute<CmsEntryFolder>(
+            this.folderModel,
+            parentId
+        );
 
         if (parentResult.isFail()) {
             return Result.fail(

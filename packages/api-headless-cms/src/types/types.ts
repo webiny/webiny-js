@@ -685,14 +685,14 @@ export interface CmsEntryListWhere {
     lastPublishedBy_not?: string;
     lastPublishedBy_in?: string[];
     lastPublishedBy_not_in?: string[];
-    
+
     createdOn?: string;
     createdOn_gt?: string;
     createdOn_gte?: string;
     createdOn_lt?: string;
     createdOn_lte?: string;
     createdOn_between?: [string, string];
-    
+
     savedOn?: string;
     savedOn_gt?: string;
     savedOn_gte?: string;

@@ -76,7 +76,7 @@ class CreateFolderRepositoryImpl implements ICreateFolderRepository {
                 values: {
                     type,
                     slug,
-                    parentId,
+                    parentId
                 },
                 ...(excludeId ? { id_not: excludeId } : {})
             },
@@ -110,7 +110,10 @@ class CreateFolderRepositoryImpl implements ICreateFolderRepository {
             return Result.ok(Path.create(slug));
         }
 
-        const parentResult = await this.getEntryById.execute<CmsEntryFolder>(this.folderModel, parentId);
+        const parentResult = await this.getEntryById.execute<CmsEntryFolder>(
+            this.folderModel,
+            parentId
+        );
 
         if (parentResult.isFail()) {
             return Result.fail(

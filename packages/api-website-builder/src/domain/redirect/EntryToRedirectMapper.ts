@@ -1,9 +1,9 @@
 import type { CmsEntry } from "@webiny/api-headless-cms/types";
-import type { WbRedirect } from "~/domain/redirect/abstractions.js";
+import type { CmsEntryWbRedirect, WbRedirect } from "~/domain/redirect/abstractions.js";
 import { ROOT_FOLDER } from "~/constants.js";
 
 export class EntryToRedirectMapper {
-    static toRedirect(entry: CmsEntry): WbRedirect {
+    static toRedirect(entry: CmsEntry<CmsEntryWbRedirect>): WbRedirect {
         return {
             id: entry.id,
             location: {

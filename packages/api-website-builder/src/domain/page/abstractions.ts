@@ -2,7 +2,15 @@ import { createAbstraction } from "@webiny/feature/api";
 import type { CmsModel, IEntryState } from "@webiny/api-headless-cms/types/index.js";
 import type { WbIdentity, WbLocation } from "~/domain/shared/abstractions.js";
 
-export interface WbPage {
+export interface CmsEntryWbPage {
+    properties: Record<string, any>;
+    metadata: Record<string, any>;
+    bindings: Record<string, any>;
+    elements: Record<string, any>;
+    extensions?: Record<string, any>;
+}
+
+export interface WbPage extends CmsEntryWbPage {
     id: string;
     entryId: string;
     location: WbLocation;
@@ -17,12 +25,6 @@ export interface WbPage {
     modifiedBy: WbIdentity | null;
     tenant: string;
     state?: IEntryState;
-
-    properties: Record<string, any>;
-    metadata: Record<string, any>;
-    bindings: Record<string, any>;
-    elements: Record<string, any>;
-    extensions?: Record<string, any>;
 }
 
 /**
