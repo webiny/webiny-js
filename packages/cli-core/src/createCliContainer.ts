@@ -59,7 +59,7 @@ import {
     commandsWithGracefulErrorHandling,
     deployCommandWithTelemetry
 } from "./decorators/index.js";
-import { CliCommandFactory } from "~/extensions/index.js";
+import { CliCommand } from "~/extensions/index.js";
 
 const { bgYellow, bold } = chalk;
 
@@ -142,7 +142,7 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
             return importedModule[exportName];
         };
 
-        const commands = projectConfig.extensionsByType(CliCommandFactory);
+        const commands = projectConfig.extensionsByType(CliCommand);
         for (const command of commands) {
             const commandImplementation = await importFromPath(command.params.src);
 
