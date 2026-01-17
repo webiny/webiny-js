@@ -526,6 +526,8 @@ export const pageModel: CmsModel = {
             fieldId: "objective",
             type: "dynamicZone",
             label: "Objective",
+            listValidation: [],
+            validation: [],
             settings: {
                 templates: [
                     {
@@ -651,6 +653,8 @@ export const pageModel: CmsModel = {
             helpText: "Single-value DZ with 2 templates",
             type: "dynamicZone",
             label: "Reference",
+            listValidation: [],
+            validation: [],
             settings: {
                 templates: [
                     {
@@ -686,6 +690,8 @@ export const pageModel: CmsModel = {
             type: "dynamicZone",
             multipleValues: false,
             label: "Reference",
+            listValidation: [],
+            validation: [],
             settings: {
                 templates: [
                     {
@@ -722,6 +728,8 @@ export const pageModel: CmsModel = {
             type: "dynamicZone",
             multipleValues: true,
             label: "Reference",
+            listValidation: [],
+            validation: [],
             settings: {
                 templates: [
                     {
