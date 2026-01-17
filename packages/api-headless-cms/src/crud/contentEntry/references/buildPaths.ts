@@ -1,5 +1,5 @@
 import type { CmsDynamicZoneTemplate, CmsEntryValues, CmsModelField } from "~/types/index.js";
-import dotProp from "dot-prop";
+import dotPropImmutable from "dot-prop-immutable";
 import { getBaseFieldType } from "~/utils/getBaseFieldType.js";
 
 type INarrowedCmsModelField = Pick<
@@ -21,7 +21,7 @@ const resolveBaseRef = <TValues extends CmsEntryValues = CmsEntryValues>(
     const { field, parentPaths, input, collection, isMultipleValues } = params;
     const parentPathsValue = parentPaths.length > 0 ? `${parentPaths.join(".")}.` : "";
     if (field.multipleValues) {
-        const inputValue = dotProp.get(input, `${field.fieldId}`, []);
+        const inputValue = dotPropImmutable.get(input, `${field.fieldId}`, []);
         if (!Array.isArray(inputValue)) {
             return collection;
         }
@@ -82,7 +82,7 @@ export const buildReferenceFieldPaths = <TValues extends CmsEntryValues = CmsEnt
                 const templates: CmsDynamicZoneTemplate[] = field.settings?.templates || [];
 
                 if (field.multipleValues) {
-                    const values = dotProp.get(input, field.fieldId, []);
+                    const values = dotPropImmutable.get(input, field.fieldId, []);
                     if (!Array.isArray(values)) {
                         return collection;
                     }
@@ -105,12 +105,11 @@ export const buildReferenceFieldPaths = <TValues extends CmsEntryValues = CmsEnt
                     return collection;
                 }
 
-                const value = dotProp.get(input, field.fieldId, {});
+                const value = dotPropImmutable.get(input, field.fieldId, {});
                 if (!value) {
                     return collection;
                 }
 
-                // @ts-expect-error We're sure that a template value contains a _templateId property.
                 const template = templates.find(tpl => tpl.id === value["_templateId"]);
 
                 if (!template) {
@@ -143,7 +142,7 @@ export const buildReferenceFieldPaths = <TValues extends CmsEntryValues = CmsEnt
             }
 
             const objFieldPath = `${field.fieldId}`;
-            const objFieldInputValue = dotProp.get(input, objFieldPath, []);
+            const objFieldInputValue = dotPropImmutable.get(input, objFieldPath, []);
 
             /**
              * If field is multiple values one, we need to go through the input and use the existing keys.
