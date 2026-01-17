@@ -31,7 +31,6 @@ import { PagePermissionsFeature } from "~/features/pages/PagePermissions/feature
 import { RedirectPermissionsFeature } from "~/features/redirects/RedirectPermissions/feature.js";
 import { ApiKeyInstallerFeature } from "~/features/installer/feature.js";
 import { NextjsGraphQLSchema } from "~/graphql/nextjs/NextjsGraphQLSchema.js";
-import { NextjsConfig } from "~/features/nextjs/index.js";
 import { NextjsFeature } from "~/features/nextjs/feature.js";
 
 const createContext = () => {

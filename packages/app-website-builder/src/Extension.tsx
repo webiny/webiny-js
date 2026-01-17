@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { plugins } from "@webiny/plugins";
-import { AdminConfig, useContainer } from "@webiny/app-admin";
+import { AdminConfig, RegisterFeature, useContainer } from "@webiny/app-admin";
 import { HasPermission } from "@webiny/app-admin";
 import { useRouter } from "@webiny/app-admin";
 import { ReactComponent as PagesIcon } from "@webiny/icons/table_chart.svg";
@@ -14,8 +14,9 @@ import { RedirectsListConfig } from "~/modules/redirects/RedirectsListConfig.js"
 import { Routes } from "~/routes.js";
 import { PagesWidget } from "~/modules/widgets/PagesWidget.js";
 import { PageListFeature } from "~/presentation/pages/PageList/feature.js";
-import { ConfigureNextjs } from "./presentation/navigation/ConfigureNextjs.js";
+import { Extension as NavigationExtension } from "./presentation/navigation/Extension.js";
 import { permissionRenderer } from "~/plugins/permissionRenderer.js";
+import { NextjsConfigFeature } from "~/presentation/navigation/NextjsConfig/feature.js";
 
 const { Menu, Route, Dashboard } = AdminConfig;
 
@@ -23,11 +24,14 @@ export const Extension = () => {
     const router = useRouter();
     const container = useContainer();
 
-    plugins.register(permissionRenderer);
-    PageListFeature.register(container);
+    useEffect(() => {
+        plugins.register(permissionRenderer);
+        PageListFeature.register(container);
+    }, []);
 
     return (
         <>
+            <RegisterFeature feature={NextjsConfigFeature} />
             <AdminConfig>
                 <HasPermission any={["wb.page", "wb.redirect"]}>
                     <Menu
@@ -95,13 +99,15 @@ export const Extension = () => {
                     <Menu name="wb.settings" parent="wb" element={<SettingsMenuItem />} />
                 </HasPermission>
                 <Menu name="wb.integrations" parent="wb" element={<IntegrationsMenuItem />} />
-                <ConfigureNextjs />
+                <NavigationExtension />
             </AdminConfig>
             <PagesListConfig />
             <RedirectsListConfig />
         </>
     );
 };
+
+Extension.displayName = "WbExtension";
 
 const SettingsMenuItem = () => {
     const { showSettingsDialog } = useSettingsDialog();
