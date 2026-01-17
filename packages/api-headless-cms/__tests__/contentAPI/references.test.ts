@@ -30,7 +30,7 @@ const createCategoryItem = async ({ manager, from, data }: ICreateCategoryItemPa
             console.log(result.data.createCategoryFrom.error);
             throw new Error("Could not create category.");
         }
-        return result.data.createCategoryFrom.data;
+        return result.data.createCategoryFrom.data!;
     }
 
     const [result] = await manager.createCategory({
@@ -42,7 +42,7 @@ const createCategoryItem = async ({ manager, from, data }: ICreateCategoryItemPa
         console.log(result.data.createCategory.error);
         throw new Error("Could not create category.");
     }
-    return result.data.createCategory.data;
+    return result.data.createCategory.data!;
 };
 
 interface ICreateArticleItemParams {
@@ -85,31 +85,37 @@ const extractReadArticle = (
         id: item.id,
         entryId: item.entryId,
         createdOn: item.createdOn,
-        modifiedOn: expect.toBeDateString(),
+        modifiedOn: null,
         savedOn: item.savedOn,
         firstPublishedOn: expect.toBeDateString(),
         lastPublishedOn: expect.toBeDateString(),
         createdBy: item.createdBy,
-        title: item.values.title,
-        body: item.values.body,
-        categories: category
-            ? [
-                  {
+        values: {
+            title: item.values.title,
+            body: item.values.body,
+            categories: category
+                ? [
+                      {
+                          id: category.id,
+                          entryId: category.entryId,
+                          modelId: "category",
+                          values: {
+                              title: category.values.title
+                          }
+                      }
+                  ]
+                : [],
+            category: category
+                ? {
                       id: category.id,
                       entryId: category.entryId,
                       modelId: "category",
-                      title: category.values.title
+                      values: {
+                          title: category.values.title
+                      }
                   }
-              ]
-            : [],
-        category: category
-            ? {
-                  id: category.id,
-                  entryId: category.entryId,
-                  modelId: "category",
-                  title: category.values.title
-              }
-            : null
+                : null
+        }
     };
 };
 
@@ -138,84 +144,94 @@ describe("entry references", () => {
                     title: "Tech category",
                     slug: "tech-category"
                 },
-                publish: true
+                status: "published"
             }
         });
 
         const techArticle = await createArticleItem({
             manager: articleManager,
             data: {
-                title: "Tech article",
-                body: null,
-                category: {
-                    id: techCategory.id,
-                    modelId: "category"
-                },
-                categories: [
-                    {
+                values: {
+                    title: "Tech article",
+                    body: null,
+                    category: {
                         id: techCategory.id,
                         modelId: "category"
-                    }
-                ]
-            },
-            publish: true
+                    },
+                    categories: [
+                        {
+                            id: techCategory.id,
+                            modelId: "category"
+                        }
+                    ]
+                },
+                status: "published"
+            }
         });
         const techCategory2 = await createCategoryItem({
             manager: categoryManager,
             from: techCategory,
             data: {
-                title: "Tech category 2",
-                slug: "tech-category-2"
-            },
-            publish: true
+                values: {
+                    title: "Tech category 2",
+                    slug: "tech-category-2"
+                },
+                status: "published"
+            }
         });
 
         const techArticle2 = await createArticleItem({
             manager: articleManager,
             data: {
-                title: "Tech article 2",
-                body: null,
-                category: {
-                    id: techCategory2.id,
-                    modelId: "category"
-                },
-                categories: [
-                    {
+                values: {
+                    title: "Tech article 2",
+                    body: null,
+                    category: {
                         id: techCategory2.id,
                         modelId: "category"
-                    }
-                ]
-            },
-            publish: true
+                    },
+                    categories: [
+                        {
+                            id: techCategory2.id,
+                            modelId: "category"
+                        }
+                    ]
+                },
+                status: "published"
+            }
         });
 
         const techCategory3 = await createCategoryItem({
             manager: categoryManager,
             from: techCategory2,
             data: {
-                title: "Tech category 3",
-                slug: "tech-category-3"
-            },
-            publish: true
+                values: {
+                    title: "Tech category 3",
+                    slug: "tech-category-3"
+                },
+                status: "published"
+            }
         });
 
         const techArticle3 = await createArticleItem({
             manager: articleManager,
             data: {
-                title: "Tech article 3",
-                body: null,
-                category: {
-                    id: techCategory3.id,
-                    modelId: "category"
-                },
-                categories: [
-                    {
+                values: {
+                    title: "Tech article 3",
+                    body: null,
+                    category: {
                         id: techCategory3.id,
                         modelId: "category"
-                    }
-                ]
-            },
-            publish: true
+                    },
+                    categories: [
+                        {
+                            id: techCategory3.id,
+                            modelId: "category"
+                        }
+                    ]
+                },
+                status: "published"
+            }
         });
 
         const [readListResponse] = await articleRead.listArticles({
@@ -269,16 +285,19 @@ describe("entry references", () => {
                 getArticle: {
                     data: {
                         ...techArticle,
-                        /**
-                         * This is to prove that category in the loaded article really is the first one created and assigned to the article.
-                         */
-                        categories: [
-                            {
-                                id: techCategory.id,
-                                entryId: techCategory.entryId,
-                                modelId: techCategory.meta.modelId
-                            }
-                        ]
+                        values: {
+                            ...techArticle.values,
+                            /**
+                             * This is to prove that category in the loaded article really is the first one created and assigned to the article.
+                             */
+                            categories: [
+                                {
+                                    id: techCategory.id,
+                                    entryId: techCategory.entryId,
+                                    modelId: techCategory.meta.modelId
+                                }
+                            ]
+                        }
                     },
                     error: null
                 }
@@ -287,9 +306,6 @@ describe("entry references", () => {
     });
 
     it("should not break if referenced entry does not exist", async () => {
-        const group = await setupContentModelGroup(mainManager);
-        await setupContentModels(mainManager, group, ["category", "article"]);
-
         const categoryManager = useCategoryManageHandler(manageOpts);
         const articleManager = useArticleManageHandler(manageOpts);
         const articleRead = useArticleReadHandler(readOpts);
@@ -300,42 +316,50 @@ describe("entry references", () => {
         const techCategory = await createCategoryItem({
             manager: categoryManager,
             data: {
-                title: "Tech category",
-                slug: "tech-category"
-            },
-            publish: true
+                values: {
+                    title: "Tech category",
+                    slug: "tech-category"
+                },
+                status: "published"
+            }
         });
 
         const techArticle = await createArticleItem({
             manager: articleManager,
             data: {
-                title: "Tech article",
-                body: null,
-                category: {
-                    id: techCategory.id,
-                    modelId: "category"
-                },
-                categories: [
-                    {
+                values: {
+                    title: "Tech article",
+                    body: null,
+                    category: {
                         id: techCategory.id,
                         modelId: "category"
-                    }
-                ]
-            },
-            publish: true
+                    },
+                    categories: [
+                        {
+                            id: techCategory.id,
+                            modelId: "category"
+                        }
+                    ]
+                },
+                status: "published"
+            }
         });
         const techCategory2 = await createCategoryItem({
             manager: categoryManager,
             from: techCategory,
             data: {
-                title: "Tech category 2",
-                slug: "tech-category-2"
-            },
-            publish: true
+                values: {
+                    title: "Tech category 2",
+                    slug: "tech-category-2"
+                },
+                status: "published"
+            }
         });
 
         const [deleteResponse] = await categoryManager.deleteCategory({
-            revision: techCategory.id
+            variables: {
+                revision: techCategory.id
+            }
         });
         expect(deleteResponse).toEqual({
             data: {
@@ -405,7 +429,9 @@ describe("entry references", () => {
         });
 
         const [delete2Response] = await categoryManager.deleteCategory({
-            revision: techCategory2.id
+            variables: {
+                revision: techCategory2.id
+            }
         });
         expect(delete2Response).toEqual({
             data: {
@@ -478,9 +504,6 @@ describe("entry references", () => {
     it("should list articles filtered by reference", async () => {
         expect.assertions(12);
 
-        const group = await setupContentModelGroup(mainManager);
-        await setupContentModels(mainManager, group, ["category", "article"]);
-
         const categoryManager = useCategoryManageHandler(manageOpts);
         const articleManager = useArticleManageHandler(manageOpts);
         const articleReader = useArticleReadHandler(readOpts);
@@ -488,120 +511,138 @@ describe("entry references", () => {
         const techCategory = await createCategoryItem({
             manager: categoryManager,
             data: {
-                title: "Tech category",
-                slug: "tech-category"
-            },
-            publish: true
+                values: {
+                    title: "Tech category",
+                    slug: "tech-category"
+                },
+                status: "published"
+            }
         });
 
         const techArticle = await createArticleItem({
             manager: articleManager,
             data: {
-                title: "Tech article",
-                body: null,
-                category: {
-                    id: techCategory.id,
-                    modelId: "category"
-                },
-                categories: [
-                    {
+                values: {
+                    title: "Tech article",
+                    body: null,
+                    category: {
                         id: techCategory.id,
                         modelId: "category"
-                    }
-                ]
-            },
-            publish: true
+                    },
+                    categories: [
+                        {
+                            id: techCategory.id,
+                            modelId: "category"
+                        }
+                    ]
+                },
+                status: "published"
+            }
         });
         const techCategory2 = await createCategoryItem({
             manager: categoryManager,
             from: techCategory,
             data: {
-                title: "Tech category 2",
-                slug: "tech-category-2"
-            },
-            publish: true
+                values: {
+                    title: "Tech category 2",
+                    slug: "tech-category-2"
+                },
+                status: "published"
+            }
         });
 
         const techArticle2 = await createArticleItem({
             manager: articleManager,
             data: {
-                title: "Tech article 2",
-                body: null,
-                category: {
-                    id: techCategory2.id,
-                    modelId: "category"
-                },
-                categories: [
-                    {
+                values: {
+                    title: "Tech article 2",
+                    body: null,
+                    category: {
                         id: techCategory2.id,
                         modelId: "category"
-                    }
-                ]
-            },
-            publish: true
+                    },
+                    categories: [
+                        {
+                            id: techCategory2.id,
+                            modelId: "category"
+                        }
+                    ]
+                },
+                status: "published"
+            }
         });
 
         const techCategory3 = await createCategoryItem({
             manager: categoryManager,
             from: techCategory2,
             data: {
-                title: "Tech category 3",
-                slug: "tech-category-3"
-            },
-            publish: true
+                values: {
+                    title: "Tech category 3",
+                    slug: "tech-category-3"
+                },
+                status: "published"
+            }
         });
 
         const techArticle3 = await createArticleItem({
             manager: articleManager,
             data: {
-                title: "Tech article 3",
-                body: null,
-                category: {
-                    id: techCategory3.id,
-                    modelId: "category"
-                },
-                categories: [
-                    {
+                values: {
+                    title: "Tech article 3",
+                    body: null,
+                    category: {
                         id: techCategory3.id,
                         modelId: "category"
-                    }
-                ]
-            },
-            publish: true
+                    },
+                    categories: [
+                        {
+                            id: techCategory3.id,
+                            modelId: "category"
+                        }
+                    ]
+                },
+                status: "published"
+            }
         });
 
         const foodCategory = await createCategoryItem({
             manager: categoryManager,
             data: {
-                title: "Food category",
-                slug: "food-category"
-            },
-            publish: true
+                values: {
+                    title: "Food category",
+                    slug: "food-category"
+                },
+                status: "published"
+            }
         });
 
         const foodArticle = await createArticleItem({
             manager: articleManager,
             data: {
-                title: "Food article",
-                body: null,
-                category: {
-                    id: foodCategory.id,
-                    modelId: "category"
-                },
-                categories: [
-                    {
+                values: {
+                    title: "Food article",
+                    body: null,
+                    category: {
                         id: foodCategory.id,
                         modelId: "category"
-                    }
-                ]
-            },
-            publish: true
+                    },
+                    categories: [
+                        {
+                            id: foodCategory.id,
+                            modelId: "category"
+                        }
+                    ]
+                },
+                status: "published"
+            }
         });
 
         const [listArticlesEntryIdResponse] = await articleReader.listArticles({
             where: {
-                category: {
-                    entryId: techCategory.entryId
+                values: {
+                    category: {
+                        entryId: techCategory.entryId
+                    }
                 }
             },
             sort: ["createdOn_ASC"]
@@ -610,56 +651,77 @@ describe("entry references", () => {
         const expectedTechArticles = [
             {
                 ...techArticle,
-                category: {
-                    id: techCategory3.id,
-                    entryId: techCategory3.entryId,
-                    modelId: "category",
-                    title: techCategory3.title
-                },
-                categories: [
-                    {
+                values: {
+                    ...techArticle.values,
+                    category: {
                         id: techCategory3.id,
                         entryId: techCategory3.entryId,
                         modelId: "category",
-                        title: techCategory3.title
-                    }
-                ],
+                        values: {
+                            title: techCategory3.values.title
+                        }
+                    },
+                    categories: [
+                        {
+                            id: techCategory3.id,
+                            entryId: techCategory3.entryId,
+                            modelId: "category",
+                            values: {
+                                title: techCategory3.values.title
+                            }
+                        }
+                    ]
+                },
                 meta: undefined
             },
             {
                 ...techArticle2,
-                category: {
-                    id: techCategory3.id,
-                    entryId: techCategory3.entryId,
-                    modelId: "category",
-                    title: techCategory3.title
-                },
-                categories: [
-                    {
+                values: {
+                    ...techArticle2.values,
+                    category: {
                         id: techCategory3.id,
                         entryId: techCategory3.entryId,
                         modelId: "category",
-                        title: techCategory3.title
-                    }
-                ],
+                        values: {
+                            title: techCategory3.values.title
+                        }
+                    },
+                    categories: [
+                        {
+                            id: techCategory3.id,
+                            entryId: techCategory3.entryId,
+                            modelId: "category",
+                            values: {
+                                title: techCategory3.values.title
+                            }
+                        }
+                    ]
+                },
                 meta: undefined
             },
             {
                 ...techArticle3,
-                category: {
-                    id: techCategory3.id,
-                    entryId: techCategory3.entryId,
-                    modelId: "category",
-                    title: techCategory3.title
-                },
-                categories: [
-                    {
+                values: {
+                    ...techArticle3.values,
+                    category: {
                         id: techCategory3.id,
                         entryId: techCategory3.entryId,
                         modelId: "category",
-                        title: techCategory3.title
-                    }
-                ],
+                        values: {
+                            title: techCategory3.values.title
+                        }
+                    },
+                    categories: [
+                        {
+                            id: techCategory3.id,
+                            entryId: techCategory3.entryId,
+                            modelId: "category",
+                            values: {
+                                title: techCategory3.values.title
+                            }
+                        }
+                    ]
+                },
                 meta: undefined
             }
         ];
@@ -680,8 +742,10 @@ describe("entry references", () => {
 
         const [listArticlesEntryIdWrongResponse] = await articleReader.listArticles({
             where: {
-                category: {
-                    entryId: techCategory.id
+                values: {
+                    category: {
+                        entryId: techCategory.id
+                    }
                 }
             },
             sort: ["createdOn_ASC"]
@@ -702,8 +766,10 @@ describe("entry references", () => {
 
         const [listArticlesIdWrongResponse] = await articleReader.listArticles({
             where: {
-                category: {
-                    id: techCategory.entryId
+                values: {
+                    category: {
+                        id: techCategory.entryId
+                    }
                 }
             },
             sort: ["createdOn_ASC"]
@@ -724,8 +790,10 @@ describe("entry references", () => {
 
         const [listArticlesEntryIdInResponse] = await articleReader.listArticles({
             where: {
-                category: {
-                    entryId_in: [techCategory.entryId]
+                values: {
+                    category: {
+                        entryId_in: [techCategory.entryId]
+                    }
                 }
             },
             sort: ["createdOn_ASC"]
@@ -747,8 +815,10 @@ describe("entry references", () => {
 
         const [listArticlesIdResponse] = await articleReader.listArticles({
             where: {
-                category: {
-                    id: techCategory.id
+                values: {
+                    category: {
+                        id: techCategory.id
+                    }
                 }
             },
             sort: ["createdOn_ASC"]
@@ -770,8 +840,10 @@ describe("entry references", () => {
 
         const [listArticlesIdInResponse] = await articleReader.listArticles({
             where: {
-                category: {
-                    id_in: [techCategory.id]
+                values: {
+                    category: {
+                        id_in: [techCategory.id]
+                    }
                 }
             },
             sort: ["createdOn_ASC"]
@@ -793,8 +865,10 @@ describe("entry references", () => {
 
         const [listArticlesFoodResponse] = await articleReader.listArticles({
             where: {
-                category: {
-                    entryId: foodCategory.entryId
+                values: {
+                    category: {
+                        entryId: foodCategory.entryId
+                    }
                 }
             },
             sort: ["createdOn_ASC"]
@@ -806,20 +880,27 @@ describe("entry references", () => {
                     data: [
                         {
                             ...foodArticle,
-                            category: {
-                                id: foodCategory.id,
-                                entryId: foodCategory.entryId,
-                                modelId: "category",
-                                title: foodCategory.title
-                            },
-                            categories: [
-                                {
+                            values: {
+                                ...foodArticle.values,
+                                category: {
                                     id: foodCategory.id,
                                     entryId: foodCategory.entryId,
                                     modelId: "category",
-                                    title: foodCategory.title
-                                }
-                            ],
+                                    values: {
+                                        title: foodCategory.values.title
+                                    }
+                                },
+                                categories: [
+                                    {
+                                        id: foodCategory.id,
+                                        entryId: foodCategory.entryId,
+                                        modelId: "category",
+                                        values: {
+                                            title: foodCategory.values.title
+                                        }
+                                    }
+                                ]
+                            },
                             meta: undefined
                         }
                     ],
@@ -838,8 +919,10 @@ describe("entry references", () => {
 
         const [listArticlesFoodMultipleEntryIdResponse] = await articleReader.listArticles({
             where: {
-                categories: {
-                    entryId: foodCategory.entryId
+                values: {
+                    categories: {
+                        entryId: foodCategory.entryId
+                    }
                 }
             },
             sort: ["createdOn_ASC"]
@@ -851,20 +934,27 @@ describe("entry references", () => {
                     data: [
                         {
                             ...foodArticle,
-                            category: {
-                                id: foodCategory.id,
-                                entryId: foodCategory.entryId,
-                                modelId: "category",
-                                title: foodCategory.title
-                            },
-                            categories: [
-                                {
+                            values: {
+                                ...foodArticle.values,
+                                category: {
                                     id: foodCategory.id,
                                     entryId: foodCategory.entryId,
                                     modelId: "category",
-                                    title: foodCategory.title
-                                }
-                            ],
+                                    values: {
+                                        title: foodCategory.values.title
+                                    }
+                                },
+                                categories: [
+                                    {
+                                        id: foodCategory.id,
+                                        entryId: foodCategory.entryId,
+                                        modelId: "category",
+                                        values: {
+                                            title: foodCategory.values.title
+                                        }
+                                    }
+                                ]
+                            },
                             meta: undefined
                         }
                     ],
@@ -880,8 +970,10 @@ describe("entry references", () => {
 
         const [listArticlesFoodMultipleIdResponse] = await articleReader.listArticles({
             where: {
-                categories: {
-                    id: foodCategory.id
+                values: {
+                    categories: {
+                        id: foodCategory.id
+                    }
                 }
             },
             sort: ["createdOn_ASC"]
@@ -893,20 +985,27 @@ describe("entry references", () => {
                     data: [
                         {
                             ...foodArticle,
-                            category: {
-                                id: foodCategory.id,
-                                entryId: foodCategory.entryId,
-                                modelId: "category",
-                                title: foodCategory.title
-                            },
-                            categories: [
-                                {
+                            values: {
+                                ...foodArticle.values,
+                                category: {
                                     id: foodCategory.id,
                                     entryId: foodCategory.entryId,
                                     modelId: "category",
-                                    title: foodCategory.title
-                                }
-                            ],
+                                    values: {
+                                        title: foodCategory.values.title
+                                    }
+                                },
+                                categories: [
+                                    {
+                                        id: foodCategory.id,
+                                        entryId: foodCategory.entryId,
+                                        modelId: "category",
+                                        values: {
+                                            title: foodCategory.values.title
+                                        }
+                                    }
+                                ]
+                            },
                             meta: undefined
                         }
                     ],
@@ -922,8 +1021,10 @@ describe("entry references", () => {
 
         const [listArticlesMultipleEntryIdInResponse] = await articleReader.listArticles({
             where: {
-                categories: {
-                    entryId_in: [techCategory.entryId]
+                values: {
+                    categories: {
+                        entryId_in: [techCategory.entryId]
+                    }
                 }
             },
             sort: ["createdOn_ASC"]
@@ -945,8 +1046,10 @@ describe("entry references", () => {
 
         const [listArticlesMultipleEntryIdWrongResponse] = await articleReader.listArticles({
             where: {
-                categories: {
-                    entryId_in: [techCategory.id]
+                values: {
+                    categories: {
+                        entryId_in: [techCategory.id]
+                    }
                 }
             },
             sort: ["createdOn_ASC"]
@@ -968,8 +1071,10 @@ describe("entry references", () => {
 
         const [listArticlesMultipleIdWrongResponse] = await articleReader.listArticles({
             where: {
-                categories: {
-                    id_in: [techCategory.entryId]
+                values: {
+                    categories: {
+                        id_in: [techCategory.entryId]
+                    }
                 }
             },
             sort: ["createdOn_ASC"]
@@ -991,8 +1096,6 @@ describe("entry references", () => {
     });
 
     it("should not populate referenced field", async () => {
-        const group = await setupContentModelGroup(mainManager);
-        await setupContentModels(mainManager, group, ["category", "article"]);
 
         const categoryManager = useCategoryManageHandler(manageOpts);
         const articleManager = useArticleManageHandler(manageOpts);
@@ -1001,29 +1104,33 @@ describe("entry references", () => {
         const techCategory = await createCategoryItem({
             manager: categoryManager,
             data: {
-                title: "Tech category",
-                slug: "tech-category"
-            },
-            publish: true
+                values: {
+                    title: "Tech category",
+                    slug: "tech-category"
+                },
+                status: "published"
+            }
         });
 
         const techArticle = await createArticleItem({
             manager: articleManager,
             data: {
-                title: "Tech article",
-                body: null,
-                category: {
-                    id: techCategory.id,
-                    modelId: "category"
-                },
-                categories: [
-                    {
+                values: {
+                    title: "Tech article",
+                    body: null,
+                    category: {
                         id: techCategory.id,
                         modelId: "category"
-                    }
-                ]
-            },
-            publish: true
+                    },
+                    categories: [
+                        {
+                            id: techCategory.id,
+                            modelId: "category"
+                        }
+                    ]
+                },
+                status: "published"
+            }
         });
 
         const [result] = await articleRead.listArticlesWithoutReferences();
@@ -1034,21 +1141,27 @@ describe("entry references", () => {
                     data: [
                         {
                             id: techArticle.id,
-                            title: techArticle.title,
-                            category: {
-                                id: techCategory.id,
-                                entryId: techCategory.entryId,
-                                modelId: "category",
-                                title: null
-                            },
-                            categories: [
-                                {
+                            values: {
+                                title: techArticle.values.title,
+                                category: {
                                     id: techCategory.id,
                                     entryId: techCategory.entryId,
                                     modelId: "category",
-                                    title: null
-                                }
-                            ]
+                                    values: {
+                                        title: null
+                                    }
+                                },
+                                categories: [
+                                    {
+                                        id: techCategory.id,
+                                        entryId: techCategory.entryId,
+                                        modelId: "category",
+                                        values: {
+                                            title: null
+                                        }
+                                    }
+                                ]
+                            }
                         }
                     ],
                     error: null,
