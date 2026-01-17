@@ -1,10 +1,9 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { CmsGroup } from "~/types";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
-import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../testHelpers/useCategoryReadHandler";
 import type { IdentityData } from "@webiny/api-core/features/IdentityContext";
+import { setupGroupAndModels } from "~tests/testHelpers/setup.js";
 
 const createIdentity = (permissions: any[] = []): IdentityData => {
     return {
@@ -32,8 +31,6 @@ const createIdentity = (permissions: any[] = []): IdentityData => {
 };
 
 describe("READ - resolvers - api key", () => {
-    let contentModelGroup: CmsGroup;
-
     const API_TOKEN = "aToken";
 
     const manageOpts = {
@@ -41,56 +38,13 @@ describe("READ - resolvers - api key", () => {
     };
     const readOpts = { path: "read", permissions: [] };
 
-    const {
-        createContentModelMutation,
-        updateContentModelMutation,
-        createContentModelGroupMutation
-    } = useGraphQLHandler(manageOpts);
+    const manager = useGraphQLHandler(manageOpts);
 
     beforeEach(async () => {
-        const [createCMG] = await createContentModelGroupMutation({
-            data: {
-                name: "Group",
-                slug: "group",
-                icon: "ico/ico",
-                description: "description"
-            }
+        await setupGroupAndModels({
+            manager,
+            models: ["category"]
         });
-        contentModelGroup = createCMG.data.createContentModelGroup.data;
-
-        const category = models.find(m => m.modelId === "category");
-        if (!category) {
-            throw new Error(`Could not find model "category".`);
-        }
-
-        // Create initial record
-        const [create] = await createContentModelMutation({
-            data: {
-                name: category.name,
-                modelId: category.modelId,
-                singularApiName: category.singularApiName,
-                pluralApiName: category.pluralApiName,
-                group: contentModelGroup.id
-            }
-        });
-
-        if (create.errors) {
-            console.error(`[beforeEach] ${create.errors[0].message}`);
-            process.exit(1);
-        }
-
-        const [update] = await updateContentModelMutation({
-            modelId: create.data.createContentModel.data.modelId,
-            data: {
-                fields: category.fields,
-                layout: category.layout
-            }
-        });
-
-        if (update.errors) {
-            console.error(`[beforeEach] ${update.errors[0].message}`);
-            process.exit(1);
-        }
     });
 
     it("get entry", async () => {
@@ -98,14 +52,27 @@ describe("READ - resolvers - api key", () => {
         const { createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
 
         // Create an entry
-        const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
-        const category = create.data.createCategory.data;
+        const [create] = await createCategory({
+            variables: {
+                data: {
+                    values: {
+                        title: "Title 1",
+                        slug: "slug-1"
+                    }
+                }
+            }
+        });
+        const category = create.data.createCategory.data!;
         const { id: categoryId } = category;
 
         // Publish it so it becomes available in the "read" API
-        const [publishedCategoryResponse] = await publishCategory({ revision: categoryId });
+        const [publishedCategoryResponse] = await publishCategory({
+            variables: {
+                revision: categoryId
+            }
+        });
 
-        const publishedCategory = publishedCategoryResponse.data.publishCategory.data;
+        const publishedCategory = publishedCategoryResponse.data.publishCategory.data!;
 
         // See if entries are available via "read" API
         const { getCategory } = useCategoryReadHandler({
@@ -137,8 +104,10 @@ describe("READ - resolvers - api key", () => {
                         entryId: category.entryId,
                         createdOn: category.createdOn,
                         savedOn: publishedCategory.savedOn,
-                        title: category.title,
-                        slug: category.slug
+                        values: {
+                            title: category.values.title,
+                            slug: category.values.slug
+                        }
                     },
                     error: null
                 }
@@ -148,17 +117,21 @@ describe("READ - resolvers - api key", () => {
 
     it("get entries", async () => {
         // Use "manage" API to create and publish entries
-        const { createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
+        const { createCategory } = useCategoryManageHandler(manageOpts);
 
         // Create an entry
-        const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
-        const category = create.data.createCategory.data;
-        const { id: categoryId } = category;
-
-        // Publish it so it becomes available in the "read" API
-        const [publishCategoryResponse] = await publishCategory({ revision: categoryId });
-
-        const publishedCatgory = publishCategoryResponse.data.publishCategory.data;
+        const [create] = await createCategory({
+            variables: {
+                data: {
+                    values: {
+                        title: "Title 1",
+                        slug: "slug-1"
+                    },
+                    status: "published"
+                }
+            }
+        });
+        const category = create.data.createCategory.data!;
 
         // See if entries are available via "read" API
         const { listCategories } = useCategoryReadHandler({
@@ -173,7 +146,7 @@ describe("READ - resolvers - api key", () => {
 
         const queryArgs = {
             where: {
-                id: categoryId
+                id: category.id
             }
         };
         const headers = {
@@ -188,10 +161,13 @@ describe("READ - resolvers - api key", () => {
                     data: [
                         {
                             id: category.id,
+                            entryId: category.entryId,
                             createdOn: category.createdOn,
-                            savedOn: publishedCatgory.savedOn,
-                            title: category.title,
-                            slug: category.slug
+                            savedOn: category.savedOn,
+                            values: {
+                                title: category.values.title,
+                                slug: category.values.slug
+                            }
                         }
                     ],
                     meta: {
@@ -210,12 +186,19 @@ describe("READ - resolvers - api key", () => {
         const { createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
 
         // Create an entry
-        const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
-        const category = create.data.createCategory.data;
+        const [create] = await createCategory({
+            variables: {
+                data: {
+                    values: {
+                        title: "Title 1",
+                        slug: "slug-1"
+                    },
+                    status: "published"
+                }
+            }
+        });
+        const category = create.data.createCategory.data!;
         const { id: categoryId } = category;
-
-        // Publish it so it becomes available in the "read" API
-        await publishCategory({ revision: categoryId });
 
         // See if entries are available via "read" API
         const { getCategory } = useCategoryReadHandler({
@@ -252,12 +235,19 @@ describe("READ - resolvers - api key", () => {
         const { createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
 
         // Create an entry
-        const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
-        const category = create.data.createCategory.data;
+        const [create] = await createCategory({
+            variables: {
+                data: {
+                    values: {
+                        title: "Title 1",
+                        slug: "slug-1"
+                    },
+                    status: "published"
+                }
+            }
+        });
+        const category = create.data.createCategory.data!;
         const { id: categoryId } = category;
-
-        // Publish it so it becomes available in the "read" API
-        await publishCategory({ revision: categoryId });
 
         // See if entries are available via "read" API
         const { listCategories } = useCategoryReadHandler({
@@ -297,12 +287,18 @@ describe("READ - resolvers - api key", () => {
         const { createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
 
         // Create an entry
-        const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
-        const category = create.data.createCategory.data;
-        const { id: categoryId } = category;
-
-        // Publish it so it becomes available in the "read" API
-        await publishCategory({ revision: categoryId });
+        const [create] = await createCategory({
+            variables: {
+                data: {
+                    values: {
+                        title: "Title 1",
+                        slug: "slug-1"
+                    },
+                    status: "published",
+                }
+            }
+        });
+        const category = create.data.createCategory.data!;
 
         // See if entries are available via "read" API
         const { getCategory } = useCategoryReadHandler({
@@ -317,7 +313,7 @@ describe("READ - resolvers - api key", () => {
 
         const queryArgs = {
             where: {
-                id: categoryId
+                id: category.id,
             }
         };
         const headers = {
@@ -343,15 +339,21 @@ describe("READ - resolvers - api key", () => {
         `cant list entries - missing "r" permission - having "%s"`,
         async rwd => {
             // Use "manage" API to create and publish entries
-            const { createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
+            const { createCategory } = useCategoryManageHandler(manageOpts);
 
             // Create an entry
-            const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
-            const category = create.data.createCategory.data;
-            const { id: categoryId } = category;
-
-            // Publish it so it becomes available in the "read" API
-            await publishCategory({ revision: categoryId });
+            const [create] = await createCategory({
+                variables: {
+                    data: {
+                        values: {
+                            title: "Title 1",
+                            slug: "slug-1"
+                        },
+                        status: "published"
+                    }
+                }
+            });
+            const category = create.data.createCategory.data!;
 
             // See if entries are available via "read" API
             const { listCategories } = useCategoryReadHandler({
@@ -366,7 +368,7 @@ describe("READ - resolvers - api key", () => {
 
             const queryArgs = {
                 where: {
-                    id: categoryId
+                    id: category.id
                 }
             };
             const headers = {
