@@ -318,46 +318,4 @@ describe("Validate model fields", () => {
             stack: expect.any(String)
         });
     });
-
-    it("should throw an error if schema cannot be generated for a model - field exists in built-in type", async () => {
-        const field = createTextField({
-            fieldId: "status"
-        });
-
-        let error: any;
-        try {
-            await validateModelFields({
-                context,
-                models: [],
-                model: createModel({
-                    fields: [field],
-                    layout: [[field.id]]
-                })
-            });
-        } catch (ex) {
-            error = extractError(ex);
-        }
-
-        expect(error).toEqual({
-            message:
-                "Cannot generate GraphQL schema when testing with the given model. Please check the response for more details.",
-            code: "GRAPHQL_SCHEMA_ERROR",
-            data: {
-                modelId: "test",
-                error: {
-                    stack: expect.any(String),
-                    message: `Field "TestInput.status" can only be defined once.
-
-Field "TestListWhereInput.status" can only be defined once.
-
-Field "TestListWhereInput.status_not" can only be defined once.
-
-Field "TestListWhereInput.status_in" can only be defined once.
-
-Field "TestListWhereInput.status_not_in" can only be defined once.`
-                }
-            },
-            stack: expect.any(String)
-        });
-    });
 });

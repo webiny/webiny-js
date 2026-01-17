@@ -125,16 +125,20 @@ describe(`graphql "and" queries`, () => {
                 where: {
                     values: {
                         title_contains: "cms",
-                        title_not_contains: "page",
-                        AND: [
-                            {
+                        title_not_contains: "page"
+                    },
+                    AND: [
+                        {
+                            values: {
                                 title_contains: "headless"
-                            },
-                            {
+                            }
+                        },
+                        {
+                            values: {
                                 title_not_contains: "form"
                             }
-                        ]
-                    }
+                        }
+                    ]
                 }
             }
         });
@@ -144,7 +148,9 @@ describe(`graphql "and" queries`, () => {
                 listCategories: {
                     data: [
                         {
-                            title: "Webiny Headless CMS Project"
+                            values: {
+                                title: "Webiny Headless CMS Project"
+                            }
                         }
                     ],
                     meta: {
@@ -161,16 +167,20 @@ describe(`graphql "and" queries`, () => {
             variables: {
                 where: {
                     values: {
-                        slug_not: "localization",
-                        AND: [
-                            {
+                        slug_not: "localization"
+                    },
+                    AND: [
+                        {
+                            values: {
                                 title_contains: "cms"
-                            },
-                            {
+                            }
+                        },
+                        {
+                            values: {
                                 title_contains: "headless"
                             }
-                        ]
-                    }
+                        }
+                    ]
                 }
             }
         });
@@ -199,13 +209,15 @@ describe(`graphql "and" queries`, () => {
             variables: {
                 where: {
                     values: {
-                        title_contains: "webiny",
-                        AND: [
-                            {
+                        title_contains: "webiny"
+                    },
+                    AND: [
+                        {
+                            values: {
                                 title_contains: "builder"
                             }
-                        ]
-                    }
+                        }
+                    ]
                 },
                 sort: ["createdOn_ASC"]
             }
@@ -244,16 +256,18 @@ describe(`graphql "and" queries`, () => {
         const [multipleCategoriesResponse] = await listCategories({
             variables: {
                 where: {
-                    values: {
-                        AND: [
-                            {
+                    AND: [
+                        {
+                            values: {
                                 title_contains: "webiny"
-                            },
-                            {
+                            }
+                        },
+                        {
+                            values: {
                                 title_contains: "builder"
                             }
-                        ]
-                    }
+                        }
+                    ]
                 },
                 sort: ["createdOn_ASC"]
             }
@@ -292,19 +306,23 @@ describe(`graphql "and" queries`, () => {
         const [multipleCategoriesWithNotResponse] = await listCategories({
             variables: {
                 where: {
-                    values: {
-                        AND: [
-                            {
+                    AND: [
+                        {
+                            values: {
                                 title_contains: "webiny"
-                            },
-                            {
+                            }
+                        },
+                        {
+                            values: {
                                 title_contains: "builder"
-                            },
-                            {
+                            }
+                        },
+                        {
+                            values: {
                                 slug_not: "webinyPageBuilder"
                             }
-                        ]
-                    }
+                        }
+                    ]
                 },
                 sort: ["createdOn_ASC"]
             }
@@ -341,25 +359,31 @@ describe(`graphql "and" queries`, () => {
             variables: {
                 where: {
                     values: {
-                        title_contains: "cms",
-                        AND: [
-                            {
-                                title_contains: "headless",
-                                AND: [
-                                    {
+                        title_contains: "cms"
+                    },
+                    AND: [
+                        {
+                            values: {
+                                title_contains: "headless"
+                            },
+                            AND: [
+                                {
+                                    values: {
                                         title_contains: "project"
                                     }
-                                ]
-                            },
-                            {
-                                AND: [
-                                    {
+                                }
+                            ]
+                        },
+                        {
+                            AND: [
+                                {
+                                    values: {
                                         title_contains: "webiny"
                                     }
-                                ]
-                            }
-                        ]
-                    }
+                                }
+                            ]
+                        }
+                    ]
                 }
             }
         });
@@ -388,25 +412,31 @@ describe(`graphql "and" queries`, () => {
             variables: {
                 where: {
                     values: {
-                        title_contains: "builder",
-                        AND: [
-                            {
-                                title_contains: "form",
-                                AND: [
-                                    {
+                        title_contains: "builder"
+                    },
+                    AND: [
+                        {
+                            values: {
+                                title_contains: "form"
+                            },
+                            AND: [
+                                {
+                                    values: {
                                         title_contains: "cms"
                                     }
-                                ]
-                            },
-                            {
-                                AND: [
-                                    {
+                                }
+                            ]
+                        },
+                        {
+                            AND: [
+                                {
+                                    values: {
                                         title_contains: "webiny"
                                     }
-                                ]
-                            }
-                        ]
-                    }
+                                }
+                            ]
+                        }
+                    ]
                 }
             }
         });
@@ -440,25 +470,31 @@ describe(`graphql "and" queries`, () => {
             variables: {
                 where: {
                     values: {
-                        title_contains: "cmsa",
-                        AND: [
-                            {
-                                title_contains: "headless",
-                                AND: [
-                                    {
+                        title_contains: "cmsa"
+                    },
+                    AND: [
+                        {
+                            values: {
+                                title_contains: "headless"
+                            },
+                            AND: [
+                                {
+                                    values: {
                                         title_contains: "project"
                                     }
-                                ]
-                            },
-                            {
-                                AND: [
-                                    {
+                                }
+                            ]
+                        },
+                        {
+                            AND: [
+                                {
+                                    values: {
                                         title_contains: "webiny"
                                     }
-                                ]
-                            }
-                        ]
-                    }
+                                }
+                            ]
+                        }
+                    ]
                 }
             }
         });
@@ -484,25 +520,31 @@ describe(`graphql "and" queries`, () => {
             variables: {
                 where: {
                     values: {
-                        title_contains: "cms",
-                        AND: [
-                            {
-                                title_contains: "headlessk",
-                                AND: [
-                                    {
+                        title_contains: "cms"
+                    },
+                    AND: [
+                        {
+                            values: {
+                                title_contains: "headlessk"
+                            },
+                            AND: [
+                                {
+                                    values: {
                                         title_contains: "project"
                                     }
-                                ]
-                            },
-                            {
-                                AND: [
-                                    {
+                                }
+                            ]
+                        },
+                        {
+                            AND: [
+                                {
+                                    values: {
                                         title_contains: "webiny"
                                     }
-                                ]
-                            }
-                        ]
-                    }
+                                }
+                            ]
+                        }
+                    ]
                 }
             }
         });
@@ -528,25 +570,31 @@ describe(`graphql "and" queries`, () => {
             variables: {
                 where: {
                     values: {
-                        title_contains: "cms",
-                        AND: [
-                            {
-                                title_contains: "headless",
-                                AND: [
-                                    {
+                        title_contains: "cms"
+                    },
+                    AND: [
+                        {
+                            values: {
+                                title_contains: "headless"
+                            },
+                            AND: [
+                                {
+                                    values: {
                                         title_contains: "cproject"
                                     }
-                                ]
-                            },
-                            {
-                                AND: [
-                                    {
+                                }
+                            ]
+                        },
+                        {
+                            AND: [
+                                {
+                                    values: {
                                         title_contains: "webiny"
                                     }
-                                ]
-                            }
-                        ]
-                    }
+                                }
+                            ]
+                        }
+                    ]
                 }
             }
         });
@@ -572,25 +620,31 @@ describe(`graphql "and" queries`, () => {
             variables: {
                 where: {
                     values: {
-                        title_contains: "cms",
-                        AND: [
-                            {
-                                title_contains: "headless",
-                                AND: [
-                                    {
+                        title_contains: "cms"
+                    },
+                    AND: [
+                        {
+                            values: {
+                                title_contains: "headless"
+                            },
+                            AND: [
+                                {
+                                    values: {
                                         title_contains: "project"
                                     }
-                                ]
-                            },
-                            {
-                                AND: [
-                                    {
+                                }
+                            ]
+                        },
+                        {
+                            AND: [
+                                {
+                                    values: {
                                         title_contains: "webny"
                                     }
-                                ]
-                            }
-                        ]
-                    }
+                                }
+                            ]
+                        }
+                    ]
                 }
             }
         });
@@ -614,16 +668,18 @@ describe(`graphql "and" queries`, () => {
         const [firstResponse] = await listCategories({
             variables: {
                 where: {
-                    values: {
-                        AND: [
-                            {
+                    AND: [
+                        {
+                            values: {
                                 title_contains: "headless"
-                            },
-                            {
+                            }
+                        },
+                        {
+                            values: {
                                 title_contains: "localization"
                             }
-                        ]
-                    }
+                        }
+                    ]
                 }
             }
         });
@@ -646,13 +702,15 @@ describe(`graphql "and" queries`, () => {
             variables: {
                 where: {
                     values: {
-                        title_contains: "headless",
-                        AND: [
-                            {
+                        title_contains: "headless"
+                    },
+                    AND: [
+                        {
+                            values: {
                                 title_contains: "localization"
                             }
-                        ]
-                    }
+                        }
+                    ]
                 }
             }
         });
@@ -679,29 +737,39 @@ describe(`graphql "and" queries`, () => {
         const [responseBanana] = await listProducts({
             where: {
                 values: {
-                    availableOn_gte: "2021-11-11",
-                    AND: [
-                        {
+                    availableOn_gte: "2021-11-11"
+                },
+                AND: [
+                    {
+                        values: {
                             price_between: [99, 101]
-                        },
-                        {
+                        }
+                    },
+                    {
+                        values: {
                             availableOn_lt: "2021-12-11"
-                        },
-                        {
-                            AND: [
-                                {
-                                    color_in: ["white"],
-                                    AND: [
-                                        {
+                        }
+                    },
+                    {
+                        AND: [
+                            {
+                                values: {
+                                    color_in: ["white"]
+                                },
+                                AND: [
+                                    {
+                                        values: {
                                             availableSizes_contains: "l"
                                         }
-                                    ]
-                                }
-                            ],
+                                    }
+                                ]
+                            }
+                        ],
+                        values: {
                             color_not: "black"
                         }
-                    ]
-                }
+                    }
+                ]
             }
         });
 
@@ -710,7 +778,9 @@ describe(`graphql "and" queries`, () => {
                 listProducts: {
                     data: [
                         {
-                            title: "Banana"
+                            values: {
+                                title: "Banana"
+                            }
                         }
                     ],
                     meta: {
@@ -729,7 +799,9 @@ describe(`graphql "and" queries`, () => {
             where: {
                 AND: [
                     {
-                        price_between: [249, 251]
+                        values: {
+                            price_between: [249, 251]
+                        }
                     }
                 ]
             }
@@ -740,7 +812,9 @@ describe(`graphql "and" queries`, () => {
                 listProducts: {
                     data: [
                         {
-                            title: "Apple"
+                            values: {
+                                title: "Apple"
+                            }
                         }
                     ],
                     meta: {
@@ -759,10 +833,14 @@ describe(`graphql "and" queries`, () => {
             where: {
                 AND: [
                     {
-                        price_between: [99, 101]
+                        values: {
+                            price_between: [99, 101]
+                        }
                     },
                     {
-                        price_between: [249, 251]
+                        values: {
+                            price_between: [249, 251]
+                        }
                     }
                 ]
             }

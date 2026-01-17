@@ -108,7 +108,11 @@ describe("Write Permissions Checks", () => {
         });
 
         expect(updateTestEntryResponse).toMatchObject({
-            data: { title: "Test - UPDATE" },
+            data: {
+                values: {
+                    title: "Test - UPDATE"
+                }
+            },
             error: null
         });
     });
