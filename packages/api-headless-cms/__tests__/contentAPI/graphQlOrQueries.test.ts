@@ -46,16 +46,20 @@ describe(`graphql "or" queries`, () => {
             variables: {
                 where: {
                     values: {
-                        title_contains: "cms",
-                        OR: [
-                            {
+                        title_contains: "cms"
+                    },
+                    OR: [
+                        {
+                            values: {
                                 title_contains: "headless"
-                            },
-                            {
+                            }
+                        },
+                        {
+                            values: {
                                 title_contains: "project"
                             }
-                        ]
-                    }
+                        }
+                    ]
                 }
             }
         });
@@ -65,7 +69,9 @@ describe(`graphql "or" queries`, () => {
                 listCategories: {
                     data: [
                         {
-                            title: "Webiny Headless CMS Project"
+                            values: {
+                                title: "Webiny Headless CMS Project"
+                            }
                         }
                     ],
                     meta: {
@@ -81,16 +87,18 @@ describe(`graphql "or" queries`, () => {
         const [singleCategoryResponse] = await listCategories({
             variables: {
                 where: {
-                    values: {
-                        OR: [
-                            {
+                    OR: [
+                        {
+                            values: {
                                 title_contains: "cms"
-                            },
-                            {
+                            }
+                        },
+                        {
+                            values: {
                                 title_contains: "headless"
                             }
-                        ]
-                    }
+                        }
+                    ]
                 }
             }
         });
@@ -124,13 +132,15 @@ describe(`graphql "or" queries`, () => {
             variables: {
                 where: {
                     values: {
-                        title_contains: "webiny",
-                        OR: [
-                            {
+                        title_contains: "webiny"
+                    },
+                    OR: [
+                        {
+                            values: {
                                 title_contains: "builder"
                             }
-                        ]
-                    }
+                        }
+                    ]
                 },
                 sort: ["createdOn_ASC"]
             }
@@ -164,16 +174,18 @@ describe(`graphql "or" queries`, () => {
         const [multipleCategoriesResponse] = await listCategories({
             variables: {
                 where: {
-                    values: {
-                        OR: [
-                            {
+                    OR: [
+                        {
+                            values: {
                                 title_contains: "page builder"
-                            },
-                            {
+                            }
+                        },
+                        {
+                            values: {
                                 title_contains: "form"
                             }
-                        ]
-                    }
+                        }
+                    ]
                 },
                 sort: ["createdOn_ASC"]
             }
@@ -214,24 +226,26 @@ describe(`graphql "or" queries`, () => {
         const [singleCategoryResponse] = await listCategories({
             variables: {
                 where: {
-                    values: {
-                        OR: [
-                            {
-                                OR: [
-                                    {
+                    OR: [
+                        {
+                            OR: [
+                                {
+                                    values: {
                                         title_contains: "form"
                                     }
-                                ]
-                            },
-                            {
-                                OR: [
-                                    {
+                                }
+                            ]
+                        },
+                        {
+                            OR: [
+                                {
+                                    values: {
                                         title_contains: "page"
                                     }
-                                ]
-                            }
-                        ]
-                    }
+                                }
+                            ]
+                        }
+                    ]
                 }
             }
         });
@@ -241,13 +255,19 @@ describe(`graphql "or" queries`, () => {
                 listCategories: {
                     data: [
                         {
-                            title: "Page and Form Builder and CMS"
+                            values: {
+                                title: "Page and Form Builder and CMS"
+                            }
                         },
                         {
-                            title: "Webiny Form Builder"
+                            values: {
+                                title: "Webiny Form Builder"
+                            }
                         },
                         {
-                            title: "Webiny Page Builder"
+                            values: {
+                                title: "Webiny Page Builder"
+                            }
                         }
                     ],
                     meta: {
@@ -261,26 +281,34 @@ describe(`graphql "or" queries`, () => {
         });
 
         const [singlePageCategoriesResponse] = await listCategories({
-            where: {
-                OR: [
-                    {
-                        title_contains: "form"
-                    },
-                    {
-                        OR: [
-                            {
-                                title_contains: "cms"
+            variables: {
+                where: {
+                    OR: [
+                        {
+                            values: {
+                                title_contains: "form"
                             }
-                        ]
-                    },
-                    {
-                        OR: [
-                            {
-                                title_contains: "webiny"
-                            }
-                        ]
-                    }
-                ]
+                        },
+                        {
+                            OR: [
+                                {
+                                    values: {
+                                        title_contains: "cms"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            OR: [
+                                {
+                                    values: {
+                                        title_contains: "webiny"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
             }
         });
 
@@ -289,19 +317,29 @@ describe(`graphql "or" queries`, () => {
                 listCategories: {
                     data: [
                         {
-                            title: "Page and Form Builder and CMS"
+                            values: {
+                                title: "Page and Form Builder and CMS"
+                            }
                         },
                         {
-                            title: "File Manager Webiny"
+                            values: {
+                                title: "File Manager Webiny"
+                            }
                         },
                         {
-                            title: "Webiny Form Builder"
+                            values: {
+                                title: "Webiny Form Builder"
+                            }
                         },
                         {
-                            title: "Webiny Page Builder"
+                            values: {
+                                title: "Webiny Page Builder"
+                            }
                         },
                         {
-                            title: "Webiny Headless CMS Project"
+                            values: {
+                                title: "Webiny Headless CMS Project"
+                            }
                         }
                     ],
                     meta: {
@@ -315,40 +353,52 @@ describe(`graphql "or" queries`, () => {
         });
 
         const [deeplyNestedCategoriesResponse] = await listCategories({
-            where: {
-                OR: [
-                    {
-                        title_contains: "form wrong"
-                    },
-                    {
-                        OR: [
-                            {
-                                title_contains: "cms wrong"
+            variables: {
+                where: {
+                    OR: [
+                        {
+                            values: {
+                                title_contains: "form wrong"
                             }
-                        ]
-                    },
-                    {
-                        OR: [
-                            {
-                                title_contains: "webiny wrong"
-                            },
-                            {
-                                OR: [
-                                    {
-                                        title_contains: "not-serverless"
-                                    },
-                                    {
-                                        OR: [
-                                            {
-                                                title_contains: "builder"
-                                            }
-                                        ]
+                        },
+                        {
+                            OR: [
+                                {
+                                    values: {
+                                        title_contains: "cms wrong"
                                     }
-                                ]
-                            }
-                        ]
-                    }
-                ]
+                                }
+                            ]
+                        },
+                        {
+                            OR: [
+                                {
+                                    values: {
+                                        title_contains: "webiny wrong"
+                                    }
+                                },
+                                {
+                                    OR: [
+                                        {
+                                            values: {
+                                                title_contains: "not-serverless"
+                                            }
+                                        },
+                                        {
+                                            OR: [
+                                                {
+                                                    values: {
+                                                        title_contains: "builder"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
             }
         });
 
@@ -357,13 +407,19 @@ describe(`graphql "or" queries`, () => {
                 listCategories: {
                     data: [
                         {
-                            title: "Page and Form Builder and CMS"
+                            values: {
+                                title: "Page and Form Builder and CMS"
+                            }
                         },
                         {
-                            title: "Webiny Form Builder"
+                            values: {
+                                title: "Webiny Form Builder"
+                            }
                         },
                         {
-                            title: "Webiny Page Builder"
+                            values: {
+                                title: "Webiny Page Builder"
+                            }
                         }
                     ],
                     meta: {
@@ -377,28 +433,36 @@ describe(`graphql "or" queries`, () => {
         });
 
         const [multiPageCategoriesResponse1] = await listCategories({
-            where: {
-                OR: [
-                    {
-                        title_contains: "form"
-                    },
-                    {
-                        OR: [
-                            {
-                                title_contains: "cms"
+            variables: {
+                where: {
+                    OR: [
+                        {
+                            values: {
+                                title_contains: "form"
                             }
-                        ]
-                    },
-                    {
-                        OR: [
-                            {
-                                title_contains: "webiny"
-                            }
-                        ]
-                    }
-                ]
-            },
-            limit: 3
+                        },
+                        {
+                            OR: [
+                                {
+                                    values: {
+                                        title_contains: "cms"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            OR: [
+                                {
+                                    values: {
+                                        title_contains: "webiny"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                limit: 3
+            }
         });
 
         expect(multiPageCategoriesResponse1).toMatchObject({
@@ -406,13 +470,19 @@ describe(`graphql "or" queries`, () => {
                 listCategories: {
                     data: [
                         {
-                            title: "Page and Form Builder and CMS"
+                            values: {
+                                title: "Page and Form Builder and CMS"
+                            }
                         },
                         {
-                            title: "File Manager Webiny"
+                            values: {
+                                title: "File Manager Webiny"
+                            }
                         },
                         {
-                            title: "Webiny Form Builder"
+                            values: {
+                                title: "Webiny Form Builder"
+                            }
                         }
                     ],
                     meta: {
@@ -426,39 +496,51 @@ describe(`graphql "or" queries`, () => {
         });
 
         const [multiPageCategoriesResponse2] = await listCategories({
-            where: {
-                OR: [
-                    {
-                        title_contains: "form"
-                    },
-                    {
-                        OR: [
-                            {
-                                title_contains: "cms"
+            variables: {
+                where: {
+                    OR: [
+                        {
+                            values: {
+                                title_contains: "form"
                             }
-                        ]
-                    },
-                    {
-                        OR: [
-                            {
-                                title_contains: "webiny"
-                            }
-                        ]
-                    }
-                ]
-            },
-            limit: 3,
-            after: multiPageCategoriesResponse1.data.listCategories.meta.cursor
+                        },
+                        {
+                            OR: [
+                                {
+                                    values: {
+                                        title_contains: "cms"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            OR: [
+                                {
+                                    values: {
+                                        title_contains: "webiny"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                limit: 3,
+                after: multiPageCategoriesResponse1.data.listCategories.meta!.cursor
+            }
         });
         expect(multiPageCategoriesResponse2).toMatchObject({
             data: {
                 listCategories: {
                     data: [
                         {
-                            title: "Webiny Page Builder"
+                            values: {
+                                title: "Webiny Page Builder"
+                            }
                         },
                         {
-                            title: "Webiny Headless CMS Project"
+                            values: {
+                                title: "Webiny Headless CMS Project"
+                            }
                         }
                     ],
                     meta: {
@@ -477,26 +559,34 @@ describe(`graphql "or" queries`, () => {
          * We will add a single non-existing character to "cms", "project" and "webiny"
          */
         const [cmsCategoryResponse] = await listCategories({
-            where: {
-                OR: [
-                    {
-                        title_contains: "cms"
-                    },
-                    {
-                        OR: [
-                            {
-                                title_contains: "projectX"
+            variables: {
+                where: {
+                    OR: [
+                        {
+                            values: {
+                                title_contains: "cms"
                             }
-                        ]
-                    },
-                    {
-                        OR: [
-                            {
-                                title_contains: "webny"
-                            }
-                        ]
-                    }
-                ]
+                        },
+                        {
+                            OR: [
+                                {
+                                    values: {
+                                        title_contains: "projectX"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            OR: [
+                                {
+                                    values: {
+                                        title_contains: "webny"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
             }
         });
 
@@ -505,10 +595,14 @@ describe(`graphql "or" queries`, () => {
                 listCategories: {
                     data: [
                         {
-                            title: "Page and Form Builder and CMS"
+                            values: {
+                                title: "Page and Form Builder and CMS"
+                            }
                         },
                         {
-                            title: "Webiny Headless CMS Project"
+                            values: {
+                                title: "Webiny Headless CMS Project"
+                            }
                         }
                     ],
                     meta: {
@@ -525,26 +619,34 @@ describe(`graphql "or" queries`, () => {
          * We will add a single non-existing character to "cms", "project" and "webiny"
          */
         const [noCmsCategoryResponse] = await listCategories({
-            where: {
-                OR: [
-                    {
-                        title_contains: "cmsC"
-                    },
-                    {
-                        OR: [
-                            {
-                                title_contains: "projectX"
+            variables: {
+                where: {
+                    OR: [
+                        {
+                            values: {
+                                title_contains: "cmsC"
                             }
-                        ]
-                    },
-                    {
-                        OR: [
-                            {
-                                title_contains: "webny"
-                            }
-                        ]
-                    }
-                ]
+                        },
+                        {
+                            OR: [
+                                {
+                                    values: {
+                                        title_contains: "projectX"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            OR: [
+                                {
+                                    values: {
+                                        title_contains: "webny"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
             }
         });
 
@@ -566,26 +668,34 @@ describe(`graphql "or" queries`, () => {
          * We will add a single non-existing character to "headless"
          */
         const [headlessProjectCategoryResponse] = await listCategories({
-            where: {
-                OR: [
-                    {
-                        title_contains: "cmsC"
-                    },
-                    {
-                        OR: [
-                            {
-                                title_contains: "project"
+            variables: {
+                where: {
+                    OR: [
+                        {
+                            values: {
+                                title_contains: "cmsC"
                             }
-                        ]
-                    },
-                    {
-                        OR: [
-                            {
-                                title_contains: "webny"
-                            }
-                        ]
-                    }
-                ]
+                        },
+                        {
+                            OR: [
+                                {
+                                    values: {
+                                        title_contains: "project"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            OR: [
+                                {
+                                    values: {
+                                        title_contains: "webny"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
             }
         });
 
@@ -594,7 +704,9 @@ describe(`graphql "or" queries`, () => {
                 listCategories: {
                     data: [
                         {
-                            title: "Webiny Headless CMS Project"
+                            values: {
+                                title: "Webiny Headless CMS Project"
+                            }
                         }
                     ],
                     meta: {
@@ -611,26 +723,34 @@ describe(`graphql "or" queries`, () => {
          * We will add a single non-existing character to "project"
          */
         const [webinyCategoryResponse] = await listCategories({
-            where: {
-                OR: [
-                    {
-                        title_contains: "cmsA"
-                    },
-                    {
-                        OR: [
-                            {
-                                title_contains: "cproject"
+            variables: {
+                where: {
+                    OR: [
+                        {
+                            values: {
+                                title_contains: "cmsA"
                             }
-                        ]
-                    },
-                    {
-                        OR: [
-                            {
-                                title_contains: "webiny"
-                            }
-                        ]
-                    }
-                ]
+                        },
+                        {
+                            OR: [
+                                {
+                                    values: {
+                                        title_contains: "cproject"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            OR: [
+                                {
+                                    values: {
+                                        title_contains: "webiny"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
             }
         });
 
@@ -639,16 +759,24 @@ describe(`graphql "or" queries`, () => {
                 listCategories: {
                     data: [
                         {
-                            title: "File Manager Webiny"
+                            values: {
+                                title: "File Manager Webiny"
+                            }
                         },
                         {
-                            title: "Webiny Form Builder"
+                            values: {
+                                title: "Webiny Form Builder"
+                            }
                         },
                         {
-                            title: "Webiny Page Builder"
+                            values: {
+                                title: "Webiny Page Builder"
+                            }
                         },
                         {
-                            title: "Webiny Headless CMS Project"
+                            values: {
+                                title: "Webiny Headless CMS Project"
+                            }
                         }
                     ],
                     meta: {
@@ -665,26 +793,34 @@ describe(`graphql "or" queries`, () => {
          * We will remove a single character from "webiny"
          */
         const [projectCategoryResponse] = await listCategories({
-            where: {
-                OR: [
-                    {
-                        title_contains: "cmsA"
-                    },
-                    {
-                        OR: [
-                            {
-                                title_contains: "project"
+            variables: {
+                where: {
+                    OR: [
+                        {
+                            values: {
+                                title_contains: "cmsA"
                             }
-                        ]
-                    },
-                    {
-                        OR: [
-                            {
-                                title_contains: "webny"
-                            }
-                        ]
-                    }
-                ]
+                        },
+                        {
+                            OR: [
+                                {
+                                    values: {
+                                        title_contains: "project"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            OR: [
+                                {
+                                    values: {
+                                        title_contains: "webny"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
             }
         });
 
@@ -693,7 +829,9 @@ describe(`graphql "or" queries`, () => {
                 listCategories: {
                     data: [
                         {
-                            title: "Webiny Headless CMS Project"
+                            values: {
+                                title: "Webiny Headless CMS Project"
+                            }
                         }
                     ],
                     meta: {
@@ -709,22 +847,30 @@ describe(`graphql "or" queries`, () => {
 
     it(`should not return any records`, async () => {
         const [firstResponse] = await listCategories({
-            where: {
-                OR: [
-                    {
-                        title_contains: "headless wrong"
-                    },
-                    {
-                        title_contains: "localization wrong"
-                    },
-                    {
-                        OR: [
-                            {
-                                title_contains: "cms wrong"
+            variables: {
+                where: {
+                    OR: [
+                        {
+                            values: {
+                                title_contains: "headless wrong"
                             }
-                        ]
-                    }
-                ]
+                        },
+                        {
+                            values: {
+                                title_contains: "localization wrong"
+                            }
+                        },
+                        {
+                            OR: [
+                                {
+                                    values: {
+                                        title_contains: "cms wrong"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
             }
         });
 
@@ -743,13 +889,19 @@ describe(`graphql "or" queries`, () => {
         });
 
         const [secondResponse] = await listCategories({
-            where: {
-                title_contains: "headless wrong",
-                OR: [
-                    {
-                        title_contains: "localization wrong"
-                    }
-                ]
+            variables: {
+                where: {
+                    values: {
+                        title_contains: "headless wrong",
+                    },
+                    OR: [
+                        {
+                            values: {
+                                title_contains: "localization wrong"
+                            }
+                        }
+                    ]
+                }
             }
         });
 
