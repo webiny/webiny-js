@@ -2,6 +2,7 @@ import React from "react";
 import { plugins } from "@webiny/plugins";
 import { AdminConfig, useContainer } from "@webiny/app-admin";
 import { HasPermission } from "@webiny/app-admin";
+import { useRouter } from "@webiny/app-admin";
 import { ReactComponent as PagesIcon } from "@webiny/icons/table_chart.svg";
 import { PageEditor } from "~/modules/pages/PageEditor.js";
 import { PageList } from "~/modules/pages/PageList.js";
@@ -11,9 +12,9 @@ import { PagesListConfig } from "~/modules/pages/PagesListConfig.js";
 import { RedirectsList } from "~/modules/redirects/RedirectsList.js";
 import { RedirectsListConfig } from "~/modules/redirects/RedirectsListConfig.js";
 import { Routes } from "~/routes.js";
-import { useRouter } from "@webiny/app-admin";
 import { PagesWidget } from "~/modules/widgets/PagesWidget.js";
 import { PageListFeature } from "~/presentation/pages/PageList/feature.js";
+import { ConfigureNextjs } from "./presentation/navigation/ConfigureNextjs.js";
 import { permissionRenderer } from "~/plugins/permissionRenderer.js";
 
 const { Menu, Route, Dashboard } = AdminConfig;
@@ -94,6 +95,7 @@ export const Extension = () => {
                     <Menu name="wb.settings" parent="wb" element={<SettingsMenuItem />} />
                 </HasPermission>
                 <Menu name="wb.integrations" parent="wb" element={<IntegrationsMenuItem />} />
+                <ConfigureNextjs />
             </AdminConfig>
             <PagesListConfig />
             <RedirectsListConfig />
