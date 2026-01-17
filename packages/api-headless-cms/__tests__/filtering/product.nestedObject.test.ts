@@ -3,9 +3,11 @@ import { useProductManageHandler } from "../testHelpers/useProductManageHandler"
 import { createEntriesFactory } from "./product/entries";
 import { createCategoryFactory } from "./product/category";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
-import { Product, ProductCategory } from "../types";
+import { Product } from "../types";
 import { createGetProduct } from "./product/getProductFactory";
 import { setupGroupAndModels } from "~tests/testHelpers/setup.js";
+import type { IManageQueryBaseResponse } from "~tests/testHelpers/types.js";
+import type { ICategoryResponseValues } from "~tests/testHelpers/category/manage/types.js";
 
 describe("complex product nestedObject filtering", () => {
     const options = {
@@ -16,12 +18,12 @@ describe("complex product nestedObject filtering", () => {
     const manager = useProductManageHandler(options);
 
     const { listProducts } = manager;
-    
-    const createEntries = createEntriesFactory(manager);
-    const createCategory = createCategoryFactory(categoryManager);
 
-    let category: ProductCategory;
-    let products: Product[];
+    const createCategory = createCategoryFactory(categoryManager);
+    const createEntries = createEntriesFactory(manager);
+
+    let category: IManageQueryBaseResponse<ICategoryResponseValues>;
+    let products: IManageQueryBaseResponse<Product>[];
     let getProduct: ReturnType<typeof createGetProduct>;
 
     beforeEach(async () => {
