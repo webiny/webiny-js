@@ -66,10 +66,12 @@ export const createNumbersEntryMutation = (data: Data) => {
                     createNumberModel(data: $data) {
                         data {
                             id
-                            integer
-                            ${floats.map(f => {
-                                return `float${f}`;
-                            })}
+                            values {
+                                integer
+                                ${floats.map(f => {
+                                    return `float${f}`;
+                                })}
+                            }
                         }
                         error {
                             message
@@ -79,7 +81,9 @@ export const createNumbersEntryMutation = (data: Data) => {
                     }
                 }`,
             variables: {
-                data
+                data: {
+                    values: data,
+                }
             }
         }
     };
@@ -92,10 +96,12 @@ export const listNumbersEntryQuery = () => {
                 listNumberModels {
                     data {
                         id
-                        integer
-                        ${floats.map(f => {
-                            return `float${f}`;
-                        })}
+                        values {
+                            integer
+                            ${floats.map(f => {
+                                return `float${f}`;
+                            })}
+                        }
                     }
                     error {
                         message
@@ -115,10 +121,12 @@ export const getNumbersEntryQuery = (revision: string) => {
                     getNumberModel(revision: $revision) {
                         data {
                             id
-                            integer
-                            ${floats.map(f => {
-                                return `float${f}`;
-                            })}
+                            values {
+                                integer
+                                ${floats.map(f => {
+                                    return `float${f}`;
+                                })}
+                            }
                         }
                         error {
                             message

@@ -59,20 +59,22 @@ describe("numbers model", () => {
                 createNumberModel: {
                     data: {
                         id: expect.stringMatching(/^([a-zA-Z0-9]+)#0001$/),
-                        integer: integerValue,
-                        float2: float2Value,
-                        float5: float5Value,
-                        float6: float6Value,
-                        float7: float7Value,
-                        float8: float8Value,
-                        float9: float9Value,
-                        float10: float10Value,
-                        float11: float11Value,
-                        float12: float12Value,
-                        float13: float13Value,
-                        float14: float14Value,
-                        float15: float15Value,
-                        float20: float20Value
+                        values: {
+                            integer: integerValue,
+                            float2: float2Value,
+                            float5: float5Value,
+                            float6: float6Value,
+                            float7: float7Value,
+                            float8: float8Value,
+                            float9: float9Value,
+                            float10: float10Value,
+                            float11: float11Value,
+                            float12: float12Value,
+                            float13: float13Value,
+                            float14: float14Value,
+                            float15: float15Value,
+                            float20: float20Value
+                        }
                     },
                     error: null
                 }
@@ -87,20 +89,22 @@ describe("numbers model", () => {
                 getNumberModel: {
                     data: {
                         id: revision,
-                        integer: integerValue,
-                        float2: float2Value,
-                        float5: float5Value,
-                        float6: float6Value,
-                        float7: float7Value,
-                        float8: float8Value,
-                        float9: float9Value,
-                        float10: float10Value,
-                        float11: float11Value,
-                        float12: float12Value,
-                        float13: float13Value,
-                        float14: float14Value,
-                        float15: float15Value,
-                        float20: float20Value
+                        values: {
+                            integer: integerValue,
+                            float2: float2Value,
+                            float5: float5Value,
+                            float6: float6Value,
+                            float7: float7Value,
+                            float8: float8Value,
+                            float9: float9Value,
+                            float10: float10Value,
+                            float11: float11Value,
+                            float12: float12Value,
+                            float13: float13Value,
+                            float14: float14Value,
+                            float15: float15Value,
+                            float20: float20Value
+                        }
                     },
                     error: null
                 }

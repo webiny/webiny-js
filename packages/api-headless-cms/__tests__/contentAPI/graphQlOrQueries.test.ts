@@ -19,36 +19,44 @@ describe(`graphql "or" queries`, () => {
     const { createCategory, listCategories } = manager;
 
     const createCategories = async () => {
-        await setupGroupAndModels({
-            manager,
-            models: ["category"]
-        });
         for (const title of categories) {
             await createCategory({
-                data: {
-                    title,
-                    slug: lodashCamelCase(title)
+                variables: {
+                    data: {
+                        values: {
+                            title,
+                            slug: lodashCamelCase(title)
+                        }
+                    }
                 }
             });
         }
     };
 
     beforeEach(async () => {
+        await setupGroupAndModels({
+            manager,
+            models: ["category"]
+        });
         await createCategories();
     });
 
     it(`should filter via root level "OR" condition and return records`, async () => {
         const [singleRootCategoryResponse] = await listCategories({
-            where: {
-                title_contains: "cms",
-                OR: [
-                    {
-                        title_contains: "headless"
-                    },
-                    {
-                        title_contains: "project"
+            variables: {
+                where: {
+                    values: {
+                        title_contains: "cms",
+                        OR: [
+                            {
+                                title_contains: "headless"
+                            },
+                            {
+                                title_contains: "project"
+                            }
+                        ]
                     }
-                ]
+                }
             }
         });
 
@@ -71,15 +79,19 @@ describe(`graphql "or" queries`, () => {
         });
 
         const [singleCategoryResponse] = await listCategories({
-            where: {
-                OR: [
-                    {
-                        title_contains: "cms"
-                    },
-                    {
-                        title_contains: "headless"
+            variables: {
+                where: {
+                    values: {
+                        OR: [
+                            {
+                                title_contains: "cms"
+                            },
+                            {
+                                title_contains: "headless"
+                            }
+                        ]
                     }
-                ]
+                }
             }
         });
 
@@ -88,10 +100,14 @@ describe(`graphql "or" queries`, () => {
                 listCategories: {
                     data: [
                         {
-                            title: "Page and Form Builder and CMS"
+                            values: {
+                                title: "Page and Form Builder and CMS"
+                            }
                         },
                         {
-                            title: "Webiny Headless CMS Project"
+                            values: {
+                                title: "Webiny Headless CMS Project"
+                            }
                         }
                     ],
                     meta: {
@@ -105,15 +121,19 @@ describe(`graphql "or" queries`, () => {
         });
 
         const [multipleRootCategoriesResponse] = await listCategories({
-            where: {
-                title_contains: "webiny",
-                OR: [
-                    {
-                        title_contains: "builder"
+            variables: {
+                where: {
+                    values: {
+                        title_contains: "webiny",
+                        OR: [
+                            {
+                                title_contains: "builder"
+                            }
+                        ]
                     }
-                ]
-            },
-            sort: ["createdOn_ASC"]
+                },
+                sort: ["createdOn_ASC"]
+            }
         });
 
         expect(multipleRootCategoriesResponse).toMatchObject({
@@ -121,10 +141,14 @@ describe(`graphql "or" queries`, () => {
                 listCategories: {
                     data: [
                         {
-                            title: "Webiny Page Builder"
+                            values: {
+                                title: "Webiny Page Builder"
+                            }
                         },
                         {
-                            title: "Webiny Form Builder"
+                            values: {
+                                title: "Webiny Form Builder"
+                            }
                         }
                     ],
                     meta: {
@@ -138,17 +162,21 @@ describe(`graphql "or" queries`, () => {
         });
 
         const [multipleCategoriesResponse] = await listCategories({
-            where: {
-                OR: [
-                    {
-                        title_contains: "page builder"
-                    },
-                    {
-                        title_contains: "form"
+            variables: {
+                where: {
+                    values: {
+                        OR: [
+                            {
+                                title_contains: "page builder"
+                            },
+                            {
+                                title_contains: "form"
+                            }
+                        ]
                     }
-                ]
-            },
-            sort: ["createdOn_ASC"]
+                },
+                sort: ["createdOn_ASC"]
+            }
         });
 
         expect(multipleCategoriesResponse).toMatchObject({
@@ -156,13 +184,19 @@ describe(`graphql "or" queries`, () => {
                 listCategories: {
                     data: [
                         {
-                            title: "Webiny Page Builder"
+                            values: {
+                                title: "Webiny Page Builder"
+                            }
                         },
                         {
-                            title: "Webiny Form Builder"
+                            values: {
+                                title: "Webiny Form Builder"
+                            }
                         },
                         {
-                            title: "Page and Form Builder and CMS"
+                            values: {
+                                title: "Page and Form Builder and CMS"
+                            }
                         }
                     ],
                     meta: {
@@ -178,23 +212,27 @@ describe(`graphql "or" queries`, () => {
 
     it(`should filter via nested "OR" conditions and return records`, async () => {
         const [singleCategoryResponse] = await listCategories({
-            where: {
-                OR: [
-                    {
+            variables: {
+                where: {
+                    values: {
                         OR: [
                             {
-                                title_contains: "form"
-                            }
-                        ]
-                    },
-                    {
-                        OR: [
+                                OR: [
+                                    {
+                                        title_contains: "form"
+                                    }
+                                ]
+                            },
                             {
-                                title_contains: "page"
+                                OR: [
+                                    {
+                                        title_contains: "page"
+                                    }
+                                ]
                             }
                         ]
                     }
-                ]
+                }
             }
         });
 

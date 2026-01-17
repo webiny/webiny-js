@@ -8,12 +8,12 @@ import type { TestCmsModel } from "~tests/types";
 import { ContextPlugin } from "@webiny/api";
 import type { CmsContext, CmsEntry } from "~/types";
 import {
-    EntryBeforeCreateHandler,
-    EntryAfterCreateHandler
+    EntryAfterCreateHandler,
+    EntryBeforeCreateHandler
 } from "~/features/contentEntry/CreateEntry/events.js";
 import {
-    EntryBeforeUpdateHandler,
-    EntryAfterUpdateHandler
+    EntryAfterUpdateHandler,
+    EntryBeforeUpdateHandler
 } from "~/features/contentEntry/UpdateEntry/events.js";
 
 const singularPageApiName = pageModel.singularApiName;
@@ -318,7 +318,9 @@ const setupAuthor = async ({ manager }: SetupAuthorParams) => {
     const [authorResponse] = await manager.createAuthor({
         data: {
             id: "john-doe",
-            fullName: "John Doe"
+            values: {
+                fullName: "John Doe"
+            }
         }
     });
 
@@ -405,7 +407,9 @@ describe("dynamicZone field", () => {
 
     it("should create a page with dynamic zone fields", async () => {
         const [createPageResponse] = await manage.createPage({
-            data: contentEntryMutationData
+            data: {
+                values: contentEntryMutationData
+            }
         });
 
         expect(createPageResponse).toEqual({
@@ -413,7 +417,9 @@ describe("dynamicZone field", () => {
                 createPage: {
                     data: {
                         id: expect.any(String),
-                        ...withTemplateId(contentEntryQueryData)
+                        values: {
+                            ...withTemplateId(contentEntryQueryData)
+                        }
                     },
                     error: null
                 }
@@ -422,7 +428,9 @@ describe("dynamicZone field", () => {
 
         const [updatePageResponse] = await manage.updatePage({
             revision: createPageResponse.data.createPage.data.id,
-            data: contentEntryMutationData
+            data: {
+                values: contentEntryMutationData
+            }
         });
 
         expect(updatePageResponse).toEqual({
@@ -430,7 +438,9 @@ describe("dynamicZone field", () => {
                 updatePage: {
                     data: {
                         id: expect.any(String),
-                        ...withTemplateId(contentEntryQueryData)
+                        values: {
+                            ...withTemplateId(contentEntryQueryData)
+                        }
                     },
                     error: null
                 }
@@ -447,7 +457,9 @@ describe("dynamicZone field", () => {
                     data: [
                         {
                             id: page.id,
-                            ...withTemplateId(contentEntryQueryData)
+                            values: {
+                                ...withTemplateId(contentEntryQueryData)
+                            }
                         }
                     ],
                     meta: {
@@ -470,7 +482,9 @@ describe("dynamicZone field", () => {
                 getPage: {
                     data: {
                         id: page.id,
-                        ...withTemplateId(contentEntryQueryData)
+                        values: {
+                            ...withTemplateId(contentEntryQueryData)
+                        }
                     },
                     error: null
                 }
@@ -493,12 +507,31 @@ describe("dynamicZone field", () => {
                 getPage: {
                     data: {
                         id: page.id,
-                        ...contentEntryQueryData,
-                        content: [
-                            ...contentEntryQueryData.content.slice(0, 3),
-                            {
-                                ...contentEntryQueryData.content[3],
-                                dynamicZone: {
+                        values: {
+                            ...contentEntryQueryData,
+                            content: [
+                                ...contentEntryQueryData.content.slice(0, 3),
+                                {
+                                    ...contentEntryQueryData.content[3],
+                                    dynamicZone: {
+                                        authors: [
+                                            {
+                                                entryId: "john-doe",
+                                                fullName: "John Doe",
+                                                id: "john-doe#0001",
+                                                modelId: "author"
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    __typename: contentEntryQueryData.content[4].__typename,
+                                    author: {
+                                        entryId: "john-doe",
+                                        fullName: "John Doe",
+                                        id: "john-doe#0001",
+                                        modelId: "author"
+                                    },
                                     authors: [
                                         {
                                             entryId: "john-doe",
@@ -508,15 +541,16 @@ describe("dynamicZone field", () => {
                                         }
                                     ]
                                 }
-                            },
-                            {
-                                __typename: contentEntryQueryData.content[4].__typename,
+                            ],
+                            reference: {
                                 author: {
                                     entryId: "john-doe",
                                     fullName: "John Doe",
                                     id: "john-doe#0001",
                                     modelId: "author"
-                                },
+                                }
+                            },
+                            references1: {
                                 authors: [
                                     {
                                         entryId: "john-doe",
@@ -525,36 +559,18 @@ describe("dynamicZone field", () => {
                                         modelId: "author"
                                     }
                                 ]
-                            }
-                        ],
-                        reference: {
-                            author: {
-                                entryId: "john-doe",
-                                fullName: "John Doe",
-                                id: "john-doe#0001",
-                                modelId: "author"
-                            }
-                        },
-                        references1: {
-                            authors: [
+                            },
+                            references2: [
                                 {
-                                    entryId: "john-doe",
-                                    fullName: "John Doe",
-                                    id: "john-doe#0001",
-                                    modelId: "author"
+                                    author: {
+                                        entryId: "john-doe",
+                                        fullName: "John Doe",
+                                        id: "john-doe#0001",
+                                        modelId: "author"
+                                    }
                                 }
                             ]
-                        },
-                        references2: [
-                            {
-                                author: {
-                                    entryId: "john-doe",
-                                    fullName: "John Doe",
-                                    id: "john-doe#0001",
-                                    modelId: "author"
-                                }
-                            }
-                        ]
+                        }
                     },
                     error: null
                 }

@@ -213,6 +213,10 @@ const models: CmsModel[] = [
                 fieldId: "separator",
                 storageId: "text@separator",
                 label: "Separator",
+                predefinedValues: {
+                    enabled: false,
+                    values: [],
+                },
                 listValidation: [],
                 validation: []
             },

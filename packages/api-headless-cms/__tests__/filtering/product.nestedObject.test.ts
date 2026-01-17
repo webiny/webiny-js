@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { useProductManageHandler } from "../testHelpers/useProductManageHandler";
-import { createInitFactory } from "./product/init";
 import { createEntriesFactory } from "./product/entries";
 import { createCategoryFactory } from "./product/category";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 import { Product, ProductCategory } from "../types";
 import { createGetProduct } from "./product/getProductFactory";
+import { setupGroupAndModels } from "~tests/testHelpers/setup.js";
 
 describe("complex product nestedObject filtering", () => {
     const options = {
@@ -16,8 +16,7 @@ describe("complex product nestedObject filtering", () => {
     const manager = useProductManageHandler(options);
 
     const { listProducts } = manager;
-
-    const init = createInitFactory(manager);
+    
     const createEntries = createEntriesFactory(manager);
     const createCategory = createCategoryFactory(categoryManager);
 
@@ -26,7 +25,10 @@ describe("complex product nestedObject filtering", () => {
     let getProduct: ReturnType<typeof createGetProduct>;
 
     beforeEach(async () => {
-        await init();
+        await setupGroupAndModels({
+            manager,
+            models: ["product", "category"]
+        });
         category = await createCategory();
         products = await createEntries(category);
         getProduct = createGetProduct(products);

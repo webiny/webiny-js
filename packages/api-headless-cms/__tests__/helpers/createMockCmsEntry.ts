@@ -6,5 +6,5 @@ export const createMockCmsEntry = <T extends CmsEntry = CmsEntry>(input: Partial
         wbyAco_location: {
             folderId: "root"
         }
-    } as T;
+    } as unknown as T;
 };

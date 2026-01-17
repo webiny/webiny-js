@@ -22,8 +22,10 @@ export type ProductManager = ReturnType<typeof useProductManageHandler>;
 export interface ProductCategory {
     id: string;
     entryId: string;
-    title: string;
-    slug: string;
+    values: {
+        title: string;
+        slug: string;
+    }
 }
 
 /**

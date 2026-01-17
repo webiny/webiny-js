@@ -77,51 +77,65 @@ describe(`graphql "and" queries`, () => {
     });
 
     const createProducts = async () => {
-        await setupGroupAndModels({
-            manager,
-            models: ["category", "product"]
-        });
         for (const title of categories) {
             await createCategory({
-                data: {
-                    title,
-                    slug: lodashCamelCase(title)
+                variables: {
+                    data: {
+                        values: {
+                            title,
+                            slug: lodashCamelCase(title)
+                        }
+                    }
                 }
             });
         }
         const [categoryResponse] = await createCategory({
-            data: {
-                title: "Fruits",
-                slug: "fruits"
+            variables: {
+                data: {
+                    values: {
+                        title: "Fruits",
+                        slug: "fruits"
+                    }
+                }
             }
         });
-        const category = categoryResponse.data.createCategory.data.id;
+        const category = categoryResponse.data.createCategory.data!.id;
         const products = createProductsData(category);
         let key: keyof typeof products;
         for (key in products) {
             await createProduct({
-                data: products[key]
+                data: {
+                    values: products[key]
+                }
             });
         }
     };
 
     beforeEach(async () => {
+        await setupGroupAndModels({
+            manager,
+            models: ["category", "product"]
+        });
         await createProducts();
     }, 60_000);
 
     it(`should filter via root level "AND" condition and return category records`, async () => {
         const [singleRootCategoryResponse] = await listCategories({
-            where: {
-                title_contains: "cms",
-                title_not_contains: "page",
-                AND: [
-                    {
-                        title_contains: "headless"
-                    },
-                    {
-                        title_not_contains: "form"
+            variables: {
+                where: {
+                    values: {
+                        title_contains: "cms",
+                        title_not_contains: "page",
+                        AND: [
+                            {
+                                title_contains: "headless"
+                            },
+                            {
+                                title_not_contains: "form"
+                            }
+                        ]
                     }
-                ]
+                }
             }
         });
 
@@ -144,16 +158,20 @@ describe(`graphql "and" queries`, () => {
         });
 
         const [singleCategoryResponse] = await listCategories({
-            where: {
-                slug_not: "localization",
-                AND: [
-                    {
-                        title_contains: "cms"
-                    },
-                    {
-                        title_contains: "headless"
+            variables: {
+                where: {
+                    values: {
+                        slug_not: "localization",
+                        AND: [
+                            {
+                                title_contains: "cms"
+                            },
+                            {
+                                title_contains: "headless"
+                            }
+                        ]
                     }
-                ]
+                }
             }
         });
 
@@ -162,7 +180,9 @@ describe(`graphql "and" queries`, () => {
                 listCategories: {
                     data: [
                         {
-                            title: "Webiny Headless CMS Project"
+                            values: {
+                                title: "Webiny Headless CMS Project"
+                            }
                         }
                     ],
                     meta: {
@@ -176,15 +196,19 @@ describe(`graphql "and" queries`, () => {
         });
 
         const [multipleRootCategoriesResponse] = await listCategories({
-            where: {
-                title_contains: "webiny",
-                AND: [
-                    {
-                        title_contains: "builder"
+            variables: {
+                where: {
+                    values: {
+                        title_contains: "webiny",
+                        AND: [
+                            {
+                                title_contains: "builder"
+                            }
+                        ]
                     }
-                ]
-            },
-            sort: ["createdOn_ASC"]
+                },
+                sort: ["createdOn_ASC"]
+            }
         });
 
         expect(multipleRootCategoriesResponse).toMatchObject({
@@ -192,13 +216,19 @@ describe(`graphql "and" queries`, () => {
                 listCategories: {
                     data: [
                         {
-                            title: "Webiny Page Builder"
+                            values: {
+                                title: "Webiny Page Builder"
+                            }
                         },
                         {
-                            title: "Webiny Form Builder"
+                            values: {
+                                title: "Webiny Form Builder"
+                            }
                         },
                         {
-                            title: "Webiny Page and Form Builder and CMS"
+                            values: {
+                                title: "Webiny Page and Form Builder and CMS"
+                            }
                         }
                     ],
                     meta: {
@@ -212,17 +242,21 @@ describe(`graphql "and" queries`, () => {
         });
 
         const [multipleCategoriesResponse] = await listCategories({
-            where: {
-                AND: [
-                    {
-                        title_contains: "webiny"
-                    },
-                    {
-                        title_contains: "builder"
+            variables: {
+                where: {
+                    values: {
+                        AND: [
+                            {
+                                title_contains: "webiny"
+                            },
+                            {
+                                title_contains: "builder"
+                            }
+                        ]
                     }
-                ]
-            },
-            sort: ["createdOn_ASC"]
+                },
+                sort: ["createdOn_ASC"]
+            }
         });
 
         expect(multipleCategoriesResponse).toMatchObject({
@@ -230,13 +264,19 @@ describe(`graphql "and" queries`, () => {
                 listCategories: {
                     data: [
                         {
-                            title: "Webiny Page Builder"
+                            values: {
+                                title: "Webiny Page Builder"
+                            }
                         },
                         {
-                            title: "Webiny Form Builder"
+                            values: {
+                                title: "Webiny Form Builder"
+                            }
                         },
                         {
-                            title: "Webiny Page and Form Builder and CMS"
+                            values: {
+                                title: "Webiny Page and Form Builder and CMS"
+                            }
                         }
                     ],
                     meta: {
@@ -250,20 +290,24 @@ describe(`graphql "and" queries`, () => {
         });
 
         const [multipleCategoriesWithNotResponse] = await listCategories({
-            where: {
-                AND: [
-                    {
-                        title_contains: "webiny"
-                    },
-                    {
-                        title_contains: "builder"
-                    },
-                    {
-                        slug_not: "webinyPageBuilder"
+            variables: {
+                where: {
+                    values: {
+                        AND: [
+                            {
+                                title_contains: "webiny"
+                            },
+                            {
+                                title_contains: "builder"
+                            },
+                            {
+                                slug_not: "webinyPageBuilder"
+                            }
+                        ]
                     }
-                ]
-            },
-            sort: ["createdOn_ASC"]
+                },
+                sort: ["createdOn_ASC"]
+            }
         });
 
         expect(multipleCategoriesWithNotResponse).toMatchObject({
@@ -271,10 +315,14 @@ describe(`graphql "and" queries`, () => {
                 listCategories: {
                     data: [
                         {
-                            title: "Webiny Form Builder"
+                            values: {
+                                title: "Webiny Form Builder"
+                            }
                         },
                         {
-                            title: "Webiny Page and Form Builder and CMS"
+                            values: {
+                                title: "Webiny Page and Form Builder and CMS"
+                            }
                         }
                     ],
                     meta: {
@@ -290,25 +338,29 @@ describe(`graphql "and" queries`, () => {
 
     it(`should filter via nested "AND" conditions and return category records`, async () => {
         const [singleCategoryResponse] = await listCategories({
-            where: {
-                title_contains: "cms",
-                AND: [
-                    {
-                        title_contains: "headless",
+            variables: {
+                where: {
+                    values: {
+                        title_contains: "cms",
                         AND: [
                             {
-                                title_contains: "project"
-                            }
-                        ]
-                    },
-                    {
-                        AND: [
+                                title_contains: "headless",
+                                AND: [
+                                    {
+                                        title_contains: "project"
+                                    }
+                                ]
+                            },
                             {
-                                title_contains: "webiny"
+                                AND: [
+                                    {
+                                        title_contains: "webiny"
+                                    }
+                                ]
                             }
                         ]
                     }
-                ]
+                }
             }
         });
 
@@ -317,7 +369,9 @@ describe(`graphql "and" queries`, () => {
                 listCategories: {
                     data: [
                         {
-                            title: "Webiny Headless CMS Project"
+                            values: {
+                                title: "Webiny Headless CMS Project"
+                            }
                         }
                     ],
                     meta: {
@@ -331,25 +385,29 @@ describe(`graphql "and" queries`, () => {
         });
 
         const [multipleCategoriesResponse] = await listCategories({
-            where: {
-                title_contains: "builder",
-                AND: [
-                    {
-                        title_contains: "form",
+            variables: {
+                where: {
+                    values: {
+                        title_contains: "builder",
                         AND: [
                             {
-                                title_contains: "cms"
-                            }
-                        ]
-                    },
-                    {
-                        AND: [
+                                title_contains: "form",
+                                AND: [
+                                    {
+                                        title_contains: "cms"
+                                    }
+                                ]
+                            },
                             {
-                                title_contains: "webiny"
+                                AND: [
+                                    {
+                                        title_contains: "webiny"
+                                    }
+                                ]
                             }
                         ]
                     }
-                ]
+                }
             }
         });
 
@@ -358,7 +416,9 @@ describe(`graphql "and" queries`, () => {
                 listCategories: {
                     data: [
                         {
-                            title: "Webiny Page and Form Builder and CMS"
+                            values: {
+                                title: "Webiny Page and Form Builder and CMS"
+                            }
                         }
                     ],
                     meta: {
@@ -377,25 +437,29 @@ describe(`graphql "and" queries`, () => {
          * We will add a single non-existing character to "cms"
          */
         const [cmsCategoryResponse] = await listCategories({
-            where: {
-                title_contains: "cmsa",
-                AND: [
-                    {
-                        title_contains: "headless",
+            variables: {
+                where: {
+                    values: {
+                        title_contains: "cmsa",
                         AND: [
                             {
-                                title_contains: "project"
-                            }
-                        ]
-                    },
-                    {
-                        AND: [
+                                title_contains: "headless",
+                                AND: [
+                                    {
+                                        title_contains: "project"
+                                    }
+                                ]
+                            },
                             {
-                                title_contains: "webiny"
+                                AND: [
+                                    {
+                                        title_contains: "webiny"
+                                    }
+                                ]
                             }
                         ]
                     }
-                ]
+                }
             }
         });
 
@@ -417,25 +481,29 @@ describe(`graphql "and" queries`, () => {
          * We will add a single non-existing character to "headless"
          */
         const [headlessCategoryResponse] = await listCategories({
-            where: {
-                title_contains: "cms",
-                AND: [
-                    {
-                        title_contains: "headlessk",
+            variables: {
+                where: {
+                    values: {
+                        title_contains: "cms",
                         AND: [
                             {
-                                title_contains: "project"
-                            }
-                        ]
-                    },
-                    {
-                        AND: [
+                                title_contains: "headlessk",
+                                AND: [
+                                    {
+                                        title_contains: "project"
+                                    }
+                                ]
+                            },
                             {
-                                title_contains: "webiny"
+                                AND: [
+                                    {
+                                        title_contains: "webiny"
+                                    }
+                                ]
                             }
                         ]
                     }
-                ]
+                }
             }
         });
 
@@ -457,25 +525,29 @@ describe(`graphql "and" queries`, () => {
          * We will add a single non-existing character to "project"
          */
         const [projectCategoryResponse] = await listCategories({
-            where: {
-                title_contains: "cms",
-                AND: [
-                    {
-                        title_contains: "headless",
+            variables: {
+                where: {
+                    values: {
+                        title_contains: "cms",
                         AND: [
                             {
-                                title_contains: "cproject"
-                            }
-                        ]
-                    },
-                    {
-                        AND: [
+                                title_contains: "headless",
+                                AND: [
+                                    {
+                                        title_contains: "cproject"
+                                    }
+                                ]
+                            },
                             {
-                                title_contains: "webiny"
+                                AND: [
+                                    {
+                                        title_contains: "webiny"
+                                    }
+                                ]
                             }
                         ]
                     }
-                ]
+                }
             }
         });
 
@@ -497,25 +569,29 @@ describe(`graphql "and" queries`, () => {
          * We will remove a single character from "webiny"
          */
         const [webinyCategoryResponse] = await listCategories({
-            where: {
-                title_contains: "cms",
-                AND: [
-                    {
-                        title_contains: "headless",
+            variables: {
+                where: {
+                    values: {
+                        title_contains: "cms",
                         AND: [
                             {
-                                title_contains: "project"
-                            }
-                        ]
-                    },
-                    {
-                        AND: [
+                                title_contains: "headless",
+                                AND: [
+                                    {
+                                        title_contains: "project"
+                                    }
+                                ]
+                            },
                             {
-                                title_contains: "webny"
+                                AND: [
+                                    {
+                                        title_contains: "webny"
+                                    }
+                                ]
                             }
                         ]
                     }
-                ]
+                }
             }
         });
 
@@ -536,15 +612,19 @@ describe(`graphql "and" queries`, () => {
 
     it(`should not return any category records`, async () => {
         const [firstResponse] = await listCategories({
-            where: {
-                AND: [
-                    {
-                        title_contains: "headless"
-                    },
-                    {
-                        title_contains: "localization"
+            variables: {
+                where: {
+                    values: {
+                        AND: [
+                            {
+                                title_contains: "headless"
+                            },
+                            {
+                                title_contains: "localization"
+                            }
+                        ]
                     }
-                ]
+                }
             }
         });
 
@@ -563,13 +643,17 @@ describe(`graphql "and" queries`, () => {
         });
 
         const [secondResponse] = await listCategories({
-            where: {
-                title_contains: "headless",
-                AND: [
-                    {
-                        title_contains: "localization"
+            variables: {
+                where: {
+                    values: {
+                        title_contains: "headless",
+                        AND: [
+                            {
+                                title_contains: "localization"
+                            }
+                        ]
                     }
-                ]
+                }
             }
         });
 
@@ -594,28 +678,30 @@ describe(`graphql "and" queries`, () => {
          */
         const [responseBanana] = await listProducts({
             where: {
-                availableOn_gte: "2021-11-11",
-                AND: [
-                    {
-                        price_between: [99, 101]
-                    },
-                    {
-                        availableOn_lt: "2021-12-11"
-                    },
-                    {
-                        AND: [
-                            {
-                                color_in: ["white"],
-                                AND: [
-                                    {
-                                        availableSizes_contains: "l"
-                                    }
-                                ]
-                            }
-                        ],
-                        color_not: "black"
-                    }
-                ]
+                values: {
+                    availableOn_gte: "2021-11-11",
+                    AND: [
+                        {
+                            price_between: [99, 101]
+                        },
+                        {
+                            availableOn_lt: "2021-12-11"
+                        },
+                        {
+                            AND: [
+                                {
+                                    color_in: ["white"],
+                                    AND: [
+                                        {
+                                            availableSizes_contains: "l"
+                                        }
+                                    ]
+                                }
+                            ],
+                            color_not: "black"
+                        }
+                    ]
+                }
             }
         });
 

@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { mdbid } from "@webiny/utils";
 import { useFruitManageHandler } from "../testHelpers/useFruitManageHandler";
 import { CmsEntry, CmsModel } from "~/types";
-import { setupContentModelGroup, setupContentModels } from "../testHelpers/setup";
+import { setupGroupAndModels } from "../testHelpers/setup";
 
 const NUMBER_OF_FRUITS = 200;
 
@@ -58,8 +58,10 @@ describe("entry pagination", () => {
      * We need to create N fruit entries
      */
     beforeEach(async () => {
-        const group = await setupContentModelGroup(manager);
-        await setupContentModels(manager, group, ["fruit"]);
+        await setupGroupAndModels({
+            manager,
+            models: ["fruit"]
+        });
         const model = (await storageOperations.models.get({
             tenant: "root",
             modelId: "fruit"
