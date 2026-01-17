@@ -1132,7 +1132,7 @@ describe("entry references", () => {
                 status: "published"
             }
         });
-
+        
         const [result] = await articleRead.listArticlesWithoutReferences();
 
         expect(result).toMatchObject({
@@ -1147,18 +1147,14 @@ describe("entry references", () => {
                                     id: techCategory.id,
                                     entryId: techCategory.entryId,
                                     modelId: "category",
-                                    values: {
-                                        title: null
-                                    }
+                                    values: null
                                 },
                                 categories: [
                                     {
                                         id: techCategory.id,
                                         entryId: techCategory.entryId,
                                         modelId: "category",
-                                        values: {
-                                            title: null
-                                        }
+                                        values: null
                                     }
                                 ]
                             }

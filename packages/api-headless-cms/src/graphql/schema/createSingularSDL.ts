@@ -67,7 +67,7 @@ export const createSingularSDL: CreateSingularSDL = ({
             entryId: String!
             
             ${onByMetaGqlFields}
-            values: ${singularName}Values!
+            values: ${singularName}Values
         }
 
         ${fields.map(f => f.typeDefs).join("\n")}

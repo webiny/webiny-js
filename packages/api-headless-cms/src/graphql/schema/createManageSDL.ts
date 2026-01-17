@@ -89,7 +89,7 @@ export const createManageSDL: CreateManageSDL = ({
             meta: ${singularName}Meta
             wbyAco_location: WbyAcoLocation
             
-            values: ${singularName}Values!
+            values: ${singularName}Values
         }
 
         type ${singularName}Meta {

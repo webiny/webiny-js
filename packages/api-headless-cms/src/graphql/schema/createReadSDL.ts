@@ -72,7 +72,7 @@ export const createReadSDL: CreateReadSDL = ({
             ${hasModelIdField ? "" : "modelId: String!"}
             
             ${onByMetaGqlFields}
-            values: ${singularName}Values!
+            values: ${singularName}Values
         }
         
         ${fieldsRender
