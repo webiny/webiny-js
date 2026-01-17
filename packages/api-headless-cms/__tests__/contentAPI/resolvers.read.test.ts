@@ -1,13 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CmsGroup } from "~/types";
-import { GraphQLHandlerParams, useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
-import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../testHelpers/useCategoryReadHandler";
 import { useProductManageHandler } from "../testHelpers/useProductManageHandler";
 import { useProductReadHandler } from "../testHelpers/useProductReadHandler";
+import { setupGroupAndModels } from "~tests/testHelpers/setup.js";
 
-const createPermissions = ({ groups, models }: { groups?: string[]; models?: string[] }) => [
+interface ICreatePermissionsParams {
+    groups?: string[];
+    models?: string[];
+}
+
+const createPermissions = ({ groups, models }: ICreatePermissionsParams) => [
     {
         name: "cms.settings"
     },
@@ -33,43 +37,48 @@ const createPermissions = ({ groups, models }: { groups?: string[]; models?: str
     }
 ];
 
-const categoryManagerHelper = async (manageOpts: GraphQLHandlerParams) => {
-    // Use "manage" API to create and publish entries
-    const { createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
-
-    const [fruitsResponse] = await createCategory({
-        data: {
-            title: "Fruits",
-            slug: "fruits"
+const categoryManagerHelper = async (manager: ReturnType<typeof useCategoryManageHandler>) => {
+    const [fruitsResponse] = await manager.createCategory({
+        variables: {
+            data: {
+                values: {
+                    title: "Fruits",
+                    slug: "fruits"
+                },
+                status: "published"
+            }
         }
     });
-    const fruits = fruitsResponse.data.createCategory.data;
-    const [vegetablesResponse] = await createCategory({
-        data: {
-            title: "Vegetables",
-            slug: "vegetables"
+    const fruits = fruitsResponse.data.createCategory.data!;
+    const [vegetablesResponse] = await manager.createCategory({
+        variables: {
+            data: {
+                values: {
+                    title: "Vegetables",
+                    slug: "vegetables"
+                },
+                status: "published"
+            }
         }
     });
-    const vegetables = vegetablesResponse.data.createCategory.data;
-    const [animalsResponse] = await createCategory({
-        data: {
-            title: "Animals",
-            slug: "animals"
+    const vegetables = vegetablesResponse.data.createCategory.data!;
+    const [animalsResponse] = await manager.createCategory({
+        variables: {
+            data: {
+                values: {
+                    title: "Animals",
+                    slug: "animals"
+                },
+                status: "published"
+            }
         }
     });
-    const animals = animalsResponse.data.createCategory.data;
-
-    // Publish categories so then become available in the "read" API
-    const [publishedFruitsResponse] = await publishCategory({ revision: fruits.id });
-    const [publishedVegetablesResponse] = await publishCategory({ revision: vegetables.id });
-    const [publishedAnimalsResponse] = await publishCategory({ revision: animals.id });
+    const animals = animalsResponse.data.createCategory.data!;
 
     return {
-        fruits: publishedFruitsResponse.data.publishCategory.data,
-        vegetables: publishedVegetablesResponse.data.publishCategory.data,
-        animals: publishedAnimalsResponse.data.publishCategory.data,
-        createCategory,
-        publishCategory
+        fruits,
+        vegetables,
+        animals
     };
 };
 
@@ -83,74 +92,31 @@ describe.sequential("READ - Resolvers", () => {
     const manageOpts = { path: "manage" };
     const readOpts = { path: "read" };
 
-    const {
-        createContentModelMutation,
-        updateContentModelMutation,
-        createContentModelGroupMutation
-    } = useGraphQLHandler(manageOpts);
-
-    const setupModel = async (name: string, group: CmsGroup) => {
-        const targetModel = models.find(m => m.modelId === name);
-        if (!targetModel) {
-            throw new Error(`Could not find model "${name}".`);
-        }
-
-        // Create initial record
-        const [create] = await createContentModelMutation({
-            data: {
-                name: targetModel.name,
-                modelId: targetModel.modelId,
-                singularApiName: targetModel.singularApiName,
-                pluralApiName: targetModel.pluralApiName,
-                group: group.slug
-            }
-        });
-
-        if (create.errors) {
-            console.error(`[beforeEach] ${create.errors[0].message}`);
-            process.exit(1);
-        }
-
-        const [update] = await updateContentModelMutation({
-            modelId: create.data.createContentModel.data.modelId,
-            data: {
-                fields: targetModel.fields,
-                layout: targetModel.layout
-            }
-        });
-
-        if (update.errors) {
-            console.error(`[beforeEach] ${update.errors[0].message}`);
-            process.exit(update.errors[0].message);
-        }
-
-        if (update.data.updateContentModel.error) {
-            console.error(`[beforeEach] ${update.data.updateContentModel.error.message}`);
-            process.exit(update.data.updateContentModel.error.message);
-        }
-        return targetModel;
-    };
+    const categoryManager = useCategoryManageHandler(manageOpts);
 
     beforeEach(async () => {
-        const [createCMG] = await createContentModelGroupMutation({
-            data: {
-                name: "Group",
-                slug: "group",
-                icon: "ico/ico",
-                description: "description"
-            }
+        const result = await setupGroupAndModels({
+            manager: categoryManager,
+            models: ["category", "product"]
         });
-        contentModelGroup = createCMG.data.createContentModelGroup.data;
-
-        await setupModel("category", contentModelGroup);
+        contentModelGroup = result.group;
     });
 
     it("should return a record by id", async () => {
         // Use "manage" API to create and publish entries
-        const { createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
+        const { createCategory, publishCategory } = categoryManager;
 
         // Create an entry
-        const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
+        const [create] = await createCategory({
+            variables: {
+                data: {
+                    values: {
+                        title: "Title 1",
+                        slug: "slug-1"
+                    }
+                }
+            }
+        });
 
         expect(create).toEqual({
             data: {
@@ -161,20 +127,23 @@ describe.sequential("READ - Resolvers", () => {
             }
         });
 
-        const category = create.data.createCategory.data;
-        const { id: categoryId } = category;
+        const category = create.data.createCategory.data!;
 
         // Publish it so it becomes available in the "read" API
-        const [publishResponse] = await publishCategory({ revision: categoryId });
+        const [publishResponse] = await publishCategory({
+            variables: {
+                revision: category.id
+            }
+        });
 
-        const publishedCategory = publishResponse.data.publishCategory.data;
+        const publishedCategory = publishResponse.data.publishCategory.data!;
 
         // See if entries are available via "read" API
         const { getCategory } = useCategoryReadHandler(readOpts);
 
         const [result] = await getCategory({
             where: {
-                id: categoryId
+                id: category.id
             }
         });
 
@@ -186,8 +155,10 @@ describe.sequential("READ - Resolvers", () => {
                         entryId: category.entryId,
                         createdOn: category.createdOn,
                         savedOn: publishedCategory.savedOn,
-                        title: category.title,
-                        slug: category.slug
+                        values: {
+                            title: category.values.title,
+                            slug: category.values.slug
+                        }
                     },
                     error: null
                 }
@@ -220,17 +191,29 @@ describe.sequential("READ - Resolvers", () => {
 
     it(`list entries`, async () => {
         // Use "manage" API to create and publish entries
-        const { createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
+        const { createCategory, publishCategory } = categoryManager;
 
         // Create an entry
-        const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
-        const category = create.data.createCategory.data;
-        const { id } = category;
+        const [create] = await createCategory({
+            variables: {
+                data: {
+                    values: {
+                        title: "Title 1",
+                        slug: "slug-1"
+                    }
+                }
+            }
+        });
+        const category = create.data.createCategory.data!;
 
         // Publish it so it becomes available in the "read" API
-        const [publishResponse] = await publishCategory({ revision: id });
+        const [publishResponse] = await publishCategory({
+            variables: {
+                revision: category.id
+            }
+        });
 
-        const publishedCategory = publishResponse.data.publishCategory.data;
+        const publishedCategory = publishResponse.data.publishCategory.data!;
 
         // See if entries are available via "read" API
         const { listCategories } = useCategoryReadHandler(readOpts);
@@ -243,8 +226,11 @@ describe.sequential("READ - Resolvers", () => {
                     data: [
                         {
                             id: category.id,
-                            title: category.title,
-                            slug: category.slug,
+                            entryId: category.entryId,
+                            values: {
+                                title: category.values.title,
+                                slug: category.values.slug
+                            },
                             createdOn: category.createdOn,
                             savedOn: publishedCategory.savedOn
                         }
@@ -262,17 +248,29 @@ describe.sequential("READ - Resolvers", () => {
 
     it(`list entries with specific group and model permissions`, async () => {
         // Use "manage" API to create and publish entries
-        const { createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
+        const { createCategory, publishCategory } = categoryManager;
 
         // Create an entry
-        const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
-        const category = create.data.createCategory.data;
-        const { id } = category;
+        const [create] = await createCategory({
+            variables: {
+                data: {
+                    values: {
+                        title: "Title 1",
+                        slug: "slug-1"
+                    }
+                }
+            }
+        });
+        const category = create.data.createCategory.data!;
 
         // Publish it so it becomes available in the "read" API
-        const [publishedCategoryResponse] = await publishCategory({ revision: id });
+        const [publishedCategoryResponse] = await publishCategory({
+            variables: {
+                revision: category.id
+            }
+        });
 
-        const publishedCategory = publishedCategoryResponse.data.publishCategory.data;
+        const publishedCategory = publishedCategoryResponse.data.publishCategory.data!;
 
         // See if entries are available via "read" API
         const { listCategories } = useCategoryReadHandler({
@@ -291,8 +289,11 @@ describe.sequential("READ - Resolvers", () => {
                     data: [
                         {
                             id: category.id,
-                            title: category.title,
-                            slug: category.slug,
+                            entryId: category.entryId,
+                            values: {
+                                title: category.values.title,
+                                slug: category.values.slug
+                            },
                             createdOn: category.createdOn,
                             savedOn: publishedCategory.savedOn
                         }
@@ -310,15 +311,27 @@ describe.sequential("READ - Resolvers", () => {
 
     it(`should return an error when getting entry without specific group permissions`, async () => {
         // Use "manage" API to create and publish entries
-        const { createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
+        const { createCategory, publishCategory } = categoryManager;
 
         // Create an entry
-        const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
-        const category = create.data.createCategory.data;
-        const { id } = category;
+        const [create] = await createCategory({
+            variables: {
+                data: {
+                    values: {
+                        title: "Title 1",
+                        slug: "slug-1"
+                    }
+                }
+            }
+        });
+        const category = create.data.createCategory.data!;
 
         // Publish it so it becomes available in the "read" API
-        await publishCategory({ revision: id });
+        await publishCategory({
+            variables: {
+                revision: category.id
+            }
+        });
 
         // See if entries are available via "read" API
         const { getCategory } = useCategoryReadHandler({
@@ -330,7 +343,7 @@ describe.sequential("READ - Resolvers", () => {
 
         const [response] = await getCategory({
             where: {
-                id
+                id: category.id
             }
         });
 
@@ -349,15 +362,28 @@ describe.sequential("READ - Resolvers", () => {
 
     it(`should return an error when getting entry without specific model permissions`, async () => {
         // Use "manage" API to create and publish entries
-        const { createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
+        const { createCategory, publishCategory } = categoryManager;
 
         // Create an entry
-        const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
-        const category = create.data.createCategory.data;
+        const [create] = await createCategory({
+            variables: {
+                data: {
+                    values: {
+                        title: "Title 1",
+                        slug: "slug-1"
+                    }
+                }
+            }
+        });
+        const category = create.data.createCategory.data!;
         const { id } = category;
 
         // Publish it so it becomes available in the "read" API
-        await publishCategory({ revision: id });
+        await publishCategory({
+            variables: {
+                revision: category.id
+            }
+        });
 
         // See if entries are available via "read" API
         const { getCategory } = useCategoryReadHandler({
@@ -367,7 +393,9 @@ describe.sequential("READ - Resolvers", () => {
             })
         });
 
-        const [response] = await getCategory({ where: { id } });
+        const [response] = await getCategory({
+            where: { id }
+        });
 
         expect(response).toMatchObject({
             data: {
@@ -383,7 +411,7 @@ describe.sequential("READ - Resolvers", () => {
     });
 
     it(`list entries (limit)`, async () => {
-        const { vegetables, animals } = await categoryManagerHelper(manageOpts);
+        const { vegetables, animals } = await categoryManagerHelper(categoryManager);
 
         // See if entries are available via "read" API
         const { listCategories } = useCategoryReadHandler(readOpts);
@@ -398,17 +426,23 @@ describe.sequential("READ - Resolvers", () => {
                     data: [
                         {
                             id: animals.id,
+                            entryId: animals.entryId,
                             createdOn: animals.createdOn,
                             savedOn: animals.savedOn,
-                            slug: animals.slug,
-                            title: animals.title
+                            values: {
+                                slug: animals.values.slug,
+                                title: animals.values.title
+                            }
                         },
                         {
                             id: vegetables.id,
+                            entryId: vegetables.entryId,
                             createdOn: vegetables.createdOn,
                             savedOn: vegetables.savedOn,
-                            slug: vegetables.slug,
-                            title: vegetables.title
+                            values: {
+                                slug: vegetables.values.slug,
+                                title: vegetables.values.title
+                            }
                         }
                     ],
                     meta: {
@@ -423,7 +457,7 @@ describe.sequential("READ - Resolvers", () => {
     });
 
     it(`list entries (limit + after)`, async () => {
-        const { fruits, vegetables, animals } = await categoryManagerHelper(manageOpts);
+        const { fruits, vegetables, animals } = await categoryManagerHelper(categoryManager);
 
         const { listCategories } = useCategoryReadHandler(readOpts);
 
@@ -438,10 +472,13 @@ describe.sequential("READ - Resolvers", () => {
                     data: [
                         {
                             id: animals.id,
+                            entryId: animals.entryId,
                             createdOn: animals.createdOn,
                             savedOn: animals.savedOn,
-                            slug: animals.slug,
-                            title: animals.title
+                            values: {
+                                slug: animals.values.slug,
+                                title: animals.values.title
+                            }
                         }
                     ],
                     meta: {
@@ -467,10 +504,13 @@ describe.sequential("READ - Resolvers", () => {
                     data: [
                         {
                             id: vegetables.id,
+                            entryId: vegetables.entryId,
                             createdOn: vegetables.createdOn,
                             savedOn: vegetables.savedOn,
-                            slug: vegetables.slug,
-                            title: vegetables.title
+                            values: {
+                                slug: vegetables.values.slug,
+                                title: vegetables.values.title
+                            }
                         }
                     ],
                     meta: {
@@ -496,10 +536,13 @@ describe.sequential("READ - Resolvers", () => {
                     data: [
                         {
                             id: fruits.id,
+                            entryId: fruits.entryId,
                             createdOn: fruits.createdOn,
                             savedOn: fruits.savedOn,
-                            slug: fruits.slug,
-                            title: fruits.title
+                            values: {
+                                slug: fruits.values.slug,
+                                title: fruits.values.title
+                            }
                         }
                     ],
                     meta: {
@@ -524,17 +567,23 @@ describe.sequential("READ - Resolvers", () => {
                     data: [
                         {
                             id: vegetables.id,
+                            entryId: vegetables.entryId,
                             createdOn: vegetables.createdOn,
                             savedOn: vegetables.savedOn,
-                            slug: vegetables.slug,
-                            title: vegetables.title
+                            values: {
+                                slug: vegetables.values.slug,
+                                title: vegetables.values.title
+                            }
                         },
                         {
                             id: fruits.id,
+                            entryId: fruits.entryId,
                             createdOn: fruits.createdOn,
                             savedOn: fruits.savedOn,
-                            slug: fruits.slug,
-                            title: fruits.title
+                            values: {
+                                slug: fruits.values.slug,
+                                title: fruits.values.title
+                            }
                         }
                     ],
                     meta: {
@@ -549,7 +598,7 @@ describe.sequential("READ - Resolvers", () => {
     });
 
     it(`list entries (sort ASC)`, async () => {
-        const { fruits, vegetables, animals } = await categoryManagerHelper(manageOpts);
+        const { fruits, vegetables, animals } = await categoryManagerHelper(categoryManager);
 
         const { listCategories } = useCategoryReadHandler(readOpts);
 
@@ -563,24 +612,33 @@ describe.sequential("READ - Resolvers", () => {
                     data: [
                         {
                             id: fruits.id,
+                            entryId: fruits.entryId,
                             createdOn: fruits.createdOn,
                             savedOn: fruits.savedOn,
-                            slug: fruits.slug,
-                            title: fruits.title
+                            values: {
+                                slug: fruits.values.slug,
+                                title: fruits.values.title
+                            }
                         },
                         {
                             id: vegetables.id,
+                            entryId: vegetables.entryId,
                             createdOn: vegetables.createdOn,
                             savedOn: vegetables.savedOn,
-                            slug: vegetables.slug,
-                            title: vegetables.title
+                            values: {
+                                slug: vegetables.values.slug,
+                                title: vegetables.values.title
+                            }
                         },
                         {
                             id: animals.id,
+                            entryId: animals.entryId,
                             createdOn: animals.createdOn,
                             savedOn: animals.savedOn,
-                            slug: animals.slug,
-                            title: animals.title
+                            values: {
+                                slug: animals.values.slug,
+                                title: animals.values.title
+                            }
                         }
                     ],
                     meta: {
@@ -595,12 +653,12 @@ describe.sequential("READ - Resolvers", () => {
     });
 
     it(`list entries (sort DESC)`, async () => {
-        const { fruits, vegetables, animals } = await categoryManagerHelper(manageOpts);
+        const { fruits, vegetables, animals } = await categoryManagerHelper(categoryManager);
 
         const { listCategories } = useCategoryReadHandler(readOpts);
 
         const [result] = await listCategories({
-            sort: ["title_DESC"]
+            sort: ["values_title_DESC"]
         });
 
         expect(result).toEqual({
@@ -609,24 +667,33 @@ describe.sequential("READ - Resolvers", () => {
                     data: [
                         {
                             id: vegetables.id,
+                            entryId: vegetables.entryId,
                             createdOn: vegetables.createdOn,
                             savedOn: vegetables.savedOn,
-                            slug: vegetables.slug,
-                            title: vegetables.title
+                            values: {
+                                slug: vegetables.values.slug,
+                                title: vegetables.values.title
+                            }
                         },
                         {
                             id: fruits.id,
+                            entryId: fruits.entryId,
                             createdOn: fruits.createdOn,
                             savedOn: fruits.savedOn,
-                            slug: fruits.slug,
-                            title: fruits.title
+                            values: {
+                                slug: fruits.values.slug,
+                                title: fruits.values.title
+                            }
                         },
                         {
                             id: animals.id,
+                            entryId: animals.entryId,
                             createdOn: animals.createdOn,
                             savedOn: animals.savedOn,
-                            slug: animals.slug,
-                            title: animals.title
+                            values: {
+                                slug: animals.values.slug,
+                                title: animals.values.title
+                            }
                         }
                     ],
                     meta: {
@@ -641,13 +708,15 @@ describe.sequential("READ - Resolvers", () => {
     });
 
     it("list entries that contains given value", async () => {
-        const { animals } = await categoryManagerHelper(manageOpts);
+        const { animals } = await categoryManagerHelper(categoryManager);
 
         const { listCategories } = useCategoryReadHandler(readOpts);
 
         const [result] = await listCategories({
             where: {
-                title_contains: "NIMal"
+                values: {
+                    title_contains: "NIMal"
+                }
             }
         });
 
@@ -657,10 +726,13 @@ describe.sequential("READ - Resolvers", () => {
                     data: [
                         {
                             id: animals.id,
+                            entryId: animals.entryId,
                             createdOn: animals.createdOn,
                             savedOn: animals.savedOn,
-                            slug: animals.slug,
-                            title: animals.title
+                            values: {
+                                slug: animals.values.slug,
+                                title: animals.values.title
+                            }
                         }
                     ],
                     meta: {
@@ -675,13 +747,15 @@ describe.sequential("READ - Resolvers", () => {
     });
 
     it("list entries that do not contains given value", async () => {
-        const { vegetables, animals } = await categoryManagerHelper(manageOpts);
+        const { vegetables, animals } = await categoryManagerHelper(categoryManager);
 
         const { listCategories } = useCategoryReadHandler(readOpts);
 
         const [result] = await listCategories({
             where: {
-                title_not_contains: "fruits"
+                values: {
+                    title_not_contains: "fruits"
+                }
             }
         });
 
@@ -691,17 +765,23 @@ describe.sequential("READ - Resolvers", () => {
                     data: [
                         {
                             id: animals.id,
+                            entryId: animals.entryId,
                             createdOn: animals.createdOn,
                             savedOn: animals.savedOn,
-                            slug: animals.slug,
-                            title: animals.title
+                            values: {
+                                slug: animals.values.slug,
+                                title: animals.values.title
+                            }
                         },
                         {
                             id: vegetables.id,
+                            entryId: vegetables.entryId,
                             createdOn: vegetables.createdOn,
                             savedOn: vegetables.savedOn,
-                            slug: vegetables.slug,
-                            title: vegetables.title
+                            values: {
+                                slug: vegetables.values.slug,
+                                title: vegetables.values.title
+                            }
                         }
                     ],
                     meta: {
@@ -716,13 +796,15 @@ describe.sequential("READ - Resolvers", () => {
     });
 
     it("list entries that are in given values", async () => {
-        const { vegetables, animals } = await categoryManagerHelper(manageOpts);
+        const { vegetables, animals } = await categoryManagerHelper(categoryManager);
 
         const { listCategories } = useCategoryReadHandler(readOpts);
 
         const [result] = await listCategories({
             where: {
-                slug_in: [vegetables.slug, animals.slug]
+                values: {
+                    slug_in: [vegetables.values.slug, animals.values.slug]
+                }
             }
         });
 
@@ -732,17 +814,23 @@ describe.sequential("READ - Resolvers", () => {
                     data: [
                         {
                             id: animals.id,
+                            entryId: animals.entryId,
                             createdOn: animals.createdOn,
                             savedOn: animals.savedOn,
-                            slug: animals.slug,
-                            title: animals.title
+                            values: {
+                                slug: animals.values.slug,
+                                title: animals.values.title
+                            }
                         },
                         {
                             id: vegetables.id,
+                            entryId: vegetables.entryId,
                             createdOn: vegetables.createdOn,
                             savedOn: vegetables.savedOn,
-                            slug: vegetables.slug,
-                            title: vegetables.title
+                            values: {
+                                slug: vegetables.values.slug,
+                                title: vegetables.values.title
+                            }
                         }
                     ],
                     meta: {
@@ -757,13 +845,15 @@ describe.sequential("READ - Resolvers", () => {
     });
 
     it("list entries that are not in given values", async () => {
-        const { fruits, vegetables, animals } = await categoryManagerHelper(manageOpts);
+        const { fruits, vegetables, animals } = await categoryManagerHelper(categoryManager);
 
         const { listCategories } = useCategoryReadHandler(readOpts);
 
         const [result] = await listCategories({
             where: {
-                slug_not_in: [vegetables.slug, animals.slug]
+                values: {
+                    slug_not_in: [vegetables.values.slug, animals.values.slug]
+                }
             }
         });
 
@@ -773,10 +863,13 @@ describe.sequential("READ - Resolvers", () => {
                     data: [
                         {
                             id: fruits.id,
+                            entryId: fruits.entryId,
                             createdOn: fruits.createdOn,
                             savedOn: fruits.savedOn,
-                            slug: fruits.slug,
-                            title: fruits.title
+                            values: {
+                                slug: fruits.values.slug,
+                                title: fruits.values.title
+                            }
                         }
                     ],
                     meta: {
@@ -791,7 +884,7 @@ describe.sequential("READ - Resolvers", () => {
     });
 
     it("list entries that are created after given date", async () => {
-        const { fruits, vegetables, animals } = await categoryManagerHelper(manageOpts);
+        const { fruits, vegetables, animals } = await categoryManagerHelper(categoryManager);
 
         const { listCategories } = useCategoryReadHandler(readOpts);
 
@@ -810,24 +903,33 @@ describe.sequential("READ - Resolvers", () => {
                     data: [
                         {
                             id: fruits.id,
+                            entryId: fruits.entryId,
                             createdOn: fruits.createdOn,
                             savedOn: fruits.savedOn,
-                            slug: fruits.slug,
-                            title: fruits.title
+                            values: {
+                                slug: fruits.values.slug,
+                                title: fruits.values.title
+                            }
                         },
                         {
                             id: vegetables.id,
+                            entryId: vegetables.entryId,
                             createdOn: vegetables.createdOn,
                             savedOn: vegetables.savedOn,
-                            slug: vegetables.slug,
-                            title: vegetables.title
+                            values: {
+                                slug: vegetables.values.slug,
+                                title: vegetables.values.title
+                            }
                         },
                         {
                             id: animals.id,
+                            entryId: animals.entryId,
                             createdOn: animals.createdOn,
                             savedOn: animals.savedOn,
-                            slug: animals.slug,
-                            title: animals.title
+                            values: {
+                                slug: animals.values.slug,
+                                title: animals.values.title
+                            }
                         }
                     ],
                     meta: {
@@ -842,7 +944,7 @@ describe.sequential("READ - Resolvers", () => {
     });
 
     it("list entries that are created after or at given date: one returned", async () => {
-        const { animals } = await categoryManagerHelper(manageOpts);
+        const { animals } = await categoryManagerHelper(categoryManager);
 
         const { listCategories } = useCategoryReadHandler(readOpts);
 
@@ -859,10 +961,13 @@ describe.sequential("READ - Resolvers", () => {
                     data: [
                         {
                             id: animals.id,
+                            entryId: animals.entryId,
                             createdOn: animals.createdOn,
                             savedOn: animals.savedOn,
-                            slug: animals.slug,
-                            title: animals.title
+                            values: {
+                                slug: animals.values.slug,
+                                title: animals.values.title
+                            }
                         }
                     ],
                     meta: {
@@ -905,7 +1010,7 @@ describe.sequential("READ - Resolvers", () => {
     });
 
     it("list entries that are created before or at given date: one returned", async () => {
-        const { fruits, vegetables } = await categoryManagerHelper(manageOpts);
+        const { fruits, vegetables } = await categoryManagerHelper(categoryManager);
 
         const { listCategories } = useCategoryReadHandler(readOpts);
 
@@ -922,17 +1027,23 @@ describe.sequential("READ - Resolvers", () => {
                     data: [
                         {
                             id: fruits.id,
+                            entryId: fruits.entryId,
                             createdOn: fruits.createdOn,
                             savedOn: fruits.savedOn,
-                            slug: fruits.slug,
-                            title: fruits.title
+                            values: {
+                                slug: fruits.values.slug,
+                                title: fruits.values.title
+                            }
                         },
                         {
                             id: vegetables.id,
+                            entryId: vegetables.entryId,
                             createdOn: vegetables.createdOn,
                             savedOn: vegetables.savedOn,
-                            slug: vegetables.slug,
-                            title: vegetables.title
+                            values: {
+                                slug: vegetables.values.slug,
+                                title: vegetables.values.title
+                            }
                         }
                     ],
                     meta: {
@@ -947,7 +1058,7 @@ describe.sequential("READ - Resolvers", () => {
     });
 
     it("list entries that are not created between given dates", async () => {
-        const { fruits, vegetables, animals } = await categoryManagerHelper(manageOpts);
+        const { fruits, vegetables, animals } = await categoryManagerHelper(categoryManager);
 
         const { listCategories } = useCategoryReadHandler(readOpts);
 
@@ -969,17 +1080,23 @@ describe.sequential("READ - Resolvers", () => {
                     data: [
                         {
                             id: fruits.id,
+                            entryId: fruits.entryId,
                             createdOn: fruits.createdOn,
                             savedOn: fruits.savedOn,
-                            slug: fruits.slug,
-                            title: fruits.title
+                            values: {
+                                slug: fruits.values.slug,
+                                title: fruits.values.title
+                            }
                         },
                         {
                             id: animals.id,
+                            entryId: animals.entryId,
                             createdOn: animals.createdOn,
                             savedOn: animals.savedOn,
-                            slug: animals.slug,
-                            title: animals.title
+                            values: {
+                                slug: animals.values.slug,
+                                title: animals.values.title
+                            }
                         }
                     ],
                     meta: {
@@ -994,26 +1111,25 @@ describe.sequential("READ - Resolvers", () => {
     });
 
     it("list entries that have price in given range", async () => {
-        await setupModel("product", contentModelGroup);
 
-        const { vegetables } = await categoryManagerHelper({
-            ...manageOpts
-        });
+        const { vegetables } = await categoryManagerHelper(categoryManager);
         const { createProduct, listProducts } = useProductManageHandler({
             ...manageOpts
         });
 
         const [potatoResponse] = await createProduct({
             data: {
-                title: "Potato",
-                price: 100.05,
-                availableOn: "2020-12-25",
-                color: "white",
-                availableSizes: ["s", "m"],
-                image: "potato.jpg",
-                category: {
-                    modelId: "category",
-                    id: vegetables.id
+                values: {
+                    title: "Potato",
+                    price: 100.05,
+                    availableOn: "2020-12-25",
+                    color: "white",
+                    availableSizes: ["s", "m"],
+                    image: "potato.jpg",
+                    category: {
+                        modelId: "category",
+                        id: vegetables.id
+                    }
                 }
             }
         });
@@ -1021,30 +1137,34 @@ describe.sequential("READ - Resolvers", () => {
 
         await createProduct({
             data: {
-                title: "Carrot",
-                price: 98,
-                availableOn: "2020-12-25",
-                color: "white",
-                availableSizes: ["m"],
-                image: "orange.jpg",
-                category: {
-                    modelId: "category",
-                    id: vegetables.id
+                values: {
+                    title: "Carrot",
+                    price: 98,
+                    availableOn: "2020-12-25",
+                    color: "white",
+                    availableSizes: ["m"],
+                    image: "orange.jpg",
+                    category: {
+                        modelId: "category",
+                        id: vegetables.id
+                    }
                 }
             }
         });
 
         const [kornResponse] = await createProduct({
             data: {
-                title: "Korn",
-                price: 99.1,
-                availableOn: "2020-12-25",
-                color: "white",
-                availableSizes: ["m"],
-                image: "korn.jpg",
-                category: {
-                    modelId: "category",
-                    id: vegetables.id
+                values: {
+                    title: "Korn",
+                    price: 99.1,
+                    availableOn: "2020-12-25",
+                    color: "white",
+                    availableSizes: ["m"],
+                    image: "korn.jpg",
+                    category: {
+                        modelId: "category",
+                        id: vegetables.id
+                    }
                 }
             }
         });
@@ -1052,8 +1172,10 @@ describe.sequential("READ - Resolvers", () => {
 
         const [response] = await listProducts({
             where: {
-                price_gte: 99,
-                price_lte: 107.99
+                values: {
+                    price_gte: 99,
+                    price_lte: 107.99
+                }
             }
         });
 
@@ -1073,56 +1195,59 @@ describe.sequential("READ - Resolvers", () => {
     });
 
     it("sort entries by title", async () => {
-        await setupModel("product", contentModelGroup);
 
-        const { vegetables } = await categoryManagerHelper({
-            ...manageOpts
-        });
+        const { vegetables } = await categoryManagerHelper(categoryManager);
         const { createProduct, listProducts } = useProductManageHandler({
             ...manageOpts
         });
 
         const [potatoResponse] = await createProduct({
             data: {
-                title: "Potato",
-                price: 100.05,
-                availableOn: "2020-12-25",
-                color: "white",
-                availableSizes: ["s", "m"],
-                image: "potato.jpg",
-                category: {
-                    modelId: "category",
-                    id: vegetables.id
+                values: {
+                    title: "Potato",
+                    price: 100.05,
+                    availableOn: "2020-12-25",
+                    color: "white",
+                    availableSizes: ["s", "m"],
+                    image: "potato.jpg",
+                    category: {
+                        modelId: "category",
+                        id: vegetables.id
+                    }
                 }
             }
         });
 
         const [carrotResponse] = await createProduct({
             data: {
-                title: "Carrot",
-                price: 98,
-                availableOn: "2020-12-25",
-                color: "white",
-                availableSizes: ["m"],
-                image: "orange.jpg",
-                category: {
-                    modelId: "category",
-                    id: vegetables.id
+                values: {
+                    title: "Carrot",
+                    price: 98,
+                    availableOn: "2020-12-25",
+                    color: "white",
+                    availableSizes: ["m"],
+                    image: "orange.jpg",
+                    category: {
+                        modelId: "category",
+                        id: vegetables.id
+                    }
                 }
             }
         });
 
         const [kornResponse] = await createProduct({
             data: {
-                title: "Korn",
-                price: 99.1,
-                availableOn: "2020-12-25",
-                color: "white",
-                availableSizes: ["m"],
-                image: "korn.jpg",
-                category: {
-                    modelId: "category",
-                    id: vegetables.id
+                values: {
+                    title: "Korn",
+                    price: 99.1,
+                    availableOn: "2020-12-25",
+                    color: "white",
+                    availableSizes: ["m"],
+                    image: "korn.jpg",
+                    category: {
+                        modelId: "category",
+                        id: vegetables.id
+                    }
                 }
             }
         });
@@ -1132,7 +1257,7 @@ describe.sequential("READ - Resolvers", () => {
         const korn = kornResponse.data.createProduct.data;
 
         const [responseAsc] = await listProducts({
-            sort: ["title_ASC"]
+            sort: ["values_title_ASC"]
         });
 
         expect(responseAsc).toEqual({
@@ -1150,7 +1275,7 @@ describe.sequential("READ - Resolvers", () => {
         });
 
         const [responseDesc] = await listProducts({
-            sort: ["title_DESC"]
+            sort: ["values_title_DESC"]
         });
 
         expect(responseDesc).toEqual({
@@ -1169,56 +1294,59 @@ describe.sequential("READ - Resolvers", () => {
     });
 
     it("should sort products by price", async () => {
-        await setupModel("product", contentModelGroup);
 
-        const { vegetables } = await categoryManagerHelper({
-            ...manageOpts
-        });
+        const { vegetables } = await categoryManagerHelper(categoryManager);
         const { createProduct, listProducts } = useProductManageHandler({
             ...manageOpts
         });
 
         const [potatoResponse] = await createProduct({
             data: {
-                title: "Potato",
-                price: 99.9,
-                availableOn: "2020-12-25",
-                color: "white",
-                availableSizes: ["s", "m"],
-                image: "potato.jpg",
-                category: {
-                    modelId: "category",
-                    id: vegetables.id
+                values: {
+                    title: "Potato",
+                    price: 99.9,
+                    availableOn: "2020-12-25",
+                    color: "white",
+                    availableSizes: ["s", "m"],
+                    image: "potato.jpg",
+                    category: {
+                        modelId: "category",
+                        id: vegetables.id
+                    }
                 }
             }
         });
 
         const [carrotResponse] = await createProduct({
             data: {
-                title: "Carrot",
-                price: 500.1,
-                availableOn: "2020-12-25",
-                color: "white",
-                availableSizes: ["m"],
-                image: "orange.jpg",
-                category: {
-                    modelId: "category",
-                    id: vegetables.id
+                values: {
+                    title: "Carrot",
+                    price: 500.1,
+                    availableOn: "2020-12-25",
+                    color: "white",
+                    availableSizes: ["m"],
+                    image: "orange.jpg",
+                    category: {
+                        modelId: "category",
+                        id: vegetables.id
+                    }
                 }
             }
         });
 
         const [kornResponse] = await createProduct({
             data: {
-                title: "Korn",
-                price: 300.5,
-                availableOn: "2020-12-25",
-                color: "white",
-                availableSizes: ["m"],
-                image: "korn.jpg",
-                category: {
-                    modelId: "category",
-                    id: vegetables.id
+                values: {
+                    title: "Korn",
+                    price: 300.5,
+                    availableOn: "2020-12-25",
+                    color: "white",
+                    availableSizes: ["m"],
+                    image: "korn.jpg",
+                    category: {
+                        modelId: "category",
+                        id: vegetables.id
+                    }
                 }
             }
         });
@@ -1228,7 +1356,7 @@ describe.sequential("READ - Resolvers", () => {
         const korn = kornResponse.data.createProduct.data;
 
         const [responseAsc] = await listProducts({
-            sort: ["price_ASC"]
+            sort: ["values_price_ASC"]
         });
 
         expect(responseAsc).toEqual({
@@ -1246,7 +1374,7 @@ describe.sequential("READ - Resolvers", () => {
         });
 
         const [responseDesc] = await listProducts({
-            sort: ["price_DESC"]
+            sort: ["values_price_DESC"]
         });
 
         expect(responseDesc).toEqual({
@@ -1265,11 +1393,8 @@ describe.sequential("READ - Resolvers", () => {
     });
 
     it("should store and retrieve nested objects", async () => {
-        await setupModel("product", contentModelGroup);
 
-        const { vegetables } = await categoryManagerHelper({
-            ...manageOpts
-        });
+        const { vegetables } = await categoryManagerHelper(categoryManager);
 
         const { getProduct } = useProductReadHandler({ ...readOpts });
 
@@ -1288,31 +1413,33 @@ describe.sequential("READ - Resolvers", () => {
 
         const [createResponse] = await createProduct({
             data: {
-                title: "Potato",
-                price: 99.9,
-                availableOn: "2020-12-25",
-                color: "white",
-                image: "image.png",
-                availableSizes: ["s", "m"],
-                category: categoryValue,
-                variant: {
-                    name: "Variant 1",
-                    price: 100,
+                values: {
+                    title: "Potato",
+                    price: 99.9,
+                    availableOn: "2020-12-25",
+                    color: "white",
+                    image: "image.png",
+                    availableSizes: ["s", "m"],
                     category: categoryValue,
-                    options: [
-                        {
-                            name: "Option 1",
-                            price: 10,
-                            category: categoryValue,
-                            categories: [categoryValue]
-                        },
-                        {
-                            name: "Option 2",
-                            price: 20,
-                            category: categoryValue,
-                            categories: [categoryValue]
-                        }
-                    ]
+                    variant: {
+                        name: "Variant 1",
+                        price: 100,
+                        category: categoryValue,
+                        options: [
+                            {
+                                name: "Option 1",
+                                price: 10,
+                                category: categoryValue,
+                                categories: [categoryValue]
+                            },
+                            {
+                                name: "Option 2",
+                                price: 20,
+                                category: categoryValue,
+                                categories: [categoryValue]
+                            }
+                        ]
+                    }
                 }
             }
         });
@@ -1321,41 +1448,43 @@ describe.sequential("READ - Resolvers", () => {
             data: {
                 createProduct: {
                     data: {
-                        title: "Potato",
-                        price: 99.9,
-                        availableOn: "2020-12-25",
-                        color: "white",
-                        image: "image.png",
-                        availableSizes: ["s", "m"],
-                        category: {
-                            ...categoryValue,
-                            entryId: vegetables.entryId
-                        },
-                        variant: {
-                            name: "Variant 1",
-                            price: 100,
+                        values: {
+                            title: "Potato",
+                            price: 99.9,
+                            availableOn: "2020-12-25",
+                            color: "white",
+                            image: "image.png",
+                            availableSizes: ["s", "m"],
                             category: {
                                 ...categoryValue,
                                 entryId: vegetables.entryId
                             },
-                            options: [
-                                {
-                                    name: "Option 1",
-                                    price: 10,
-                                    category: {
-                                        ...categoryValue,
-                                        entryId: vegetables.entryId
-                                    }
+                            variant: {
+                                name: "Variant 1",
+                                price: 100,
+                                category: {
+                                    ...categoryValue,
+                                    entryId: vegetables.entryId
                                 },
-                                {
-                                    name: "Option 2",
-                                    price: 20,
-                                    category: {
-                                        ...categoryValue,
-                                        entryId: vegetables.entryId
+                                options: [
+                                    {
+                                        name: "Option 1",
+                                        price: 10,
+                                        category: {
+                                            ...categoryValue,
+                                            entryId: vegetables.entryId
+                                        }
+                                    },
+                                    {
+                                        name: "Option 2",
+                                        price: 20,
+                                        category: {
+                                            ...categoryValue,
+                                            entryId: vegetables.entryId
+                                        }
                                     }
-                                }
-                            ]
+                                ]
+                            }
                         }
                     },
                     error: null
@@ -1373,41 +1502,43 @@ describe.sequential("READ - Resolvers", () => {
                 getProduct: {
                     data: {
                         id: potato.id,
-                        title: "Potato",
-                        price: 99.9,
-                        availableOn: "2020-12-25",
-                        color: "white",
-                        image: "image.png",
-                        availableSizes: ["s", "m"],
-                        category: {
-                            ...categoryValue,
-                            entryId: vegetables.entryId
-                        },
-                        variant: {
-                            name: "Variant 1",
-                            price: 100,
+                        values: {
+                            title: "Potato",
+                            price: 99.9,
+                            availableOn: "2020-12-25",
+                            color: "white",
+                            image: "image.png",
+                            availableSizes: ["s", "m"],
                             category: {
                                 ...categoryValue,
                                 entryId: vegetables.entryId
                             },
-                            options: [
-                                {
-                                    name: "Option 1",
-                                    price: 10,
-                                    category: {
-                                        ...categoryValue,
-                                        entryId: vegetables.entryId
-                                    }
+                            variant: {
+                                name: "Variant 1",
+                                price: 100,
+                                category: {
+                                    ...categoryValue,
+                                    entryId: vegetables.entryId
                                 },
-                                {
-                                    name: "Option 2",
-                                    price: 20,
-                                    category: {
-                                        ...categoryValue,
-                                        entryId: vegetables.entryId
+                                options: [
+                                    {
+                                        name: "Option 1",
+                                        price: 10,
+                                        category: {
+                                            ...categoryValue,
+                                            entryId: vegetables.entryId
+                                        }
+                                    },
+                                    {
+                                        name: "Option 2",
+                                        price: 20,
+                                        category: {
+                                            ...categoryValue,
+                                            entryId: vegetables.entryId
+                                        }
                                     }
-                                }
-                            ]
+                                ]
+                            }
                         }
                     },
                     error: null
@@ -1415,7 +1546,9 @@ describe.sequential("READ - Resolvers", () => {
             }
         });
 
-        const [publishResponse] = await publishProduct({ revision: potato.id });
+        const [publishResponse] = await publishProduct({
+            revision: potato.id
+        });
 
         expect(publishResponse).toMatchObject({
             data: {
@@ -1425,53 +1558,55 @@ describe.sequential("READ - Resolvers", () => {
                         meta: {
                             status: "published"
                         },
-                        title: "Potato",
-                        price: 99.9,
-                        availableOn: "2020-12-25",
-                        color: "white",
-                        image: "image.png",
-                        availableSizes: ["s", "m"],
-                        category: {
-                            ...categoryValue,
-                            entryId: vegetables.entryId
-                        },
-                        variant: {
-                            name: "Variant 1",
-                            price: 100,
+                        values: {
+                            title: "Potato",
+                            price: 99.9,
+                            availableOn: "2020-12-25",
+                            color: "white",
+                            image: "image.png",
+                            availableSizes: ["s", "m"],
                             category: {
                                 ...categoryValue,
                                 entryId: vegetables.entryId
                             },
-                            options: [
-                                {
-                                    name: "Option 1",
-                                    price: 10,
-                                    category: {
-                                        ...categoryValue,
-                                        entryId: vegetables.entryId
-                                    },
-                                    categories: [
-                                        {
-                                            ...categoryValue,
-                                            entryId: vegetables.entryId
-                                        }
-                                    ]
+                            variant: {
+                                name: "Variant 1",
+                                price: 100,
+                                category: {
+                                    ...categoryValue,
+                                    entryId: vegetables.entryId
                                 },
-                                {
-                                    name: "Option 2",
-                                    price: 20,
-                                    category: {
-                                        ...categoryValue,
-                                        entryId: vegetables.entryId
-                                    },
-                                    categories: [
-                                        {
+                                options: [
+                                    {
+                                        name: "Option 1",
+                                        price: 10,
+                                        category: {
                                             ...categoryValue,
                                             entryId: vegetables.entryId
-                                        }
-                                    ]
-                                }
-                            ]
+                                        },
+                                        categories: [
+                                            {
+                                                ...categoryValue,
+                                                entryId: vegetables.entryId
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        name: "Option 2",
+                                        price: 20,
+                                        category: {
+                                            ...categoryValue,
+                                            entryId: vegetables.entryId
+                                        },
+                                        categories: [
+                                            {
+                                                ...categoryValue,
+                                                entryId: vegetables.entryId
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
                         }
                     },
                     error: null
@@ -1487,22 +1622,26 @@ describe.sequential("READ - Resolvers", () => {
 
         expect(result.data.getProduct.data).toMatchObject({
             id: potato.id,
-            title: "Potato",
-            price: 99.9,
-            availableOn: "2020-12-25",
-            color: "white",
-            availableSizes: ["s", "m"],
-            category: {
-                id: vegetables.id,
-                title: "Vegetables"
-            },
-            variant: {
-                name: "Variant 1",
-                price: 100,
-                options: [
-                    { name: "Option 1", price: 10 },
-                    { name: "Option 2", price: 20 }
-                ]
+            values: {
+                title: "Potato",
+                price: 99.9,
+                availableOn: "2020-12-25",
+                color: "white",
+                availableSizes: ["s", "m"],
+                category: {
+                    id: vegetables.id,
+                    values: {
+                        title: "Vegetables"
+                    }
+                },
+                variant: {
+                    name: "Variant 1",
+                    price: 100,
+                    options: [
+                        { name: "Option 1", price: 10 },
+                        { name: "Option 2", price: 20 }
+                    ]
+                }
             }
         });
     });

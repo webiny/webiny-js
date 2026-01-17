@@ -21,7 +21,6 @@ describe("model delete", () => {
         model = result.getModel("category");
     });
 
-
     it("should be able to delete model when there are no more entries", async () => {
         const { createCategory, deleteCategory } = useCategoryManageHandler({
             ...manageOpts

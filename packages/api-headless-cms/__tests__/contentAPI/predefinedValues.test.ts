@@ -20,7 +20,6 @@ describe("predefined values", () => {
     });
 
     it("should create an entry with predefined values selected", async () => {
-
         const { createBug } = useBugManageHandler({
             ...manageOpts
         });
@@ -110,7 +109,6 @@ describe("predefined values", () => {
     });
 
     it("should fail creating an entry with wrong predefined number value selected", async () => {
-
         const { createBug } = useBugManageHandler({
             ...manageOpts
         });
@@ -149,7 +147,6 @@ describe("predefined values", () => {
     });
 
     it("should fail creating an entry with wrong predefined number and text values selected", async () => {
-
         const { createBug } = useBugManageHandler({
             ...manageOpts
         });

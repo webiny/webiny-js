@@ -110,7 +110,9 @@ const createProducts = ({ id }: ProductCategory): Product[] => {
 };
 
 export const createEntriesFactory = <T extends Product = Product>(manager: ProductManager) => {
-    return async (category: IManageQueryBaseResponse<ICategoryResponseValues>): Promise<IManageQueryBaseResponse<T>[]> => {
+    return async (
+        category: IManageQueryBaseResponse<ICategoryResponseValues>
+    ): Promise<IManageQueryBaseResponse<T>[]> => {
         const products = createProducts(category);
 
         const entries: IManageQueryBaseResponse<T>[] = [];

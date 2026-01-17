@@ -215,7 +215,7 @@ const models: CmsModel[] = [
                 label: "Separator",
                 predefinedValues: {
                     enabled: false,
-                    values: [],
+                    values: []
                 },
                 listValidation: [],
                 validation: []

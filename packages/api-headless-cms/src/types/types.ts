@@ -583,8 +583,6 @@ export interface CmsEntryListWhereRef {
     modelId_not_in?: string[];
 }
 
-
-
 export interface CmsEntryListWhereValues {
     /**
      * This is to allow querying by any content model field defined by the user.

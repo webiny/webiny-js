@@ -1667,11 +1667,11 @@ describe("MANAGE - Resolvers", () => {
                         title,
                         slug
                     },
-                    status: "published",
+                    status: "published"
                 }
             }
         });
-        
+
         const webiny = createWebinyResponse.data.createCategory.data!;
 
         const [response] = await createCategoryFrom({
@@ -1761,7 +1761,7 @@ describe("MANAGE - Resolvers", () => {
 
         const [latestResponse] = await getCategory({
             variables: {
-                entryId: webiny.entryId,
+                entryId: webiny.entryId
             }
         });
 
@@ -1782,7 +1782,7 @@ describe("MANAGE - Resolvers", () => {
 
         const [latestWithIdResponse] = await getCategory({
             variables: {
-                entryId: webiny.id,
+                entryId: webiny.id
             }
         });
 

@@ -18,7 +18,7 @@ describe("Republish entries", () => {
 
     const categoryManager = useCategoryManageHandler(manageOpts);
     const { createCategory, publishCategory, republishCategory } = categoryManager;
-    
+
     let categoryModel: CmsModel;
     let productModel: CmsModel;
 
@@ -133,7 +133,6 @@ describe("Republish entries", () => {
     };
 
     it("should republish entries without changing them", async () => {
-
         const { listCategories } = useCategoryReadHandler(readOpts);
 
         const {
@@ -144,7 +143,6 @@ describe("Republish entries", () => {
             bananaPublished,
             bananaOriginal
         } = await createPublishedCategories();
-        
 
         /**
          * Now we republish all categories and expect they did not change.

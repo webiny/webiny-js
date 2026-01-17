@@ -71,7 +71,7 @@ describe("storage transform for complex entries", () => {
     const productManager = useProductManageHandler(managerOptions);
 
     const categoryManager = useCategoryManageHandler(managerOptions);
-    
+
     const createCategory = createCategoryFactory(categoryManager);
 
     let categoryRecord: ProductCategory;

@@ -892,7 +892,7 @@ describe(`graphql "or" queries`, () => {
             variables: {
                 where: {
                     values: {
-                        title_contains: "headless wrong",
+                        title_contains: "headless wrong"
                     },
                     OR: [
                         {

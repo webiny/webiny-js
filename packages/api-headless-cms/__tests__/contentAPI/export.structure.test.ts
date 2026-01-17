@@ -131,7 +131,7 @@ describe("export cms structure", () => {
                 icon: model.icon,
                 group: group.slug,
                 fields: fixFields(model.fields),
-                layout: model.layout,
+                layout: model.layout
             });
             expect(jsonModel.imageFieldId).toEqual(model.imageFieldId ?? null);
             expect(jsonModel.descriptionFieldId).toEqual(model.descriptionFieldId ?? null);

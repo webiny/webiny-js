@@ -7,7 +7,7 @@ describe("fieldValidations", () => {
     const manageOpts = { path: "manage" };
 
     const manager = useGraphQLHandler(manageOpts);
-    
+
     beforeEach(async () => {
         await setupGroupAndModels({
             manager,
@@ -36,7 +36,6 @@ describe("fieldValidations", () => {
      * testing required, minLength and maxLength of the string
      */
     it(`should return error when validating "name" field`, async () => {
-
         const { createFruit } = useFruitManageHandler({
             ...manageOpts
         });
@@ -106,7 +105,6 @@ describe("fieldValidations", () => {
      * testing required, gte and lte for each value in the array
      */
     it(`should return error when validating "numbers" field`, async () => {
-
         const { createFruit } = useFruitManageHandler({
             ...manageOpts
         });
@@ -251,7 +249,6 @@ describe("fieldValidations", () => {
     it.each(emailPatternTestValues)(
         `should return error when validating "email" field with a pattern - %s`,
         async email => {
-
             const { createFruit } = useFruitManageHandler({
                 ...manageOpts
             });
@@ -307,7 +304,6 @@ describe("fieldValidations", () => {
     it.each(urlPatternTestValues)(
         `should return error when validating "url" field with a pattern - %s`,
         async url => {
-
             const { createFruit } = useFruitManageHandler({
                 ...manageOpts
             });
@@ -357,7 +353,6 @@ describe("fieldValidations", () => {
     it.each(lowerCaseTestValues)(
         `should return error when validating "lowerCase" field - %s`,
         async lowerCase => {
-
             const { createFruit } = useFruitManageHandler({
                 ...manageOpts
             });
@@ -406,7 +401,6 @@ describe("fieldValidations", () => {
     it.each(upperCaseTestValues)(
         `should return error when validating "upperCase" field - %s`,
         async upperCase => {
-
             const { createFruit } = useFruitManageHandler({
                 ...manageOpts
             });
@@ -451,7 +445,6 @@ describe("fieldValidations", () => {
     it.each(dateErrorValidations)(
         `should return error when validating "date" field - %s`,
         async (date, message) => {
-
             const { createFruit } = useFruitManageHandler({
                 ...manageOpts
             });
@@ -496,7 +489,6 @@ describe("fieldValidations", () => {
     it.each(dateTimeErrorValidations)(
         `should return error when validating "dateTime" field - %s`,
         async (dateTime, message) => {
-
             const { createFruit } = useFruitManageHandler({
                 ...manageOpts
             });
@@ -544,7 +536,6 @@ describe("fieldValidations", () => {
     it.each(dateTimeZErrorValidations)(
         `should return error when validating "dateTimeZ" field - %s`,
         async (dateTimeZ, message) => {
-
             const { createFruit } = useFruitManageHandler({
                 ...manageOpts
             });
@@ -589,7 +580,6 @@ describe("fieldValidations", () => {
     it.each(timeErrorValidations)(
         `should return error when validating "time" field - %s`,
         async (time, message) => {
-
             const { createFruit } = useFruitManageHandler({
                 ...manageOpts
             });
@@ -627,7 +617,6 @@ describe("fieldValidations", () => {
     );
 
     it("should return error when slug already exists", async () => {
-
         const { createFruit } = useFruitManageHandler({
             ...manageOpts
         });
@@ -636,7 +625,7 @@ describe("fieldValidations", () => {
          */
         const [createResponse] = await createFruit({
             data: {
-                values: defaultFruitData,
+                values: defaultFruitData
             }
         });
 
@@ -681,7 +670,6 @@ describe("fieldValidations", () => {
     });
 
     it("should create a fruit without validation errors", async () => {
-
         const { createFruit, getFruit } = useFruitManageHandler({
             ...manageOpts
         });

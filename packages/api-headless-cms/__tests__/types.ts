@@ -25,7 +25,7 @@ export interface ProductCategory {
     values: {
         title: string;
         slug: string;
-    }
+    };
 }
 
 /**

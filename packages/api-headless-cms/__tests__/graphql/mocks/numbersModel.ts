@@ -82,7 +82,7 @@ export const createNumbersEntryMutation = (data: Data) => {
                 }`,
             variables: {
                 data: {
-                    values: data,
+                    values: data
                 }
             }
         }

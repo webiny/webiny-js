@@ -123,7 +123,7 @@ describe("refField", () => {
             Required<CreateAuthorParams>
         >;
     };
-    
+
     beforeEach(async () => {
         await setupGroupAndModels({
             manager: mainHandler,
@@ -132,7 +132,6 @@ describe("refField", () => {
     });
 
     it("should create review connected to a product", async () => {
-
         const category = await createCategory();
         const product = await createProduct(category);
         const author = await createAuthor();
@@ -502,7 +501,7 @@ describe("refField", () => {
         };
         const [createResponse] = await createProduct({
             data: {
-                values: data,
+                values: data
             }
         });
 

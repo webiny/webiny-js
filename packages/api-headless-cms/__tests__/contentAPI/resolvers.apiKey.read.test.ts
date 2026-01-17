@@ -294,7 +294,7 @@ describe("READ - resolvers - api key", () => {
                         title: "Title 1",
                         slug: "slug-1"
                     },
-                    status: "published",
+                    status: "published"
                 }
             }
         });
@@ -313,7 +313,7 @@ describe("READ - resolvers - api key", () => {
 
         const queryArgs = {
             where: {
-                id: category.id,
+                id: category.id
             }
         };
         const headers = {

@@ -8,16 +8,14 @@ import { setupGroupAndModels } from "~tests/testHelpers/setup.js";
 describe("revision id scalar", () => {
     const manageHandlerOpts = { path: "manage" };
 
-    const manager =
-        useArticleManageHandler(manageHandlerOpts);
+    const manager = useArticleManageHandler(manageHandlerOpts);
     const { createContentModelGroupMutation, createContentModelMutation, createArticle } = manager;
-    
 
     beforeEach(async () => {
         await setupGroupAndModels({
             manager,
-            models: ["article"],
-        })
+            models: ["article"]
+        });
     });
 
     it("should fail when sending malformed revision id into the ref field", async () => {

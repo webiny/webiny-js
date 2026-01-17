@@ -11,7 +11,6 @@ import type {
 } from "~tests/testHelpers/category/manage/types.js";
 import type { IManageQueryBaseResponse } from "~tests/testHelpers/types.js";
 
-
 interface ICreateCategoryItemParams {
     manager: ReturnType<typeof useCategoryManageHandler>;
     from?: GenericRecord | null;
@@ -132,7 +131,6 @@ describe("entry references", () => {
     });
 
     it("should get the published references on entries", async () => {
-
         const categoryManager = useCategoryManageHandler(manageOpts);
         const articleManager = useArticleManageHandler(manageOpts);
         const articleRead = useArticleReadHandler(readOpts);
@@ -1096,7 +1094,6 @@ describe("entry references", () => {
     });
 
     it("should not populate referenced field", async () => {
-
         const categoryManager = useCategoryManageHandler(manageOpts);
         const articleManager = useArticleManageHandler(manageOpts);
         const articleRead = useArticleReadHandler(readOpts);
@@ -1132,7 +1129,7 @@ describe("entry references", () => {
                 status: "published"
             }
         });
-        
+
         const [result] = await articleRead.listArticlesWithoutReferences();
 
         expect(result).toMatchObject({
