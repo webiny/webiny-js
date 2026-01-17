@@ -47,9 +47,7 @@ class NextjsGraphQLGateway implements GatewayAbstraction.Interface {
             throw new Error(envelope.error.message);
         }
 
-        return new Promise(resolve => {
-            setTimeout(() => resolve(envelope.data), 300);
-        });
+        return envelope.data;
     }
 }
 
