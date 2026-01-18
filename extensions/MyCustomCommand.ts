@@ -1,14 +1,14 @@
-import { CliCommand } from "webiny/cli/features/CliCommand";
+import { CliCommandFactory } from "webiny/cli/features/CliCommand";
 import { UiService } from "webiny/cli/features/Ui";
 
 export interface IMyCustomCommandParams {
     name: string;
 }
 
-class MyCustomCommandImpl implements CliCommand.Interface<IMyCustomCommandParams> {
+class MyCustomCommandImpl implements CliCommandFactory.Interface<IMyCustomCommandParams> {
     constructor(private ui: UiService.Interface) {}
 
-    execute(): CliCommand.CommandDefinition<IMyCustomCommandParams> {
+    execute(): CliCommandFactory.CommandDefinition<IMyCustomCommandParams> {
         return {
             name: "my-custom-command",
             description: "This is my custom command",
@@ -22,14 +22,14 @@ class MyCustomCommandImpl implements CliCommand.Interface<IMyCustomCommandParams
             ],
             handler: async params => {
                 this.ui.info("Starting my custom command...");
-                this.ui.newLine();
+                this.ui.emptyLine();
                 this.ui.success(`Hello, ${params.name}! This is my custom command.`);
             }
         };
     }
 }
 
-export const MyCustomCommand = CliCommand.createImplementation({
+export const MyCustomCommand = CliCommandFactory.createImplementation({
     implementation: MyCustomCommandImpl,
     dependencies: [UiService]
 });

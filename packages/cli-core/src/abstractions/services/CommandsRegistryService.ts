@@ -1,8 +1,8 @@
 import { createAbstraction } from "~/abstractions/createAbstraction.js";
-import { CliCommand } from "~/abstractions/index.js";
+import { CliCommandFactory } from "~/abstractions/index.js";
 
 export interface ICommandsRegistryService {
-    execute(): CliCommand.Interface<any>[];
+    execute(): CliCommandFactory.Interface<any>[];
 }
 
 export const CommandsRegistryService =

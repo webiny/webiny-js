@@ -1,5 +1,5 @@
 import { defineExtension, zodPathToAbstraction } from "@webiny/project/extensions/index.js";
-import { CliCommand as CliCommandAbstraction } from "~/abstractions/index.js";
+import { CliCommandFactory as CliCommandFactoryAbstraction } from "~/abstractions/index.js";
 import { z } from "zod";
 
 export const CliCommand = defineExtension({
@@ -9,7 +9,7 @@ export const CliCommand = defineExtension({
     multiple: true,
     paramsSchema: ({ project }) => {
         return z.object({
-            src: zodPathToAbstraction(CliCommandAbstraction, project)
+            src: zodPathToAbstraction(CliCommandFactoryAbstraction, project)
         });
     }
 });

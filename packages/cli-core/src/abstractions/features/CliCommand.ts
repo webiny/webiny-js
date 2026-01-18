@@ -36,9 +36,9 @@ export interface ICliCommand<TCommandParams> {
         | ICliCommandDefinition<TCommandParams>;
 }
 
-export const CliCommand = createAbstraction<ICliCommand<any>>("CliCommand");
+export const CliCommandFactory = createAbstraction<ICliCommand<any>>("CliCommandFactory");
 
-export namespace CliCommand {
+export namespace CliCommandFactory {
     export type Interface<TCommandParams> = ICliCommand<TCommandParams>;
 
     export type ParamDefinition<TCommandParams> = ICliCommandParamDefinition<TCommandParams>;
