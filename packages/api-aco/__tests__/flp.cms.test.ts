@@ -648,7 +648,13 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
         // // Creating content in the folder should be now allowed for identity C.
         await expect(
             gqlIdentityC.cms
-                .createEntry(model, { data: { title: `Test-5` } })
+                .createEntry(model, {
+                    data: {
+                        values: {
+                            title: `Test-5`
+                        }
+                    }
+                })
                 .then(([response]) => {
                     return response.data.createBasicTestModel;
                 })

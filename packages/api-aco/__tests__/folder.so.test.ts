@@ -706,7 +706,9 @@ describe("`folder` CRUD", () => {
         // Let's create an entry within the folder.
         const [entryResponse] = await cms.createEntry(model, {
             data: {
-                title: "Test entry",
+                values: {
+                    title: "Test entry",
+                },
                 wbyAco_location: {
                     folderId: folder.id
                 }
