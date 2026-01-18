@@ -118,7 +118,7 @@ export const zodSrcPath = (options: ZodSrcPathOptions) => {
                             `The class %s in %s must implement the %s interface.`,
                             exportName,
                             src,
-                            tokenName
+                            tokenName || ''
                         )
                     });
                 }
