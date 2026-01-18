@@ -81,10 +81,8 @@ describe("published and unpublished references", () => {
             models: ["category", "article"]
         });
     });
-    
 
     it("should populate reference field with some published and some unpublished records", async () => {
-
         const categoryManager = useCategoryManageHandler(manageOpts);
         const articleManager = useArticleManageHandler(manageOpts);
         const articleRead = useArticleReadHandler(readOpts);
@@ -179,10 +177,12 @@ describe("published and unpublished references", () => {
         const [articleManageGetPublishedResponse] = await articleManager.getArticle({
             revision: createdArticle.id
         });
-        expect(articleManageGetPublishedResponse?.data?.getArticle?.data?.values?.categories).toEqual(
-            expectedAllCategories
-        );
-        expect(articleManageGetPublishedResponse?.data?.getArticle?.data?.values?.category).toMatchObject({
+        expect(
+            articleManageGetPublishedResponse?.data?.getArticle?.data?.values?.categories
+        ).toEqual(expectedAllCategories);
+        expect(
+            articleManageGetPublishedResponse?.data?.getArticle?.data?.values?.category
+        ).toMatchObject({
             id: firstUnpublishedCategoryId
         });
         /**
@@ -195,12 +195,14 @@ describe("published and unpublished references", () => {
                 id: createdArticle.id
             }
         });
-        expect(articleReadGetPublishedResponse?.data?.getArticle?.data?.values?.categories).toMatchObject(
-            expectedPublishedCategories
-        );
-        expect(articleReadGetPublishedResponse?.data?.getArticle?.data?.values?.categories).toHaveLength(
-            expectedPublishedCategories.length
-        );
-        expect(articleReadGetPublishedResponse?.data?.getArticle?.data?.values?.category).toBeNull();
+        expect(
+            articleReadGetPublishedResponse?.data?.getArticle?.data?.values?.categories
+        ).toMatchObject(expectedPublishedCategories);
+        expect(
+            articleReadGetPublishedResponse?.data?.getArticle?.data?.values?.categories
+        ).toHaveLength(expectedPublishedCategories.length);
+        expect(
+            articleReadGetPublishedResponse?.data?.getArticle?.data?.values?.category
+        ).toBeNull();
     });
 });

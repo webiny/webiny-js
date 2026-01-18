@@ -578,7 +578,7 @@ describe("filtering", () => {
             });
         });
     });
-    // TODO NOT SKIP
+
     it("should filter by reference field", async () => {
         const categoryManager = useCategoryManageHandler(manageOpts);
         const productManager = useProductManageHandler(manageOpts);

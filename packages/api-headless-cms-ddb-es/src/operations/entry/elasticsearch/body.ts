@@ -13,9 +13,9 @@ import { createSortModifierPluginList } from "./plugins/sortModifier.js";
 import { createBodyModifierPluginList } from "./plugins/bodyModifier.js";
 import { createElasticsearchSort } from "./sort.js";
 import type {
+    BoolQueryConfig,
     PrimitiveValue,
-    SearchBody,
-    BoolQueryConfig
+    SearchBody
 } from "@webiny/api-elasticsearch/types.js";
 import { createExecFiltering } from "./filtering/index.js";
 import { assignMinimumShouldMatchToQuery } from "./assignMinimumShouldMatchToQuery.js";
@@ -94,7 +94,9 @@ export const createElasticsearchBody = ({ plugins, model, params }: Params): Sea
 
     execFiltering({
         where,
-        query
+        query,
+        // initial value must always be false - but we do not want to have a default one in the method
+        isValues: false
     });
 
     for (const pl of queryModifierPlugins) {

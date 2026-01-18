@@ -629,7 +629,7 @@ describe("Content entries", () => {
                 modelsIds: ["fruit"],
                 query
             });
-            
+
             expect(response.data.entries.error).toBeNull();
 
             expect(response.data.entries.data).toHaveLength(titles.length);

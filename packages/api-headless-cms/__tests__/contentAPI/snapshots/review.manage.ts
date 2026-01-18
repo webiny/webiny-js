@@ -441,10 +441,7 @@ export default /* GraphQL */ `
 
         moveReviewApiModel(revision: ID!, folderId: ID!): ReviewApiModelMoveResponse
 
-        deleteReviewApiModel(
-            revision: ID!
-            options: CmsDeleteEntryOptions
-        ): CmsDeleteResponse
+        deleteReviewApiModel(revision: ID!, options: CmsDeleteEntryOptions): CmsDeleteResponse
 
         restoreReviewApiModelFromBin(revision: ID!): ReviewApiModelResponse
 

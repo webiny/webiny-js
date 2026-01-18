@@ -39,7 +39,7 @@ interface Entry {
     };
     values: {
         title: string;
-    }
+    };
 }
 export interface CmsError {
     code: string;
@@ -111,7 +111,7 @@ export interface CreateEntryInputVariables {
         };
         values: {
             title: string;
-        }
+        };
     };
 }
 
@@ -131,7 +131,7 @@ export interface UpdateEntryInputVariables {
     data: {
         values?: {
             title?: string;
-        }
+        };
     };
 }
 

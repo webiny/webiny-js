@@ -124,6 +124,6 @@ export interface IManageQueryBaseResponse<T> {
     revisionLastPublishedBy: IGraphQLIdentityResponse | null;
     meta: IManageQueryBaseResponseMeta<T>;
     wbyAco_location: IManageQueryBaseResponseLocation;
-    
+
     values: T;
 }

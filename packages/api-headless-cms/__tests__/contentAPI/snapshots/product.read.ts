@@ -4,9 +4,7 @@ export default /* GraphQL */ `
     """
     type ProductApiSingularValues {
         title: String
-        category(
-            populate: Boolean = true
-        ): CategoryApiNameWhichIsABitDifferentThanModelId
+        category(populate: Boolean = true): CategoryApiNameWhichIsABitDifferentThanModelId
         price: Number
         inStock: Boolean
         itemsInStock: Number
@@ -59,12 +57,8 @@ export default /* GraphQL */ `
         name: String
         price: Number
         image: String
-        category(
-            populate: Boolean = true
-        ): CategoryApiNameWhichIsABitDifferentThanModelId
-        categories(
-            populate: Boolean = true
-        ): [CategoryApiNameWhichIsABitDifferentThanModelId!]
+        category(populate: Boolean = true): CategoryApiNameWhichIsABitDifferentThanModelId
+        categories(populate: Boolean = true): [CategoryApiNameWhichIsABitDifferentThanModelId!]
         longText: [String]
     }
 
@@ -103,9 +97,7 @@ export default /* GraphQL */ `
         name: String
         price: Number
         images: [String]
-        category(
-            populate: Boolean = true
-        ): CategoryApiNameWhichIsABitDifferentThanModelId
+        category(populate: Boolean = true): CategoryApiNameWhichIsABitDifferentThanModelId
         options: [ProductApiSingular_Variant_Options!]
     }
 
@@ -468,9 +460,7 @@ export default /* GraphQL */ `
     }
 
     extend type Query {
-        getProductApiSingular(
-            where: ProductApiSingularGetWhereInput!
-        ): ProductApiSingularResponse
+        getProductApiSingular(where: ProductApiSingularGetWhereInput!): ProductApiSingularResponse
 
         listProductPluralApiName(
             where: ProductApiSingularListWhereInput
