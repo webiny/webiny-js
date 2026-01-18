@@ -614,6 +614,10 @@ export interface CmsEntryListWhere {
     id_in?: string[];
     id_not?: string;
     id_not_in?: string[];
+    id_gte?: string | number;
+    id_gt?: string | number;
+    id_lte?: string | number;
+    id_lt?: string | number;
     /**
      * Generated ID without the version.
      */
