@@ -1,4 +1,4 @@
-import { describe, test, expect } from "vitest";
+import { describe, expect, test } from "vitest";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 import { expectCmsNotAuthorized, expectNotAuthorized } from "./utils/expectNotAuthorized.js";
 import { AuthenticatedIdentity } from "@webiny/api-core/features/security/IdentityContext/index.js";
@@ -20,7 +20,13 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
         for (let i = 1; i <= 4; i++) {
             entries.push(
                 await gqlIdentityA.cms
-                    .createEntry(model, { data: { title: `Test-${i}` } })
+                    .createEntry(model, {
+                        data: {
+                            values: {
+                                title: `Test-${i}`
+                            }
+                        }
+                    })
                     .then(([response]) => {
                         return response.data.createBasicTestModel.data;
                     })
@@ -37,7 +43,9 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
             const createdEntry = entries[i];
             await expect(
                 gqlIdentityA.cms
-                    .getEntry(model, { revision: createdEntry.id })
+                    .getEntry(model, {
+                        revision: createdEntry.id
+                    })
                     .then(([response]) => {
                         return response.data.getBasicTestModel.data;
                     })
@@ -53,7 +61,13 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
         for (let i = 1; i <= 4; i++) {
             entries.push(
                 await gqlIdentityA.cms
-                    .createEntry(model, { data: { title: `Test-${i}` } })
+                    .createEntry(model, {
+                        data: {
+                            values: {
+                                title: `Test-${i}`
+                            }
+                        }
+                    })
                     .then(([response]) => {
                         return response.data.createBasicTestModel.data;
                     })
@@ -70,7 +84,9 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
             const createdEntry = entries[i];
             await expect(
                 gqlIdentityA.cms
-                    .getEntry(model, { revision: createdEntry.id })
+                    .getEntry(model, {
+                        revision: createdEntry.id
+                    })
                     .then(([response]) => {
                         return response.data.getBasicTestModel.data;
                     })
@@ -105,7 +121,9 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
                 await gqlIdentityA.cms
                     .createEntry(model, {
                         data: {
-                            title: `Test-${i}`,
+                            values: {
+                                title: `Test-${i}`
+                            },
                             wbyAco_location: {
                                 folderId: folder.id
                             }
@@ -135,7 +153,9 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
             const createdEntry = entries[i];
             await expectCmsNotAuthorized(
                 gqlIdentityC.cms
-                    .getEntry(model, { revision: createdEntry.id })
+                    .getEntry(model, {
+                        revision: createdEntry.id
+                    })
                     .then(([response]) => {
                         return response.data.getBasicTestModel;
                     })
@@ -170,7 +190,9 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
             gqlIdentityC.cms
                 .createEntry(model, {
                     data: {
-                        title: `Test-5`,
+                        values: {
+                            title: `Test-5`
+                        },
                         wbyAco_location: {
                             folderId: folder.id
                         }
@@ -188,7 +210,11 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
                 gqlIdentityC.cms
                     .updateEntry(model, {
                         revision: createdEntry.id,
-                        data: { title: createdEntry.title + "-update" }
+                        data: {
+                            values: {
+                                title: createdEntry.title + "-update"
+                            }
+                        }
                     })
                     .then(([response]) => {
                         return response.data.updateBasicTestModel;
@@ -201,7 +227,9 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
             const createdEntry = entries[i];
             await expectCmsNotAuthorized(
                 gqlIdentityC.cms
-                    .deleteEntry(model, { revision: createdEntry.id })
+                    .deleteEntry(model, {
+                        revision: createdEntry.id
+                    })
                     .then(([response]) => {
                         return response.data.deleteBasicTestModel;
                     })
@@ -226,7 +254,9 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
             const createdEntry = entries[i];
             await expect(
                 gqlIdentityC.cms
-                    .getEntry(model, { revision: createdEntry.id })
+                    .getEntry(model, {
+                        revision: createdEntry.id
+                    })
                     .then(([response]) => {
                         return response.data.getBasicTestModel;
                     })
@@ -267,7 +297,13 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
         // Creating content in the folder should be now allowed for identity C.
         await expect(
             gqlIdentityC.cms
-                .createEntry(model, { data: { title: `Test-5` } })
+                .createEntry(model, {
+                    data: {
+                        values: {
+                            title: `Test-5`
+                        }
+                    }
+                })
                 .then(([response]) => {
                     return response.data.createBasicTestModel;
                 })
@@ -282,13 +318,21 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
                 gqlIdentityC.cms
                     .updateEntry(model, {
                         revision: createdEntry.id,
-                        data: { title: createdEntry.title + "-update" }
+                        data: {
+                            values: {
+                                title: createdEntry.title + "-update"
+                            }
+                        }
                     })
                     .then(([response]) => {
                         return response.data.updateBasicTestModel;
                     })
             ).resolves.toMatchObject({
-                data: { title: createdEntry.title + "-update" }
+                data: {
+                    values: {
+                        title: createdEntry.title + "-update"
+                    }
+                }
             });
         }
 
@@ -297,7 +341,9 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
             const createdEntry = entries[i];
             await expect(
                 gqlIdentityC.cms
-                    .deleteEntry(model, { revision: createdEntry.id })
+                    .deleteEntry(model, {
+                        revision: createdEntry.id
+                    })
                     .then(([response]) => {
                         return response.data.deleteBasicTestModel;
                     })
@@ -332,7 +378,9 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
                 await gqlIdentityA.cms
                     .createEntry(model, {
                         data: {
-                            title: `Test-${i}`,
+                            values: {
+                                title: `Test-${i}`
+                            },
                             wbyAco_location: {
                                 folderId: folder.id
                             }
@@ -362,7 +410,9 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
             const createdEntry = entries[i];
             await expectCmsNotAuthorized(
                 gqlIdentityB.cms
-                    .getEntry(model, { revision: createdEntry.id })
+                    .getEntry(model, {
+                        revision: createdEntry.id
+                    })
                     .then(([response]) => {
                         return response.data.getBasicTestModel;
                     })
@@ -397,7 +447,9 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
             gqlIdentityB.cms
                 .createEntry(model, {
                     data: {
-                        title: `Test-5`,
+                        values: {
+                            title: `Test-5`
+                        },
                         wbyAco_location: {
                             folderId: folder.id
                         }
@@ -415,7 +467,11 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
                 gqlIdentityB.cms
                     .updateEntry(model, {
                         revision: createdEntry.id,
-                        data: { title: createdEntry.title + "-update" }
+                        data: {
+                            values: {
+                                title: createdEntry.title + "-update"
+                            }
+                        }
                     })
                     .then(([response]) => {
                         return response.data.updateBasicTestModel;
@@ -428,7 +484,9 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
             const createdEntry = entries[i];
             await expectCmsNotAuthorized(
                 gqlIdentityB.cms
-                    .deleteEntry(model, { revision: createdEntry.id })
+                    .deleteEntry(model, {
+                        revision: createdEntry.id
+                    })
                     .then(([response]) => {
                         return response.data.deleteBasicTestModel;
                     })
@@ -461,7 +519,9 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
         const createdEntry = await gqlIdentityA.cms
             .createEntry(model, {
                 data: {
-                    title: `Test entry`,
+                    values: {
+                        title: `Test entry`
+                    },
                     wbyAco_location: {
                         folderId: folder.id
                     }
@@ -522,7 +582,9 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
             gqlIdentityC.cms
                 .createEntry(model, {
                     data: {
-                        title: `Test-5`,
+                        values: {
+                            title: `Test-5`
+                        },
                         wbyAco_location: {
                             folderId: folder.id
                         }
@@ -538,7 +600,11 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
             gqlIdentityC.cms
                 .updateEntry(model, {
                     revision: createdEntry.id,
-                    data: { title: createdEntry.title + "-update" }
+                    data: {
+                        values: {
+                            title: createdEntry.title + "-update"
+                        }
+                    }
                 })
                 .then(([response]) => {
                     return response.data.updateBasicTestModel;
@@ -548,7 +614,9 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
         // Deleting a file in the folder should be forbidden for identity C.
         await expectCmsNotAuthorized(
             gqlIdentityC.cms
-                .deleteEntry(model, { revision: createdEntry.id })
+                .deleteEntry(model, {
+                    revision: createdEntry.id
+                })
                 .then(([response]) => {
                     return response.data.deleteBasicTestModel;
                 })
@@ -556,7 +624,9 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
 
         await expectCmsNotAuthorized(
             gqlIdentityC.cms
-                .deleteEntry(model, { revision: createdEntry.entryId })
+                .deleteEntry(model, {
+                    revision: createdEntry.entryId
+                })
                 .then(([response]) => {
                     return response.data.deleteBasicTestModel;
                 })
@@ -591,13 +661,21 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
             gqlIdentityC.cms
                 .updateEntry(model, {
                     revision: createdEntry.id,
-                    data: { title: createdEntry.title + "-update" }
+                    data: {
+                        values: {
+                            title: createdEntry.title + "-update"
+                        }
+                    }
                 })
                 .then(([response]) => {
                     return response.data.updateBasicTestModel;
                 })
         ).resolves.toMatchObject({
-            data: { title: createdEntry.title + "-update" }
+            data: {
+                values: {
+                    title: createdEntry.title + "-update"
+                }
+            }
         });
 
         // Deleting a file in the folder should be now allowed for identity C.

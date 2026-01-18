@@ -7,16 +7,19 @@ import { createOperationsWrapper } from "~/utils/createOperationsWrapper.js";
 import { pickEntryFieldValues } from "~/utils/pickEntryFieldValues.js";
 import type { AcoFilterStorageOperations, Filter } from "./filter.types.js";
 import { ENTRY_META_FIELDS } from "@webiny/api-headless-cms/constants.js";
+import { CmsFieldInputToWhereMapper } from "@webiny/api-headless-cms/features/mapper/abstractions.js";
 
 export const createFilterOperations = (
     params: CreateAcoStorageOperationsParams
 ): AcoFilterStorageOperations => {
-    const { cms, security } = params;
+    const { cms, security, container } = params;
 
     const { withModel } = createOperationsWrapper({
         ...params,
         modelName: FILTER_MODEL_ID
     });
+    
+    const cmsFieldInputToWhereMapper = container.resolve(CmsFieldInputToWhereMapper);
 
     return {
         getFilter({ id }) {
@@ -40,10 +43,13 @@ export const createFilterOperations = (
                 const [entries, meta] = await cms.listLatestEntries(model, {
                     ...params,
                     sort: createListSort(sort),
-                    where: {
-                        ...where,
-                        createdBy
-                    }
+                    where: cmsFieldInputToWhereMapper.map({
+                        input: {
+                            ...where,
+                            createdBy
+                        },
+                        fields: model.fields
+                    })
                 });
 
                 return [entries.map(pickEntryFieldValues<Filter>), meta];
@@ -52,7 +58,7 @@ export const createFilterOperations = (
         createFilter({ data }) {
             return withModel(async model => {
                 const entry = await cms.createEntry(model, {
-                    ...data,
+                    id: data.id,
                     values: data
                 });
                 return pickEntryFieldValues(entry);
@@ -68,7 +74,10 @@ export const createFilterOperations = (
                      *  we don't want to override them with the ones coming from the `original` entry.
                      */
                     ...omit(original, ENTRY_META_FIELDS),
-                    ...data
+                    values: {
+                        ...original.values,
+                        ...data
+                    }
                 };
 
                 const entry = await cms.updateEntry(model, original.id, input);

@@ -1,4 +1,3 @@
-import omit from "lodash/omit.js";
 import { Result } from "@webiny/feature/api";
 import {
     type IUpdateFolderRepository,
@@ -11,7 +10,6 @@ import { FolderModel } from "~/domain/folder/abstractions.js";
 import type { CmsEntryFolder, Folder, UpdateFolderParams } from "~/folder/folder.types.js";
 import { EntryToFolderMapper } from "../shared/EntryToFolderMapper.js";
 import { FolderPersistenceError, FolderValidationError } from "~/domain/folder/errors.js";
-import { ENTRY_META_FIELDS } from "@webiny/api-headless-cms/constants.js";
 import { Path } from "~/utils/Path.js";
 
 class UpdateFolderRepositoryImpl implements IUpdateFolderRepository {
@@ -59,15 +57,13 @@ class UpdateFolderRepositoryImpl implements IUpdateFolderRepository {
         if (pathResult.isFail()) {
             return Result.fail(pathResult.error);
         }
-
-        // Prepare the input by merging original with updates
-        const input = {
-            ...omit(original, [...ENTRY_META_FIELDS, "id", "entryId"]),
-            ...data,
-            path: pathResult.value
-        };
-
-        const result = await this.updateEntry.execute<CmsEntryFolder>(this.folderModel, id, input);
+        
+        const result = await this.updateEntry.execute<CmsEntryFolder>(this.folderModel, id, {
+            values: {
+                ...data,
+                path: pathResult.value
+            }
+        });
 
         if (result.isFail()) {
             return Result.fail(new FolderPersistenceError(result.error));

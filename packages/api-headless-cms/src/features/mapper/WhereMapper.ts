@@ -1,3 +1,8 @@
+/**
+ * Used to map a model with custom schema with fields in a root to values object.
+ * eg. File Manager File model has "title" and "tags" fields in the root, but they should be
+ * mapped to "values.title" and "values.tags" when creating the entry.
+ */
 import { GenericRecord } from "@webiny/api/types.js";
 import { CmsEntryListWhere } from "~/types/types.js";
 import { CmsFieldInputToWhereMapper, ICmsFieldInputToWhereMapperParams } from "./abstractions.js";
@@ -11,7 +16,7 @@ class WhereMapperImpl implements CmsFieldInputToWhereMapper.Interface {
             return undefined;
         }
 
-        const keys = Object.getOwnPropertyNames(input); // as (keyof typeof input)[];
+        const keys = Object.getOwnPropertyNames(input);
         if (keys.length === 0) {
             return undefined;
         }

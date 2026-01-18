@@ -10,11 +10,13 @@ import { EntryToFolderMapper } from "../shared/EntryToFolderMapper.js";
 import { FolderPersistenceError } from "~/domain/folder/errors.js";
 import { createListSort } from "~/utils/createListSort.js";
 import type { ListSort } from "~/types.js";
+import { CmsFieldInputToWhereMapper } from "@webiny/api-headless-cms/features/mapper/abstractions.js";
 
 class ListFoldersRepositoryImpl implements IListFoldersRepository {
     constructor(
         private listLatestEntries: ListLatestEntriesUseCase.Interface,
-        private folderModel: FolderModel.Interface
+        private folderModel: FolderModel.Interface,
+        private cmsFieldInputToWhereMapper: CmsFieldInputToWhereMapper.Interface,
     ) {}
 
     async execute(params: ListFoldersParams): RepositoryAbstraction.Return {
@@ -23,15 +25,16 @@ class ListFoldersRepositoryImpl implements IListFoldersRepository {
         const listSort =
             sort ||
             ({
-                title: "ASC"
+                values_title: "ASC"
             } as unknown as ListSort);
 
         const result = await this.listLatestEntries.execute<CmsEntryFolder>(this.folderModel, {
             ...params,
             sort: createListSort(listSort),
-            where: {
-                ...(where || {})
-            }
+            where: this.cmsFieldInputToWhereMapper.map({
+                input: where,
+                fields: this.folderModel.fields,
+            })
         });
 
         if (result.isFail()) {
@@ -46,5 +49,5 @@ class ListFoldersRepositoryImpl implements IListFoldersRepository {
 
 export const ListFoldersRepository = RepositoryAbstraction.createImplementation({
     implementation: ListFoldersRepositoryImpl,
-    dependencies: [ListLatestEntriesUseCase, FolderModel]
+    dependencies: [ListLatestEntriesUseCase, FolderModel, CmsFieldInputToWhereMapper]
 });

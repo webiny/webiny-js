@@ -8,6 +8,7 @@ export interface CmsEntryFolder {
     type: string;
     parentId?: string | null;
     path: string;
+    extensions?: Record<string, any>;
 }
 
 export interface Folder extends CmsEntryFolder {
@@ -19,8 +20,6 @@ export interface Folder extends CmsEntryFolder {
     createdBy: User;
     modifiedBy: User | null;
     savedBy: User;
-
-    extensions?: Record<string, any>;
 }
 
 export interface ListFoldersWhere {
