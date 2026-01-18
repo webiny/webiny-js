@@ -22,7 +22,7 @@ class MyCustomCommandImpl implements CliCommandFactory.Interface<IMyCustomComman
             ],
             handler: async params => {
                 this.ui.info("Starting my custom command...");
-                this.ui.newLine();
+                this.ui.emptyLine();
                 this.ui.success(`Hello, ${params.name}! This is my custom command.`);
             }
         };
