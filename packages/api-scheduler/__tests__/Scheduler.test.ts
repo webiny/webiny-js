@@ -10,6 +10,7 @@ import { ScheduledActionId } from "~/domain/ScheduledActionId.js";
 import { ListScheduledActionsUseCase } from "~/features/ListScheduledActions/index.js";
 import { CancelScheduledActionUseCase } from "~/features/CancelScheduledAction/index.js";
 import { useHandler } from "~tests/mocks/context/useHandler.js";
+import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 
 describe("Scheduler", () => {
     const targetId = "target-id#0001";
@@ -50,7 +51,7 @@ describe("Scheduler", () => {
             actionType,
             targetId,
             title: "Title",
-            input: { scheduleOn: new Date(Date.now() + 1000000).toISOString() },
+            scheduleFor: new Date(Date.now() + 1000000).toISOString(),
             payload: { some: "payload" }
         });
 
@@ -90,7 +91,7 @@ describe("Scheduler", () => {
             actionType,
             targetId,
             title: "Title",
-            input: { scheduleOn: new Date(Date.now() + 1000000).toISOString() },
+            scheduleFor: new Date(Date.now() + 1000000).toISOString(),
             payload: { some: "payload" }
         });
 
@@ -150,7 +151,7 @@ describe("Scheduler", () => {
             actionType,
             targetId,
             title: "Title",
-            input: { scheduleOn: new Date(Date.now() + 1000000).toISOString() },
+            scheduleFor: new Date(Date.now() + 1000000).toISOString(),
             payload: { some: "payload" }
         });
 
@@ -194,7 +195,7 @@ describe("Scheduler", () => {
             actionType,
             targetId,
             title: "Title",
-            input: { scheduleOn: firstDate.toISOString() },
+            scheduleFor: firstDate.toISOString(),
             payload: { version: 1 }
         });
 
@@ -203,7 +204,7 @@ describe("Scheduler", () => {
         // Verify first schedule
         const getFirstResult = await getScheduledAction.execute(scheduleId);
         expect(getFirstResult.isFail()).toBe(false);
-        expect(new Date(getFirstResult.value.scheduledOn).getTime()).toBe(firstDate.getTime());
+        expect(new Date(getFirstResult.value.scheduledFor).getTime()).toBe(firstDate.getTime());
         expect(getFirstResult.value.payload).toEqual({ version: 1 });
 
         // Reschedule (same namespace + actionType + targetId)
@@ -212,7 +213,7 @@ describe("Scheduler", () => {
             actionType,
             targetId,
             title: "Title",
-            input: { scheduleOn: secondDate.toISOString() },
+            scheduleFor: secondDate.toISOString(),
             payload: { version: 2 }
         });
 
@@ -222,7 +223,7 @@ describe("Scheduler", () => {
         const getSecondResult = await getScheduledAction.execute(scheduleId);
         expect(getSecondResult.isFail()).toBe(false);
         expect(getSecondResult.value.id).toBe(scheduleId); // Same ID
-        expect(new Date(getSecondResult.value.scheduledOn).getTime()).toBe(secondDate.getTime());
+        expect(new Date(getSecondResult.value.scheduledFor).getTime()).toBe(secondDate.getTime());
         expect(getSecondResult.value.payload).toEqual({ version: 2 });
     });
 
@@ -239,7 +240,7 @@ describe("Scheduler", () => {
             actionType,
             targetId,
             title: "Title",
-            input: { scheduleOn: new Date(Date.now() + 1000000).toISOString() },
+            scheduleFor: new Date(Date.now() + 1000000).toISOString(),
             payload: { some: "payload" }
         });
 
@@ -248,7 +249,7 @@ describe("Scheduler", () => {
             actionType: "ColonizeMars",
             targetId,
             title: "Title",
-            input: { scheduleOn: new Date(Date.now() + 1000000).toISOString() },
+            scheduleFor: new Date(Date.now() + 1000000).toISOString(),
             payload: { some: "payload" }
         });
 
@@ -275,7 +276,7 @@ describe("Scheduler", () => {
             await cancelAction.execute(action.id);
         }
 
-        // Assert all actions were cancelled
+        // Assert all actions were canceled
         const allActions = await until(
             async () => {
                 const result = await listScheduledActions.execute({ where: { namespace } });
@@ -284,5 +285,15 @@ describe("Scheduler", () => {
             (result: any) => result.items.length === 0
         );
         expect(allActions.items.length).toBe(0);
+
+        // Ensure the records were deleted from the database
+        const client = getDocumentClient();
+        const scanned = await client.scan({ TableName: process.env.DB_TABLE });
+
+        const dbRecords = (scanned.Items ?? []).filter(item =>
+            item.GSI1_PK.startsWith("wby-schedule-")
+        );
+
+        expect(dbRecords.length).toBe(0);
     });
 });

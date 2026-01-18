@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import type { IScheduledAction, ISchedulerInput } from "~/shared/abstractions.js";
+import type { IScheduledAction } from "~/shared/abstractions.js";
 import {
     ScheduledActionPersistenceError,
     InvalidScheduleDateError,
@@ -27,7 +27,7 @@ interface IScheduleActionParams {
     namespace: string;
     actionType: string;
     targetId: string;
-    input: ISchedulerInput;
+    scheduleFor: string;
     title: string;
     payload?: any;
 }
