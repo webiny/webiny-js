@@ -1567,4 +1567,26 @@ describe("content model test", () => {
         });
         expect(updateModelResponse.data.updateContentModel.error).toBeNull();
     });
+
+    it("should create a model with extrapolated modelId", async () => {
+        const [response] = await baseCreateContentModelMutation({
+            data: {
+                name: "Test Content model",
+                singularApiName: `TestContentModel`,
+                pluralApiName: `TestContentModels`,
+                group: contentModelGroup.slug
+            }
+        });
+
+        expect(response).toMatchObject({
+            data: {
+                createContentModel: {
+                    data: {
+                        modelId: "testContentModel"
+                    },
+                    error: null
+                }
+            }
+        });
+    });
 });

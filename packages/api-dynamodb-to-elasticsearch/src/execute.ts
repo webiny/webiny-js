@@ -8,6 +8,7 @@ import type { ITimer } from "@webiny/handler-aws";
 import type { ApiResponse } from "@webiny/api-elasticsearch/types.js";
 import { WebinyError } from "@webiny/error";
 import type { Context, IOperations } from "./types.js";
+import { shouldShowLogs } from "~/helpers/shouldShowLogs.js";
 
 export interface BulkOperationsResponseBodyItemIndexError {
     reason?: string;
@@ -76,7 +77,7 @@ export const execute = (params: IExecuteParams) => {
         const runningTime = maxRunningTime - remainingTime;
         const maxWaitingTime = remainingTime - 90;
 
-        if (process.env.DEBUG === "true") {
+        if (shouldShowLogs()) {
             console.debug(
                 `The Lambda is already running for ${runningTime}s. Setting Health Check max waiting time: ${maxWaitingTime}s`
             );
@@ -148,7 +149,7 @@ export const execute = (params: IExecuteParams) => {
                 tenant: "root"
             });
 
-            if (process.env.DEBUG !== "true") {
+            if (shouldShowLogs() === false) {
                 throw error;
             }
             const meta = error?.meta || {};
@@ -156,7 +157,7 @@ export const execute = (params: IExecuteParams) => {
             console.error("Bulk error", JSON.stringify(error, null, 2));
             throw error;
         }
-        if (process.env.DEBUG !== "true") {
+        if (shouldShowLogs() === false) {
             return;
         }
         console.info(`Transferred ${operations.total} record operations to Elasticsearch.`);
