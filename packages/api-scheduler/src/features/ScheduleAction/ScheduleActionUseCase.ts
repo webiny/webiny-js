@@ -6,8 +6,8 @@ import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEnt
 import { parseIdentifier } from "@webiny/utils";
 import { ScheduleActionUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { GetScheduledActionUseCase } from "~/features/GetScheduledAction/abstractions.js";
+import type { Identity, IScheduledAction } from "~/shared/abstractions.js";
 import { ScheduledActionModel, SchedulerService } from "~/shared/abstractions.js";
-import type { IScheduledAction, Identity } from "~/shared/abstractions.js";
 import {
     InvalidScheduleDateError,
     ScheduledActionPersistenceError,
@@ -161,9 +161,11 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         // Update CMS entry
         const existingEntryId = ScheduledActionIdWithVersion.from(existing.id);
         const updateResult = await this.updateEntryUseCase.execute(this.model, existingEntryId, {
-            scheduledBy: identity,
-            scheduledFor: scheduleFor,
-            payload
+            values: {
+                scheduledBy: identity,
+                scheduledFor: scheduleFor,
+                payload
+            }
         });
 
         if (updateResult.isFail()) {
