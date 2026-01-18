@@ -3,7 +3,7 @@ import type { CmsEntryListWhere, CmsModelField } from "~/types/index.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 
 export interface ICmsFieldInputToWhereMapperParams<T extends GenericRecord> {
-    fields: CmsModelField[];
+    fields: Pick<CmsModelField, "fieldId">[];
     input: T | undefined;
 }
 
