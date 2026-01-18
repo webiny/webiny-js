@@ -10,19 +10,6 @@ type ZodSrcPathOptions = {
     abstraction?: Abstraction<any>;
 };
 
-/**
- * Unified validator for src paths.
- * 
- * Validates that a path is either:
- * 1. An absolute path (e.g., starts with "/" on Unix or a drive letter on Windows)
- * 2. A path starting with "/" (from project root)
- *
- * Rejects all relative paths:
- * - Explicitly relative: `./file.ts`, `../folder/file.ts`
- * - Implicitly relative: `folder/file.ts`
- * 
- * If abstraction is provided, also validates that the file exports the correct abstraction.
- */
 export const zodSrcPath = (options: ZodSrcPathOptions) => {
     const { project, abstraction } = options;
 
@@ -34,46 +21,21 @@ export const zodSrcPath = (options: ZodSrcPathOptions) => {
     const tokenName = abstraction ? getTokenName(abstraction.token) : undefined;
     const description = abstraction
         ? `Path to a file exporting ${tokenName}`
-        : `Absolute path or path starting from project root (e.g., "/extensions/MyFile.ts")`;
+        : `Absolute path or relative path from project root (e.g., "extensions/MyFile.ts")`;
 
     return z
         .string()
         .describe(description)
         .superRefine(async (src, ctx) => {
-            // First, check for explicitly relative paths (starts with ./ or ../)
-            // This provides a more specific error message
-            if (src.startsWith("./") || src.startsWith("../")) {
-                ctx.addIssue({
-                    code: z.ZodIssueCode.custom,
-                    message: ProjectError.formatMessage(
-                        `Relative paths are not supported. Path %s must be either an absolute path or start with "/" to reference from project root (e.g., "/extensions/MyFile.ts").`,
-                        src
-                    )
-                });
-                return;
+            // Convert to absolute path for file existence check.
+            let absoluteSrcPath: string;
+            if (path.isAbsolute(src)) {
+                // Already an absolute path.
+                absoluteSrcPath = src;
+            } else {
+                // Relative to project root.
+                absoluteSrcPath = project.paths.rootFolder.join(src).toString();
             }
-
-            // Then, check if path is either absolute or starts with "/"
-            // This catches all other relative paths (e.g., "folder/file.ts")
-            if (!src.startsWith("/") && !path.isAbsolute(src)) {
-                ctx.addIssue({
-                    code: z.ZodIssueCode.custom,
-                    message: ProjectError.formatMessage(
-                        `Path %s must be either an absolute path or start with "/" to reference from project root (e.g., "/extensions/MyFile.ts").`,
-                        src
-                    )
-                });
-                return;
-            }
-
-            // Convert to absolute path for file existence check
-            let absoluteSrcPath = src;
-            if (src.startsWith("/")) {
-                // For paths starting with "/", they're relative to project root
-                // Remove the leading "/" before joining with rootFolder
-                absoluteSrcPath = project.paths.rootFolder.join(src.slice(1)).toString();
-            }
-            // Otherwise, src is already an absolute path
 
             if (!fs.existsSync(absoluteSrcPath)) {
                 ctx.addIssue({
@@ -118,7 +80,7 @@ export const zodSrcPath = (options: ZodSrcPathOptions) => {
                             `The class %s in %s must implement the %s interface.`,
                             exportName,
                             src,
-                            tokenName || ''
+                            tokenName || ""
                         )
                     });
                 }
