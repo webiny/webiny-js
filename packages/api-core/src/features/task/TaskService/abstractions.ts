@@ -1,4 +1,4 @@
-import { createAbstraction, BaseError, Result } from "@webiny/feature/api";
+import { BaseError, createAbstraction, Result } from "@webiny/feature/api";
 import type { GenericRecord } from "@webiny/api/types.js";
 import { type ITaskOutput, TaskDefinition } from "~/features/task/TaskDefinition/index.js";
 
@@ -71,25 +71,29 @@ export interface ITaskTriggerParams<I = TaskDefinition.TaskInput> {
     delay?: number;
 }
 
-export interface ITask<T = GenericRecord, O extends ITaskOutput = ITaskOutput> {
-    /**
-     * ID without the revision number (for example: #0001).
-     */
-    id: string;
+export interface ITaskValues<T = GenericRecord, O extends ITaskOutput = ITaskOutput> {
+    startedOn?: string;
+    finishedOn?: string;
+    eventResponse: GenericRecord | undefined;
+    iterations: number;
+    parentId?: string;
     name: string;
     taskStatus: TaskDataStatus;
     definitionId: string;
     executionName: string;
     input: T;
     output?: O;
+}
+
+export interface ITask<T = GenericRecord, O extends ITaskOutput = ITaskOutput>
+    extends ITaskValues<T, O> {
+    /**
+     * ID without the revision number (for example: #0001).
+     */
+    id: string;
     createdOn: string;
     savedOn: string;
     createdBy: ITaskIdentity;
-    startedOn?: string;
-    finishedOn?: string;
-    eventResponse: GenericRecord | undefined;
-    iterations: number;
-    parentId?: string;
 }
 
 export enum TaskDataStatus {

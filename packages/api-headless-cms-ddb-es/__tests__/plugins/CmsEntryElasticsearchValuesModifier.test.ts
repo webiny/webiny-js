@@ -54,16 +54,16 @@ const getMockData = () => {
     };
 };
 
-describe("entry values modifier", () => {
+describe("cms elasticsearch entry values modifier", () => {
     it("should modify the original values with a single plugin", async () => {
         const { model, values: initialValues, entry } = getMockData();
         let values = structuredClone(initialValues);
 
         const modifier = createCmsEntryElasticsearchValuesModifier<MockCmsEntryValues>(
             async ({ setValues }) => {
-                setValues(prev => {
+                // @ts-expect-error
+                setValues(() => {
                     return {
-                        ...prev,
                         title: "Test title"
                     };
                 });
@@ -87,9 +87,9 @@ describe("entry values modifier", () => {
         let values = structuredClone(initialValues);
         const titleModifier = createCmsEntryElasticsearchValuesModifier<MockCmsEntryValues>(
             async ({ setValues }) => {
-                setValues(prev => {
+                // @ts-expect-error
+                setValues(() => {
                     return {
-                        ...prev,
                         title: "Test title"
                     };
                 });
