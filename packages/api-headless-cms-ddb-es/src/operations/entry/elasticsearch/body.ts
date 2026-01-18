@@ -94,9 +94,7 @@ export const createElasticsearchBody = ({ plugins, model, params }: Params): Sea
 
     execFiltering({
         where,
-        query,
-        // initial value must always be false - but we do not want to have a default one in the method
-        isValues: false
+        query
     });
 
     for (const pl of queryModifierPlugins) {

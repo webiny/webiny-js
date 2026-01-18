@@ -22,7 +22,7 @@ export interface CreateExecParams {
 export interface IExecParams {
     where: CmsEntryListWhere;
     query: ElasticsearchBoolQueryConfig;
-    isValues: boolean;
+    isValues?: boolean;
 }
 export interface CreateExecFilteringResponse {
     (params: IExecParams): void;
@@ -75,7 +75,7 @@ export const createExecFiltering = (params: CreateExecParams): CreateExecFilteri
     };
 
     const execFiltering = (params: IExecParams) => {
-        const { where: initialWhere, query, isValues } = params;
+        const { where: initialWhere, query, isValues = false } = params;
         /**
          * No point in continuing if no "where" conditions exist.
          */

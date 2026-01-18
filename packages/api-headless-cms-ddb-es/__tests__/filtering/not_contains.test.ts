@@ -20,7 +20,9 @@ describe("not_contains filter", () => {
     it("should add not_contains filter", async () => {
         const title = "Webiny";
         const where: CmsEntryListWhere = {
-            title_not_contains: title
+            values: {
+                title_not_contains: title
+            }
         };
 
         execFiltering({

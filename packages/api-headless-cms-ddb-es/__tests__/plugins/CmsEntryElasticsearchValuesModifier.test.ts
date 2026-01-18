@@ -8,7 +8,6 @@ interface MockCmsEntryValues {
 }
 
 const mockModel: CmsModel = {
-    locale: "en-US",
     tenant: "root",
     modelId: "abcdefghijklmn",
     name: "Test model",
@@ -18,10 +17,7 @@ const mockModel: CmsModel = {
     singularApiName: "TestModel",
     pluralApiName: "TestModels",
     titleFieldId: "id",
-    group: {
-        id: "group",
-        name: "group"
-    }
+    group: "group"
 };
 const createdBy: CmsIdentity = {
     id: "a",
@@ -43,7 +39,6 @@ const mockEntry: CmsEntry<MockCmsEntryValues> = {
     locked: false,
     tenant: "root",
     createdBy,
-    ownedBy: createdBy,
     meta: {},
     createdOn: new Date().toISOString(),
     savedOn: new Date().toISOString(),
@@ -66,15 +61,15 @@ describe("entry values modifier", () => {
 
         const modifier = createCmsEntryElasticsearchValuesModifier<MockCmsEntryValues>(
             async ({ setValues }) => {
-                setValues(() => {
+                setValues(prev => {
                     return {
+                        ...prev,
                         title: "Test title"
                     };
                 });
             }
         );
 
-        // @ts-expect-error
         values = await modifier.modify({
             entry,
             model,
@@ -92,15 +87,15 @@ describe("entry values modifier", () => {
         let values = structuredClone(initialValues);
         const titleModifier = createCmsEntryElasticsearchValuesModifier<MockCmsEntryValues>(
             async ({ setValues }) => {
-                setValues(() => {
+                setValues(prev => {
                     return {
+                        ...prev,
                         title: "Test title"
                     };
                 });
             }
         );
 
-        // @ts-expect-error
         values = await titleModifier.modify({
             entry,
             model,
@@ -123,7 +118,6 @@ describe("entry values modifier", () => {
             }
         );
 
-        // @ts-expect-error
         values = await ageModifier.modify({
             entry,
             model,
@@ -141,8 +135,9 @@ describe("entry values modifier", () => {
             createCmsEntryElasticsearchValuesModifier<MockCmsEntryValues>({
                 models: ["nonExisting"],
                 modifier: async ({ setValues }) => {
-                    setValues(() => {
+                    setValues(prev => {
                         return {
+                            ...prev,
                             title: "Test title"
                         };
                     });

@@ -45,7 +45,9 @@ describe("entry values modifier", () => {
         const modelResult = await getModel.execute("converter");
         const model = modelResult.value;
 
-        const createResult = await createEntry.execute(model, createEntryRawData());
+        const createResult = await createEntry.execute(model, {
+            values: createEntryRawData()
+        });
 
         /**
          * Check that we are getting everything properly out of the DynamoDB
@@ -83,7 +85,9 @@ describe("entry values modifier", () => {
         const modelResult = await getModel.execute("converter");
         const model = modelResult.value;
 
-        const createResult = await createEntry.execute(model, createEntryRawData());
+        const createResult = await createEntry.execute(model, {
+            values: createEntryRawData()
+        });
 
         /**
          * Check that we are getting everything properly out of the DynamoDB
@@ -121,7 +125,9 @@ describe("entry values modifier", () => {
         const modelResult = await getModel.execute("converter");
         const model = modelResult.value;
 
-        const createResult = await createEntry.execute(model, createEntryRawData());
+        const createResult = await createEntry.execute(model, {
+            values: createEntryRawData()
+        });
 
         /**
          * Check that we are getting everything properly out of the DynamoDB
@@ -168,7 +174,9 @@ describe("entry values modifier", () => {
         const modelResult = await getModel.execute("converter");
         const model = modelResult.value;
 
-        const createResult = await createEntry.execute(model, createEntryRawData());
+        const createResult = await createEntry.execute(model, {
+            values: createEntryRawData()
+        });
 
         /**
          * Check that we are getting everything properly out of the DynamoDB

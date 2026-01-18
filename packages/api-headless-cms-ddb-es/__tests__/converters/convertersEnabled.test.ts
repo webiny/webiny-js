@@ -52,7 +52,9 @@ describe("storage field path converters enabled", () => {
 
         const model = modelResult.value;
 
-        const createResult = await createEntry.execute(model, createEntryRawData());
+        const createResult = await createEntry.execute(model, {
+            values: createEntryRawData()
+        });
         if (createResult.isFail()) {
             throw createResult.error;
         }

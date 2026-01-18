@@ -3,10 +3,10 @@ import type { CmsModel } from "@webiny/api-headless-cms/types";
 
 export interface Fields extends ModelFields {
     id: ModelField;
-    age: ModelField;
-    title: ModelField;
-    date: ModelField;
-    isMarried: ModelField;
+    "values.age": ModelField;
+    "values.title": ModelField;
+    "values.date": ModelField;
+    "values.isMarried": ModelField;
 }
 
 export const createModel = (): CmsModel => {
@@ -21,52 +21,60 @@ export const createModel = (): CmsModel => {
                 type: "number",
                 fieldId: "age",
                 storageId: "age",
-                label: "Age"
+                label: "Age",
+                validation: [],
+                listValidation: []
             },
             {
                 id: "title",
                 type: "text",
                 fieldId: "title",
                 storageId: "title",
-                label: "Title"
+                label: "Title",
+                validation: [],
+                listValidation: []
             },
             {
                 id: "date",
                 type: "datetime",
                 fieldId: "date",
                 storageId: "date",
-                label: "Date"
+                label: "Date",
+                validation: [],
+                listValidation: []
             },
             {
                 id: "isMarried",
                 type: "boolean",
                 fieldId: "isMarried",
                 storageId: "isMarried",
-                label: "Is Married"
+                label: "Is Married",
+                validation: [],
+                listValidation: []
             },
             {
                 id: "price",
                 type: "number",
                 fieldId: "price",
                 storageId: "price",
-                label: "Price"
+                label: "Price",
+                validation: [],
+                listValidation: []
             },
             {
                 id: "availableOn",
                 type: "datetime",
                 fieldId: "availableOn",
                 storageId: "availableOn",
-                label: "Available On"
+                label: "Available On",
+                validation: [],
+                listValidation: []
             }
         ],
         layout: [],
-        locale: "en-US",
         tenant: "root",
         description: "",
-        group: {
-            id: "group",
-            name: "Group"
-        },
+        group: "group",
         titleFieldId: "title"
     };
 };
@@ -79,7 +87,9 @@ export const createFields = (): Fields => {
                 type: "string",
                 fieldId: "id",
                 storageId: "id",
-                label: "Id"
+                label: "Id",
+                validation: [],
+                listValidation: []
             },
             searchable: true,
             sortable: true,
@@ -87,89 +97,137 @@ export const createFields = (): Fields => {
             type: "string",
             parents: []
         },
-        age: {
+        "values.age": {
             field: {
                 id: "age",
                 type: "number",
                 fieldId: "age",
                 storageId: "age",
-                label: "Age"
+                label: "Age",
+                validation: [],
+                listValidation: []
             },
             searchable: true,
             sortable: true,
             systemField: false,
             type: "number",
-            parents: []
+            parents: [
+                {
+                    fieldId: "values",
+                    type: "object",
+                    storageId: "values"
+                }
+            ]
         },
-        title: {
+        "values.title": {
             field: {
                 id: "title",
                 type: "text",
                 fieldId: "title",
                 storageId: "title",
-                label: "Title"
+                label: "Title",
+                validation: [],
+                listValidation: []
             },
             searchable: true,
             sortable: true,
             systemField: false,
             type: "text",
-            parents: []
+            parents: [
+                {
+                    fieldId: "values",
+                    type: "object",
+                    storageId: "values"
+                }
+            ]
         },
-        date: {
+        "values.date": {
             field: {
                 id: "date",
                 type: "datetime",
                 fieldId: "date",
                 storageId: "date",
-                label: "Date"
+                label: "Date",
+                validation: [],
+                listValidation: []
             },
             searchable: true,
             sortable: true,
             systemField: false,
             type: "datetime",
-            parents: []
+            parents: [
+                {
+                    fieldId: "values",
+                    type: "object",
+                    storageId: "values"
+                }
+            ]
         },
-        isMarried: {
+        "values.isMarried": {
             field: {
                 id: "isMarried",
                 type: "boolean",
                 fieldId: "isMarried",
                 storageId: "isMarried",
-                label: "Is Married"
+                label: "Is Married",
+                validation: [],
+                listValidation: []
             },
             searchable: true,
             sortable: true,
             systemField: false,
             type: "date",
-            parents: []
+            parents: [
+                {
+                    fieldId: "values",
+                    type: "object",
+                    storageId: "values"
+                }
+            ]
         },
-        price: {
+        "values.price": {
             field: {
                 id: "price",
                 type: "number",
                 fieldId: "price",
                 storageId: "price",
-                label: "Price"
+                label: "Price",
+                validation: [],
+                listValidation: []
             },
             searchable: true,
             sortable: true,
             systemField: false,
             type: "number",
-            parents: []
+            parents: [
+                {
+                    fieldId: "values",
+                    type: "object",
+                    storageId: "values"
+                }
+            ]
         },
-        availableOn: {
+        "values.availableOn": {
             field: {
                 id: "availableOn",
                 type: "datetime",
                 fieldId: "availableOn",
                 storageId: "availableOn",
-                label: "Available On"
+                label: "Available On",
+                validation: [],
+                listValidation: []
             },
             searchable: true,
             sortable: true,
             systemField: false,
             type: "date",
-            parents: []
+            parents: [
+                {
+                    fieldId: "values",
+                    type: "object",
+                    storageId: "values"
+                }
+            ]
         }
     };
 };
