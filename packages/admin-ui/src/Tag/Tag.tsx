@@ -33,7 +33,7 @@ const tagVariants = cva(
                 ],
                 "neutral-base-outline": [
                     "border-sm border-solid px-[calc(var(--padding-xs-plus)-(var(--border-width-sm)))] py-[calc(var(--padding-xxs)-(var(--border-width-sm)))]",
-                    "bg-transparent border-neutral-muted text-neutral-primary",
+                    "bg-neutral-base border-neutral-muted text-neutral-primary",
                     "hover:bg-neutral-light",
                     "aria-disabled:bg-transparent aria-disabled:border-neutral-dimmed aria-disabled:text-neutral-disabled"
                 ],
