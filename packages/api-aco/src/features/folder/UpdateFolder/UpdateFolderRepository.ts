@@ -57,7 +57,7 @@ class UpdateFolderRepositoryImpl implements IUpdateFolderRepository {
         if (pathResult.isFail()) {
             return Result.fail(pathResult.error);
         }
-        
+
         const result = await this.updateEntry.execute<CmsEntryFolder>(this.folderModel, id, {
             values: {
                 ...data,

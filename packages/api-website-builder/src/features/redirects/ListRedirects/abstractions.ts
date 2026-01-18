@@ -1,9 +1,8 @@
-import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
-import type { CmsEntryListSort, CmsEntryListWhere } from "@webiny/api-headless-cms/types/index.js";
+import { createAbstraction } from "@webiny/feature/api";
+import type { CmsEntryListSort } from "@webiny/api-headless-cms/types/index.js";
 import type { WbRedirect } from "~/domain/redirect/abstractions.js";
 import type { RedirectPersistenceError } from "~/domain/redirect/errors.js";
-import type { WbIdentity, WbLocation } from "~/domain/shared/abstractions.js";
 
 // ============================================================================
 // Type Definitions
@@ -14,17 +13,17 @@ export interface IListWbRedirectsWhere {
     redirectFrom_not?: string;
     redirectFrom_in?: string[];
     redirectFrom_not_in?: string[];
-    
+
     redirectTo?: string;
     redirectTo_not?: string;
     redirectTo_in?: string[];
     redirectTo_not_in?: string[];
-    
+
     redirectType?: string;
     redirectType_not?: string;
     redirectType_in?: string[];
     redirectType_not_in?: string[];
-    
+
     isEnabled?: boolean;
 }
 

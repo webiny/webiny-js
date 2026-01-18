@@ -16,7 +16,7 @@ class ListFoldersRepositoryImpl implements IListFoldersRepository {
     constructor(
         private listLatestEntries: ListLatestEntriesUseCase.Interface,
         private folderModel: FolderModel.Interface,
-        private cmsFieldInputToWhereMapper: CmsFieldInputToWhereMapper.Interface,
+        private cmsFieldInputToWhereMapper: CmsFieldInputToWhereMapper.Interface
     ) {}
 
     async execute(params: ListFoldersParams): RepositoryAbstraction.Return {
@@ -33,7 +33,7 @@ class ListFoldersRepositoryImpl implements IListFoldersRepository {
             sort: createListSort(listSort),
             where: this.cmsFieldInputToWhereMapper.map({
                 input: where,
-                fields: this.folderModel.fields,
+                fields: this.folderModel.fields
             })
         });
 

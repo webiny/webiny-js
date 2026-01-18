@@ -14,16 +14,13 @@ class ListRedirectsRepositoryImpl implements RepositoryAbstraction.Interface {
     ) {}
 
     async execute(params: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
-        const result = await this.listEntries.execute<CmsEntryWbRedirect>(
-            this.redirectModel,
-            {
-                ...params,
-                where: this.cmsFieldInputToWhereMapper.map({
-                    input: params.where,
-                    fields: this.redirectModel.fields,
-                }),
-            }
-        );
+        const result = await this.listEntries.execute<CmsEntryWbRedirect>(this.redirectModel, {
+            ...params,
+            where: this.cmsFieldInputToWhereMapper.map({
+                input: params.where,
+                fields: this.redirectModel.fields
+            })
+        });
 
         if (result.isFail()) {
             return Result.fail(new RedirectPersistenceError(result.error));

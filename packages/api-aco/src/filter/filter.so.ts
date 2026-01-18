@@ -18,7 +18,7 @@ export const createFilterOperations = (
         ...params,
         modelName: FILTER_MODEL_ID
     });
-    
+
     const cmsFieldInputToWhereMapper = container.resolve(CmsFieldInputToWhereMapper);
 
     return {
