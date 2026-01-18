@@ -30,7 +30,7 @@ const DisplayIcon = ({ icon }: IconProps) => {
 
 export const Image = ({ src, icon, width }: ImageProps) => {
     return (
-        <div className={"size-[96px] rounded-lg overflow-hidden relative"}>
+        <div className={"size-[56px] m-xs rounded-sm overflow-hidden relative"}>
             <div className={"size-full flex justify-center items-center bg-neutral-base"}>
                 {src ? <img src={src} width={width} /> : <DisplayIcon icon={icon} />}
             </div>
