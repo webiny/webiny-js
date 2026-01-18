@@ -15,7 +15,6 @@ import { WEBINY_TASK_MODEL_ID } from "./TaskPrivateModel.js";
 import { WEBINY_TASK_LOG_MODEL_ID } from "./TaskLogPrivateModel.js";
 import type { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { remapWhere } from "./where.js";
 import { createZodError, parseIdentifier } from "@webiny/utils";
 import zod from "zod";
 import type { GenericRecord } from "@webiny/api/types.js";
@@ -42,6 +41,7 @@ import {
     TaskBeforeDeleteEvent,
     TaskBeforeUpdateEvent
 } from "~/events/index.js";
+import { CmsFieldInputToWhereMapper } from "@webiny/api-headless-cms/features/mapper/feature.js";
 
 const createRevisionId = (id: string) => {
     const { id: entryId } = parseIdentifier(id);
@@ -123,6 +123,8 @@ const validateTaskInput = async (params: IValidateParams) => {
 };
 
 export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
+    const cmsFieldInputToWhereMapper = context.container.resolve(CmsFieldInputToWhereMapper);
+
     const getTaskModel = async (): Promise<CmsModel> => {
         const identityContext = context.container.resolve(IdentityContext);
         return await identityContext.withoutAuthorization(async () => {
@@ -184,8 +186,8 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
             const listLatestEntries = context.container.resolve(ListLatestEntriesUseCase);
             const result = await listLatestEntries.execute<TaskService.Task<T, O>>(model, {
                 ...params,
-                where: remapWhere({
-                    where: params?.where,
+                where: cmsFieldInputToWhereMapper.map({
+                    input: params?.where,
                     fields: model.fields
                 })
             });
@@ -435,8 +437,8 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
             const listLatestEntries = context.container.resolve(ListLatestEntriesUseCase);
             const result = await listLatestEntries.execute<ITaskLog>(model, {
                 ...params,
-                where: remapWhere({
-                    where: params.where,
+                where: cmsFieldInputToWhereMapper.map({
+                    input: params.where,
                     fields: model.fields
                 })
             });

@@ -17,9 +17,9 @@ import { getSchema } from "~/graphql/getSchema.js";
 import { CmsInstallerFeature } from "~/features/installer/feature.js";
 import { ContentEntriesFeature } from "~/features/contentEntry/ContentEntriesFeature.js";
 import {
-    StorageOperations,
     AccessControl as AccessControlAbstraction,
-    CmsContext as CmsContextAbstraction
+    CmsContext as CmsContextAbstraction,
+    StorageOperations
 } from "~/features/shared/abstractions.js";
 import {
     EntryFromStorageTransform,
@@ -32,6 +32,7 @@ import { getSearchableFields } from "~/crud/contentEntry/searchableFields.js";
 import { ContentModelGroupFeature } from "~/features/contentModelGroup/ContentModelGroupFeature.js";
 import { ContentModelFeature } from "~/features/contentModel/ContentModelFeature.js";
 import { ModelBuilderFeature } from "~/features/modelBuilder/index.js";
+import { CmsFieldInputToWhereMapperFeature } from "~/features/mapper/feature.js";
 
 const getParameters = async (context: CmsContext): Promise<CmsParametersPluginResponse> => {
     const plugins = context.plugins.byType<CmsParametersPlugin>(CmsParametersPlugin.type);
@@ -168,6 +169,8 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
         ContentModelFeature.register(context.container);
         ContentModelGroupFeature.register(context.container);
         ModelBuilderFeature.register(context.container);
+
+        CmsFieldInputToWhereMapperFeature.register(context.container);
 
         if (!storageOperations.init) {
             return;

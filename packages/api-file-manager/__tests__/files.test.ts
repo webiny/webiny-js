@@ -1,8 +1,8 @@
-import { describe, test, it, beforeAll, expect } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { mdbid } from "@webiny/utils";
 import useGqlHandler from "~tests/utils/useGqlHandler";
 import testFiles from "./data";
-import { ids, fileDData, fileCData, fileBData, fileAData } from "./mocks/files";
+import { fileAData, fileBData, fileCData, fileDData, ids } from "./mocks/files";
 
 describe("Files CRUD test", { timeout: 100_000, retry: 3 }, () => {
     const { createFile, updateFile, createFiles, getFile, listFiles, listTags } = useGqlHandler();
@@ -14,7 +14,7 @@ describe("Files CRUD test", { timeout: 100_000, retry: 3 }, () => {
         });
     });
 
-    test("should create, read, update and delete files", async () => {
+    it("should create, read, update and delete files", async () => {
         const [create] = await createFile({ data: fileAData });
         expect(create).toEqual({
             data: {
@@ -144,7 +144,7 @@ describe("Files CRUD test", { timeout: 100_000, retry: 3 }, () => {
         });
     });
 
-    test("should create files in bulk and paginate using cursor", async () => {
+    it("should create files in bulk and paginate using cursor", async () => {
         // Bulk insert test data
         await createFiles({ data: testFiles });
 

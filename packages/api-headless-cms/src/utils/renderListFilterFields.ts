@@ -41,10 +41,14 @@ export const renderListFilterFields: RenderListFilterFields = (
         "id_not: ID",
         "id_in: [ID!]",
         "id_not_in: [ID!]",
-        "entryId: String",
-        "entryId_not: String",
-        "entryId_in: [String!]",
-        "entryId_not_in: [String!]",
+        ...(excludeFields.includes("entryId")
+            ? []
+            : [
+                  "entryId: String",
+                  "entryId_not: String",
+                  "entryId_in: [String!]",
+                  "entryId_not_in: [String!]"
+              ]),
 
         ...ENTRY_META_FIELDS.map(field => {
             if (isDateTimeEntryMetaField(field)) {
@@ -76,7 +80,7 @@ export const renderListFilterFields: RenderListFilterFields = (
     /**
      * We can find different statuses only in the manage API endpoint.
      */
-    if (type === "manage") {
+    if (type === "manage" && excludeFields.includes("status") === false) {
         baseFilters.push(
             "status: String",
             "status_not: String",

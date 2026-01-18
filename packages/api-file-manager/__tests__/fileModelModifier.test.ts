@@ -13,14 +13,18 @@ describe.skip("File Model Modifier test", () => {
                         id: "carMake",
                         fieldId: "carMake",
                         label: "Car Make",
-                        type: "text"
+                        type: "text",
+                        listValidation: [],
+                        validation: []
                     });
 
                     modifier.addField({
                         id: "year",
                         fieldId: "year",
                         label: "Year of manufacturing",
-                        type: "number"
+                        type: "number",
+                        listValidation: [],
+                        validation: []
                     });
                 })
             ]

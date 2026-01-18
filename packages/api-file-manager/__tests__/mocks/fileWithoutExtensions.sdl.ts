@@ -410,14 +410,14 @@ export default /* GraphQL */ `
         revisionFirstPublishedOn_DESC
         revisionLastPublishedOn_ASC
         revisionLastPublishedOn_DESC
-        name_ASC
-        name_DESC
-        key_ASC
-        key_DESC
-        type_ASC
-        type_DESC
-        size_ASC
-        size_DESC
+        values_name_ASC
+        values_name_DESC
+        values_key_ASC
+        values_key_DESC
+        values_type_ASC
+        values_type_DESC
+        values_size_ASC
+        values_size_DESC
     }
 
     input FmTagsListWhereInput {
