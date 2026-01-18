@@ -184,7 +184,10 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
             const listLatestEntries = context.container.resolve(ListLatestEntriesUseCase);
             const result = await listLatestEntries.execute<TaskService.Task<T, O>>(model, {
                 ...params,
-                where: remapWhere(params?.where)
+                where: remapWhere({
+                    where: params?.where,
+                    fields: model.fields
+                })
             });
             if (result.isFail()) {
                 throw result.error;
@@ -270,8 +273,9 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
             const model = await getTaskModel();
             const updateEntry = context.container.resolve(UpdateEntryUseCase);
             return updateEntry.execute(model, createRevisionId(id), {
-                ...data,
-                savedOn: new Date().toISOString()
+                values: {
+                    ...data
+                }
             });
         });
 
@@ -431,7 +435,10 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
             const listLatestEntries = context.container.resolve(ListLatestEntriesUseCase);
             const result = await listLatestEntries.execute<ITaskLog>(model, {
                 ...params,
-                where: remapWhere(params.where)
+                where: remapWhere({
+                    where: params.where,
+                    fields: model.fields
+                })
             });
             if (result.isFail()) {
                 throw result.error;

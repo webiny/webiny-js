@@ -1,23 +1,32 @@
-const maps: Record<string, string> = {
-    id: "entryId",
-    id_in: "entryId_in",
-    id_not: "entryId_not",
-    id_not_in: "entryId_not_in"
-};
+import type { CmsEntryListWhere, CmsModelField } from "@webiny/api-headless-cms/types/index.js";
+import type { GenericRecord } from "@webiny/api/types.js";
 
-export const remapWhere = <T extends Record<string, any>>(where?: T): T | undefined => {
+interface IRemapWhereParams {
+    where?: GenericRecord;
+    fields: CmsModelField[];
+}
+
+export const remapWhere = (params: IRemapWhereParams): CmsEntryListWhere | undefined => {
+    const { where, fields } = params;
     if (!where) {
         return undefined;
     }
-    const result: T = { ...where };
-    for (const key in maps) {
-        const value = result[key];
-        delete result[key];
-        if (value === undefined) {
+    const fieldIdList = fields.map(f => f.fieldId);
+
+    const result: CmsEntryListWhere = {};
+    for (const whereKey in where) {
+        const key = whereKey as unknown as keyof typeof result;
+
+        const field = key.split("_")[0];
+        const value = where[key];
+        if (fieldIdList.includes(field)) {
+            result.values = {
+                ...result.values,
+                [key]: value
+            };
             continue;
         }
-        const newKey = maps[key];
-        result[newKey as keyof T] = value;
+        result[key] = value;
     }
     return result;
 };

@@ -373,6 +373,9 @@ const createGraphQL = () => {
                 }
             }
         });
+
+        plugin.name = "tasks.graphql.schema";
+
         ctx.plugins.register(plugin);
     });
 

@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { useRawHandler } from "~tests/helpers/useRawHandler";
 import { createTaskDefinition } from "~tests/helpers/createTaskDefinition.js";
 
-describe("definitions crud", () => {
+describe("tasks - definitions crud", () => {
     const handler = useRawHandler({
         plugins: [
             createTaskDefinition({

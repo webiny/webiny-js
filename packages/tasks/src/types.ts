@@ -120,7 +120,11 @@ export interface IListTaskParams extends Omit<CmsEntryListParams, "fields" | "se
     where?: IListTaskParamsWhere;
 }
 
-export interface IListTaskLogParamsWhere extends CmsEntryListWhere {
+export interface IListTaskLogParamsWhere {
+    id?: string;
+    id_not?: string;
+    id_in?: string[];
+    id_not_in?: string[];
     task?: string;
     task_in?: string[];
     task_not?: string;
@@ -132,7 +136,8 @@ export interface IListTaskLogParamsWhere extends CmsEntryListWhere {
     iteration_lt?: number;
 }
 
-export interface IListTaskLogParams extends Omit<CmsEntryListParams, "fields" | "search"> {
+export interface IListTaskLogParams
+    extends Omit<CmsEntryListParams, "fields" | "search" | "where"> {
     where?: IListTaskLogParamsWhere;
 }
 
