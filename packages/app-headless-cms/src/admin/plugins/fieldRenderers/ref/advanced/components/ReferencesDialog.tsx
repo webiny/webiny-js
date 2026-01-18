@@ -137,7 +137,10 @@ export const ReferencesDialog = (props: ReferencesDialogProps) => {
                 title={"Select an existing record"}
                 description={
                     <>
-                        Content model: <span className={"font-bold text-neutral-primary"}>{contentModel.name}</span>
+                        Content model:{" "}
+                        <span className={"font-bold text-neutral-primary"}>
+                            {contentModel.name}
+                        </span>
                     </>
                 }
                 actions={

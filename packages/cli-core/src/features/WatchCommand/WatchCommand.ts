@@ -1,5 +1,10 @@
 import { createImplementation } from "@webiny/di";
-import { CliCommandFactory, GetProjectSdkService, StdioService, UiService } from "~/abstractions/index.js";
+import {
+    CliCommandFactory,
+    GetProjectSdkService,
+    StdioService,
+    UiService
+} from "~/abstractions/index.js";
 import { IBaseAppParams } from "~/abstractions/features/types.js";
 import { createBaseAppOptions } from "~/features/common/index.js";
 import chalk from "chalk";

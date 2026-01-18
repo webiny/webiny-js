@@ -1,5 +1,10 @@
 import { createImplementation } from "@webiny/di";
-import { CliCommandFactory, GetProjectSdkService, StdioService, UiService } from "~/abstractions/index.js";
+import {
+    CliCommandFactory,
+    GetProjectSdkService,
+    StdioService,
+    UiService
+} from "~/abstractions/index.js";
 import { measureDuration } from "~/features/utils/index.js";
 import { createBaseAppOptions } from "~/features/common/index.js";
 import { PulumiError } from "@webiny/pulumi-sdk";

@@ -1,7 +1,9 @@
 import { CliCommandFactory, ErrorHandler } from "~/abstractions/index.js";
 import { GracefulError } from "@webiny/project";
 
-export class CommandsWithGracefulErrorHandling<TParams> implements CliCommandFactory.Interface<TParams> {
+export class CommandsWithGracefulErrorHandling<TParams>
+    implements CliCommandFactory.Interface<TParams>
+{
     constructor(
         private gracefulErrorHandlers: ErrorHandler.Interface<TParams>[],
         private decoratee: CliCommandFactory.Interface<TParams>

@@ -1,5 +1,10 @@
 import { createImplementation } from "@webiny/di";
-import { CliCommandFactory, GetProjectSdkService, StdioService, UiService } from "~/abstractions/index.js";
+import {
+    CliCommandFactory,
+    GetProjectSdkService,
+    StdioService,
+    UiService
+} from "~/abstractions/index.js";
 import { DeployOutput } from "./deployOutputs/DeployOutput.js";
 import { AppName } from "@webiny/project";
 import { BuildRunner } from "~/features/BuildCommand/buildRunners/BuildRunner.js";
