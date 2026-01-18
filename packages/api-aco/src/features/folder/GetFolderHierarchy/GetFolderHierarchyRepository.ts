@@ -115,7 +115,7 @@ class GetFolderHierarchyRepositoryImpl implements IGetFolderHierarchyRepository 
         let currentFolder = folder;
 
         while (currentFolder.parentId) {
-            const parentResult = await this.getEntryById.execute(
+            const parentResult = await this.getEntryById.execute<CmsEntryFolder>(
                 this.folderModel,
                 currentFolder.parentId
             );

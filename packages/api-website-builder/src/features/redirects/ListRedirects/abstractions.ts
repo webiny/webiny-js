@@ -9,6 +9,7 @@ import type { RedirectPersistenceError } from "~/domain/redirect/errors.js";
 // ============================================================================
 
 export interface IListWbRedirectsWhere {
+    latest?: boolean;
     redirectFrom?: string;
     redirectFrom_not?: string;
     redirectFrom_in?: string[];

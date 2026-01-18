@@ -10,9 +10,7 @@ class GetActiveRedirectsRepositoryImpl implements RepositoryAbstraction.Interfac
         const result = await this.listRedirects.execute({
             where: {
                 latest: true,
-                values: {
-                    isEnabled: true
-                }
+                isEnabled: true
             },
             limit: 10000,
             sort: [],
