@@ -1,11 +1,11 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import { ApiKeysRepository } from "../shared/abstractions.js";
-import { NotAuthorizedError } from "../shared/errors.js";
+import { ApiKeyNotAuthorizedError } from "../shared/errors.js";
 import type { ApiKey } from "../shared/types.js";
 
 export interface IDeleteApiKeyErrors {
-    notAuthorized: NotAuthorizedError;
+    notAuthorized: ApiKeyNotAuthorizedError;
 }
 
 type DeleteApiKeyError = IDeleteApiKeyErrors[keyof IDeleteApiKeyErrors] | ApiKeysRepository.Error;
@@ -14,9 +14,9 @@ export interface IDeleteApiKey {
     execute(id: string): Promise<Result<void, DeleteApiKeyError>>;
 }
 
-export const DeleteApiKey = createAbstraction<IDeleteApiKey>("DeleteApiKey");
+export const DeleteApiKeyUseCase = createAbstraction<IDeleteApiKey>("DeleteApiKeyUseCase");
 
-export namespace DeleteApiKey {
+export namespace DeleteApiKeyUseCase {
     export type Interface = IDeleteApiKey;
     export type Error = DeleteApiKeyError;
 }

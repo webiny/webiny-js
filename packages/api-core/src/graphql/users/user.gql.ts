@@ -14,11 +14,7 @@ import { ListUsersUseCase } from "~/features/users/ListUsers/index.js";
 
 const emptyResolver = () => ({});
 
-export interface CreateUserGraphQlPluginsParams {
-    teams?: boolean;
-}
-
-export const createUsersGraphQL = (params: CreateUserGraphQlPluginsParams) => {
+export const createUsersGraphQL = () => {
     return [
         new GraphQLSchemaPlugin<ApiCoreContext>({
             typeDefs: /* GraphQL */ `
@@ -96,9 +92,7 @@ export const createUsersGraphQL = (params: CreateUserGraphQlPluginsParams) => {
 
                 extend type AdminUsersQuery {
                     getUser(where: AdminUsersGetUserWhereInput): AdminUsersResponse
-
                     getCurrentUser: AdminUsersResponse
-
                     listUsers: AdminUsersListResponse
                 }
             `,
@@ -123,7 +117,7 @@ export const createUsersGraphQL = (params: CreateUserGraphQlPluginsParams) => {
 
                         if (userResult.isFail()) {
                             const error = userResult.error;
-                            if (error.code === "USER_NOT_FOUND") {
+                            if (error.code === "AdminUser/NotFound") {
                                 return new NotFoundResponse(
                                     `User "${JSON.stringify(where)}" was not found!`
                                 );
@@ -141,7 +135,7 @@ export const createUsersGraphQL = (params: CreateUserGraphQlPluginsParams) => {
                     getCurrentUser: async (_, __, context) => {
                         const identity = context.security.getIdentity();
 
-                        if (identity.isAnonymous()) {
+                        if (!identity.isAdmin()) {
                             throw new NotAuthorizedResponse();
                         }
 
@@ -159,7 +153,7 @@ export const createUsersGraphQL = (params: CreateUserGraphQlPluginsParams) => {
 
                         if (userResponse.isFail()) {
                             const error = userResponse.error;
-                            if (error.code === "USER_NOT_FOUND") {
+                            if (error.code === "AdminUser/NotFound") {
                                 return new NotFoundResponse(
                                     `User with ID ${identity.id} was not found!`
                                 );
@@ -187,25 +181,24 @@ export const createUsersGraphQL = (params: CreateUserGraphQlPluginsParams) => {
                 }
             }
         }),
-        params.teams &&
-            new GraphQLSchemaPlugin<ApiCoreContext>({
-                typeDefs: /* GraphQL */ `
-                    extend type AdminUser {
-                        teams: [SecurityTeam]
-                    }
-                `,
-                resolvers: {
-                    AdminUser: {
-                        teams(user: AdminUser, _, context) {
-                            const hasTeams = Array.isArray(user.teams) && user.teams.length > 0;
-                            if (!hasTeams) {
-                                return [];
-                            }
-
-                            return context.security.listTeams({ where: { id_in: user.teams } });
+        new GraphQLSchemaPlugin<ApiCoreContext>({
+            typeDefs: /* GraphQL */ `
+                extend type AdminUser {
+                    teams: [SecurityTeam]
+                }
+            `,
+            resolvers: {
+                AdminUser: {
+                    teams(user: AdminUser, _, context) {
+                        const hasTeams = Array.isArray(user.teams) && user.teams.length > 0;
+                        if (!hasTeams) {
+                            return [];
                         }
+
+                        return context.security.listTeams({ where: { id_in: user.teams } });
                     }
                 }
-            })
+            }
+        })
     ].filter(Boolean);
 };

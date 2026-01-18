@@ -31,13 +31,13 @@ export class ScheduledActionPersistenceError extends BaseError<{ originalError: 
 /**
  * Invalid schedule date error (e.g., scheduling in the past)
  */
-export class InvalidScheduleDateError extends BaseError<{ scheduleOn: string }> {
+export class InvalidScheduleDateError extends BaseError<{ scheduleFor: string }> {
     override readonly code = "Scheduler/ScheduledAction/InvalidDate" as const;
 
-    constructor(scheduleOn: string) {
+    constructor(scheduleFor: string) {
         super({
             message: "Cannot schedule in the past",
-            data: { scheduleOn }
+            data: { scheduleFor }
         });
     }
 }

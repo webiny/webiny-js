@@ -7,7 +7,6 @@
     { "path": "../app" },
     { "path": "../app-admin" },
     { "path": "../aws-sdk" },
-    { "path": "../error" },
     { "path": "../feature" },
     { "path": "../form" },
     { "path": "../handler-graphql" },
@@ -15,7 +14,8 @@
     { "path": "../project" },
     { "path": "../project-aws" },
     { "path": "../ui" },
-    { "path": "../validation" }
+    { "path": "../validation" },
+    { "path": "../wcp" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -158,8 +158,6 @@
       "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
       "@webiny/aws-sdk": ["../aws-sdk/src"],
-      "@webiny/error/*": ["../error/src/*"],
-      "@webiny/error": ["../error/src"],
       "@webiny/feature/api": ["../feature/src/api/index.js"],
       "@webiny/feature/admin": ["../feature/src/admin/index.js"],
       "@webiny/feature/*": ["../feature/src/*"],
@@ -177,7 +175,9 @@
       "@webiny/ui/*": ["../ui/src/*"],
       "@webiny/ui": ["../ui/src"],
       "@webiny/validation/*": ["../validation/src/*"],
-      "@webiny/validation": ["../validation/src"]
+      "@webiny/validation": ["../validation/src"],
+      "@webiny/wcp/*": ["../wcp/src/*"],
+      "@webiny/wcp": ["../wcp/src"]
     },
     "baseUrl": "."
   }

@@ -3,11 +3,6 @@ import omit from "lodash/omit.js";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { Form } from "@webiny/form";
-import { Input } from "@webiny/ui/Input/index.js";
-import { ButtonPrimary } from "@webiny/ui/Button/index.js";
-import { CircularProgress } from "@webiny/ui/Progress/index.js";
-import { SnackbarAction } from "@webiny/ui/Snackbar/index.js";
-import { Cell, Grid } from "@webiny/ui/Grid/index.js";
 import { validation } from "@webiny/validation";
 import { AvatarImage } from "../../components/AvatarImage/index.js";
 import { GET_CURRENT_USER, UPDATE_CURRENT_USER } from "./graphql.js";
@@ -20,42 +15,60 @@ import {
     SimpleFormContent,
     useIdentity
 } from "@webiny/app-admin";
-import { CenteredView, useSnackbar } from "@webiny/app-admin";
-import { Alert } from "@webiny/ui/Alert/index.js";
+import { CenteredView } from "@webiny/app-admin";
 import { usePasswordValidator } from "~/admin/presentation/shared/usePasswordValidator.js";
+import { Alert, Button, Grid, Input, OverlayLoader, useToast } from "@webiny/admin-ui";
 
 const t = i18n.ns("app-security-admin-users/account-form");
 
 interface UserAccountFormData {
+    id?: boolean;
     firstName: string;
     lastName: string;
+    email: string;
+    password?: string;
+    external?: boolean;
     avatar: {
         src?: string;
     };
 }
 
-const UserAccountForm = () => {
-    const [loading, setLoading] = useState(false);
-    const { showSnackbar } = useSnackbar();
+export const UserAccountForm = () => {
+    const [isSaving, setSaving] = useState(false);
+    const toast = useToast();
     const { identity } = useIdentity();
     const passwordValidator = usePasswordValidator();
-
     const currentUser = useQuery(GET_CURRENT_USER);
     const [updateUser] = useMutation(UPDATE_CURRENT_USER);
 
+    const user = currentUser.loading ? {} : currentUser.data.adminUsers.user.data;
+
+    const isFormLoading = isSaving || currentUser.loading;
+    const loaderMessage = isSaving ? "Saving account..." : "Loading account...";
+
+    const emailIsDisabled = appConfig.getKey(
+        "ADMIN_USER_CAN_CHANGE_EMAIL",
+        process.env.REACT_APP_ADMIN_USER_CAN_CHANGE_EMAIL === "false"
+    );
+
+    const isExternal = user?.external === true;
+
     const onSubmit = async (formData: UserAccountFormData) => {
-        setLoading(true);
+        setSaving(true);
         const { data: response } = await updateUser({
             variables: { data: omit(formData, ["id", "external"]) }
         });
 
         const { error } = response.adminUsers.updateCurrentUser;
-        setLoading(false);
+        setSaving(false);
 
         if (error) {
-            return showSnackbar(error.message, {
-                action: <SnackbarAction label="Close" onClick={() => showSnackbar(null)} />
+            toast.showWarningToast({
+                title: "Error updating user account",
+                description: error.message,
+                duration: Infinity
             });
+            return;
         }
 
         // TODO: set new roles/teams into the identity context
@@ -70,50 +83,33 @@ const UserAccountForm = () => {
             }
         });
 
-        showSnackbar("Account saved successfully!");
+        toast.showSuccessToast({ title: "Account updated successfully!" });
     };
-
-    const user = currentUser.loading ? {} : currentUser.data.adminUsers.user.data;
-
-    const emailIsDisabled = appConfig.getKey(
-        "ADMIN_USER_CAN_CHANGE_EMAIL",
-        process.env.REACT_APP_ADMIN_USER_CAN_CHANGE_EMAIL === "false"
-    );
-
-    const isExternal = user?.external === true;
 
     return (
         <CenteredView maxWidth={600}>
-            <Form
-                data={user}
-                onSubmit={data => {
-                    /**
-                     * We are positive that data is UserAccountFormData.
-                     */
-                    onSubmit(data as unknown as UserAccountFormData);
-                }}
-            >
+            <Form<UserAccountFormData> data={user} onSubmit={onSubmit}>
                 {({ data, form, Bind }) => (
                     <SimpleForm>
-                        {loading && <CircularProgress style={{ zIndex: 3 }} />}
+                        {isFormLoading && <OverlayLoader text={loaderMessage} />}
                         <SimpleFormHeader title={"Account"} />
                         <SimpleFormContent>
                             {isExternal && (
                                 <Grid>
-                                    <Cell span={12}>
+                                    <Grid.Column span={12}>
                                         <Alert type={"info"} title={"External User"}>
                                             This user is an external user and cannot be edited.
                                         </Alert>
-                                    </Cell>
+                                    </Grid.Column>
                                 </Grid>
                             )}
                             <Grid>
-                                <Cell span={12} data-testid={"avatar"}>
+                                <Grid.Column span={12} data-testid={"avatar"}>
                                     <Bind name="avatar">
                                         <AvatarImage round disabled={isExternal} />
                                     </Bind>
-                                </Cell>
-                                <Cell span={12}>
+                                </Grid.Column>
+                                <Grid.Column span={12}>
                                     <Bind
                                         name="firstName"
                                         validators={validation.create("required")}
@@ -124,8 +120,8 @@ const UserAccountForm = () => {
                                             data-testid="account.firstname"
                                         />
                                     </Bind>
-                                </Cell>
-                                <Cell span={12}>
+                                </Grid.Column>
+                                <Grid.Column span={12}>
                                     {" "}
                                     <Bind
                                         name="lastName"
@@ -137,8 +133,8 @@ const UserAccountForm = () => {
                                             data-testid="account.lastname"
                                         />
                                     </Bind>
-                                </Cell>
-                                <Cell span={12}>
+                                </Grid.Column>
+                                <Grid.Column span={12}>
                                     <Bind
                                         name="email"
                                         validators={validation.create("required,email")}
@@ -153,8 +149,8 @@ const UserAccountForm = () => {
                                             }
                                         />
                                     </Bind>
-                                </Cell>
-                                <Cell span={12}>
+                                </Grid.Column>
+                                <Grid.Column span={12}>
                                     <Bind name="password" validators={passwordValidator}>
                                         <Input
                                             autoComplete="off"
@@ -167,17 +163,15 @@ const UserAccountForm = () => {
                                             data-testid="account.password"
                                         />
                                     </Bind>
-                                </Cell>
+                                </Grid.Column>
                             </Grid>
                         </SimpleFormContent>
                         <SimpleFormFooter data-testid={"form-footer"}>
-                            <ButtonPrimary
+                            <Button
                                 disabled={isExternal}
                                 data-testid="account.updatebutton"
-                                onClick={ev => {
-                                    form.submit(ev);
-                                }}
-                            >{t`Update account`}</ButtonPrimary>
+                                onClick={form.submit}
+                            >{t`Update account`}</Button>
                         </SimpleFormFooter>
                     </SimpleForm>
                 )}
@@ -185,5 +179,3 @@ const UserAccountForm = () => {
         </CenteredView>
     );
 };
-
-export default UserAccountForm;

@@ -165,53 +165,6 @@ describe("KeyValueStore Feature", () => {
             });
         });
 
-        describe("list", () => {
-            it("should list values by prefix in default scope", async () => {
-                await globalKeyValueStore.set("app/config/theme", { mode: "dark" });
-                await globalKeyValueStore.set("app/config/language", { lang: "en" });
-                await globalKeyValueStore.set("app/settings/user", { name: "John" });
-
-                const result = await globalKeyValueStore.list("app/config/");
-                expect(result.isOk()).toBe(true);
-                expect(result.value).toHaveLength(2);
-
-                const keys = result.value.map(r => r.key).sort();
-                expect(keys).toEqual(["app/config/language", "app/config/theme"]);
-            });
-
-            it("should list values by prefix in specific scope", async () => {
-                await globalKeyValueStore.set("feature/a", { enabled: true }, { scope: "tenant1" });
-                await globalKeyValueStore.set(
-                    "feature/b",
-                    { enabled: false },
-                    { scope: "tenant1" }
-                );
-                await globalKeyValueStore.set("feature/c", { enabled: true }, { scope: "tenant2" });
-
-                const result = await globalKeyValueStore.list("feature/", { scope: "tenant1" });
-                expect(result.isOk()).toBe(true);
-                expect(result.value).toHaveLength(2);
-
-                const keys = result.value.map(r => r.key).sort();
-                expect(keys).toEqual(["feature/a", "feature/b"]);
-            });
-
-            it("should return empty array when no matches found", async () => {
-                const result = await globalKeyValueStore.list("nonexistent/");
-                expect(result.isOk()).toBe(true);
-                expect(result.value).toEqual([]);
-            });
-
-            it("should list all values with empty prefix", async () => {
-                await globalKeyValueStore.set("key1", { value: 1 }, { scope: "test" });
-                await globalKeyValueStore.set("key2", { value: 2 }, { scope: "test" });
-
-                const result = await globalKeyValueStore.list("", { scope: "test" });
-                expect(result.isOk()).toBe(true);
-                expect(result.value).toHaveLength(2);
-            });
-        });
-
         describe("update", () => {
             it("should update an existing value", async () => {
                 await globalKeyValueStore.set("counter", { count: 1 });
@@ -298,39 +251,6 @@ describe("KeyValueStore Feature", () => {
                 const getResult2 = await keyValueStore.get("shared/key");
                 expect(getResult2.isOk()).toBe(true);
                 expect(getResult2.value).toEqual({ tenant: "2" });
-            });
-        });
-
-        describe("list", () => {
-            it("should list values by prefix for current tenant only", async () => {
-                const tenant1 = createTenant({ id: "tenant1", name: "Tenant 1", parent: "root" });
-
-                tenantContext.setTenant(tenant1);
-                await keyValueStore.set("plugin/a/config", { enabled: true });
-                await keyValueStore.set("plugin/b/config", { enabled: false });
-                await keyValueStore.set("other/config", { value: 1 });
-
-                const result = await keyValueStore.list("plugin/");
-                expect(result.isOk()).toBe(true);
-                expect(result.value).toHaveLength(2);
-
-                const keys = result.value.map(r => r.key).sort();
-                expect(keys).toEqual(["plugin/a/config", "plugin/b/config"]);
-            });
-
-            it("should not return values from other tenants", async () => {
-                const tenant1 = createTenant({ id: "tenant1", name: "Tenant 1", parent: "root" });
-                const tenant2 = createTenant({ id: "tenant2", name: "Tenant 2", parent: "root" });
-
-                // Add data to tenant1
-                tenantContext.setTenant(tenant1);
-                await keyValueStore.set("app/config", { value: 1 });
-
-                // List from tenant2 should be empty
-                tenantContext.setTenant(tenant2);
-                const result = await keyValueStore.list("app/");
-                expect(result.isOk()).toBe(true);
-                expect(result.value).toEqual([]);
             });
         });
 

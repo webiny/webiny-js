@@ -2,8 +2,8 @@ import type { CreatedBy, SecurityPermission } from "~/types/security.js";
 
 export interface ApiKey {
     id: string;
-    tenant: string;
     name: string;
+    slug: string;
     description: string;
     token: string;
     permissions: SecurityPermission[];
@@ -13,6 +13,7 @@ export interface ApiKey {
 
 export interface CreateApiKeyInput {
     name: string;
+    slug: string;
     description: string;
     permissions: SecurityPermission[];
 }

@@ -43,7 +43,7 @@ export const SchedulerConfigs = () => {
                     hideable={false}
                 />
                 <Browser.Table.Column
-                    name={"scheduledOn"}
+                    name={"scheduledFor"}
                     header={"Action Time"}
                     cell={<CellScheduledOn />}
                     sortable={true}
@@ -58,7 +58,11 @@ export const SchedulerConfigs = () => {
                     hideable={false}
                     resizable={false}
                 />
-                <Browser.Table.Sorting name={"scheduledOn"} field={"scheduledOn"} order={"desc"} />
+                <Browser.Table.Sorting
+                    name={"scheduledFor"}
+                    field={"scheduledFor"}
+                    order={"desc"}
+                />
                 <Browser.EntryAction name={"cancel"} element={<CancelItemAction />} />
             </SchedulerListConfig>
         </>

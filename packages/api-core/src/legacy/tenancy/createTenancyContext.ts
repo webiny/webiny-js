@@ -5,7 +5,7 @@ import { GetTenantByIdUseCase } from "~/features/tenancy/GetTenantById/index.js"
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 import { LegacyContext } from "~/legacy/tenancy/LegacyContext.js";
 import { createTenantSchema } from "~/graphql/tenancy/tenant.gql.js";
-import { RootTenant } from "~/domain/tenancy/RootTenant.js";
+import { RootTenantValue } from "~/domain/tenancy/RootTenantValue.js";
 
 export const createTenancyContext = () => {
     return new ContextPlugin<ApiCoreContext>(async context => {
@@ -43,7 +43,7 @@ export const createTenancyContext = () => {
             }
 
             // Mock root tenant so the system can bootstrap
-            tenantContext.setTenant(RootTenant.create());
+            tenantContext.setTenant(RootTenantValue.create());
         }
 
         // Set up legacy context. We use this API in many places across our codebase, and this will provide

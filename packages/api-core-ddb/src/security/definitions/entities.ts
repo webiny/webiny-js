@@ -2,7 +2,7 @@ import { createStandardEntity, standardEntityAttributes } from "@webiny/db-dynam
 import type { Table } from "@webiny/db-dynamodb/toolbox.js";
 import { ENTITIES } from "../types.js";
 import type { IApiKeyEntity, IRoleEntity, ITeamEntity } from "~/security/definitions/types.js";
-import type { ApiKey, Role, Team } from "@webiny/api-core/types/security.js";
+import type { Role, StorageApiKey, Team } from "@webiny/api-core/types/security.js";
 
 export const createRoleEntity = (table: Table<string, string, string>): IRoleEntity => {
     return createStandardEntity<Role>({
@@ -22,7 +22,7 @@ export const createTeamEntity = (table: Table<string, string, string>): ITeamEnt
 };
 
 export const createApiKeyEntity = (table: Table<string, string, string>): IApiKeyEntity => {
-    return createStandardEntity<ApiKey>({
+    return createStandardEntity<StorageApiKey>({
         name: ENTITIES.API_KEY,
         table,
         attributes: {

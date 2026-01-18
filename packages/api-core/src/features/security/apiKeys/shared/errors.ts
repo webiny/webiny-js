@@ -1,7 +1,7 @@
 import { BaseError } from "@webiny/feature/api";
 
-export class ApiKeyStorageError extends BaseError {
-    override readonly code = "API_KEY_STORAGE_ERROR" as const;
+export class ApiKeyPersistenceError extends BaseError {
+    override readonly code = "ApiKey/Persistence" as const;
 
     constructor(error: Error) {
         super({
@@ -11,7 +11,7 @@ export class ApiKeyStorageError extends BaseError {
 }
 
 export class ApiKeyNotFoundError extends BaseError {
-    override readonly code = "API_KEY_NOT_FOUND" as const;
+    override readonly code = "ApiKey/NotFound" as const;
 
     constructor() {
         super({
@@ -24,8 +24,8 @@ type NotAuthorizedErrorData = {
     message?: string;
 };
 
-export class NotAuthorizedError extends BaseError<NotAuthorizedErrorData> {
-    override readonly code = "NOT_AUTHORIZED" as const;
+export class ApiKeyNotAuthorizedError extends BaseError<NotAuthorizedErrorData> {
+    override readonly code = "ApiKey/NotAuthorized" as const;
 
     constructor(data: NotAuthorizedErrorData = {}) {
         super({
@@ -40,7 +40,7 @@ type ApiKeyValidationErrorData = {
 };
 
 export class ApiKeyValidationError extends BaseError<ApiKeyValidationErrorData> {
-    override readonly code = "API_KEY_VALIDATION_ERROR" as const;
+    override readonly code = "ApiKey/Validation" as const;
 
     constructor(message: string) {
         super({

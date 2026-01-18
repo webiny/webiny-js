@@ -5,7 +5,7 @@ import { HasPermission } from "@webiny/app-admin";
 import { useRouter } from "@webiny/app-admin";
 import { Permission } from "./plugins/constants.js";
 import { UsersView } from "./ui/views/Users/UsersView.js";
-import { Account } from "./ui/views/Account/index.js";
+import { UserAccountForm } from "./ui/views/Account/index.js";
 import { AccountDetails } from "./plugins/userMenu/AccountDetails.js";
 import permissionRenderer from "./plugins/permissionRenderer/index.js";
 import { CognitoLogin, type CognitoLoginProps } from "./CognitoLogin.js";
@@ -40,7 +40,7 @@ const CognitoIdP = (props: CognitoAdminProps) => {
                         route={Routes.Users.Account}
                         element={
                             <AdminLayout title={"User Account"}>
-                                <Account />
+                                <UserAccountForm />
                             </AdminLayout>
                         }
                     />

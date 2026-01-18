@@ -24,6 +24,7 @@ class CancelScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
     ) {}
 
     async execute(id: string): Promise<Result<void, UseCaseAbstraction.Error>> {
+        console.log("Cancel schedule", id);
         // Check if scheduled action exists
         const getResult = await this.getScheduledActionUseCase.execute(id);
 
@@ -38,11 +39,12 @@ class CancelScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         const scheduleId = ScheduledActionIdWithVersion.from(id);
+        console.log("scheduleId", scheduleId);
 
         // Delete EventBridge schedule
         // Note: We continue even if this fails, as the schedule might already be executed/deleted
         try {
-            await this.schedulerService.delete(scheduleId);
+            await this.schedulerService.delete(id);
         } catch (error) {
             console.warn(
                 `Failed to delete EventBridge schedule: ${scheduleId}. Continuing with CMS entry deletion.`,
@@ -57,12 +59,13 @@ class CancelScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
         });
 
         if (deleteResult.isFail()) {
+            console.log("deleteResultError", deleteResult.error);
             return Result.fail(
                 new ScheduledActionPersistenceError(new Error(deleteResult.error.message))
             );
         }
 
-        return Result.ok(undefined);
+        return Result.ok();
     }
 }
 

@@ -1,10 +1,14 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { ApiKey, ListApiKeysInput } from "./types.js";
-import { type ApiKeyNotFoundError, ApiKeyStorageError } from "./errors.js";
+import {
+    type ApiKeyNotFoundError,
+    ApiKeyPersistenceError,
+    ApiKeyValidationError
+} from "./errors.js";
 
 export interface IApiKeysRepositoryErrors {
-    base: ApiKeyNotFoundError | ApiKeyStorageError;
+    base: ApiKeyNotFoundError | ApiKeyPersistenceError | ApiKeyValidationError;
 }
 
 type RepositoryError = IApiKeysRepositoryErrors[keyof IApiKeysRepositoryErrors];
@@ -12,6 +16,7 @@ type RepositoryError = IApiKeysRepositoryErrors[keyof IApiKeysRepositoryErrors];
 export interface IApiKeysRepository {
     get(id: string): Promise<Result<ApiKey, RepositoryError>>;
     getByToken(token: string): Promise<Result<ApiKey, RepositoryError>>;
+    getBySlug(token: string): Promise<Result<ApiKey, RepositoryError>>;
     list(params: ListApiKeysInput): Promise<Result<ApiKey[], RepositoryError>>;
     create(data: ApiKey): Promise<Result<void, RepositoryError>>;
     update(data: ApiKey): Promise<Result<void, RepositoryError>>;
@@ -25,7 +30,7 @@ export namespace ApiKeysRepository {
     export type Error = RepositoryError;
 }
 
-export type CodeApiKey = Pick<ApiKey, "name" | "permissions"> & {
+export type CodeApiKey = Pick<ApiKey, "name" | "permissions" | "slug"> & {
     token: `wat_${string}`;
 };
 
@@ -43,6 +48,7 @@ export namespace ApiKeyFactory {
 
 export interface IApiKeyProvider {
     getByToken(token: string): Promise<ApiKey | null>;
+    getBySlug(slug: string): Promise<ApiKey | null>;
 }
 
 export const ApiKeyProvider = createAbstraction<IApiKeyProvider>("ApiKeyProvider");

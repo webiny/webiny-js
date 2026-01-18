@@ -11,7 +11,7 @@ import { DeleteRedirectUseCase } from "~/features/redirects/DeleteRedirect/index
 import { GetActiveRedirectsUseCase } from "~/features/redirects/GetActiveRedirects/index.js";
 import type { ICreateWbRedirectData } from "~/features/redirects/CreateRedirect/abstractions.js";
 
-describe("Redirects Use Cases", () => {
+describe("Redirects Use Cases (Authorized)", () => {
     let context: ApiCoreContext;
 
     beforeEach(async () => {

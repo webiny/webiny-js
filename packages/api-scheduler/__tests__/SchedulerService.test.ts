@@ -33,7 +33,7 @@ describe("SchedulerService", () => {
 
         const input: SchedulerServiceCreateInput = {
             id: "schedule-1",
-            scheduleOn: new Date(Date.now() + 1000000)
+            scheduleFor: new Date(Date.now() + 1000000)
         };
 
         await service.create(input);
@@ -47,7 +47,7 @@ describe("SchedulerService", () => {
 
         const input: SchedulerServiceCreateInput = {
             id: "schedule-1",
-            scheduleOn: new Date(Date.now() - 100000)
+            scheduleFor: new Date(Date.now() - 100000)
         };
 
         try {
@@ -78,7 +78,7 @@ describe("SchedulerService", () => {
 
         const input: SchedulerServiceCreateInput = {
             id: "schedule-1",
-            scheduleOn: new Date(Date.now() + 1000000)
+            scheduleFor: new Date(Date.now() + 1000000)
         };
 
         await service.update(input);
@@ -92,7 +92,7 @@ describe("SchedulerService", () => {
 
         const input: SchedulerServiceCreateInput = {
             id: "schedule-1",
-            scheduleOn: new Date(Date.now())
+            scheduleFor: new Date(Date.now())
         };
 
         try {

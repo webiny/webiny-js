@@ -18,7 +18,7 @@ export interface BaseUserAttributes {
 
     // Required field, but, note that some users coming with a 3rd party IdP might not
     // be able to provide it. In that case, we assign the identity's ID as the email.
-    // Check `api-security-okta` package for an example.
+    // Check `okta` package for an example.
     email: string;
 
     roles?: string[];
@@ -42,10 +42,6 @@ export interface CreateUserInput extends Omit<BaseUserAttributes, "id" | "displa
 
     // Display name can be provided, but it's not required. If not provided, it will be auto-generated.
     displayName?: string;
-
-    // At the moment, this field is only used by the default Cognito IdP setup.
-    // Other IdPs (Auth0, Okta) do not require this field to be present.
-    password?: string;
 }
 
 export type UpdateUserInput = Partial<Omit<CreateUserInput, "id">>;

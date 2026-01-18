@@ -2,10 +2,10 @@ import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { ApiKey, CreateApiKeyInput } from "../shared/types.js";
 import { ApiKeysRepository } from "../shared/abstractions.js";
-import { NotAuthorizedError, ApiKeyValidationError } from "../shared/errors.js";
+import { ApiKeyNotAuthorizedError, ApiKeyValidationError } from "../shared/errors.js";
 
 export interface ICreateApiKeyErrors {
-    notAuthorized: NotAuthorizedError;
+    notAuthorized: ApiKeyNotAuthorizedError;
     validation: ApiKeyValidationError;
 }
 
@@ -15,9 +15,9 @@ export interface ICreateApiKey {
     execute(input: CreateApiKeyInput): Promise<Result<ApiKey, CreateApiKeyError>>;
 }
 
-export const CreateApiKey = createAbstraction<ICreateApiKey>("CreateApiKey");
+export const CreateApiKeyUseCase = createAbstraction<ICreateApiKey>("CreateApiKeyUseCase");
 
-export namespace CreateApiKey {
+export namespace CreateApiKeyUseCase {
     export type Interface = ICreateApiKey;
     export type Error = CreateApiKeyError;
 }

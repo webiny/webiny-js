@@ -109,7 +109,7 @@ class AutoInstallAfterApiDeployImpl implements ApiAfterDeploy.Interface {
         const variables = {
             installationInput: [
                 {
-                    app: "AdminUser",
+                    app: "Cognito",
                     data: adminUser
                 }
             ]

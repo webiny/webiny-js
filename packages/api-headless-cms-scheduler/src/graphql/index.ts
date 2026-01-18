@@ -73,21 +73,9 @@ export const createSchedulerGraphQL = () => {
                 meta: CmsListMeta
             }
 
-            input CmsCreateScheduleInput {
-                immediately: Boolean
-                scheduleOn: DateTime
-                type: CmsScheduleRecordType!
-            }
-
             type CmsCreateScheduleResponse {
                 data: CmsScheduleRecord
                 error: CmsError
-            }
-
-            input CmsUpdateScheduleInput {
-                immediately: Boolean
-                scheduleOn: DateTime
-                type: CmsScheduleRecordType!
             }
 
             type CmsUpdateScheduleResponse {
@@ -106,16 +94,16 @@ export const createSchedulerGraphQL = () => {
                 title_not_contains: String
                 type: CmsScheduleRecordType
                 scheduledBy: ID
-                scheduledOn: DateTime
-                scheduledOn_gte: DateTime
-                scheduledOn_lte: DateTime
+                scheduledFor: DateTime
+                scheduledFor_gte: DateTime
+                scheduledFor_lte: DateTime
             }
 
             enum CmsListSchedulesSorter {
                 title_ASC
                 title_DESC
-                scheduledOn_ASC
-                scheduledOn_DESC
+                scheduledFor_ASC
+                scheduledFor_DESC
             }
 
             extend type Query {
@@ -133,12 +121,16 @@ export const createSchedulerGraphQL = () => {
                 createCmsSchedule(
                     modelId: String!
                     id: ID!
-                    input: CmsCreateScheduleInput!
+                    immediately: Boolean
+                    scheduleFor: DateTime
+                    type: CmsScheduleRecordType!
                 ): CmsCreateScheduleResponse!
                 updateCmsSchedule(
                     modelId: String!
                     id: ID!
-                    input: CmsUpdateScheduleInput!
+                    immediately: Boolean
+                    scheduleFor: DateTime
+                    type: CmsScheduleRecordType!
                 ): CmsUpdateScheduleResponse!
                 cancelCmsSchedule(modelId: String!, id: ID!): CmsCancelScheduleResponse!
             }
@@ -224,9 +216,9 @@ export const createSchedulerGraphQL = () => {
                         const result = await scheduleEntry.execute({
                             modelId: data.modelId,
                             targetId: data.id,
-                            scheduleOn: data.input.scheduleOn?.toISOString(),
-                            immediately: data.input.immediately,
-                            actionType: typeMap[data.input.type]
+                            scheduleFor: data.scheduleFor?.toISOString(),
+                            immediately: data.immediately,
+                            actionType: typeMap[data.type]
                         });
 
                         if (result.isFail()) {
@@ -249,9 +241,9 @@ export const createSchedulerGraphQL = () => {
                         const result = await scheduleEntry.execute({
                             modelId: data.modelId,
                             targetId: data.id,
-                            scheduleOn: data.input.scheduleOn?.toISOString(),
-                            immediately: data.input.immediately,
-                            actionType: typeMap[data.input.type]
+                            scheduleFor: data.scheduleFor?.toISOString(),
+                            immediately: data.immediately,
+                            actionType: typeMap[data.type]
                         });
 
                         if (result.isFail()) {
@@ -272,10 +264,7 @@ export const createSchedulerGraphQL = () => {
                             CancelScheduledEntryActionUseCase
                         );
 
-                        const res = await cancelEntryAction.execute({
-                            modelId: validated.data.modelId,
-                            targetId: validated.data.id
-                        });
+                        const res = await cancelEntryAction.execute(validated.data.id);
 
                         if (res.isFail()) {
                             throw res.error;

@@ -141,12 +141,10 @@ export const ElementOverlays = observer(() => {
                         previewBox={box}
                         editorBox={boxes.editor.get(box.id)!}
                     />
-                    {slots
-                        .filter(slot => slot.parentId === box.id)
-                        .map(slot => (
-                            <DropBox key={slot.id} box={slot} onDrop={onDrop} />
-                        ))}
                 </Fragment>
+            ))}
+            {slots.map(slot => (
+                <DropBox key={slot.id} box={slot} onDrop={onDrop} />
             ))}
         </OverlayContainer>
     );
