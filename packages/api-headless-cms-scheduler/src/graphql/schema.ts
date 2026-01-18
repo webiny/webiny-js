@@ -27,7 +27,7 @@ export const listScheduleSchema = zod.object({
             title_not_contains: zod.string().optional(),
             type: publishAndUnpublishSchemaType.optional(),
             scheduledBy: zod.string().optional(),
-            scheduledOn: zod
+            scheduledFor: zod
                 .date()
                 .optional()
                 .transform(value => {
@@ -36,7 +36,7 @@ export const listScheduleSchema = zod.object({
                     }
                     return dateToISOString(value);
                 }),
-            scheduledOn_gte: zod
+            scheduledFor_gte: zod
                 .date()
                 .optional()
                 .transform(value => {
@@ -45,7 +45,7 @@ export const listScheduleSchema = zod.object({
                     }
                     return dateToISOString(value);
                 }),
-            scheduledOn_lte: zod
+            scheduledFor_lte: zod
                 .date()
                 .optional()
                 .transform(value => {
@@ -76,12 +76,12 @@ export const listScheduleSchema = zod.object({
 const schedulerInputSchema = zod.discriminatedUnion("immediately", [
     zod.object({
         immediately: zod.literal(true),
-        scheduleOn: zod.never().optional(),
+        scheduleFor: zod.never().optional(),
         type: publishAndUnpublishSchemaType
     }),
     zod.object({
         immediately: zod.literal(false).optional(),
-        scheduleOn: zod.date().or(
+        scheduleFor: zod.date().or(
             zod.string().transform(value => {
                 return new Date(value);
             })
@@ -90,19 +90,21 @@ const schedulerInputSchema = zod.discriminatedUnion("immediately", [
     })
 ]);
 
-export const createScheduleSchema = zod.object({
-    modelId: zod.string(),
-    id: zod.string(),
-    input: schedulerInputSchema
-});
+export const createScheduleSchema = schedulerInputSchema.and(
+    zod.object({
+        modelId: zod.string(),
+        id: zod.string()
+    })
+);
 
-export const updateScheduleSchema = zod.object({
-    modelId: zod.string(),
-    id: zod.string(),
-    input: schedulerInputSchema
-});
+export const updateScheduleSchema = schedulerInputSchema.and(
+    zod.object({
+        modelId: zod.string(),
+        id: zod.string()
+    })
+);
 
 export const cancelScheduleSchema = zod.object({
-    modelId: zod.string(),
+    modelId: zod.string(), // TODO: remove this; not needed as schedule ID already has model encoded
     id: zod.string()
 });

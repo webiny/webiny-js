@@ -45,7 +45,7 @@ describe("Action Handlers", () => {
             modelId: MOCK_TARGET_MODEL_ID,
             targetId: entryResult.value.id,
             actionType: "Publish",
-            scheduleOn: new Date(Date.now() + 100000).toISOString()
+            scheduleFor: new Date(Date.now() + 100000).toISOString()
         });
 
         // Assert scheduled actions
@@ -73,7 +73,7 @@ describe("Action Handlers", () => {
             modelId: MOCK_TARGET_MODEL_ID,
             targetId: entryResult.value.id,
             actionType: "Unpublish",
-            scheduleOn: new Date(Date.now() + 1000000).toISOString()
+            scheduleFor: new Date(Date.now() + 1000000).toISOString()
         });
 
         // Execute action handler

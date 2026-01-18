@@ -13,12 +13,12 @@ import type { ApiKey } from "@webiny/api-core/types/security.js";
 const cleanupApiKey = (apiKey: ApiKey): Omit<ApiKey, "token"> => {
     return {
         id: apiKey.id,
+        slug: apiKey.slug,
         createdBy: apiKey.createdBy,
         createdOn: apiKey.createdOn,
         description: apiKey.description,
         name: apiKey.name,
-        permissions: apiKey.permissions,
-        tenant: apiKey.tenant
+        permissions: apiKey.permissions
     };
 };
 

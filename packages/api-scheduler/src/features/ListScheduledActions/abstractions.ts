@@ -22,10 +22,11 @@ export interface IListScheduledActionsWhere {
     namespace_startsWith?: string;
     actionType?: string;
     targetId?: string;
+    targetId_startsWith?: string;
     scheduledBy?: string;
-    scheduledOn?: DateISOString;
-    scheduledOn_gte?: DateISOString;
-    scheduledOn_lte?: DateISOString;
+    scheduledFor?: DateISOString;
+    scheduledFor_gte?: DateISOString;
+    scheduledFor_lte?: DateISOString;
 }
 
 export interface IListScheduledActionsParams {

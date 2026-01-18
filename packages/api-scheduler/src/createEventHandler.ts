@@ -7,7 +7,7 @@ import { ExecuteScheduledActionUseCase } from "~/features/ExecuteScheduledAction
 
 export interface IScheduledActionEventPayload {
     id: string; // id of the scheduled action
-    scheduleOn: string;
+    scheduleFor: string;
 }
 
 export interface IScheduledActionEvent {
@@ -26,7 +26,7 @@ const canHandle = (event: Partial<IScheduledActionEvent>): boolean => {
     }
 
     const value = event[SCHEDULED_CMS_ACTION_EVENT_IDENTIFIER];
-    return !!(value?.id && value?.scheduleOn);
+    return !!(value?.id && value?.scheduleFor);
 };
 
 const handler = createSourceHandler<IScheduledActionEvent, HandlerParams>({

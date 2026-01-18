@@ -9,8 +9,8 @@ export class ActionMapper {
                 modelId: action.payload?.modelId
             },
             scheduledBy: action.scheduledBy,
-            publishOn: action.actionType === "Publish" ? action.scheduledOn : null,
-            unpublishOn: action.actionType === "Unpublish" ? action.scheduledOn : null,
+            publishOn: action.actionType === "Publish" ? action.scheduledFor : null,
+            unpublishOn: action.actionType === "Unpublish" ? action.scheduledFor : null,
             type: action.actionType.toLowerCase(),
             title: action.title
         };

@@ -12,11 +12,6 @@ import {
  * This is a convenience use case for canceling scheduled CMS entry actions.
  */
 
-export interface ICancelScheduledEntryActionInput {
-    modelId: string;
-    targetId: string;
-}
-
 export interface ICancelScheduledEntryActionErrors {
     notFound: ScheduledActionNotFoundError;
     persistence: ScheduledActionPersistenceError;
@@ -27,9 +22,7 @@ type CancelScheduledEntryActionError =
     ICancelScheduledEntryActionErrors[keyof ICancelScheduledEntryActionErrors];
 
 export interface ICancelScheduledEntryActionUseCase {
-    execute(
-        input: ICancelScheduledEntryActionInput
-    ): Promise<Result<void, CancelScheduledEntryActionError>>;
+    execute(scheduleId: string): Promise<Result<void, CancelScheduledEntryActionError>>;
 }
 
 export const CancelScheduledEntryActionUseCase =
@@ -37,6 +30,5 @@ export const CancelScheduledEntryActionUseCase =
 
 export namespace CancelScheduledEntryActionUseCase {
     export type Interface = ICancelScheduledEntryActionUseCase;
-    export type Input = ICancelScheduledEntryActionInput;
     export type Error = CancelScheduledEntryActionError;
 }

@@ -7,7 +7,7 @@ import { parseIdentifier } from "@webiny/utils";
 import { ScheduleActionUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { GetScheduledActionUseCase } from "~/features/GetScheduledAction/abstractions.js";
 import { ScheduledActionModel, SchedulerService } from "~/shared/abstractions.js";
-import type { IScheduledAction, ISchedulerInput, Identity } from "~/shared/abstractions.js";
+import type { IScheduledAction, Identity } from "~/shared/abstractions.js";
 import {
     InvalidScheduleDateError,
     ScheduledActionPersistenceError,
@@ -45,8 +45,8 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
     ): Promise<Result<IScheduledAction, UseCaseAbstraction.Error>> {
         const identity = this.identityContext.getIdentity();
 
-        if (!isValidDate(params.input.scheduleOn)) {
-            return Result.fail(new InvalidScheduleDateError(params.input.scheduleOn));
+        if (!isValidDate(params.scheduleFor)) {
+            return Result.fail(new InvalidScheduleDateError(params.scheduleFor));
         }
 
         // Generate unique schedule ID
@@ -66,7 +66,7 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
                     params.namespace,
                     params.actionType,
                     params.targetId,
-                    params.input,
+                    params.scheduleFor,
                     identity,
                     params.payload
                 );
@@ -80,7 +80,7 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         // Reschedule existing action
         const scheduledAction = existingResult.value;
 
-        return this.reschedule(scheduledAction, params.input, identity, params.payload);
+        return this.reschedule(scheduledAction, params.scheduleFor, identity, params.payload);
     }
 
     /**
@@ -92,7 +92,7 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         namespace: string,
         actionType: string,
         targetId: string,
-        input: ISchedulerInput,
+        scheduleFor: string,
         identity: Identity,
         payload?: any
     ): Promise<Result<IScheduledAction, UseCaseAbstraction.Error>> {
@@ -105,7 +105,7 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
             actionType,
             targetId,
             scheduledBy: identity,
-            scheduledOn: input.scheduleOn,
+            scheduledFor: scheduleFor,
             payload
         };
 
@@ -122,7 +122,7 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         try {
             await this.schedulerService.create({
                 id: scheduleId,
-                scheduleOn: new Date(input.scheduleOn)
+                scheduleFor: new Date(scheduleFor)
             });
         } catch (error) {
             // Rollback - delete CMS entry if EventBridge fails
@@ -144,7 +144,7 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
      */
     private async reschedule(
         existing: IScheduledAction,
-        input: ISchedulerInput,
+        scheduleFor: string,
         identity: Identity,
         payload?: any
     ): Promise<Result<IScheduledAction, UseCaseAbstraction.Error>> {
@@ -157,7 +157,7 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         const existingEntryId = ScheduledActionIdWithVersion.from(existing.id);
         const updateResult = await this.updateEntryUseCase.execute(this.model, existingEntryId, {
             scheduledBy: identity,
-            scheduledOn: input.scheduleOn,
+            scheduledFor: scheduleFor,
             payload
         });
 
@@ -171,7 +171,7 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         try {
             await this.schedulerService.update({
                 id: existing.id,
-                scheduleOn: new Date(input.scheduleOn)
+                scheduleFor: new Date(scheduleFor)
             });
         } catch (error) {
             return Result.fail(new SchedulerServiceError(error as Error));
@@ -180,7 +180,7 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         return Result.ok({
             ...existing,
             scheduledBy: identity,
-            scheduledOn: input.scheduleOn,
+            scheduledFor: scheduleFor,
             payload
         });
     }

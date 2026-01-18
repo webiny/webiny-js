@@ -45,9 +45,9 @@ class ScheduleEntryActionUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.ok(result.value);
         }
 
-        // Validate scheduleOn is provided for future scheduling
-        if (!input.scheduleOn) {
-            throw new Error("scheduleOn is required when immediately is not true");
+        // Validate scheduleFor is provided for future scheduling
+        if (!input.scheduleFor) {
+            throw new Error("scheduleFor is required when immediately is not true");
         }
 
         // Fetch the target model
@@ -73,9 +73,7 @@ class ScheduleEntryActionUseCaseImpl implements UseCaseAbstraction.Interface {
             actionType: input.actionType,
             targetId: input.targetId,
             title,
-            input: {
-                scheduleOn: input.scheduleOn
-            },
+            scheduleFor: input.scheduleFor,
             payload: {
                 modelId: input.modelId
             }

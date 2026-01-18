@@ -14027,6 +14027,7 @@ __metadata:
     "@webiny/api-file-manager-s3": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^0.2.3"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/handler-aws": "npm:0.0.0"
@@ -14759,6 +14760,7 @@ __metadata:
     "@webiny/lexical-editor": "npm:0.0.0"
     "@webiny/lexical-nodes": "npm:0.0.0"
     "@webiny/lexical-theme": "npm:0.0.0"
+    "@webiny/plugins": "npm:0.0.0"
     "@webiny/react-composition": "npm:0.0.0"
     "@webiny/react-properties": "npm:0.0.0"
     "@webiny/ui": "npm:0.0.0"
@@ -14777,6 +14779,7 @@ __metadata:
     graphql-tag: "npm:^2.12.6"
     is-hotkey: "npm:^0.2.0"
     lodash: "npm:^4.17.21"
+    markdown-to-jsx: "npm:^9.5.7"
     matcher: "npm:^5.0.0"
     mobx: "npm:^6.15.0"
     mobx-react-lite: "npm:^3.4.3"
@@ -26338,6 +26341,26 @@ __metadata:
   version: 4.3.0
   resolution: "map-obj@npm:4.3.0"
   checksum: 10/fbc554934d1a27a1910e842bc87b177b1a556609dd803747c85ece420692380827c6ae94a95cce4407c054fa0964be3bf8226f7f2cb2e9eeee432c7c1985684e
+  languageName: node
+  linkType: hard
+
+"markdown-to-jsx@npm:^9.5.7":
+  version: 9.5.7
+  resolution: "markdown-to-jsx@npm:9.5.7"
+  peerDependencies:
+    react: ">= 16.0.0"
+    solid-js: ">=1.0.0"
+    vue: ">=3.0.0"
+  peerDependenciesMeta:
+    react:
+      optional: true
+    react-native:
+      optional: true
+    solid-js:
+      optional: true
+    vue:
+      optional: true
+  checksum: 10/74eac1ed9ee9f1d6da6f967452a47a60aea262ba46a3aee491eb7f6513dadc303f275f0a8c33c6507353e651816f8e416e352db4589ebceb2c2e27d6415a1f4b
   languageName: node
   linkType: hard
 

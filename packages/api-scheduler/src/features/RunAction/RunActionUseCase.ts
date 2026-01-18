@@ -24,7 +24,7 @@ class RunActionUseCaseImpl implements UseCaseAbstraction.Interface {
             title: "Unknown title",
             // Calculate the soonest possible execution time.
             // Add at least 90 seconds of buffer to ensure EventBridge can process the schedule.
-            input: { scheduleOn: new Date(Date.now() + 90000).toISOString() }
+            scheduleFor: new Date(Date.now() + 90000).toISOString()
         });
 
         if (result.isFail()) {
