@@ -19,17 +19,10 @@ export interface IScheduledAction<TPayload = any> {
     actionType: string; // Operation: "Publish", "Unpublish", "Send", "Delete"
     targetId: string; // Resource identifier (entry ID, email ID, etc.)
     scheduledBy: Identity;
-    scheduledOn: string;
+    scheduledFor: string;
     title?: string;
     payload?: TPayload; // Action-specific data
     error?: string; // Error if execution failed
-}
-
-/**
- * Scheduler Input - When to schedule
- */
-export interface ISchedulerInput {
-    scheduleOn: string; // Future date (required)
 }
 
 /**
@@ -66,8 +59,8 @@ export namespace ScheduledActionHandler {
  * Abstracts the underlying scheduling infrastructure (AWS EventBridge, Azure Logic Apps, etc.)
  */
 export interface ISchedulerService {
-    create(params: { id: string; scheduleOn: Date }): Promise<void>;
-    update(params: { id: string; scheduleOn: Date }): Promise<void>;
+    create(params: { id: string; scheduleFor: Date }): Promise<void>;
+    update(params: { id: string; scheduleFor: Date }): Promise<void>;
     delete(id: string): Promise<void>;
     exists(id: string): Promise<boolean>;
 }

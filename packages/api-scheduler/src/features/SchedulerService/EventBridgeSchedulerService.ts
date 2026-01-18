@@ -27,16 +27,16 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
         private config: ISchedulerConfig
     ) {}
 
-    async create(params: { id: string; scheduleOn: Date; payload?: any }): Promise<void> {
-        const { id, scheduleOn, payload } = params;
+    async create(params: { id: string; scheduleFor: Date; payload?: any }): Promise<void> {
+        const { id, scheduleFor, payload } = params;
 
         // Validate date is in future
-        if (scheduleOn <= new Date()) {
+        if (scheduleFor <= new Date()) {
             throw new WebinyError(
                 `Cannot create a schedule for "${id}" with date in the past`,
                 "INVALID_SCHEDULE_DATE",
                 {
-                    scheduleOn,
+                    scheduleFor,
                     id
                 }
             );
@@ -51,7 +51,7 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
         }
 
         // Format: at(YYYY-MM-DDTHH:mm:ss) - EventBridge expects this format
-        const scheduleExpression = `at(${scheduleOn.toISOString().replace(/\.\d{3}Z$/, "")})`;
+        const scheduleExpression = `at(${scheduleFor.toISOString().replace(/\.\d{3}Z$/, "")})`;
 
         await client.send(
             new CreateScheduleCommand({
@@ -68,21 +68,21 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
         );
     }
 
-    async update(params: { id: string; scheduleOn: Date; payload?: any }): Promise<void> {
-        const { id, scheduleOn, payload } = params;
+    async update(params: { id: string; scheduleFor: Date; payload?: any }): Promise<void> {
+        const { id, scheduleFor, payload } = params;
 
         // Validate date is in future
-        if (scheduleOn <= new Date()) {
+        if (scheduleFor <= new Date()) {
             throw new WebinyError(
                 `Cannot update an existing schedule for "${id}" with date in the past`,
                 "INVALID_SCHEDULE_DATE",
-                { scheduleOn, id }
+                { scheduleFor, id }
             );
         }
 
         const client = this.getClient();
 
-        const scheduleExpression = `at(${scheduleOn.toISOString().replace(/\.\d{3}Z$/, "")})`;
+        const scheduleExpression = `at(${scheduleFor.toISOString().replace(/\.\d{3}Z$/, "")})`;
 
         await client.send(
             new UpdateScheduleCommand({
@@ -116,11 +116,13 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
 
     async exists(id: string): Promise<boolean> {
         const client = this.getClient();
+        console.log("schedule exists?", id);
 
         try {
             await client.send(new GetScheduleCommand({ Name: id }));
             return true;
         } catch (ex) {
+            console.log(ex);
             if (ex.name === "ResourceNotFoundException") {
                 return false;
             }

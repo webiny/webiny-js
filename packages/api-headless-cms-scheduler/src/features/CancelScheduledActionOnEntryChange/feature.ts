@@ -1,7 +1,8 @@
 import { createFeature } from "@webiny/feature/api";
 import { CancelScheduledActionOnPublishHandler } from "./CancelScheduledActionOnPublishHandler.js";
 import { CancelScheduledActionOnUnpublishHandler } from "./CancelScheduledActionOnUnpublishHandler.js";
-import { CancelScheduledActionOnDeleteHandler } from "./CancelScheduledActionOnDeleteHandler.js";
+import { CancelScheduledActionOnEntryDeleteHandler } from "./CancelScheduledActionOnEntryDeleteHandler.js";
+import { CancelScheduledActionOnRevisionDeleteHandler } from "./CancelScheduledActionOnRevisionDeleteHandler.js";
 
 /**
  * CancelScheduledActionOnEntryChange Feature
@@ -15,6 +16,7 @@ export const CancelScheduledActionOnEntryChangeFeature = createFeature({
     register(container) {
         container.register(CancelScheduledActionOnPublishHandler);
         container.register(CancelScheduledActionOnUnpublishHandler);
-        container.register(CancelScheduledActionOnDeleteHandler);
+        container.register(CancelScheduledActionOnEntryDeleteHandler);
+        container.register(CancelScheduledActionOnRevisionDeleteHandler);
     }
 });
