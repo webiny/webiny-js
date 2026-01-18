@@ -9,7 +9,7 @@ export const CliCommand = defineExtension({
     multiple: true,
     paramsSchema: ({ project }) => {
         return z.object({
-            src: zodSrcPath(CliCommandFactoryAbstraction, project)
+            src: zodSrcPath({ abstraction: CliCommandFactoryAbstraction, project })
         });
     }
 });
