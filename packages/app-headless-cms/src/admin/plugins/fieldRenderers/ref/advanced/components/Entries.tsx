@@ -3,6 +3,7 @@ import debounce from "lodash/debounce.js";
 import type { CmsReferenceContentEntry } from "~/admin/plugins/fieldRenderers/ref/components/types.js";
 import { Scrollbar } from "@webiny/admin-ui";
 import type { positionValues as PositionValues } from "react-custom-scrollbars";
+import { NoEntries } from "~/admin/plugins/fieldRenderers/ref/advanced/components/NoEntries.js";
 
 interface EntriesProps {
     entries: CmsReferenceContentEntry[];
@@ -22,6 +23,10 @@ export const Entries = (props: EntriesProps) => {
         }, 500),
         [entries, loadMore]
     );
+
+    if (entries.length === 0) {
+        return <NoEntries text={"No records found"} />;
+    }
 
     return (
         <div style={{ height: "260px" }} className={"w-full overflow-x-hidden overflow-y-hidden"}>

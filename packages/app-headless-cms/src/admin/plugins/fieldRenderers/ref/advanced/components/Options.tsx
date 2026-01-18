@@ -14,7 +14,7 @@ const LinkExistingRecordButton = (props: ButtonProps) => {
         <Button
             {...props}
             variant={"tertiary"}
-            text="Select an existing record"
+            text="Link an existing record"
             icon={<LinkIcon />}
         />
     );
@@ -43,7 +43,7 @@ export const Options = ({ models, onNewRecord, onLinkExistingRecord }: OptionsPr
 
     if (hasMultipleModels) {
         return (
-            <div className={"flex gap-sm"}>
+            <div className={"flex gap-sm mt-md"}>
                 <DropdownMenu
                     trigger={
                         <Button
@@ -59,7 +59,7 @@ export const Options = ({ models, onNewRecord, onLinkExistingRecord }: OptionsPr
                     trigger={
                         <Button
                             variant={"tertiary"}
-                            text="Select an existing record"
+                            text="Link an existing record"
                             icon={<LinkIcon />}
                         />
                     }
@@ -71,7 +71,7 @@ export const Options = ({ models, onNewRecord, onLinkExistingRecord }: OptionsPr
     }
 
     return (
-        <div className={"flex gap-sm"}>
+        <div className={"flex gap-sm mt-md"}>
             <CreateNewRecordButton onClick={onSingleNewRecord} />
             <LinkExistingRecordButton onClick={onSingleExistingRecord} />
         </div>

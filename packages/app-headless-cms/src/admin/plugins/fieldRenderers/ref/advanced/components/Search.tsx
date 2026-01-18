@@ -18,6 +18,7 @@ export const Search = ({ onChange, value }: SearchProps) => {
                         onChange={onChange}
                         value={value}
                         startIcon={<Icon label="Search" icon={<SearchIcon />} />}
+                        variant={"secondary"}
                     />
                 )}
             </DelayedOnChange>
