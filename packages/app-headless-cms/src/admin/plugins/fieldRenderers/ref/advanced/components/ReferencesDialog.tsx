@@ -132,10 +132,19 @@ export const ReferencesDialog = (props: ReferencesDialogProps) => {
     return (
         <>
             <Dialog
+                className={"w-[800px]"}
+                size={"lg"}
                 open={true}
                 onClose={onDialogClose}
                 title={"Select an existing record"}
-                description={`Content model: ${contentModel.name}`}
+                description={
+                    <>
+                        Content model:{" "}
+                        <span className={"font-bold text-neutral-primary"}>
+                            {contentModel.name}
+                        </span>
+                    </>
+                }
                 actions={
                     <>
                         <Dialog.CancelAction />
@@ -143,23 +152,25 @@ export const ReferencesDialog = (props: ReferencesDialogProps) => {
                     </>
                 }
             >
-                <>
+                <div className={"relative"}>
                     {loading && <OverlayLoader />}
-                    <Search onChange={onInput} value={searchValue} />
-                    <Entries entries={entries} loadMore={loadMore}>
-                        {entry => {
-                            return (
-                                <Entry
-                                    model={contentModel}
-                                    key={`reference-entry-${entry.id}`}
-                                    entry={entry}
-                                    selected={isSelected(entry.entryId, values)}
-                                    onChange={onChange}
-                                />
-                            );
-                        }}
-                    </Entries>
-                </>
+                    <div className={"flex flex-col gap-md"}>
+                        <Search onChange={onInput} value={searchValue} />
+                        <Entries entries={entries} loadMore={loadMore}>
+                            {entry => {
+                                return (
+                                    <Entry
+                                        model={contentModel}
+                                        key={`reference-entry-${entry.id}`}
+                                        entry={entry}
+                                        selected={isSelected(entry.entryId, values)}
+                                        onChange={onChange}
+                                    />
+                                );
+                            }}
+                        </Entries>
+                    </div>
+                </div>
             </Dialog>
         </>
     );

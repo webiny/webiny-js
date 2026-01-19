@@ -1,9 +1,7 @@
 import React, { useCallback } from "react";
 import debounce from "lodash/debounce.js";
 import type { CmsReferenceContentEntry } from "~/admin/plugins/fieldRenderers/ref/components/types.js";
-import { Scrollbar } from "@webiny/admin-ui";
-import type { positionValues as PositionValues } from "react-custom-scrollbars";
-import { NoEntries } from "~/admin/plugins/fieldRenderers/ref/advanced/components/NoEntries.js";
+import { ScrollArea } from "@webiny/admin-ui";
 
 interface EntriesProps {
     entries: CmsReferenceContentEntry[];
@@ -15,7 +13,7 @@ export const Entries = (props: EntriesProps) => {
     const { entries, children, loadMore } = props;
 
     const loadMoreOnScroll = useCallback(
-        debounce((position: PositionValues) => {
+        debounce(position => {
             if (position.top <= 0.9) {
                 return;
             }
@@ -24,21 +22,17 @@ export const Entries = (props: EntriesProps) => {
         [entries, loadMore]
     );
 
-    if (entries.length === 0) {
-        return <NoEntries text={"No records found"} />;
-    }
-
     return (
-        <div style={{ height: "260px" }} className={"w-full overflow-x-hidden overflow-y-hidden"}>
-            <Scrollbar data-testid="advanced-ref-field-entries" onScrollFrame={loadMoreOnScroll}>
+        <ScrollArea
+            className={"max-h-[404px] w-full flex flex-col gap-md"}
+            data-testid="advanced-ref-field-entries"
+            onScroll={loadMoreOnScroll}
+        >
+            <div className={"flex flex-col gap-md"}>
                 {entries.map((entry, index) => {
-                    return (
-                        <div className={"mb-sm w-full"} key={`entry-${entry.id}`}>
-                            {children(entry, index)}
-                        </div>
-                    );
+                    return <div key={`entry-${entry.id}`}>{children(entry, index)}</div>;
                 })}
-            </Scrollbar>
-        </div>
+            </div>
+        </ScrollArea>
     );
 };

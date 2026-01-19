@@ -100,9 +100,10 @@ export const Default: Story = {
                     icon={<Link.Icon label="Link 1" element={<LinkIcon />} />}
                 />
                 <Link
-                    text={"Link 2"}
+                    text={"Link 2 (target: _blank)"}
                     to={"#link-2"}
                     icon={<Link.Icon label="Link 2" element={<LinkIcon />} />}
+                    target={"_blank"}
                 />
                 <Link
                     text={"Link 3"}
