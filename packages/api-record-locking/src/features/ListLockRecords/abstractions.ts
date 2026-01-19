@@ -1,11 +1,27 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
+import { createAbstraction, Result } from "@webiny/feature/api";
 import type { ILockRecord } from "~/domain/LockRecord.js";
 import type { LockRecordPersistenceError } from "~/domain/errors.js";
 import type { CmsEntryListParams, CmsEntryMeta } from "@webiny/api-headless-cms/types";
+import type {
+    DateStringInterfaceGenerator,
+    IdentityInterfaceGenerator,
+    IdInterfaceGenerator
+} from "@webiny/api";
+
 
 // Input/Output types
-export type ListLockRecordsInput = Pick<CmsEntryListParams, "where" | "limit" | "sort" | "after">;
+export interface IListLockRecordsWhere
+    extends IdInterfaceGenerator<"id">,
+        IdentityInterfaceGenerator<"lockedBy">,
+        IdentityInterfaceGenerator<"createdBy">,
+        DateStringInterfaceGenerator<"lockedOn">,
+        DateStringInterfaceGenerator<"updatedOn">,
+        DateStringInterfaceGenerator<"savedOn">,
+        DateStringInterfaceGenerator<"expiresOn"> {}
+
+export interface ListLockRecordsInput extends Pick<CmsEntryListParams, "limit" | "sort" | "after"> {
+    where?: IListLockRecordsWhere;
+}
 
 export interface ListLockRecordsOutput {
     items: ILockRecord[];

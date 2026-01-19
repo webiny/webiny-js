@@ -18,6 +18,14 @@ import type { CmsGroup } from "./modelGroup.js";
 import type { CmsIdentity } from "./identity.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
+import type {
+    DateStringInterfaceGenerator,
+    IdentityInterfaceGenerator,
+    IdInterfaceGenerator,
+    IdMixedInterfaceGenerator,
+    NumericInterfaceGenerator,
+    TruthfulInterfaceGenerator
+} from "@webiny/api";
 
 export interface CmsError {
     message: string;
@@ -568,20 +576,10 @@ export interface CmsModelContext {
  */
 export type CmsEntryStatus = "published" | "unpublished" | "draft";
 
-export interface CmsEntryListWhereRef {
-    id?: string;
-    id_in?: string[];
-    id_not?: string;
-    id_not_in?: string[];
-    entryId?: string;
-    entryId_not?: string;
-    entryId_in?: string[];
-    entryId_not_in?: string[];
-    modelId?: string;
-    modelId_not?: string;
-    modelId_in?: string[];
-    modelId_not_in?: string[];
-}
+export interface CmsEntryListWhereRef
+    extends IdInterfaceGenerator<"id">,
+        IdInterfaceGenerator<"entryId">,
+        IdInterfaceGenerator<"modelId"> {}
 
 export interface CmsEntryListWhereValues {
     /**
@@ -606,136 +604,53 @@ export interface CmsEntryListWhereValues {
  * @category CmsEntry
  * @category GraphQL params
  */
-export interface CmsEntryListWhere {
-    /**
-     * Fields.
-     */
-    id?: string;
-    id_in?: string[];
-    id_not?: string;
-    id_not_in?: string[];
-    id_gte?: string | number;
-    id_gt?: string | number;
-    id_lte?: string | number;
-    id_lt?: string | number;
-    /**
-     * Generated ID without the version.
-     */
-    entryId?: string;
-    entryId_gte?: string;
-    entryId_not?: string;
-    entryId_in?: string[];
-    entryId_not_in?: string[];
-    /**
-     * Status of the entry.
-     */
-    status?: CmsEntryStatus;
-    status_not?: CmsEntryStatus;
-    status_in?: CmsEntryStatus[];
-    status_not_in?: CmsEntryStatus[];
 
-    /**
-     * Revision-level meta fields. 👇
-     */
-    revisionCreatedBy?: string;
-    revisionCreatedBy_not?: string;
-    revisionCreatedBy_in?: string[];
-    revisionCreatedBy_not_in?: string[];
-
-    revisionModifiedBy?: string;
-    revisionModifiedBy_not?: string;
-    revisionModifiedBy_in?: string[];
-    revisionModifiedBy_not_in?: string[];
-
-    revisionSavedBy?: string;
-    revisionSavedBy_not?: string;
-    revisionSavedBy_in?: string[];
-    revisionSavedBy_not_in?: string[];
-
-    revisionFirstPublishedBy?: string;
-    revisionFirstPublishedBy_not?: string;
-    revisionFirstPublishedBy_in?: string[];
-    revisionFirstPublishedBy_not_in?: string[];
-
-    revisionLastPublishedBy?: string;
-    revisionLastPublishedBy_not?: string;
-    revisionLastPublishedBy_in?: string[];
-    revisionLastPublishedBy_not_in?: string[];
-
-    /**
-     * Entry-level meta fields. 👇
-     */
-    createdBy?: string;
-    createdBy_not?: string;
-    createdBy_in?: string[];
-    createdBy_not_in?: string[];
-
-    modifiedBy?: string;
-    modifiedBy_not?: string;
-    modifiedBy_in?: string[];
-    modifiedBy_not_in?: string[];
-
-    savedBy?: string;
-    savedBy_not?: string;
-    savedBy_in?: string[];
-    savedBy_not_in?: string[];
-
-    firstPublishedBy?: string;
-    firstPublishedBy_not?: string;
-    firstPublishedBy_in?: string[];
-    firstPublishedBy_not_in?: string[];
-
-    lastPublishedBy?: string;
-    lastPublishedBy_not?: string;
-    lastPublishedBy_in?: string[];
-    lastPublishedBy_not_in?: string[];
-
-    createdOn?: string;
-    createdOn_gt?: string;
-    createdOn_gte?: string;
-    createdOn_lt?: string;
-    createdOn_lte?: string;
-    createdOn_between?: [string, string];
-
-    savedOn?: string;
-    savedOn_gt?: string;
-    savedOn_gte?: string;
-    savedOn_lt?: string;
-    savedOn_lte?: string;
-    savedOn_between?: [string, string];
-
-    deletedOn?: string;
-    deletedOn_gt?: string;
-    deletedOn_gte?: string;
-    deletedOn_lt?: string;
-    deletedOn_lte?: string;
-    deletedOn_between?: [string, string];
-
-    /**
-     * Version of the entry.
-     *
-     * It is not meant to be used via the API.
-     * @internal
-     */
-    version?: number;
-    version_lt?: number;
-    version_gt?: number;
-    /**
-     * Each storage operations implementation MUST determine how to use this field.
-     * In SQL, it can be a `published` field, and in DynamoDB it can be an SK.
-     *
-     * It is not meant to be used via the API.
-     * @internal
-     */
-    published?: boolean;
-    /**
-     * Each storage operations implementation MUST determine how to use this field.
-     * In SQL, it can be a `latest` field, and in DynamoDB it can be an SK.
-     *
-     * It is not meant to be used via the API.
-     * @internal
-     */
-    latest?: boolean;
+export interface CmsEntryListWhere
+    extends IdMixedInterfaceGenerator<"id">,
+        IdInterfaceGenerator<"entryId">,
+        IdInterfaceGenerator<"status", CmsEntryStatus>,
+        /**
+         * Revision-level meta fields. 👇
+         */
+        IdentityInterfaceGenerator<"revisionCreatedBy">,
+        IdentityInterfaceGenerator<"revisionModifiedBy">,
+        IdentityInterfaceGenerator<"revisionSavedBy">,
+        IdentityInterfaceGenerator<"revisionFirstPublishedBy">,
+        IdentityInterfaceGenerator<"revisionLastPublishedBy">,
+        /**
+         * Entry-level meta fields. 👇
+         */
+        IdentityInterfaceGenerator<"createdBy">,
+        IdentityInterfaceGenerator<"modifiedBy">,
+        IdentityInterfaceGenerator<"savedBy">,
+        IdentityInterfaceGenerator<"firstPublishedBy">,
+        IdentityInterfaceGenerator<"lastPublishedBy">,
+        DateStringInterfaceGenerator<"createdOn">,
+        DateStringInterfaceGenerator<"savedOn">,
+        DateStringInterfaceGenerator<"deletedOn">,
+        /**
+         * Version of the entry.
+         *
+         * It is not meant to be used via the API.
+         * @internal
+         */
+        NumericInterfaceGenerator<"version">,
+        /**
+         * Each storage operations implementation MUST determine how to use this field.
+         * In SQL, it can be a `published` field, and in DynamoDB it can be an SK.
+         *
+         * It is not meant to be used via the API.
+         * @internal
+         */
+        TruthfulInterfaceGenerator<"published">,
+        /**
+         * Each storage operations implementation MUST determine how to use this field.
+         * In SQL, it can be a `latest` field, and in DynamoDB it can be an SK.
+         *
+         * It is not meant to be used via the API.
+         * @internal
+         */
+        TruthfulInterfaceGenerator<"latest"> {
     /**
      * ACO related parameters.
      */
@@ -765,6 +680,7 @@ export interface CmsEntryListWhere {
     AND?: CmsEntryListWhere[];
     OR?: CmsEntryListWhere[];
 }
+
 
 /**
  * Entry listing sort.

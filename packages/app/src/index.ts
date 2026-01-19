@@ -35,3 +35,5 @@ export {
     useLocalStorageValue,
     useLocalStorageValues
 } from "./presentation/localStorage/index.js";
+
+export * from "./helpers/InterfaceGenerator/index.js";

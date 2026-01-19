@@ -70,9 +70,6 @@ export const LockedRecord = ({ record: lockRecordEntry }: ILockedRecordProps) =>
             </Wrapper>
         );
     } else if (!lockRecordEntry?.lockedBy) {
-        console.log({
-            record
-        });
         return (
             <Wrapper>
                 <Title />
