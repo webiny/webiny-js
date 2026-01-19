@@ -82,6 +82,7 @@ export const Entry = ({
 
     return (
         <div
+            tabIndex={1}
             data-selected={selected}
             onClick={() => {
                 if (onChange) {

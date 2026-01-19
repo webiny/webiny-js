@@ -14,7 +14,6 @@ export const Entries = (props: EntriesProps) => {
 
     const loadMoreOnScroll = useCallback(
         debounce(position => {
-            console.log("pos", position);
             if (position.top <= 0.9) {
                 return;
             }
@@ -25,9 +24,9 @@ export const Entries = (props: EntriesProps) => {
 
     return (
         <ScrollArea
-            className={"h-[416px] w-full overflow-x-hidden overflow-y-hidden flex flex-col gap-md"}
+            className={"h-[416px] w-full flex flex-col gap-md"}
             data-testid="advanced-ref-field-entries"
-            onScrollCapture={loadMoreOnScroll}
+            onScroll={loadMoreOnScroll}
         >
             <div className={"flex flex-col gap-md"}>
                 {entries.map((entry, index) => {
