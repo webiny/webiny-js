@@ -80,7 +80,7 @@ export const Entry = ({
         return "v" + Number(extractedRevision).toString();
     }, [entry.id]);
 
-    const folderId = entry.wbyAco_location?.folderId || "";
+    const folderId = entry.wbyAco_location?.folderId || entry.location?.folderId || "";
 
     const link = getLink(Routes.ContentEntries.List, {
         id: entry.id,
@@ -193,7 +193,7 @@ export const Entry = ({
                         {onRemove && (
                             <DropdownMenu.Item
                                 icon={<RemoveIcon />}
-                                text={"Remove from list"}
+                                text={placement === "multiRef" ? "Remove from list" : "Remove"}
                                 onClick={() => onRemove(entry.id)}
                             />
                         )}

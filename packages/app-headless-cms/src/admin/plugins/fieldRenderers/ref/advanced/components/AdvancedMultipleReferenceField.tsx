@@ -88,11 +88,7 @@ export const AdvancedMultipleReferenceField = (props: AdvancedMultipleReferenceF
         setLinkEntryDialogModel(null);
     }, []);
 
-    const {
-        entries,
-        loading: loadingEntries,
-        loadMore
-    } = useReferences({
+    const { entries, loadMore } = useReferences({
         values,
         perPage: 10,
         requestContext

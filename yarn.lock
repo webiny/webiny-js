@@ -14525,7 +14525,6 @@ __metadata:
     raw.macro: "npm:^0.4.2"
     react: "npm:18.2.0"
     react-butterfiles: "npm:^1.3.3"
-    react-custom-scrollbars: "npm:^4.2.1"
     react-dnd: "npm:^16.0.1"
     react-dnd-html5-backend: "npm:^16.0.1"
     react-dom: "npm:18.2.0"
