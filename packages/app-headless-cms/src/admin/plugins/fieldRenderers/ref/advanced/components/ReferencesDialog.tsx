@@ -152,7 +152,7 @@ export const ReferencesDialog = (props: ReferencesDialogProps) => {
                     </>
                 }
             >
-                <>
+                <div className={"relative"}>
                     {loading && <OverlayLoader />}
                     <div className={"flex flex-col gap-md"}>
                         <Search onChange={onInput} value={searchValue} />
@@ -170,7 +170,7 @@ export const ReferencesDialog = (props: ReferencesDialogProps) => {
                             }}
                         </Entries>
                     </div>
-                </>
+                </div>
             </Dialog>
         </>
     );

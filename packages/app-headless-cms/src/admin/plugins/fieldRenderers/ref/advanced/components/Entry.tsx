@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import type {
     CmsReferenceContentEntry,
     CmsReferenceValue
@@ -70,7 +70,15 @@ export const Entry = ({
     );
 
     const entryStatusLabel = entry.status.charAt(0).toUpperCase() + entry.status.slice(1);
-    const entryRevision = "v2";
+
+    // Did not have `revision` field available in the `getLatestContentEntries`
+    // response, hence the manual extraction from the `id` field.
+    const entryRevision = useMemo(() => {
+        const extractedRevision = entry.id.split("#")[1] || "0001";
+
+        // Remove leading zeros for correct padding.
+        return "v" + Number(extractedRevision).toString();
+    }, [entry.id]);
 
     const folderId = entry.wbyAco_location?.folderId || "";
 
@@ -82,7 +90,6 @@ export const Entry = ({
 
     return (
         <div
-            tabIndex={1}
             data-selected={selected}
             onClick={() => {
                 if (onChange) {
