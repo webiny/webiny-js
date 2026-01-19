@@ -21,7 +21,6 @@ import { NewReferencedEntryDialog } from "~/admin/plugins/fieldRenderers/ref/com
 import { FormComponentErrorMessage, FormComponentLabel } from "@webiny/admin-ui";
 
 const b =
-
     123;
 
 interface AdvancedMultipleReferenceFieldProps extends CmsModelFieldRendererProps {
