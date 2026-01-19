@@ -607,7 +607,7 @@ export interface CmsEntryListWhereValues {
 
 export interface CmsEntryListWhere
     extends IdMixedInterfaceGenerator<"id">,
-        IdInterfaceGenerator<"entryId">,
+        IdMixedInterfaceGenerator<"entryId">,
         IdInterfaceGenerator<"status", CmsEntryStatus>,
         /**
          * Revision-level meta fields. 👇

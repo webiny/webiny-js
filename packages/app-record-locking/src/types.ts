@@ -17,7 +17,26 @@ export interface IRecordLockingRecordLocked {
     actions: IRecordLockingLockRecordAction[];
 }
 
-export interface IPossiblyRecordLockingRecord extends CmsContentEntry {
+export interface IRecordLockingCmsEntryValuesAction {
+    type: string;
+    message: string;
+    createdBy: Identity;
+    createdOn: string;
+}
+
+export interface IRecordLockingCmsEntryValues {
+    lockedBy: Identity;
+    lockedOn: string;
+    updatedOn: string;
+    expiresOn: string;
+    targetId: string;
+    type: string;
+    actions: IRecordLockingCmsEntryValuesAction;
+}
+
+export interface IPossiblyRecordLockingRecord extends CmsContentEntry<IRecordLockingCmsEntryValues> {
+    $selectable?: boolean;
+    $type?: "RECORD";
     $lockingType?: string;
     $locked?: IRecordLockingRecordLocked | null;
 }
