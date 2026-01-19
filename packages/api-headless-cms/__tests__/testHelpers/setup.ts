@@ -17,7 +17,7 @@ const setupContentModel = async (params: SetupContentModelParams) => {
             modelId: model.modelId,
             singularApiName: model.singularApiName,
             pluralApiName: model.pluralApiName,
-            group: group.slug,
+            group: group.id,
             fields: model.fields,
             layout: model.layout
         }
