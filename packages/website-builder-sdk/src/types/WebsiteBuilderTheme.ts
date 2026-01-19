@@ -1,5 +1,3 @@
-import type { LexicalEditorTheme } from "./LexicalEditorTheme.js";
-
 export type Breakpoint = {
     name: string;
     title: string;
@@ -14,11 +12,8 @@ export type WebsiteBuilderTheme = {
     cssVariables?: Record<string, string>;
     fonts?: string[];
     breakpoints: Breakpoint[];
-    styles: {
-        colors: Record<string, any>;
-        typography: Typography;
-    };
-    lexical: LexicalEditorTheme;
+    colors: ColorStyle[];
+    typography: Typography;
 };
 type KnownKeys = "desktop" | "tablet" | "mobile";
 
@@ -33,18 +28,20 @@ type Breakpoints = KnownBreakpoints & {
     };
 };
 
-// We want to allow custom strings as well, thus the (string & {}).
-
-export type TypographyType = "headings" | "paragraphs" | "quotes" | "lists" | (string & {});
+export type ColorStyle = {
+    id: string;
+    label: string;
+    value: string;
+};
 
 export type TypographyStyle = {
     id: string;
-    name: string;
+    label: string;
     tag: string;
     className: string;
 };
 
-export type Typography = Partial<Record<TypographyType, TypographyStyle[]>>;
+export type Typography = Record<string, TypographyStyle[]>;
 
 export type WebsiteBuilderThemeInput = {
     /**
@@ -69,35 +66,37 @@ export type WebsiteBuilderThemeInput = {
      * }
      */
     breakpoints?: Breakpoints;
-    lexical?: LexicalEditorTheme;
-    styles?: {
-        /**
-         * color1: "#fa5723",
-         * color2: "#00ccb0",
-         */
-        colors?: Record<string, any>;
-        /**
-         * headings: [
-         *   {
-         *     id: "heading1",
-         *     name: "Heading 1",
-         *     tag: "h1"
-         *   },
-         * ],
-         * paragraphs: [
-         *   {
-         *     id: "paragraph1",
-         *     name: "Paragraph 1",
-         *     tag: "p",
-         * ],
-         * quotes: [
-         *   {
-         *     id: "quote",
-         *     name: "Quote",
-         *     tag: "blockquote"
-         *   }
-         * ]
-         */
-        typography?: Typography;
-    };
+    /**
+     * [
+     *   {
+     *     id: "primary",
+     *     label: "Primary",
+     *     value: "#000000"
+     *   },
+     * ]
+     */
+    colors?: ColorStyle[];
+    /**
+     * headings: [
+     *   {
+     *     id: "heading1",
+     *     name: "Heading 1",
+     *     tag: "h1"
+     *   },
+     * ],
+     * paragraphs: [
+     *   {
+     *     id: "paragraph1",
+     *     name: "Paragraph 1",
+     *     tag: "p",
+     * ],
+     * quotes: [
+     *   {
+     *     id: "quote",
+     *     name: "Quote",
+     *     tag: "blockquote"
+     *   }
+     * ]
+     */
+    typography?: Typography;
 };

@@ -212,11 +212,20 @@ export function useProperties() {
     return properties;
 }
 
+export function useMaybeProperties() {
+    const properties = useContext(PropertiesContext);
+    if (!properties) {
+        return undefined;
+    }
+
+    return properties;
+}
+
 export function useAncestorByName(name: string | undefined) {
-    const parent = useProperties();
+    const parent = useMaybeProperties();
 
     return useMemo(() => {
-        if (!name) {
+        if (!name || !parent) {
             return undefined;
         }
 
@@ -297,7 +306,7 @@ export const Property = ({
     const immediateProperties = useProperties();
     const ancestorByName = useAncestorByName(targetName);
 
-    const properties = targetName ? ancestorByName : immediateProperties;
+    const properties = targetName && ancestorByName ? ancestorByName : immediateProperties;
 
     if (!properties) {
         throw Error("<Properties> provider is missing higher in the hierarchy!");

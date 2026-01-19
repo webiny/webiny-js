@@ -3,7 +3,6 @@ import React from "react";
 import {
     TypographyAction,
     LexicalEditorConfig,
-    FontSizeAction,
     FontColorAction,
     Divider,
     BoldAction,
@@ -34,7 +33,6 @@ export const LexicalEditorCmsPlugin: FC = () => {
     return (
         <CompositionScope name={"cms"}>
             <LexicalEditorConfig>
-                <ToolbarElement name="fontSize" element={<FontSizeAction />} />
                 <ToolbarElement name="fontColor" element={<FontColorAction />} />
                 <ToolbarElement name="typography" element={<TypographyAction />} />
                 <ToolbarElement name="textAlignment" element={<TextAlignmentAction />} />

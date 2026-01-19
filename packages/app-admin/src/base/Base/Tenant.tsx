@@ -7,13 +7,11 @@ export const Tenant = React.memo(() => {
     const { Tenant } = AdminConfig;
     return (
         <AdminConfig.Public>
-            <Tenant>
-                <Tenant.Name value={"Webiny"} />
-                <Tenant.Logo
-                    squareLogo={<SquareLogo alt={"Webiny"} />}
-                    horizontalLogo={<HorizontalLogo width={175} />}
-                />
-            </Tenant>
+            <Tenant.Name value={"Webiny"} />
+            <Tenant.Logo
+                squareLogo={<SquareLogo alt={"Webiny"} />}
+                horizontalLogo={<HorizontalLogo width={175} />}
+            />
         </AdminConfig.Public>
     );
 });

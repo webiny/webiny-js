@@ -50,7 +50,7 @@ export type TypographyAction = React.ComponentType<unknown> & {
 
 export const TypographyAction: TypographyAction = () => {
     const [typography, setTypography] = useState<ActiveTypography>();
-    const { editor, themeEmotionMap } = useRichTextEditor();
+    const { editor, theme } = useRichTextEditor();
     const { element } = useCurrentElement();
     const isParagraphSelected = $isParagraphNode(element);
     const isHeadingSelected = $isHeadingNode(element);
@@ -94,7 +94,7 @@ export const TypographyAction: TypographyAction = () => {
     }, []);
 
     useEffect(() => {
-        if (!element || !themeEmotionMap) {
+        if (!element) {
             return;
         }
 
@@ -104,28 +104,28 @@ export const TypographyAction: TypographyAction = () => {
                 return;
             }
 
-            const style = themeEmotionMap[styleId];
+            const style = theme.getTypographyById(styleId);
             if (style) {
                 setTypography({
                     id: style.id,
-                    name: style.name
+                    label: style.label
                 });
             }
             return;
         }
 
         // list and quote element
-        if (themeEmotionMap && $isListNode(element)) {
+        if ($isListNode(element)) {
             const styleId = element.getStyleId();
             if (!styleId) {
                 return;
             }
 
-            const style = themeEmotionMap[styleId];
+            const style = theme.getTypographyById(styleId);
             if (style) {
                 setTypography({
                     id: style.id,
-                    name: style.name
+                    label: style.label
                 });
             }
         }

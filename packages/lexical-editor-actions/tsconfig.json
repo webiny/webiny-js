@@ -1,7 +1,11 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
-  "references": [{ "path": "../lexical-editor" }, { "path": "../ui" }],
+  "references": [
+    { "path": "../lexical-editor" },
+    { "path": "../lexical-theme" },
+    { "path": "../ui" }
+  ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
@@ -11,6 +15,8 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/lexical-editor/*": ["../lexical-editor/src/*"],
       "@webiny/lexical-editor": ["../lexical-editor/src"],
+      "@webiny/lexical-theme/*": ["../lexical-theme/src/*"],
+      "@webiny/lexical-theme": ["../lexical-theme/src"],
       "@webiny/ui/*": ["../ui/src/*"],
       "@webiny/ui": ["../ui/src"]
     },

@@ -3,8 +3,7 @@ import { Dashboard, AdminLayout, NotFound } from "~/index.js";
 import { AdminConfig } from "~/config/AdminConfig.js";
 import { Routes } from "~/routes.js";
 import { FileManager } from "~/index.js";
-
-const { Route } = AdminConfig;
+import { Route } from "~/config/AdminConfig/Route.js";
 
 export const RoutesConfig = React.memo(() => {
     return (

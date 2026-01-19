@@ -16,11 +16,11 @@ class NextjsConfigImpl implements Abstraction.Interface {
         const apiKey = apiKeyResult.isOk() ? apiKeyResult.value : null;
 
         const envVars = [
-            "```dotenv",
-            `NEXT_PUBLIC_WEBSITE_BUILDER_API_KEY={API_TOKEN}`,
-            `NEXT_PUBLIC_WEBSITE_BUILDER_API_HOST={API_HOST}`,
-            `NEXT_PUBLIC_WEBSITE_BUILDER_API_TENANT={TENANT_ID}`,
-            "```"
+            "<pre>",
+            `NEXT_PUBLIC_WEBSITE_BUILDER_API_KEY={API_TOKEN}<br/>`,
+            `NEXT_PUBLIC_WEBSITE_BUILDER_API_HOST={API_HOST}<br/>`,
+            `NEXT_PUBLIC_WEBSITE_BUILDER_API_TENANT={TENANT_ID}<br/>`,
+            "</pre>"
         ];
 
         const builder = new MarkdownContentBuilder();
@@ -35,7 +35,8 @@ class NextjsConfigImpl implements Abstraction.Interface {
                 "description",
                 `This is a configuration for <a href="{LINK}" target="_blank">Webiny Next.js starter kit:</a>`
             )
-            .add("config", envVars.join("\n"));
+            .add("config", envVars.join("\n"))
+        ;
 
         return builder;
     }

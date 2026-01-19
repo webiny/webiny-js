@@ -1,0 +1,85 @@
+@import "@webiny/app-admin/lexical.css";
+
+:root {
+  --wa-theme-color1: #fa5723;
+  --wa-theme-color2: #00ccb0;
+  --wa-theme-color3: #0a0a0a;
+  --wa-theme-color4: #616161;
+  --wa-theme-color5: #eaecec;
+  --wa-theme-color6: #ffffff;
+  --wa-theme-font-family: InterVariable, sans-serif;
+}
+
+.wa-heading-1 {
+  line-height: 1.5;
+  font-family: var(--wa-theme-font-family);
+  font-weight: bold;
+  font-size: 48px;
+  color: var(--wa-theme-color3);
+  --webkit-font-smoothing: antialiased;
+}
+
+.wa-heading-2 {
+  line-height: 1.5;
+  font-family: var(--wa-theme-font-family);
+  font-size: 36px;
+  color: var(--wa-theme-color3);
+  --webkit-font-smoothing: antialiased;
+}
+
+.wa-heading-2 {
+  line-height: 1.5;
+  font-family: var(--wa-theme-font-family);
+  font-size: 24px;
+  color: var(--wa-theme-color3);
+  --webkit-font-smoothing: antialiased;
+}
+
+.wa-paragraph-1 {
+  line-height: 1.35;
+  font-family: var(--wa-theme-font-family);
+  font-weight: 400;
+  font-size: 16px;
+  color: var(--wa-theme-color3);
+  --webkit-font-smoothing: antialiased;
+}
+
+.wa-paragraph-2 {
+  line-height: 19px;
+  font-family: var(--wa-theme-font-family);
+  font-weight: 400;
+  font-size: 12px;
+  letter-spacing: 0.45px;
+  color: var(--wa-theme-color3);
+  --webkit-font-smoothing: antialiased;
+}
+
+.wa-blockquote-1 {
+  font-family: var(--wa-theme-font-family);
+  font-weight: bold;
+  font-size: 22px;
+  letter-spacing: 0.45px;
+  color: var(--wa-theme-color3);
+  --webkit-font-smoothing: antialiased;
+}
+
+.wa-unordered-list-1 {
+  padding: 0;
+  margin: 0 0 0 16px;
+  list-style: inside;
+  font-size: 17px;
+  color: var(--wa-theme-color3);
+  li {
+    margin: 0;
+  }
+}
+
+.wa-ordered-list-1 {
+  padding: 0;
+  margin: 0 0 0 16px;
+  color: var(--wa-theme-color3);
+  list-style: inside;
+  li {
+    margin: 0;
+  }
+}

@@ -1,7 +1,6 @@
 import React from "react";
 import { INSERT_UNORDERED_LIST_COMMAND, REMOVE_LIST_COMMAND } from "~/commands/index.js";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor.js";
-import { findTypographyStyleByHtmlTag } from "@webiny/lexical-theme";
 import type { ListNode } from "@webiny/lexical-nodes";
 import { $isListNode } from "@webiny/lexical-nodes";
 import { useCurrentElement } from "~/hooks/useCurrentElement.js";
@@ -9,16 +8,14 @@ import { useCurrentElement } from "~/hooks/useCurrentElement.js";
 export const BulletListAction = () => {
     const { editor } = useRichTextEditor();
     const { element } = useCurrentElement();
-    const { themeEmotionMap } = useRichTextEditor();
+    const { theme } = useRichTextEditor();
     const isList = $isListNode(element);
 
     const isBullet = isList && (element as ListNode).getListType() === "bullet";
 
     const formatBulletList = () => {
         if (!isBullet) {
-            const styleId = themeEmotionMap
-                ? findTypographyStyleByHtmlTag("ul", themeEmotionMap)?.id
-                : undefined;
+            const styleId = theme.getTypographyByTag("ul")?.id;
 
             // will update the active state in the useEffect
             editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, { themeStyleId: styleId });

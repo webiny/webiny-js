@@ -9,7 +9,10 @@ import { Route } from "./AdminConfig/Route.js";
 import { Theme } from "./AdminConfig/Theme.js";
 import { Dashboard } from "./AdminConfig/Dashboard.js";
 import { type WidgetConfig } from "./AdminConfig/Widget.js";
+import { LexicalTheme } from "./AdminConfig/LexicalTheme.js";
 import { createAdminConfig } from "./createAdminConfig.js";
+import type { EditorTheme } from "@webiny/lexical-theme";
+import { createLexicalTokens } from "@webiny/lexical-theme/createLexicalEditorTokens.js";
 
 const base = createAdminConfig<AdminConfig>();
 
@@ -23,6 +26,7 @@ interface AdminConfig {
     userMenus: UserMenuConfig[];
     tenant: TenantConfig;
     widgets: WidgetConfig[];
+    lexicalTheme: EditorTheme;
 }
 
 export const AdminConfigProvider = AppContainer.createDecorator(Original => {
@@ -45,15 +49,26 @@ export const AdminConfigProvider = AppContainer.createDecorator(Original => {
     };
 });
 
+const lexicalTokens = createLexicalTokens("wa-lx-");
+
 export const useAdminConfig = () => {
     const baseConfig = base.useConfig();
+
+    const lexicalTheme: EditorTheme = {
+        colors: baseConfig.lexicalTheme?.colors,
+        typography: baseConfig.lexicalTheme?.typography || {},
+        tokens: lexicalTokens
+    };
+    
+    console.log("lexicalTheme", lexicalTheme);
 
     return {
         menus: baseConfig.menus ?? [],
         userMenus: baseConfig.userMenus ?? [],
         supportMenus: baseConfig.supportMenus ?? [],
         tenant: baseConfig.tenant || {},
-        widgets: baseConfig.widgets ?? []
+        widgets: baseConfig.widgets ?? [],
+        lexicalTheme
     };
 };
 
@@ -80,5 +95,6 @@ export const AdminConfig = Object.assign(Private, {
     Route,
     Tenant,
     Dashboard,
+    LexicalTheme,
     useAdminConfig
 });

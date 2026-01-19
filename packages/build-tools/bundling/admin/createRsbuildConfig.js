@@ -30,8 +30,7 @@ export const createRsbuildConfig = ({ cwd }) => {
         },
         server: { port: 3001 },
         html: {
-            title: "Webiny",
-            favicon: paths.admin.faviconFile
+            template: paths.admin.rootFolder + "/public/index.html"
         },
         plugins: [
             pluginTypeCheck({
@@ -68,12 +67,6 @@ const getPaths = cwd => {
     const adminRootFolderPath = cwd;
     const adminOutputFolderPath = path.join(adminRootFolderPath, "build");
     const adminEntryFilePath = path.join(adminRootFolderPath, "src", "index.tsx");
-    const adminFaviconFilePath = path.join(
-        adminRootFolderPath,
-        "public",
-        "favicons",
-        "favicon.ico"
-    );
 
     const adminTsConfigFilePath = path.join(adminRootFolderPath, "tsconfig.json");
 
@@ -83,8 +76,7 @@ const getPaths = cwd => {
             rootFolder: adminRootFolderPath,
             tsConfig: adminTsConfigFilePath,
             outputFolder: adminOutputFolderPath,
-            entryFile: adminEntryFilePath,
-            faviconFile: adminFaviconFilePath
+            entryFile: adminEntryFilePath
         }
     };
 };

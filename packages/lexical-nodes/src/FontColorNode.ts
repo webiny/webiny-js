@@ -1,16 +1,16 @@
 import type { EditorConfig, LexicalNode, SerializedTextNode, Spread } from "lexical";
 import { $getSelection, $isRangeSelection, createCommand, TextNode } from "lexical";
-import type { EditorTheme } from "@webiny/lexical-theme";
+import { Theme } from "@webiny/lexical-theme";
 
 export class ThemeColorValue {
     // Webiny theme color variable, like color1, color2, etc.
-    private readonly name: string;
+    private readonly id: string;
     // This can be a HEX value or a CSS variable.
     private value: string;
 
     constructor(value: string, name?: string) {
         this.value = value;
-        this.name = name ?? "custom";
+        this.id = name ?? "custom";
     }
 
     getValue() {
@@ -18,12 +18,15 @@ export class ThemeColorValue {
     }
 
     getName() {
-        return this.name;
+        return this.id;
     }
 
-    updateFromTheme(theme: EditorTheme) {
-        if (theme?.styles?.colors && this.name !== "custom") {
-            this.value = theme.styles?.colors[this.name];
+    updateFromTheme(theme: Theme) {
+        if (theme.colors && this.id !== "custom") {
+            const color = theme.colors.find(color => color.id === this.id);
+            if (color) {
+                this.value = color.value;
+            }
         }
     }
 }
@@ -124,7 +127,7 @@ export class FontColorNode extends TextNode {
         };
     }
 
-    private addColorValueToHTMLElement(element: HTMLElement, theme: EditorTheme): HTMLElement {
+    private addColorValueToHTMLElement(element: HTMLElement, theme: Theme): HTMLElement {
         // Update color from webiny theme
         this.__color.updateFromTheme(theme);
         element.setAttribute(FontColorNodeAttrName, this.__color.getName());
@@ -134,7 +137,8 @@ export class FontColorNode extends TextNode {
 
     override updateDOM(prevNode: this, dom: HTMLElement, config: EditorConfig): boolean {
         const isUpdated = super.updateDOM(prevNode, dom, config);
-        this.__color.updateFromTheme(config.theme as EditorTheme);
+        const theme = Theme.from(config.theme);
+        this.__color.updateFromTheme(theme);
 
         dom.setAttribute(FontColorNodeAttrName, this.__color.getName());
         dom.style.color = this.__color.getValue();
@@ -150,7 +154,8 @@ export class FontColorNode extends TextNode {
 
     override createDOM(config: EditorConfig): HTMLElement {
         const element = super.createDOM(config);
-        return this.addColorValueToHTMLElement(element, config.theme as EditorTheme);
+        const theme = Theme.from(config.theme);
+        return this.addColorValueToHTMLElement(element, theme);
     }
 }
 

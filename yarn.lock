@@ -14504,7 +14504,6 @@ __metadata:
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/react-composition": "npm:0.0.0"
     "@webiny/react-properties": "npm:0.0.0"
-    "@webiny/theme": "npm:0.0.0"
     "@webiny/ui": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
@@ -15424,6 +15423,7 @@ __metadata:
     "@types/react-color": "npm:^2.17.12"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/lexical-editor": "npm:0.0.0"
+    "@webiny/lexical-theme": "npm:0.0.0"
     "@webiny/ui": "npm:0.0.0"
     emotion: "npm:10.0.27"
     react: "npm:18.2.0"
@@ -15889,22 +15889,6 @@ __metadata:
     graphql: "npm:^16.12.0"
     rimraf: "npm:^6.1.2"
     typescript: "npm:5.9.3"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/theme@npm:0.0.0, @webiny/theme@workspace:packages/theme":
-  version: 0.0.0-use.local
-  resolution: "@webiny/theme@workspace:packages/theme"
-  dependencies:
-    "@emotion/babel-plugin": "npm:^11.13.5"
-    "@emotion/react": "npm:11.10.8"
-    "@types/react": "npm:18.2.79"
-    "@webiny/build-tools": "npm:0.0.0"
-    execa: "npm:^5.1.1"
-    rimraf: "npm:^6.1.2"
-    typescript: "npm:5.9.3"
-  peerDependencies:
-    react: 18.2.0
   languageName: unknown
   linkType: soft
 
