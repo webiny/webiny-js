@@ -28,3 +28,11 @@ export class PageValidationError extends BaseError {
         super({ message });
     }
 }
+
+export class PageNotAuthorizedError extends BaseError {
+    override readonly code = "WebsiteBuilder/Page/NotAuthorized" as const;
+
+    constructor() {
+        super({ message: "Not authorized!" });
+    }
+}

@@ -96,7 +96,8 @@ const DialogBase = (props: DialogProps) => {
                 open,
                 onOpenChange,
                 modal,
-                dir
+                dir,
+                size
             },
             triggerProps: {
                 // Temporary fix. We need this because `ref` doesn't get passed to components

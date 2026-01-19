@@ -11,42 +11,44 @@ import { ReactComponent as GridLayout336 } from "./assets/grid-3-3-6.svg";
 import { ReactComponent as GridLayout3333 } from "./assets/grid-3-3-3-3.svg";
 import { ReactComponent as GridLayout222222 } from "./assets/grid-2-2-2-2-2-2.svg";
 
+const svgProps = { width: 74, height: 37 };
+
 const presets = [
     {
         layout: "12",
-        icon: <GridLayout12 />
+        icon: <GridLayout12 {...svgProps} />
     },
     {
         layout: "6-6",
-        icon: <GridLayout66 />
+        icon: <GridLayout66 {...svgProps} />
     },
     {
         layout: "8-4",
-        icon: <GridLayout84 />
+        icon: <GridLayout84 {...svgProps} />
     },
     {
         layout: "4-8",
-        icon: <GridLayout48 />
+        icon: <GridLayout48 {...svgProps} />
     },
     {
         layout: "4-4-4",
-        icon: <GridLayout444 />
+        icon: <GridLayout444 {...svgProps} />
     },
     {
         layout: "6-3-3",
-        icon: <GridLayout633 />
+        icon: <GridLayout633 {...svgProps} />
     },
     {
         layout: "3-3-6",
-        icon: <GridLayout336 />
+        icon: <GridLayout336 {...svgProps} />
     },
     {
         layout: "3-3-3-3",
-        icon: <GridLayout3333 />
+        icon: <GridLayout3333 {...svgProps} />
     },
     {
         layout: "2-2-2-2-2-2",
-        icon: <GridLayout222222 />
+        icon: <GridLayout222222 {...svgProps} />
     }
 ];
 

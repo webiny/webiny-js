@@ -23,7 +23,7 @@ describe("Scheduler Event Handler", () => {
                     actionType: "Publish",
                     targetId: "target-id#0001"
                 }),
-                scheduleOn: new Date().toISOString()
+                scheduleFor: new Date().toISOString()
             }
         };
         const sourceHandler = registry.getHandler(event, lambdaContext);

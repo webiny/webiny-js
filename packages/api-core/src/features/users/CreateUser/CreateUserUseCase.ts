@@ -9,7 +9,7 @@ import { AdminUsersRepository } from "~/features/users/shared/abstractions.js";
 import { createUserValidation } from "./schema.js";
 import {
     NotAuthorizedError,
-    UserExistsError,
+    EmailTakenError,
     UserValidationError
 } from "~/features/users/shared/errors.js";
 import { UserBeforeCreateEvent, UserAfterCreateEvent } from "./events.js";
@@ -44,10 +44,10 @@ class CreateUserUseCaseImpl implements UseCaseAbstraction.Interface {
         const existingUserResult = await this.repository.get({ email: data.email });
         if (existingUserResult.isOk()) {
             // This means the email is taken!
-            return Result.fail(new UserExistsError(data.email));
+            return Result.fail(new EmailTakenError(data.email));
         }
 
-        if (existingUserResult.error.code !== "USER_NOT_FOUND") {
+        if (existingUserResult.error.code !== "AdminUser/NotFound") {
             return Result.fail(existingUserResult.error);
         }
 

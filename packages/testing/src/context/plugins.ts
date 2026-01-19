@@ -77,7 +77,7 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
                     return {
                         id: apiKey,
                         name: apiKey,
-                        tenant: tenant.id,
+                        slug: apiKey,
                         permissions: identity?.permissions || [],
                         token,
                         createdBy: {

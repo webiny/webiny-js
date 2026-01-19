@@ -1,6 +1,6 @@
-import { CliCommand, GetProjectSdkService, UiService } from "~/abstractions/index.js";
+import { CliCommandFactory, GetProjectSdkService, UiService } from "~/abstractions/index.js";
 
-export class WhoAmICommand implements CliCommand.Interface<void> {
+export class WhoAmICommand implements CliCommandFactory.Interface<void> {
     constructor(
         private getProjectSdkService: GetProjectSdkService.Interface,
         private uiService: UiService.Interface
@@ -32,7 +32,7 @@ export class WhoAmICommand implements CliCommand.Interface<void> {
     }
 }
 
-export const whoAmICommand = CliCommand.createImplementation({
+export const whoAmICommand = CliCommandFactory.createImplementation({
     implementation: WhoAmICommand,
     dependencies: [GetProjectSdkService, UiService]
 });

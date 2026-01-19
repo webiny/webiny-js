@@ -15,7 +15,7 @@ import { CreatePageRevisionFromUseCase } from "~/features/pages/CreatePageRevisi
 import { GetPageRevisionsUseCase } from "~/features/pages/GetPageRevisions/index.js";
 import { DeletePageUseCase } from "~/features/pages/DeletePage/index.js";
 
-describe("Pages Use Cases", () => {
+describe("Pages Use Cases (Authorized)", () => {
     let context: ApiCoreContext;
 
     beforeEach(async () => {

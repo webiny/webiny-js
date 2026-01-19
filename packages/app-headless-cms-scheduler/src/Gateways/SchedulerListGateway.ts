@@ -8,12 +8,12 @@ export interface ISchedulerListExecuteParamsWhere {
     title_not_contains?: string;
     type?: ScheduleType;
     scheduledBy?: string;
-    scheduledOn?: Date;
-    scheduledOn_gte?: Date;
-    scheduledOn_lte?: Date;
+    scheduledFor?: Date;
+    scheduledFor_gte?: Date;
+    scheduledFor_lte?: Date;
 }
 
-export type ISchedulerListExecuteParamsSort = "scheduledOn_ASC" | "scheduledOn_DESC";
+export type ISchedulerListExecuteParamsSort = "scheduledFor_ASC" | "scheduledFor_DESC";
 
 export interface ISchedulerListExecuteParams {
     modelId: string;

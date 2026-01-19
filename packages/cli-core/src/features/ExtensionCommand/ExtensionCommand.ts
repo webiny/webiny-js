@@ -1,5 +1,5 @@
 import { createImplementation } from "@webiny/di";
-import { CliCommand, GetProjectSdkService, UiService } from "~/abstractions/index.js";
+import { CliCommandFactory, GetProjectSdkService, UiService } from "~/abstractions/index.js";
 import chalk from "chalk";
 import ora from "ora";
 
@@ -7,13 +7,13 @@ interface IExtensionCommandParams {
     source: string;
 }
 
-export class ExtensionCommand implements CliCommand.Interface<IExtensionCommandParams> {
+export class ExtensionCommand implements CliCommandFactory.Interface<IExtensionCommandParams> {
     constructor(
         private getProjectSdkService: GetProjectSdkService.Interface,
         private uiService: UiService.Interface
     ) {}
 
-    execute(): CliCommand.CommandDefinition<IExtensionCommandParams> {
+    execute(): CliCommandFactory.CommandDefinition<IExtensionCommandParams> {
         return {
             name: "extension",
             description: "Download and install extensions from the Webiny extensions repository.",
@@ -78,7 +78,7 @@ export class ExtensionCommand implements CliCommand.Interface<IExtensionCommandP
 }
 
 export const extensionCommand = createImplementation({
-    abstraction: CliCommand,
+    abstraction: CliCommandFactory,
     implementation: ExtensionCommand,
     dependencies: [GetProjectSdkService, UiService]
 });

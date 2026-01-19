@@ -66,7 +66,6 @@ const ContentEntriesMultiAutocomplete = ({ bind, field }: ContentEntriesMultiAut
 
     const model = models.find(model => model.modelId === refModelId);
 
-
     if (renderNewEntryModal) {
         return (
             <>

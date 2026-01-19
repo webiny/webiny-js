@@ -5,6 +5,7 @@ class MyApiKeyImpl implements ApiKeyFactory.Interface {
         return [
             {
                 name: "Universal API Key",
+                slug: "universal-key",
                 token: "wat_12345678",
                 permissions: [{ name: "*" }]
             }

@@ -15,8 +15,8 @@ import { createSchedulerEntryFields } from "./graphql/fields.js";
 
 const createSchedulerPublishMutation = () => {
     return gql`
-        mutation SchedulerPublish($modelId: String!, $id: ID!, $input: CmsCreateScheduleInput!) {
-            createCmsSchedule(modelId: $modelId, id: $id, input: $input) {
+        mutation SchedulerPublish($modelId: String!, $id: ID!, $scheduleFor: DateTime, $type: CmsScheduleRecordType!) {
+            createCmsSchedule(modelId: $modelId, id: $id, scheduleFor: $scheduleFor, type: $type) {
                 data {
                     ${createSchedulerEntryFields()}
                 }
@@ -34,10 +34,8 @@ const createSchedulerPublishMutation = () => {
 interface SchedulerPublishGraphQLMutationVariables {
     modelId: string;
     id: string;
-    input: {
-        scheduleOn: Date;
-        type: ScheduleType.publish;
-    };
+    scheduleFor: Date;
+    type: ScheduleType.publish;
 }
 
 interface SchedulerPublishGraphQLMutationResponse {
@@ -69,10 +67,8 @@ export class SchedulerPublishGraphQLGateway implements ISchedulerPublishGateway 
             variables: {
                 modelId: params.modelId,
                 id: params.id,
-                input: {
-                    scheduleOn: params.scheduleOn,
-                    type: ScheduleType.publish
-                }
+                scheduleFor: params.scheduleOn,
+                type: ScheduleType.publish
             },
             fetchPolicy: "no-cache"
         });

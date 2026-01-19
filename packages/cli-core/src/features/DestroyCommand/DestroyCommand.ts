@@ -1,5 +1,10 @@
 import { createImplementation } from "@webiny/di";
-import { CliCommand, GetProjectSdkService, StdioService, UiService } from "~/abstractions/index.js";
+import {
+    CliCommandFactory,
+    GetProjectSdkService,
+    StdioService,
+    UiService
+} from "~/abstractions/index.js";
 import { measureDuration } from "~/features/utils/index.js";
 import { createBaseAppOptions } from "~/features/common/index.js";
 import { PulumiError } from "@webiny/pulumi-sdk";
@@ -19,14 +24,14 @@ export interface IDestroyWithAppParams extends IDestroyNoAppParams {
 
 export type IDestroyCommandParams = IDestroyNoAppParams | IDestroyWithAppParams;
 
-export class DestroyCommand implements CliCommand.Interface<IDestroyCommandParams> {
+export class DestroyCommand implements CliCommandFactory.Interface<IDestroyCommandParams> {
     constructor(
         private getProjectSdkService: GetProjectSdkService.Interface,
         private uiService: UiService.Interface,
         private stdioService: StdioService.Interface
     ) {}
 
-    async execute(): Promise<CliCommand.CommandDefinition<IDestroyCommandParams>> {
+    async execute(): Promise<CliCommandFactory.CommandDefinition<IDestroyCommandParams>> {
         const projectSdk = await this.getProjectSdkService.execute();
 
         return {
@@ -93,7 +98,7 @@ export class DestroyCommand implements CliCommand.Interface<IDestroyCommandParam
 }
 
 export const destroyCommand = createImplementation({
-    abstraction: CliCommand,
+    abstraction: CliCommandFactory,
     implementation: DestroyCommand,
     dependencies: [GetProjectSdkService, UiService, StdioService]
 });

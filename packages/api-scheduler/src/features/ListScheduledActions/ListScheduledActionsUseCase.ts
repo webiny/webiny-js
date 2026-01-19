@@ -52,7 +52,7 @@ class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
             actionType: entry.values.actionType,
             targetId: entry.values.targetId,
             scheduledBy: entry.values.scheduledBy,
-            scheduledOn: entry.values.scheduledOn,
+            scheduledFor: entry.values.scheduledFor,
             payload: entry.values.payload,
             error: entry.values.error
         }));

@@ -20,8 +20,7 @@ class SchedulePrivateModelImpl implements ModelFactory.Interface {
                             displayName: fields.text().label("Display Name"),
                             type: fields.text().label("Type")
                         })),
-                    scheduledOn: fields.datetime().label("Scheduled On"),
-                    dateOn: fields.datetime().label("Date On"),
+                    scheduledFor: fields.datetime().label("Scheduled For"),
                     title: fields.text().label("Title"),
                     error: fields.text().label("Error"),
                     payload: fields.json().label("Payload")

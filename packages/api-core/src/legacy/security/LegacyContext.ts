@@ -8,12 +8,6 @@ import {
     IdentityContext,
     IdentityData
 } from "~/features/security/IdentityContext/index.js";
-import { GetApiKey } from "~/features/security/apiKeys/GetApiKey/index.js";
-import { GetApiKeyByToken } from "~/features/security/apiKeys/GetApiKeyByToken/index.js";
-import { ListApiKeys } from "~/features/security/apiKeys/ListApiKeys/index.js";
-import { CreateApiKey } from "~/features/security/apiKeys/CreateApiKey/index.js";
-import { UpdateApiKey } from "~/features/security/apiKeys/UpdateApiKey/index.js";
-import { DeleteApiKey } from "~/features/security/apiKeys/DeleteApiKey/index.js";
 import { GetRoleUseCase } from "~/features/security/roles/GetRole/index.js";
 import { ListRolesUseCase } from "~/features/security/roles/ListRoles/index.js";
 import { CreateRoleUseCase } from "~/features/security/roles/CreateRole/index.js";
@@ -136,71 +130,6 @@ export class LegacyContext {
 
     async hasFullAccess(): Promise<boolean> {
         return this.identityContext.hasFullAccess();
-    }
-
-    async getApiKey(id: string) {
-        const useCase = this.container.resolve(GetApiKey);
-        const result = await useCase.execute(id);
-
-        if (result.isFail()) {
-            throw result.error;
-        }
-
-        return result.value;
-    }
-
-    async getApiKeyByToken(token: string) {
-        const useCase = this.container.resolve(GetApiKeyByToken);
-        const result = await useCase.execute(token);
-
-        if (result.isFail()) {
-            throw result.error;
-        }
-
-        return result.value;
-    }
-
-    async listApiKeys(params?: any) {
-        const useCase = this.container.resolve(ListApiKeys);
-        const result = await useCase.execute(params);
-
-        if (result.isFail()) {
-            throw result.error;
-        }
-
-        return result.value;
-    }
-
-    async createApiKey(data: any) {
-        const useCase = this.container.resolve(CreateApiKey);
-        const result = await useCase.execute(data);
-
-        if (result.isFail()) {
-            throw result.error;
-        }
-
-        return result.value;
-    }
-
-    async updateApiKey(id: string, data: any) {
-        const useCase = this.container.resolve(UpdateApiKey);
-        const result = await useCase.execute(id, data);
-
-        if (result.isFail()) {
-            throw result.error;
-        }
-
-        return result.value;
-    }
-
-    async deleteApiKey(id: string) {
-        const useCase = this.container.resolve(DeleteApiKey);
-        const result = await useCase.execute(id);
-
-        if (result.isFail()) {
-            throw result.error;
-        }
-        return true;
     }
 
     async getRole(params: any) {

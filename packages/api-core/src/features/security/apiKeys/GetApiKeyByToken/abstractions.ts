@@ -15,9 +15,10 @@ export interface IGetApiKeyByToken {
     execute(token: string): Promise<Result<ApiKey | null, GetApiKeyByTokenError>>;
 }
 
-export const GetApiKeyByToken = createAbstraction<IGetApiKeyByToken>("GetApiKeyByToken");
+export const GetApiKeyByTokenUseCase =
+    createAbstraction<IGetApiKeyByToken>("GetApiKeyByTokenUseCase");
 
-export namespace GetApiKeyByToken {
+export namespace GetApiKeyByTokenUseCase {
     export type Interface = IGetApiKeyByToken;
     export type Error = GetApiKeyByTokenError;
 }

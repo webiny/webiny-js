@@ -4,15 +4,6 @@ import role from "./role.gql.js";
 import team from "./team.gql.js";
 import identity from "./identity.gql.js";
 
-export interface CreateGraphQlPluginsParams {
-    teams?: boolean;
-}
-
-export const createSecurityGraphQL = ({ teams }: CreateGraphQlPluginsParams) => {
-    const plugins = [base, apiKey, role, identity];
-    if (teams) {
-        plugins.push(team);
-    }
-
-    return plugins;
+export const createSecurityGraphQL = () => {
+    return [base, team, apiKey, role, identity];
 };

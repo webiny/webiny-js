@@ -1,9 +1,9 @@
-import { CliCommand } from "~/abstractions/index.js";
+import { CliCommandFactory } from "~/abstractions/index.js";
 import { ProjectSdk } from "@webiny/project";
 
 export const createEnvOption = <T extends { env?: string }>(
-    overrides: Partial<CliCommand.OptionDefinition<T>> = {}
-): CliCommand.OptionDefinition<T> => {
+    overrides: Partial<CliCommandFactory.OptionDefinition<T>> = {}
+): CliCommandFactory.OptionDefinition<T> => {
     return {
         name: "env",
         description: "Environment name (dev, prod, etc.)",
@@ -23,8 +23,8 @@ export const createEnvOption = <T extends { env?: string }>(
 
 export const createVariantOption = <T extends { variant?: string }>(
     projectSdk: ProjectSdk,
-    overrides: Partial<CliCommand.OptionDefinition<T>> = {}
-): CliCommand.OptionDefinition<T> => {
+    overrides: Partial<CliCommandFactory.OptionDefinition<T>> = {}
+): CliCommandFactory.OptionDefinition<T> => {
     return {
         name: "variant",
         description: "Variant name",
@@ -42,8 +42,8 @@ export const createVariantOption = <T extends { variant?: string }>(
 
 export const createRegionOption = <T extends { region?: string }>(
     projectSdk: ProjectSdk,
-    overrides: Partial<CliCommand.OptionDefinition<T>> = {}
-): CliCommand.OptionDefinition<T> => {
+    overrides: Partial<CliCommandFactory.OptionDefinition<T>> = {}
+): CliCommandFactory.OptionDefinition<T> => {
     return {
         name: "region",
         description: "Region to target",
@@ -62,11 +62,11 @@ export const createRegionOption = <T extends { region?: string }>(
 export const createBaseAppOptions = <T extends { env?: string; variant?: string; region?: string }>(
     projectSdk: ProjectSdk,
     overrides: {
-        env?: Partial<CliCommand.OptionDefinition<T>>;
-        variant?: Partial<CliCommand.OptionDefinition<T>>;
-        region?: Partial<CliCommand.OptionDefinition<T>>;
+        env?: Partial<CliCommandFactory.OptionDefinition<T>>;
+        variant?: Partial<CliCommandFactory.OptionDefinition<T>>;
+        region?: Partial<CliCommandFactory.OptionDefinition<T>>;
     } = {}
-): CliCommand.OptionDefinition<T>[] => {
+): CliCommandFactory.OptionDefinition<T>[] => {
     return [
         createEnvOption(overrides.env),
         createVariantOption(projectSdk, overrides.variant),

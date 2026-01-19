@@ -1,15 +1,18 @@
 import { EntryAfterUnpublishHandler } from "@webiny/api-headless-cms/features/contentEntry/UnpublishEntry/events";
-import { CancelScheduledEntryActionUseCase } from "../CancelScheduledEntryAction/index.js";
+import { CancelScheduledActionUseCase, ListScheduledActionsUseCase } from "@webiny/api-scheduler";
 
 /**
- * Cancels scheduled actions when an entry is manually unpublished
+ * Cancels scheduled action when an entry is manually unpublished
  *
- * When a user manually unpublishes an entry, any scheduled publish/unpublish
- * actions for that entry should be cancelled since the manual action
+ * When a user manually unpublishes an entry revision, any scheduled unpublish
+ * action for that revision should be canceled since the manual action
  * takes precedence.
  */
 class CancelScheduledActionOnUnpublishHandlerImpl implements EntryAfterUnpublishHandler.Interface {
-    constructor(private cancelScheduledEntryAction: CancelScheduledEntryActionUseCase.Interface) {}
+    constructor(
+        private listScheduledActions: ListScheduledActionsUseCase.Interface,
+        private cancelScheduledEntryAction: CancelScheduledActionUseCase.Interface
+    ) {}
 
     async handle(event: EntryAfterUnpublishHandler.Event): Promise<void> {
         const { entry, model } = event.payload;
@@ -19,14 +22,22 @@ class CancelScheduledActionOnUnpublishHandlerImpl implements EntryAfterUnpublish
             return;
         }
 
-        try {
-            await this.cancelScheduledEntryAction.execute({
-                modelId: model.modelId,
+        const actionsResult = await this.listScheduledActions.execute({
+            where: {
+                namespace: `Cms/Entry/${model.modelId}`,
+                actionType: "Unpublish",
                 targetId: entry.id
-            });
-        } catch {
-            // Silently ignore errors - this is non-critical cleanup
-            // The entry was unpublished successfully, cancelling scheduled actions is best-effort
+            }
+        });
+
+        const actions = actionsResult.value.items;
+
+        for (const action of actions) {
+            const cancelRes = await this.cancelScheduledEntryAction.execute(action.id);
+            if (cancelRes.isFail()) {
+                // Silently ignore errors - this is non-critical cleanup.
+                // Entry was unpublished successfully, cancelling scheduled actions is best-effort.
+            }
         }
     }
 }
@@ -34,5 +45,5 @@ class CancelScheduledActionOnUnpublishHandlerImpl implements EntryAfterUnpublish
 export const CancelScheduledActionOnUnpublishHandler =
     EntryAfterUnpublishHandler.createImplementation({
         implementation: CancelScheduledActionOnUnpublishHandlerImpl,
-        dependencies: [CancelScheduledEntryActionUseCase]
+        dependencies: [ListScheduledActionsUseCase, CancelScheduledActionUseCase]
     });

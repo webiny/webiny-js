@@ -14,8 +14,8 @@ import { createSchedulerEntryFields } from "./graphql/fields.js";
 
 const createSchedulerUnpublishMutation = () => {
     return gql`
-        mutation SchedulerUnpublish($modelId: String!, $id: ID!, $input: CmsCreateScheduleInput!) {
-            createCmsSchedule(modelId: $modelId, id: $id, input: $input) {
+        mutation SchedulerUnpublish($modelId: String!, $id: ID!, $scheduleFor: DateTime, $type: CmsScheduleRecordType!) {
+            createCmsSchedule(modelId: $modelId, id: $id, scheduleFor: $scheduleFor, type: $type) {
                 data {
                     ${createSchedulerEntryFields()}
                 }
@@ -33,10 +33,8 @@ const createSchedulerUnpublishMutation = () => {
 interface SchedulerUnpublishGraphQLMutationVariables {
     modelId: string;
     id: string;
-    input: {
-        scheduleOn: Date;
-        type: ScheduleType.unpublish;
-    };
+    scheduleFor: Date;
+    type: ScheduleType.unpublish;
 }
 
 interface SchedulerUnpublishGraphQLMutationResponse {
@@ -66,10 +64,8 @@ export class SchedulerUnpublishGraphQLGateway implements ISchedulerUnpublishGate
             variables: {
                 modelId: params.modelId,
                 id: params.id,
-                input: {
-                    scheduleOn: params.scheduleOn,
-                    type: ScheduleType.unpublish
-                }
+                scheduleFor: params.scheduleOn,
+                type: ScheduleType.unpublish
             },
             fetchPolicy: "no-cache"
         });

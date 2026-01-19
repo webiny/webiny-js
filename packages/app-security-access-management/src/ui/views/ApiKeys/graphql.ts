@@ -4,6 +4,7 @@ import type { ApiKey } from "~/types.js";
 const fields = `
     id
     name
+    slug
     description
     token
     permissions

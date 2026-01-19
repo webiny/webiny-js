@@ -5,10 +5,7 @@ import type { CreateFolderTypeDefsParams } from "./createFolderTypeDefs.js";
 import { createFolderTypeDefs } from "./createFolderTypeDefs.js";
 import { ensureAuthentication } from "~/utils/ensureAuthentication.js";
 import { resolve } from "~/utils/resolve.js";
-import { compress } from "~/utils/compress.js";
-
 import type { AcoContext, Folder } from "~/types.js";
-import type { FolderLevelPermission } from "~/flp/flp.types.js";
 import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 import { GetFolderUseCase } from "~/features/folder/GetFolder/abstractions.js";
 import { ListFoldersUseCase } from "~/features/folder/ListFolders/abstractions.js";
@@ -72,58 +69,6 @@ export const createFoldersSchema = (params: CreateFolderTypeDefsParams) => {
                     } catch (e) {
                         return new ErrorResponse(e);
                     }
-                },
-                listFoldersCompressed: async (_, args: any, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-
-                        const flp = context.container.resolve(FolderLevelPermissions);
-                        const listFoldersUseCase = context.container.resolve(ListFoldersUseCase);
-                        const result = await listFoldersUseCase.execute(args);
-                        if (result.isFail()) {
-                            throw result.error;
-                        }
-                        const { folders } = result.value;
-                        const foldersPromises = folders.map(folder => {
-                            const canManageStructure = flp.canManageFolderStructure(
-                                folder as unknown as FolderLevelPermission
-                            );
-                            const canManagePermissions = flp.canManageFolderPermissions(
-                                folder as unknown as FolderLevelPermission
-                            );
-                            const canManageContent = flp.canManageFolderContent(
-                                folder as unknown as FolderLevelPermission
-                            );
-                            const hasNonInheritedPermissions =
-                                flp.permissionsIncludeNonInheritedPermissions(
-                                    folder.permissions ?? []
-                                );
-
-                            return Promise.all([
-                                canManageStructure,
-                                canManagePermissions,
-                                canManageContent,
-                                hasNonInheritedPermissions
-                            ]).then(
-                                ([
-                                    canManageStructure,
-                                    canManagePermissions,
-                                    canManageContent,
-                                    hasNonInheritedPermissions
-                                ]) => {
-                                    return {
-                                        ...folder,
-                                        canManageStructure,
-                                        canManagePermissions,
-                                        canManageContent,
-                                        hasNonInheritedPermissions
-                                    };
-                                }
-                            );
-                        });
-
-                        return Promise.all(foldersPromises).then(compress);
-                    });
                 },
                 getFolderHierarchy: async (_, args: any, context) => {
                     try {

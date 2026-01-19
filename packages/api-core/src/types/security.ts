@@ -45,11 +45,15 @@ export interface SecurityStorageOperations {
 
     deleteTeam(params: StorageOperationsDeleteTeamParams): Promise<void>;
 
-    getApiKey(params: StorageOperationsGetApiKeyParams): Promise<ApiKey | null>;
+    getApiKey(params: StorageOperationsGetApiKeyParams): Promise<StorageApiKey | null>;
 
-    getApiKeyByToken(params: StorageOperationsGetApiKeyByTokenParams): Promise<ApiKey | null>;
+    getApiKeyByToken(
+        params: StorageOperationsGetApiKeyByTokenParams
+    ): Promise<StorageApiKey | null>;
 
-    listApiKeys(params: StorageOperationsListApiKeysParams): Promise<ApiKey[]>;
+    getApiKeyBySlug(params: StorageOperationsGetApiKeyBySlugParams): Promise<StorageApiKey | null>;
+
+    listApiKeys(params: StorageOperationsListApiKeysParams): Promise<StorageApiKey[]>;
 
     createApiKey(params: StorageOperationsCreateApiKeyParams): Promise<void>;
 
@@ -172,8 +176,20 @@ export interface DeleteTeamParams {
 
 export interface ApiKey {
     id: string;
+    name: string;
+    slug: string;
+    description: string;
+    token: string;
+    permissions: SecurityPermission[];
+    createdBy: CreatedBy;
+    createdOn: string;
+}
+
+export interface StorageApiKey {
+    id: string;
     tenant: string;
     name: string;
+    slug: string;
     description: string;
     token: string;
     permissions: SecurityPermission[];
@@ -199,16 +215,21 @@ export interface GetApiKeyByTokenParams {
     token: string;
 }
 
+export interface GetApiKeyBySlugParams {
+    tenant: string;
+    slug: string;
+}
+
 export interface CreateApiKeyParams {
-    apiKey: ApiKey;
+    apiKey: StorageApiKey;
 }
 
 export interface UpdateApiKeyParams {
-    apiKey: ApiKey;
+    apiKey: StorageApiKey;
 }
 
 export interface DeleteApiKeyParams {
-    apiKey: ApiKey;
+    apiKey: StorageApiKey;
 }
 
 export interface StorageOperationsListApiKeysParams extends ListApiKeysParams {
@@ -250,6 +271,7 @@ export type StorageOperationsUpdateTeamParams = UpdateTeamParams;
 export type StorageOperationsDeleteTeamParams = DeleteTeamParams;
 export type StorageOperationsGetApiKeyParams = GetApiKeyParams;
 export type StorageOperationsGetApiKeyByTokenParams = GetApiKeyByTokenParams;
+export type StorageOperationsGetApiKeyBySlugParams = GetApiKeyBySlugParams;
 export type StorageOperationsCreateApiKeyParams = CreateApiKeyParams;
 export type StorageOperationsUpdateApiKeyParams = UpdateApiKeyParams;
 export type StorageOperationsDeleteApiKeyParams = DeleteApiKeyParams;

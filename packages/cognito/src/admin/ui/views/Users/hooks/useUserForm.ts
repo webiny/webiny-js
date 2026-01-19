@@ -1,10 +1,11 @@
 import { useCallback } from "react";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import isEmpty from "lodash/isEmpty.js";
-import { useRoute, useRouter, useSnackbar, useWcp } from "@webiny/app-admin";
+import { useRoute, useRouter, useWcp } from "@webiny/app-admin";
 import { CREATE_USER, LIST_USERS, READ_USER, UPDATE_USER } from "~/admin/ui/views/Users/graphql.js";
 import omit from "lodash/omit.js";
 import { Routes } from "~/admin/routes.js";
+import { useToast } from "@webiny/admin-ui";
 
 export type UseUserForm = ReturnType<typeof useUserForm>;
 
@@ -27,7 +28,7 @@ interface SubmitUserCallable {
 export function useUserForm() {
     const { goToRoute } = useRouter();
     const { route } = useRoute(Routes.Users.List);
-    const { showSnackbar } = useSnackbar();
+    const toast = useToast();
 
     const wcp = useWcp();
     const teams = wcp.canUseTeams();
@@ -46,7 +47,11 @@ export function useUserForm() {
             const { error } = data.adminUsers.user;
             if (error) {
                 goToRoute(Routes.Users.List);
-                showSnackbar(error.message);
+                toast.showWarningToast({
+                    title: "Error loading user profile",
+                    description: error.message,
+                    duration: Infinity
+                });
             }
         }
     });
@@ -73,13 +78,20 @@ export function useUserForm() {
             const { data: user, error } = result.data.adminUsers.user;
 
             if (error) {
-                return showSnackbar(error.message);
+                toast.showWarningToast({
+                    title: "Error updating user profile",
+                    description: error.message,
+                    duration: Infinity
+                });
+                return;
             }
 
             if (newUser) {
                 goToRoute(Routes.Users.List, { id: user.id });
             }
-            showSnackbar("User saved successfully.");
+            toast.showSuccessToast({
+                title: "User saved successfully."
+            });
         },
         [id, newUser]
     );
