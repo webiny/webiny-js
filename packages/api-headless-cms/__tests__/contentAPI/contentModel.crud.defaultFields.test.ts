@@ -34,7 +34,7 @@ describe("content model default fields", () => {
                 modelId,
                 singularApiName,
                 pluralApiName,
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
 
@@ -61,7 +61,7 @@ describe("content model default fields", () => {
                 modelId,
                 singularApiName,
                 pluralApiName,
-                group: contentModelGroup.id,
+                group: contentModelGroup.slug,
                 defaultFields: false
             }
         });
@@ -89,7 +89,7 @@ describe("content model default fields", () => {
                 modelId,
                 singularApiName,
                 pluralApiName,
-                group: contentModelGroup.id,
+                group: contentModelGroup.slug,
                 defaultFields: true
             }
         });

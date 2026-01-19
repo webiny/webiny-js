@@ -86,7 +86,7 @@ export interface CreateContentModelMutationVariables {
     data: {
         name: string;
         modelId?: string;
-        group: string | { id: string; name: string };
+        group: string;
         singularApiName: string;
         pluralApiName: string;
         description?: string;
@@ -102,7 +102,7 @@ export interface CreateContentModelFromMutationVariables {
     data: {
         name: string;
         modelId?: string;
-        group: string | { id: string; name: string };
+        group: string;
         singularApiName: string;
         pluralApiName: string;
         description?: string;

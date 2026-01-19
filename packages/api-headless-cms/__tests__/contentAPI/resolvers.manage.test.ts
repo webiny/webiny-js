@@ -172,7 +172,7 @@ describe("MANAGE - Resolvers", () => {
         const { getCategory } = useCategoryManageHandler({
             ...manageOpts,
             permissions: createPermissions({
-                groups: [contentModelGroup.id],
+                groups: [contentModelGroup.slug],
                 models: ["someOtherModelId"]
             })
         });
@@ -208,7 +208,7 @@ describe("MANAGE - Resolvers", () => {
         const { id, entryId } = create.data.createCategory.data!;
 
         const permissions = createPermissions({
-            groups: [contentModelGroup.id],
+            groups: [contentModelGroup.slug],
             models: ["category"]
         });
         const { getCategory } = useCategoryManageHandler({

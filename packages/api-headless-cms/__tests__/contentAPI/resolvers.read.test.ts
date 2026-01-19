@@ -276,7 +276,7 @@ describe.sequential("READ - Resolvers", () => {
         const { listCategories } = useCategoryReadHandler({
             ...readOpts,
             permissions: createPermissions({
-                groups: [contentModelGroup.id],
+                groups: [contentModelGroup.slug],
                 models: ["category"]
             })
         });

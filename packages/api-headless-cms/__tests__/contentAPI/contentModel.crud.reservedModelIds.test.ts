@@ -32,7 +32,7 @@ describe("content model test reserved model ids", () => {
                 modelId: "contentModel",
                 singularApiName: "ContentModel",
                 pluralApiName: "ContentModels",
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
 
@@ -57,7 +57,7 @@ describe("content model test reserved model ids", () => {
                 modelId: "contentModelGroup",
                 singularApiName: "ContentModelGroup",
                 pluralApiName: "ContentModelsGroups",
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
 

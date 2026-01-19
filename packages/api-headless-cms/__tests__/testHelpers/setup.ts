@@ -17,7 +17,7 @@ const setupContentModel = async (params: SetupContentModelParams) => {
             modelId: model.modelId,
             singularApiName: model.singularApiName,
             pluralApiName: model.pluralApiName,
-            group: group.id,
+            group: group.slug,
             fields: model.fields,
             layout: model.layout
         }
@@ -39,7 +39,7 @@ export const getModel = (item: TestCmsModel | string): TestCmsModel => {
     if (typeof item === "string") {
         const model = allModels.find(m => m.modelId === item);
         if (!model) {
-            console.log(`[setupContentModel] There is no model "${name}" defined.`);
+            console.log(`[setupContentModel] There is no model "${item}" defined.`);
             process.exit(1);
         }
         return model;
