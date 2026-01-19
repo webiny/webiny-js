@@ -1,8 +1,7 @@
 import React, { useCallback } from "react";
 import debounce from "lodash/debounce.js";
 import type { CmsReferenceContentEntry } from "~/admin/plugins/fieldRenderers/ref/components/types.js";
-import { Scrollbar } from "@webiny/admin-ui";
-import type { positionValues as PositionValues } from "react-custom-scrollbars";
+import { ScrollArea } from "@webiny/admin-ui";
 
 interface EntriesProps {
     entries: CmsReferenceContentEntry[];
@@ -14,7 +13,8 @@ export const Entries = (props: EntriesProps) => {
     const { entries, children, loadMore } = props;
 
     const loadMoreOnScroll = useCallback(
-        debounce((position: PositionValues) => {
+        debounce(position => {
+            console.log("pos", position);
             if (position.top <= 0.9) {
                 return;
             }
@@ -24,16 +24,16 @@ export const Entries = (props: EntriesProps) => {
     );
 
     return (
-        <div style={{ height: "260px" }} className={"w-full overflow-x-hidden overflow-y-hidden"}>
-            <Scrollbar data-testid="advanced-ref-field-entries" onScrollFrame={loadMoreOnScroll}>
+        <ScrollArea
+            className={"h-[416px] w-full overflow-x-hidden overflow-y-hidden flex flex-col gap-md"}
+            data-testid="advanced-ref-field-entries"
+            onScrollCapture={loadMoreOnScroll}
+        >
+            <div className={"flex flex-col gap-md"}>
                 {entries.map((entry, index) => {
-                    return (
-                        <div className={"mb-sm w-full"} key={`entry-${entry.id}`}>
-                            {children(entry, index)}
-                        </div>
-                    );
+                    return <div key={`entry-${entry.id}`}>{children(entry, index)}</div>;
                 })}
-            </Scrollbar>
-        </div>
+            </div>
+        </ScrollArea>
     );
 };

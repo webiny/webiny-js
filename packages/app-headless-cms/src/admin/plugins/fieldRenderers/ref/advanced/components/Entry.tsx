@@ -4,16 +4,15 @@ import type {
     CmsReferenceValue
 } from "~/admin/plugins/fieldRenderers/ref/components/types.js";
 import { Image } from "./entry/Image.js";
-import { View } from "./entry/View.js";
-import { Select } from "./entry/Select.js";
-import { Remove } from "./entry/Remove.js";
-import { MoveUp } from "./entry/MoveUp.js";
-import { MoveDown } from "./entry/MoveDown.js";
 import type { CmsModel } from "~/types.js";
-import { Tag, TimeAgo, Text, Sidebar, DropdownMenu, IconButton } from "@webiny/admin-ui";
+import { Tag, TimeAgo, Text, DropdownMenu, IconButton, Checkbox } from "@webiny/admin-ui";
 import { ReactComponent as MoreVertIcon } from "@webiny/icons/more_vert.svg";
 import { ReactComponent as OpenInNewIcon } from "@webiny/icons/open_in_new.svg";
 import { ReactComponent as RemoveIcon } from "@webiny/icons/close.svg";
+import { ReactComponent as ArrowUp } from "@webiny/icons/arrow_upward.svg";
+import { ReactComponent as ArrowDown } from "@webiny/icons/arrow_downward.svg";
+import { useRouter } from "@webiny/app";
+import { Routes } from "~/routes";
 
 interface EntryProps {
     model: CmsModel;
@@ -40,7 +39,6 @@ interface EntryPropsWithRemove {
 }
 
 export const Entry = ({
-    model,
     entry,
     onChange,
     onRemove,
@@ -50,6 +48,8 @@ export const Entry = ({
     onMoveDown: onMoveDownClick,
     placement
 }: EntryPropsWithRemove | EntryProps) => {
+    const { getLink } = useRouter();
+
     const onMoveUp = useCallback(
         (ev: React.MouseEvent) => {
             if (!onMoveUpClick) {
@@ -69,15 +69,40 @@ export const Entry = ({
         [onMoveDownClick, index]
     );
 
-    const icon = model.icon;
-
     const entryStatusLabel = entry.status.charAt(0).toUpperCase() + entry.status.slice(1);
     const entryRevision = "v2";
 
+    const folderId = entry.wbyAco_location?.folderId || "";
+
+    const link = getLink(Routes.ContentEntries.List, {
+        id: entry.id,
+        modelId: entry.model.modelId,
+        folderId
+    });
+
     return (
-        <div data-role="ref-field-entry" className={"w-full rounded-md bg-neutral-light"}>
+        <div
+            data-selected={selected}
+            data-role="ref-field-entry"
+            className={
+                "w-full rounded-md bg-neutral-light hover:bg-neutral-dimmed border-md border-transparent data-[selected=true]:border-accent-dimmed"
+            }
+        >
             <div className="flex items-center justify-between gap-lg min-w-0 p-sm-extra pr-lg">
-                <Image title={entry.title} src={entry.image} icon={icon} />
+                <div>
+                    {onChange && (
+                        <Checkbox
+                            checked={selected}
+                            onChange={() =>
+                                onChange({
+                                    id: entry.id,
+                                    modelId: entry.model.modelId
+                                })
+                            }
+                        />
+                    )}
+                </div>
+                <Image title={entry.title} src={entry.image} />
                 <div
                     className={
                         "flex flex-col gap-xxs overflow-hidden flex-1 min-w-0 text-sm text-neutral-muted"
@@ -96,7 +121,7 @@ export const Entry = ({
                         </span>
                     </div>
                     <div>
-                        <span className={"w-[60px] inline-block"}>Source:</span>
+                        <span className={"w-[60px] inline-block"}>Location:</span>
                         <span>
                             Home / Content / Preview / ... / Manage / Retail / Local / Products
                         </span>
@@ -114,22 +139,39 @@ export const Entry = ({
                         }
                         variant={"neutral-base-outline"}
                     />
+
+                    {placement == "multiRef" && (
+                        <>
+                            <div className={"flex gap-xs"}>
+                                <IconButton
+                                    disabled={!onMoveUpClick}
+                                    variant={"ghost"}
+                                    size={"sm"}
+                                    icon={<ArrowUp />}
+                                    onClick={onMoveUp}
+                                />
+                                <IconButton
+                                    disabled={!onMoveDownClick}
+                                    variant={"ghost"}
+                                    size={"sm"}
+                                    icon={<ArrowDown />}
+                                    onClick={onMoveDown}
+                                />
+                            </div>
+                        </>
+                    )}
+
                     <DropdownMenu
                         trigger={
-                            <IconButton
-                                variant={"ghost"}
-                                size={"sm"}
-                                icon={
-                                    <Sidebar.Item.Icon
-                                        label="Settings"
-                                        element={<MoreVertIcon />}
-                                    />
-                                }
-                            />
+                            <IconButton variant={"ghost"} size={"sm"} icon={<MoreVertIcon />} />
                         }
-                        className={"w-[225px]"}
                     >
-                        <DropdownMenu.Item icon={<OpenInNewIcon />} text={"Open in new window"} />
+                        <DropdownMenu.Link
+                            icon={<OpenInNewIcon />}
+                            text={"Open in new tab"}
+                            to={link}
+                            target={"_blank"}
+                        />
 
                         {onRemove && (
                             <DropdownMenu.Item
@@ -140,23 +182,6 @@ export const Entry = ({
                         )}
                     </DropdownMenu>
                 </div>
-                {/*<div className={"flex items-center gap-sm pr-sm-extra h-lg"}>
-                    {placement == "multiRef" && (
-                        <>
-                            <MoveUp
-                                className={onMoveUpClick ? "active" : "disabled"}
-                                onClick={onMoveUp}
-                            />
-                            <MoveDown
-                                className={onMoveDownClick ? "active" : "disabled"}
-                                onClick={onMoveDown}
-                            />
-                        </>
-                    )}
-                    <View entry={entry} />
-                    {onChange && <Select entry={entry} onChange={onChange} selected={selected} />}
-                    {onRemove && <Remove entry={entry} onRemove={onRemove} />}
-                </div>*/}
             </div>
         </div>
     );
