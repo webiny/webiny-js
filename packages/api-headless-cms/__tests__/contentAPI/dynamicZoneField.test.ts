@@ -517,9 +517,11 @@ describe("dynamicZone field", () => {
                                         authors: [
                                             {
                                                 entryId: "john-doe",
-                                                fullName: "John Doe",
                                                 id: "john-doe#0001",
-                                                modelId: "author"
+                                                modelId: "author",
+                                                values: {
+                                                    fullName: "John Doe"
+                                                }
                                             }
                                         ]
                                     }
@@ -528,16 +530,20 @@ describe("dynamicZone field", () => {
                                     __typename: contentEntryQueryData.content[4].__typename,
                                     author: {
                                         entryId: "john-doe",
-                                        fullName: "John Doe",
                                         id: "john-doe#0001",
-                                        modelId: "author"
+                                        modelId: "author",
+                                        values: {
+                                            fullName: "John Doe"
+                                        }
                                     },
                                     authors: [
                                         {
                                             entryId: "john-doe",
-                                            fullName: "John Doe",
                                             id: "john-doe#0001",
-                                            modelId: "author"
+                                            modelId: "author",
+                                            values: {
+                                                fullName: "John Doe"
+                                            }
                                         }
                                     ]
                                 }
@@ -545,18 +551,22 @@ describe("dynamicZone field", () => {
                             reference: {
                                 author: {
                                     entryId: "john-doe",
-                                    fullName: "John Doe",
                                     id: "john-doe#0001",
-                                    modelId: "author"
+                                    modelId: "author",
+                                    values: {
+                                        fullName: "John Doe"
+                                    }
                                 }
                             },
                             references1: {
                                 authors: [
                                     {
                                         entryId: "john-doe",
-                                        fullName: "John Doe",
                                         id: "john-doe#0001",
-                                        modelId: "author"
+                                        modelId: "author",
+                                        values: {
+                                            fullName: "John Doe"
+                                        }
                                     }
                                 ]
                             },
@@ -564,9 +574,11 @@ describe("dynamicZone field", () => {
                                 {
                                     author: {
                                         entryId: "john-doe",
-                                        fullName: "John Doe",
                                         id: "john-doe#0001",
-                                        modelId: "author"
+                                        modelId: "author",
+                                        values: {
+                                            fullName: "John Doe"
+                                        }
                                     }
                                 }
                             ]

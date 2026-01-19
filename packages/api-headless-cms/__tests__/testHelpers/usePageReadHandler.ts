@@ -39,7 +39,9 @@ const pageFields = `
                             id
                             modelId
                             entryId
-                            fullName
+                            values {
+                                fullName
+                            }
                         }
                     }
                 }
@@ -50,13 +52,17 @@ const pageFields = `
                     id
                     entryId
                     modelId
-                    fullName
+                    values {
+                        fullName
+                    }
                 }
                 authors(populate: true) {
                     id
                     entryId
                     modelId
-                    fullName
+                    values {
+                        fullName
+                    }
                 }
                 __typename
             }
@@ -94,7 +100,9 @@ const pageFields = `
                     id
                     entryId
                     modelId
-                    fullName
+                    values {
+                        fullName
+                    }
                 }
             }
         }
@@ -104,7 +112,9 @@ const pageFields = `
                     id
                     entryId
                     modelId
-                    fullName
+                    values {
+                        fullName
+                    }
                 }
             }
         }
@@ -114,7 +124,9 @@ const pageFields = `
                     id
                     entryId
                     modelId
-                    fullName
+                    values {
+                        fullName
+                    }
                 }
             }
         }
