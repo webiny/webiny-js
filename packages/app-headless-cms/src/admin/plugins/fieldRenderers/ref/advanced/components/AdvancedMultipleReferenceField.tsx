@@ -211,6 +211,8 @@ export const AdvancedMultipleReferenceField = (props: AdvancedMultipleReferenceF
         [values]
     );
 
+    const loading = loadingEntries || loadingModels;
+
     const { validation } = bind;
     const { isValid: validationIsValid, message: validationMessage } = validation || {};
     const invalid = useMemo(() => validationIsValid === false, [validationIsValid]);
@@ -221,32 +223,38 @@ export const AdvancedMultipleReferenceField = (props: AdvancedMultipleReferenceF
                 <FormComponentLabel text={field.label} invalid={invalid} />
             </div>
             <div className={"webiny_ref-field-container"}>
-                <Entries entries={entries} loadMore={loadMore}>
-                    {(entry, index) => {
-                        const isFirst = index === 0;
-                        const isLast = index >= values.length - 1;
-                        const model = loadedModels.find(
-                            model => model.modelId === entry.model.modelId
-                        );
-                        if (!model) {
-                            return null;
-                        }
-                        return (
-                            <Entry
-                                model={model}
-                                placement="multiRef"
-                                key={`reference-entry-${entry.id}`}
-                                index={index}
-                                entry={entry}
-                                onRemove={onRemove}
-                                onMoveUp={!isFirst ? onMoveUp : undefined}
-                                onMoveDown={!isLast ? onMoveDown : undefined}
-                            />
-                        );
-                    }}
-                </Entries>
+                {loading ? (
+                    <>LOAD</>
+                ) : (
+                    <Entries entries={entries} loadMore={loadMore}>
+                        {(entry, index) => {
+                            const isFirst = index === 0;
+                            const isLast = index >= values.length - 1;
+                            const model = loadedModels.find(
+                                model => model.modelId === entry.model.modelId
+                            );
+                            if (!model) {
+                                return null;
+                            }
+                            return (
+                                <Entry
+                                    model={model}
+                                    placement="multiRef"
+                                    key={`reference-entry-${entry.id}`}
+                                    index={index}
+                                    entry={entry}
+                                    onRemove={onRemove}
+                                    onMoveUp={!isFirst ? onMoveUp : undefined}
+                                    onMoveDown={!isLast ? onMoveDown : undefined}
+                                />
+                            );
+                        }}
+                    </Entries>
+                )}
             </div>
             <FormComponentErrorMessage text={validationMessage} invalid={invalid} />
+            {values.length > 0 && <div className="mb-md" />}
+
             <Options
                 models={models}
                 onNewRecord={onNewRecord}

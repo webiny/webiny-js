@@ -24,7 +24,7 @@ export const Entries = (props: EntriesProps) => {
 
     return (
         <ScrollArea
-            className={"h-[404px] w-full flex flex-col gap-md"}
+            className={"max-h-[404px] w-full flex flex-col gap-md"}
             data-testid="advanced-ref-field-entries"
             onScroll={loadMoreOnScroll}
         >
