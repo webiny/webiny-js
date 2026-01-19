@@ -5,14 +5,14 @@ import type {
 } from "~/admin/plugins/fieldRenderers/ref/components/types.js";
 import { Image } from "./entry/Image.js";
 import type { CmsModel } from "~/types.js";
-import { Tag, TimeAgo, Text, DropdownMenu, IconButton, Checkbox } from "@webiny/admin-ui";
+import { Tag, TimeAgo, Text, DropdownMenu, IconButton, Checkbox, cn } from "@webiny/admin-ui";
 import { ReactComponent as MoreVertIcon } from "@webiny/icons/more_vert.svg";
 import { ReactComponent as OpenInNewIcon } from "@webiny/icons/open_in_new.svg";
 import { ReactComponent as RemoveIcon } from "@webiny/icons/close.svg";
 import { ReactComponent as ArrowUp } from "@webiny/icons/arrow_upward.svg";
 import { ReactComponent as ArrowDown } from "@webiny/icons/arrow_downward.svg";
 import { useRouter } from "@webiny/app";
-import { Routes } from "~/routes";
+import { Routes } from "~/routes.js";
 
 interface EntryProps {
     model: CmsModel;
@@ -83,10 +83,19 @@ export const Entry = ({
     return (
         <div
             data-selected={selected}
+            onClick={() => {
+                if (onChange) {
+                    onChange({
+                        id: entry.id,
+                        modelId: entry.model.modelId
+                    });
+                }
+            }}
             data-role="ref-field-entry"
-            className={
-                "w-full rounded-md bg-neutral-light hover:bg-neutral-dimmed border-md border-transparent data-[selected=true]:border-accent-dimmed"
-            }
+            className={cn(
+                "w-full rounded-md bg-neutral-light hover:bg-neutral-dimmed border-md border-transparent data-[selected=true]:border-accent-dimmed",
+                { "hover:cursor-pointer": !!onChange }
+            )}
         >
             <div className="flex items-center justify-between gap-lg min-w-0 p-sm-extra pr-lg">
                 <div>
@@ -120,12 +129,12 @@ export const Entry = ({
                             {entry.createdBy.displayName}, <TimeAgo datetime={entry.createdOn} />
                         </span>
                     </div>
-                    <div>
+                    {/* <div>
                         <span className={"w-[60px] inline-block"}>Location:</span>
                         <span>
                             Home / Content / Preview / ... / Manage / Retail / Local / Products
                         </span>
-                    </div>
+                    </div>*/}
                 </div>
                 <div className={"flex items-center gap-sm"}>
                     <Tag

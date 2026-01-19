@@ -183,6 +183,7 @@ export const AdvancedSingleReferenceField = (props: AdvancedSingleReferenceField
                 )}
             </div>
             <FormComponentErrorMessage text={validationMessage} invalid={invalid} />
+            {initialValue && <div className="mb-md" />}
             <Options
                 models={models}
                 onNewRecord={onNewRecord}
