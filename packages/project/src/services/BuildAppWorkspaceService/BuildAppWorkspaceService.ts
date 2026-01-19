@@ -72,14 +72,6 @@ export class DefaultBuildAppWorkspaceService implements BuildAppWorkspaceService
             }
         ]);
 
-        // Copy `public` folder into `admin` app workspace folder.
-        if (appName === "admin") {
-            const publicFolder = path.join(sdkParams.cwd, "public");
-            fs.cpSync(publicFolder, path.join(appWorkspaceFolderPath, "public"), {
-                recursive: true
-            });
-        }
-
         this.loggerService.info("App workspace built successfully.");
     }
 }

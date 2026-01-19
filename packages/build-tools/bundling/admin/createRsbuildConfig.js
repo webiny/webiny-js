@@ -12,7 +12,12 @@ export const createRsbuildConfig = ({ cwd }) => {
     const mode = getMode();
 
     return /** @type {import("@rsbuild/core").RsbuildConfig} */ ({
-        source: { entry: { index: paths.admin.entryFile }, define: envVars },
+        source: {
+            entry: {
+                index: paths.admin.entryFile
+            },
+            define: envVars
+        },
         output: { distPath: { root: paths.admin.outputFolder } },
         mode,
         dev: { hmr: true },
@@ -30,7 +35,7 @@ export const createRsbuildConfig = ({ cwd }) => {
         },
         server: { port: 3001 },
         html: {
-            template: paths.admin.rootFolder + "/public/index.html"
+            template: paths.projectRootFolder + "/public/index.html"
         },
         plugins: [
             pluginTypeCheck({
