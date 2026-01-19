@@ -8,7 +8,6 @@ import type {
     IdInterfaceGenerator
 } from "@webiny/api";
 
-
 // Input/Output types
 export interface IListLockRecordsWhere
     extends IdInterfaceGenerator<"id">,

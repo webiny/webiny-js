@@ -681,7 +681,6 @@ export interface CmsEntryListWhere
     OR?: CmsEntryListWhere[];
 }
 
-
 /**
  * Entry listing sort.
  *
