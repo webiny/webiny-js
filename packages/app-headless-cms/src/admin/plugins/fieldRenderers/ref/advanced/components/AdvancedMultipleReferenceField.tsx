@@ -20,9 +20,6 @@ import { Entries } from "./Entries.js";
 import { NewReferencedEntryDialog } from "~/admin/plugins/fieldRenderers/ref/components/NewReferencedEntryDialog.js";
 import { FormComponentErrorMessage, FormComponentLabel } from "@webiny/admin-ui";
 
-const b =
-    123;
-
 interface AdvancedMultipleReferenceFieldProps extends CmsModelFieldRendererProps {
     bind: BindComponentRenderProp<CmsReferenceValue[] | undefined | null>;
 }
