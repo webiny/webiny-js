@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-webpack5";
-import { ScrollArea, ScrollBar } from "./ScrollArea.js";
+import { ScrollArea, ScrollBar, ScrollPosition } from "./ScrollArea.js";
 import React from "react";
 import { Heading } from "~/Heading/index.js";
 import { Text } from "~/Text/index.js";
@@ -86,6 +86,60 @@ export const HorizontalScrolling: Story = {
                 </div>
                 <ScrollBar orientation="horizontal" />
             </ScrollArea>
+        );
+    }
+};
+
+export const WithScrollPositionTracking: Story = {
+    render: () => {
+        const [position, setPosition] = React.useState<ScrollPosition | null>(null);
+        const [loadMoreTriggered, setLoadMoreTriggered] = React.useState(false);
+
+        const handleScrollPositionChange = React.useCallback(
+            (pos: ScrollPosition) => {
+                setPosition(pos);
+
+                // Trigger load more when scrolled 90% down.
+                if (pos.top >= 0.9 && !loadMoreTriggered) {
+                    setLoadMoreTriggered(true);
+                    console.log("Load more triggered at position:", pos);
+                } else if (pos.top < 0.9) {
+                    setLoadMoreTriggered(false);
+                }
+            },
+            [loadMoreTriggered]
+        );
+
+        return (
+            <div className="space-y-4">
+                <ScrollArea
+                    className="h-72 w-48 rounded-md border border-neutral-dimmed"
+                    onScrollPositionChange={handleScrollPositionChange}
+                >
+                    <div className="p-4">
+                        <Heading level={6} className="mb-4">
+                            Tags
+                        </Heading>
+                        {tags.map(tag => (
+                            <div key={tag}>
+                                <Text className="text-sm">{tag}</Text>
+                                <Separator className="my-2" />
+                            </div>
+                        ))}
+                    </div>
+                </ScrollArea>
+
+                {position && (
+                    <div className="rounded-md border border-neutral-dimmed p-4 space-y-2">
+                        <Text className="font-semibold">Scroll Position:</Text>
+                        <Text className="text-sm">Top: {(position.top * 100).toFixed(1)}%</Text>
+                        <Text className="text-sm">ScrollTop: {position.scrollTop}px</Text>
+                        <Text className="text-sm">
+                            Load More Triggered: {loadMoreTriggered ? "Yes" : "No"}
+                        </Text>
+                    </div>
+                )}
+            </div>
         );
     }
 };

@@ -9,8 +9,6 @@ import { Options } from "./Options.js";
 import { useReferences } from "../hooks/useReferences.js";
 import { Entry } from "./Entry.js";
 import { ReferencesDialog } from "./ReferencesDialog.js";
-import { NoEntries } from "./NoEntries.js";
-import { Container } from "./Container.js";
 import { useQuery, useModelFieldGraphqlContext } from "~/admin/hooks/index.js";
 import type { ListCmsModelsQueryResponse } from "~/admin/viewsGraphql.js";
 import * as GQL from "~/admin/viewsGraphql.js";
@@ -172,9 +170,9 @@ export const AdvancedSingleReferenceField = (props: AdvancedSingleReferenceField
     return (
         <>
             <FormComponentLabel text={field.label} invalid={invalid} />
-            <Container className={"webiny_ref-field-container"}>
+            <div className={"webiny_ref-field-container"}>
                 {loading && <OverlayLoader size={"md"} />}
-                {initialValue ? (
+                {initialValue && (
                     <Entry
                         model={initialValue.model}
                         placement="singleRefField"
@@ -182,11 +180,10 @@ export const AdvancedSingleReferenceField = (props: AdvancedSingleReferenceField
                         entry={initialValue.entry}
                         onRemove={onRemove}
                     />
-                ) : (
-                    <NoEntries text={"No record found"} />
                 )}
-            </Container>
+            </div>
             <FormComponentErrorMessage text={validationMessage} invalid={invalid} />
+            {initialValue && <div className="mb-md" />}
             <Options
                 models={models}
                 onNewRecord={onNewRecord}

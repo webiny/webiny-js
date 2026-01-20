@@ -8,9 +8,9 @@ const SidebarContent = ({ className, children, ...props }: React.ComponentProps<
     const isExpanded = state === "expanded";
 
     if (isExpanded) {
-        // Extract dir prop to avoid type conflict with ScrollArea
+        // Extract dir and onScroll props to avoid type conflicts with ScrollArea.
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { dir, ...restProps } = props;
+        const { dir, onScroll, ...restProps } = props;
         return (
             <ScrollArea
                 data-sidebar="content"
