@@ -26,21 +26,21 @@ const Loader = ({ children, ...props }: LoaderProps) => (
 const ContentModelEditor = lazy(
     () =>
         import(
-            /* webpackChunkName: "ViewsContentModelsContentModelEditor" */
+            /* webpackChunkName: "contentModelEditor" */
             "./views/contentModels/ContentModelEditor.js"
         )
 );
 const ContentModelsView = lazy(
     () =>
         import(
-            /* webpackChunkName: "ViewsContentModelsContentModels" */
+            /* webpackChunkName: "contentModels" */
             "./views/contentModels/ContentModels.js"
         )
 );
 const ContentModelGroupsView = lazy(
     () =>
         import(
-            /* webpackChunkName: "ViewsContentModelsContentModelGroups" */
+            /* webpackChunkName: "contentModelGroups" */
             "./views/contentModelGroups/ContentModelGroups.js"
         )
 );

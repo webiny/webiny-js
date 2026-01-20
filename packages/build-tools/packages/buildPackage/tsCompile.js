@@ -24,10 +24,13 @@ export const tsCompile = async ({ cwd = "", overrides, debug }) => {
 
     const { projectReferences, options, fileNames, errors } = parsedJsonConfigFile;
 
+    // Exclude .d.ts files from TypeScript compilation
+    const filteredFileNames = fileNames.filter(fileName => !fileName.endsWith(".d.ts"));
+
     const program = ts.createProgram({
         projectReferences,
         options,
-        rootNames: fileNames,
+        rootNames: filteredFileNames,
         configFileParsingDiagnostics: errors
     });
 

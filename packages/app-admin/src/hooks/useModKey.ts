@@ -30,7 +30,5 @@ export function useModKey() {
         };
     }, []);
 
-    console.log("pressed", pressed);
-
     return pressed;
 }

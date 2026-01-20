@@ -1,4 +1,5 @@
 import React from "react";
+{GLOBAL_CSS}
 
 import "cross-fetch/polyfill";
 import "core-js/stable";

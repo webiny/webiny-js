@@ -10,7 +10,7 @@
     "esModuleInterop": true,
     "declaration": true,
     "composite": true,
-    "noEmit": false,
+    "noEmit": true,
     "jsx": "preserve",
     "emitDeclarationOnly": true,
     "baseUrl": ".",

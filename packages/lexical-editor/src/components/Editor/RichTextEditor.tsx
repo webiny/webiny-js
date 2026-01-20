@@ -1,6 +1,4 @@
 import React, { Fragment, useRef, useState } from "react";
-import { css } from "emotion";
-import type { CSSObject } from "@emotion/react";
 import type { Klass, LexicalNode } from "lexical";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
@@ -10,8 +8,7 @@ import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { makeDecoratable } from "@webiny/react-composition";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
-import type { EditorTheme, ThemeEmotionMap } from "@webiny/lexical-theme";
-import { createTheme, toTypographyEmotionMap } from "@webiny/lexical-theme";
+import type { EditorTheme } from "@webiny/lexical-theme";
 import { allNodes } from "@webiny/lexical-nodes";
 import { RichTextEditorProvider } from "~/context/RichTextEditorContext.js";
 import { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin.js";
@@ -39,9 +36,7 @@ export interface RichTextEditorProps {
     styles?: React.CSSProperties;
     tag?: string;
     theme: EditorTheme;
-    themeEmotionMap?: ThemeEmotionMap;
     toolbarActionPlugins?: ToolbarActionPlugin[];
-    themeStylesTransformer?: (cssObject: Record<string, any>) => CSSObject;
     toolbar?: React.ReactNode;
     value: LexicalValue | null | undefined;
     width?: number | string;
@@ -63,11 +58,7 @@ const BaseRichTextEditor = ({
     placeholderStyles,
     ...props
 }: RichTextEditorProps) => {
-    const themeEmotionMap =
-        props.themeEmotionMap ??
-        toTypographyEmotionMap(css, props.theme, props.themeStylesTransformer);
-
-    const editorTheme = useRef(createTheme(props.theme));
+    const editorTheme = useRef(props.theme);
     const config = useLexicalEditorConfig();
     const { historyState } = useSharedHistoryContext();
     const placeholderElem = (
@@ -101,7 +92,14 @@ const BaseRichTextEditor = ({
             // These are usually resolved in the next component render cycle.
         },
         nodes: [...allNodes, ...configNodes, ...(nodes || [])],
-        theme: { ...editorTheme.current, emotionMap: themeEmotionMap }
+        theme: {
+            ...editorTheme.current.tokens,
+            // I'm not aware of a better way to pass custom data to nodes.
+            // For now, we're using Lexical's theme to pass colors and typography.
+            $colors: editorTheme.current.colors,
+            $typography: editorTheme.current.typography,
+            $cacheKey: JSON.stringify(editorTheme.current)
+        }
     };
 
     return (
@@ -116,7 +114,6 @@ const BaseRichTextEditor = ({
             <LexicalComposer initialConfig={initialConfig} key={initialConfig.nodes.length}>
                 <RichTextEditorProvider
                     theme={props.theme}
-                    themeEmotionMap={themeEmotionMap}
                     toolbarActionPlugins={props.toolbarActionPlugins}
                 >
                     {staticToolbar ? staticToolbar : null}

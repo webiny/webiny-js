@@ -111,6 +111,7 @@ const ContentModelGroupsForm = ({ canCreate }: ContentModelGroupsFormProps) => {
         (group: Partial<CmsGroup>) => {
             if (!group.id) {
                 return create({
+                    refetchQueries: ["CmsListMenuContentGroupsModels"],
                     variables: {
                         data: {
                             name: group.name,
@@ -122,6 +123,7 @@ const ContentModelGroupsForm = ({ canCreate }: ContentModelGroupsFormProps) => {
                 });
             }
             return update({
+                refetchQueries: ["CmsListMenuContentGroupsModels"],
                 variables: {
                     id: group.id,
                     data: {

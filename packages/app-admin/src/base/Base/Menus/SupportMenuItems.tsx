@@ -1,7 +1,5 @@
 import React, { type ReactElement } from "react";
-import { AdminConfig } from "~/config/AdminConfig.js";
-
-const { useAdminConfig } = AdminConfig;
+import { useAdminConfig } from "~/config/AdminConfig.js";
 
 export const SupportMenuItems = (): ReactElement | null => {
     const { supportMenus } = useAdminConfig();

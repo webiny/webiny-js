@@ -1,9 +1,7 @@
 import React from "react";
 import { Text } from "@webiny/admin-ui";
 import { useAuthentication } from "~/presentation/security/hooks/useAuthentication.js";
-import { AdminConfig } from "~/config/AdminConfig.js";
-
-const { Menu } = AdminConfig;
+import { Menu } from "~/config/AdminConfig/Menu.js";
 
 interface UserInfoProps {
     accountRoute?: string;
