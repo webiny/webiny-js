@@ -15978,7 +15978,6 @@ __metadata:
   dependencies:
     "@types/react": "npm:18.2.79"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/lexical-editor": "npm:0.0.0"
     "@webiny/website-builder-sdk": "npm:0.0.0"
     deep-equal: "npm:^2.2.3"
     mobx: "npm:^6.15.0"
@@ -34491,6 +34490,7 @@ __metadata:
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
     "@webiny/tasks": "npm:0.0.0"
+    react: "npm:18.2.0"
     rimraf: "npm:^6.1.2"
     typescript: "npm:5.9.3"
   languageName: unknown
