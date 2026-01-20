@@ -61,6 +61,10 @@ export const createFilesSchema = (params: CreateFilesTypeDefsParams) => {
                 },
                 async listFiles(_, args, context) {
                     const listFiles = context.container.resolve(ListFilesUseCase);
+                    // console.log({
+                    //     beforeListFilesExecute: true,
+                    //     args: JSON.stringify(args)
+                    // });
                     const result = await listFiles.execute(args);
 
                     if (result.isFail()) {

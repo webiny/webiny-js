@@ -7,6 +7,24 @@ import { GenericRecord } from "@webiny/api/types.js";
 import { CmsEntryListWhere } from "~/types/types.js";
 import { CmsFieldInputToWhereMapper, ICmsFieldInputToWhereMapperParams } from "./abstractions.js";
 
+const isPlainObject = (value: unknown): value is Record<string, unknown> => {
+    if (!value || typeof value !== "object") {
+        return false;
+    } else if (Array.isArray(value)) {
+        return false;
+    }
+    return true;
+};
+
+const isLogicalKey = (key: string): key is "AND" | "OR" => {
+    return key === "AND" || key === "OR";
+};
+
+interface IMapNodeWhereParams {
+    input: GenericRecord;
+    isField: (key: string) => boolean;
+}
+
 class WhereMapperImpl implements CmsFieldInputToWhereMapper.Interface {
     map<T extends GenericRecord>(
         params: ICmsFieldInputToWhereMapperParams<T>
@@ -16,35 +34,55 @@ class WhereMapperImpl implements CmsFieldInputToWhereMapper.Interface {
             return undefined;
         }
 
-        const keys = Object.getOwnPropertyNames(input);
-        if (keys.length === 0) {
-            return undefined;
-        }
-
         const fields = modelFields.map(field => {
             return field.fieldId;
         });
 
-        const isField = (input: string): boolean => {
-            const field = input.split("_")[0];
+        const isField = (key: string): boolean => {
+            const field = key.split("_")[0];
             return fields.includes(field);
         };
 
-        const where: CmsEntryListWhere = {};
+        return this.mapWhere({
+            input,
+            isField
+        });
+    }
+
+    private mapWhere(params: IMapNodeWhereParams) {
+        const { input, isField } = params;
+        const out: CmsEntryListWhere = {};
+
+        const keys = Object.keys(input) as (keyof typeof out)[];
+        if (keys.length === 0) {
+            return out;
+        }
 
         for (const key of keys) {
             const value = input[key];
-            if (isField(key)) {
-                where.values = {
-                    ...where.values,
-                    [key]: value
-                };
+
+            if (isLogicalKey(key)) {
+                if (Array.isArray(value)) {
+                    out[key] = value.filter(isPlainObject).map(child => {
+                        return this.mapWhere({
+                            input: child,
+                            isField
+                        });
+                    });
+                }
+                continue;
+            } else if (isField(key)) {
+                if (!out.values) {
+                    out.values = {};
+                }
+                out.values[key] = value;
                 continue;
             }
-            where[key as keyof typeof where] = value;
+
+            out[key] = value;
         }
 
-        return where;
+        return out;
     }
 }
 

@@ -1,5 +1,6 @@
 import type { CmsDynamicZoneTemplate, CmsFieldValueTransformer } from "~/types.js";
 import { prepareFormData } from "@webiny/app-headless-cms-common";
+import type { CmsContentEntry } from "@webiny/app-headless-cms-common/types/index.js";
 
 interface TemplateValueFromForm {
     _templateId: string;
@@ -15,8 +16,12 @@ const convertToGraphQLInput = (
         return undefined;
     }
 
+    const entry: Required<Pick<CmsContentEntry, "values">> = {
+        values: prepareFormData(value, template.fields)
+    };
+
     return {
-        [template.gqlTypeName]: prepareFormData(value, template.fields)
+        [template.gqlTypeName]: entry
     };
 };
 

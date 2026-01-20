@@ -21,15 +21,23 @@ class ListFilesRepositoryImpl implements RepositoryAbstraction.Interface {
     async execute(
         input: ListFilesInput
     ): Promise<Result<ListFilesOutput, RepositoryAbstraction.Error>> {
+        const where = this.cmsFieldInputToWhereMapper.map<GenericRecord>({
+            input: input.where || {},
+            fields: this.fileModel.fields
+        });
+
+        console.log({
+            where: JSON.stringify(where)
+        });
         const result = await this.listLatestEntries.execute(this.fileModel, {
-            where: this.cmsFieldInputToWhereMapper.map<GenericRecord>({
-                input: input.where || {},
-                fields: this.fileModel.fields
-            }),
+            where,
             limit: input.limit || 40,
             after: input.after || undefined,
             sort: input.sort || ["id_DESC"],
             search: input.search
+        });
+        console.log({
+            resultIs: result.isOk() ? "OK" : "FAIL"
         });
 
         if (result.isFail()) {

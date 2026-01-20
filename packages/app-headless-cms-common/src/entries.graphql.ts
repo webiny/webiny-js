@@ -243,8 +243,9 @@ export const createListQueryDataSelection = (
 ) => {
     return `
         ${createEntrySystemFields(model)}
-        ${fields ? `values {${createFieldsList({ model, fields })}` : ""}
-        ${!fields ? `values {${getModelTitleFieldId(model)}` : ""}
+        values {
+            ${fields ? createFieldsList({ model, fields }) : getModelTitleFieldId(model)}
+        }
     `;
 };
 
@@ -254,6 +255,8 @@ export const createListQuery = (
     deleted?: boolean
 ) => {
     const queryName = deleted ? `Deleted${model.pluralApiName}` : model.pluralApiName;
+
+    const selection = createListQueryDataSelection(model, fields);
 
     return gql`
         query CmsEntriesList${queryName}($where: ${model.singularApiName}ListWhereInput, $sort: [${
@@ -267,7 +270,7 @@ export const createListQuery = (
             search: $search
             ) {
                 data {
-                    ${createListQueryDataSelection(model, fields)}
+                    ${selection}
                 }
                 meta {
                     cursor

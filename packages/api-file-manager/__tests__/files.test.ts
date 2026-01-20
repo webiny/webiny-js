@@ -503,4 +503,79 @@ describe("Files CRUD test", { timeout: 100_000, retry: 3 }, () => {
             }
         });
     });
+    /**
+     * Skipped because it is used to test Where mapper.
+     */
+    it.skip("should list files with AND keyword", async () => {
+        await createFiles({
+            data: [fileAData, fileBData, fileCData]
+        });
+
+        const [listResponse] = await listFiles();
+        expect(listResponse.errors).toBeUndefined();
+        expect(listResponse).toMatchObject({
+            data: {
+                fileManager: {
+                    listFiles: {
+                        data: expect.any(Array),
+                        meta: {
+                            totalCount: 3
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [listResponseWithWhere] = await listFiles({
+            where: {
+                tags_not_startsWith: "scope:",
+                location: {
+                    folderId: "root"
+                },
+                AND: [
+                    {
+                        size_gt: 1000,
+                        OR: [
+                            {
+                                type_startsWith: "image/jpg"
+                            },
+                            {
+                                type_startsWith: "image/jpeg"
+                            },
+                            {
+                                type_startsWith: "image/tiff"
+                            },
+                            {
+                                type_startsWith: "image/gif"
+                            },
+                            {
+                                type_startsWith: "image/png"
+                            },
+                            {
+                                type_startsWith: "image/webp"
+                            },
+                            {
+                                type_startsWith: "image/bmp"
+                            },
+                            {
+                                type_startsWith: "image/svg+xml"
+                            }
+                        ]
+                    }
+                ]
+            }
+        });
+        expect(listResponseWithWhere).toEqual({
+            data: {
+                fileManager: {
+                    listFiles: {
+                        data: null,
+                        meta: null,
+                        error: null
+                    }
+                }
+            }
+        });
+    });
 });
