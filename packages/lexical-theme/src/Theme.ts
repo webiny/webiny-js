@@ -11,6 +11,7 @@ type InternalTheme = EditorThemeClasses & InternalProps;
 
 export class Theme {
     static cache: Record<string, Theme> = {};
+    static lastUsedTheme: Theme | null = null;
     public readonly tokens: EditorThemeClasses;
     private _colors: ColorValue[];
     private _typography: Record<string, TypographyValue[]>;
@@ -27,12 +28,22 @@ export class Theme {
         this.tokens = tokens;
     }
 
+    static empty() {
+        return new Theme([], {}, {});
+    }
+
     static from(lexicalTheme: EditorThemeClasses) {
         const { $colors, $typography, $cacheKey, ...tokens } = lexicalTheme as InternalTheme;
+
+        if (!$colors) {
+            return Theme.lastUsedTheme ?? Theme.empty();
+        }
 
         if (!Theme.cache[$cacheKey]) {
             Theme.cache[$cacheKey] = new Theme($colors, $typography, tokens);
         }
+
+        Theme.lastUsedTheme = Theme.cache[$cacheKey];
 
         return Theme.cache[$cacheKey];
     }

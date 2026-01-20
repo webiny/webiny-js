@@ -9,7 +9,6 @@ export type Breakpoint = {
 
 export type WebsiteBuilderTheme = {
     css?: string;
-    cssVariables?: Record<string, string>;
     fonts?: string[];
     breakpoints: Breakpoint[];
     colors: ColorStyle[];
@@ -48,10 +47,6 @@ export type WebsiteBuilderThemeInput = {
      * CSS to include in the editor.
      */
     css?: string;
-    /**
-     * CSS variables to define in the editor.
-     */
-    cssVariables?: Record<string, string>;
     /**
      * Fonts to load when the editor loads.
      */

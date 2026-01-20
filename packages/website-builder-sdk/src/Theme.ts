@@ -27,7 +27,6 @@ export class Theme {
 
         return {
             css: input.css,
-            cssVariables: input.cssVariables,
             fonts: input.fonts,
             breakpoints: breakpoints.sort((a, b) => b.maxWidth - a.maxWidth),
             colors: input?.colors ?? [],
