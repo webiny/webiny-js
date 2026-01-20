@@ -101,25 +101,24 @@ export const Entry = ({
             }}
             data-role="ref-field-entry"
             className={cn(
-                "w-full rounded-md bg-neutral-light p-sm-extra pr-lg border-md border-transparent flex items-center gap-md data-[selected=true]:border-accent-dimmed hover:bg-neutral-dimmed",
+                "w-full rounded-md bg-neutral-light p-sm-extra pr-lg hover:bg-neutral-dimmed border-md border-transparent data-[selected=true]:border-accent-dimmed",
                 { "hover:cursor-pointer": !!onChange }
             )}
         >
-            {onChange && (
-                <div>
-                    <Checkbox
-                        checked={selected}
-                        onChange={() =>
-                            onChange({
-                                id: entry.id,
-                                modelId: entry.model.modelId
-                            })
-                        }
-                    />
-                </div>
-            )}
-
-            <div className="flex items-center justify-between gap-lg w-full">
+            <div className="flex items-center justify-between gap-md min-w-0">
+                {onChange && (
+                    <div>
+                        <Checkbox
+                            checked={selected}
+                            onChange={() =>
+                                onChange({
+                                    id: entry.id,
+                                    modelId: entry.model.modelId
+                                })
+                            }
+                        />
+                    </div>
+                )}
                 <Image title={entry.title} src={entry.image} />
                 <div
                     className={
