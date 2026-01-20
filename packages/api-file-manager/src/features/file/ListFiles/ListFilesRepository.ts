@@ -26,18 +26,12 @@ class ListFilesRepositoryImpl implements RepositoryAbstraction.Interface {
             fields: this.fileModel.fields
         });
 
-        console.log({
-            where: JSON.stringify(where)
-        });
         const result = await this.listLatestEntries.execute(this.fileModel, {
             where,
             limit: input.limit || 40,
             after: input.after || undefined,
             sort: input.sort || ["id_DESC"],
             search: input.search
-        });
-        console.log({
-            resultIs: result.isOk() ? "OK" : "FAIL"
         });
 
         if (result.isFail()) {
