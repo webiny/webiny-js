@@ -1,15 +1,14 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import pick from "lodash/pick.js";
-import { NavigationPrompt } from "@webiny/app-admin";
+import { CompositionScope, NavigationPrompt, useSnackbar } from "@webiny/app-admin";
+import type { FormAPI, FormInvalidFields, FormOnSubmit, FormValidation } from "@webiny/form";
 import { Form } from "@webiny/form";
 import { prepareFormData } from "@webiny/app-headless-cms-common";
-import type { FormAPI, FormOnSubmit, FormValidation, FormInvalidFields } from "@webiny/form";
 import type { CmsContentEntry, CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
-import { CompositionScope, useSnackbar } from "@webiny/app-admin";
 import type {
     CreateEntryResponse,
     UpdateEntryRevisionResponse
 } from "~/admin/contexts/Cms/index.js";
+import type { GenericRecord } from "@webiny/app/types.js";
 
 const promptMessage =
     "There are some unsaved changes! Are you sure you want to navigate away and discard all changes?";
@@ -66,7 +65,7 @@ const formValidationToMap = (invalidFields: FormValidation): FormInvalidFields =
 
 export const ContentEntryFormProvider = ({
     model,
-    entry,
+    entry: initialEntry,
     children,
     persistEntry,
     onChange,
@@ -84,23 +83,23 @@ export const ContentEntryFormProvider = ({
     const saveEntry = useCallback(async (options: SaveEntryOptions = {}) => {
         saveOptionsRef.current.skipValidators = options.skipValidators;
 
-        return ref.current!.submit(undefined, {
+        return (await ref.current!.submit(undefined, {
             skipValidators: options.skipValidators
-        }) as unknown as Promise<CmsContentEntry | null>;
+        })) as Promise<CmsContentEntry | null>;
     }, []);
 
     const onFormSubmit: FormOnSubmit<CmsContentEntry> = async data => {
-        const fieldsIds = model.fields.map(item => item.fieldId);
-        const formData = pick(data, [...fieldsIds]);
-
-        const gqlData = prepareFormData(formData, model.fields) as Partial<CmsContentEntry>;
-        const isNewEntry = data.id === undefined;
+        const values = prepareFormData<GenericRecord>(data, model.fields);
+        const isNewEntry = initialEntry.id === undefined;
 
         const { entry, error } = await persistEntry(
-            { id: data.id, ...gqlData },
+            {
+                id: initialEntry.id,
+                values
+            },
             {
                 skipValidators: saveOptionsRef.current.skipValidators,
-                createNewRevision: data.meta?.locked
+                createNewRevision: initialEntry.meta?.locked
             }
         );
 
@@ -120,7 +119,7 @@ export const ContentEntryFormProvider = ({
         showSnackbar("Entry saved successfully!");
         setInvalidFields({});
 
-        const isNewRevision = !isNewEntry && data.id !== entry.id;
+        const isNewRevision = !isNewEntry && entry.id !== initialEntry.id;
 
         if ((isNewEntry || isNewRevision) && onAfterCreate) {
             onAfterSubmitRef.current = onAfterCreate;
@@ -142,7 +141,7 @@ export const ContentEntryFormProvider = ({
                 onAfterSubmitRef.current(data);
             }}
             onChange={onChange}
-            data={entry}
+            data={initialEntry.values}
             ref={ref}
             validateOnFirstSubmit
             invalidFields={invalidFields}
