@@ -30,7 +30,7 @@
   "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f",
   "exports": {
     "./configs/tsconfig.json": "./configs/tsconfig.json",
-    "./global.ts": "./global.ts",
+    "./global": "./global.d.ts",
     "./api/security": "./api/security.js",
     "./api/features/eventPublisher": "./api/features/eventPublisher.js",
     "./api/features/Logger": "./api/features/Logger.js",
