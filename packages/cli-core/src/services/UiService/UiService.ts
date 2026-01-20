@@ -19,9 +19,7 @@ export class DefaultUiService implements UiService.Interface {
     constructor(
         private readonly stdio: StdioService.Interface,
         private readonly isCi: IsCi.Interface
-    ) {
-        this.stdio = stdio;
-    }
+    ) {}
 
     raw(text: string) {
         this.stdio.getStdout().write(text);
