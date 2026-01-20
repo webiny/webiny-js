@@ -1,6 +1,6 @@
 import { BeforeDeploy, ProjectSdkParamsService } from "@webiny/project/abstractions/index.js";
 
-class PrintDeploymentInfoAfterDeployImpl implements BeforeDeploy.Interface {
+class EnsureVariantBeforeDeployImpl implements BeforeDeploy.Interface {
     constructor(private projectSdkParamsService: ProjectSdkParamsService.Interface) {}
 
     async execute(params: BeforeDeploy.Params) {
@@ -20,7 +20,7 @@ class PrintDeploymentInfoAfterDeployImpl implements BeforeDeploy.Interface {
 }
 
 const EnsureVariantBeforeDeploy = BeforeDeploy.createImplementation({
-    implementation: PrintDeploymentInfoAfterDeployImpl,
+    implementation: EnsureVariantBeforeDeployImpl,
     dependencies: [ProjectSdkParamsService]
 });
 
