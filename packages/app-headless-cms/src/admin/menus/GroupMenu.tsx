@@ -13,6 +13,8 @@ const { Menu } = AdminConfig;
 export const GroupMenu = ({ group }: { group: CmsGroup }) => {
     const icon = (group.icon || "").split("/") as IconProp;
 
+    console.log("GroupMenu", group);
+
     return (
         <Menu
             name={group.id}

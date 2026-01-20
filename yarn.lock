@@ -14188,6 +14188,7 @@ __metadata:
     "@iconify/json": "npm:^2.2.425"
     "@monaco-editor/react": "npm:^4.7.0"
     "@svgr/webpack": "npm:^6.5.1"
+    "@testing-library/react": "npm:^15.0.7"
     "@types/bytes": "npm:^3.1.5"
     "@types/graphlib": "npm:^2.1.12"
     "@types/is-hotkey": "npm:^0.1.10"
@@ -14500,7 +14501,6 @@ __metadata:
     "@webiny/icons": "npm:0.0.0"
     "@webiny/lexical-editor": "npm:0.0.0"
     "@webiny/lexical-nodes": "npm:0.0.0"
-    "@webiny/lexical-theme": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/react-composition": "npm:0.0.0"
     "@webiny/react-properties": "npm:0.0.0"
@@ -15423,7 +15423,6 @@ __metadata:
     "@types/react-color": "npm:^2.17.12"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/lexical-editor": "npm:0.0.0"
-    "@webiny/lexical-theme": "npm:0.0.0"
     "@webiny/ui": "npm:0.0.0"
     emotion: "npm:10.0.27"
     react: "npm:18.2.0"
@@ -15436,7 +15435,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/lexical-editor@workspace:packages/lexical-editor"
   dependencies:
-    "@emotion/react": "npm:11.10.8"
     "@lexical/code": "npm:^0.39.0"
     "@lexical/history": "npm:^0.39.0"
     "@lexical/react": "npm:^0.39.0"
@@ -15449,7 +15447,6 @@ __metadata:
     "@webiny/lexical-theme": "npm:0.0.0"
     "@webiny/react-composition": "npm:0.0.0"
     "@webiny/react-properties": "npm:0.0.0"
-    emotion: "npm:10.0.27"
     lexical: "npm:^0.39.0"
     lodash: "npm:^4.17.21"
     react: "npm:18.2.0"
@@ -15483,11 +15480,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/lexical-theme@workspace:packages/lexical-theme"
   dependencies:
-    "@emotion/react": "npm:11.10.8"
     "@webiny/build-tools": "npm:0.0.0"
-    emotion: "npm:10.0.27"
     lexical: "npm:^0.39.0"
-    react-style-object-to-css: "npm:^1.1.2"
   languageName: unknown
   linkType: soft
 
@@ -15628,6 +15622,7 @@ __metadata:
     mime: "npm:^3.0.0"
     react: "npm:18.2.0"
     regenerator-runtime: "npm:^0.14.1"
+    replace-in-path: "npm:^1.1.0"
     typescript: "npm:5.9.3"
     zod: "npm:^3.25.76"
   languageName: unknown
@@ -16009,7 +16004,6 @@ __metadata:
     fast-json-patch: "npm:^3.1.1"
     fast-json-stable-stringify: "npm:^2.1.0"
     is-hotkey: "npm:^0.2.0"
-    lexical: "npm:^0.39.0"
     lodash: "npm:^4.17.21"
     matcher: "npm:^5.0.0"
     mobx: "npm:^6.15.0"
@@ -29928,13 +29922,6 @@ __metadata:
   peerDependencies:
     react: ^16.3.0 || ^17.0.0 || ^18.0.0
   checksum: 10/8c31aaec5b383d942ff1775b12c45022239d1250d1a00a238bac3c07e0fe266c71991e2814ae16a5d9b855bcd96ba95817d48ab3f34738f0bb32036ebb1abb1a
-  languageName: node
-  linkType: hard
-
-"react-style-object-to-css@npm:^1.1.2":
-  version: 1.1.2
-  resolution: "react-style-object-to-css@npm:1.1.2"
-  checksum: 10/1f854bf5c7fabcc0be3db3e35e4b346dd0d3cb2b09079f100380ab299d2db94ba75ab225254446958d820933c7be67b609219746610a14cda2c42e708711cc78
   languageName: node
   linkType: hard
 

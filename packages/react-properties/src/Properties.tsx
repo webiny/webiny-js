@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { getUniqueId, toObject } from "./utils.js";
 
 const PropertiesTargetContext = createContext<string | undefined>(undefined);
@@ -305,6 +305,7 @@ export const Property = ({
     const parentProperty = useParentProperty();
     const immediateProperties = useProperties();
     const ancestorByName = useAncestorByName(targetName);
+    const previousValue = useRef(value);
 
     const properties = targetName && ancestorByName ? ancestorByName : immediateProperties;
 
@@ -336,6 +337,15 @@ export const Property = ({
             removeProperty(uniqueId);
         };
     }, []);
+
+    useEffect(() => {
+        if (previousValue.current !== value) {
+            previousValue.current = value;
+            if (!remove && !replace) {
+                replaceProperty(uniqueId, property);
+            }
+        }
+    }, [value]);
 
     if (children) {
         return <PropertyContext.Provider value={property}>{children}</PropertyContext.Provider>;
