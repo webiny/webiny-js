@@ -35,8 +35,7 @@ class NextjsConfigImpl implements Abstraction.Interface {
                 "description",
                 `This is a configuration for <a href="{LINK}" target="_blank">Webiny Next.js starter kit:</a>`
             )
-            .add("config", envVars.join("\n"))
-        ;
+            .add("config", envVars.join("\n"));
 
         return builder;
     }
