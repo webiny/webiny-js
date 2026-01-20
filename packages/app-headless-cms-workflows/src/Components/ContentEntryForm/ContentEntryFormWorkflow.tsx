@@ -1,11 +1,11 @@
 import React from "react";
-import { ContentEntryForm, useContentEntry, useModel } from "@webiny/app-headless-cms";
+import { ContentEntryForm, useModel } from "@webiny/app-headless-cms";
 import type { IWorkflowState } from "@webiny/app-workflows";
 import { Components } from "@webiny/app-workflows";
 import { Alert, Grid } from "@webiny/admin-ui";
 import type { PersistEntry } from "@webiny/app-headless-cms/admin/components/ContentEntryForm/ContentEntryFormProvider.js";
 import { CMS_MODEL_SINGLETON_TAG } from "@webiny/app-headless-cms-common";
-import { useSingletonContentEntry } from "@webiny/app-headless-cms/admin/views/contentEntries/hooks/useSingletonContentEntry.js";
+import type { CmsContentEntry, CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 
 const {
     ContentReview: { WorkflowStateBar, WorkflowStateOverlay }
@@ -35,8 +35,8 @@ const StoreAlert = ({ state }: IStoreAlertProps) => {
 };
 
 interface IShouldShowOriginalParams {
-    entry: ReturnType<typeof useContentEntry>["entry"];
-    model: ReturnType<typeof useContentEntry>["contentModel"];
+    entry: Partial<Pick<CmsContentEntry, "id">>;
+    model: Partial<Pick<CmsModel, "tags">>;
 }
 const shouldShowOriginal = (params: IShouldShowOriginalParams): boolean => {
     const { entry, model } = params;
@@ -44,7 +44,7 @@ const shouldShowOriginal = (params: IShouldShowOriginalParams): boolean => {
      * In case of new entry or no model, show original.
      * Also, for singleton models, show original.
      */
-    if (!entry?.id || !model?.modelId) {
+    if (!entry?.id || !model?.tags) {
         return true;
     }
     return model.tags.includes(CMS_MODEL_SINGLETON_TAG);
@@ -54,16 +54,8 @@ export const ContentEntryFormWorkflow = ContentEntryForm.createDecorator(Origina
     return function ContentEntryFormWorkflow(props) {
         const { model } = useModel();
 
-        const isSingleEntryModel = model.tags.includes(CMS_MODEL_SINGLETON_TAG);
-        /**
-         * A really, really dirty way to determine which hook to use.
-         * TODO @bruno - to be blamed
-         * TODO @pavel - please give idea how to solve it
-         */
-        const { entry } = isSingleEntryModel ? useSingletonContentEntry() : useContentEntry();
-
         const showOriginal = shouldShowOriginal({
-            entry,
+            entry: props.entry,
             model
         });
 
