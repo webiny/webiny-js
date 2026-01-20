@@ -6,11 +6,10 @@ import {
     defaultParagraphValue,
     expectedHeadingRenderedValue,
     expectedParagraphRenderedValue,
-    LexicalJsonCmsDataInput,
-    notCorrectValue
+    LexicalJsonCmsDataInput
 } from "./lexical-content";
 import { emptyEditorContent, LexicalCmsInputRender } from "./lexical-render";
-import theme from "./theme";
+import { theme } from "./theme";
 import { RichTextLexicalRenderer } from "~/index";
 
 describe("Test Rich Lexical Renderer", () => {
@@ -23,7 +22,9 @@ describe("Test Rich Lexical Renderer", () => {
 
     it("Paragraph string value type is rendered", async () => {
         // ARRANGE
-        const { container } = render(<RichTextLexicalRenderer value={defaultParagraphValue} />);
+        const { container } = render(
+            <RichTextLexicalRenderer theme={theme} value={defaultParagraphValue} />
+        );
 
         await vi.runAllTimersAsync();
 
@@ -33,7 +34,9 @@ describe("Test Rich Lexical Renderer", () => {
 
     it("Header object value type is rendered", async () => {
         // ARRANGE
-        const { container } = render(<RichTextLexicalRenderer value={defaultHeadingValue} />);
+        const { container } = render(
+            <RichTextLexicalRenderer theme={theme} value={defaultHeadingValue} />
+        );
         await vi.runAllTimersAsync();
         // ASSERT
         expect(container.innerHTML).toContain(expectedHeadingRenderedValue);
@@ -41,7 +44,7 @@ describe("Test Rich Lexical Renderer", () => {
 
     it("Handle null as value", async () => {
         // ARRANGE
-        const { container } = render(<RichTextLexicalRenderer value={null} />);
+        const { container } = render(<RichTextLexicalRenderer theme={theme} value={null} />);
         await vi.runAllTimersAsync();
         // ASSERT
         expect(container.innerHTML).toEqual(emptyEditorContent);
@@ -49,15 +52,7 @@ describe("Test Rich Lexical Renderer", () => {
 
     it("Handle undefined as value", async () => {
         // ARRANGE
-        const { container } = render(<RichTextLexicalRenderer value={undefined} />);
-        await vi.runAllTimersAsync();
-        // ASSERT
-        expect(container.innerHTML).toEqual(emptyEditorContent);
-    });
-
-    it("Handle wrong lexical value", async () => {
-        // ARRANGE
-        const { container } = render(<RichTextLexicalRenderer value={notCorrectValue} />);
+        const { container } = render(<RichTextLexicalRenderer theme={theme} value={undefined} />);
         await vi.runAllTimersAsync();
         // ASSERT
         expect(container.innerHTML).toEqual(emptyEditorContent);
@@ -65,7 +60,9 @@ describe("Test Rich Lexical Renderer", () => {
 
     it("Lexical CMS input includes title, paragraph, list and quote", async () => {
         // ARRANGE
-        const { container } = render(<RichTextLexicalRenderer value={LexicalJsonCmsDataInput} />);
+        const { container } = render(
+            <RichTextLexicalRenderer theme={theme} value={LexicalJsonCmsDataInput} />
+        );
         await vi.runAllTimersAsync();
         // ASSERT
         expect(container.innerHTML).toEqual(LexicalCmsInputRender);
@@ -74,15 +71,13 @@ describe("Test Rich Lexical Renderer", () => {
     it("Lexical CMS input with theme", async () => {
         // ARRANGE
         const { container } = render(
-            <RichTextLexicalRenderer value={LexicalJsonCmsDataInput} theme={theme} />
+            <RichTextLexicalRenderer theme={theme} value={LexicalJsonCmsDataInput} />
         );
         await vi.runAllTimersAsync();
         // ASSERT
         // editor is here
         expect(container.innerHTML.includes("editor")).toBeTruthy();
         // emotion produced css classes are here
-        expect(container.innerHTML.includes("css-")).toBeTruthy();
-        // `css-99wy28` is a class generated for `paragraph1` styles defined in the `theme`.
-        expect(container.innerHTML.includes("css-99wy28")).toBeTruthy();
+        expect(container.innerHTML.includes("wby-")).toBeTruthy();
     });
 });

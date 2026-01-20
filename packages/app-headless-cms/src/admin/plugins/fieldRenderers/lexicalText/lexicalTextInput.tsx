@@ -21,16 +21,11 @@ const plugin: CmsModelFieldRendererPlugin = {
         name: t`Lexical Text Input`,
         description: t`Renders a lexical text editor.`,
         canUse({ field }) {
-            const canUse =
-                field.type === "rich-text" &&
-                !field.multipleValues &&
-                !get(field, "predefinedValues.enabled");
-
-            if (canUse) {
-                return false;
-            }
-
-            return canUse;
+            return [
+                field.type === "rich-text",
+                !field.multipleValues,
+                !get(field, "predefinedValues.enabled")
+            ].every(Boolean);
         },
         render({ field, getBind, Label }) {
             const form = useForm();

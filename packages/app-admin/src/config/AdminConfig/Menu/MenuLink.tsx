@@ -2,7 +2,7 @@ import React from "react";
 import { makeDecoratable } from "~/index.js";
 import { Sidebar } from "@webiny/admin-ui";
 import { type SidebarMenuItemLinkProps } from "@webiny/admin-ui/Sidebar/components/items/SidebarMenuLink.js";
-import { useRoute } from "@webiny/app-admin";
+import { useRoute } from "@webiny/app";
 
 const MenuLinkBase = (props: SidebarMenuItemLinkProps) => {
     const { route } = useRoute();

@@ -40,6 +40,7 @@ export const FontColorAction: FontColorAction = () => {
 
     const onFontColorSelect = useCallback(
         (colorValue: string, themeColorName: string | undefined) => {
+            console.log({ colorValue, themeColorName });
             editor.dispatchCommand<LexicalCommand<FontColorPayload>>(ADD_FONT_COLOR_COMMAND, {
                 color: new ThemeColorValue(colorValue, themeColorName)
             });

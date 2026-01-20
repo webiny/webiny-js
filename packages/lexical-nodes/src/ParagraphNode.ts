@@ -12,8 +12,7 @@ import type {
 } from "lexical";
 import { ParagraphNode as BaseParagraphNode } from "lexical";
 import type { EditorConfig } from "lexical";
-import type { EditorTheme, ThemeEmotionMap } from "@webiny/lexical-theme";
-import { findTypographyStyleByHtmlTag } from "@webiny/lexical-theme";
+import { Theme } from "@webiny/lexical-theme";
 import { addClassNamesToElement } from "@lexical/utils";
 import type { TypographyStylesNode, ThemeStyleValue } from "~/types.js";
 import { getStyleId } from "./utils/getStyleId.js";
@@ -100,7 +99,7 @@ export class ParagraphNode extends BaseParagraphNode implements TypographyStyles
 
     override createDOM(config: EditorConfig): HTMLElement {
         const element = super.createDOM(config);
-        return this.updateElementWithThemeClasses(element, config.theme as EditorTheme);
+        return this.updateElementWithThemeClasses(element, Theme.from(config.theme));
     }
 
     override exportDOM(editor: LexicalEditor): DOMExportOutput {
@@ -119,12 +118,12 @@ export class ParagraphNode extends BaseParagraphNode implements TypographyStyles
         const nextTypoStyleId = this.getStyleId();
 
         if (!nextTypoStyleId) {
-            this.updateElementWithThemeClasses(dom, config.theme as EditorTheme);
+            this.updateElementWithThemeClasses(dom, Theme.from(config.theme));
             return false;
         }
 
         if (prevTypoStyleId !== nextTypoStyleId && nextTypoStyleId) {
-            this.updateElementWithThemeClasses(dom, config.theme as EditorTheme);
+            this.updateElementWithThemeClasses(dom, Theme.from(config.theme));
         }
         // Returning false tells Lexical that this node does not need its
         // DOM element replacing with a new copy from createDOM.
@@ -174,13 +173,9 @@ export class ParagraphNode extends BaseParagraphNode implements TypographyStyles
         };
     }
 
-    protected updateElementWithThemeClasses(element: HTMLElement, theme: EditorTheme): HTMLElement {
-        if (!theme?.emotionMap) {
-            return element;
-        }
-
+    protected updateElementWithThemeClasses(element: HTMLElement, theme: Theme): HTMLElement {
         if (!this.__styleId || !this.__className) {
-            this.setDefaultTypography(theme.emotionMap, this.__styleId);
+            this.setDefaultTypography(theme, this.__styleId);
         }
 
         if (this.__className) {
@@ -190,10 +185,10 @@ export class ParagraphNode extends BaseParagraphNode implements TypographyStyles
         return element;
     }
 
-    private setDefaultTypography(themeEmotionMap: ThemeEmotionMap, styleId?: string) {
-        let typographyStyle = findTypographyStyleByHtmlTag("p", themeEmotionMap);
+    private setDefaultTypography(theme: Theme, styleId?: string) {
+        let typographyStyle = theme.getTypographyByTag("p");
         if (styleId) {
-            const byStyleId = themeEmotionMap[styleId];
+            const byStyleId = theme.getTypographyById(styleId);
             if (byStyleId) {
                 typographyStyle = byStyleId;
             }

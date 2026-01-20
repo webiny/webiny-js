@@ -1,7 +1,7 @@
 import React from "react";
 import type { TypographyValue } from "@webiny/lexical-theme";
 
-export type ActiveTypography = Pick<TypographyValue, "id" | "name">;
+export type ActiveTypography = Pick<TypographyValue, "id" | "label">;
 
 export interface TypographyActionContextProps {
     /*

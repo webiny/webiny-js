@@ -53,7 +53,7 @@ interface CompositionContextGetComponentCallable {
     ): ComposedFunction | GenericComponent | undefined;
 }
 
-interface CompositionContext {
+interface CompositionContextValue {
     components: ComponentScopes;
     getComponent: CompositionContextGetComponentCallable;
     composeComponent(
@@ -64,7 +64,7 @@ interface CompositionContext {
     ): void;
 }
 
-const CompositionContext = createContext<CompositionContext | undefined>(undefined);
+const CompositionContext = createContext<CompositionContextValue | undefined>(undefined);
 
 export type DecoratorsTuple = [Decoratable, Decorator<any>[]];
 export type DecoratorsCollection = Array<DecoratorsTuple>;
@@ -174,7 +174,7 @@ export const CompositionProvider = ({ decorators = [], children }: CompositionPr
         [components]
     );
 
-    const context: CompositionContext = useMemo(
+    const context: CompositionContextValue = useMemo(
         () => ({
             getComponent,
             composeComponent,

@@ -1,39 +1,40 @@
-import React, { createContext } from "react";
+import React, { createContext, useMemo } from "react";
 import type { LexicalEditor } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import type { ThemeEmotionMap, EditorTheme } from "@webiny/lexical-theme";
+import { type EditorTheme, Theme } from "@webiny/lexical-theme";
 import type { ToolbarActionPlugin } from "~/types.js";
 
 export interface RichTextEditorContext {
     editor: LexicalEditor;
-    theme?: EditorTheme;
-    themeEmotionMap?: ThemeEmotionMap;
     toolbarActionPlugins: ToolbarActionPlugin[];
+    theme: Theme;
 }
 
 export const RichTextEditorContext = createContext<RichTextEditorContext | undefined>(undefined);
 
 interface RichTextEditorProviderProps {
     theme: EditorTheme;
-    themeEmotionMap?: ThemeEmotionMap;
     toolbarActionPlugins?: ToolbarActionPlugin[];
     children?: React.ReactNode | React.ReactNode[];
 }
 
 export const RichTextEditorProvider = ({
-    themeEmotionMap,
     theme,
     toolbarActionPlugins = [],
     children
 }: RichTextEditorProviderProps) => {
     const [editor] = useLexicalComposerContext();
 
+    const internalTheme = useMemo(
+        () => new Theme(theme.colors, theme.typography, theme.tokens),
+        [theme]
+    );
+
     return (
         <RichTextEditorContext.Provider
             value={{
                 editor,
-                theme,
-                themeEmotionMap,
+                theme: internalTheme,
                 toolbarActionPlugins
             }}
         >

@@ -14188,6 +14188,7 @@ __metadata:
     "@iconify/json": "npm:^2.2.425"
     "@monaco-editor/react": "npm:^4.7.0"
     "@svgr/webpack": "npm:^6.5.1"
+    "@testing-library/react": "npm:^15.0.7"
     "@types/bytes": "npm:^3.1.5"
     "@types/graphlib": "npm:^2.1.12"
     "@types/is-hotkey": "npm:^0.1.10"
@@ -14500,11 +14501,9 @@ __metadata:
     "@webiny/icons": "npm:0.0.0"
     "@webiny/lexical-editor": "npm:0.0.0"
     "@webiny/lexical-nodes": "npm:0.0.0"
-    "@webiny/lexical-theme": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/react-composition": "npm:0.0.0"
     "@webiny/react-properties": "npm:0.0.0"
-    "@webiny/theme": "npm:0.0.0"
     "@webiny/ui": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
@@ -15435,7 +15434,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/lexical-editor@workspace:packages/lexical-editor"
   dependencies:
-    "@emotion/react": "npm:11.10.8"
     "@lexical/code": "npm:^0.39.0"
     "@lexical/history": "npm:^0.39.0"
     "@lexical/react": "npm:^0.39.0"
@@ -15448,7 +15446,6 @@ __metadata:
     "@webiny/lexical-theme": "npm:0.0.0"
     "@webiny/react-composition": "npm:0.0.0"
     "@webiny/react-properties": "npm:0.0.0"
-    emotion: "npm:10.0.27"
     lexical: "npm:^0.39.0"
     lodash: "npm:^4.17.21"
     react: "npm:18.2.0"
@@ -15482,11 +15479,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/lexical-theme@workspace:packages/lexical-theme"
   dependencies:
-    "@emotion/react": "npm:11.10.8"
     "@webiny/build-tools": "npm:0.0.0"
-    emotion: "npm:10.0.27"
     lexical: "npm:^0.39.0"
-    react-style-object-to-css: "npm:^1.1.2"
   languageName: unknown
   linkType: soft
 
@@ -15627,6 +15621,7 @@ __metadata:
     mime: "npm:^3.0.0"
     react: "npm:18.2.0"
     regenerator-runtime: "npm:^0.14.1"
+    replace-in-path: "npm:^1.1.0"
     typescript: "npm:5.9.3"
     zod: "npm:^3.25.76"
   languageName: unknown
@@ -15891,22 +15886,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/theme@npm:0.0.0, @webiny/theme@workspace:packages/theme":
-  version: 0.0.0-use.local
-  resolution: "@webiny/theme@workspace:packages/theme"
-  dependencies:
-    "@emotion/babel-plugin": "npm:^11.13.5"
-    "@emotion/react": "npm:11.10.8"
-    "@types/react": "npm:18.2.79"
-    "@webiny/build-tools": "npm:0.0.0"
-    execa: "npm:^5.1.1"
-    rimraf: "npm:^6.1.2"
-    typescript: "npm:5.9.3"
-  peerDependencies:
-    react: 18.2.0
-  languageName: unknown
-  linkType: soft
-
 "@webiny/ui@npm:*, @webiny/ui@npm:0.0.0, @webiny/ui@workspace:packages/ui":
   version: 0.0.0-use.local
   resolution: "@webiny/ui@workspace:packages/ui"
@@ -15999,7 +15978,6 @@ __metadata:
   dependencies:
     "@types/react": "npm:18.2.79"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/lexical-editor": "npm:0.0.0"
     "@webiny/website-builder-sdk": "npm:0.0.0"
     deep-equal: "npm:^2.2.3"
     mobx: "npm:^6.15.0"
@@ -16024,7 +16002,6 @@ __metadata:
     fast-json-patch: "npm:^3.1.1"
     fast-json-stable-stringify: "npm:^2.1.0"
     is-hotkey: "npm:^0.2.0"
-    lexical: "npm:^0.39.0"
     lodash: "npm:^4.17.21"
     matcher: "npm:^5.0.0"
     mobx: "npm:^6.15.0"
@@ -29946,13 +29923,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-style-object-to-css@npm:^1.1.2":
-  version: 1.1.2
-  resolution: "react-style-object-to-css@npm:1.1.2"
-  checksum: 10/1f854bf5c7fabcc0be3db3e35e4b346dd0d3cb2b09079f100380ab299d2db94ba75ab225254446958d820933c7be67b609219746610a14cda2c42e708711cc78
-  languageName: node
-  linkType: hard
-
 "react-style-singleton@npm:^2.2.2, react-style-singleton@npm:^2.2.3":
   version: 2.2.3
   resolution: "react-style-singleton@npm:2.2.3"
@@ -34520,6 +34490,7 @@ __metadata:
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
     "@webiny/tasks": "npm:0.0.0"
+    react: "npm:18.2.0"
     rimraf: "npm:^6.1.2"
     typescript: "npm:5.9.3"
   languageName: unknown

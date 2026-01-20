@@ -1,8 +1,4 @@
 import React from "react";
-import { HasPermission } from "@webiny/app-admin";
-import { WebinyVersion } from "./Menus/WebinyVersion.js";
-import { SupportMenuItems } from "./Menus/SupportMenuItems.js";
-import { AdminConfig } from "~/config/AdminConfig.js";
 import { ReactComponent as DashboardIcon } from "@webiny/icons/space_dashboard.svg";
 import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
 import { ReactComponent as FileManagerIcon } from "@webiny/icons/folder_open.svg";
@@ -12,8 +8,11 @@ import { ReactComponent as DocsIcon } from "@webiny/icons/summarize.svg";
 import { ReactComponent as GithubIcon } from "@webiny/icons/route.svg";
 import { ReactComponent as MoreIcon } from "@webiny/icons/more_vert.svg";
 import { DropdownMenu } from "@webiny/admin-ui";
-
-const { Menu } = AdminConfig;
+import { WebinyVersion } from "./Menus/WebinyVersion.js";
+import { SupportMenuItems } from "./Menus/SupportMenuItems.js";
+import { AdminConfig } from "~/config/AdminConfig.js";
+import { HasPermission } from "~/presentation/security/components/HasPermission.js";
+import { Menu } from "~/config/AdminConfig/Menu.js";
 
 export const Menus = React.memo(() => {
     return (

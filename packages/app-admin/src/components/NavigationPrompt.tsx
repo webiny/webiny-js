@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { useRouter } from "@webiny/app-admin";
+import { useRouter } from "@webiny/app";
 import { makeDecoratable } from "@webiny/react-composition";
 import { useDialogs } from "~/components/Dialogs/useDialogs.js";
 
