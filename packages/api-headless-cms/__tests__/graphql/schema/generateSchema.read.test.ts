@@ -7,13 +7,13 @@ import { graphql } from "graphql";
 import { introspectionQuery } from "~tests/graphql/schema/__query/introspectionQuery.js";
 import allModels from "~tests/contentAPI/mocks/contentModels";
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const expectedEmptySchemaExecutionResult = require("./__expected/read/expectedEmptySchemaExecutionResult.json");
-const expectedFruitSchemaExecutionResult = require("./__expected/read/expectedFruitSchemaExecutionResult.json");
+// const expectedFruitSchemaExecutionResult = require("./__expected/read/expectedFruitSchemaExecutionResult.json");
 
 describe("generate graphql read schema", () => {
-    
     const fruitModelDefinition = structuredClone(allModels.find(m => m.modelId === "fruit"))!;
-    
+
     const manager = useGraphQLHandler({
         path: "manage"
     });
@@ -34,7 +34,6 @@ describe("generate graphql read schema", () => {
             context,
             models: []
         });
-        // expect(JSON.parse(JSON.stringify(schema))).toMatchObject(expectedEmptySchema);
 
         const result = await graphql({
             schema,
@@ -47,7 +46,7 @@ describe("generate graphql read schema", () => {
         expect(JSON.stringify(result.errors || [])).toEqual("[]");
         expect(JSON.stringify(result)).toEqual(JSON.stringify(expectedEmptySchemaExecutionResult));
     });
-    
+
     const fields = fruitModelDefinition.fields.map(field => {
         return field.fieldId;
     });
@@ -82,9 +81,6 @@ describe("generate graphql read schema", () => {
                 models
             });
 
-            // expect(JSON.parse(JSON.stringify(schema))).toEqual(expectedFruitSchema);
-            // expect(JSON.parse(JSON.stringify(schema.toConfig()))).toEqual(expectedFruitSchemaConfig);
-
             const result = await graphql({
                 schema,
                 source: introspectionQuery.source,
@@ -95,7 +91,6 @@ describe("generate graphql read schema", () => {
             });
 
             expect(JSON.stringify(result.errors || [])).toEqual("[]");
-            // expect(JSON.stringify(result)).toEqual(JSON.stringify(expectedFruitSchemaExecutionResult));
         }
     );
 });

@@ -25,5 +25,5 @@ const operationName = "IntrospectionQuery";
 
 export const introspectionQuery = {
     operationName,
-    source,
+    source
 };

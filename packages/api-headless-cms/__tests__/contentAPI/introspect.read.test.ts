@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { useGraphQLHandler } from "~tests/testHelpers/useGraphQLHandler.js";
 import { setupGroupAndModels } from "~tests/testHelpers/setup.js";
-import fs from "node:fs";
 
 describe("cms read introspect query", () => {
     const manager = useGraphQLHandler({
@@ -43,26 +42,3 @@ describe("cms read introspect query", () => {
         });
     });
 });
-/*
-Array [
-  Object {
-    "locations": Array [
-      Object {
-        "column": 9,
-        "line": 31,
-      },
-    ],
-    "message": "String cannot represent value: [function]",
-    "path": Array [
-      "__schema",
-      "types",
-      95,
-      "fields",
-      31,
-      "description",
-    ],
-  },
-]
-
-
-*/

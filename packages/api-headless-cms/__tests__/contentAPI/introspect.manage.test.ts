@@ -4,19 +4,19 @@ import { setupGroupAndModels } from "~tests/testHelpers/setup.js";
 
 describe("cms manage introspect query", () => {
     const manager = useGraphQLHandler({
-        path: "manage",
+        path: "manage"
     });
-    
-    beforeEach(async() => {
+
+    beforeEach(async () => {
         await setupGroupAndModels({
             manager,
             models: "*"
-        })
+        });
     });
 
     it("should show proper field types for manage introspect query", async () => {
         const [result] = await manager.introspect();
-        
+
         expect(result.errors).toBeUndefined();
         expect(result).toMatchObject({
             data: {

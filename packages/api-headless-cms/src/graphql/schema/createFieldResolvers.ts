@@ -134,7 +134,7 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
         }
 
         /**
-         * Difference between root and non-root is that root has a values wrapper.
+         * Difference between root and non-root (object and dz, etc... fields) is that root has a values wrapper.
          * Subtypes must not have it.
          */
         if (!isRoot) {
@@ -149,7 +149,6 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
 
         return {
             [graphQLType]: {
-                values: fieldResolvers,
                 ...extraResolvers
             },
             [`${graphQLType}Values`]: fieldResolvers,

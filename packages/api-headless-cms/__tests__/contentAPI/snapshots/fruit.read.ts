@@ -1,4 +1,7 @@
 export default `
+    """
+    Fruit
+    """
     type FruitApiModelValues {
       name: String
       numbers: [Number]

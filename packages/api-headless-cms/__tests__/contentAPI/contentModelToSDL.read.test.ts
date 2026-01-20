@@ -35,10 +35,10 @@ describe("READ - ContentModel to SDL", () => {
     }, {});
 
     const models = [...contentModels];
-    
+
     it("Fruit SDL", async () => {
         const model = getModel("fruit");
-        
+
         const sdl = createReadSDL({ models, model, fieldTypePlugins, sorterPlugins: [] });
         const prettyGql = await prettier.format(sdl.trim(), { parser: "graphql" });
         const prettySnapshot = await prettier.format(fruitSDL.trim(), { parser: "graphql" });
