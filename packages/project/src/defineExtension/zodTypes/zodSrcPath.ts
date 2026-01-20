@@ -10,7 +10,7 @@ import { ProjectError } from "~/ProjectError.js";
  * - `/extensions/${string}` - resolves from project root
  * - string (absolute path) - treated as absolute path
  */
-export type SrcPath = `/extensions/${string}` | (string & {});
+export type SrcPath = `/extensions/${string}` | string;
 
 type ZodSrcPathOptions = {
     project: IProjectModel;
@@ -33,6 +33,7 @@ export const zodSrcPath = (options: ZodSrcPathOptions) => {
     return z
         .string()
         .describe(description)
+        .transform((val): SrcPath => val as SrcPath)
         .superRefine(async (src, ctx) => {
             // Convert to absolute path for file existence check.
             let absoluteSrcPath: string;
