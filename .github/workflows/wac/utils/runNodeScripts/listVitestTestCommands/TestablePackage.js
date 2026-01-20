@@ -98,7 +98,12 @@ export class TestablePackage {
                     return true;
                 }
             } else if (entry.isFile()) {
-                if (entry.name.endsWith(".test.ts") || entry.name.endsWith(".test.js")) {
+                if (
+                    entry.name.endsWith(".test.ts") ||
+                    entry.name.endsWith(".test.js") ||
+                    entry.name.endsWith(".test.tsx") ||
+                    entry.name.endsWith(".test.jsx")
+                ) {
                     return true;
                 }
             }
