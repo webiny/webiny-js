@@ -5,7 +5,7 @@ import {
     createNumbersEntryMutation,
     createNumbersModel,
     getNumbersEntryQuery
-} from "./mocks/numbersModel";
+} from "./__mocks/numbersModel";
 
 const integerValue = 1234567890111213;
 const float2Value = 0.04;

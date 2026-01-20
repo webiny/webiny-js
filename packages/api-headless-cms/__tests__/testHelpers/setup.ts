@@ -49,7 +49,7 @@ export const getModel = (item: TestCmsModel | string): TestCmsModel => {
 
 interface SetupGroupAndModelsParams {
     manager: ReturnType<typeof useGraphQLHandler>;
-    models: (TestCmsModel | string)[] | undefined;
+    models: (TestCmsModel | string)[] | "*" | undefined;
 }
 
 export const setupGroupAndModels = async (params: SetupGroupAndModelsParams) => {
@@ -66,7 +66,7 @@ export const setupGroupAndModels = async (params: SetupGroupAndModelsParams) => 
             }
         };
     }
-    const models = initialModels || allModels.map(m => m.modelId);
+    const models = initialModels === "*" ? allModels : initialModels;
 
     const results: CmsModel[] = [];
     for (const item of models) {
