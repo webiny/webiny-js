@@ -8,6 +8,7 @@ docs/
 **/.pulumi/
 .webiny/**
 packages/admin-ui/scripts/importFromFigma/exports/Alias tokens.json
+packages/project-aws/_templates/appTemplates/
 lerna.json
 coverage/**
 packages/cli/files/**/*.json

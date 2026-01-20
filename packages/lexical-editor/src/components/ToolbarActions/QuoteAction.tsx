@@ -3,17 +3,18 @@ import { $isQuoteNode, formatToQuote, formatToParagraph } from "@webiny/lexical-
 import { useRichTextEditor } from "~/hooks/useRichTextEditor.js";
 import { useCurrentElement } from "~/hooks/useCurrentElement.js";
 
+const QUOTE_TAG = "quote";
+
 export const QuoteAction = () => {
-    const { editor, themeEmotionMap } = useRichTextEditor();
+    const { editor, theme } = useRichTextEditor();
     const { element } = useCurrentElement();
     const isQuote = $isQuoteNode(element);
 
     const formatText = () => {
         if (!isQuote) {
             // Try to set default quote style, when the action button is clicked for first time
-            const DEFAULT_QUOTE_ID = "quote";
-            const hasQuoteStyles = themeEmotionMap && themeEmotionMap[DEFAULT_QUOTE_ID];
-            formatToQuote(editor, hasQuoteStyles ? DEFAULT_QUOTE_ID : undefined);
+            const hasQuoteStyles = theme.getTypographyByTag(QUOTE_TAG);
+            formatToQuote(editor, hasQuoteStyles ? QUOTE_TAG : undefined);
             return;
         }
         formatToParagraph(editor);

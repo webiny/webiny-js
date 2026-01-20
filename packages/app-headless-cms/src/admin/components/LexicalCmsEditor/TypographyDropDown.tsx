@@ -1,4 +1,3 @@
-// @ts-nocheck TODO v6 @pavel
 import React, { useEffect, useState } from "react";
 import { $getNearestNodeOfType } from "@lexical/utils";
 import {
@@ -15,42 +14,38 @@ import {
     $isListNode,
     ListNode
 } from "@webiny/lexical-nodes";
-import type { TypographyStyle } from "@webiny/theme/types.js";
-import type { TypographyValue } from "@webiny/lexical-theme";
-// import { useTheme } from "@webiny/app-admin";
+import { useAdminConfig } from "@webiny/app-admin";
+
+export type TypographyStyle = {
+    id: string;
+    label: string;
+    tag: string;
+    className: string;
+};
 
 export const TypographyDropDown = () => {
     const { value, applyTypography } = useTypographyAction();
-    const { theme } = useTheme();
+    const { lexicalTheme } = useAdminConfig();
 
     const [styles, setStyles] = useState<TypographyStyle[]>([]);
     const { element } = useCurrentElement();
     const { rangeSelection } = useCurrentSelection();
 
     const getAllTextStyles = (): TypographyStyle[] => {
-        if (!theme?.styles.typography) {
-            return [];
-        }
-        const headingsStyles = theme.styles.typography?.headings || [];
-        const paragraphStyles = theme.styles.typography?.paragraphs || [];
+        const headingsStyles = lexicalTheme.typography.headings || [];
+        const paragraphStyles = lexicalTheme.typography.paragraphs || [];
+
         return [...headingsStyles, ...paragraphStyles];
     };
 
-    useEffect(() => {
-        // In static toolbar typography, styles always need to be visible.
-        if (theme?.styles) {
-            setStyles(getAllTextStyles());
-        }
-    }, [theme?.styles]);
-
     const getListStyles = (tag: string): TypographyStyle[] => {
-        const listStyles = theme?.styles.typography.lists?.filter(x => x.tag === tag) || [];
+        const listStyles = lexicalTheme.typography.lists?.filter(x => x.tag === tag) || [];
         if (listStyles.length > 0) {
             return listStyles;
         }
 
         const fallbackTag = tag === "ul" ? "ol" : "ul";
-        return theme?.styles.typography.lists?.filter(x => x.tag === fallbackTag) || [];
+        return lexicalTheme.typography.lists?.filter(x => x.tag === fallbackTag) || [];
     };
 
     useEffect(() => {
@@ -78,7 +73,7 @@ export const TypographyDropDown = () => {
                 setStyles(getListStyles("ol"));
             }
         } else if ($isQuoteNode(element)) {
-            setStyles(theme?.styles.typography?.quotes || []);
+            setStyles(lexicalTheme.typography.quotes || []);
         } else {
             setStyles([]);
         }
@@ -90,7 +85,7 @@ export const TypographyDropDown = () => {
                 <DropDown
                     buttonClassName="toolbar-item typography-dropdown"
                     buttonAriaLabel={"Typography formatting options"}
-                    buttonLabel={value?.name || "Typography"}
+                    buttonLabel={value?.label || "Typography"}
                     stopCloseOnClickSelf={true}
                     disabled={false}
                     showScroll={true}
@@ -100,15 +95,10 @@ export const TypographyDropDown = () => {
                             className={`item typography-item ${
                                 value?.id === option.id ? "active dropdown-item-active" : ""
                             }`}
-                            onClick={() =>
-                                applyTypography({
-                                    ...option,
-                                    css: option.styles
-                                } as TypographyValue)
-                            }
+                            onClick={() => applyTypography(option)}
                             key={option.id}
                         >
-                            <span className="text">{option.name}</span>
+                            <span className="text">{option.label}</span>
                         </DropDownItem>
                     ))}
                 </DropDown>

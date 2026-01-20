@@ -3,8 +3,7 @@ import { AdminConfig } from "~/config/AdminConfig.js";
 import { SignOut } from "./UserMenu/SignOut.js";
 import { UserInfo } from "./UserMenu/UserInfo.js";
 import { ExitTenant } from "./UserMenu/ExitTenant.js";
-
-const { Menu } = AdminConfig;
+import { Menu } from "~/config/AdminConfig/Menu.js";
 
 export const UserMenu = React.memo(() => {
     return (

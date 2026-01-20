@@ -1,7 +1,5 @@
 {
   "extends": "webiny/configs/tsconfig.json",
-  "compilerOptions": {
-    "typeRoots": ["./types"]
-  },
+  "compilerOptions": {},
   "include": ["webiny-env.d.ts", "webiny.config.tsx", "extensions"]
 }
