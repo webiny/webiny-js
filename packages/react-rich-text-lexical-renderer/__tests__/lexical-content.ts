@@ -69,9 +69,6 @@ export const defaultHeadingValue = {
 
 export const expectedHeadingRenderedValue = "Heading";
 
-// Simulate the header component with default content like in Page builder
-export const notCorrectValue = "some default text that is not correct value for lexical";
-
 export const LexicalJsonCmsDataInput = JSON.parse(`{
     "root": {
         "children": [

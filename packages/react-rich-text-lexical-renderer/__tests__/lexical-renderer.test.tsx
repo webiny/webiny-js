@@ -6,8 +6,7 @@ import {
     defaultParagraphValue,
     expectedHeadingRenderedValue,
     expectedParagraphRenderedValue,
-    LexicalJsonCmsDataInput,
-    notCorrectValue
+    LexicalJsonCmsDataInput
 } from "./lexical-content";
 import { emptyEditorContent, LexicalCmsInputRender } from "./lexical-render";
 import { theme } from "./theme";
