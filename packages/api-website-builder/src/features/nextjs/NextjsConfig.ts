@@ -16,11 +16,11 @@ class NextjsConfigImpl implements Abstraction.Interface {
         const apiKey = apiKeyResult.isOk() ? apiKeyResult.value : null;
 
         const envVars = [
-            "<pre>",
-            `NEXT_PUBLIC_WEBSITE_BUILDER_API_KEY={API_TOKEN}<br/>`,
-            `NEXT_PUBLIC_WEBSITE_BUILDER_API_HOST={API_HOST}<br/>`,
-            `NEXT_PUBLIC_WEBSITE_BUILDER_API_TENANT={TENANT_ID}<br/>`,
-            "</pre>"
+            "```dotenv",
+            `NEXT_PUBLIC_WEBSITE_BUILDER_API_KEY={API_TOKEN}`,
+            `NEXT_PUBLIC_WEBSITE_BUILDER_API_HOST={API_HOST}`,
+            `NEXT_PUBLIC_WEBSITE_BUILDER_API_TENANT={TENANT_ID}`,
+            "```"
         ];
 
         const builder = new MarkdownContentBuilder();
