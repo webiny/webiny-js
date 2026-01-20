@@ -6,7 +6,7 @@ import { ProjectDecorator, DatabaseSetup } from "@webiny/project/extensions/inde
 
 const p = createPathResolver(import.meta.dirname, "OpenSearch");
 
-const OpenSearch = (props: React.ComponentProps<typeof PulumiOpenSearch>) => {
+export const OpenSearch = (props: React.ComponentProps<typeof PulumiOpenSearch>) => {
     return (
         <>
             <PulumiOpenSearch {...props} />
@@ -23,5 +23,3 @@ const OpenSearch = (props: React.ComponentProps<typeof PulumiOpenSearch>) => {
         </>
     );
 };
-
-export default OpenSearch;
