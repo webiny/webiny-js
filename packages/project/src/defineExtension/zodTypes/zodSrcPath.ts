@@ -5,6 +5,13 @@ import fs from "fs";
 import { type IProjectModel } from "~/abstractions/models/index.js";
 import { ProjectError } from "~/ProjectError.js";
 
+/**
+ * TypeScript type for source paths.
+ * - `/extensions/${string}` - resolves from project root
+ * - string (absolute path) - treated as absolute path
+ */
+export type SrcPath = `/extensions/${string}` | (string & {});
+
 type ZodSrcPathOptions = {
     project: IProjectModel;
     abstraction?: Abstraction<any>;
@@ -20,8 +27,8 @@ export const zodSrcPath = (options: ZodSrcPathOptions) => {
 
     const tokenName = abstraction ? getTokenName(abstraction.token) : undefined;
     const description = abstraction
-        ? `Path to a file exporting ${tokenName}`
-        : `Absolute path or relative path from project root (e.g., "extensions/MyFile.ts")`;
+        ? `Path to a file exporting ${tokenName}. Use "/extensions/..." to resolve from project root, or provide an absolute path.`
+        : `Path: "/extensions/..." resolves from project root, or provide an absolute path.`;
 
     return z
         .string()
@@ -29,12 +36,12 @@ export const zodSrcPath = (options: ZodSrcPathOptions) => {
         .superRefine(async (src, ctx) => {
             // Convert to absolute path for file existence check.
             let absoluteSrcPath: string;
-            if (path.isAbsolute(src)) {
-                // Already an absolute path.
-                absoluteSrcPath = src;
-            } else {
-                // Relative to project root.
+            if (src.startsWith("/extensions/")) {
+                // Resolve from project root.
                 absoluteSrcPath = project.paths.rootFolder.join(src).toString();
+            } else {
+                // Treat as absolute path.
+                absoluteSrcPath = src;
             }
 
             if (!fs.existsSync(absoluteSrcPath)) {
