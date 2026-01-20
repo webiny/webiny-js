@@ -1,4 +1,4 @@
-import { defineExtension, zodPathToFile } from "@webiny/project/extensions/index.js";
+import { defineExtension, zodSrcPath } from "@webiny/project/extensions/index.js";
 import { z } from "zod";
 import path from "path";
 import { type JsxFragment, Node, Project } from "ts-morph";
@@ -11,7 +11,7 @@ export const AdminExtension = defineExtension({
     multiple: true,
     paramsSchema: ({ project }) => {
         return z.object({
-            src: zodPathToFile(project)
+            src: zodSrcPath({ project })
         });
     },
     async build(params, ctx) {

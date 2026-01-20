@@ -260,10 +260,13 @@ export const createProjectSdkContainer = async (
     const project = container.resolve(GetProject).execute();
 
     const importFromPath = async (filePath: string) => {
-        let importPath = filePath;
-        if (!path.isAbsolute(filePath)) {
-            // If the path is not absolute, we assume it's relative to the current working directory.
+        let importPath: string;
+        if (filePath.startsWith("/extensions/")) {
+            // Resolve from project root.
             importPath = project.paths.rootFolder.join(filePath).toString();
+        } else {
+            // Treat as absolute path.
+            importPath = filePath;
         }
 
         const exportName = path.basename(filePath).replace(path.extname(filePath), "");

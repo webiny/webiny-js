@@ -2,7 +2,7 @@ import { z } from "zod";
 import { Node, Project, ArrayLiteralExpression } from "ts-morph";
 import { Abstraction } from "@webiny/di";
 import { defineExtension } from "~/defineExtension/index.js";
-import { zodPathToAbstraction } from "~/defineExtension/zodTypes/zodPathToAbstraction.js";
+import { zodSrcPath } from "~/defineExtension/zodTypes/zodSrcPath.js";
 import path from "path";
 import crypto from "crypto";
 
@@ -19,15 +19,8 @@ export const defineApiExtension = (params: DefineApiExtensionParams) =>
         description: params.description,
         multiple: true,
         paramsSchema: ({ project }) => {
-            if (!params.abstraction) {
-                return z.object({
-                    src: z.string(),
-                    exportName: z.string().optional()
-                });
-            }
-
             return z.object({
-                src: zodPathToAbstraction(params.abstraction, project),
+                src: zodSrcPath({ project, abstraction: params.abstraction }),
                 exportName: z.string().optional()
             });
         },

@@ -1,4 +1,4 @@
-import { defineExtension, zodPathToAbstraction } from "@webiny/project/extensions/index.js";
+import { defineExtension, zodSrcPath } from "@webiny/project/extensions/index.js";
 import { OnEntryBeforeCreate as OnEntryBeforeCreateAbstraction } from "~/abstractions/index.js";
 import { z } from "zod";
 
@@ -9,7 +9,7 @@ export const OnEntryBeforeCreate = defineExtension({
     multiple: true,
     paramsSchema: ({ project }) => {
         return z.object({
-            src: zodPathToAbstraction(OnEntryBeforeCreateAbstraction, project)
+            src: zodSrcPath({ project, abstraction: OnEntryBeforeCreateAbstraction })
         });
     }
 });

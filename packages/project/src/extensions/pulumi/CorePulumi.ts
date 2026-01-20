@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { defineExtension } from "~/defineExtension/index.js";
-import { zodPathToAbstraction } from "~/defineExtension/zodTypes/zodPathToAbstraction.js";
+import { zodSrcPath } from "~/defineExtension/zodTypes/zodSrcPath.js";
 import { CorePulumi as CorePulumiAbstraction } from "~/abstractions/features/pulumi/index.js";
 
 export const CorePulumi = defineExtension({
@@ -10,7 +10,7 @@ export const CorePulumi = defineExtension({
     multiple: true,
     paramsSchema: ({ project }) => {
         return z.object({
-            src: zodPathToAbstraction(CorePulumiAbstraction, project)
+            src: zodSrcPath({ project, abstraction: CorePulumiAbstraction })
         });
     }
 });

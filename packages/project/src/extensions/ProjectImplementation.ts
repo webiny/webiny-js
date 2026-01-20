@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { defineExtension } from "../defineExtension/index.js";
-import { zodPathToFile } from "../defineExtension/zodTypes/zodPathToFile.js";
+import { zodSrcPath } from "../defineExtension/zodTypes/zodSrcPath.js";
 
 export const ProjectImplementation = defineExtension({
     type: "Project/Implementation",
@@ -9,7 +9,7 @@ export const ProjectImplementation = defineExtension({
     description: "Define a custom implementation or replace an existing one.",
     paramsSchema: ({ project }) => {
         return z.object({
-            src: zodPathToFile(project),
+            src: zodSrcPath({ project }),
             singleton: z.boolean().optional().default(true)
         });
     }
