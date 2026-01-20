@@ -45,7 +45,9 @@ class EnsureOsWasDeployedImpl implements CoreBeforeDeploy.Interface {
     }
 }
 
-export const EnsureOsWasDeployed = CoreBeforeDeploy.createImplementation({
+const EnsureOsWasDeployed = CoreBeforeDeploy.createImplementation({
     implementation: EnsureOsWasDeployedImpl,
     dependencies: [CoreStackOutputService]
 });
+
+export default EnsureOsWasDeployed;

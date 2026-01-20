@@ -20,7 +20,9 @@ class SetAdminEnvVarsBeforeBuildImpl implements AdminBeforeBuild.Interface {
     }
 }
 
-export const SetAdminEnvVarsBeforeBuild = AdminBeforeBuild.createImplementation({
+const SetAdminEnvVarsBeforeBuild = AdminBeforeBuild.createImplementation({
     implementation: SetAdminEnvVarsBeforeBuildImpl,
     dependencies: [ProjectSdkParamsService, CoreStackOutputService, ApiStackOutputService]
 });
+
+export default SetAdminEnvVarsBeforeBuild;

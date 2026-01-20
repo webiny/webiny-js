@@ -55,7 +55,9 @@ class EnsureOsServiceRoleBeforeCoreDeployImpl implements CoreBeforeDeploy.Interf
     }
 }
 
-export const EnsureOsServiceRoleBeforeCoreDeploy = CoreBeforeDeploy.createImplementation({
+const EnsureOsServiceRoleBeforeCoreDeploy = CoreBeforeDeploy.createImplementation({
     implementation: EnsureOsServiceRoleBeforeCoreDeployImpl,
     dependencies: [UiService]
 });
+
+export default EnsureOsServiceRoleBeforeCoreDeploy;

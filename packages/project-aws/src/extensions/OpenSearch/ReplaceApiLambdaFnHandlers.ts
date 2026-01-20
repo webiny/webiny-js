@@ -41,7 +41,9 @@ class ReplaceApiLambdaFnHandlerDecorator implements BuildAppWorkspaceService.Int
     }
 }
 
-export const ReplaceApiLambdaFnHandlers = BuildAppWorkspaceService.createDecorator({
+const ReplaceApiLambdaFnHandlers = BuildAppWorkspaceService.createDecorator({
     decorator: ReplaceApiLambdaFnHandlerDecorator,
     dependencies: [GetApp, LoggerService]
 });
+
+export default ReplaceApiLambdaFnHandlers;

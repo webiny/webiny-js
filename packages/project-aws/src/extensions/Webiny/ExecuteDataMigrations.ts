@@ -93,7 +93,9 @@ class ExecuteDataMigrationsImpl implements ApiAfterDeploy.Interface {
     }
 }
 
-export const ExecuteDataMigrations = ApiAfterDeploy.createImplementation({
+const ExecuteDataMigrations = ApiAfterDeploy.createImplementation({
     implementation: ExecuteDataMigrationsImpl,
     dependencies: [UiService, ApiStackOutputService, GetProject]
 });
+
+export default ExecuteDataMigrations;

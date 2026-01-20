@@ -71,7 +71,9 @@ export class SetPrimaryVariantCommandImpl
     }
 }
 
-export const SetPrimaryVariantCliCommand = CliCommandFactory.createImplementation({
+const SetPrimaryVariantCliCommand = CliCommandFactory.createImplementation({
     implementation: SetPrimaryVariantCommandImpl,
     dependencies: [GetProjectSdkService]
 });
+
+export default SetPrimaryVariantCliCommand;

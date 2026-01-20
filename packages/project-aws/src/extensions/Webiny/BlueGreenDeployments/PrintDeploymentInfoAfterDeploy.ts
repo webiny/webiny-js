@@ -91,7 +91,9 @@ class PrintDeploymentInfoAfterDeployImpl implements AfterDeploy.Interface {
     }
 }
 
-export const PrintDeploymentInfoAfterDeploy = AfterDeploy.createImplementation({
+const PrintDeploymentInfoAfterDeploy = AfterDeploy.createImplementation({
     implementation: PrintDeploymentInfoAfterDeployImpl,
     dependencies: [UiService, GetAppStackOutput, ProjectSdkParamsService]
 });
+
+export default PrintDeploymentInfoAfterDeploy;

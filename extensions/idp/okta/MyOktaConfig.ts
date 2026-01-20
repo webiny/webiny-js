@@ -22,7 +22,9 @@ class MyIdpConfig implements OktaIdpConfig.Interface {
     }
 }
 
-export const MyOktaConfig = OktaIdpConfig.createImplementation({
+const MyOktaConfig = OktaIdpConfig.createImplementation({
     implementation: MyIdpConfig,
     dependencies: []
 });
+
+export default MyOktaConfig;

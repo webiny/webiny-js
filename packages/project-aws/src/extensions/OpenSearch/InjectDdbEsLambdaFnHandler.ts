@@ -41,7 +41,9 @@ class InjectDdbEsLambdaFnHandlerDecorator implements BuildAppWorkspaceService.In
     }
 }
 
-export const InjectDdbEsLambdaFnHandler = BuildAppWorkspaceService.createDecorator({
+const InjectDdbEsLambdaFnHandler = BuildAppWorkspaceService.createDecorator({
     decorator: InjectDdbEsLambdaFnHandlerDecorator,
     dependencies: [GetApp, LoggerService]
 });
+
+export default InjectDdbEsLambdaFnHandler;

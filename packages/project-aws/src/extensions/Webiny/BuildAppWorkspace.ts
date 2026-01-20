@@ -42,7 +42,9 @@ class BuildAppWorkspaceImpl implements BuildAppWorkspaceService.Interface {
     }
 }
 
-export const BuildAppWorkspace = BuildAppWorkspaceService.createDecorator({
+const BuildAppWorkspace = BuildAppWorkspaceService.createDecorator({
     decorator: BuildAppWorkspaceImpl,
     dependencies: [GetApp, LoggerService]
 });
+
+export default BuildAppWorkspace;

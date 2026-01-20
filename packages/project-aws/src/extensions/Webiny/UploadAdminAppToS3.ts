@@ -69,7 +69,9 @@ class UploadAdminAppToS3Impl implements AdminAfterDeploy.Interface {
     }
 }
 
-export const UploadAdminAppToS3 = AdminAfterDeploy.createImplementation({
+const UploadAdminAppToS3 = AdminAfterDeploy.createImplementation({
     implementation: UploadAdminAppToS3Impl,
     dependencies: [UiService, GetApp, AdminStackOutputService]
 });
+
+export default UploadAdminAppToS3;

@@ -134,7 +134,9 @@ class AutoInstallAfterApiDeployImpl implements ApiAfterDeploy.Interface {
     }
 }
 
-export const AutoInstallAfterApiDeploy = ApiAfterDeploy.createImplementation({
+const AutoInstallAfterApiDeploy = ApiAfterDeploy.createImplementation({
     implementation: AutoInstallAfterApiDeployImpl,
     dependencies: [ApiGqlClient, UiService, GetProjectConfigService, LoggerService]
 });
+
+export default AutoInstallAfterApiDeploy;

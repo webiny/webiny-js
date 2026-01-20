@@ -20,7 +20,9 @@ class SetAdminEnvVarsBeforeWatchImpl implements AdminBeforeWatch.Interface {
     }
 }
 
-export const SetAdminEnvVarsBeforeWatch = AdminBeforeWatch.createImplementation({
+const SetAdminEnvVarsBeforeWatch = AdminBeforeWatch.createImplementation({
     implementation: SetAdminEnvVarsBeforeWatchImpl,
     dependencies: [ProjectSdkParamsService, CoreStackOutputService, ApiStackOutputService]
 });
+
+export default SetAdminEnvVarsBeforeWatch;

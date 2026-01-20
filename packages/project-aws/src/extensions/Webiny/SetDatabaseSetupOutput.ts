@@ -24,7 +24,9 @@ class SetDatabaseSetupOutputImpl implements CorePulumi.Interface {
     }
 }
 
-export const SetDatabaseSetupOutput = CorePulumi.createImplementation({
+const SetDatabaseSetupOutput = CorePulumi.createImplementation({
     implementation: SetDatabaseSetupOutputImpl,
     dependencies: [GetProjectConfigService]
 });
+
+export default SetDatabaseSetupOutput;

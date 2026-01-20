@@ -19,7 +19,9 @@ class PrintDeploymentInfoAfterDeployImpl implements BeforeDeploy.Interface {
     }
 }
 
-export const EnsureVariantBeforeDeploy = BeforeDeploy.createImplementation({
+const EnsureVariantBeforeDeploy = BeforeDeploy.createImplementation({
     implementation: PrintDeploymentInfoAfterDeployImpl,
     dependencies: [ProjectSdkParamsService]
 });
+
+export default EnsureVariantBeforeDeploy;
