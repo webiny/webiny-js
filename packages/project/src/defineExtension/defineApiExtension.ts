@@ -2,7 +2,7 @@ import { z } from "zod";
 import { Node, Project, ArrayLiteralExpression } from "ts-morph";
 import { Abstraction } from "@webiny/di";
 import { defineExtension } from "~/defineExtension/index.js";
-import { zodPathToAbstraction } from "~/defineExtension/zodTypes/zodPathToAbstraction.js";
+import { zodSrcPath } from "~/defineExtension/zodTypes/zodSrcPath.js";
 import path from "path";
 import crypto from "crypto";
 
@@ -19,15 +19,8 @@ export const defineApiExtension = (params: DefineApiExtensionParams) =>
         description: params.description,
         multiple: true,
         paramsSchema: ({ project }) => {
-            if (!params.abstraction) {
-                return z.object({
-                    src: z.string(),
-                    exportName: z.string().optional()
-                });
-            }
-
             return z.object({
-                src: zodPathToAbstraction(params.abstraction, project),
+                src: zodSrcPath({ project, abstraction: params.abstraction }),
                 exportName: z.string().optional()
             });
         },
@@ -38,7 +31,19 @@ export const defineApiExtension = (params: DefineApiExtensionParams) =>
 
             const { src: extensionFilePath } = params;
 
-            const extensionFileName = path.basename(extensionFilePath);
+            // Resolve to absolute path for file operations
+            let absoluteExtensionFilePath: string;
+            if (extensionFilePath.startsWith("/extensions/")) {
+                // Resolve from project root
+                absoluteExtensionFilePath = ctx.project.paths.rootFolder
+                    .join(extensionFilePath)
+                    .toString();
+            } else {
+                // Treat as absolute path
+                absoluteExtensionFilePath = extensionFilePath;
+            }
+
+            const extensionFileName = path.basename(absoluteExtensionFilePath);
 
             // 1. Export name is always the file name without extension.
             const exportName = params.exportName ?? extensionFileName.replace(".ts", "");
@@ -50,7 +55,10 @@ export const defineApiExtension = (params: DefineApiExtensionParams) =>
 
             // 3. Calculate import path relative to `extensions.ts` file.
             const importPath = [
-                path.relative(path.dirname(extensionsTsFilePath), path.dirname(extensionFilePath)),
+                path.relative(
+                    path.dirname(extensionsTsFilePath),
+                    path.dirname(absoluteExtensionFilePath)
+                ),
                 extensionFileName.replace(".ts", ".js")
             ].join("/");
 

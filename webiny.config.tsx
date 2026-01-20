@@ -2,18 +2,18 @@ import React from "react";
 import { Api, Cli, Infra, Project, Security } from "webiny/extensions";
 import { MySchemaExtension } from "./extensions/graphql/MySchemaExtension.js";
 import { Cognito } from "@webiny/cognito";
-// import { MyIdpExtension } from "./extensions/idp/okta/MyIdpExtension.js";
+// import { MyIdpExtension } from "/extensions/idp/okta/MyIdpExtension.js";
 
 export const Extensions = () => {
     return (
         <>
             {/* Admin 👇 */}
-            {/*<Admin.Extension src={"./extensions/AdminLogo/AdminLogo.tsx"} />*/}
+            {/*<Admin.Extension src={"/extensions/AdminLogo/AdminLogo.tsx"} />*/}
 
             {/* Infra 👇 */}
             <Infra.PulumiResourceNamePrefix prefix={"myproj-"} />
             <Infra.ProductionEnvironments environments={["prod", "staging"]} />
-            <Infra.Core.Pulumi src={"./extensions/MyCorePulumiHandler.ts"} />
+            <Infra.Core.Pulumi src={"/extensions/MyCorePulumiHandler.ts"} />
             <Infra.Vpc enabled={false} />
             <Infra.OpenSearch enabled={false} />
             <Infra.Aws.Tags tags={{ OWNER: "me", PROJECT: "my-project" }} />
@@ -63,7 +63,7 @@ export const Extensions = () => {
             />*/}
 
             {/* CLI 👇 */}
-            <Cli.Command src={"./extensions/MyCustomCommand.ts"} />
+            <Cli.Command src={"/extensions/MyCustomCommand.ts"} />
 
             {/* Project 👇 */}
             <Project.Telemetry enabled={false} />
@@ -86,30 +86,30 @@ export const Extensions = () => {
             <MySchemaExtension />
 
             {/* Security 👇 */}
-            <Api.Extension src={"./extensions/MyApiKey.ts"} />
-            <Security.ApiKey.AfterUpdate src={"./extensions/MyApiKeyAfterUpdate.ts"} />
+            <Api.Extension src={"/extensions/MyApiKey.ts"} />
+            <Security.ApiKey.AfterUpdate src={"/extensions/MyApiKeyAfterUpdate.ts"} />
 
             {/* 🚧 WIP 👇 */}
-            {/*<Security.ApiKeyBeforeCreate src={"./extensions/ApiKeyBeforeCreate.ts"} />*/}
+            {/*<Security.ApiKeyBeforeCreate src={"/extensions/ApiKeyBeforeCreate.ts"} />*/}
             {/*<AuditLogs.RetentionPeriod days={90} />*/}
             {/*<AuditLogs.RetentionPeriod days={90} />*/}
             {/*<AuditLogs.Admin.RetentionPeriod days={90} />*/}
 
             {/*<Cms.OnEntryBeforeCreate.../>*/}
 
-            {/*<Security.Authenticator src={"./extensions/myOnEntryBeforeCreate.ts"} />*/}
-            {/*<Cms.OnEntryBeforeCreate src={"./extensions/myOnEntryBeforeCreate.ts"} />*/}
-            {/*<Cms.Model src={"./extensions/myOnEntryBeforeCreate.ts"} />*/}
-            {/*<Cms.ModelGroup src={"./extensions/myOnEntryBeforeCreate.ts"} />*/}
-            {/*<Fm.FileModelModifier src={"./extensions/myOnEntryBeforeCreate.ts"} />*/}
-            {/*<Fm.OnFileBeforeCreate src={"./extensions/myOnEntryBeforeCreate.ts"} />*/}
+            {/*<Security.Authenticator src={"/extensions/myOnEntryBeforeCreate.ts"} />*/}
+            {/*<Cms.OnEntryBeforeCreate src={"/extensions/myOnEntryBeforeCreate.ts"} />*/}
+            {/*<Cms.Model src={"/extensions/myOnEntryBeforeCreate.ts"} />*/}
+            {/*<Cms.ModelGroup src={"/extensions/myOnEntryBeforeCreate.ts"} />*/}
+            {/*<Fm.FileModelModifier src={"/extensions/myOnEntryBeforeCreate.ts"} />*/}
+            {/*<Fm.OnFileBeforeCreate src={"/extensions/myOnEntryBeforeCreate.ts"} />*/}
 
             {/*Finally, we have these extra extensions that are not even included in the default*/}
             {/*`webiny/extensions` package. These will most probably always be without any*/}
             {/*namespace prefix, just like the `Okta` extension below.*/}
             {/*<Okta*/}
-            {/*    backendSrc={"./extensions/myOktaIdProvider.ts"}*/}
-            {/*    adminSrc={"./extensions/myOktaIdProvider.ts"}*/}
+            {/*    backendSrc={"/extensions/myOktaIdProvider.ts"}*/}
+            {/*    adminSrc={"/extensions/myOktaIdProvider.ts"}*/}
             {/*/>*/}
         </>
     );
