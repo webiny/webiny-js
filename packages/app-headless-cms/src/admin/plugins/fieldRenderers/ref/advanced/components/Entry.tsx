@@ -118,12 +118,21 @@ export const Entry = ({
                     />
                 </div>
             )}
-            <div className={"flex items-center gap-lg text-sm text-neutral-muted w-full"}>
+            <div
+                className={
+                    "grid grid-cols-[auto_1fr_auto] items-center gap-lg text-sm text-neutral-muted w-full min-w-0"
+                }
+            >
                 <Image title={entry.title} src={entry.image} />
-                <div className={"flex-1"}>
+                <div className={"overflow-hidden"}>
                     <div>{entry.model.name}</div>
 
-                    <div className={"text-md text-neutral-primary font-semibold mb-sm"}>
+                    <div
+                        title={entry.title}
+                        className={
+                            "text-md text-neutral-primary font-semibold mb-sm text-ellipsis overflow-hidden whitespace-nowrap block"
+                        }
+                    >
                         {entry.title}
                     </div>
 

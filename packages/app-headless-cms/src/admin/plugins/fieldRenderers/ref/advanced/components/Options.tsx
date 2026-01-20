@@ -71,8 +71,8 @@ export const Options = ({ models, onNewRecord, onLinkExistingRecord }: OptionsPr
     }
 
     return (
-        <div className={"flex gap-sm"}>
-            <CreateNewRecordButton onClick={onSingleNewRecord} />
+        <div>
+            <CreateNewRecordButton onClick={onSingleNewRecord} />&nbsp;
             <LinkExistingRecordButton onClick={onSingleExistingRecord} />
         </div>
     );
