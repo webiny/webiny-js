@@ -61,7 +61,8 @@ export class ConverterCollection {
     }
 
     public getConverter(type: string): Converter {
-        const converter = this.converters.get(type);
+        const baseType = getBaseFieldType({ type });
+        const converter = this.converters.get(baseType);
         if (converter === undefined) {
             throw new WebinyError(
                 `Missing converter for field type "${type}".`,
@@ -83,8 +84,7 @@ export class ConverterCollection {
         this.attachHasOwnProperty(inputValues);
 
         return fields.reduce<CmsEntryValues>((output, field) => {
-            const baseType = getBaseFieldType(field);
-            const converter = this.getConverter(baseType);
+            const converter = this.getConverter(field.type);
             if (inputValues === null || inputValues.hasOwnProperty(field.fieldId) === false) {
                 return output;
             }
@@ -109,8 +109,7 @@ export class ConverterCollection {
         }
 
         return fields.reduce((output, field) => {
-            const baseType = getBaseFieldType(field);
-            const converter = this.getConverter(baseType);
+            const converter = this.getConverter(field.type);
             if (inputValues === null || inputValues.hasOwnProperty(field.storageId) === false) {
                 return output;
             }

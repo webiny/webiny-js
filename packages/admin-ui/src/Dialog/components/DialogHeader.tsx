@@ -4,7 +4,7 @@ import { type DialogProps } from "../Dialog.js";
 import { DialogTitle } from "./DialogTitle.js";
 import { DialogDescription } from "./DialogDescription.js";
 
-const dialogHeaderVariants = cva(["flex flex-col gap-sm", "text-neutral-primary", "sm:text-left"], {
+const dialogHeaderVariants = cva(["flex flex-col gap-xs", "text-neutral-primary", "sm:text-left"], {
     variants: {
         size: {
             sm: "pt-md pb-md-extra px-md-extra mr-xl",
