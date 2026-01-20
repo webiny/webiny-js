@@ -59,8 +59,6 @@ export const useAdminConfig = () => {
         typography: baseConfig.lexicalTheme?.typography || {},
         tokens: lexicalTokens
     };
-    
-    console.log("baseConfig.menus", baseConfig.menus);
 
     return {
         menus: baseConfig.menus ?? [],

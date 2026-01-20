@@ -32,7 +32,6 @@ const BaseMenu = ({
     after,
     pinnable = false
 }: MenuProps) => {
-    console.log("Base menu", name, element);
     const getId = useIdGenerator("Menu");
 
     let placeAfter = after !== undefined ? getId(after) : undefined;
