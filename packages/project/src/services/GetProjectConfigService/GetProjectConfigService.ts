@@ -1,5 +1,4 @@
 import { createImplementation } from "@webiny/di";
-import path from "path";
 import {
     GetProjectConfigService,
     GetProjectService,
