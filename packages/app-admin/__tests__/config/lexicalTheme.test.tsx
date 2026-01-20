@@ -210,11 +210,13 @@ describe("LexicalTheme Config", () => {
 
         expect(toObject(properties)).toEqual({
             lexicalTheme: {
-                colors: [{
-                    id: "color2",
-                    label: "Color 2",
-                    value: "#666666"
-                }]
+                colors: [
+                    {
+                        id: "color2",
+                        label: "Color 2",
+                        value: "#666666"
+                    }
+                ]
             }
         });
     });
