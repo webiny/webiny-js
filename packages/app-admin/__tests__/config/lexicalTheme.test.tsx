@@ -17,8 +17,8 @@ describe("LexicalTheme Config", () => {
 
         render(
             <Properties onChange={onChange}>
-                <LexicalTheme.Color id="color1" value="var(--wb-theme-color1)" />
-                <LexicalTheme.Color id="color2" value="#666666" />
+                <LexicalTheme.Color id="color1" label={"Color 1"} value="var(--wb-theme-color1)" />
+                <LexicalTheme.Color id="color2" label={"Color 2"} value="#666666" />
             </Properties>
         );
 
@@ -26,10 +26,18 @@ describe("LexicalTheme Config", () => {
 
         expect(toObject(properties)).toEqual({
             lexicalTheme: {
-                colors: {
-                    color1: "var(--wb-theme-color1)",
-                    color2: "#666666"
-                }
+                colors: [
+                    {
+                        id: "color1",
+                        label: "Color 1",
+                        value: "var(--wb-theme-color1)"
+                    },
+                    {
+                        id: "color2",
+                        label: "Color 2",
+                        value: "#666666"
+                    }
+                ]
             }
         });
     });
@@ -84,8 +92,8 @@ describe("LexicalTheme Config", () => {
         render(
             <Properties onChange={onChange}>
                 {/* Colors */}
-                <LexicalTheme.Color id="color1" value="var(--wb-theme-color1)" />
-                <LexicalTheme.Color id="color2" value="#666666" />
+                <LexicalTheme.Color id="color1" label={"Color 1"} value="var(--wb-theme-color1)" />
+                <LexicalTheme.Color id="color2" label={"Color 2"} value="#666666" />
 
                 {/* Headings */}
                 <LexicalTheme.Typography.Heading
@@ -131,10 +139,18 @@ describe("LexicalTheme Config", () => {
 
         expect(toObject(properties)).toEqual({
             lexicalTheme: {
-                colors: {
-                    color1: "var(--wb-theme-color1)",
-                    color2: "#666666"
-                },
+                colors: [
+                    {
+                        id: "color1",
+                        label: "Color 1",
+                        value: "var(--wb-theme-color1)"
+                    },
+                    {
+                        id: "color2",
+                        label: "Color 2",
+                        value: "#666666"
+                    }
+                ],
                 typography: {
                     headings: [
                         {
@@ -184,8 +200,8 @@ describe("LexicalTheme Config", () => {
 
         render(
             <Properties onChange={onChange}>
-                <LexicalTheme.Color id="color1" value="var(--wb-theme-color1)" />
-                <LexicalTheme.Color id="color2" value="#666666" />
+                <LexicalTheme.Color id="color1" label={"Color 1"} value="var(--wb-theme-color1)" />
+                <LexicalTheme.Color id="color2" label={"Color 2"} value="#666666" />
                 <LexicalTheme.Color id="color1" remove />
             </Properties>
         );
@@ -194,9 +210,11 @@ describe("LexicalTheme Config", () => {
 
         expect(toObject(properties)).toEqual({
             lexicalTheme: {
-                colors: {
-                    color2: "#666666"
-                }
+                colors: [{
+                    id: "color2",
+                    label: "Color 2",
+                    value: "#666666"
+                }]
             }
         });
     });
