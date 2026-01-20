@@ -58,19 +58,14 @@ export const zodSrcPath = (options: ZodSrcPathOptions) => {
 
             // If abstraction validation is required
             if (abstraction) {
-                const exportName = path
-                    .basename(absoluteSrcPath)
-                    .replace(path.extname(absoluteSrcPath), "");
-
                 const importedModule = await import(absoluteSrcPath);
-                const exportedImplementation = importedModule?.[exportName];
+                const exportedImplementation = importedModule?.default;
                 if (!exportedImplementation) {
                     ctx.addIssue({
                         code: z.ZodIssueCode.custom,
                         message: ProjectError.formatMessage(
-                            `The file %s must export a class named %s.`,
-                            src,
-                            exportName
+                            `The file %s must have a default export.`,
+                            src
                         )
                     });
                     return;
@@ -85,8 +80,7 @@ export const zodSrcPath = (options: ZodSrcPathOptions) => {
                     ctx.addIssue({
                         code: z.ZodIssueCode.custom,
                         message: ProjectError.formatMessage(
-                            `The class %s in %s must implement the %s interface.`,
-                            exportName,
+                            `The default export in %s must implement the %s interface.`,
                             src,
                             tokenName || ""
                         )

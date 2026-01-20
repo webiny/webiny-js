@@ -139,10 +139,8 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
                 importPath = filePath;
             }
 
-            const exportName = path.basename(filePath).replace(path.extname(filePath), "");
-
             const importedModule = await import(importPath);
-            return importedModule[exportName];
+            return importedModule.default;
         };
 
         const commands = projectConfig.extensionsByType(CliCommand);

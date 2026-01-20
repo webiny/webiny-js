@@ -20,8 +20,7 @@ export const defineApiExtension = (params: DefineApiExtensionParams) =>
         multiple: true,
         paramsSchema: ({ project }) => {
             return z.object({
-                src: zodSrcPath({ project, abstraction: params.abstraction }),
-                exportName: z.string().optional()
+                src: zodSrcPath({ project, abstraction: params.abstraction })
             });
         },
         async build(params, ctx) {
@@ -45,15 +44,12 @@ export const defineApiExtension = (params: DefineApiExtensionParams) =>
 
             const extensionFileName = path.basename(absoluteExtensionFilePath);
 
-            // 1. Export name is always the file name without extension.
-            const exportName = params.exportName ?? extensionFileName.replace(".ts", "");
-
-            // 2. Alias name is "ApiExtension_" + hash of the file path. This way we
+            // 1. Alias name is "ApiExtension_" + hash of the file path. This way we
             //    avoid potential naming conflicts and keep the identifier constant.
             const hash = crypto.createHash("sha256").update(extensionFilePath).digest("hex");
-            const exportNameAlias = `ApiExtension_${hash.slice(-10)}`;
+            const importAlias = `ApiExtension_${hash.slice(-10)}`;
 
-            // 3. Calculate import path relative to `extensions.ts` file.
+            // 2. Calculate import path relative to `extensions.ts` file.
             const importPath = [
                 path.relative(
                     path.dirname(extensionsTsFilePath),
@@ -81,7 +77,7 @@ export const defineApiExtension = (params: DefineApiExtensionParams) =>
             }
 
             source.insertImportDeclaration(index, {
-                namedImports: [{ name: exportName, alias: exportNameAlias }],
+                defaultImport: importAlias,
                 moduleSpecifier: importPath
             });
 
@@ -90,7 +86,7 @@ export const defineApiExtension = (params: DefineApiExtensionParams) =>
             ) as ArrayLiteralExpression;
 
             pluginsArray.addElement(
-                `\ncreateContextPlugin(ctx => {\n\tregisterExtension(ctx.container, ${exportNameAlias});\n})`
+                `\ncreateContextPlugin(ctx => {\n\tregisterExtension(ctx.container, ${importAlias});\n})`
             );
 
             {
