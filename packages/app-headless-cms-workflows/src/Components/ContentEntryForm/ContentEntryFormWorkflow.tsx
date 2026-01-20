@@ -1,10 +1,11 @@
 import React from "react";
-import { ContentEntryForm, useContentEntry } from "@webiny/app-headless-cms";
+import { ContentEntryForm, useContentEntry, useModel } from "@webiny/app-headless-cms";
+import type { IWorkflowState } from "@webiny/app-workflows";
 import { Components } from "@webiny/app-workflows";
 import { Alert, Grid } from "@webiny/admin-ui";
-import { useSecurity } from "@webiny/app-admin";
 import type { PersistEntry } from "@webiny/app-headless-cms/admin/components/ContentEntryForm/ContentEntryFormProvider.js";
-import type { IWorkflowState } from "@webiny/app-workflows";
+import { CMS_MODEL_SINGLETON_TAG } from "@webiny/app-headless-cms-common";
+import { useSingletonContentEntry } from "@webiny/app-headless-cms/admin/views/contentEntries/hooks/useSingletonContentEntry.js";
 
 const {
     ContentReview: { WorkflowStateBar, WorkflowStateOverlay }
@@ -33,12 +34,38 @@ const StoreAlert = ({ state }: IStoreAlertProps) => {
     );
 };
 
+interface IShouldShowOriginalParams {
+    entry: ReturnType<typeof useContentEntry>["entry"];
+    model: ReturnType<typeof useContentEntry>["contentModel"];
+}
+const shouldShowOriginal = (params: IShouldShowOriginalParams): boolean => {
+    const { entry, model } = params;
+    /**
+     * In case of new entry or no model, show original.
+     * Also, for singleton models, show original.
+     */
+    if (!entry?.id || !model?.modelId) {
+        return true;
+    }
+    return model.tags.includes(CMS_MODEL_SINGLETON_TAG);
+};
+
 export const ContentEntryFormWorkflow = ContentEntryForm.createDecorator(Original => {
     return function ContentEntryFormWorkflow(props) {
-        const { entry, contentModel: model } = useContentEntry();
-        const { identity } = useSecurity();
+        const { model } = useModel();
 
-        const showOriginal = !entry?.id || !model?.modelId || !identity.id;
+        const isSingleEntryModel = model.tags.includes(CMS_MODEL_SINGLETON_TAG);
+        /**
+         * A really, really dirty way to determine which hook to use.
+         * TODO @bruno - to be blamed
+         * TODO @pavel - please give idea how to solve it
+         */
+        const { entry } = isSingleEntryModel ? useSingletonContentEntry() : useContentEntry();
+
+        const showOriginal = shouldShowOriginal({
+            entry,
+            model
+        });
 
         if (showOriginal) {
             return <Original {...props} />;
