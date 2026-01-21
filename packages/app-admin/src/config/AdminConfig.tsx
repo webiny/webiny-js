@@ -10,6 +10,8 @@ import { Theme } from "./AdminConfig/Theme.js";
 import { Dashboard } from "./AdminConfig/Dashboard.js";
 import { type WidgetConfig } from "./AdminConfig/Widget.js";
 import { LexicalTheme } from "./AdminConfig/LexicalTheme.js";
+import { Title } from "./AdminConfig/Title.js";
+import { Logo } from "./AdminConfig/Logo.js";
 import { createAdminConfig } from "./createAdminConfig.js";
 import type { EditorTheme } from "@webiny/lexical-theme";
 import { createLexicalTokens } from "@webiny/lexical-theme/createLexicalEditorTokens.js";
@@ -92,6 +94,8 @@ export const AdminConfig = Object.assign(Private, {
     Menu,
     Route,
     Tenant,
+    Title,
+    Logo,
     Dashboard,
     LexicalTheme,
     useAdminConfig
