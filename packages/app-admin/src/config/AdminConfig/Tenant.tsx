@@ -16,16 +16,7 @@ const BaseTenant = ({ children }: TenantProps) => {
     return <>{children}</>;
 };
 
-/**
- * @deprecated Use AdminConfig.Title and AdminConfig.Logo directly instead of AdminConfig.Tenant.Name and AdminConfig.Tenant.Logo
- */
 export const Tenant = Object.assign(BaseTenant, {
-    /**
-     * @deprecated Use AdminConfig.Title instead
-     */
     Name: TenantName,
-    /**
-     * @deprecated Use AdminConfig.Logo instead
-     */
     Logo: TenantLogo
 });
