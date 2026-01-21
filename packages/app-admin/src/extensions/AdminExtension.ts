@@ -46,10 +46,36 @@ export const AdminExtension = defineExtension({
             index = last.getChildIndex() + 1;
         }
 
-        source.insertImportDeclaration(index, {
-            namedImports: [{ name: "Extension", alias: componentName }],
-            moduleSpecifier: importPath
-        });
+        // Check if the file has a default export by importing it.
+        let absoluteSrcPath: string;
+        if (params.src.startsWith("/extensions/")) {
+            // Resolve from project root.
+            absoluteSrcPath = ctx.project.paths.rootFolder.join(params.src).toString();
+        } else {
+            // Treat as absolute path.
+            absoluteSrcPath = params.src;
+        }
+
+        const importedModule = await import(absoluteSrcPath);
+        const hasDefaultExport = "default" in importedModule;
+
+        // Support both default and named exports.
+        if (hasDefaultExport) {
+            source.insertImportDeclaration(index, {
+                defaultImport: componentName,
+                moduleSpecifier: importPath
+            });
+        } else {
+            // Try "Extension" first, then fall back to filename-based export
+            const exportName = "Extension" in importedModule 
+                ? "Extension" 
+                : path.basename(params.src).replace(path.extname(params.src), "");
+            
+            source.insertImportDeclaration(index, {
+                namedImports: [{ name: exportName, alias: componentName }],
+                moduleSpecifier: importPath
+            });
+        }
 
         const extensionsIdentifier = source.getFirstDescendant(node => {
             if (!Node.isIdentifier(node)) {
