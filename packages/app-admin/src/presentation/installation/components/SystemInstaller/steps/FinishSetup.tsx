@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Text, Button, Grid, Loader, Alert } from "@webiny/admin-ui";
+import { Button, Grid, Loader, Alert } from "@webiny/admin-ui";
 import { Center } from "./Center.js";
 import { Container } from "./Container.js";
 import type {
@@ -26,28 +26,37 @@ export const FinishSetupStep = ({
         installSystem();
     }, []);
 
+    const subtitle = isInstalled
+        ? "Setup complete! Everything went smooth as a breeze!"
+        : "We're finalizing installation of Webiny...please wait.";
+
     return (
-        <Container
-            title={"Finish setup"}
-            message={"We're finalizing installation of Webiny...please wait."}
-        >
+        <Container title={"Finish setup"} message={subtitle}>
             <Center>
                 <div style={{ width: 400 }}>
                     <Grid>
                         {error ? (
-                            <Grid.Column span={12}>
-                                <Alert type={"danger"} title={error.message}>
-                                    {error.data.reason}
-                                </Alert>
+                            <Grid.Column span={12} className={"flex flex-col gap-4"}>
+                                <Alert type={"danger"}>{error.data.reason}</Alert>
+                                <Button
+                                    containerClassName={"w-full"}
+                                    className={"w-full"}
+                                    variant={"secondary"}
+                                    size={"lg"}
+                                    text={"Restart installation"}
+                                    onClick={() => {
+                                        window.location.reload();
+                                    }}
+                                />
                             </Grid.Column>
                         ) : (
                             <></>
                         )}
                         {installing ? (
                             <Grid.Column span={12}>
-                                <div className="flex flex-col items-center gap-4">
+                                <div className="flex flex-col items-center gap-4 mt-8">
                                     <Loader
-                                        size="md"
+                                        size="lg"
                                         variant="accent"
                                         indeterminate={true}
                                         text="Installing Webiny..."
@@ -57,23 +66,9 @@ export const FinishSetupStep = ({
                         ) : (
                             <></>
                         )}
-                        {isInstalled ? (
-                            <Grid.Column span={12}>
-                                <Text
-                                    as="div"
-                                    size={"md"}
-                                    className={"text-neutral-strong text-center"}
-                                >
-                                    Setup complete! Everything went smooth as a breeze!
-                                </Text>
-                            </Grid.Column>
-                        ) : (
-                            <></>
-                        )}
-                        {!error ? (
+                        {!error && isInstalled ? (
                             <Grid.Column span={12}>
                                 <Button
-                                    disabled={!isInstalled}
                                     containerClassName={"w-full"}
                                     className={"w-full"}
                                     variant={"primary"}
