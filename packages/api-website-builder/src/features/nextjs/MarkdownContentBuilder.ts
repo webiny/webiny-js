@@ -20,6 +20,7 @@ export interface IMarkdownContentBuilder {
 export class MarkdownContentBuilder implements IMarkdownContentBuilder {
     private sections: ISection[] = [];
     private variables: Map<string, string> = new Map();
+    private readonly MAX_INTERPOLATION_DEPTH = 10; // Prevent infinite loops
 
     add(id: string, markdown: string, position?: IPositionOptions): this {
         const section: ISection = { id, content: markdown };
@@ -79,10 +80,28 @@ export class MarkdownContentBuilder implements IMarkdownContentBuilder {
 
     private substituteVariables(text: string): string {
         let result = text;
-        this.variables.forEach((value, key) => {
-            const regex = new RegExp(`\\{${this.escapeRegex(key)}\\}`, "g");
-            result = result.replace(regex, value);
-        });
+        let previousResult = "";
+        let depth = 0;
+
+        // Keep substituting until no more changes occur or max depth reached
+        while (result !== previousResult && depth < this.MAX_INTERPOLATION_DEPTH) {
+            previousResult = result;
+
+            this.variables.forEach((value, key) => {
+                const regex = new RegExp(`\\{${this.escapeRegex(key)}\\}`, "g");
+                result = result.replace(regex, value);
+            });
+
+            depth++;
+        }
+
+        // Warn about potential circular reference if max depth reached
+        if (depth === this.MAX_INTERPOLATION_DEPTH && result !== previousResult) {
+            console.warn(
+                "Maximum interpolation depth reached. Possible circular variable reference."
+            );
+        }
+
         return result;
     }
 

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { MarkdownContentBuilder } from "./MarkdownContentBuilder.js";
 
 describe("MarkdownContentBuilder", () => {
@@ -308,6 +308,133 @@ describe("MarkdownContentBuilder", () => {
 
             const result = builder.build();
             expect(result).toBe("Key: plugin_key\nAdded by plugin: plugin_key");
+        });
+    });
+
+    describe("deep variable interpolation", () => {
+        it("should handle single level nested variables", () => {
+            builder
+                .setVariables({
+                    LINK: "https://example.com",
+                    DESCRIPTION: "Visit {LINK} for more info"
+                })
+                .add("section1", "{DESCRIPTION}");
+
+            expect(builder.build()).toBe("Visit https://example.com for more info");
+        });
+
+        it("should handle multiple levels of nested variables", () => {
+            builder
+                .setVariables({
+                    BASE_URL: "https://example.com",
+                    API_PATH: "{BASE_URL}/api",
+                    FULL_ENDPOINT: "{API_PATH}/v1/users"
+                })
+                .add("section1", "Endpoint: {FULL_ENDPOINT}");
+
+            expect(builder.build()).toBe("Endpoint: https://example.com/api/v1/users");
+        });
+
+        it("should handle variables in HTML links", () => {
+            builder
+                .setVariables({
+                    STARTER_KIT_LINK: "https://github.com/webiny/website-builder-nextjs",
+                    DESCRIPTION:
+                        '<a href="{STARTER_KIT_LINK}" target="_blank">Webiny Next.js starter kit</a>'
+                })
+                .add("section1", "{DESCRIPTION}");
+
+            expect(builder.build()).toBe(
+                '<a href="https://github.com/webiny/website-builder-nextjs" target="_blank">Webiny Next.js starter kit</a>'
+            );
+        });
+
+        it("should handle complex nested scenario from example", () => {
+            builder
+                .setVariables({
+                    DESCRIPTION:
+                        'This is a configuration for <a href="{STARTER_KIT_LINK}" target="_blank">Webiny Next.js starter kit:</a>',
+                    STARTER_KIT_LINK: "https://github.com/webiny/website-builder-nextjs",
+                    API_TOKEN: "wat_12345",
+                    API_HOST: "https://api.example.com",
+                    ADMIN_HOST: "https://admin.example.com",
+                    TENANT_ID: "root"
+                })
+                .add("description", "{DESCRIPTION}");
+
+            const result = builder.build();
+            expect(result).toContain("https://github.com/webiny/website-builder-nextjs");
+            expect(result).toContain("Webiny Next.js starter kit");
+            expect(result).not.toContain("{STARTER_KIT_LINK}");
+        });
+
+        it("should handle variable that references another variable multiple times", () => {
+            builder
+                .setVariables({
+                    NAME: "John",
+                    GREETING: "Hello {NAME}, welcome {NAME}!"
+                })
+                .add("section1", "{GREETING}");
+
+            expect(builder.build()).toBe("Hello John, welcome John!");
+        });
+
+        it("should handle deep nesting (3+ levels)", () => {
+            builder
+                .setVariables({
+                    LEVEL_1: "base",
+                    LEVEL_2: "{LEVEL_1}/path",
+                    LEVEL_3: "{LEVEL_2}/more",
+                    LEVEL_4: "{LEVEL_3}/final"
+                })
+                .add("section1", "{LEVEL_4}");
+
+            expect(builder.build()).toBe("base/path/more/final");
+        });
+
+        it("should handle circular references gracefully", () => {
+            const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+            builder
+                .setVariables({
+                    VAR_A: "Start {VAR_B}",
+                    VAR_B: "{VAR_A} End"
+                })
+                .add("section1", "{VAR_A}");
+
+            builder.build();
+
+            expect(consoleSpy).toHaveBeenCalledWith(
+                expect.stringContaining("Maximum interpolation depth reached")
+            );
+
+            consoleSpy.mockRestore();
+        });
+
+        it("should stop at undefined variables and leave them as-is", () => {
+            builder
+                .setVariables({
+                    DEFINED: "value",
+                    HAS_UNDEFINED: "{DEFINED} and {UNDEFINED}"
+                })
+                .add("section1", "{HAS_UNDEFINED}");
+
+            expect(builder.build()).toBe("value and {UNDEFINED}");
+        });
+
+        it("should handle mixed defined and nested variables", () => {
+            builder
+                .setVariables({
+                    API_KEY: "key123",
+                    HOST: "example.com",
+                    CONFIG: "API_KEY={API_KEY}\nHOST={HOST}\nUNDEFINED={UNKNOWN}"
+                })
+                .add("section1", "{CONFIG}");
+
+            const result = builder.build();
+            expect(result).toContain("API_KEY=key123");
+            expect(result).toContain("HOST=example.com");
+            expect(result).toContain("UNDEFINED={UNKNOWN}");
         });
     });
 });

@@ -29,18 +29,16 @@ class NextjsConfigImpl implements Abstraction.Interface {
         const builder = new MarkdownContentBuilder();
         builder
             .setVariables({
-                LINK: `https://github.com/webiny/website-builder-nextjs`,
+                DESCRIPTION: `This is a configuration for <a href="{STARTER_KIT_LINK}" target="_blank">Webiny Next.js starter kit:</a>`,
+                STARTER_KIT_LINK: `https://github.com/webiny/website-builder-nextjs`,
                 API_TOKEN: apiKey ? apiKey.token : "{API_KEY_TOKEN}",
-                API_HOST: domains.apiHost,
-                ADMIN_HOST: domains.adminHost,
+                API_HOST: domains.apiHost ?? "",
+                ADMIN_HOST: domains.adminHost ?? "",
                 TENANT_ID: tenant.id
             })
-            .add(
-                "description",
-                `This is a configuration for <a href="{LINK}" target="_blank">Webiny Next.js starter kit:</a>`
-            )
+            .add("description", "{DESCRIPTION}")
             .add("dotEnvStart", "```dotenv")
-            .add("config", envVars.join("\n"))
+            .add("dotEnvBody", envVars.join("\n"))
             .add("dotEnvEnd", "```");
 
         return builder;
@@ -49,9 +47,9 @@ class NextjsConfigImpl implements Abstraction.Interface {
     private async getDomains() {
         const manifest = await ServiceDiscovery.load();
 
-        const domains = {
-            apiHost: "{API_HOST}",
-            adminHost: "{ADMIN_HOST}"
+        const domains: Record<string, string | null> = {
+            apiHost: null,
+            adminHost: null
         };
 
         if (!manifest) {
