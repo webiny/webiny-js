@@ -14,40 +14,59 @@ class NextjsConfigImpl implements Abstraction.Interface {
         const tenant = this.tenantContext.getTenant();
         const apiKeyResult = await this.apiKeyRepo.getBySlug("website-builder");
         const apiKey = apiKeyResult.isOk() ? apiKeyResult.value : null;
+        const domains = await this.getDomains();
 
         const envVars = [
-            "```dotenv",
             `NEXT_PUBLIC_WEBSITE_BUILDER_API_KEY={API_TOKEN}`,
             `NEXT_PUBLIC_WEBSITE_BUILDER_API_HOST={API_HOST}`,
-            `NEXT_PUBLIC_WEBSITE_BUILDER_API_TENANT={TENANT_ID}`,
-            "```"
+            `NEXT_PUBLIC_WEBSITE_BUILDER_API_TENANT={TENANT_ID}`
         ];
+
+        if (domains.adminHost) {
+            envVars.push(`NEXT_PUBLIC_WEBSITE_BUILDER_ADMIN_HOST={ADMIN_HOST}`);
+        }
 
         const builder = new MarkdownContentBuilder();
         builder
             .setVariables({
-                LINK: `https://github.com/webiny/website-builder-nextjs`,
+                DESCRIPTION: `This is a configuration for <a href="{STARTER_KIT_LINK}" target="_blank">Webiny Next.js starter kit:</a>`,
+                STARTER_KIT_LINK: `https://github.com/webiny/website-builder-nextjs`,
                 API_TOKEN: apiKey ? apiKey.token : "{API_KEY_TOKEN}",
-                API_HOST: await this.getApiHost(),
+                API_HOST: domains.apiHost ?? "",
+                ADMIN_HOST: domains.adminHost ?? "",
                 TENANT_ID: tenant.id
             })
-            .add(
-                "description",
-                `This is a configuration for <a href="{LINK}" target="_blank">Webiny Next.js starter kit:</a>`
-            )
-            .add("config", envVars.join("\n"));
+            .add("description", "{DESCRIPTION}")
+            .add("dotEnvStart", "```dotenv")
+            .add("dotEnvBody", envVars.join("\n"))
+            .add("dotEnvEnd", "```");
 
         return builder;
     }
 
-    private async getApiHost() {
+    private async getDomains() {
         const manifest = await ServiceDiscovery.load();
 
+        const domains: Record<string, string | null> = {
+            apiHost: null,
+            adminHost: null
+        };
+
         if (!manifest) {
-            return "{API_HOST}";
+            return domains;
         }
 
-        return manifest.api.cloudfront.domain;
+        const { api, admin } = manifest;
+
+        if (api?.cloudfront) {
+            domains.apiHost = api.cloudfront.domain;
+        }
+
+        if (admin?.cloudfront) {
+            domains.adminHost = admin.cloudfront.domain;
+        }
+
+        return domains;
     }
 }
 
