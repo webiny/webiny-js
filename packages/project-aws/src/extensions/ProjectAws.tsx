@@ -39,7 +39,10 @@ export const ProjectAws = () => {
             <ProjectImplementation src={p("../features/ApiGqlClient.js")} singleton />
 
             <AdminAfterDeploy src={p("ProjectAws/UploadAdminAppToS3.js")} />
-            <ApiAfterDeploy src={p("ProjectAws/ExecuteDataMigrations.js")} />
+
+            {/* We'll bring this back once needed. */}
+            {/* <ApiAfterDeploy src={p("ProjectAws/ExecuteDataMigrations.js")} /> */}
+
             <ApiAfterDeploy src={p("ProjectAws/AutoInstall/AutoInstallAfterApiDeploy.js")} />
             <ExtensionDefinitions src={p("ProjectAws/definitions.js")} />
 
@@ -50,7 +53,9 @@ export const ProjectAws = () => {
             {/* Blue-green */}
             <CliCommand src={p("ProjectAws/BlueGreenDeployments/SetPrimaryVariantCliCommand.js")} />
             <BeforeDeploy src={p("ProjectAws/BlueGreenDeployments/EnsureVariantBeforeDeploy.js")} />
-            <AfterDeploy src={p("ProjectAws/BlueGreenDeployments/PrintDeploymentInfoAfterDeploy.js")} />
+            <AfterDeploy
+                src={p("ProjectAws/BlueGreenDeployments/PrintDeploymentInfoAfterDeploy.js")}
+            />
         </>
     );
 };
