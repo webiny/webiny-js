@@ -14,8 +14,6 @@ import { createMockScheduleClient } from "./__mocks/scheduleClient.js";
 import { SchedulerService } from "~/shared/abstractions.js";
 import { VoidSchedulerService } from "~/features/SchedulerService/VoidSchedulerService.js";
 import { ScheduleActionUseCase } from "~/features/ScheduleAction/index.js";
-import { createTable } from "@webiny/db-dynamodb";
-import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import {
     PublishTestEntryActionHandler,
     PublishTestEntryActionHandlerImpl
@@ -23,11 +21,6 @@ import {
 
 describe("Scheduler Event Handler", () => {
     const lambdaContext = {} as LambdaContext;
-    
-    const table = createTable({
-        name: process.env.DB_TABLE as string,
-        documentClient: getDocumentClient()
-    });
 
     let context: CmsContext;
 
@@ -64,7 +57,7 @@ describe("Scheduler Event Handler", () => {
         });
         expect(sourceHandler.canUse(event, lambdaContext)).toBe(true);
     });
-    
+
     it("should run handle action", async () => {
         const eventHandler = createScheduledActionEventHandler();
         const scheduleActionUseCase = context.container.resolve(ScheduleActionUseCase);

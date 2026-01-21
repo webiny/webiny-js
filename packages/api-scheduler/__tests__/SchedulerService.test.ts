@@ -20,7 +20,6 @@ describe("SchedulerService", () => {
         lambdaArn,
         roleArn
     };
-    
 
     it("creates a schedule successfully", async () => {
         const client = mockClient(SchedulerClient);

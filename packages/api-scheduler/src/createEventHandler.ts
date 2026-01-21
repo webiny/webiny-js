@@ -44,10 +44,6 @@ export const createScheduledActionEventHandler = () => {
         canHandle,
         handle: async params => {
             const { payload, context } = params;
-            console.log({
-                handlingScheduledActionEvent: true,
-                payload
-            });
             const input = payload[SCHEDULED_CMS_ACTION_EVENT_IDENTIFIER];
 
             const executeScheduledAction = context.container.resolve(ExecuteScheduledActionUseCase);

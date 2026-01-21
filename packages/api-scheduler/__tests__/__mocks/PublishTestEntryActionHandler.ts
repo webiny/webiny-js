@@ -1,4 +1,4 @@
-import { type IScheduledAction, ScheduledActionHandler } from "~/shared/abstractions.js";
+import { ScheduledActionHandler } from "~/shared/abstractions.js";
 
 /**
  * Handler for publishing CMS entries
@@ -22,10 +22,9 @@ export class PublishTestEntryActionHandlerImpl implements ScheduledActionHandler
         return true;
     }
 
-    public async handle(action: IScheduledAction): Promise<void> {
-        console.log({
-            publishing: action
-        });
+    public async handle(): Promise<void> {
+        // act like everything is fine
+        return;
     }
 }
 
