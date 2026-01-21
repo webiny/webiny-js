@@ -1,5 +1,5 @@
 import React from "react";
-import { Admin, Api, Cli, Infra, Project, Security } from "webiny/extensions";
+import { Api, Cli, Infra, Project, Security } from "webiny/extensions";
 import { MySchemaExtension } from "./extensions/graphql/MySchemaExtension.js";
 import { Cognito } from "@webiny/cognito";
 // import { MyIdpExtension } from "/extensions/idp/okta/MyIdpExtension.js";
