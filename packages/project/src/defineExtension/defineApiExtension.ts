@@ -82,7 +82,7 @@ export const defineApiExtension = (params: DefineApiExtensionParams) =>
 
             // Check if the file has a default export by importing it.
             const importedModule = await import(absoluteExtensionFilePath);
-            const hasDefaultExport = !!importedModule.default;
+            const hasDefaultExport = "default" in importedModule;
 
             // Support both default and named exports.
             if (hasDefaultExport) {

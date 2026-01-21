@@ -65,8 +65,9 @@ export const zodSrcPath = (options: ZodSrcPathOptions) => {
                 const importedModule = await import(absoluteSrcPath);
                 
                 // Support both default and named exports.
+                // Check for 'default' property existence rather than truthiness.
                 const exportedImplementation = 
-                    importedModule?.default ?? importedModule?.[exportName];
+                    ("default" in importedModule && importedModule.default) || importedModule?.[exportName];
                 
                 if (!exportedImplementation) {
                     ctx.addIssue({
