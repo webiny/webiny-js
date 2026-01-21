@@ -72,7 +72,8 @@ export const Options = ({ models, onNewRecord, onLinkExistingRecord }: OptionsPr
 
     return (
         <div>
-            <CreateNewRecordButton onClick={onSingleNewRecord} />&nbsp;
+            <CreateNewRecordButton onClick={onSingleNewRecord} />
+            &nbsp;
             <LinkExistingRecordButton onClick={onSingleExistingRecord} />
         </div>
     );
