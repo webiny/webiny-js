@@ -60,11 +60,11 @@ class NextjsConfigImpl implements Abstraction.Interface {
 
         const { api, admin } = manifest;
 
-        if (api.cloudfront) {
+        if (api?.cloudfront) {
             domains.apiHost = api.cloudfront.domain;
         }
 
-        if (admin.cloudfront) {
+        if (admin?.cloudfront) {
             domains.adminHost = admin.cloudfront.domain;
         }
 
