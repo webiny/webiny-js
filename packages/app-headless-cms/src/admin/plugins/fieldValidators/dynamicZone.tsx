@@ -1,5 +1,4 @@
 import React from "react";
-import type { FontAwesomeIconProps } from "@fortawesome/react-fontawesome";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AccordionItem } from "@webiny/ui/Accordion/index.js";
 import { Bind } from "@webiny/form";
@@ -13,6 +12,7 @@ import { createValidators } from "~/utils/createValidators.js";
 import { CmsModelFieldValidatorConfigAdapter } from "~/utils/CmsModelFieldValidatorConfigAdapter.js";
 import { useModelField } from "~/admin/components/ModelFieldProvider/index.js";
 import { commonValidators } from "~/admin/plugins/fields/dynamicZone/commonValidators.js";
+import { normalizeIcon } from "~/utils/normalizeIcon.js";
 
 function TemplateValidationSettings() {
     const { field } = useModelField();
@@ -36,9 +36,7 @@ function TemplateValidationSettings() {
                 return (
                     <>
                         {(templates as CmsDynamicZoneTemplate[]).map((template, index) => {
-                            const icon = template.icon
-                                ? (template.icon.split("/") as FontAwesomeIconProps["icon"])
-                                : undefined;
+                            const icon = normalizeIcon(template.icon);
 
                             return (
                                 <AccordionItem

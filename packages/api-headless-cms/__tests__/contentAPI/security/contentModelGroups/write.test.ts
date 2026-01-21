@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { useTestModelHandler } from "~tests/testHelpers/useTestModelHandler";
 import { CmsTestPermissions, expectNotAuthorized } from "../utils";
 import type { IdentityData } from "@webiny/api-core/features/IdentityContext";
+import { createIcon } from "~tests/__helpers/icon.js";
 
 const identityA: IdentityData = { id: "a", type: "admin", displayName: "A" };
 const identityB: IdentityData = { id: "b", type: "admin", displayName: "B" };
@@ -19,7 +20,7 @@ describe("Write Permissions Checks", () => {
         });
 
         const [modelGroup] = await manageApiA.createContentModelGroupMutation({
-            data: { name: "Group 1", icon: "x" }
+            data: { name: "Group 1", icon: createIcon("x") }
         });
 
         expectNotAuthorized(modelGroup.data.createContentModelGroup, {
@@ -37,7 +38,7 @@ describe("Write Permissions Checks", () => {
         });
 
         const [modelGroupWithPermissions] = await manageApiB.createContentModelGroupMutation({
-            data: { name: "Group 1", icon: "x" }
+            data: { name: "Group 1", icon: createIcon("x") }
         });
 
         expect(modelGroupWithPermissions).toMatchObject({
@@ -45,7 +46,7 @@ describe("Write Permissions Checks", () => {
                 createContentModelGroup: {
                     data: {
                         name: "Group 1",
-                        icon: "x"
+                        icon: createIcon("x")
                     },
                     error: null
                 }
@@ -56,7 +57,7 @@ describe("Write Permissions Checks", () => {
     it("should allow update of groups only with sufficient permission", async () => {
         const { manage: manageApiA } = useTestModelHandler({ identity: identityA });
         const [modelGroup] = await manageApiA.createContentModelGroupMutation({
-            data: { name: "Group 1", icon: "x" }
+            data: { name: "Group 1", icon: createIcon("x") }
         });
 
         const permissions = new CmsTestPermissions({
@@ -70,7 +71,7 @@ describe("Write Permissions Checks", () => {
 
         const [notUpdatedModelGroup] = await manageApiB.updateContentModelGroupMutation({
             id: modelGroup.data.createContentModelGroup.data.id,
-            data: { name: "Group 1 - UPDATE", icon: "x" }
+            data: { name: "Group 1 - UPDATE", icon: createIcon("x") }
         });
 
         expectNotAuthorized(notUpdatedModelGroup.data.updateContentModelGroup, {
@@ -88,7 +89,7 @@ describe("Write Permissions Checks", () => {
 
         const [updatedModelGroup] = await manageApiC.updateContentModelGroupMutation({
             id: modelGroup.data.createContentModelGroup.data.id,
-            data: { name: "Group 1 - UPDATE", icon: "x" }
+            data: { name: "Group 1 - UPDATE", icon: createIcon("x") }
         });
 
         expect(updatedModelGroup).toMatchObject({
@@ -96,7 +97,7 @@ describe("Write Permissions Checks", () => {
                 updateContentModelGroup: {
                     data: {
                         name: "Group 1 - UPDATE",
-                        icon: "x"
+                        icon: createIcon("x")
                     },
                     error: null
                 }

@@ -1,8 +1,8 @@
 import React from "react";
-import type { CmsGroup } from "~/types.js";
 import { AdminConfig } from "@webiny/app-admin";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { IconProp } from "@fortawesome/fontawesome-svg-core";
+import type { CmsGroup } from "~/types.js";
+import { normalizeIcon } from "~/utils/normalizeIcon.js";
 
 const { Menu } = AdminConfig;
 
@@ -11,7 +11,7 @@ const { Menu } = AdminConfig;
  * Displays the group's name and icon in the menu.
  */
 export const GroupMenu = ({ group }: { group: CmsGroup }) => {
-    const icon = (group.icon || "").split("/") as IconProp;
+    const icon = normalizeIcon(group.icon);
 
     return (
         <Menu
@@ -21,10 +21,12 @@ export const GroupMenu = ({ group }: { group: CmsGroup }) => {
                 <Menu.Item
                     text={group.name}
                     icon={
-                        <Menu.Item.Icon
-                            label={group.name}
-                            element={<FontAwesomeIcon icon={icon} />}
-                        />
+                        icon ? (
+                            <Menu.Item.Icon
+                                label={group.name}
+                                element={<FontAwesomeIcon icon={icon} />}
+                            />
+                        ) : null
                     }
                 />
             }

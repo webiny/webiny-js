@@ -12,7 +12,8 @@ import {
     DateTimeScalar,
     JsonScalar,
     TimeScalar,
-    LongScalar
+    LongScalar,
+    IconScalar
 } from "./builtInTypes/index.js";
 import { ResolverDecoration } from "./ResolverDecoration.js";
 import type { GraphQLSchemaPlugin } from "~/plugins/index.js";
@@ -42,6 +43,7 @@ export const createGraphQLSchema = async (context: Context) => {
             ${scalars.map(scalar => `scalar ${scalar.name}`).join(" ")}
             scalar JSON
             scalar Long
+            scalar Icon
             scalar RefInput
             scalar Number
             scalar Any
@@ -76,7 +78,8 @@ export const createGraphQLSchema = async (context: Context) => {
             Any: AnyScalar,
             DateTime: DateTimeScalar,
             Date: DateScalar,
-            Time: TimeScalar
+            Time: TimeScalar,
+            Icon: IconScalar
         }
     ];
 

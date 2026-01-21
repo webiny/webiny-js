@@ -394,6 +394,12 @@
           "fields": null
         },
         {
+          "name": "Icon",
+          "kind": "SCALAR",
+          "description": "Icon scalar that accepts string or object {type, name, value}",
+          "fields": null
+        },
+        {
           "name": "Query",
           "kind": "OBJECT",
           "description": null,
@@ -672,7 +678,7 @@
             {
               "name": "icon",
               "description": null,
-              "type": { "kind": "SCALAR", "name": "String", "ofType": null }
+              "type": { "kind": "SCALAR", "name": "Icon", "ofType": null }
             },
             {
               "name": "createdOn",
@@ -862,7 +868,7 @@
             {
               "name": "icon",
               "description": null,
-              "type": { "kind": "SCALAR", "name": "String", "ofType": null }
+              "type": { "kind": "SCALAR", "name": "Icon", "ofType": null }
             },
             {
               "name": "createdBy",

@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import { identity } from "../testHelpers/helpers";
 import { toSlug } from "~/utils/toSlug";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
+import { createIcon } from "~tests/__helpers/icon.js";
 
 enum TestHelperEnum {
     MODELS_AMOUNT = 3,
@@ -26,7 +27,7 @@ const createContentModelGroupData = ({
         name: `${prefix}name${append}`,
         slug: toSlug(`${prefix}slug`),
         description: `${prefix}description${append}`,
-        icon: `${prefix}icon${append}`
+        icon: createIcon(`${prefix}icon${append}`)
     };
 };
 
@@ -238,7 +239,7 @@ describe("Group crud test", () => {
                 name: "",
                 slug: "slug",
                 description: `description`,
-                icon: `icon`
+                icon: createIcon("icon")
             }
         });
         expect(nameResponse).toEqual({
@@ -257,32 +258,6 @@ describe("Group crud test", () => {
                 }
             }
         });
-
-        const [iconResponse] = await createContentModelGroupMutation({
-            data: {
-                name: "name",
-                slug: "slug",
-                description: `description`,
-                icon: ""
-            }
-        });
-
-        expect(iconResponse).toEqual({
-            data: {
-                createContentModelGroup: {
-                    data: null,
-                    error: {
-                        message: `Validation failed.`,
-                        code: "Cms/ModelGroup/ValidationFailed",
-                        data: {
-                            invalidFields: {
-                                icon: expect.any(Object)
-                            }
-                        }
-                    }
-                }
-            }
-        });
     });
 
     test("error when trying to create a new content model group with no name or slug", async () => {
@@ -290,7 +265,7 @@ describe("Group crud test", () => {
             data: {
                 name: "",
                 description: "description",
-                icon: ""
+                icon: createIcon("icon")
             }
         });
         expect(response).toEqual({
@@ -302,8 +277,7 @@ describe("Group crud test", () => {
                         code: "Cms/ModelGroup/ValidationFailed",
                         data: {
                             invalidFields: {
-                                name: expect.any(Object),
-                                icon: expect.any(Object)
+                                name: expect.any(Object)
                             }
                         }
                     }
@@ -317,7 +291,7 @@ describe("Group crud test", () => {
             data: {
                 name: "content model group",
                 description: "description",
-                icon: "icon"
+                icon: createIcon("icon")
             }
         });
 
@@ -326,7 +300,7 @@ describe("Group crud test", () => {
                 name: "content model group",
                 slug: "content-model-group",
                 description: "description",
-                icon: "icon"
+                icon: createIcon("icon")
             }
         });
 
@@ -393,7 +367,7 @@ describe("Group crud test", () => {
             id: "a-custom-group-id",
             name: "My Group With ID",
             description: "A group with ID",
-            icon: "fa/fas"
+            icon: createIcon("fa/fas")
         };
         const [response] = await createContentModelGroupMutation({
             data

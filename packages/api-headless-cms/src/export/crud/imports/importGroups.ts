@@ -42,6 +42,7 @@ export const importGroups = async (params: Params) => {
             try {
                 const result = await context.cms.updateGroup(group.group.id, {
                     ...group.group,
+                    icon: group.group.icon ?? undefined,
                     description: group.group.description || undefined
                 });
                 results.push({

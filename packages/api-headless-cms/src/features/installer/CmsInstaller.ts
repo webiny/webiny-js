@@ -20,7 +20,7 @@ export class CmsInstaller implements AppInstaller.Interface {
             name: "Ungrouped",
             slug: "ungrouped",
             description: "A generic content model group",
-            icon: "fas/star"
+            icon: { name: "fas/star", type: "icon" }
         });
     }
 

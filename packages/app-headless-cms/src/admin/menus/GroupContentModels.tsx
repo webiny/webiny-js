@@ -4,7 +4,7 @@ import { useRouter, AdminConfig } from "@webiny/app-admin";
 import { HasContentEntryPermissions } from "./HasContentEntryPermissions.js";
 import { Routes } from "~/routes.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { normalizeIcon } from "~/utils/normalizeIcon.js";
 
 const { Menu } = AdminConfig;
 
@@ -29,7 +29,7 @@ export const GroupContentModels = ({ group }: { group: CmsGroup }) => {
     return (
         <>
             {group.contentModels.map(contentModel => {
-                const icon = (contentModel.icon || "").split("/") as IconProp;
+                const icon = normalizeIcon(contentModel.icon);
 
                 return (
                     <HasContentEntryPermissions
@@ -48,7 +48,7 @@ export const GroupContentModels = ({ group }: { group: CmsGroup }) => {
                                         modelId: contentModel.modelId
                                     })}
                                     pinnedIcon={
-                                        contentModel.icon ? (
+                                        icon ? (
                                             <Menu.Link.Icon
                                                 label={contentModel.name}
                                                 element={<FontAwesomeIcon icon={icon} />}

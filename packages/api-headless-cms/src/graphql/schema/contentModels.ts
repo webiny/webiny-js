@@ -156,7 +156,7 @@ export const createModelsSchema = ({
                 pluralApiName: String!
                 modelId: String
                 group: String!
-                icon: String
+                icon: Icon
                 singleEntry: Boolean
                 description: String
                 layout: [[ID!]!]
@@ -174,7 +174,7 @@ export const createModelsSchema = ({
                 pluralApiName: String!
                 modelId: String
                 group: String!
-                icon: String
+                icon: Icon
                 description: String
                 locale: String
             }
@@ -184,7 +184,7 @@ export const createModelsSchema = ({
                 singularApiName: String
                 pluralApiName: String
                 group: String
-                icon: String
+                icon: Icon
                 description: String
                 layout: [[ID!]!]!
                 fields: [CmsContentModelFieldInput!]!
@@ -262,7 +262,7 @@ export const createModelsSchema = ({
                 modelId: String!
                 description: String
                 group: String!
-                icon: String
+                icon: Icon
                 createdOn: DateTime
                 savedOn: DateTime
                 createdBy: CmsIdentity

@@ -14448,7 +14448,6 @@ __metadata:
   resolution: "@webiny/app-headless-cms-workflows@workspace:packages/app-headless-cms-workflows"
   dependencies:
     "@apollo/react-hooks": "npm:^3.1.5"
-    "@fortawesome/fontawesome-svg-core": "npm:^1.3.0"
     "@fortawesome/react-fontawesome": "npm:^0.1.19"
     "@types/react": "npm:18.2.79"
     "@webiny/admin-ui": "npm:0.0.0"

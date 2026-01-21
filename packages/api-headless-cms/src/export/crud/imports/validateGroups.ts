@@ -3,6 +3,7 @@ import { createGroupCreateValidation } from "~/domain/contentModelGroup/validati
 import { createZodError } from "@webiny/utils";
 import type { ValidatedCmsGroupResult } from "~/export/types.js";
 import { CmsImportAction } from "~/export/types.js";
+import { remapIcon } from "~/export/crud/imports/remapIcon.js";
 
 interface Params {
     groups: Pick<CmsGroup, "id" | "slug" | "isPlugin">[];
@@ -30,6 +31,9 @@ export const validateGroups = async (params: Params): Promise<ValidatedCmsGroupR
                 };
             }
             const data = result.data as CmsGroup;
+
+            data.icon = remapIcon(data.icon);
+
             if (!data.id) {
                 return {
                     group: data,
