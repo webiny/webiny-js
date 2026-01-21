@@ -63,12 +63,13 @@ export const zodSrcPath = (options: ZodSrcPathOptions) => {
                     .replace(path.extname(absoluteSrcPath), "");
 
                 const importedModule = await import(absoluteSrcPath);
-                
+
                 // Support both default and named exports.
                 // Check for 'default' property existence rather than truthiness.
-                const exportedImplementation = 
-                    ("default" in importedModule && importedModule.default) || importedModule?.[exportName];
-                
+                const exportedImplementation =
+                    ("default" in importedModule && importedModule.default) ||
+                    importedModule?.[exportName];
+
                 if (!exportedImplementation) {
                     ctx.addIssue({
                         code: z.ZodIssueCode.custom,
