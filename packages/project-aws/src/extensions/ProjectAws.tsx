@@ -22,35 +22,35 @@ export const ProjectAws = () => {
     return (
         <>
             <Project />
-            <ProjectDecorator src={p("Webiny/BuildAppWorkspace.js")} />
+            <ProjectDecorator src={p("ProjectAws/BuildAppWorkspace.js")} />
 
             {/* Database Setup - default to DynamoDB only */}
             <DatabaseSetup setupName="ddb" />
 
             {/* Set database setup output value in Core stack */}
-            <Infra.Core.Pulumi src={p("Webiny/SetDatabaseSetupOutput.js")} />
+            <Infra.Core.Pulumi src={p("ProjectAws/SetDatabaseSetupOutput.js")} />
 
             {/* Stack Output Services */}
-            <ProjectImplementation src={p("Webiny/CoreStackOutputService.js")} singleton />
-            <ProjectImplementation src={p("Webiny/ApiStackOutputService.js")} singleton />
-            <ProjectImplementation src={p("Webiny/AdminStackOutputService.js")} singleton />
+            <ProjectImplementation src={p("ProjectAws/CoreStackOutputService.js")} singleton />
+            <ProjectImplementation src={p("ProjectAws/ApiStackOutputService.js")} singleton />
+            <ProjectImplementation src={p("ProjectAws/AdminStackOutputService.js")} singleton />
 
             <ProjectImplementation src={p("../features/InvokeLambdaFunction.js")} singleton />
             <ProjectImplementation src={p("../features/ApiGqlClient.js")} singleton />
 
-            <AdminAfterDeploy src={p("Webiny/UploadAdminAppToS3.js")} />
-            <ApiAfterDeploy src={p("Webiny/ExecuteDataMigrations.js")} />
-            <ApiAfterDeploy src={p("Webiny/AutoInstall/AutoInstallAfterApiDeploy.js")} />
-            <ExtensionDefinitions src={p("Webiny/definitions.js")} />
+            <AdminAfterDeploy src={p("ProjectAws/UploadAdminAppToS3.js")} />
+            <ApiAfterDeploy src={p("ProjectAws/ExecuteDataMigrations.js")} />
+            <ApiAfterDeploy src={p("ProjectAws/AutoInstall/AutoInstallAfterApiDeploy.js")} />
+            <ExtensionDefinitions src={p("ProjectAws/definitions.js")} />
 
             {/* Admin env vars */}
-            <AdminBeforeBuild src={p("Webiny/SetAdminEnvVars/SetAdminEnvVarsBeforeBuild.js")} />
-            <AdminBeforeWatch src={p("Webiny/SetAdminEnvVars/SetAdminEnvVarsBeforeWatch.js")} />
+            <AdminBeforeBuild src={p("ProjectAws/SetAdminEnvVars/SetAdminEnvVarsBeforeBuild.js")} />
+            <AdminBeforeWatch src={p("ProjectAws/SetAdminEnvVars/SetAdminEnvVarsBeforeWatch.js")} />
 
             {/* Blue-green */}
-            <CliCommand src={p("Webiny/BlueGreenDeployments/SetPrimaryVariantCliCommand.js")} />
-            <BeforeDeploy src={p("Webiny/BlueGreenDeployments/EnsureVariantBeforeDeploy.js")} />
-            <AfterDeploy src={p("Webiny/BlueGreenDeployments/PrintDeploymentInfoAfterDeploy.js")} />
+            <CliCommand src={p("ProjectAws/BlueGreenDeployments/SetPrimaryVariantCliCommand.js")} />
+            <BeforeDeploy src={p("ProjectAws/BlueGreenDeployments/EnsureVariantBeforeDeploy.js")} />
+            <AfterDeploy src={p("ProjectAws/BlueGreenDeployments/PrintDeploymentInfoAfterDeploy.js")} />
         </>
     );
 };

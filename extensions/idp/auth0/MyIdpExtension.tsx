@@ -1,7 +1,7 @@
 import React from "react";
 import { Auth0 } from "@webiny/auth0";
 
-const MyIdpExtension = () => {
+export const MyIdpExtension = () => {
     return (
         <Auth0
             issuer={String(process.env.AUTH0_ISSUER)}
@@ -10,5 +10,3 @@ const MyIdpExtension = () => {
         />
     );
 };
-
-export default MyIdpExtension;

@@ -51,7 +51,7 @@ function initEcommerceApi(settings: SampleSettings) {
     return service;
 }
 
-const Extension = () => {
+export const Extension = () => {
     return (
         <>
             <EcommercePlugin
@@ -76,5 +76,3 @@ const Extension = () => {
         </>
     );
 };
-
-export default Extension;

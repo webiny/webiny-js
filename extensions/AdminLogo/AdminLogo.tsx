@@ -5,7 +5,7 @@ import { ReactComponent as HorizontalLogo } from "./webiny-horizontal.svg";
 
 const { Tenant } = AdminConfig;
 
-const AdminLogo = () => {
+export const AdminLogo = () => {
     return (
         <>
             <AdminConfig.Public>
@@ -18,5 +18,3 @@ const AdminLogo = () => {
         </>
     );
 };
-
-export default AdminLogo;
