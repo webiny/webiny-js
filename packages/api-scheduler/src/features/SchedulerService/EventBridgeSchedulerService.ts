@@ -1,5 +1,9 @@
 import { WebinyError } from "@webiny/error";
-import { SchedulerService } from "~/shared/abstractions.js";
+import {
+    type ISchedulerServiceCreateParams,
+    type ISchedulerServiceUpdateParams,
+    SchedulerService
+} from "~/shared/abstractions.js";
 import {
     CreateScheduleCommand,
     DeleteScheduleCommand,
@@ -7,6 +11,8 @@ import {
     type SchedulerClient,
     UpdateScheduleCommand
 } from "@webiny/aws-sdk/client-scheduler";
+import { SCHEDULED_CMS_ACTION_EVENT_IDENTIFIER } from "~/constants.js";
+import type { IScheduledActionEventPayload } from "~/createEventHandler.js";
 
 export interface ISchedulerConfig {
     lambdaArn: string;
@@ -22,13 +28,13 @@ export interface ISchedulerConfig {
  * at specified future times.
  */
 export class EventBridgeSchedulerService implements SchedulerService.Interface {
-    constructor(
+    public constructor(
         private getClient: (config?: any) => Pick<SchedulerClient, "send">,
         private config: ISchedulerConfig
     ) {}
 
-    async create(params: { id: string; scheduleFor: Date; payload?: any }): Promise<void> {
-        const { id, scheduleFor, payload } = params;
+    public async create(params: ISchedulerServiceCreateParams): Promise<void> {
+        const { id, scheduleFor } = params;
 
         // Validate date is in future
         if (scheduleFor <= new Date()) {
@@ -50,56 +56,58 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
             return this.update(params);
         }
 
-        // Format: at(YYYY-MM-DDTHH:mm:ss) - EventBridge expects this format
-        const scheduleExpression = `at(${scheduleFor.toISOString().replace(/\.\d{3}Z$/, "")})`;
-
         await client.send(
             new CreateScheduleCommand({
                 Name: id,
-                ScheduleExpression: scheduleExpression,
-                FlexibleTimeWindow: { Mode: "OFF" }, // Exact time execution
+                ScheduleExpression: this.createScheduleExpression(scheduleFor),
+                FlexibleTimeWindow: {
+                    Mode: "OFF"
+                },
                 Target: {
                     Arn: this.config.lambdaArn,
                     RoleArn: this.config.roleArn,
-                    Input: JSON.stringify(payload)
+                    Input: this.createScheduledActionEventInput(params)
                 },
                 ActionAfterCompletion: "DELETE" // Auto-cleanup after execution
             })
         );
     }
 
-    async update(params: { id: string; scheduleFor: Date; payload?: any }): Promise<void> {
-        const { id, scheduleFor, payload } = params;
+    public async update(params: ISchedulerServiceUpdateParams): Promise<void> {
+        const { id, scheduleFor } = params;
 
         // Validate date is in future
         if (scheduleFor <= new Date()) {
             throw new WebinyError(
                 `Cannot update an existing schedule for "${id}" with date in the past`,
                 "INVALID_SCHEDULE_DATE",
-                { scheduleFor, id }
+                {
+                    scheduleFor,
+                    id
+                }
             );
         }
 
         const client = this.getClient();
 
-        const scheduleExpression = `at(${scheduleFor.toISOString().replace(/\.\d{3}Z$/, "")})`;
-
         await client.send(
             new UpdateScheduleCommand({
                 Name: id,
-                ScheduleExpression: scheduleExpression,
-                FlexibleTimeWindow: { Mode: "OFF" },
+                ScheduleExpression: this.createScheduleExpression(scheduleFor),
+                FlexibleTimeWindow: {
+                    Mode: "OFF"
+                },
                 Target: {
                     Arn: this.config.lambdaArn,
                     RoleArn: this.config.roleArn,
-                    Input: JSON.stringify(payload)
+                    Input: this.createScheduledActionEventInput(params)
                 },
                 ActionAfterCompletion: "DELETE"
             })
         );
     }
 
-    async delete(id: string): Promise<void> {
+    public async delete(id: string): Promise<void> {
         const client = this.getClient();
 
         const exists = await this.exists(id);
@@ -114,7 +122,7 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
         }
     }
 
-    async exists(id: string): Promise<boolean> {
+    public async exists(id: string): Promise<boolean> {
         const client = this.getClient();
 
         try {
@@ -127,5 +135,29 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
             }
             throw ex;
         }
+    }
+
+    private createScheduleExpression(scheduleFor: Date): string {
+        // Format: at(YYYY-MM-DDTHH:mm:ss) - EventBridge expects this format
+        return `at(${scheduleFor.toISOString().replace(/\.\d{3}Z$/, "")})`;
+    }
+
+    private createScheduledActionEventInput(
+        params: ISchedulerServiceCreateParams | ISchedulerServiceUpdateParams
+    ): string {
+        return JSON.stringify({
+            [SCHEDULED_CMS_ACTION_EVENT_IDENTIFIER]: this.createScheduledActionEventPayload(params)
+        });
+    }
+
+    private createScheduledActionEventPayload(
+        params: ISchedulerServiceCreateParams | ISchedulerServiceUpdateParams
+    ): IScheduledActionEventPayload {
+        const { id, scheduleFor } = params;
+
+        return {
+            id,
+            scheduleFor: scheduleFor.toISOString()
+        };
     }
 }

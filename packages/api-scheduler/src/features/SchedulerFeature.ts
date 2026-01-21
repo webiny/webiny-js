@@ -3,7 +3,7 @@ import { ScheduleActionFeature } from "./ScheduleAction/feature.js";
 import { GetScheduledActionFeature } from "./GetScheduledAction/feature.js";
 import { ListScheduledActionsFeature } from "./ListScheduledActions/feature.js";
 import { CancelScheduledActionFeature } from "./CancelScheduledAction/feature.js";
-import { ExecuteScheduledActionFeature } from "./ExecuteScheduledAction/feature.js";
+// import { ExecuteScheduledActionFeature } from "./ExecuteScheduledAction/feature.js";
 import { RunActionFeature } from "~/features/RunAction/feature.js";
 
 /**
@@ -21,7 +21,7 @@ export const SchedulerFeature = createFeature({
         GetScheduledActionFeature.register(container);
         ListScheduledActionsFeature.register(container);
         CancelScheduledActionFeature.register(container);
-        ExecuteScheduledActionFeature.register(container);
+        // ExecuteScheduledActionFeature.register(container);
         RunActionFeature.register(container);
     }
 });
