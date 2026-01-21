@@ -7,13 +7,9 @@ export interface TitleProps {
 }
 
 const BaseTitle = ({ value }: TitleProps) => {
-    const getId = useIdGenerator("Tenant");
+    const getId = useIdGenerator("Title");
 
-    return (
-        <Property id={getId("tenant")} name={"tenant"}>
-            <Property id={getId("name")} name={"name"} value={value} />
-        </Property>
-    );
+    return <Property id={getId("title")} name={"title"} value={value} />;
 };
 
 export const Title = makeDecoratable("Title", BaseTitle);

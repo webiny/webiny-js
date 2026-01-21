@@ -27,6 +27,9 @@ interface AdminConfig {
     supportMenus: SupportMenuConfig[];
     userMenus: UserMenuConfig[];
     tenant: TenantConfig;
+    title: string;
+    squareLogo: React.ReactNode;
+    horizontalLogo: React.ReactNode;
     widgets: WidgetConfig[];
     lexicalTheme: EditorTheme;
 }
@@ -67,6 +70,11 @@ export const useAdminConfig = () => {
         userMenus: baseConfig.userMenus ?? [],
         supportMenus: baseConfig.supportMenus ?? [],
         tenant: baseConfig.tenant || {},
+        title: baseConfig.title || baseConfig.tenant?.name || "",
+        logo: {
+            squareLogo: baseConfig.squareLogo || baseConfig.tenant?.squareLogo,
+            horizontalLogo: baseConfig.horizontalLogo || baseConfig.tenant?.horizontalLogo
+        },
         widgets: baseConfig.widgets ?? [],
         lexicalTheme
     };
