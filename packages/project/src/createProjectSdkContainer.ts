@@ -272,7 +272,10 @@ export const createProjectSdkContainer = async (
         const exportName = path.basename(filePath).replace(path.extname(filePath), "");
 
         const importedModule = await import(importPath);
-        return importedModule[exportName];
+        
+        // Support both default and named exports.
+        // Check for 'default' property existence rather than truthiness.
+        return ("default" in importedModule && importedModule.default) || importedModule[exportName];
     };
 
     // Hooks.
