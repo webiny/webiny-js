@@ -47,10 +47,6 @@ export class InputValueObject {
     }
 }
 
-function convertBracketPathToDotPath(path: string): string {
-    return path.replace(/\/(\d+)\//g, ".$1");
-}
-
 /**
  * This makes UI interaction smoother (input blur in particular).
  */
@@ -122,7 +118,7 @@ export const useInputValue = (elementId: string, node: InputAstNode) => {
             // Change the input value (and metadata).
             cb(updaterInput);
 
-            const valuePath = convertBracketPathToDotPath(node.path);
+            const valuePath = node.path.replaceAll("/", ".");
             const devFriendlyInputs = set(
                 structuredClone(deepInputs),
                 valuePath,
@@ -175,7 +171,6 @@ export const useInputValue = (elementId: string, node: InputAstNode) => {
     const onPreviewChange = useCallback(
         (cb: (params: OnChangeParams) => void) => {
             const deepInputs = inputsProcessor.toDeepInputs(resolvedBindings.inputs);
-
             const valueObject = new InputValueObject(localState ?? value);
 
             const updaterInput = {
@@ -186,7 +181,8 @@ export const useInputValue = (elementId: string, node: InputAstNode) => {
             // Change the input value (and metadata).
             cb(updaterInput);
 
-            const valuePath = convertBracketPathToDotPath(node.path);
+            const valuePath = node.path.replaceAll("/", ".");
+
             const devFriendlyInputs = set(
                 structuredClone(deepInputs),
                 valuePath,

@@ -2,16 +2,9 @@ import React from "react";
 import { Grid } from "@webiny/admin-ui";
 import type { InputAstNode } from "@webiny/website-builder-sdk";
 import { InputField } from "./InputField.js";
-import type { DocumentElement, DocumentElementBindings } from "@webiny/website-builder-sdk";
-import { useActiveElement } from "~/BaseEditor/hooks/useActiveElement.js";
+import { ActiveElement } from "./ActiveElement.js";
 
-export const InputRenderer = ({
-    ast,
-    bindings
-}: {
-    ast: InputAstNode[];
-    bindings: DocumentElementBindings["inputs"];
-}) => {
+export const InputRenderer = ({ ast }: { ast: InputAstNode[] }) => {
     return (
         <>
             {ast.map(node =>
@@ -19,12 +12,7 @@ export const InputRenderer = ({
                     <Grid.Column span={12} key={node.path}>
                         <ActiveElement>
                             {element => (
-                                <InputField
-                                    key={node.path}
-                                    element={element}
-                                    node={node}
-                                    bindings={bindings}
-                                />
+                                <InputField key={node.path} element={element} node={node} />
                             )}
                         </ActiveElement>
                     </Grid.Column>
@@ -32,17 +20,4 @@ export const InputRenderer = ({
             )}
         </>
     );
-};
-
-type ActiveElementProps = {
-    children: (element: DocumentElement) => React.ReactNode;
-};
-
-const ActiveElement = ({ children }: ActiveElementProps) => {
-    const [element] = useActiveElement();
-    if (!element) {
-        return null;
-    }
-
-    return children(element);
 };

@@ -11,6 +11,7 @@ import { GridLayoutInputRenderer } from "~/inputRenderers/GridLayoutInput.js";
 import { SelectInputRenderer } from "~/inputRenderers/SelectInput.js";
 import { FileInputRenderer } from "~/inputRenderers/FileInput.js";
 import { FragmentSelectorInputRenderer } from "~/inputRenderers/FragmentSelectorInput.js";
+import { ObjectInputRenderer } from "~/inputRenderers/ObjectInput.js";
 
 export const ElementInputRenderers = () => {
     return (
@@ -56,6 +57,10 @@ export const ElementInputRenderers = () => {
             <EditorConfig.ElementInput.Renderer
                 name={"Webiny/FragmentSelector"}
                 component={FragmentSelectorInputRenderer}
+            />
+            <EditorConfig.ElementInput.Renderer
+                name={"Webiny/Object"}
+                component={ObjectInputRenderer}
             />
         </>
     );

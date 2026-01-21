@@ -2,13 +2,12 @@ import React from "react";
 import type { InputAstNode } from "@webiny/website-builder-sdk";
 import { useInputRenderer } from "./useInputRenderer.js";
 import { useInputValue } from "./useInputValue.js";
-import type { DocumentElement, DocumentElementBindings } from "@webiny/website-builder-sdk";
+import type { DocumentElement } from "@webiny/website-builder-sdk";
 import { InheritanceLabel } from "../InheritanceLabel.js";
 
 interface InputFieldProps {
     node: InputAstNode;
     element: DocumentElement;
-    bindings: DocumentElementBindings["inputs"];
 }
 
 export function InputField({ element, node }: InputFieldProps) {
@@ -18,24 +17,6 @@ export function InputField({ element, node }: InputFieldProps) {
         node
     );
     const input = node.input;
-
-    if (input.type === "object") {
-        // TODO: nested inputs will be implemented at a later stage.
-        return;
-
-        /*if (node.list) {
-            return <FieldArray node={node} bindings={bindings} />;
-        }
-
-        return (
-            <fieldset>
-                <legend>{input.label}</legend>
-                {node.children.map(child => (
-                    <InputField key={child.path} node={child} bindings={bindings} />
-                ))}
-            </fieldset>
-        );*/
-    }
 
     const label = node.input.responsive ? (
         <InheritanceLabel
@@ -56,6 +37,7 @@ export function InputField({ element, node }: InputFieldProps) {
             onChange={onChange}
             onPreviewChange={onPreviewChange}
             input={node.input}
+            astNode={node}
         />
     );
 
