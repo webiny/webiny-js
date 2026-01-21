@@ -19,24 +19,14 @@ export const AdminExtension = defineExtension({
             .join("apps", "admin", "src", "Extensions.tsx")
             .toString();
 
-        // Resolve to absolute path for file operations.
-        let absoluteSrcPath: string;
-        if (params.src.startsWith("/extensions/")) {
-            // Resolve from project root.
-            absoluteSrcPath = ctx.project.paths.rootFolder.join(params.src).toString();
-        } else {
-            // Treat as absolute path.
-            absoluteSrcPath = params.src;
-        }
-
-        // Generate a constant hash-based component name to avoid using timestamps.
+        // Generate a constant hash-based component name to avoid using timestamps
         const hash = crypto.createHash("sha256").update(params.src).digest("hex");
         const componentName = `AdminExtension_${hash.slice(-10)}`;
 
         const project = new Project();
 
         const importPath = path
-            .relative(path.dirname(extensionsTsxFilePath), absoluteSrcPath)
+            .relative(path.dirname(extensionsTsxFilePath), params.src)
             .replace(".tsx", ".js");
 
         project.addSourceFileAtPath(extensionsTsxFilePath);
@@ -56,28 +46,10 @@ export const AdminExtension = defineExtension({
             index = last.getChildIndex() + 1;
         }
 
-        // Check if the file has a default export by importing it.
-
-        const importedModule = await import(absoluteSrcPath);
-        const hasDefaultExport = "default" in importedModule;
-
-        // Export name is always the file name without extension.
-        const exportName = path
-            .basename(absoluteSrcPath)
-            .replace(path.extname(absoluteSrcPath), "");
-
-        // Support both default and named exports.
-        if (hasDefaultExport) {
-            source.insertImportDeclaration(index, {
-                defaultImport: componentName,
-                moduleSpecifier: importPath
-            });
-        } else {
-            source.insertImportDeclaration(index, {
-                namedImports: [{ name: exportName, alias: componentName }],
-                moduleSpecifier: importPath
-            });
-        }
+        source.insertImportDeclaration(index, {
+            namedImports: [{ name: "Extension", alias: componentName }],
+            moduleSpecifier: importPath
+        });
 
         const extensionsIdentifier = source.getFirstDescendant(node => {
             if (!Node.isIdentifier(node)) {
