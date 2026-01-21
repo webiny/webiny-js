@@ -5,6 +5,7 @@ export * from "./DeployCommand/index.js";
 export * from "./DestroyCommand/index.js";
 export * from "./ExtensionCommand/index.js";
 export * from "./InfoCommand/index.js";
+export * from "./IsCi/index.js";
 export * from "./OpenCommand.js";
 export * from "./DisableTelemetryCommand.js";
 export * from "./EnableTelemetryCommand.js";

@@ -1,8 +1,7 @@
 import { createImplementation } from "@webiny/di";
 import chalk from "chalk";
 import util from "util";
-import { UiService, StdioService } from "~/abstractions/index.js";
-import { IsCi } from "@webiny/project";
+import { UiService, StdioService, IsCi } from "~/abstractions/index.js";
 
 const NEW_LINE = "\n";
 const PIPE_SYMBOL = "┃";
