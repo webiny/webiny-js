@@ -16,10 +16,31 @@ export function FieldArray({ node, element }: FieldArrayProps) {
     const editor = useDocumentEditor();
     const bindings = useSelectFromDocument(
         document => {
-            return document.bindings[element.id] ?? { inputs: {} };
+            const elementBindings = document.bindings[element.id];
+            if (!elementBindings?.inputs) {
+                return { inputs: {} };
+            }
+
+            // Only track bindings relevant to this array node
+            const relevantInputs: Record<string, any> = {};
+            Object.keys(elementBindings.inputs).forEach(key => {
+                if (key.startsWith(`${node.path}/`)) {
+                    relevantInputs[key] = elementBindings.inputs![key];
+                }
+            });
+
+            return { inputs: relevantInputs };
         },
-        [element.id]
+        [element.id, node.path]
     );
+
+    // Pre-compute child path transformations (optimization #3)
+    const childPathsWithoutParent = useMemo(() => {
+        return node.children.map(child => ({
+            child,
+            pathWithoutParent: child.path.substring(node.path.length + 1)
+        }));
+    }, [node.children, node.path]);
 
     // Parse bindings to discover array indices
     const indices = useMemo(() => {
@@ -42,6 +63,21 @@ export function FieldArray({ node, element }: FieldArrayProps) {
         // Convert Set to sorted array
         return Array.from(foundIndices).sort((a, b) => a - b);
     }, [bindings.inputs, node.path]);
+
+    // Memoize cloned nodes to prevent unnecessary InputField re-renders (optimization #2)
+    const clonedNodesByIndex = useMemo(() => {
+        const nodeMap = new Map<number, InputAstNode[]>();
+
+        indices.forEach(index => {
+            const clonedNodes = childPathsWithoutParent.map(({ child, pathWithoutParent }) => ({
+                ...child,
+                path: `${node.path}/${index}/${pathWithoutParent}`
+            }));
+            nodeMap.set(index, clonedNodes);
+        });
+
+        return nodeMap;
+    }, [indices, childPathsWithoutParent, node.path]);
 
     const handleAdd = useCallback(() => {
         editor.updateDocument(document => {
@@ -97,6 +133,8 @@ export function FieldArray({ node, element }: FieldArrayProps) {
                 </div>
             )}
             {indices.map(index => {
+                const clonedNodes = clonedNodesByIndex.get(index) || [];
+
                 return (
                     <div
                         key={index}
@@ -131,26 +169,13 @@ export function FieldArray({ node, element }: FieldArrayProps) {
                                 Remove
                             </button>
                         </div>
-                        {node.children.map(child => {
-                            // Create a cloned node with the updated path
-                            // Child path is like "cards/title", we need to replace "cards" with "cards/0"
-                            // Pattern: parentPath/index/childName
-                            const childPathWithoutParent = child.path.substring(
-                                node.path.length + 1
-                            );
-                            const clonedNode: InputAstNode = {
-                                ...child,
-                                path: `${node.path}/${index}/${childPathWithoutParent}`
-                            };
-
-                            return (
-                                <InputField
-                                    key={clonedNode.path}
-                                    element={element}
-                                    node={clonedNode}
-                                />
-                            );
-                        })}
+                        {clonedNodes.map(clonedNode => (
+                            <InputField
+                                key={clonedNode.path}
+                                element={element}
+                                node={clonedNode}
+                            />
+                        ))}
                     </div>
                 );
             })}
