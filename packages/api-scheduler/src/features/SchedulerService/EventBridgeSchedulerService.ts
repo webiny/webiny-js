@@ -2,10 +2,10 @@ import { WebinyError } from "@webiny/error";
 import { SchedulerService } from "~/shared/abstractions.js";
 import {
     CreateScheduleCommand,
-    UpdateScheduleCommand,
     DeleteScheduleCommand,
     GetScheduleCommand,
-    type SchedulerClient
+    type SchedulerClient,
+    UpdateScheduleCommand
 } from "@webiny/aws-sdk/client-scheduler";
 
 export interface ISchedulerConfig {
@@ -116,7 +116,6 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
 
     async exists(id: string): Promise<boolean> {
         const client = this.getClient();
-        console.log("schedule exists?", id);
 
         try {
             await client.send(new GetScheduleCommand({ Name: id }));

@@ -18,6 +18,8 @@ const createMockField = (
 ): CmsModelField => {
     return {
         ...field,
+        validation: [],
+        listValidation: [],
         id: field.fieldId,
         storageId: field.fieldId,
         label: field.fieldId

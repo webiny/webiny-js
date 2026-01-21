@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import type { CmsEntry } from "~/types/index.js";
+import type { CmsEntry, CmsEntryValues } from "~/types/index.js";
 import type { CmsModel } from "~/types/index.js";
 import {
     type EntryNotFoundError,
@@ -15,7 +15,9 @@ import {
  * Gets the singleton entry for a model, creating it if it doesn't exist.
  */
 export interface IGetSingletonEntryUseCase {
-    execute(model: CmsModel): Promise<Result<CmsEntry, UseCaseError>>;
+    execute<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel
+    ): Promise<Result<CmsEntry<T>, UseCaseError>>;
 }
 
 export interface IGetSingletonEntryUseCaseErrors {

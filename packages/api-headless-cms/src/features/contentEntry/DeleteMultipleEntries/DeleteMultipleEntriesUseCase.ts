@@ -29,7 +29,7 @@ import { filterAsync } from "~/utils/filterAsync.js";
  * - Delegate to repository for storage operations
  */
 class DeleteMultipleEntriesUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(
+    public constructor(
         private repository: DeleteMultipleEntriesRepository.Interface,
         private accessControl: AccessControl.Interface,
         private listEntries: ListEntriesUseCase.Interface,

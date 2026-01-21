@@ -1,9 +1,11 @@
 const entryFields = `
     id
     entryId
-    title
     wbyAco_location {
         folderId
+    }
+    values {
+        title
     }
 `;
 
@@ -32,9 +34,11 @@ const META_FIELD = /* GraphQL */ `
 interface Entry {
     id: string;
     entryId: string;
-    title: string;
     wbyAco_location?: {
         folderId?: string;
+    };
+    values: {
+        title: string;
     };
 }
 export interface CmsError {
@@ -102,9 +106,11 @@ export type CreateEntryResult = GetEntryResult;
 export interface CreateEntryInputVariables {
     data: {
         id?: string;
-        title: string;
         wbyAco_location?: {
             folderId: string;
+        };
+        values: {
+            title: string;
         };
     };
 }
@@ -123,7 +129,9 @@ export type UpdateEntryResult = GetEntryResult;
 export interface UpdateEntryInputVariables {
     revision: string;
     data: {
-        title?: string;
+        values?: {
+            title?: string;
+        };
     };
 }
 

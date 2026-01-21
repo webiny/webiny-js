@@ -7,7 +7,7 @@ import type { CmsEntryListParams, CmsEntryValues, CmsModel } from "~/types/index
  * Lists latest entries for manage API (non-deleted).
  */
 class ListLatestEntriesUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(private listEntriesUseCase: ListEntriesUseCase.Interface) {}
+    public constructor(private listEntriesUseCase: ListEntriesUseCase.Interface) {}
 
     async execute<T extends CmsEntryValues>(
         model: CmsModel,

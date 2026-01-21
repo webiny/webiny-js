@@ -1,36 +1,40 @@
-import type { CmsContext, CmsEntry, CmsModel } from "~/types/index.js";
+import type { CmsContext, CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import { referenceFieldsMapping } from "~/crud/contentEntry/referenceFieldsMapping.js";
 import { STATUS_PUBLISHED } from "./statuses.js";
 import { getIdentity } from "~/utils/identity.js";
 import { getDate } from "~/utils/date.js";
 import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 
-type CreateRepublishEntryDataParams = {
+type CreateRepublishEntryDataParams<TValues extends CmsEntryValues = CmsEntryValues> = {
     model: CmsModel;
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
-    originalEntry: CmsEntry;
+    originalEntry: CmsEntry<TValues>;
 };
 
-export const createRepublishEntryData = async ({
+interface ICreateRepublishEntryDataResponse<TValues extends CmsEntryValues = CmsEntryValues> {
+    entry: CmsEntry<TValues>;
+}
+
+export const createRepublishEntryData = async <TValues extends CmsEntryValues = CmsEntryValues>({
     model,
     context,
     getIdentity: getSecurityIdentity,
     originalEntry
-}: CreateRepublishEntryDataParams): Promise<{
-    entry: CmsEntry;
-}> => {
-    const values = await referenceFieldsMapping({
+}: CreateRepublishEntryDataParams<TValues>): Promise<
+    ICreateRepublishEntryDataResponse<TValues>
+> => {
+    const values = await referenceFieldsMapping<TValues>({
         context,
         model,
-        input: originalEntry.values,
+        values: originalEntry.values,
         validateEntries: false
     });
 
     const currentDateTime = new Date().toISOString();
     const currentIdentity = getSecurityIdentity();
 
-    const entry: CmsEntry = {
+    const entry: CmsEntry<TValues> = {
         ...originalEntry,
         status: STATUS_PUBLISHED,
         /**
@@ -62,5 +66,7 @@ export const createRepublishEntryData = async ({
         values
     };
 
-    return { entry };
+    return {
+        entry
+    };
 };

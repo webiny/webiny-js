@@ -1,12 +1,12 @@
 import { Result } from "@webiny/feature/api";
 import {
+    type GetAncestorsParams,
     GetAncestorsRepository as RepositoryAbstraction,
-    type IGetAncestorsRepository,
-    type GetAncestorsParams
+    type IGetAncestorsRepository
 } from "./abstractions.js";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries";
 import { FolderModel } from "~/domain/folder/abstractions.js";
-import type { Folder } from "~/folder/folder.types.js";
+import type { CmsEntryFolder, Folder } from "~/folder/folder.types.js";
 import { EntryToFolderMapper } from "../shared/EntryToFolderMapper.js";
 import { FolderPersistenceError } from "~/domain/folder/errors.js";
 import { ROOT_FOLDER } from "~/constants.js";
@@ -39,10 +39,12 @@ class GetAncestorsRepositoryImpl implements IGetAncestorsRepository {
         });
 
         // Retrieve all folders that match the specified type and any of the constructed paths
-        const result = await this.listLatestEntries.execute(this.folderModel, {
+        const result = await this.listLatestEntries.execute<CmsEntryFolder>(this.folderModel, {
             where: {
-                type: folder.type,
-                path_in: paths
+                values: {
+                    type: folder.type,
+                    path_in: paths
+                }
             }
         });
 

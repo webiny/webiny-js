@@ -17,20 +17,22 @@ const fruitFields = `
         type
     }
     # user defined fields
-    name
-    numbers
-    email
-    url
-    lowerCase
-    upperCase
-    date
-    dateTime
-    dateTimeZ
-    time
-    isSomething
-    rating
-    description
-    slug
+    values {
+        name
+        numbers
+        email
+        url
+        lowerCase
+        upperCase
+        date
+        dateTime
+        dateTimeZ
+        time
+        isSomething
+        rating
+        description
+        slug
+    }
 `;
 
 const errorFields = `

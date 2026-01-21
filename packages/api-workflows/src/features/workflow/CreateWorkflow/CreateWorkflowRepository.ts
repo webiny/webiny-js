@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { parseIdentifier } from "@webiny/utils/parseIdentifier.js";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
-import { WorkflowMapper, WorkflowModel } from "~/domain/workflow/abstractions.js";
+import { type IWorkflow, WorkflowMapper, WorkflowModel } from "~/domain/workflow/abstractions.js";
 import { WorkflowPersistenceError } from "~/domain/workflow/errors.js";
 import { CreateWorkflowRepository as Repository } from "./abstractions.js";
 
@@ -21,9 +21,11 @@ class CreateWorkflowRepositoryImpl implements Repository.Interface {
             name: input.name,
             steps: input.steps
         });
-
         try {
-            const createResult = await this.createEntry.execute(this.model, values);
+            const createResult = await this.createEntry.execute<IWorkflow>(this.model, {
+                id,
+                values
+            });
 
             if (createResult.isFail()) {
                 return Result.fail(new WorkflowPersistenceError(createResult.error));

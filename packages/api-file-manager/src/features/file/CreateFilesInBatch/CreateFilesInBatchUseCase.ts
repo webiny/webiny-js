@@ -13,14 +13,14 @@ import { FilePermissions } from "~/features/shared/abstractions.js";
 import { CreateFileInput } from "~/features/file/CreateFile/abstractions.js";
 
 class CreateFilesInBatchUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(
+    public constructor(
         private filePermissions: FilePermissions.Interface,
         private repository: CreateFilesInBatchRepository.Interface,
         private getSettings: GetSettingsUseCase.Interface,
         private eventPublisher: EventPublisher.Interface
     ) {}
 
-    async execute(
+    public async execute(
         input: CreateFilesInBatchInput
     ): Promise<Result<File[], UseCaseAbstraction.Error>> {
         // Check write permission

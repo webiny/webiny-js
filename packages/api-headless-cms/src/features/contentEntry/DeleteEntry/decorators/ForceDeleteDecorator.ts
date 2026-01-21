@@ -14,7 +14,7 @@ import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
  * record is already deleted).
  */
 class ForceDeleteDecoratorImpl implements DeleteEntryUseCase.Interface {
-    constructor(
+    public constructor(
         private storageOperations: StorageOperations.Interface,
         private decoratee: DeleteEntryUseCase.Interface
     ) {}

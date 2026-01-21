@@ -22,7 +22,11 @@ export const ContentEntryFormPreview = makeDecoratable(
             <ContentEntryFormProvider
                 entry={{}}
                 model={contentModel}
-                persistEntry={entry => Promise.resolve({ entry } as { entry: CmsContentEntry })}
+                persistEntry={async entry => {
+                    return {
+                        entry: entry as CmsContentEntry
+                    };
+                }}
                 confirmNavigationIfDirty={false}
             >
                 <ModelProvider model={contentModel}>

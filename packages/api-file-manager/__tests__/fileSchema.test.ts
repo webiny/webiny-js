@@ -1,8 +1,7 @@
-import { describe, test, expect } from "vitest";
+import { describe, expect, test } from "vitest";
 import prettier from "prettier";
 import { useHandler } from "./utils/useHandler.js";
 import { createFilesTypeDefs } from "~/graphql/createFilesTypeDefs.js";
-import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { createFieldTypePluginRecords } from "@webiny/api-headless-cms/graphql/schema/createFieldTypePluginRecords.js";
 import fileSdlSnapshot from "./mocks/fileWithoutExtensions.sdl.js";
 import { createFileModelModifier } from "~/modelModifier/CmsModelModifier.js";
@@ -17,14 +16,18 @@ describe("File Model Modifier test", () => {
                         id: "carMake",
                         fieldId: "carMake",
                         label: "Car Make",
-                        type: "text"
+                        type: "text",
+                        listValidation: [],
+                        validation: []
                     });
 
                     modifier.addField({
                         id: "year",
                         fieldId: "year",
                         label: "Year of manufacturing",
-                        type: "number"
+                        type: "number",
+                        listValidation: [],
+                        validation: []
                     });
                     modifier.addField({
                         id: "article",
@@ -40,7 +43,9 @@ describe("File Model Modifier test", () => {
                                     modelId: "article"
                                 }
                             ]
-                        }
+                        },
+                        listValidation: [],
+                        validation: []
                     });
                 })
             ]
@@ -48,7 +53,7 @@ describe("File Model Modifier test", () => {
 
         const context = await handler();
 
-        const fileModel = (await context.cms.getModel("fmFile")) as CmsModel;
+        const fileModel = await context.cms.getModel("fmFile");
         const models = await context.cms.listModels();
         const fieldPlugins = createFieldTypePluginRecords(context.plugins);
 

@@ -17,7 +17,7 @@ export interface FieldBuilderConfig
 export class FieldBuilder<TType extends string = string> {
     protected config: FieldBuilderConfig;
 
-    constructor(
+    public constructor(
         protected readonly type: TType,
         label?: string
     ) {

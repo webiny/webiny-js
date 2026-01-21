@@ -3,8 +3,7 @@ import { GetSingletonEntryUseCase as UseCaseAbstraction } from "./abstractions.j
 import { CMS_MODEL_SINGLETON_TAG } from "~/constants.js";
 import { EntryValidationError } from "~/domain/contentEntry/errors.js";
 import { createCacheKey } from "@webiny/utils";
-import type { CmsEntry } from "~/types/index.js";
-import type { CmsModel } from "~/types/index.js";
+import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import { CreateEntryUseCase } from "~/features/contentEntry/CreateEntry/index.js";
 import { GetEntryByIdUseCase } from "~/features/contentEntry/GetEntryById/index.js";
 
@@ -19,12 +18,14 @@ import { GetEntryByIdUseCase } from "~/features/contentEntry/GetEntryById/index.
  * - Delegate to generic GetEntry and CreateEntry use cases
  */
 class GetSingletonEntryUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(
+    public constructor(
         private getEntryById: GetEntryByIdUseCase.Interface,
         private createEntry: CreateEntryUseCase.Interface
     ) {}
 
-    async execute(model: CmsModel): Promise<Result<CmsEntry, UseCaseAbstraction.Error>> {
+    async execute<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel
+    ): Promise<Result<CmsEntry<T>, UseCaseAbstraction.Error>> {
         // Validate model is marked as singleton
         if (!model.tags?.includes(CMS_MODEL_SINGLETON_TAG)) {
             return Result.fail(new EntryValidationError("Model is not marked as singleton."));
@@ -35,20 +36,23 @@ class GetSingletonEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         const entryId = `${id}#0001`;
 
         // Try to get existing entry
-        const getResult = await this.getEntryById.execute(model, entryId);
+        const getResult = await this.getEntryById.execute<T>(model, entryId);
 
         if (getResult.isOk()) {
             return getResult;
         }
 
         // Entry doesn't exist, create it
-        const createResult = await this.createEntry.execute(
+        return await this.createEntry.execute<T>(
             model,
-            { id },
+            {
+                id,
+                values: {
+                    // safe to cast
+                } as T
+            },
             { skipValidators: ["required"] }
         );
-
-        return createResult;
     }
 }
 

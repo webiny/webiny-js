@@ -25,7 +25,7 @@ import type { CmsGroup } from "~/types/index.js";
  * - Return the group or NotFoundError
  */
 class GetGroupRepositoryImpl implements RepositoryAbstraction.Interface {
-    constructor(
+    public constructor(
         private groupCache: GroupCache.Interface,
         private pluginGroupsProvider: PluginGroupsProvider.Interface,
         private storageOperations: StorageOperations.Interface,

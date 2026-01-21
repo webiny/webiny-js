@@ -35,7 +35,7 @@ import type { CmsModelCreateInput } from "~/types/index.js";
  * - Field validation and plugin conflict checks
  */
 class CreateModelUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(
+    public constructor(
         private eventPublisher: EventPublisher.Interface,
         private repository: CreateModelRepository.Interface,
         private accessControl: AccessControl.Interface,

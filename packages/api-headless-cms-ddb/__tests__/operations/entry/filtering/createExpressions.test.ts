@@ -21,8 +21,10 @@ describe("create expressions from where conditions", () => {
             plugins,
             fields,
             where: {
-                title_contains: "some value",
-                date_gte: "2023-01-01",
+                values: {
+                    title_contains: "some value",
+                    date_gte: "2023-01-01"
+                },
                 id_not_in: ["1", "2", "3"]
             }
         });
@@ -32,7 +34,7 @@ describe("create expressions from where conditions", () => {
             expressions: [],
             filters: [
                 {
-                    fieldPathId: "title",
+                    fieldPathId: "values.title",
                     negate: false,
                     path: "values.title",
                     compareValue: "some value",
@@ -41,7 +43,7 @@ describe("create expressions from where conditions", () => {
                     field: expect.any(Object)
                 },
                 {
-                    fieldPathId: "date",
+                    fieldPathId: "values.date",
                     negate: false,
                     path: "values.date",
                     compareValue: "2023-01-01",
@@ -71,8 +73,10 @@ describe("create expressions from where conditions", () => {
             where: {
                 AND: [
                     {
-                        title_contains: "some value",
-                        date_gte: "2023-01-01",
+                        values: {
+                            title_contains: "some value",
+                            date_gte: "2023-01-01"
+                        },
                         id_not_in: ["1", "2", "3"]
                     }
                 ]
@@ -88,7 +92,7 @@ describe("create expressions from where conditions", () => {
                     expressions: [],
                     filters: [
                         {
-                            fieldPathId: "title",
+                            fieldPathId: "values.title",
                             negate: false,
                             path: "values.title",
                             compareValue: "some value",
@@ -97,7 +101,7 @@ describe("create expressions from where conditions", () => {
                             field: expect.any(Object)
                         },
                         {
-                            fieldPathId: "date",
+                            fieldPathId: "values.date",
                             negate: false,
                             path: "values.date",
                             compareValue: "2023-01-01",
@@ -125,15 +129,19 @@ describe("create expressions from where conditions", () => {
             plugins,
             fields,
             where: {
-                isMarried_not: true,
+                values: {
+                    isMarried_not: true,
+                    price_gte: 100
+                },
                 AND: [
                     {
-                        title_contains: "some value",
-                        date_gte: "2023-01-01",
+                        values: {
+                            title_contains: "some value",
+                            date_gte: "2023-01-01"
+                        },
                         id_not_in: ["1", "2", "3"]
                     }
-                ],
-                price_gte: 100
+                ]
             }
         });
 
@@ -141,7 +149,7 @@ describe("create expressions from where conditions", () => {
             condition: "AND",
             filters: [
                 {
-                    fieldPathId: "isMarried",
+                    fieldPathId: "values.isMarried",
                     negate: true,
                     path: "values.isMarried",
                     compareValue: true,
@@ -150,7 +158,7 @@ describe("create expressions from where conditions", () => {
                     field: expect.any(Object)
                 },
                 {
-                    fieldPathId: "price",
+                    fieldPathId: "values.price",
                     negate: false,
                     path: "values.price",
                     compareValue: 100,
@@ -169,7 +177,7 @@ describe("create expressions from where conditions", () => {
                             expressions: [],
                             filters: [
                                 {
-                                    fieldPathId: "title",
+                                    fieldPathId: "values.title",
                                     negate: false,
                                     path: "values.title",
                                     compareValue: "some value",
@@ -178,7 +186,7 @@ describe("create expressions from where conditions", () => {
                                     field: expect.any(Object)
                                 },
                                 {
-                                    fieldPathId: "date",
+                                    fieldPathId: "values.date",
                                     negate: false,
                                     path: "values.date",
                                     compareValue: "2023-01-01",
@@ -210,17 +218,21 @@ describe("create expressions from where conditions", () => {
             plugins,
             fields,
             where: {
-                isMarried_not: true,
+                values: {
+                    isMarried_not: true,
+                    price_gte: 100
+                },
                 AND: [
                     {
                         AND: [
                             {
-                                price_lte: 500
+                                values: {
+                                    price_lte: 500
+                                }
                             }
                         ]
                     }
-                ],
-                price_gte: 100
+                ]
             }
         });
 
@@ -228,7 +240,7 @@ describe("create expressions from where conditions", () => {
             condition: "AND",
             filters: [
                 {
-                    fieldPathId: "isMarried",
+                    fieldPathId: "values.isMarried",
                     negate: true,
                     path: "values.isMarried",
                     compareValue: true,
@@ -237,7 +249,7 @@ describe("create expressions from where conditions", () => {
                     field: expect.any(Object)
                 },
                 {
-                    fieldPathId: "price",
+                    fieldPathId: "values.price",
                     negate: false,
                     path: "values.price",
                     compareValue: 100,
@@ -263,7 +275,7 @@ describe("create expressions from where conditions", () => {
                                             condition: "AND",
                                             filters: [
                                                 {
-                                                    fieldPathId: "price",
+                                                    fieldPathId: "values.price",
                                                     negate: false,
                                                     path: "values.price",
                                                     compareValue: 500,
@@ -289,28 +301,38 @@ describe("create expressions from where conditions", () => {
             plugins,
             fields,
             where: {
-                isMarried_not: true,
+                values: {
+                    isMarried_not: true,
+                    price_gte: 100
+                },
                 AND: [
                     {
-                        date_gt: "2023-01-01"
+                        values: {
+                            date_gt: "2023-01-01"
+                        }
                     },
                     {
                         AND: [
                             {
-                                price_lte: 500
+                                values: {
+                                    price_lte: 500
+                                }
                             },
                             {
-                                availableOn_not: null,
+                                values: {
+                                    availableOn_not: null
+                                },
                                 AND: [
                                     {
-                                        title_contains: "nested"
+                                        values: {
+                                            title_contains: "nested"
+                                        }
                                     }
                                 ]
                             }
                         ]
                     }
-                ],
-                price_gte: 100
+                ]
             }
         });
 
@@ -318,7 +340,7 @@ describe("create expressions from where conditions", () => {
             condition: "AND",
             filters: [
                 {
-                    fieldPathId: "isMarried",
+                    fieldPathId: "values.isMarried",
                     negate: true,
                     path: "values.isMarried",
                     compareValue: true,
@@ -327,7 +349,7 @@ describe("create expressions from where conditions", () => {
                     field: expect.any(Object)
                 },
                 {
-                    fieldPathId: "price",
+                    fieldPathId: "values.price",
                     negate: false,
                     path: "values.price",
                     compareValue: 100,
@@ -346,7 +368,7 @@ describe("create expressions from where conditions", () => {
                             expressions: [],
                             filters: [
                                 {
-                                    fieldPathId: "date",
+                                    fieldPathId: "values.date",
                                     negate: false,
                                     path: "values.date",
                                     compareValue: "2023-01-01",
@@ -369,7 +391,7 @@ describe("create expressions from where conditions", () => {
                                             expressions: [],
                                             filters: [
                                                 {
-                                                    fieldPathId: "price",
+                                                    fieldPathId: "values.price",
                                                     negate: false,
                                                     path: "values.price",
                                                     compareValue: 500,
@@ -383,7 +405,7 @@ describe("create expressions from where conditions", () => {
                                             condition: "AND",
                                             filters: [
                                                 {
-                                                    fieldPathId: "availableOn",
+                                                    fieldPathId: "values.availableOn",
                                                     negate: true,
                                                     path: "values.availableOn",
                                                     compareValue: null,
@@ -401,7 +423,7 @@ describe("create expressions from where conditions", () => {
                                                             condition: "AND",
                                                             filters: [
                                                                 {
-                                                                    fieldPathId: "title",
+                                                                    fieldPathId: "values.title",
                                                                     negate: false,
                                                                     path: "values.title",
                                                                     compareValue: "nested",
@@ -436,8 +458,10 @@ describe("create expressions from where conditions", () => {
             where: {
                 OR: [
                     {
-                        title_contains: "some value",
-                        date_gte: "2023-01-01",
+                        values: {
+                            title_contains: "some value",
+                            date_gte: "2023-01-01"
+                        },
                         id_not_in: ["1", "2", "3"]
                     }
                 ]
@@ -453,7 +477,7 @@ describe("create expressions from where conditions", () => {
                     expressions: [],
                     filters: [
                         {
-                            fieldPathId: "title",
+                            fieldPathId: "values.title",
                             negate: false,
                             path: "values.title",
                             compareValue: "some value",
@@ -462,7 +486,7 @@ describe("create expressions from where conditions", () => {
                             field: expect.any(Object)
                         },
                         {
-                            fieldPathId: "date",
+                            fieldPathId: "values.date",
                             negate: false,
                             path: "values.date",
                             compareValue: "2023-01-01",
@@ -494,14 +518,18 @@ describe("create expressions from where conditions", () => {
             where: {
                 OR: [
                     {
-                        title_contains: "some value",
-                        title_not_contains: "unwanted value"
+                        values: {
+                            title_contains: "some value",
+                            title_not_contains: "unwanted value"
+                        }
                     },
                     {
                         id_not_in: ["1", "2", "3"]
                     },
                     {
-                        date_gte: "2023-01-01"
+                        values: {
+                            date_gte: "2023-01-01"
+                        }
                     }
                 ]
             }
@@ -516,7 +544,7 @@ describe("create expressions from where conditions", () => {
                     expressions: [],
                     filters: [
                         {
-                            fieldPathId: "title",
+                            fieldPathId: "values.title",
                             negate: false,
                             path: "values.title",
                             compareValue: "some value",
@@ -525,7 +553,7 @@ describe("create expressions from where conditions", () => {
                             field: expect.any(Object)
                         },
                         {
-                            fieldPathId: "title",
+                            fieldPathId: "values.title",
                             negate: true,
                             path: "values.title",
                             compareValue: "unwanted value",
@@ -555,7 +583,7 @@ describe("create expressions from where conditions", () => {
                     expressions: [],
                     filters: [
                         {
-                            fieldPathId: "date",
+                            fieldPathId: "values.date",
                             negate: false,
                             path: "values.date",
                             compareValue: "2023-01-01",
@@ -578,8 +606,10 @@ describe("create expressions from where conditions", () => {
             where: {
                 OR: [
                     {
-                        title_contains: "some value",
-                        date_gte: "2023-01-01"
+                        values: {
+                            title_contains: "some value",
+                            date_gte: "2023-01-01"
+                        }
                     },
                     {
                         id_not_in: ["1", "2", "3"]
@@ -587,7 +617,9 @@ describe("create expressions from where conditions", () => {
                     {
                         OR: [
                             {
-                                title_contains: "some other value"
+                                values: {
+                                    title_contains: "some other value"
+                                }
                             }
                         ]
                     }
@@ -604,7 +636,7 @@ describe("create expressions from where conditions", () => {
                     condition: "AND",
                     filters: [
                         {
-                            fieldPathId: "title",
+                            fieldPathId: "values.title",
                             negate: false,
                             path: "values.title",
                             compareValue: "some value",
@@ -613,7 +645,7 @@ describe("create expressions from where conditions", () => {
                             field: expect.any(Object)
                         },
                         {
-                            fieldPathId: "date",
+                            fieldPathId: "values.date",
                             negate: false,
                             path: "values.date",
                             compareValue: "2023-01-01",
@@ -651,7 +683,7 @@ describe("create expressions from where conditions", () => {
                                     expressions: [],
                                     filters: [
                                         {
-                                            fieldPathId: "title",
+                                            fieldPathId: "values.title",
                                             negate: false,
                                             path: "values.title",
                                             compareValue: "some other value",
@@ -678,21 +710,28 @@ describe("create expressions from where conditions", () => {
             where: {
                 OR: [
                     {
-                        title_contains: "some value",
-                        date_gte: "2023-01-01"
+                        values: {
+                            title_contains: "some value",
+                            date_gte: "2023-01-01"
+                        }
                     },
                     {
                         id_not_in: ["1", "2", "3"],
+
                         OR: [
                             {
-                                price_gte: 100
+                                values: {
+                                    price_gte: 100
+                                }
                             }
                         ]
                     },
                     {
                         OR: [
                             {
-                                title_contains: "some other value"
+                                values: {
+                                    title_contains: "some other value"
+                                }
                             }
                         ]
                     }
@@ -709,7 +748,7 @@ describe("create expressions from where conditions", () => {
                     expressions: [],
                     filters: [
                         {
-                            fieldPathId: "title",
+                            fieldPathId: "values.title",
                             negate: false,
                             path: "values.title",
                             compareValue: "some value",
@@ -718,7 +757,7 @@ describe("create expressions from where conditions", () => {
                             field: expect.any(Object)
                         },
                         {
-                            fieldPathId: "date",
+                            fieldPathId: "values.date",
                             negate: false,
                             path: "values.date",
                             compareValue: "2023-01-01",
@@ -751,7 +790,7 @@ describe("create expressions from where conditions", () => {
                                     expressions: [],
                                     filters: [
                                         {
-                                            fieldPathId: "price",
+                                            fieldPathId: "values.price",
                                             negate: false,
                                             path: "values.price",
                                             compareValue: 100,
@@ -778,7 +817,7 @@ describe("create expressions from where conditions", () => {
                                     expressions: [],
                                     filters: [
                                         {
-                                            fieldPathId: "title",
+                                            fieldPathId: "values.title",
                                             negate: false,
                                             path: "values.title",
                                             compareValue: "some other value",
@@ -805,27 +844,37 @@ describe("create expressions from where conditions", () => {
             where: {
                 OR: [
                     {
-                        title_contains: "some value"
+                        values: {
+                            title_contains: "some value"
+                        }
                     },
                     {
                         id_not_in: ["1", "2", "3"]
                     },
                     {
-                        date_gte: "2023-01-01"
+                        values: {
+                            date_gte: "2023-01-01"
+                        }
                     },
                     {
                         OR: [
                             {
-                                title_contains: "some other value"
+                                values: {
+                                    title_contains: "some other value"
+                                }
                             },
                             {
                                 OR: [
                                     {
-                                        price_lte: 500
+                                        values: {
+                                            price_lte: 500
+                                        }
                                     },
                                     {
-                                        price_gte: 100,
-                                        price_lte: 1000
+                                        values: {
+                                            price_gte: 100,
+                                            price_lte: 1000
+                                        }
                                     }
                                 ]
                             }
@@ -844,7 +893,7 @@ describe("create expressions from where conditions", () => {
                     expressions: [],
                     filters: [
                         {
-                            fieldPathId: "title",
+                            fieldPathId: "values.title",
                             negate: false,
                             path: "values.title",
                             compareValue: "some value",
@@ -874,7 +923,7 @@ describe("create expressions from where conditions", () => {
                     expressions: [],
                     filters: [
                         {
-                            fieldPathId: "date",
+                            fieldPathId: "values.date",
                             negate: false,
                             path: "values.date",
                             compareValue: "2023-01-01",
@@ -897,7 +946,7 @@ describe("create expressions from where conditions", () => {
                                     expressions: [],
                                     filters: [
                                         {
-                                            fieldPathId: "title",
+                                            fieldPathId: "values.title",
                                             negate: false,
                                             path: "values.title",
                                             compareValue: "some other value",
@@ -920,7 +969,7 @@ describe("create expressions from where conditions", () => {
                                                     expressions: [],
                                                     filters: [
                                                         {
-                                                            fieldPathId: "price",
+                                                            fieldPathId: "values.price",
                                                             negate: false,
                                                             path: "values.price",
                                                             compareValue: 500,
@@ -935,7 +984,7 @@ describe("create expressions from where conditions", () => {
                                                     expressions: [],
                                                     filters: [
                                                         {
-                                                            fieldPathId: "price",
+                                                            fieldPathId: "values.price",
                                                             negate: false,
                                                             path: "values.price",
                                                             compareValue: 100,
@@ -944,7 +993,7 @@ describe("create expressions from where conditions", () => {
                                                             field: expect.any(Object)
                                                         },
                                                         {
-                                                            fieldPathId: "price",
+                                                            fieldPathId: "values.price",
                                                             negate: false,
                                                             path: "values.price",
                                                             compareValue: 1000,
@@ -975,35 +1024,49 @@ describe("create expressions from where conditions", () => {
             where: {
                 OR: [
                     {
-                        title_contains: "some value"
+                        values: {
+                            title_contains: "some value"
+                        }
                     },
                     {
                         id_not_in: ["1", "2", "3"]
                     },
                     {
-                        date_gte: "2023-01-01"
+                        values: {
+                            date_gte: "2023-01-01"
+                        }
                     },
                     {
                         OR: [
                             {
-                                title_contains: "some other value"
+                                values: {
+                                    title_contains: "some other value"
+                                }
                             },
                             {
                                 OR: [
                                     {
-                                        price_lte: 500,
+                                        values: {
+                                            price_lte: 500
+                                        },
                                         OR: [
                                             {
-                                                title_contains: "some unknown value"
+                                                values: {
+                                                    title_contains: "some unknown value"
+                                                }
                                             },
                                             {
-                                                title_contains: "some even more unknown value"
+                                                values: {
+                                                    title_contains: "some even more unknown value"
+                                                }
                                             }
                                         ]
                                     },
                                     {
-                                        price_gte: 100,
-                                        price_lte: 1000
+                                        values: {
+                                            price_gte: 100,
+                                            price_lte: 1000
+                                        }
                                     }
                                 ]
                             }
@@ -1022,7 +1085,7 @@ describe("create expressions from where conditions", () => {
                     expressions: [],
                     filters: [
                         {
-                            fieldPathId: "title",
+                            fieldPathId: "values.title",
                             negate: false,
                             path: "values.title",
                             compareValue: "some value",
@@ -1052,7 +1115,7 @@ describe("create expressions from where conditions", () => {
                     expressions: [],
                     filters: [
                         {
-                            fieldPathId: "date",
+                            fieldPathId: "values.date",
                             negate: false,
                             path: "values.date",
                             compareValue: "2023-01-01",
@@ -1075,7 +1138,7 @@ describe("create expressions from where conditions", () => {
                                     expressions: [],
                                     filters: [
                                         {
-                                            fieldPathId: "title",
+                                            fieldPathId: "values.title",
                                             negate: false,
                                             path: "values.title",
                                             compareValue: "some other value",
@@ -1097,7 +1160,7 @@ describe("create expressions from where conditions", () => {
                                                     condition: "AND",
                                                     filters: [
                                                         {
-                                                            fieldPathId: "price",
+                                                            fieldPathId: "values.price",
                                                             negate: false,
                                                             path: "values.price",
                                                             compareValue: 500,
@@ -1116,7 +1179,8 @@ describe("create expressions from where conditions", () => {
                                                                     expressions: [],
                                                                     filters: [
                                                                         {
-                                                                            fieldPathId: "title",
+                                                                            fieldPathId:
+                                                                                "values.title",
                                                                             negate: false,
                                                                             path: "values.title",
                                                                             compareValue:
@@ -1139,7 +1203,8 @@ describe("create expressions from where conditions", () => {
                                                                     expressions: [],
                                                                     filters: [
                                                                         {
-                                                                            fieldPathId: "title",
+                                                                            fieldPathId:
+                                                                                "values.title",
                                                                             negate: false,
                                                                             path: "values.title",
                                                                             compareValue:
@@ -1166,7 +1231,7 @@ describe("create expressions from where conditions", () => {
                                                     expressions: [],
                                                     filters: [
                                                         {
-                                                            fieldPathId: "price",
+                                                            fieldPathId: "values.price",
                                                             negate: false,
                                                             path: "values.price",
                                                             compareValue: 100,
@@ -1175,7 +1240,7 @@ describe("create expressions from where conditions", () => {
                                                             field: expect.any(Object)
                                                         },
                                                         {
-                                                            fieldPathId: "price",
+                                                            fieldPathId: "values.price",
                                                             negate: false,
                                                             path: "values.price",
                                                             compareValue: 1000,
@@ -1204,13 +1269,19 @@ describe("create expressions from where conditions", () => {
             plugins,
             fields,
             where: {
-                price_gte: 100,
+                values: {
+                    price_gte: 100
+                },
                 OR: [
                     {
-                        title_contains: "some value"
+                        values: {
+                            title_contains: "some value"
+                        }
                     },
                     {
-                        title_contains: "some other value"
+                        values: {
+                            title_contains: "some other value"
+                        }
                     }
                 ]
             }
@@ -1220,7 +1291,7 @@ describe("create expressions from where conditions", () => {
             condition: "AND",
             filters: [
                 {
-                    fieldPathId: "price",
+                    fieldPathId: "values.price",
                     negate: false,
                     path: "values.price",
                     compareValue: 100,
@@ -1239,7 +1310,7 @@ describe("create expressions from where conditions", () => {
                             expressions: [],
                             filters: [
                                 {
-                                    fieldPathId: "title",
+                                    fieldPathId: "values.title",
                                     negate: false,
                                     path: "values.title",
                                     compareValue: "some value",
@@ -1254,7 +1325,7 @@ describe("create expressions from where conditions", () => {
                             expressions: [],
                             filters: [
                                 {
-                                    fieldPathId: "title",
+                                    fieldPathId: "values.title",
                                     negate: false,
                                     path: "values.title",
                                     compareValue: "some other value",
@@ -1279,44 +1350,64 @@ describe("create expressions from where conditions", () => {
             where: {
                 OR: [
                     {
-                        title_contains: "some value"
+                        values: {
+                            title_contains: "some value"
+                        }
                     },
                     {
-                        title_contains: "some other value"
+                        values: {
+                            title_contains: "some other value"
+                        }
                     },
                     {
                         OR: [
                             {
-                                title_contains: "some level #3 value",
-                                price_gte: 100
+                                values: {
+                                    title_contains: "some level #3 value",
+                                    price_gte: 100
+                                }
                             },
                             {
-                                title_contains: "some level #3.1 value",
+                                values: {
+                                    title_contains: "some level #3.1 value"
+                                },
                                 OR: [
                                     {
-                                        price_gte: 110,
-                                        price_lte: 490
+                                        values: {
+                                            price_gte: 110,
+                                            price_lte: 490
+                                        }
                                     },
                                     {
-                                        title_contains: "some level #4 value"
+                                        values: {
+                                            title_contains: "some level #4 value"
+                                        }
                                     }
                                 ]
                             }
                         ],
                         AND: [
                             {
-                                price_gte: 100,
-                                price_lte: 500
+                                values: {
+                                    price_gte: 100,
+                                    price_lte: 500
+                                }
                             },
                             {
-                                isMarried: true,
+                                values: {
+                                    isMarried: true
+                                },
                                 OR: [
                                     {
-                                        price_gte: 120,
-                                        price_lte: 480
+                                        values: {
+                                            price_gte: 120,
+                                            price_lte: 480
+                                        }
                                     },
                                     {
-                                        title_contains: "some level #4 value"
+                                        values: {
+                                            title_contains: "some level #4 value"
+                                        }
                                     }
                                 ]
                             }
@@ -1335,7 +1426,7 @@ describe("create expressions from where conditions", () => {
                     expressions: [],
                     filters: [
                         {
-                            fieldPathId: "title",
+                            fieldPathId: "values.title",
                             negate: false,
                             path: "values.title",
                             compareValue: "some value",
@@ -1350,7 +1441,7 @@ describe("create expressions from where conditions", () => {
                     expressions: [],
                     filters: [
                         {
-                            fieldPathId: "title",
+                            fieldPathId: "values.title",
                             negate: false,
                             path: "values.title",
                             compareValue: "some other value",
@@ -1373,7 +1464,7 @@ describe("create expressions from where conditions", () => {
                                     expressions: [],
                                     filters: [
                                         {
-                                            fieldPathId: "title",
+                                            fieldPathId: "values.title",
                                             negate: false,
                                             path: "values.title",
                                             compareValue: "some level #3 value",
@@ -1382,7 +1473,7 @@ describe("create expressions from where conditions", () => {
                                             field: expect.any(Object)
                                         },
                                         {
-                                            fieldPathId: "price",
+                                            fieldPathId: "values.price",
                                             negate: false,
                                             path: "values.price",
                                             compareValue: 100,
@@ -1396,7 +1487,7 @@ describe("create expressions from where conditions", () => {
                                     condition: "AND",
                                     filters: [
                                         {
-                                            fieldPathId: "title",
+                                            fieldPathId: "values.title",
                                             negate: false,
                                             path: "values.title",
                                             compareValue: "some level #3.1 value",
@@ -1415,7 +1506,7 @@ describe("create expressions from where conditions", () => {
                                                     expressions: [],
                                                     filters: [
                                                         {
-                                                            fieldPathId: "price",
+                                                            fieldPathId: "values.price",
                                                             negate: false,
                                                             path: "values.price",
                                                             compareValue: 110,
@@ -1424,7 +1515,7 @@ describe("create expressions from where conditions", () => {
                                                             field: expect.any(Object)
                                                         },
                                                         {
-                                                            fieldPathId: "price",
+                                                            fieldPathId: "values.price",
                                                             negate: false,
                                                             path: "values.price",
                                                             compareValue: 490,
@@ -1439,7 +1530,7 @@ describe("create expressions from where conditions", () => {
                                                     expressions: [],
                                                     filters: [
                                                         {
-                                                            fieldPathId: "title",
+                                                            fieldPathId: "values.title",
                                                             negate: false,
                                                             path: "values.title",
                                                             compareValue: "some level #4 value",
@@ -1464,7 +1555,7 @@ describe("create expressions from where conditions", () => {
                                     expressions: [],
                                     filters: [
                                         {
-                                            fieldPathId: "price",
+                                            fieldPathId: "values.price",
                                             negate: false,
                                             path: "values.price",
                                             compareValue: 100,
@@ -1473,7 +1564,7 @@ describe("create expressions from where conditions", () => {
                                             field: expect.any(Object)
                                         },
                                         {
-                                            fieldPathId: "price",
+                                            fieldPathId: "values.price",
                                             negate: false,
                                             path: "values.price",
                                             compareValue: 500,
@@ -1487,7 +1578,7 @@ describe("create expressions from where conditions", () => {
                                     condition: "AND",
                                     filters: [
                                         {
-                                            fieldPathId: "isMarried",
+                                            fieldPathId: "values.isMarried",
                                             negate: false,
                                             path: "values.isMarried",
                                             compareValue: true,
@@ -1506,7 +1597,7 @@ describe("create expressions from where conditions", () => {
                                                     expressions: [],
                                                     filters: [
                                                         {
-                                                            fieldPathId: "price",
+                                                            fieldPathId: "values.price",
                                                             negate: false,
                                                             path: "values.price",
                                                             compareValue: 120,
@@ -1515,7 +1606,7 @@ describe("create expressions from where conditions", () => {
                                                             field: expect.any(Object)
                                                         },
                                                         {
-                                                            fieldPathId: "price",
+                                                            fieldPathId: "values.price",
                                                             negate: false,
                                                             path: "values.price",
                                                             compareValue: 480,
@@ -1530,7 +1621,7 @@ describe("create expressions from where conditions", () => {
                                                     expressions: [],
                                                     filters: [
                                                         {
-                                                            fieldPathId: "title",
+                                                            fieldPathId: "values.title",
                                                             negate: false,
                                                             path: "values.title",
                                                             compareValue: "some level #4 value",
@@ -1559,44 +1650,64 @@ describe("create expressions from where conditions", () => {
             where: {
                 AND: [
                     {
-                        title_contains: "some value"
+                        values: {
+                            title_contains: "some value"
+                        }
                     },
                     {
-                        title_contains: "some other value"
+                        values: {
+                            title_contains: "some other value"
+                        }
                     },
                     {
                         OR: [
                             {
-                                title_contains: "some level #3 value",
-                                price_gte: 100
+                                values: {
+                                    title_contains: "some level #3 value",
+                                    price_gte: 100
+                                }
                             },
                             {
-                                title_contains: "some level #3.1 value",
+                                values: {
+                                    title_contains: "some level #3.1 value"
+                                },
                                 OR: [
                                     {
-                                        price_gte: 110,
-                                        price_lte: 490
+                                        values: {
+                                            price_gte: 110,
+                                            price_lte: 490
+                                        }
                                     },
                                     {
-                                        title_contains: "some level #4 value"
+                                        values: {
+                                            title_contains: "some level #4 value"
+                                        }
                                     }
                                 ]
                             }
                         ],
                         AND: [
                             {
-                                price_gte: 100,
-                                price_lte: 500
+                                values: {
+                                    price_gte: 100,
+                                    price_lte: 500
+                                }
                             },
                             {
-                                isMarried: true,
+                                values: {
+                                    isMarried: true
+                                },
                                 OR: [
                                     {
-                                        price_gte: 120,
-                                        price_lte: 480
+                                        values: {
+                                            price_gte: 120,
+                                            price_lte: 480
+                                        }
                                     },
                                     {
-                                        title_contains: "some level #4 value"
+                                        values: {
+                                            title_contains: "some level #4 value"
+                                        }
                                     }
                                 ]
                             }
@@ -1615,7 +1726,7 @@ describe("create expressions from where conditions", () => {
                     expressions: [],
                     filters: [
                         {
-                            fieldPathId: "title",
+                            fieldPathId: "values.title",
                             negate: false,
                             path: "values.title",
                             compareValue: "some value",
@@ -1630,7 +1741,7 @@ describe("create expressions from where conditions", () => {
                     expressions: [],
                     filters: [
                         {
-                            fieldPathId: "title",
+                            fieldPathId: "values.title",
                             negate: false,
                             path: "values.title",
                             compareValue: "some other value",
@@ -1653,7 +1764,7 @@ describe("create expressions from where conditions", () => {
                                     expressions: [],
                                     filters: [
                                         {
-                                            fieldPathId: "title",
+                                            fieldPathId: "values.title",
                                             negate: false,
                                             path: "values.title",
                                             compareValue: "some level #3 value",
@@ -1662,7 +1773,7 @@ describe("create expressions from where conditions", () => {
                                             field: expect.any(Object)
                                         },
                                         {
-                                            fieldPathId: "price",
+                                            fieldPathId: "values.price",
                                             negate: false,
                                             path: "values.price",
                                             compareValue: 100,
@@ -1676,7 +1787,7 @@ describe("create expressions from where conditions", () => {
                                     condition: "AND",
                                     filters: [
                                         {
-                                            fieldPathId: "title",
+                                            fieldPathId: "values.title",
                                             negate: false,
                                             path: "values.title",
                                             compareValue: "some level #3.1 value",
@@ -1695,7 +1806,7 @@ describe("create expressions from where conditions", () => {
                                                     expressions: [],
                                                     filters: [
                                                         {
-                                                            fieldPathId: "price",
+                                                            fieldPathId: "values.price",
                                                             negate: false,
                                                             path: "values.price",
                                                             compareValue: 110,
@@ -1704,7 +1815,7 @@ describe("create expressions from where conditions", () => {
                                                             field: expect.any(Object)
                                                         },
                                                         {
-                                                            fieldPathId: "price",
+                                                            fieldPathId: "values.price",
                                                             negate: false,
                                                             path: "values.price",
                                                             compareValue: 490,
@@ -1719,7 +1830,7 @@ describe("create expressions from where conditions", () => {
                                                     expressions: [],
                                                     filters: [
                                                         {
-                                                            fieldPathId: "title",
+                                                            fieldPathId: "values.title",
                                                             negate: false,
                                                             path: "values.title",
                                                             compareValue: "some level #4 value",
@@ -1744,7 +1855,7 @@ describe("create expressions from where conditions", () => {
                                     expressions: [],
                                     filters: [
                                         {
-                                            fieldPathId: "price",
+                                            fieldPathId: "values.price",
                                             negate: false,
                                             path: "values.price",
                                             compareValue: 100,
@@ -1753,7 +1864,7 @@ describe("create expressions from where conditions", () => {
                                             field: expect.any(Object)
                                         },
                                         {
-                                            fieldPathId: "price",
+                                            fieldPathId: "values.price",
                                             negate: false,
                                             path: "values.price",
                                             compareValue: 500,
@@ -1767,7 +1878,7 @@ describe("create expressions from where conditions", () => {
                                     condition: "AND",
                                     filters: [
                                         {
-                                            fieldPathId: "isMarried",
+                                            fieldPathId: "values.isMarried",
                                             negate: false,
                                             path: "values.isMarried",
                                             compareValue: true,
@@ -1786,7 +1897,7 @@ describe("create expressions from where conditions", () => {
                                                     expressions: [],
                                                     filters: [
                                                         {
-                                                            fieldPathId: "price",
+                                                            fieldPathId: "values.price",
                                                             negate: false,
                                                             path: "values.price",
                                                             compareValue: 120,
@@ -1795,7 +1906,7 @@ describe("create expressions from where conditions", () => {
                                                             field: expect.any(Object)
                                                         },
                                                         {
-                                                            fieldPathId: "price",
+                                                            fieldPathId: "values.price",
                                                             negate: false,
                                                             path: "values.price",
                                                             compareValue: 480,
@@ -1810,7 +1921,7 @@ describe("create expressions from where conditions", () => {
                                                     expressions: [],
                                                     filters: [
                                                         {
-                                                            fieldPathId: "title",
+                                                            fieldPathId: "values.title",
                                                             negate: false,
                                                             path: "values.title",
                                                             compareValue: "some level #4 value",
@@ -1839,44 +1950,64 @@ describe("create expressions from where conditions", () => {
             where: {
                 AND: [
                     {
-                        title_contains: "some value"
+                        values: {
+                            title_contains: "some value"
+                        }
                     },
                     {
-                        title_contains: "some other value"
+                        values: {
+                            title_contains: "some other value"
+                        }
                     },
                     {
                         OR: [
                             {
-                                title_contains: "some level #3 value",
-                                price_gte: 100
+                                values: {
+                                    title_contains: "some level #3 value",
+                                    price_gte: 100
+                                }
                             },
                             {
-                                title_contains: "some level #3.1 value",
+                                values: {
+                                    title_contains: "some level #3.1 value"
+                                },
                                 OR: [
                                     {
-                                        price_gte: 110,
-                                        price_lte: 490
+                                        values: {
+                                            price_gte: 110,
+                                            price_lte: 490
+                                        }
                                     },
                                     {
-                                        title_contains: "some level #4 value"
+                                        values: {
+                                            title_contains: "some level #4 value"
+                                        }
                                     }
                                 ]
                             }
                         ],
                         AND: [
                             {
-                                price_gte: 100,
-                                price_lte: 500
+                                values: {
+                                    price_gte: 100,
+                                    price_lte: 500
+                                }
                             },
                             {
-                                isMarried: true,
+                                values: {
+                                    isMarried: true
+                                },
                                 OR: [
                                     {
-                                        price_gte: 120,
-                                        price_lte: 480
+                                        values: {
+                                            price_gte: 120,
+                                            price_lte: 480
+                                        }
                                     },
                                     {
-                                        title_contains: "some level #4 value"
+                                        values: {
+                                            title_contains: "some level #4 value"
+                                        }
                                     }
                                 ]
                             }
@@ -1885,10 +2016,14 @@ describe("create expressions from where conditions", () => {
                 ],
                 OR: [
                     {
-                        price_gte: 777
+                        values: {
+                            price_gte: 777
+                        }
                     },
                     {
-                        isMarried: false
+                        values: {
+                            isMarried: false
+                        }
                     }
                 ]
             }
@@ -1907,7 +2042,7 @@ describe("create expressions from where conditions", () => {
                             expressions: [],
                             filters: [
                                 {
-                                    fieldPathId: "title",
+                                    fieldPathId: "values.title",
                                     negate: false,
                                     path: "values.title",
                                     compareValue: "some value",
@@ -1922,7 +2057,7 @@ describe("create expressions from where conditions", () => {
                             expressions: [],
                             filters: [
                                 {
-                                    fieldPathId: "title",
+                                    fieldPathId: "values.title",
                                     negate: false,
                                     path: "values.title",
                                     compareValue: "some other value",
@@ -1945,7 +2080,7 @@ describe("create expressions from where conditions", () => {
                                             expressions: [],
                                             filters: [
                                                 {
-                                                    fieldPathId: "title",
+                                                    fieldPathId: "values.title",
                                                     negate: false,
                                                     path: "values.title",
                                                     compareValue: "some level #3 value",
@@ -1954,7 +2089,7 @@ describe("create expressions from where conditions", () => {
                                                     field: expect.any(Object)
                                                 },
                                                 {
-                                                    fieldPathId: "price",
+                                                    fieldPathId: "values.price",
                                                     negate: false,
                                                     path: "values.price",
                                                     compareValue: 100,
@@ -1968,7 +2103,7 @@ describe("create expressions from where conditions", () => {
                                             condition: "AND",
                                             filters: [
                                                 {
-                                                    fieldPathId: "title",
+                                                    fieldPathId: "values.title",
                                                     negate: false,
                                                     path: "values.title",
                                                     compareValue: "some level #3.1 value",
@@ -1987,7 +2122,7 @@ describe("create expressions from where conditions", () => {
                                                             expressions: [],
                                                             filters: [
                                                                 {
-                                                                    fieldPathId: "price",
+                                                                    fieldPathId: "values.price",
                                                                     negate: false,
                                                                     path: "values.price",
                                                                     compareValue: 110,
@@ -1997,7 +2132,7 @@ describe("create expressions from where conditions", () => {
                                                                     field: expect.any(Object)
                                                                 },
                                                                 {
-                                                                    fieldPathId: "price",
+                                                                    fieldPathId: "values.price",
                                                                     negate: false,
                                                                     path: "values.price",
                                                                     compareValue: 490,
@@ -2013,7 +2148,7 @@ describe("create expressions from where conditions", () => {
                                                             expressions: [],
                                                             filters: [
                                                                 {
-                                                                    fieldPathId: "title",
+                                                                    fieldPathId: "values.title",
                                                                     negate: false,
                                                                     path: "values.title",
                                                                     compareValue:
@@ -2040,7 +2175,7 @@ describe("create expressions from where conditions", () => {
                                             expressions: [],
                                             filters: [
                                                 {
-                                                    fieldPathId: "price",
+                                                    fieldPathId: "values.price",
                                                     negate: false,
                                                     path: "values.price",
                                                     compareValue: 100,
@@ -2049,7 +2184,7 @@ describe("create expressions from where conditions", () => {
                                                     field: expect.any(Object)
                                                 },
                                                 {
-                                                    fieldPathId: "price",
+                                                    fieldPathId: "values.price",
                                                     negate: false,
                                                     path: "values.price",
                                                     compareValue: 500,
@@ -2063,7 +2198,7 @@ describe("create expressions from where conditions", () => {
                                             condition: "AND",
                                             filters: [
                                                 {
-                                                    fieldPathId: "isMarried",
+                                                    fieldPathId: "values.isMarried",
                                                     negate: false,
                                                     path: "values.isMarried",
                                                     compareValue: true,
@@ -2082,7 +2217,7 @@ describe("create expressions from where conditions", () => {
                                                             expressions: [],
                                                             filters: [
                                                                 {
-                                                                    fieldPathId: "price",
+                                                                    fieldPathId: "values.price",
                                                                     negate: false,
                                                                     path: "values.price",
                                                                     compareValue: 120,
@@ -2092,7 +2227,7 @@ describe("create expressions from where conditions", () => {
                                                                     field: expect.any(Object)
                                                                 },
                                                                 {
-                                                                    fieldPathId: "price",
+                                                                    fieldPathId: "values.price",
                                                                     negate: false,
                                                                     path: "values.price",
                                                                     compareValue: 480,
@@ -2108,7 +2243,7 @@ describe("create expressions from where conditions", () => {
                                                             expressions: [],
                                                             filters: [
                                                                 {
-                                                                    fieldPathId: "title",
+                                                                    fieldPathId: "values.title",
                                                                     negate: false,
                                                                     path: "values.title",
                                                                     compareValue:
@@ -2139,7 +2274,7 @@ describe("create expressions from where conditions", () => {
                             expressions: [],
                             filters: [
                                 {
-                                    fieldPathId: "price",
+                                    fieldPathId: "values.price",
                                     negate: false,
                                     path: "values.price",
                                     compareValue: 777,
@@ -2154,7 +2289,7 @@ describe("create expressions from where conditions", () => {
                             expressions: [],
                             filters: [
                                 {
-                                    fieldPathId: "isMarried",
+                                    fieldPathId: "values.isMarried",
                                     negate: false,
                                     path: "values.isMarried",
                                     compareValue: false,
@@ -2183,15 +2318,21 @@ describe("create expressions from where conditions", () => {
             where: {
                 OR: [
                     {
-                        price_between: [200, 300],
+                        values: {
+                            price_between: [200, 300]
+                        },
                         OR: [
                             {
-                                title: "black"
+                                values: {
+                                    title: "black"
+                                }
                             },
                             {
                                 OR: [
                                     {
-                                        title_contains: "version"
+                                        values: {
+                                            title_contains: "version"
+                                        }
                                     }
                                 ]
                             }
@@ -2200,8 +2341,10 @@ describe("create expressions from where conditions", () => {
                     {
                         OR: [
                             {
-                                availableOn_gte: "2024-02-01",
-                                availableOn_lte: "2024-02-02"
+                                values: {
+                                    availableOn_gte: "2024-02-01",
+                                    availableOn_lte: "2024-02-02"
+                                }
                             }
                         ]
                     }
@@ -2217,7 +2360,7 @@ describe("create expressions from where conditions", () => {
                     condition: "AND",
                     filters: [
                         {
-                            fieldPathId: "price",
+                            fieldPathId: "values.price",
                             negate: false,
                             path: "values.price",
                             compareValue: [200, 300],
@@ -2236,7 +2379,7 @@ describe("create expressions from where conditions", () => {
                                     expressions: [],
                                     filters: [
                                         {
-                                            fieldPathId: "title",
+                                            fieldPathId: "values.title",
                                             negate: false,
                                             path: "values.title",
                                             compareValue: "black",
@@ -2259,7 +2402,7 @@ describe("create expressions from where conditions", () => {
                                                     expressions: [],
                                                     filters: [
                                                         {
-                                                            fieldPathId: "title",
+                                                            fieldPathId: "values.title",
                                                             negate: false,
                                                             path: "values.title",
                                                             compareValue: "version",
@@ -2290,7 +2433,7 @@ describe("create expressions from where conditions", () => {
                                     expressions: [],
                                     filters: [
                                         {
-                                            fieldPathId: "availableOn",
+                                            fieldPathId: "values.availableOn",
                                             negate: false,
                                             path: "values.availableOn",
                                             compareValue: "2024-02-01",
@@ -2299,7 +2442,7 @@ describe("create expressions from where conditions", () => {
                                             field: expect.any(Object)
                                         },
                                         {
-                                            fieldPathId: "availableOn",
+                                            fieldPathId: "values.availableOn",
                                             negate: false,
                                             path: "values.availableOn",
                                             compareValue: "2024-02-02",

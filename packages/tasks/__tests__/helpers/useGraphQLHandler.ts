@@ -33,12 +33,6 @@ export interface UseHandlerParams {
     plugins?: PluginCollection;
 }
 
-const tenant = {
-    id: "root",
-    name: "Root",
-    parent: null
-};
-
 export const useGraphQLHandler = (params?: UseHandlerParams) => {
     const { plugins = [] } = params || {};
 
@@ -70,7 +64,7 @@ export const useGraphQLHandler = (params?: UseHandlerParams) => {
                         return {
                             id: apiKey,
                             name: apiKey,
-                            tenant: tenant.id,
+                            slug: `slug-${apiKey}`,
                             permissions: [],
                             token,
                             createdBy: {

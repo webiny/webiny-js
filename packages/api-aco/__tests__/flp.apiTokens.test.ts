@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 
@@ -12,7 +12,11 @@ describe("Folder Level Permissions - API Tokens", () => {
 
         const gqlIdentityApiToken = useGraphQlHandler({
             identity: identityApiToken,
-            permissions: [{ name: "cms.*" }]
+            permissions: [
+                {
+                    name: "cms.*"
+                }
+            ]
         });
 
         const modelGroup = await gqlIdentityA.cms.createTestModelGroup();
@@ -33,7 +37,9 @@ describe("Folder Level Permissions - API Tokens", () => {
         const createdEntry = await gqlIdentityA.cms
             .createEntry(model, {
                 data: {
-                    title: `Test entry`,
+                    values: {
+                        title: `Test entry`
+                    },
                     wbyAco_location: {
                         folderId: folder.id
                     }
@@ -84,7 +90,11 @@ describe("Folder Level Permissions - API Tokens", () => {
                     return response.data.listBasicTestModels;
                 })
         ).resolves.toMatchObject({
-            data: [{ id: createdEntry.id }],
+            data: [
+                {
+                    id: createdEntry.id
+                }
+            ],
             error: null,
             meta: {
                 cursor: null,
@@ -98,7 +108,9 @@ describe("Folder Level Permissions - API Tokens", () => {
             gqlIdentityApiToken.cms
                 .createEntry(model, {
                     data: {
-                        title: `Test-5`,
+                        values: {
+                            title: `Test-5`
+                        },
                         wbyAco_location: {
                             folderId: folder.id
                         }
@@ -108,7 +120,9 @@ describe("Folder Level Permissions - API Tokens", () => {
                     return response.data.createBasicTestModel;
                 })
         ).resolves.toMatchObject({
-            data: { id: expect.any(String) }
+            data: {
+                id: expect.any(String)
+            }
         });
 
         // Updating content in the folder should be allowed with an API key.
@@ -116,22 +130,35 @@ describe("Folder Level Permissions - API Tokens", () => {
             gqlIdentityApiToken.cms
                 .updateEntry(model, {
                     revision: createdEntry.id,
-                    data: { title: createdEntry.title + "-update" }
+                    data: {
+                        values: {
+                            title: createdEntry.title + "-update"
+                        }
+                    }
                 })
                 .then(([response]) => {
                     return response.data.updateBasicTestModel;
                 })
         ).resolves.toMatchObject({
-            data: { title: createdEntry.title + "-update" }
+            data: {
+                values: {
+                    title: createdEntry.title + "-update"
+                }
+            }
         });
 
         // Deleting content in the folder should be allowed with an API key.
         await expect(
             gqlIdentityApiToken.cms
-                .deleteEntry(model, { revision: createdEntry.entryId })
+                .deleteEntry(model, {
+                    revision: createdEntry.entryId
+                })
                 .then(([response]) => {
                     return response.data.deleteBasicTestModel;
                 })
-        ).resolves.toMatchObject({ data: true, error: null });
+        ).resolves.toMatchObject({
+            data: true,
+            error: null
+        });
     });
 });

@@ -33,8 +33,8 @@ import { CmsEntryFilterPlugin } from "~/plugins/CmsEntryFilterPlugin.js";
 import { StorageOperationsCmsModelPlugin, StorageTransformPlugin } from "@webiny/api-headless-cms";
 import { createCreateIndexTask } from "~/tasks/createIndexTaskPlugin.js";
 import { CompressorPlugin } from "@webiny/api";
-import { ModelBeforeCreateHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";
-import { ModelBeforeCreateFromHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModelFrom/events.js";
+import { ModelAfterCreateHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";
+import { ModelAfterCreateFromHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModelFrom/events.js";
 import { ModelAfterDeleteHandler } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/events.js";
 import { createTable } from "@webiny/db-dynamodb";
 
@@ -162,7 +162,11 @@ export const createStorageOperations: StorageOperationsFactory = params => {
             entries.dataLoaders.clearAll();
         },
         init: async context => {
-            context.container.registerFactory(ModelBeforeCreateHandler, () => ({
+            /**
+             * TODO @pavel
+             * Moved operations to AFTER create/from because at in before the model does not have modelId - to create the index.
+             */
+            context.container.registerFactory(ModelAfterCreateHandler, () => ({
                 async handle(event) {
                     const { model } = event.payload;
                     await createElasticsearchIndex({
@@ -173,7 +177,7 @@ export const createStorageOperations: StorageOperationsFactory = params => {
                 }
             }));
 
-            context.container.registerFactory(ModelBeforeCreateFromHandler, () => ({
+            context.container.registerFactory(ModelAfterCreateFromHandler, () => ({
                 async handle(event) {
                     const { model } = event.payload;
                     await createElasticsearchIndex({

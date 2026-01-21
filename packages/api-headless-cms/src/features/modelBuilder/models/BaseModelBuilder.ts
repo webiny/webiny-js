@@ -16,7 +16,7 @@ export abstract class BaseModelBuilder<TBuild = CmsModelPlugin> {
 
     protected isSingleEntry = false;
 
-    constructor(protected registry: FieldBuilderRegistry.Interface) {}
+    public constructor(protected registry: FieldBuilderRegistry.Interface) {}
 
     modelId(id: string): this {
         this.config.modelId = id;

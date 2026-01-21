@@ -51,12 +51,12 @@ const doNotTouchProperty = Symbol("__DO_NOT_TOUCH_AS_WE_USE_IT_TO_SKIP_UNNECESSA
 /**
  * This should be used when transforming the whole entry.
  */
-const entryStorageTransform = async (
+const entryStorageTransform = async <T extends CmsEntryValues = CmsEntryValues>(
     context: Pick<CmsContext, "plugins">,
     model: CmsModel,
     operation: "toStorage" | "fromStorage",
-    entry: CmsEntry
-): Promise<CmsEntry> => {
+    entry: CmsEntry<T>
+): Promise<CmsEntry<T>> => {
     /**
      * We use this property to skip unnecessary operations.
      */
@@ -67,7 +67,7 @@ const entryStorageTransform = async (
 
     const getStoragePlugin = getStoragePluginFactory(context);
 
-    const transformedValues: Record<string, any> = {};
+    const transformedValues: T = {} as T;
     for (const field of model.fields) {
         /**
          * We can safely skip fields that are not present in the entry values.
@@ -75,7 +75,8 @@ const entryStorageTransform = async (
         if (entry.values.hasOwnProperty(field.fieldId) === false) {
             continue;
         }
-        const value = entry.values[field.fieldId];
+        const key = field.fieldId as keyof T;
+        const value = entry.values[key];
 
         const baseType = getBaseFieldType(field);
         const plugin = getStoragePlugin(baseType);
@@ -86,7 +87,7 @@ const entryStorageTransform = async (
             );
         }
 
-        transformedValues[field.fieldId] = await plugin[operation]({
+        transformedValues[key] = await plugin[operation]({
             plugins: context.plugins,
             model,
             field,

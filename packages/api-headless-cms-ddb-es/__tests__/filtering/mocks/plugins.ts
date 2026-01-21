@@ -15,8 +15,7 @@ export const createPluginsContainer = (plugins: Plugin[] = []) => {
 
 export const buildElasticsearchOperatorPlugins = (container?: PluginsContainer) => {
     return createOperatorPluginList({
-        plugins: container || createPluginsContainer(),
-        locale: "en-US"
+        plugins: container || createPluginsContainer()
     });
 };
 

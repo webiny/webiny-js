@@ -1,8 +1,8 @@
 import type { CmsEntry } from "@webiny/api-headless-cms/types";
-import type { Folder } from "~/folder/folder.types.js";
+import type { CmsEntryFolder, Folder } from "~/folder/folder.types.js";
 
 export class EntryToFolderMapper {
-    static toFolder(entry: CmsEntry): Folder {
+    static toFolder(entry: CmsEntry<CmsEntryFolder>): Folder {
         return {
             id: entry.id,
             entryId: entry.entryId,

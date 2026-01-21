@@ -22,7 +22,7 @@ import type { CmsGroup } from "~/types/index.js";
  * - Clear GroupCache after successful create
  */
 class CreateGroupRepositoryImpl implements RepositoryAbstraction.Interface {
-    constructor(
+    public constructor(
         private groupCache: GroupCache.Interface,
         private pluginGroupsProvider: PluginGroupsProvider.Interface,
         private storageOperations: StorageOperations.Interface,

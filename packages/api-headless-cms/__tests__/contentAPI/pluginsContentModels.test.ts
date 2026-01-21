@@ -50,9 +50,11 @@ const FIELDS_FRAGMENT = (model: Pick<CmsModel, "singularApiName">) => {
     return /* GraphQL */ `
         fragment ${model.singularApiName}Fields on ${model.singularApiName} {
             id
-            name
-            sku
-            price
+            values {
+                name
+                sku
+                price
+            }
             meta {
                 status
             }
@@ -395,9 +397,11 @@ describe("content model plugins", () => {
                     query: CREATE_PRODUCT(contentModelPlugin.contentModel),
                     variables: {
                         data: {
-                            name: `product-${i}`,
-                            sku: `sku-${i}`,
-                            price: i * 100
+                            values: {
+                                name: `product-${i}`,
+                                sku: `sku-${i}`,
+                                price: i * 100
+                            }
                         }
                     }
                 }
@@ -406,9 +410,11 @@ describe("content model plugins", () => {
                 data: {
                     createProduct: {
                         data: {
-                            name: `product-${i}`,
-                            sku: `sku-${i}`,
-                            price: i * 100
+                            values: {
+                                name: `product-${i}`,
+                                sku: `sku-${i}`,
+                                price: i * 100
+                            }
                         },
                         error: null
                     }
@@ -451,27 +457,33 @@ describe("content model plugins", () => {
                             meta: {
                                 status: "draft"
                             },
-                            name: "product-2",
-                            price: 200,
-                            sku: "sku-2"
+                            values: {
+                                name: "product-2",
+                                price: 200,
+                                sku: "sku-2"
+                            }
                         },
                         {
                             id: expect.any(String),
                             meta: {
                                 status: "draft"
                             },
-                            name: "product-1",
-                            price: 100,
-                            sku: "sku-1"
+                            values: {
+                                name: "product-1",
+                                price: 100,
+                                sku: "sku-1"
+                            }
                         },
                         {
                             id: expect.any(String),
                             meta: {
                                 status: "draft"
                             },
-                            name: "product-0",
-                            price: 0,
-                            sku: "sku-0"
+                            values: {
+                                name: "product-0",
+                                price: 0,
+                                sku: "sku-0"
+                            }
                         }
                     ],
                     error: null
@@ -518,27 +530,33 @@ describe("content model plugins", () => {
                             meta: {
                                 status: "published"
                             },
-                            name: "product-2",
-                            price: 200,
-                            sku: "sku-2"
+                            values: {
+                                name: "product-2",
+                                price: 200,
+                                sku: "sku-2"
+                            }
                         },
                         {
                             id: expect.any(String),
                             meta: {
                                 status: "published"
                             },
-                            name: "product-1",
-                            price: 100,
-                            sku: "sku-1"
+                            values: {
+                                name: "product-1",
+                                price: 100,
+                                sku: "sku-1"
+                            }
                         },
                         {
                             id: expect.any(String),
                             meta: {
                                 status: "published"
                             },
-                            name: "product-0",
-                            price: 0,
-                            sku: "sku-0"
+                            values: {
+                                name: "product-0",
+                                price: 0,
+                                sku: "sku-0"
+                            }
                         }
                     ],
                     error: null

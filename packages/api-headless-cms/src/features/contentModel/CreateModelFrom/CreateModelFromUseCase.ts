@@ -32,7 +32,7 @@ import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
  * Note: Repository handles domain validations (modelId generation, uniqueness, etc.)
  */
 class CreateModelFromUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(
+    public constructor(
         private getModelUseCase: GetModelUseCase.Interface,
         private eventPublisher: EventPublisher.Interface,
         private repository: CreateModelFromRepository.Interface,

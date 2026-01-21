@@ -16,25 +16,39 @@ interface RenderListFilterFieldsParams {
     excludeFields?: string[];
 }
 
+interface RenderListFilterFieldsResponse {
+    baseFilters: string[];
+    baseFiltersAsString(): string;
+    fieldFilters: string[];
+    fieldFiltersAsString(): string;
+    allFiltersAsString(): string;
+}
+
 interface RenderListFilterFields {
-    (params: RenderListFilterFieldsParams): string;
+    (params: RenderListFilterFieldsParams): RenderListFilterFieldsResponse;
 }
 
 type CreateListFiltersType =
     | CmsModelFieldToGraphQLPlugin["read"]["createListFilters"]
     | CmsModelFieldToGraphQLPlugin["manage"]["createListFilters"];
 
-export const renderListFilterFields: RenderListFilterFields = (params): string => {
+export const renderListFilterFields: RenderListFilterFields = (
+    params
+): RenderListFilterFieldsResponse => {
     const { model, fields, type, fieldTypePlugins, excludeFields = [] } = params;
-    const result: string[] = [
+    const baseFilters: string[] = [
         "id: ID",
         "id_not: ID",
         "id_in: [ID!]",
         "id_not_in: [ID!]",
-        "entryId: String",
-        "entryId_not: String",
-        "entryId_in: [String!]",
-        "entryId_not_in: [String!]",
+        ...(excludeFields.includes("entryId")
+            ? []
+            : [
+                  "entryId: String",
+                  "entryId_not: String",
+                  "entryId_in: [String!]",
+                  "entryId_not_in: [String!]"
+              ]),
 
         ...ENTRY_META_FIELDS.map(field => {
             if (isDateTimeEntryMetaField(field)) {
@@ -55,14 +69,19 @@ export const renderListFilterFields: RenderListFilterFields = (params): string =
                 `${field}_in: [ID!]`,
                 `${field}_not_in: [ID!]`
             ];
-        }).flat()
+        })
+            .flat()
+            .filter(field => {
+                return !excludeFields.some(excl => {
+                    return field.startsWith(`${excl}_`) || field.startsWith(`${excl}: `);
+                });
+            })
     ];
-
     /**
      * We can find different statuses only in the manage API endpoint.
      */
-    if (type === "manage") {
-        result.push(
+    if (type === "manage" && excludeFields.includes("status") === false) {
+        baseFilters.push(
             "status: String",
             "status_not: String",
             "status_in: [String!]",
@@ -70,11 +89,7 @@ export const renderListFilterFields: RenderListFilterFields = (params): string =
         );
     }
 
-    const finalFields = result.filter(field => {
-        return !excludeFields.some(excl => {
-            return field.startsWith(`${excl}_`) || field.startsWith(`${excl}: `);
-        });
-    });
+    const fieldFilters: string[] = [];
 
     for (const field of fields) {
         // Every time a client updates content model's fields, we check the type of each field. If a field plugin
@@ -88,8 +103,20 @@ export const renderListFilterFields: RenderListFilterFields = (params): string =
         if (typeof createListFilters !== "function") {
             continue;
         }
-        finalFields.push(createListFilters({ model, field, plugins: fieldTypePlugins }));
+        fieldFilters.push(createListFilters({ model, field, plugins: fieldTypePlugins }));
     }
 
-    return finalFields.filter(Boolean).join("\n");
+    return {
+        baseFilters,
+        fieldFilters,
+        baseFiltersAsString() {
+            return baseFilters.join("\n");
+        },
+        fieldFiltersAsString() {
+            return fieldFilters.join("\n");
+        },
+        allFiltersAsString() {
+            return [...baseFilters, ...fieldFilters].join("\n");
+        }
+    };
 };

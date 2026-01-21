@@ -1,9 +1,9 @@
 import { Result } from "@webiny/feature/api";
 import {
-    ListLockRecordsUseCase as UseCaseAbstraction,
-    ListLockRecordsRepository,
     ListLockRecordsInput,
-    ListLockRecordsOutput
+    ListLockRecordsOutput,
+    ListLockRecordsRepository,
+    ListLockRecordsUseCase as UseCaseAbstraction
 } from "./abstractions.js";
 import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
 import { RecordLockingConfig } from "~/domain/abstractions.js";
@@ -26,7 +26,7 @@ class ListLockRecordsUseCaseImpl implements UseCaseAbstraction.Interface {
             where: {
                 ...input?.where,
                 createdBy_not: identity.id,
-                savedOn_gte: new Date(new Date().getTime() - this.config.timeout)
+                savedOn_gte: new Date(new Date().getTime() - this.config.timeout).toISOString()
             }
         };
 

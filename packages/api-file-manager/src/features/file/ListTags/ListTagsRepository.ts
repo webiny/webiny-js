@@ -1,26 +1,33 @@
 import { Result } from "@webiny/feature/api";
 import { GetUniqueFieldValuesUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetUniqueFieldValues";
 import {
-    ListTagsRepository as RepositoryAbstraction,
     ListTagsInput,
+    ListTagsRepository as RepositoryAbstraction,
     TagItem
 } from "./abstractions.js";
 import { FileModel } from "~/domain/file/abstractions.js";
 import { FilePersistenceError } from "~/domain/file/errors.js";
+import { CmsFieldInputToWhereMapper } from "@webiny/api-headless-cms/features/mapper/abstractions.js";
 
 class ListTagsRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
         private getUniqueFieldValues: GetUniqueFieldValuesUseCase.Interface,
-        private fileModel: FileModel.Interface
+        private fileModel: FileModel.Interface,
+        private cmsFieldInputToWhereMapper: CmsFieldInputToWhereMapper.Interface
     ) {}
 
     async execute(input: ListTagsInput): Promise<Result<TagItem[], RepositoryAbstraction.Error>> {
         const result = await this.getUniqueFieldValues.execute(this.fileModel, {
             fieldId: "tags",
-            where: {
-                ...(input.where || {}),
-                latest: true
-            }
+            // TODO fix with proper types
+            // @ts-expect-error
+            where: this.cmsFieldInputToWhereMapper.map({
+                input: {
+                    ...(input.where || {}),
+                    latest: true
+                },
+                fields: this.fileModel.fields
+            })
         });
 
         if (result.isFail()) {
@@ -44,5 +51,5 @@ class ListTagsRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const ListTagsRepository = RepositoryAbstraction.createImplementation({
     implementation: ListTagsRepositoryImpl,
-    dependencies: [GetUniqueFieldValuesUseCase, FileModel]
+    dependencies: [GetUniqueFieldValuesUseCase, FileModel, CmsFieldInputToWhereMapper]
 });

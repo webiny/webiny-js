@@ -11,7 +11,7 @@ export interface IObjectFieldBuilder extends FieldBuilder<"object"> {
 }
 
 export class ObjectFieldBuilder extends FieldBuilder<"object"> implements IObjectFieldBuilder {
-    constructor(private registry: FieldBuilderRegistry.Interface) {
+    public constructor(private registry: FieldBuilderRegistry.Interface) {
         super("object");
     }
 

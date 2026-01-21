@@ -21,7 +21,9 @@ const convertDefaultValue = (field: CmsModelField, value: any): string | number 
 
 export const useDefaultValues = (model: CmsModel) => {
     return useMemo(() => {
-        const values: Partial<CmsContentEntry> = {};
+        const entry: Partial<CmsContentEntry> & Required<Pick<CmsContentEntry, "values">> = {
+            values: {}
+        };
         /**
          * Assign the default values:
          * * check the settings.defaultValue
@@ -37,7 +39,7 @@ export const useDefaultValues = (model: CmsModel) => {
                  * Special type of field is the boolean one.
                  * We MUST set true/false for default value.
                  */
-                values[field.fieldId] = convertDefaultValue(field, settings.defaultValue);
+                entry.values[field.fieldId] = convertDefaultValue(field, settings.defaultValue);
                 continue;
             }
             /**
@@ -59,19 +61,19 @@ export const useDefaultValues = (model: CmsModel) => {
                     return !!selected;
                 });
                 if (selectedValue) {
-                    values[field.fieldId] = convertDefaultValue(field, selectedValue.value);
+                    entry.values[field.fieldId] = convertDefaultValue(field, selectedValue.value);
                 }
                 continue;
             }
             /**
              *
              */
-            values[field.fieldId] = predefinedValues.values
+            entry.values[field.fieldId] = predefinedValues.values
                 .filter(({ selected }) => !!selected)
                 .map(({ value }) => {
                     return convertDefaultValue(field, value);
                 });
         }
-        return values;
+        return entry;
     }, [model.modelId]);
 };

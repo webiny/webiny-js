@@ -15,7 +15,6 @@ import { WEBINY_TASK_MODEL_ID } from "./TaskPrivateModel.js";
 import { WEBINY_TASK_LOG_MODEL_ID } from "./TaskLogPrivateModel.js";
 import type { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { remapWhere } from "./where.js";
 import { createZodError, parseIdentifier } from "@webiny/utils";
 import zod from "zod";
 import type { GenericRecord } from "@webiny/api/types.js";
@@ -35,13 +34,14 @@ import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
 import {
-    TaskBeforeCreateEvent,
     TaskAfterCreateEvent,
-    TaskBeforeUpdateEvent,
+    TaskAfterDeleteEvent,
     TaskAfterUpdateEvent,
+    TaskBeforeCreateEvent,
     TaskBeforeDeleteEvent,
-    TaskAfterDeleteEvent
+    TaskBeforeUpdateEvent
 } from "~/events/index.js";
+import { CmsFieldInputToWhereMapper } from "@webiny/api-headless-cms/features/mapper/feature.js";
 
 const createRevisionId = (id: string) => {
     const { id: entryId } = parseIdentifier(id);
@@ -123,6 +123,8 @@ const validateTaskInput = async (params: IValidateParams) => {
 };
 
 export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
+    const cmsFieldInputToWhereMapper = context.container.resolve(CmsFieldInputToWhereMapper);
+
     const getTaskModel = async (): Promise<CmsModel> => {
         const identityContext = context.container.resolve(IdentityContext);
         return await identityContext.withoutAuthorization(async () => {
@@ -184,7 +186,10 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
             const listLatestEntries = context.container.resolve(ListLatestEntriesUseCase);
             const result = await listLatestEntries.execute<TaskService.Task<T, O>>(model, {
                 ...params,
-                where: remapWhere(params?.where)
+                where: cmsFieldInputToWhereMapper.map({
+                    input: params?.where,
+                    fields: model.fields
+                })
             });
             if (result.isFail()) {
                 throw result.error;
@@ -222,9 +227,11 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
             const model = await getTaskModel();
             const createEntry = context.container.resolve(CreateEntryUseCase);
             return createEntry.execute(model, {
-                ...data,
-                iterations: 0,
-                taskStatus: TaskDataStatus.PENDING
+                values: {
+                    ...data,
+                    iterations: 0,
+                    taskStatus: TaskDataStatus.PENDING
+                }
             });
         });
 
@@ -268,8 +275,9 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
             const model = await getTaskModel();
             const updateEntry = context.container.resolve(UpdateEntryUseCase);
             return updateEntry.execute(model, createRevisionId(id), {
-                ...data,
-                savedOn: new Date().toISOString()
+                values: {
+                    ...data
+                }
             });
         });
 
@@ -326,8 +334,10 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
             const model = await getLogModel();
             const createEntry = context.container.resolve(CreateEntryUseCase);
             return createEntry.execute(model, {
-                ...data,
-                task: task.id
+                values: {
+                    ...data,
+                    task: task.id
+                }
             });
         });
 
@@ -343,7 +353,9 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
         const result = await identityContext.withoutAuthorization(async () => {
             const model = await getLogModel();
             const updateEntry = context.container.resolve(UpdateEntryUseCase);
-            return updateEntry.execute(model, createRevisionId(id), data);
+            return updateEntry.execute(model, createRevisionId(id), {
+                values: data
+            });
         });
 
         if (result.isFail()) {
@@ -397,7 +409,9 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
             const listLatestEntries = context.container.resolve(ListLatestEntriesUseCase);
             const result = await listLatestEntries.execute<ITaskLog>(model, {
                 where: {
-                    task: taskId
+                    values: {
+                        task: taskId
+                    }
                 },
                 sort: ["createdOn_DESC"],
                 limit: 1
@@ -423,7 +437,10 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
             const listLatestEntries = context.container.resolve(ListLatestEntriesUseCase);
             const result = await listLatestEntries.execute<ITaskLog>(model, {
                 ...params,
-                where: remapWhere(params.where)
+                where: cmsFieldInputToWhereMapper.map({
+                    input: params.where,
+                    fields: model.fields
+                })
             });
             if (result.isFail()) {
                 throw result.error;

@@ -51,6 +51,7 @@ const pageModelPlugin = new CmsModelPlugin({
                         fieldId: "blocks",
                         id: "lxza895k",
                         label: "Blocks",
+                        storageId: "",
                         renderer: {
                             name: "ref-input"
                         },
@@ -65,7 +66,8 @@ const pageModelPlugin = new CmsModelPlugin({
                             ]
                         },
                         type: "ref",
-                        validation: []
+                        validation: [],
+                        listValidation: []
                     }
                 ],
                 layout: [["lxza895k"]]
@@ -74,10 +76,7 @@ const pageModelPlugin = new CmsModelPlugin({
             validation: []
         }
     ],
-    group: {
-        id: "62f39c13ebe1d800091bf33c",
-        name: "Ungrouped"
-    },
+    group: "62f39c13ebe1d800091bf33c",
     layout: [["jf7h0jsc"], ["0kbfq0j6"]]
 });
 
@@ -149,10 +148,7 @@ const faqModelPlugin = new CmsModelPlugin({
             validation: []
         }
     ],
-    group: {
-        id: "62f39c13ebe1d800091bf33c",
-        name: "Ungrouped"
-    },
+    group: "62f39c13ebe1d800091bf33c",
     layout: [["c8pphxf2"], ["477qeutg"], ["7jubpw3w"]]
 });
 
@@ -309,10 +305,7 @@ const faqGroupBannerModelPlugin = new CmsModelPlugin({
             validation: []
         }
     ],
-    group: {
-        id: "62f39c13ebe1d800091bf33c",
-        name: "Ungrouped"
-    },
+    group: "62f39c13ebe1d800091bf33c",
     layout: [
         ["iqe2aw2g"],
         ["25kvqahf"],

@@ -20,7 +20,7 @@ export const renderSortEnum: RenderSortEnum = ({
     fieldTypePlugins,
     sorterPlugins
 }): string => {
-    let sorters: string[] = [
+    const sorters: string[] = [
         `id_ASC`,
         `id_DESC`,
 
@@ -31,24 +31,11 @@ export const renderSortEnum: RenderSortEnum = ({
 
     for (const field of fields) {
         const plugin = fieldTypePlugins[getBaseFieldType(field)];
-        if (!plugin) {
-            continue;
-        } else if (plugin.createSorters) {
-            const result = plugin.createSorters({
-                model,
-                field,
-                sorters
-            });
-            if (result) {
-                sorters = result;
-                continue;
-            }
-        }
-        if (!plugin.isSortable) {
+        if (!plugin?.isSortable) {
             continue;
         }
-        sorters.push(`${field.fieldId}_ASC`);
-        sorters.push(`${field.fieldId}_DESC`);
+        sorters.push(`values_${field.fieldId}_ASC`);
+        sorters.push(`values_${field.fieldId}_DESC`);
     }
     if (!sorterPlugins) {
         return sorters.join("\n");

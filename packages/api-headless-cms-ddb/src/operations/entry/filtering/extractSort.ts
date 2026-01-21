@@ -4,42 +4,62 @@ import type { PluginsContainer } from "@webiny/plugins";
 import { CmsEntryFieldSortingPlugin } from "~/plugins/index.js";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 
-interface Result {
+const extractSortInfo = (sortBy: string) => {
+    const rootSorting = sortBy.match(/^([a-zA-Z]+)_(ASC|DESC)$/);
+    if (rootSorting) {
+        return {
+            fieldId: rootSorting[1],
+            isValues: false,
+            order: rootSorting[2] as "ASC" | "DESC"
+        };
+    }
+    const valuesSorting = sortBy.match(/^values_([a-zA-Z0-9]+)_(ASC|DESC)$/);
+    if (valuesSorting) {
+        return {
+            fieldId: valuesSorting[1],
+            isValues: true,
+            order: valuesSorting[2] as "ASC" | "DESC"
+        };
+    }
+    throw new WebinyError(
+        "Problem in determining the sorting for the entry items.",
+        "SORT_EXTRACT_ERROR",
+        {
+            sortBy
+        }
+    );
+};
+
+interface IResponse {
     valuePath: string;
     reverse: boolean;
     fieldId: string;
     field: Field;
 }
 
-interface Params {
+interface IParams {
     model: CmsModel;
     sortBy: string;
     fields: Record<string, Field>;
     plugins: PluginsContainer;
 }
 
-export const extractSort = (params: Params): Result => {
+export const extractSort = (params: IParams): IResponse => {
     const { model, sortBy, fields, plugins } = params;
-    const result = sortBy.split("_");
-    if (result.length !== 2) {
-        throw new WebinyError(
-            "Problem in determining the sorting for the entry items.",
-            "SORT_EXTRACT_ERROR",
-            {
-                sortBy
-            }
-        );
-    }
-    const [fieldId, order] = result as [string, "ASC" | "DESC"];
+    const { fieldId, isValues: isValuesSorting, order } = extractSortInfo(sortBy);
 
-    const field = Object.values(fields).find(field => {
+    const field = Object.values(fields).find(f => {
         /**
          * We do not support sorting by nested fields.
          */
-        if (field.parents.length > 0) {
+        const isValues = f.parents[0]?.fieldId === "values";
+        if (isValues && isValuesSorting) {
+            return f.fieldId === fieldId;
+        }
+        if (f.parents.length > 0) {
             return false;
         }
-        return field.fieldId === fieldId;
+        return f.fieldId === fieldId;
     });
 
     const plugin = plugins

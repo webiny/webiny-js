@@ -1,10 +1,9 @@
-import { createDecorator } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
+import { createDecorator, Result } from "@webiny/feature/api";
 import { ListEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/abstractions.js";
 import type {
-    CmsModel,
+    CmsEntryListParams,
     CmsEntryValues,
-    CmsEntryListParams
+    CmsModel
 } from "@webiny/api-headless-cms/types/index.js";
 import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 import { ListEntriesFactory } from "~/utils/decorators/ListEntriesFactory.js";

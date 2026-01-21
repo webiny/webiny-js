@@ -1,10 +1,8 @@
-import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
-import { CreateEntryUseCase as UseCaseAbstraction } from "./abstractions.js";
-import { CreateEntryRepository } from "./abstractions.js";
+import { createImplementation, Result } from "@webiny/feature/api";
+import { CreateEntryRepository, CreateEntryUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
-import { EntryBeforeCreateEvent, EntryAfterCreateEvent } from "./events.js";
-import { AccessControl } from "~/features/shared/abstractions.js";
+import { EntryAfterCreateEvent, EntryBeforeCreateEvent } from "./events.js";
+import { AccessControl, CmsContext } from "~/features/shared/abstractions.js";
 import type {
     CmsEntry,
     CmsEntryValues,
@@ -16,7 +14,6 @@ import { EntryNotAuthorizedError, EntryValidationError } from "~/domain/contentE
 import { createEntryData } from "~/crud/contentEntry/entryDataFactories/createEntryData.js";
 import { TenantContext } from "@webiny/api-core/features/TenantContext";
 import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
-import { CmsContext } from "~/features/shared/abstractions.js";
 
 /**
  * CreateEntryUseCase - Orchestrates entry creation.
@@ -28,7 +25,7 @@ import { CmsContext } from "~/features/shared/abstractions.js";
  * - Delegate persistence to repository
  */
 class CreateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(
+    public constructor(
         private eventPublisher: EventPublisher.Interface,
         private repository: CreateEntryRepository.Interface,
         private accessControl: AccessControl.Interface,
@@ -37,7 +34,7 @@ class CreateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         private cmsContext: CmsContext.Interface
     ) {}
 
-    async execute<T = CmsEntryValues>(
+    public async execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         rawInput: CreateCmsEntryInput<T>,
         options?: CreateCmsEntryOptionsInput
@@ -50,7 +47,7 @@ class CreateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
 
         try {
             // Transform raw input to domain entry
-            const { entry, input } = await createEntryData({
+            const { entry, input } = await createEntryData<T>({
                 model,
                 rawInput,
                 options,
@@ -89,7 +86,7 @@ class CreateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
                 })
             );
 
-            return Result.ok(entry as CmsEntry<T>);
+            return Result.ok(entry);
         } catch (error) {
             if (error.code === "VALIDATION_FAILED") {
                 return Result.fail(new EntryValidationError(error.message, error.data));

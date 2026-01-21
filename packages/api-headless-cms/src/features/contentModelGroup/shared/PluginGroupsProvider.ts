@@ -20,7 +20,7 @@ import type { CmsGroup } from "~/types/index.js";
 class PluginGroupsProviderImpl implements ProviderAbstraction.Interface {
     private cache = createMemoryCache<Promise<CmsGroup[]>>();
 
-    constructor(
+    public constructor(
         private tenantContext: TenantContext.Interface,
         private cmsContext: CmsContext.Interface,
         private accessControl: AccessControl.Interface,

@@ -7,7 +7,7 @@ import { createMockIdentity } from "~tests/mocks/identity";
 import { TaskDefinitionNotFoundError, TaskNotFoundError } from "~/domain/errors.js";
 import { createTaskDefinition } from "../helpers/createTaskDefinition.js";
 
-describe("store crud", () => {
+describe("tasks - store crud", () => {
     const handler = useRawHandler({
         plugins: [
             createTaskDefinition({

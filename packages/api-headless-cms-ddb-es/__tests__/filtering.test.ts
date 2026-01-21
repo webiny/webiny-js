@@ -2,11 +2,11 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
 import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
 import { createPluginsContainer, createQuery } from "./filtering/mocks";
-import { createExecFiltering, CreateExecFilteringResponse } from "./filtering/mocks/filtering";
+import { createExecFiltering } from "./filtering/mocks/filtering";
 
 describe("convert where to elasticsearch query", () => {
     let query: ElasticsearchBoolQueryConfig;
-    let execFiltering: CreateExecFilteringResponse;
+    let execFiltering: ReturnType<typeof createExecFiltering>;
 
     beforeEach(() => {
         query = createQuery();
@@ -17,23 +17,25 @@ describe("convert where to elasticsearch query", () => {
 
     it("should add root level query conditions", async () => {
         const where: CmsEntryListWhere = {
-            title_contains: "webiny",
-            title_not_contains: "server",
-            title_not_startsWith: "test",
-            title_startsWith: "CMS",
-            date_gte: "2022-01-01",
-            date_in: [
-                "2022-02-01",
-                "2022-03-01",
-                "2022-04-01",
-                "2022-05-01",
-                "2022-06-01",
-                "2022-07-01",
-                "2022-08-01"
-            ],
-            date_between: ["2022-07-07", "2022-12-07"],
-            date_not_between: ["2022-08-07", "2022-08-08"],
-            date_not: "2022-05-05"
+            values: {
+                title_contains: "webiny",
+                title_not_contains: "server",
+                title_not_startsWith: "test",
+                title_startsWith: "CMS",
+                date_gte: "2022-01-01",
+                date_in: [
+                    "2022-02-01",
+                    "2022-03-01",
+                    "2022-04-01",
+                    "2022-05-01",
+                    "2022-06-01",
+                    "2022-07-01",
+                    "2022-08-01"
+                ],
+                date_between: ["2022-07-07", "2022-12-07"],
+                date_not_between: ["2022-08-07", "2022-08-08"],
+                date_not: "2022-05-05"
+            }
         };
 
         execFiltering({
@@ -127,10 +129,14 @@ describe("convert where to elasticsearch query", () => {
                     id_gt: 50
                 },
                 {
-                    title_contains: "webiny"
+                    values: {
+                        title_contains: "webiny"
+                    }
                 },
                 {
-                    title_contains: "serverless"
+                    values: {
+                        title_contains: "serverless"
+                    }
                 }
             ]
         };
@@ -184,10 +190,14 @@ describe("convert where to elasticsearch query", () => {
             id_gt: 50,
             OR: [
                 {
-                    title_contains: "webiny"
+                    values: {
+                        title_contains: "webiny"
+                    }
                 },
                 {
-                    title_contains: "serverless"
+                    values: {
+                        title_contains: "serverless"
+                    }
                 }
             ]
         };
@@ -250,10 +260,14 @@ describe("convert where to elasticsearch query", () => {
                     id_gt: 50
                 },
                 {
-                    title_contains: "webiny"
+                    values: {
+                        title_contains: "webiny"
+                    }
                 },
                 {
-                    title_contains: "serverless"
+                    values: {
+                        title_contains: "serverless"
+                    }
                 }
             ]
         };
@@ -320,15 +334,21 @@ describe("convert where to elasticsearch query", () => {
                     id_gt: 50
                 },
                 {
-                    title_contains: "webiny"
+                    values: {
+                        title_contains: "webiny"
+                    }
                 },
                 {
                     OR: [
                         {
-                            title_contains: "serverless"
+                            values: {
+                                title_contains: "serverless"
+                            }
                         },
                         {
-                            title_contains: "cms"
+                            values: {
+                                title_contains: "cms"
+                            }
                         }
                     ]
                 }
@@ -407,10 +427,14 @@ describe("convert where to elasticsearch query", () => {
             id_gte: 2,
             AND: [
                 {
-                    title_contains: "webiny"
+                    values: {
+                        title_contains: "webiny"
+                    }
                 },
                 {
-                    title_contains: "serverless"
+                    values: {
+                        title_contains: "serverless"
+                    }
                 }
             ]
         };
@@ -462,10 +486,14 @@ describe("convert where to elasticsearch query", () => {
             id_gte: 2,
             OR: [
                 {
-                    title_contains: "webiny"
+                    values: {
+                        title_contains: "webiny"
+                    }
                 },
                 {
-                    title_contains: "serverless"
+                    values: {
+                        title_contains: "serverless"
+                    }
                 }
             ]
         };
@@ -523,24 +551,34 @@ describe("convert where to elasticsearch query", () => {
 
     it(`should add root "AND" condition with nested "AND" and "OR"`, async () => {
         const where: CmsEntryListWhere = {
-            title_contains: "cms",
+            values: {
+                title_contains: "cms"
+            },
             id_gt: 50,
             OR: [
                 {
-                    title_contains: "headless",
+                    values: {
+                        title_contains: "headless"
+                    },
                     AND: [
                         {
-                            title_contains: "form"
+                            values: {
+                                title_contains: "form"
+                            }
                         },
                         {
-                            title_contains: "page"
+                            values: {
+                                title_contains: "page"
+                            }
                         }
                     ]
                 },
                 {
                     OR: [
                         {
-                            title_contains: "webiny"
+                            values: {
+                                title_contains: "webiny"
+                            }
                         }
                     ]
                 }
@@ -641,28 +679,40 @@ describe("convert where to elasticsearch query", () => {
         const where: CmsEntryListWhere = {
             OR: [
                 {
-                    price_between: [35000, 100000],
+                    values: {
+                        price_between: [35000, 100000]
+                    },
                     OR: [
                         {
-                            title_not: "unknown"
+                            values: {
+                                title_not: "unknown"
+                            }
                         },
                         {
-                            title_contains: "es"
+                            values: {
+                                title_contains: "es"
+                            }
                         },
                         {
                             AND: [
                                 {
                                     OR: [
                                         {
-                                            title_contains: "st"
+                                            values: {
+                                                title_contains: "st"
+                                            }
                                         },
                                         {
-                                            age_gt: 5
+                                            values: {
+                                                age_gt: 5
+                                            }
                                         }
                                     ]
                                 },
                                 {
-                                    age_between: [2, 18]
+                                    values: {
+                                        age_between: [2, 18]
+                                    }
                                 }
                             ]
                         }
@@ -671,8 +721,10 @@ describe("convert where to elasticsearch query", () => {
                 {
                     AND: [
                         {
-                            availableOn_gte: "2021-01-01",
-                            availableOn_lte: "2021-01-02"
+                            values: {
+                                availableOn_gte: "2021-01-01",
+                                availableOn_lte: "2021-01-02"
+                            }
                         }
                     ]
                 }

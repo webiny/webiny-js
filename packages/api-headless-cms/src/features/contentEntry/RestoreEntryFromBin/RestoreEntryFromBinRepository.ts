@@ -1,10 +1,8 @@
-import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
+import { createImplementation, Result } from "@webiny/feature/api";
 import { RestoreEntryFromBinRepository as RepositoryAbstraction } from "./abstractions.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
-import { EntryToStorageTransform } from "~/legacy/abstractions.js";
-import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
-import type { CmsEntry, CmsModel } from "~/types/index.js";
+import { EntryFromStorageTransform, EntryToStorageTransform } from "~/legacy/abstractions.js";
+import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 
 /**
@@ -17,28 +15,28 @@ import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
  * - Handle storage errors
  */
 class RestoreEntryFromBinRepositoryImpl implements RepositoryAbstraction.Interface {
-    constructor(
+    public constructor(
         private entryToStorageTransform: EntryToStorageTransform.Interface,
         private entryFromStorageTransform: EntryFromStorageTransform.Interface,
         private storageOperations: StorageOperations.Interface
     ) {}
 
-    async execute(
+    public async execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
-        entry: CmsEntry
-    ): Promise<Result<CmsEntry, RepositoryAbstraction.Error>> {
+        entry: CmsEntry<T>
+    ): Promise<Result<CmsEntry<T>, RepositoryAbstraction.Error>> {
         try {
             // Transform entry to storage format
-            const storageEntry = await this.entryToStorageTransform(model, entry);
+            const storageEntry = await this.entryToStorageTransform<T>(model, entry);
 
             // Call storage operation
-            const result = await this.storageOperations.entries.restoreFromBin(model, {
+            const result = await this.storageOperations.entries.restoreFromBin<T>(model, {
                 entry,
                 storageEntry
             });
 
             // Transform result back from storage format
-            const transformedEntry = await this.entryFromStorageTransform(model, result);
+            const transformedEntry = await this.entryFromStorageTransform<T>(model, result);
 
             return Result.ok(transformedEntry);
         } catch (error) {

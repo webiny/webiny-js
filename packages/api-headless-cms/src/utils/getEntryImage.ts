@@ -1,8 +1,8 @@
-import type { CmsEntry, CmsModel } from "~/types/index.js";
+import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 
-export function getEntryImage(
+export function getEntryImage<T extends CmsEntryValues = CmsEntryValues>(
     model: Pick<CmsModel, "imageFieldId" | "fields">,
-    entry: Pick<CmsEntry, "values">
+    entry: Pick<CmsEntry<T>, "values">
 ): string | null {
     if (!model.imageFieldId) {
         return null;
@@ -11,6 +11,10 @@ export function getEntryImage(
     if (!field) {
         return null;
     }
-    const imageFieldId = field.fieldId;
-    return entry.values[imageFieldId] || null;
+    const imageFieldId = field.fieldId as keyof T;
+    const value = entry.values[imageFieldId];
+    if (!value || typeof value !== "string") {
+        return null;
+    }
+    return value;
 }

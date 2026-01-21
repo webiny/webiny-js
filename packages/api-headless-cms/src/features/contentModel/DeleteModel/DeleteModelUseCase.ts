@@ -22,7 +22,7 @@ import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
  * Note: Validation (e.g., checking for entries, plugin models) should be done in event handlers
  */
 class DeleteModelUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(
+    public constructor(
         private getModelUseCase: GetModelUseCase.Interface,
         private eventPublisher: EventPublisher.Interface,
         private repository: DeleteModelRepository.Interface,

@@ -6,9 +6,9 @@ import { DuplicatePageRepository as RepositoryAbstraction } from "./abstractions
 import { PageModel } from "~/domain/page/abstractions.js";
 import { EntryToPageMapper } from "~/domain/page/EntryToPageMapper.js";
 import {
-    PageValidationError,
     PageNotFoundError,
-    PagePersistenceError
+    PagePersistenceError,
+    PageValidationError
 } from "~/domain/page/errors.js";
 
 class DuplicatePageRepositoryImpl implements RepositoryAbstraction.Interface {
@@ -51,7 +51,10 @@ class DuplicatePageRepositoryImpl implements RepositoryAbstraction.Interface {
         };
 
         // Create the duplicated page
-        const result = await this.createEntry.execute(this.pageModel, newPageData);
+        const result = await this.createEntry.execute(this.pageModel, {
+            location: newPageData.location,
+            values: newPageData
+        });
 
         if (result.isFail()) {
             if (result.error.code === "Cms/Entry/ValidationError") {

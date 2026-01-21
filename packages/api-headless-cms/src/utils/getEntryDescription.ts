@@ -1,8 +1,8 @@
-import type { CmsEntry, CmsModel } from "~/types/index.js";
+import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 
-export function getEntryDescription(
+export function getEntryDescription<T extends CmsEntryValues = CmsEntryValues>(
     model: Pick<CmsModel, "descriptionFieldId" | "fields">,
-    entry: CmsEntry
+    entry: Pick<CmsEntry<T>, "values">
 ): string {
     if (!model.descriptionFieldId) {
         return "";
@@ -12,5 +12,9 @@ export function getEntryDescription(
         return "";
     }
     const descriptionFieldId = field.fieldId;
-    return entry.values[descriptionFieldId] || "";
+    const value = entry.values[descriptionFieldId as keyof T];
+    if (!value || typeof value !== "string") {
+        return "";
+    }
+    return value;
 }

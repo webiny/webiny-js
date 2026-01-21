@@ -10,7 +10,7 @@ export const createPatternValidator = (): CmsModelFieldValidatorPlugin => {
         validator: {
             name: "pattern",
             async validate({ value, validator, context }) {
-                if (!value) {
+                if (typeof value !== "string" || !value) {
                     return true;
                 }
 

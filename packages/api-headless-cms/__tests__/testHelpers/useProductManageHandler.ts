@@ -24,48 +24,52 @@ const productFields = `
         status
         revisions {
             id
-            title
+            values {
+                title
+            }
         }
     }
     # user defined fields
-    title
-    category {
-        modelId
-        entryId
-        id
-    }
-    price
-    image
-    inStock
-    itemsInStock
-    availableOn
-    color
-    availableSizes
-    richText
-    variant {
-        name
-        price
-        images
+    values {
+        title
         category {
             modelId
             entryId
             id
         }
-        options {
+        price
+        image
+        inStock
+        itemsInStock
+        availableOn
+        color
+        availableSizes
+        richText
+        variant {
             name
             price
-            image
+            images
             category {
                 modelId
                 entryId
                 id
             }
-            categories {
-                modelId
-                entryId
-                id
+            options {
+                name
+                price
+                image
+                category {
+                    modelId
+                    entryId
+                    id
+                }
+                categories {
+                    modelId
+                    entryId
+                    id
+                }
+                longText
             }
-            longText
         }
     }
 `;
@@ -75,6 +79,7 @@ const errorFields = `
         code
         message
         data
+        stack
     }
 `;
 

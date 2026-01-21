@@ -39,8 +39,10 @@ const authorWithSearchableJsonFields = `
        
         revisions {
             id
-            name
-            info
+            values {
+                name
+                info
+            }
             meta {
                 status
                 version
@@ -52,9 +54,11 @@ const authorWithSearchableJsonFields = `
         folderId
     }
     # user defined fields
-    name
-    info
-    nonSearchableJson
+    values {
+        name
+        info
+        nonSearchableJson
+    }
 `;
 
 export const createGetQuery = (model: Pick<CmsModel, "singularApiName" | "pluralApiName">) => {

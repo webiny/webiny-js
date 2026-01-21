@@ -11,7 +11,7 @@ export interface IRefFieldBuilder
 }
 
 class RefFieldBuilder extends FieldBuilder<"ref"> implements IRefFieldBuilder {
-    constructor() {
+    public constructor() {
         super("ref");
     }
 

@@ -255,7 +255,14 @@ export const createWorkflowStateSchema = () => {
 
                         const listWorkflowStates =
                             context.container.resolve(ListWorkflowStatesUseCase);
-                        const listResult = await listWorkflowStates.execute(result.data);
+                        const listResult = await listWorkflowStates.execute({
+                            ...result.data,
+                            where: {
+                                values: {
+                                    ...result.data?.where
+                                }
+                            }
+                        });
 
                         if (listResult.isFail()) {
                             throw listResult.error;
@@ -274,7 +281,14 @@ export const createWorkflowStateSchema = () => {
                         const listOwnWorkflowStates = context.container.resolve(
                             ListOwnWorkflowStatesUseCase
                         );
-                        const listResult = await listOwnWorkflowStates.execute(result.data);
+                        const listResult = await listOwnWorkflowStates.execute({
+                            ...result.data,
+                            where: {
+                                values: {
+                                    ...result.data?.where
+                                }
+                            }
+                        });
 
                         if (listResult.isFail()) {
                             throw listResult.error;
@@ -293,7 +307,14 @@ export const createWorkflowStateSchema = () => {
                         const listRequestedWorkflowStates = context.container.resolve(
                             ListRequestedWorkflowStatesUseCase
                         );
-                        const listResult = await listRequestedWorkflowStates.execute(result.data);
+                        const listResult = await listRequestedWorkflowStates.execute({
+                            ...result.data,
+                            where: {
+                                values: {
+                                    ...result.data?.where
+                                }
+                            }
+                        });
 
                         if (listResult.isFail()) {
                             throw listResult.error;

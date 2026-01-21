@@ -1,15 +1,14 @@
-import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
+import { createImplementation, Result } from "@webiny/feature/api";
 import {
     EventPublisher,
     EventPublisher as EventPublisherAbstraction
 } from "@webiny/api-core/features/EventPublisher";
 import {
-    UpdateFolderUseCase as UseCaseAbstraction,
-    UpdateFolderRepository
+    UpdateFolderRepository,
+    UpdateFolderUseCase as UseCaseAbstraction
 } from "./abstractions.js";
 import { GetFolderRepository } from "../GetFolder/abstractions.js";
-import { FolderBeforeUpdateEvent, FolderAfterUpdateEvent } from "./events.js";
+import { FolderAfterUpdateEvent, FolderBeforeUpdateEvent } from "./events.js";
 import type { Folder, UpdateFolderParams } from "~/folder/folder.types.js";
 
 class UpdateFolderUseCaseImpl implements UseCaseAbstraction.Interface {

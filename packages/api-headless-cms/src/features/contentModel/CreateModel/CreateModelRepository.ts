@@ -56,7 +56,7 @@ const getModelId = (model: { modelId?: string; name?: string }): string => {
  * - Clear ModelCache after successful create
  */
 class CreateModelRepositoryImpl implements RepositoryAbstraction.Interface {
-    constructor(
+    public constructor(
         private modelCache: ModelCache.Interface,
         private pluginModelsProvider: PluginModelsProvider.Interface,
         private listModelsUseCase: ListModelsUseCase.Interface,

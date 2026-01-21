@@ -10,7 +10,7 @@ import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
 class FieldBuilderRegistryImpl implements IFieldBuilderRegistry {
     private fieldTypes = new Map<string, IFieldTypeFactory>();
 
-    constructor(fieldTypeFactories: IFieldTypeFactory[]) {
+    public constructor(fieldTypeFactories: IFieldTypeFactory[]) {
         // Register all field types by their type name
         for (const factory of fieldTypeFactories) {
             this.fieldTypes.set(factory.type, factory);

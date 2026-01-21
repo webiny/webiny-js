@@ -21,9 +21,11 @@ class GetTargetWorkflowStateRepositoryImpl implements Repository.Interface {
             this.model,
             {
                 where: {
-                    app: input.app,
-                    targetRevisionId: input.targetRevisionId,
-                    isActive: true
+                    values: {
+                        app: input.app,
+                        targetRevisionId: input.targetRevisionId,
+                        isActive: true
+                    }
                 },
                 limit: 1
             }

@@ -2,7 +2,7 @@ import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
 import { GetRevisionByIdRepository as RepositoryAbstraction } from "./abstractions.js";
 import { EntryPersistenceError, EntryNotFoundError } from "~/domain/contentEntry/errors.js";
-import type { CmsEntry, CmsModel } from "~/types/index.js";
+import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
 import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
 
@@ -11,18 +11,18 @@ import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
  * Returns entry or fails with EntryNotFoundError if not found.
  */
 class GetRevisionByIdRepositoryImpl implements RepositoryAbstraction.Interface {
-    constructor(
+    public constructor(
         private entryFromStorageTransform: EntryFromStorageTransform.Interface,
         private storageOperations: StorageOperations.Interface
     ) {}
 
-    async execute(
+    async execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         id: string
-    ): Promise<Result<CmsEntry, RepositoryAbstraction.Error>> {
+    ): Promise<Result<CmsEntry<T>, RepositoryAbstraction.Error>> {
         try {
             // Fetch from storage
-            const storageEntry = await this.storageOperations.entries.getRevisionById(model, {
+            const storageEntry = await this.storageOperations.entries.getRevisionById<T>(model, {
                 id
             });
 
@@ -31,7 +31,7 @@ class GetRevisionByIdRepositoryImpl implements RepositoryAbstraction.Interface {
             }
 
             // Transform storage entry to domain entry
-            const entry = await this.entryFromStorageTransform(model, storageEntry);
+            const entry = await this.entryFromStorageTransform<T>(model, storageEntry);
 
             return Result.ok(entry);
         } catch (error) {

@@ -13,19 +13,21 @@ const fields = `
     }
     savedOn
     # user defined fields
-    title
-    references {
-        ... on CategoryApiNameWhichIsABitDifferentThanModelId {
-            id
-            modelId
-        }
-        ... on AuthorApiModel {
-            id
-            modelId
-        }
-        ... on ProductApiSingular {
-            id
-            modelId
+    values {
+        title
+        references {
+            ... on CategoryApiNameWhichIsABitDifferentThanModelId {
+                id
+                modelId
+            }
+            ... on AuthorApiModel {
+                id
+                modelId
+            }
+            ... on ProductApiSingular {
+                id
+                modelId
+            }
         }
     }
 `;

@@ -19,12 +19,13 @@ export interface CreateExecParams {
     fields: ModelFields;
     plugins: PluginsContainer;
 }
-export interface ExecParams {
+export interface IExecParams {
     where: CmsEntryListWhere;
     query: ElasticsearchBoolQueryConfig;
+    isValues?: boolean;
 }
 export interface CreateExecFilteringResponse {
-    (params: ExecParams): void;
+    (params: IExecParams): void;
 }
 export const createExecFiltering = (params: CreateExecParams): CreateExecFilteringResponse => {
     const { fields, plugins, model } = params;
@@ -73,8 +74,8 @@ export const createExecFiltering = (params: CreateExecParams): CreateExecFilteri
         );
     };
 
-    const execFiltering = (params: ExecParams) => {
-        const { where: initialWhere, query } = params;
+    const execFiltering = (params: IExecParams) => {
+        const { where: initialWhere, query, isValues = false } = params;
         /**
          * No point in continuing if no "where" conditions exist.
          */
@@ -82,12 +83,10 @@ export const createExecFiltering = (params: CreateExecParams): CreateExecFilteri
         if (keys.length === 0) {
             return;
         }
-        const where: CmsEntryListWhere = {
-            ...initialWhere
-        };
+        const where = structuredClone(initialWhere);
 
         for (const key in where) {
-            const value = where[key];
+            const value = where[key as keyof typeof where];
             /**
              * We always skip if no value is defined.
              * Only skip undefined value, null is valid.
@@ -107,7 +106,8 @@ export const createExecFiltering = (params: CreateExecParams): CreateExecFilteri
                 for (const childWhere of childWhereList) {
                     execFiltering({
                         query: childQuery,
-                        where: childWhere
+                        where: childWhere,
+                        isValues
                     });
                 }
                 const childQueryBool = getPopulated(childQuery);
@@ -134,7 +134,8 @@ export const createExecFiltering = (params: CreateExecParams): CreateExecFilteri
                     const childQuery = createBaseQuery();
                     execFiltering({
                         query: childQuery,
-                        where: childWhere
+                        where: childWhere,
+                        isValues
                     });
                     const childQueryBool = getPopulated(childQuery);
                     if (Object.keys(childQueryBool).length === 0) {
@@ -156,10 +157,17 @@ export const createExecFiltering = (params: CreateExecParams): CreateExecFilteri
                     query
                 });
                 continue;
+            } else if (key === "values") {
+                execFiltering({
+                    query,
+                    where: where[key] as CmsEntryListWhere,
+                    isValues: true
+                });
+                continue;
             }
             const { field: whereFieldId, operator } = parseWhereKey(key);
 
-            let fieldId: string = whereFieldId;
+            let fieldId: string = isValues ? `values.${whereFieldId}` : whereFieldId;
 
             /**
              * TODO This will be required until the storage operations receive the fieldId instead of field storageId.

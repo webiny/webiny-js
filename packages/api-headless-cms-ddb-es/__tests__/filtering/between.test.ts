@@ -17,7 +17,9 @@ describe("between filter", () => {
 
     it("should add between filter - number", async () => {
         const where: CmsEntryListWhere = {
-            age_between: [18, 55]
+            values: {
+                age_between: [18, 55]
+            }
         };
 
         execFiltering({
@@ -46,7 +48,9 @@ describe("between filter", () => {
 
     it("should add between filter - date", async () => {
         const where: CmsEntryListWhere = {
-            date_between: ["2022-01-01T00:00:00.000Z", "2022-12-31T23:59:59.999Z"]
+            values: {
+                date_between: ["2022-01-01T00:00:00.000Z", "2022-12-31T23:59:59.999Z"]
+            }
         };
 
         execFiltering({
@@ -75,7 +79,9 @@ describe("between filter", () => {
 
     it("should throw error if array was not sent as filter value", async () => {
         const where: CmsEntryListWhere = {
-            age_between: 17
+            values: {
+                age_between: 17
+            }
         };
 
         expect(() => {
@@ -91,7 +97,9 @@ describe("between filter", () => {
     const wrongTupleValues = [[[]], [[17]], [[17, 177, 1777]]];
     it.each(wrongTupleValues)("should throw error if a tuple was not sent - %s", async value => {
         const where: CmsEntryListWhere = {
-            age_between: value
+            values: {
+                age_between: value
+            }
         };
 
         expect(() => {

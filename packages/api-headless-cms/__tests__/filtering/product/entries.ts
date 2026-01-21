@@ -1,4 +1,6 @@
 import type { ProductCategory, Product, ProductManager } from "../../types";
+import type { IManageQueryBaseResponse } from "~tests/testHelpers/types.js";
+import type { ICategoryResponseValues } from "~tests/testHelpers/category/manage/types.js";
 
 const createProducts = ({ id }: ProductCategory): Product[] => {
     const category = {
@@ -107,14 +109,18 @@ const createProducts = ({ id }: ProductCategory): Product[] => {
     return products;
 };
 
-export const createEntriesFactory = (manager: ProductManager) => {
-    return async (category: ProductCategory): Promise<Product[]> => {
+export const createEntriesFactory = <T extends Product = Product>(manager: ProductManager) => {
+    return async (
+        category: IManageQueryBaseResponse<ICategoryResponseValues>
+    ): Promise<IManageQueryBaseResponse<T>[]> => {
         const products = createProducts(category);
 
-        const entries: Product[] = [];
+        const entries: IManageQueryBaseResponse<T>[] = [];
         for (const product of products) {
             const [response] = await manager.createProduct({
-                data: product
+                data: {
+                    values: product
+                }
             });
             entries.push(response.data.createProduct.data);
         }

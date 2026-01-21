@@ -150,7 +150,8 @@ describe("content model test", () => {
                         layout: [],
                         plugin: false,
                         group: contentModelGroup.slug,
-                        icon: "fa/fas"
+                        icon: "fa/fas",
+                        tenant: "root"
                     },
                     error: null
                 }
@@ -336,9 +337,13 @@ describe("content model test", () => {
         const model = updateContentModelResponse.data.updateContentModel.data;
 
         const [createCategoryResponse] = await createCategory({
-            data: {
-                title: "Category",
-                slug: "title"
+            variables: {
+                data: {
+                    values: {
+                        title: "Category",
+                        slug: "title"
+                    }
+                }
             }
         });
         expect(createCategoryResponse).toMatchObject({
@@ -371,9 +376,11 @@ describe("content model test", () => {
 
         // Let's move the entry to the trash bin and try to delete the content model: it should fail.
         const [deleteCategoryResult] = await deleteCategory({
-            revision: createCategoryResponse.data.createCategory.data.entryId,
-            options: {
-                permanently: false
+            variables: {
+                revision: createCategoryResponse.data.createCategory.data!.entryId,
+                options: {
+                    permanently: false
+                }
             }
         });
 
@@ -403,10 +410,21 @@ describe("content model test", () => {
         });
 
         // Let's permanently delete the entry: it should be able to delete the content model.
-        await deleteCategory({
-            revision: createCategoryResponse.data.createCategory.data.entryId,
-            options: {
-                permanently: true
+        const [deleteCategoryResponse] = await deleteCategory({
+            variables: {
+                revision: createCategoryResponse.data.createCategory.data!.entryId,
+                options: {
+                    permanently: true
+                }
+            }
+        });
+
+        expect(deleteCategoryResponse).toEqual({
+            data: {
+                deleteCategory: {
+                    data: true,
+                    error: null
+                }
             }
         });
 
@@ -639,7 +657,8 @@ describe("content model test", () => {
                         layout: [[textField.id], [numberField.id]],
                         name: "new name",
                         plugin: false,
-                        icon: null
+                        icon: null,
+                        tenant: "root"
                     },
                     error: null
                 }
@@ -889,10 +908,11 @@ describe("content model test", () => {
             useGraphQLHandler(manageHandlerOpts);
         const { listBugs } = useBugManageHandler(manageHandlerOpts);
 
-        const bugModel = models.find(m => m.modelId === "bug");
-        if (!bugModel) {
+        const initialBugModel = models.find(m => m.modelId === "bug");
+        if (!initialBugModel) {
             throw new Error("Could not find model `bug`.");
         }
+        const bugModel = structuredClone(initialBugModel);
         // Create initial record
         const [createBugModelResponse] = await createContentModelMutation({
             data: {
@@ -915,11 +935,29 @@ describe("content model test", () => {
         initialLayouts.pop();
         initialLayouts.pop();
 
-        await updateContentModelMutation({
+        const [updatedBugModelResponse] = await updateContentModelMutation({
             modelId: createBugModelResponse.data.createContentModel.data.modelId,
             data: {
                 fields: initialFields,
                 layout: initialLayouts
+            }
+        });
+
+        expect(updatedBugModelResponse).toMatchObject({
+            data: {
+                updateContentModel: {
+                    data: {
+                        modelId: createBugModelResponse.data.createContentModel.data.modelId,
+                        fields: initialFields.map(field => {
+                            return {
+                                id: field.id,
+                                fieldId: field.fieldId
+                            };
+                        }),
+                        layout: [...initialLayouts]
+                    },
+                    error: null
+                }
             }
         });
 
@@ -931,14 +969,14 @@ describe("content model test", () => {
         });
 
         // should not be able to query bugType or bugValue fields (they are defined in the graphql query)
-        expect(listResponse).toEqual({
+        expect(listResponse).toMatchObject({
             errors: [
                 {
-                    message: `Cannot query field "bugValue" on type "${bugModel.singularApiName}". Did you mean "bugType"?`,
+                    message: `Cannot query field "${removedFields[1].fieldId}" on type "${bugModel.singularApiName}Values". Did you mean "bugType"?`,
                     locations: expect.any(Array)
                 },
                 {
-                    message: `Cannot query field "bugFixed" on type "${bugModel.singularApiName}". Did you mean "bugType"?`,
+                    message: `Cannot query field "${removedFields[0].fieldId}" on type "${bugModel.singularApiName}Values". Did you mean "bugType"?`,
                     locations: expect.any(Array)
                 }
             ]
@@ -965,10 +1003,12 @@ describe("content model test", () => {
         // make sure that we can query newly added fields
         const [listResponseAfterUpdate] = await listBugs({
             where: {
-                name: "test",
-                bugType: "t1",
-                bugValue: 3,
-                bugFixed: 2
+                values: {
+                    name: "test",
+                    bugType: "t1",
+                    bugValue: 3,
+                    bugFixed: 2
+                }
             },
             sort: ["createdOn_DESC"]
         });
@@ -1526,5 +1566,27 @@ describe("content model test", () => {
             }
         });
         expect(updateModelResponse.data.updateContentModel.error).toBeNull();
+    });
+
+    it("should create a model with extrapolated modelId", async () => {
+        const [response] = await baseCreateContentModelMutation({
+            data: {
+                name: "Test Content model",
+                singularApiName: `TestContentModel`,
+                pluralApiName: `TestContentModels`,
+                group: contentModelGroup.slug
+            }
+        });
+
+        expect(response).toMatchObject({
+            data: {
+                createContentModel: {
+                    data: {
+                        modelId: "testContentModel"
+                    },
+                    error: null
+                }
+            }
+        });
     });
 });

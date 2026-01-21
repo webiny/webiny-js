@@ -65,6 +65,11 @@ export interface InvokeParams {
     headers?: Record<string, string>;
 }
 
+export interface IBaseGraphQLResponse<T = any> {
+    data: T;
+    errors?: Error[];
+}
+
 export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
     const { identity, path } = params;
 
@@ -89,7 +94,7 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
         body,
         headers = {},
         ...rest
-    }: InvokeParams): Promise<[T, any]> => {
+    }: InvokeParams): Promise<[IBaseGraphQLResponse<T>, any]> => {
         const response = await handler(
             {
                 /**

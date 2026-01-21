@@ -1,5 +1,6 @@
 import type { CmsModel } from "./model.js";
 import type { GenericRecord } from "@webiny/api/types.js";
+import type { CmsDynamicZoneTemplate } from "~/types/fields/dynamicZoneField.js";
 
 export type CmsModelFieldType =
     | "boolean"
@@ -280,6 +281,10 @@ export interface CmsModelFieldSettings {
      * Disable full text search explicitly on this field.
      */
     disableFullTextSearch?: boolean;
+    /**
+     * Dynamic zone field templates.
+     */
+    templates?: CmsDynamicZoneTemplate[];
     /**
      * There are a lot of other settings that are possible to add, so we keep the type opened.
      */

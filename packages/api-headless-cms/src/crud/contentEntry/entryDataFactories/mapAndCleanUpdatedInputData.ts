@@ -1,11 +1,17 @@
 import WebinyError from "@webiny/error";
-import type { CmsModel } from "~/types/index.js";
+import type { CmsEntryValues, CmsModel } from "~/types/index.js";
 
 /**
  * Cleans the update input entry data.
  */
-export const mapAndCleanUpdatedInputData = (model: CmsModel, input: Record<string, any>) => {
-    return model.fields.reduce<Record<string, any>>((acc, field) => {
+export const mapAndCleanUpdatedInputData = <TValues extends CmsEntryValues = CmsEntryValues>(
+    model: CmsModel,
+    input?: Partial<TValues>
+) => {
+    if (!input) {
+        return {};
+    }
+    return model.fields.reduce<Partial<TValues>>((acc, field) => {
         /**
          * This should never happen, but let's make it sure.
          * The fix would be for the user to add the fieldId on the field definition.
@@ -18,11 +24,12 @@ export const mapAndCleanUpdatedInputData = (model: CmsModel, input: Record<strin
         /**
          * We cannot set default value here because user might want to update only certain field values.
          */
-        const value = input[field.fieldId];
+        const key = field.fieldId as keyof TValues;
+        const value = input[key];
         if (value === undefined) {
             return acc;
         }
-        acc[field.fieldId] = value;
+        acc[key] = value;
         return acc;
     }, {});
 };
