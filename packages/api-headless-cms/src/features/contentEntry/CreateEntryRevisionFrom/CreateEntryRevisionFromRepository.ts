@@ -4,7 +4,7 @@ import { CreateEntryRevisionFromRepository as RepositoryAbstraction } from "./ab
 import { StorageOperations } from "~/features/shared/abstractions.js";
 import { EntryToStorageTransform } from "~/legacy/abstractions.js";
 import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
-import type { CmsEntry, CmsModel } from "~/types/index.js";
+import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 
 /**
@@ -17,19 +17,19 @@ import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
  * - Handle storage errors
  */
 class CreateEntryRevisionFromRepositoryImpl implements RepositoryAbstraction.Interface {
-    constructor(
+    public constructor(
         private entryToStorageTransform: EntryToStorageTransform.Interface,
         private entryFromStorageTransform: EntryFromStorageTransform.Interface,
         private storageOperations: StorageOperations.Interface
     ) {}
 
-    async execute(
+    async execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
-        entry: CmsEntry
-    ): Promise<Result<CmsEntry, RepositoryAbstraction.Error>> {
+        entry: CmsEntry<T>
+    ): Promise<Result<CmsEntry<T>, RepositoryAbstraction.Error>> {
         try {
             // Transform entry to storage format
-            const storageEntry = await this.entryToStorageTransform(model, entry);
+            const storageEntry = await this.entryToStorageTransform<T>(model, entry);
 
             // Call storage operation
             const result = await this.storageOperations.entries.createRevisionFrom(model, {

@@ -104,7 +104,9 @@ describe("Entries storage operations", () => {
 
         const result = await storageOperations.entries.list(personModel, {
             where: {
-                name_contains: "person ",
+                values: {
+                    name_contains: "person "
+                },
                 latest: true
             },
             limit: 1000

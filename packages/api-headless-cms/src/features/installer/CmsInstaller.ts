@@ -10,7 +10,7 @@ export class CmsInstaller implements AppInstaller.Interface {
     readonly dependsOn = [];
     private defaultGroup: CmsModelGroup | undefined;
 
-    constructor(
+    public constructor(
         private createModelGroup: CreateModelGroup,
         private deleteModelGroup: DeleteModelGroup
     ) {}

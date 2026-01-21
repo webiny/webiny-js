@@ -1,6 +1,7 @@
 import type {
     CmsContext,
     CmsEntry,
+    CmsEntryValues,
     CmsModel,
     CreateCmsEntryInput,
     CreateCmsEntryOptionsInput
@@ -12,27 +13,31 @@ import { validateModelEntryDataOrThrow } from "../entryDataValidation.js";
 import { referenceFieldsMapping } from "../referenceFieldsMapping.js";
 import { createIdentifier, parseIdentifier } from "@webiny/utils";
 import WebinyError from "@webiny/error";
-import type { GenericRecord } from "@webiny/api/types.js";
 import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import { STATUS_DRAFT, STATUS_PUBLISHED, STATUS_UNPUBLISHED } from "./statuses.js";
 import type { AccessControl } from "~/crud/AccessControl/AccessControl.js";
 import { getState } from "./state.js";
 
-interface CreateEntryRevisionFromDataParams {
+interface CreateEntryRevisionFromDataParams<TValues extends CmsEntryValues = CmsEntryValues> {
     sourceId: string;
     model: CmsModel;
-    rawInput: CreateCmsEntryInput;
+    rawInput: CreateCmsEntryInput<TValues>;
     options?: CreateCmsEntryOptionsInput;
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
     getTenant: () => Tenant;
-    originalEntry: CmsEntry;
-    latestStorageEntry: CmsEntry;
+    originalEntry: CmsEntry<TValues>;
+    latestStorageEntry: CmsEntry<TValues>;
     accessControl: AccessControl;
 }
 
-export const createEntryRevisionFromData = async ({
+interface ICreateEntryRevisionFromDataResponse<TValues extends CmsEntryValues = CmsEntryValues> {
+    entry: CmsEntry<TValues>;
+    input: CreateCmsEntryInput<TValues>;
+}
+
+export const createEntryRevisionFromData = async <TValues extends CmsEntryValues = CmsEntryValues>({
     sourceId,
     model,
     rawInput,
@@ -42,32 +47,31 @@ export const createEntryRevisionFromData = async ({
     originalEntry,
     latestStorageEntry,
     accessControl
-}: CreateEntryRevisionFromDataParams): Promise<{
-    entry: CmsEntry;
-    input: GenericRecord;
-}> => {
+}: CreateEntryRevisionFromDataParams<TValues>): Promise<
+    ICreateEntryRevisionFromDataResponse<TValues>
+> => {
     /**
      * Make sure we only work with fields that are defined in the model.
+     *
+     * Also, we can be certain to cast as TValues because originalValues and new ones are being merged.
      */
-    const input = mapAndCleanUpdatedInputData(model, rawInput);
-
     const initialValues = {
         ...originalEntry.values,
-        ...input
+        ...mapAndCleanUpdatedInputData<TValues>(model, rawInput.values)
     };
 
     await validateModelEntryDataOrThrow({
         context,
         model,
-        data: initialValues,
+        values: initialValues,
         entry: originalEntry,
         skipValidators: options?.skipValidators
     });
 
-    const values = await referenceFieldsMapping({
+    const values = await referenceFieldsMapping<TValues>({
         context,
         model,
-        input: initialValues,
+        values: initialValues,
         validateEntries: false
     });
 
@@ -145,7 +149,7 @@ export const createEntryRevisionFromData = async ({
         };
     }
 
-    const entry: CmsEntry = {
+    const entry: CmsEntry<TValues> = {
         ...originalEntry,
         id,
         version: nextVersion,
@@ -181,7 +185,13 @@ export const createEntryRevisionFromData = async ({
         })
     };
 
-    return { entry, input };
+    return {
+        entry,
+        input: {
+            ...rawInput,
+            values: structuredClone(values)
+        }
+    };
 };
 
 const increaseEntryIdVersion = (id: string) => {

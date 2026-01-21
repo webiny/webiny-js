@@ -13,10 +13,7 @@ describe("content model via code", () => {
         const buildFields = vi.spyOn(CmsModelPlugin.prototype, "buildFields" as never);
 
         const model = new CmsModelPlugin({
-            group: {
-                id: "group",
-                name: "Group"
-            },
+            group: "group",
             name: "Test",
             modelId: "test",
             fields: [
@@ -24,20 +21,29 @@ describe("content model via code", () => {
                     id: "title",
                     fieldId: "title",
                     label: "Title",
-                    type: "text"
+                    type: "text",
+                    storageId: "",
+                    validation: [],
+                    listValidation: []
                 },
                 {
                     id: "obj",
                     fieldId: "obj",
                     label: "Obj",
                     type: "object",
+                    storageId: "",
+                    validation: [],
+                    listValidation: [],
                     settings: {
                         fields: [
                             {
                                 id: "objTitle",
                                 fieldId: "objTitle",
                                 label: "Obj Title",
-                                type: "text"
+                                type: "text",
+                                storageId: "",
+                                validation: [],
+                                listValidation: []
                             }
                         ]
                     }
@@ -62,10 +68,7 @@ describe("content model via code", () => {
 
         const model = new CmsModelPlugin({
             noValidate: true,
-            group: {
-                id: "group",
-                name: "Group"
-            },
+            group: "group",
             name: "Test",
             modelId: "test",
             fields: [
@@ -74,7 +77,9 @@ describe("content model via code", () => {
                     storageId: "text@title",
                     fieldId: "title",
                     label: "Title",
-                    type: "text"
+                    type: "text",
+                    validation: [],
+                    listValidation: []
                 },
                 {
                     id: "obj",
@@ -82,6 +87,8 @@ describe("content model via code", () => {
                     fieldId: "obj",
                     label: "Obj",
                     type: "object",
+                    validation: [],
+                    listValidation: [],
                     settings: {
                         fields: [
                             {
@@ -89,7 +96,9 @@ describe("content model via code", () => {
                                 fieldId: "objTitle",
                                 label: "Obj Title",
                                 type: "text",
-                                storageId: "text@objTitle"
+                                storageId: "text@objTitle",
+                                validation: [],
+                                listValidation: []
                             }
                         ]
                     }

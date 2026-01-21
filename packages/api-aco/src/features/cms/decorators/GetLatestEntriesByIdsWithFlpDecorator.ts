@@ -31,7 +31,9 @@ class GetLatestEntriesByIdsWithFlpDecoratorImpl implements GetLatestEntriesByIds
         return Result.ok(filteredEntries);
     }
 
-    private async filterEntriesByFolder<T>(entries: CmsEntry<T>[]): Promise<CmsEntry<T>[]> {
+    private async filterEntriesByFolder<T extends CmsEntryValues = CmsEntryValues>(
+        entries: CmsEntry<T>[]
+    ): Promise<CmsEntry<T>[]> {
         const results = await Promise.all(
             entries.map(async entry => {
                 const folderId = entry.location?.folderId;

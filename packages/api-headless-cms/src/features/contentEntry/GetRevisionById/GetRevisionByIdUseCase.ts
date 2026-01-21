@@ -2,7 +2,7 @@ import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
 import { GetRevisionByIdUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { GetRevisionByIdRepository } from "./abstractions.js";
-import type { CmsEntry, CmsModel } from "~/types/index.js";
+import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 
 /**
  * GetRevisionByIdUseCase - Fetches a specific entry revision.
@@ -10,13 +10,13 @@ import type { CmsEntry, CmsModel } from "~/types/index.js";
  * This is a simple query use case that delegates to the repository.
  */
 class GetRevisionByIdUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(private repository: GetRevisionByIdRepository.Interface) {}
+    public constructor(private repository: GetRevisionByIdRepository.Interface) {}
 
-    async execute(
+    public async execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         id: string
-    ): Promise<Result<CmsEntry, UseCaseAbstraction.Error>> {
-        return this.repository.execute(model, id);
+    ): Promise<Result<CmsEntry<T>, UseCaseAbstraction.Error>> {
+        return this.repository.execute<T>(model, id);
     }
 }
 

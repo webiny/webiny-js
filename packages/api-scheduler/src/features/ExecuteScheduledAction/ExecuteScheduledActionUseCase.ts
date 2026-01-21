@@ -1,11 +1,15 @@
 import { Result } from "@webiny/feature/api";
 import {
     ExecuteScheduledActionUseCase as UseCaseAbstraction,
-    HandlerNotFoundError,
-    ExecutionFailedError
+    ExecutionFailedError,
+    HandlerNotFoundError
 } from "./abstractions.js";
 import { GetScheduledActionUseCase } from "~/features/GetScheduledAction/abstractions.js";
-import { ScheduledActionHandler, ScheduledActionModel } from "~/shared/abstractions.js";
+import {
+    type IScheduledAction,
+    ScheduledActionHandler,
+    ScheduledActionModel
+} from "~/shared/abstractions.js";
 import { ScheduledActionNotFoundError, ScheduledActionPersistenceError } from "~/domain/errors.js";
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
@@ -55,8 +59,10 @@ class ExecuteScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface 
             );
 
             // Update entry with error for debugging
-            await this.updateEntryUseCase.execute(this.model, scheduleId, {
-                error: error.message
+            await this.updateEntryUseCase.execute<IScheduledAction>(this.model, scheduleId, {
+                values: {
+                    error: error.message
+                }
             });
 
             return Result.fail(error);
@@ -86,8 +92,10 @@ class ExecuteScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface 
             );
 
             // Update entry with error for debugging
-            await this.updateEntryUseCase.execute(this.model, scheduleId, {
-                error: executionError.message
+            await this.updateEntryUseCase.execute<IScheduledAction>(this.model, scheduleId, {
+                values: {
+                    error: executionError.message
+                }
             });
 
             return Result.fail(executionError);

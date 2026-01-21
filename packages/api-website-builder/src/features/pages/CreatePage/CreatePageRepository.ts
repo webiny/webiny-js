@@ -16,7 +16,10 @@ class CreatePageRepositoryImpl implements ICreatePageRepository {
 
     async execute(data: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
         // Create the entry using CMS CreateEntry use case
-        const result = await this.createEntry.execute(this.pageModel, data);
+        const result = await this.createEntry.execute(this.pageModel, {
+            location: data.location,
+            values: data
+        });
 
         if (result.isFail()) {
             // Map CMS errors to domain errors

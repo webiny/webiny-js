@@ -8,7 +8,7 @@ import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
 import type { LambdaContext } from "@webiny/handler-aws/types";
 import type { Context } from "~tests/types";
 import type { PluginCollection } from "@webiny/plugins/types";
-import { createBackgroundTaskContext } from "~/index";
+import { createBackgroundTaskContext, createBackgroundTaskGraphQL } from "~/index";
 import { createMockTaskServicePlugin } from "~tests/mocks/taskTriggerTransportPlugin";
 import { createApiCore } from "@webiny/api-core";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
@@ -39,6 +39,7 @@ export const useRawHandler = <C extends Context = Context>(params?: UseHandlerPa
             createHeadlessCmsGraphQL(),
             graphQLHandlerPlugins(),
             createBackgroundTaskContext(),
+            createBackgroundTaskGraphQL(),
             createRawEventHandler(async ({ context }) => {
                 return context;
             }),

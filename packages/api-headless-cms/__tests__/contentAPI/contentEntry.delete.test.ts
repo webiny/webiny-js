@@ -1,20 +1,20 @@
-import { describe, expect, it, vi } from "vitest";
-import { setupContentModelGroup, setupContentModels } from "~tests/testHelpers/setup";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { setupGroupAndModels } from "~tests/testHelpers/setup";
 import { useCategoryManageHandler } from "~tests/testHelpers/useCategoryManageHandler";
-import type { CmsEntry } from "~/types";
 import { toSlug } from "~/utils/toSlug";
 import { useCategoryReadHandler } from "~tests/testHelpers/useCategoryReadHandler";
 import { ROOT_FOLDER } from "~/constants";
+import type {
+    ICategoryInputValues,
+    ICategoryResponseValues
+} from "~tests/testHelpers/category/manage/types.js";
+import type { IManageQueryBaseResponse } from "~tests/testHelpers/types.js";
 
 vi.setConfig({
     testTimeout: 100_000
 });
 
-interface CreateCategoryParams {
-    title: string;
-    slug: string;
-}
-type Categories = CmsEntry[];
+type ICategory = IManageQueryBaseResponse<ICategoryResponseValues>;
 
 describe("delete entries", () => {
     const manager = useCategoryManageHandler({
@@ -24,19 +24,25 @@ describe("delete entries", () => {
         path: "read"
     });
 
-    const createCategory = async (data: CreateCategoryParams) => {
+    const createCategory = async (values: ICategoryInputValues) => {
         const [response] = await manager.createCategory({
-            data
+            variables: {
+                data: {
+                    values
+                }
+            }
         });
 
-        const createdCategory = response.data.createCategory.data;
+        const createdCategory = response.data.createCategory.data!;
 
         if (response.data.createCategory.error) {
             throw new Error(response.data.createCategory.error.message);
         }
 
         const [publish] = await manager.publishCategory({
-            revision: createdCategory.id
+            variables: {
+                revision: createdCategory.id
+            }
         });
         if (publish.data.publishCategory.error) {
             throw new Error(publish.data.publishCategory.error.message);
@@ -63,27 +69,31 @@ describe("delete entries", () => {
     ];
 
     const createCategories = async () => {
-        const results: Categories = [];
+        const results: ICategory[] = [];
         for (const title of titles) {
             const result = await createCategory({
                 title,
                 slug: toSlug(title)
             });
+            if (!result) {
+                continue;
+            }
             results.push(result);
         }
 
         return results;
     };
+    let categories: ICategory[] = [];
 
-    const setupCategories = async () => {
-        const group = await setupContentModelGroup(manager);
-        await setupContentModels(manager, group, ["category"]);
-        return createCategories();
-    };
+    beforeEach(async () => {
+        await setupGroupAndModels({
+            manager,
+            models: ["category"]
+        });
+        categories = await createCategories();
+    });
 
     it("should delete an entry, destroying it", async () => {
-        const categories = await setupCategories();
-
         const [listManageResponse] = await manager.listCategories();
         expect(listManageResponse.data.listCategories.data).toHaveLength(titles.length);
         const [listReadResponse] = await reader.listCategories();
@@ -95,7 +105,9 @@ describe("delete entries", () => {
          * Let's now delete one entry.
          */
         const [deleteResponse] = await manager.deleteCategory({
-            revision: categoryToDelete.entryId
+            variables: {
+                revision: categoryToDelete.entryId
+            }
         });
         expect(deleteResponse).toMatchObject({
             data: {
@@ -110,7 +122,7 @@ describe("delete entries", () => {
          * Let's check that has been removed from the list.
          */
         const [listAfterDeleteManageResponse] = await manager.listCategories();
-        expect(listAfterDeleteManageResponse.data.listCategories.meta.totalCount).toBe(
+        expect(listAfterDeleteManageResponse.data.listCategories.meta!.totalCount).toBe(
             titles.length - 1
         );
         const [listAfterDeleteReadResponse] = await reader.listCategories();
@@ -122,10 +134,14 @@ describe("delete entries", () => {
          * ...and we should not be able to get the entry anymore.
          */
         const [getAfterDeleteManageResponse] = await manager.getCategory({
-            revision: categoryToDelete.id
+            variables: {
+                revision: categoryToDelete.id
+            }
         });
         const [getAfterDeleteReadResponse] = await manager.getCategory({
-            revision: categoryToDelete.id
+            variables: {
+                revision: categoryToDelete.id
+            }
         });
         expect(getAfterDeleteManageResponse).toMatchObject({
             data: {
@@ -154,7 +170,9 @@ describe("delete entries", () => {
          * Let's try to delete it again, it should not work...
          */
         const [deleteAgainResponse] = await manager.deleteCategory({
-            revision: categoryToDelete.entryId
+            variables: {
+                revision: categoryToDelete.entryId
+            }
         });
         expect(deleteAgainResponse).toMatchObject({
             data: {
@@ -173,9 +191,11 @@ describe("delete entries", () => {
          * ...but I should not receive an error in case I "force" delete it.
          */
         const [deleteForceResponse] = await manager.deleteCategory({
-            revision: categoryToDelete.entryId,
-            options: {
-                force: true
+            variables: {
+                revision: categoryToDelete.entryId,
+                options: {
+                    force: true
+                }
             }
         });
         expect(deleteForceResponse).toMatchObject({
@@ -189,8 +209,6 @@ describe("delete entries", () => {
     });
 
     it("should delete an entry, marking it as `deleted` a.k.a  moving it to the bin", async () => {
-        const categories = await setupCategories();
-
         const [listManageResponse] = await manager.listCategories();
         expect(listManageResponse.data.listCategories.data).toHaveLength(titles.length);
         const [listReadResponse] = await reader.listCategories();
@@ -202,9 +220,11 @@ describe("delete entries", () => {
          * Let's now delete one entry, marking it as deleted.
          */
         const [deleteResponse] = await manager.deleteCategory({
-            revision: categoryToDelete.entryId,
-            options: {
-                permanently: false
+            variables: {
+                revision: categoryToDelete.entryId,
+                options: {
+                    permanently: false
+                }
             }
         });
         expect(deleteResponse).toMatchObject({
@@ -220,9 +240,11 @@ describe("delete entries", () => {
          * If we repeat the operation, trying to mark it as deleted again, we should get the non existing entry error.
          */
         const [secondDeleteResponse] = await manager.deleteCategory({
-            revision: categoryToDelete.entryId,
-            options: {
-                permanently: false
+            variables: {
+                revision: categoryToDelete.entryId,
+                options: {
+                    permanently: false
+                }
             }
         });
         expect(secondDeleteResponse).toMatchObject({
@@ -242,7 +264,7 @@ describe("delete entries", () => {
          * Let's check that has been removed from the list.
          */
         const [listAfterDeleteManageResponse] = await manager.listCategories();
-        expect(listAfterDeleteManageResponse.data.listCategories.meta.totalCount).toBe(
+        expect(listAfterDeleteManageResponse.data.listCategories.meta!.totalCount).toBe(
             titles.length - 1
         );
         const [listAfterDeleteReadResponse] = await reader.listCategories();
@@ -254,7 +276,9 @@ describe("delete entries", () => {
          * ...and we should not be able to get the entry anymore.
          */
         const [getAfterDeleteManageResponse] = await manager.getCategory({
-            revision: categoryToDelete.id
+            variables: {
+                revision: categoryToDelete.id
+            }
         });
         const [getAfterDeleteReadResponse] = await reader.getCategory({
             where: { id: categoryToDelete.id }
@@ -286,9 +310,13 @@ describe("delete entries", () => {
          * Let's try to create from, update, publish, unpublish and move the entry.
          */
         const [createFromResponse] = await manager.createCategoryFrom({
-            revision: categoryToDelete.entryId,
-            data: {
-                title: "Create from title"
+            variables: {
+                revision: categoryToDelete.entryId,
+                data: {
+                    values: {
+                        title: "Create from title"
+                    }
+                }
             }
         });
         expect(createFromResponse).toMatchObject({
@@ -305,9 +333,13 @@ describe("delete entries", () => {
         });
 
         const [updateResponse] = await manager.updateCategory({
-            revision: categoryToDelete.entryId,
-            data: {
-                title: "Updated title"
+            variables: {
+                revision: categoryToDelete.entryId,
+                data: {
+                    values: {
+                        title: "Updated title"
+                    }
+                }
             }
         });
         expect(updateResponse).toMatchObject({
@@ -324,7 +356,9 @@ describe("delete entries", () => {
         });
 
         const [publishResponse] = await manager.publishCategory({
-            revision: categoryToDelete.id
+            variables: {
+                revision: categoryToDelete.id
+            }
         });
         expect(publishResponse).toMatchObject({
             data: {
@@ -340,7 +374,9 @@ describe("delete entries", () => {
         });
 
         const [unpublishResponse] = await manager.unpublishCategory({
-            revision: categoryToDelete.id
+            variables: {
+                revision: categoryToDelete.id
+            }
         });
         expect(unpublishResponse).toMatchObject({
             data: {
@@ -356,8 +392,10 @@ describe("delete entries", () => {
         });
 
         const [moveResponse] = await manager.moveCategory({
-            revision: categoryToDelete.id,
-            folderId: "any-id"
+            variables: {
+                revision: categoryToDelete.id,
+                folderId: "any-id"
+            }
         });
         expect(moveResponse).toMatchObject({
             data: {
@@ -376,9 +414,11 @@ describe("delete entries", () => {
          * Let's try repeat the operation, trying to mark it as deleted again.
          */
         const [deleteAgainResponse] = await manager.deleteCategory({
-            revision: categoryToDelete.entryId,
-            options: {
-                permanently: false
+            variables: {
+                revision: categoryToDelete.entryId,
+                options: {
+                    permanently: false
+                }
             }
         });
         expect(deleteAgainResponse).toMatchObject({
@@ -425,10 +465,14 @@ describe("delete entries", () => {
          * ...and we should not be able to get the entry anymore.
          */
         const [getAfterBinManageResponse] = await manager.getCategory({
-            revision: categoryToDelete.id
+            variables: {
+                revision: categoryToDelete.id
+            }
         });
         const [getAfterBinReadResponse] = await manager.getCategory({
-            revision: categoryToDelete.id
+            variables: {
+                revision: categoryToDelete.id
+            }
         });
         expect(getAfterBinManageResponse).toMatchObject({
             data: {
@@ -457,7 +501,9 @@ describe("delete entries", () => {
          * Let's try to destroy an item in the bin, we should get the success response...
          */
         const [destroyBinItemResponse] = await manager.deleteCategory({
-            revision: categoryToDelete.entryId
+            variables: {
+                revision: categoryToDelete.entryId
+            }
         });
         expect(destroyBinItemResponse).toMatchObject({
             data: {
@@ -472,7 +518,9 @@ describe("delete entries", () => {
          * ...but, if we try to repeat the operation, it should fail.
          */
         const [destroyAgainBinItemResponse] = await manager.deleteCategory({
-            revision: categoryToDelete.entryId
+            variables: {
+                revision: categoryToDelete.entryId
+            }
         });
         expect(destroyAgainBinItemResponse).toMatchObject({
             data: {
@@ -489,8 +537,6 @@ describe("delete entries", () => {
     });
 
     it("should delete an entry, moving it to the ROOT_FOLDER placed inside the bin", async () => {
-        const categories = await setupCategories();
-
         const [listManageResponse] = await manager.listCategories();
         expect(listManageResponse.data.listCategories.data).toHaveLength(titles.length);
 
@@ -501,8 +547,10 @@ describe("delete entries", () => {
          * Let's now move the entry into a different folder
          */
         const [moveResponse] = await manager.moveCategory({
-            revision: categoryToDelete.id,
-            folderId: newFolderId
+            variables: {
+                revision: categoryToDelete.id,
+                folderId: newFolderId
+            }
         });
 
         expect(moveResponse).toMatchObject({
@@ -518,7 +566,9 @@ describe("delete entries", () => {
          * ...let's check the new location.
          */
         const [getAfterMoveManageResponse] = await manager.getCategory({
-            revision: categoryToDelete.id
+            variables: {
+                revision: categoryToDelete.id
+            }
         });
 
         expect(getAfterMoveManageResponse).toMatchObject({
@@ -539,9 +589,11 @@ describe("delete entries", () => {
          * Let's now delete one entry, marking it as deleted.
          */
         const [deleteResponse] = await manager.deleteCategory({
-            revision: categoryToDelete.entryId,
-            options: {
-                permanently: false
+            variables: {
+                revision: categoryToDelete.entryId,
+                options: {
+                    permanently: false
+                }
             }
         });
         expect(deleteResponse).toMatchObject({

@@ -23,7 +23,10 @@ class GetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
     async execute(id: string): Promise<Result<IScheduledAction, UseCaseAbstraction.Error>> {
         // Get entry from CMS
         const scheduleId = ScheduledActionIdWithVersion.from(id);
-        const entryResult = await this.getEntryByIdUseCase.execute(this.model, scheduleId);
+        const entryResult = await this.getEntryByIdUseCase.execute<IScheduledAction>(
+            this.model,
+            scheduleId
+        );
 
         if (entryResult.isFail()) {
             if (entryResult.error.code === "Cms/Entry/NotFound") {

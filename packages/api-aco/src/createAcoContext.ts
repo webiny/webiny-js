@@ -5,7 +5,10 @@ import { createAcoStorageOperations } from "~/createAcoStorageOperations.js";
 import type { AcoContext } from "~/types.js";
 import { createFilterCrudMethods } from "~/filter/filter.crud.js";
 import { createFlpCrudMethods } from "~/flp/index.js";
-import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
+import {
+    FolderLevelPermissions,
+    FolderLevelPermissionsFeature
+} from "~/features/flp/FolderLevelPermissions/index.js";
 import { UpdateFolderFeature } from "~/features/folder/UpdateFolder/index.js";
 import { DeleteFolderFeature } from "~/features/folder/DeleteFolder/index.js";
 import { CreateFolderFeature } from "~/features/folder/CreateFolder/index.js";
@@ -19,7 +22,6 @@ import { EnsureHcmsFolderIsEmptyOnDeleteFeature } from "~/features/folder/Ensure
 import { CreateFlpFeature } from "~/features/flp/CreateFlp/index.js";
 import { DeleteFlpFeature } from "~/features/flp/DeleteFlp/index.js";
 import { UpdateFlpFeature } from "~/features/flp/UpdateFlp/index.js";
-import { FolderLevelPermissionsFeature } from "~/features/flp/FolderLevelPermissions/index.js";
 import { EnsureFolderIsEmptyOnDeleteFeature } from "~/features/folder/EnsureFolderIsEmptyOnDelete/index.js";
 import { FilterStorageOperations } from "~/features/folder/shared/abstractions.js";
 import { ListFlpsFeature } from "~/features/flp/ListFlps/feature.js";
@@ -65,6 +67,7 @@ const setupAcoContext = async (
          * TODO: We need to figure out a way to pass "cms" from outside (e.g. apps/api/graphql)
          */
         cms: context.cms,
+        container: context.container,
         documentClient: setupAcoContextParams.documentClient,
         security
     });

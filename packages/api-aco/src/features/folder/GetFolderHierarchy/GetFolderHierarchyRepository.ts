@@ -7,9 +7,10 @@ import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEn
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries";
 import { FolderModel } from "~/domain/folder/abstractions.js";
 import type {
+    CmsEntryFolder,
+    Folder,
     GetFolderHierarchyParams,
-    GetFolderHierarchyResponse,
-    Folder
+    GetFolderHierarchyResponse
 } from "~/folder/folder.types.js";
 import { EntryToFolderMapper } from "../shared/EntryToFolderMapper.js";
 import { FolderPersistenceError } from "~/domain/folder/errors.js";
@@ -31,10 +32,18 @@ class GetFolderHierarchyRepositoryImpl implements IGetFolderHierarchyRepository 
         const siblings: Folder[] = [];
 
         // Get root folders (siblings at root level)
-        const rootFoldersResult = await this.listLatestEntries.execute(this.folderModel, {
-            where: { type: params.type, parentId: null },
-            limit: FIXED_FOLDER_LISTING_LIMIT
-        });
+        const rootFoldersResult = await this.listLatestEntries.execute<CmsEntryFolder>(
+            this.folderModel,
+            {
+                where: {
+                    values: {
+                        type: params.type,
+                        parentId: null
+                    }
+                },
+                limit: FIXED_FOLDER_LISTING_LIMIT
+            }
+        );
 
         if (rootFoldersResult.isFail()) {
             return Result.fail(new FolderPersistenceError(rootFoldersResult.error));
@@ -51,7 +60,10 @@ class GetFolderHierarchyRepositoryImpl implements IGetFolderHierarchyRepository 
         }
 
         // Get the folder by id
-        const folderResult = await this.getEntryById.execute(this.folderModel, params.id);
+        const folderResult = await this.getEntryById.execute<CmsEntryFolder>(
+            this.folderModel,
+            params.id
+        );
 
         if (folderResult.isFail()) {
             return Result.fail(new FolderPersistenceError(folderResult.error));
@@ -69,10 +81,19 @@ class GetFolderHierarchyRepositoryImpl implements IGetFolderHierarchyRepository 
         // Get all child folders of all parents (these are siblings at different levels)
         const parentIds = parents.map(f => f.id);
 
-        const childFoldersResult = await this.listLatestEntries.execute(this.folderModel, {
-            where: { type: folder.type, parentId_in: parentIds, id_not_in: parentIds },
-            limit: FIXED_FOLDER_LISTING_LIMIT
-        });
+        const childFoldersResult = await this.listLatestEntries.execute<CmsEntryFolder>(
+            this.folderModel,
+            {
+                where: {
+                    id_not_in: parentIds,
+                    values: {
+                        type: folder.type,
+                        parentId_in: parentIds
+                    }
+                },
+                limit: FIXED_FOLDER_LISTING_LIMIT
+            }
+        );
 
         if (childFoldersResult.isFail()) {
             return Result.fail(new FolderPersistenceError(childFoldersResult.error));
@@ -94,7 +115,7 @@ class GetFolderHierarchyRepositoryImpl implements IGetFolderHierarchyRepository 
         let currentFolder = folder;
 
         while (currentFolder.parentId) {
-            const parentResult = await this.getEntryById.execute(
+            const parentResult = await this.getEntryById.execute<CmsEntryFolder>(
                 this.folderModel,
                 currentFolder.parentId
             );

@@ -37,7 +37,7 @@ declare module "../abstractions.js" {
 }
 
 class TextFieldBuilder extends FieldBuilder<"text"> implements ITextFieldBuilder {
-    constructor() {
+    public constructor() {
         super("text");
     }
 

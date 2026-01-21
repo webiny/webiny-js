@@ -49,7 +49,7 @@ describe("ContentModel modelId variations", () => {
                     modelId,
                     singularApiName,
                     pluralApiName,
-                    group: contentModelGroup.id
+                    group: contentModelGroup.slug
                 }
             });
 
@@ -91,7 +91,7 @@ describe("ContentModel modelId variations", () => {
                     modelId,
                     singularApiName,
                     pluralApiName,
-                    group: contentModelGroup.id
+                    group: contentModelGroup.slug
                 }
             });
 

@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { UpdateSingletonEntryUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { GetSingletonEntryUseCase } from "~/features/contentEntry/GetSingletonEntry/index.js";
-import type { CmsEntry } from "~/types/index.js";
+import type { CmsEntry, CmsEntryValues } from "~/types/index.js";
 import type { CmsModel } from "~/types/index.js";
 import type { UpdateCmsEntryInput } from "~/types/index.js";
 import type { UpdateCmsEntryOptionsInput } from "~/types/index.js";
@@ -10,12 +10,12 @@ import { UpdateEntryUseCase } from "../UpdateEntry/abstractions.js";
 // This will be the generic entry use case - using 'any' for now as placeholder
 // You'll need to import the actual abstraction when it's created
 interface UpdateEntryUseCase {
-    execute(
+    execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         entryId: string,
-        data: UpdateCmsEntryInput,
+        data: UpdateCmsEntryInput<T>,
         options?: UpdateCmsEntryOptionsInput
-    ): Promise<Result<CmsEntry, any>>;
+    ): Promise<Result<CmsEntry<T>, any>>;
 }
 
 /**
@@ -26,18 +26,18 @@ interface UpdateEntryUseCase {
  * - Delegate to generic UpdateEntry use case with the entry ID
  */
 class UpdateSingletonEntryUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(
+    public constructor(
         private getSingletonEntryUseCase: GetSingletonEntryUseCase.Interface,
         private updateEntryUseCase: UpdateEntryUseCase
     ) {}
 
-    async execute(
+    async execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
-        data: UpdateCmsEntryInput,
+        data: UpdateCmsEntryInput<T>,
         options?: UpdateCmsEntryOptionsInput
-    ): Promise<Result<CmsEntry, UseCaseAbstraction.Error>> {
+    ): Promise<Result<CmsEntry<T>, UseCaseAbstraction.Error>> {
         // Get the singleton entry (create a new one if it doesn't exist)
-        const getResult = await this.getSingletonEntryUseCase.execute(model);
+        const getResult = await this.getSingletonEntryUseCase.execute<T>(model);
 
         if (getResult.isFail()) {
             return getResult;
@@ -46,9 +46,7 @@ class UpdateSingletonEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         const entry = getResult.value;
 
         // Update the entry using the regular update use case
-        const updateResult = await this.updateEntryUseCase.execute(model, entry.id, data, options);
-
-        return updateResult;
+        return await this.updateEntryUseCase.execute<T>(model, entry.id, data, options);
     }
 }
 

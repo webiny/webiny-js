@@ -1,10 +1,9 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
-import { CmsEntry, CmsGroup } from "~/types";
-import models from "./mocks/contentModels";
 import { useProductManageHandler } from "../testHelpers/useProductManageHandler";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 import { useProductReadHandler } from "../testHelpers/useProductReadHandler";
+import { setupGroupAndModels } from "~tests/testHelpers/setup.js";
 
 const richTextMock = [
     {
@@ -35,92 +34,41 @@ describe("richTextField", () => {
     const manageOpts = { path: "manage" };
     const readOpts = { path: "read" };
 
-    const {
-        createContentModelMutation,
-        updateContentModelMutation,
-        createContentModelGroupMutation
-    } = useGraphQLHandler(manageOpts);
+    const mainManager = useGraphQLHandler(manageOpts);
 
-    // This function is not directly within `beforeEach` as we don't always setup the same content model.
-    // We call this function manually at the beginning of each test, where needed.
-    const setupContentModelGroup = async (): Promise<CmsGroup> => {
-        const [createCMG] = await createContentModelGroupMutation({
-            data: {
-                name: "Group",
-                slug: "group",
-                icon: "ico/ico",
-                description: "description"
-            }
+    beforeEach(async () => {
+        await setupGroupAndModels({
+            manager: mainManager,
+            models: ["category", "product", "review", "author"]
         });
-        return createCMG.data.createContentModelGroup.data;
-    };
-
-    const setupContentModel = async (contentModelGroup: CmsGroup, name: string) => {
-        const model = models.find(m => m.modelId === name);
-        if (!model) {
-            throw new Error(`Could not find model "${name}".`);
-        }
-        // Create initial record
-        const [create] = await createContentModelMutation({
-            data: {
-                name: model.name,
-                modelId: model.modelId,
-                singularApiName: model.singularApiName,
-                pluralApiName: model.pluralApiName,
-                group: contentModelGroup.id
-            }
-        });
-
-        if (create.errors) {
-            console.error(`[beforeEach] ${create.errors[0].message}`);
-            process.exit(1);
-        }
-
-        const [update] = await updateContentModelMutation({
-            modelId: create.data.createContentModel.data.modelId,
-            data: {
-                fields: model.fields,
-                layout: model.layout
-            }
-        });
-        return update.data.updateContentModel.data;
-    };
-    const setupContentModels = async (contentModelGroup: CmsGroup) => {
-        const models: Record<string, any> = {
-            category: null,
-            product: null,
-            review: null,
-            author: null
-        };
-        for (const name in models) {
-            models[name] = await setupContentModel(contentModelGroup, name);
-        }
-        return models;
-    };
+    });
 
     const createCategory = async () => {
         const { createCategory, publishCategory } = useCategoryManageHandler({
             ...manageOpts
         });
         const [createCategoryResponse] = await createCategory({
-            data: {
-                title: "Vegetables",
-                slug: "vegetables"
+            variables: {
+                data: {
+                    values: {
+                        title: "Vegetables",
+                        slug: "vegetables"
+                    }
+                }
             }
         });
-        const category = createCategoryResponse.data.createCategory.data as CmsEntry;
+        const category = createCategoryResponse.data.createCategory.data!;
 
         await publishCategory({
-            revision: category.id
+            variables: {
+                revision: category.id
+            }
         });
 
         return category;
     };
 
     it("should create a product with richText field populated", async () => {
-        const contentModelGroup = await setupContentModelGroup();
-        await setupContentModels(contentModelGroup);
-
         const category = await createCategory();
 
         const { createProduct, publishProduct } = useProductManageHandler({
@@ -133,17 +81,19 @@ describe("richTextField", () => {
 
         const [createProductResponse] = await createProduct({
             data: {
-                title: "Potato",
-                price: 100,
-                availableOn: "2020-12-25",
-                color: "white",
-                availableSizes: ["s", "m"],
-                image: "file.jpg",
-                category: {
-                    modelId: "category",
-                    id: category.id
-                },
-                richText: richTextMock
+                values: {
+                    title: "Potato",
+                    price: 100,
+                    availableOn: "2020-12-25",
+                    color: "white",
+                    availableSizes: ["s", "m"],
+                    image: "file.jpg",
+                    category: {
+                        modelId: "category",
+                        id: category.id
+                    },
+                    richText: richTextMock
+                }
             }
         });
 
@@ -163,28 +113,32 @@ describe("richTextField", () => {
                             displayName: "John Doe",
                             type: "admin"
                         },
-                        title: "Potato",
-                        price: 100,
-                        image: "file.jpg",
-                        availableOn: expect.toBeDateString(),
-                        color: "white",
-                        availableSizes: ["s", "m"],
-                        category: {
-                            modelId: "category",
-                            id: category.id,
-                            entryId: category.entryId
+                        values: {
+                            title: "Potato",
+                            price: 100,
+                            image: "file.jpg",
+                            availableOn: expect.toBeDateString(),
+                            color: "white",
+                            availableSizes: ["s", "m"],
+                            category: {
+                                modelId: "category",
+                                id: category.id,
+                                entryId: category.entryId
+                            },
+                            richText: richTextMock,
+                            inStock: null,
+                            itemsInStock: null,
+                            variant: null
                         },
-                        richText: richTextMock,
-                        inStock: null,
-                        itemsInStock: null,
-                        variant: null,
                         meta: {
                             locked: false,
                             modelId: "product",
                             revisions: [
                                 {
                                     id: expect.any(String),
-                                    title: "Potato"
+                                    values: {
+                                        title: "Potato"
+                                    }
                                 }
                             ],
                             status: "draft",
@@ -199,8 +153,19 @@ describe("richTextField", () => {
 
         const product = createProductResponse.data.createProduct.data;
 
-        await publishProduct({
+        const [publishedResult] = await publishProduct({
             revision: product.id
+        });
+
+        expect(publishedResult).toMatchObject({
+            data: {
+                publishProduct: {
+                    data: {
+                        id: product.id
+                    },
+                    error: null
+                }
+            }
         });
 
         const [response] = await getProduct({
@@ -220,20 +185,24 @@ describe("richTextField", () => {
                         savedOn: expect.toBeDateString(),
                         firstPublishedOn: expect.toBeDateString(),
                         lastPublishedOn: expect.toBeDateString(),
-                        title: "Potato",
-                        image: "file.jpg",
-                        price: 100,
-                        availableOn: expect.toBeDateString(),
-                        color: "white",
-                        availableSizes: ["s", "m"],
-                        category: {
-                            id: expect.any(String),
-                            title: "Vegetables"
-                        },
-                        richText: richTextMock,
-                        inStock: null,
-                        itemsInStock: null,
-                        variant: null
+                        values: {
+                            title: "Potato",
+                            image: "file.jpg",
+                            price: 100,
+                            availableOn: expect.toBeDateString(),
+                            color: "white",
+                            availableSizes: ["s", "m"],
+                            category: {
+                                id: expect.any(String),
+                                values: {
+                                    title: "Vegetables"
+                                }
+                            },
+                            richText: richTextMock,
+                            inStock: null,
+                            itemsInStock: null,
+                            variant: null
+                        }
                     },
                     error: null
                 }
@@ -242,9 +211,6 @@ describe("richTextField", () => {
     });
 
     it("should create a product with empty rich-text field and then update it with some value", async () => {
-        const contentModelGroup = await setupContentModelGroup();
-        await setupContentModels(contentModelGroup);
-
         const category = await createCategory();
 
         const { createProduct, updateProduct } = useProductManageHandler({
@@ -267,7 +233,9 @@ describe("richTextField", () => {
          * First we create the product without the rich text populated.
          */
         const [createProductResponse] = await createProduct({
-            data: productData
+            data: {
+                values: productData
+            }
         });
 
         const expectedCreatedProduct = {
@@ -283,33 +251,37 @@ describe("richTextField", () => {
                 displayName: "John Doe",
                 type: "admin"
             },
-            title: "Potato",
-            price: 100,
-            image: "file.jpg",
-            availableOn: expect.toBeDateString(),
-            color: "white",
-            availableSizes: ["s", "m"],
-            category: {
-                modelId: "category",
-                id: category.id,
-                entryId: category.entryId
-            },
-            richText: null,
-            inStock: null,
-            itemsInStock: null,
-            variant: null,
             meta: {
                 locked: false,
                 modelId: "product",
                 revisions: [
                     {
                         id: expect.any(String),
-                        title: "Potato"
+                        values: {
+                            title: "Potato"
+                        }
                     }
                 ],
                 status: "draft",
                 title: "Potato",
                 version: 1
+            },
+            values: {
+                title: "Potato",
+                price: 100,
+                image: "file.jpg",
+                availableOn: expect.toBeDateString(),
+                color: "white",
+                availableSizes: ["s", "m"],
+                category: {
+                    modelId: "category",
+                    id: category.id,
+                    entryId: category.entryId
+                },
+                richText: null,
+                inStock: null,
+                itemsInStock: null,
+                variant: null
             }
         };
         /**
@@ -329,8 +301,10 @@ describe("richTextField", () => {
         const [updateProductResponse] = await updateProduct({
             revision: createProductResponse.data.createProduct.data.id,
             data: {
-                ...productData,
-                richText: richTextMock
+                values: {
+                    ...productData,
+                    richText: richTextMock
+                }
             }
         });
         /**
@@ -341,7 +315,10 @@ describe("richTextField", () => {
                 updateProduct: {
                     data: {
                         ...expectedCreatedProduct,
-                        richText: richTextMock,
+                        values: {
+                            ...expectedCreatedProduct.values,
+                            richText: richTextMock
+                        },
                         modifiedOn: expect.toBeDateString()
                     },
                     error: null

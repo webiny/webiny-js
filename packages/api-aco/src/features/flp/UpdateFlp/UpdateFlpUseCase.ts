@@ -1,7 +1,7 @@
 import { WebinyError } from "@webiny/error";
 import { Path } from "~/utils/Path.js";
 import { Permissions, ROOT_FOLDER } from "@webiny/shared-aco";
-import type { UpdateFlpUseCase as UseCaseAbstraction, UpdateFlpParams } from "./abstractions.js";
+import type { UpdateFlpParams, UpdateFlpUseCase as UseCaseAbstraction } from "./abstractions.js";
 import type { AcoContext, Folder, FolderLevelPermission, FolderPermission } from "~/types.js";
 import { ListFoldersUseCase } from "~/features/folder/ListFolders/index.js";
 import { FolderModel } from "~/domain/folder/abstractions.js";
@@ -148,7 +148,11 @@ export class UpdateFlpUseCase implements UseCaseAbstraction.Interface {
             for (const item of items) {
                 const { id, data } = item;
                 // Directly update the folder in CMS storage to bypass any folder update event triggers.
-                await this.context.cms.updateEntry(folderModel, id, { path: data.path });
+                await this.context.cms.updateEntry(folderModel, id, {
+                    values: {
+                        path: data.path
+                    }
+                });
             }
         } catch (error) {
             throw WebinyError.from(error, {

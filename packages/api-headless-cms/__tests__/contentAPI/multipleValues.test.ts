@@ -1,34 +1,26 @@
-import { describe, expect, it } from "vitest";
-import { CmsGroup, CmsModelField } from "~/types";
+import { beforeEach, describe, expect, it } from "vitest";
+import { type CmsGroup, CmsModelField } from "~/types";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import models from "./mocks/contentModels";
+import { setupGroupAndModels } from "~tests/testHelpers/setup.js";
 
 describe("multiple values in field", () => {
     const manageOpts = { path: "manage" };
 
-    const {
-        createContentModelMutation,
-        updateContentModelMutation,
-        createContentModelGroupMutation
-    } = useGraphQLHandler(manageOpts);
+    const manager = useGraphQLHandler(manageOpts);
+    const { createContentModelMutation, updateContentModelMutation } = manager;
 
-    // This function is not directly within `beforeEach` as we don't always setup the same content model.
-    // We call this function manually at the beginning of each test, where needed.
-    const setupContentModelGroup = async (): Promise<CmsGroup> => {
-        const [createCMG] = await createContentModelGroupMutation({
-            data: {
-                name: "Group",
-                slug: "group",
-                icon: "ico/ico",
-                description: "description"
-            }
+    let contentModelGroup: CmsGroup;
+
+    beforeEach(async () => {
+        const result = await setupGroupAndModels({
+            manager,
+            models: undefined
         });
-        return createCMG.data.createContentModelGroup.data;
-    };
+        contentModelGroup = result.group;
+    });
 
     it("multiple value field is correctly created", async () => {
-        const contentModelGroup = await setupContentModelGroup();
-
         const model = models.find(m => m.modelId === "product");
         if (!model) {
             throw new Error(`Could not find model "product".`);
@@ -110,8 +102,6 @@ describe("multiple values in field", () => {
     });
 
     it("should not allow multipleValue field to be set as title", async () => {
-        const contentModelGroup = await setupContentModelGroup();
-
         const model = models.find(m => m.modelId === "product");
         if (!model) {
             throw new Error(`Could not find model "product".`);

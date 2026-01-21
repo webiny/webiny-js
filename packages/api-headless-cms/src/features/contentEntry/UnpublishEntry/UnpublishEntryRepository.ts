@@ -2,7 +2,7 @@ import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
 import { UnpublishEntryRepository as RepositoryAbstraction } from "./abstractions.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
-import type { CmsEntry } from "~/types/index.js";
+import type { CmsEntry, CmsEntryValues } from "~/types/index.js";
 import type { CmsModel } from "~/types/index.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
 import { EntryToStorageTransform } from "~/legacy/abstractions.js";
@@ -12,21 +12,21 @@ import { EntryToStorageTransform } from "~/legacy/abstractions.js";
  * Transforms domain entry to storage format and persists unpublish operation.
  */
 class UnpublishEntryRepositoryImpl implements RepositoryAbstraction.Interface {
-    constructor(
+    public constructor(
         private entryToStorageTransform: EntryToStorageTransform.Interface,
         private storageOperations: StorageOperations.Interface
     ) {}
 
-    async execute(
+    public async execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
-        entry: CmsEntry
-    ): Promise<Result<CmsEntry, RepositoryAbstraction.Error>> {
+        entry: CmsEntry<T>
+    ): Promise<Result<CmsEntry<T>, RepositoryAbstraction.Error>> {
         try {
             // Transform domain entry to storage format
-            const storageEntry = await this.entryToStorageTransform(model, entry);
+            const storageEntry = await this.entryToStorageTransform<T>(model, entry);
 
             // Persist unpublish to storage
-            const result = await this.storageOperations.entries.unpublish(model, {
+            const result = await this.storageOperations.entries.unpublish<T>(model, {
                 entry,
                 storageEntry
             });

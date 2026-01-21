@@ -10,7 +10,7 @@ import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
  * entries marked as deleted (wbyDeleted flag).
  */
 class GetEntriesByIdsNotDeletedDecoratorImpl implements GetEntriesByIdsUseCase.Interface {
-    constructor(private decoratee: GetEntriesByIdsUseCase.Interface) {}
+    public constructor(private decoratee: GetEntriesByIdsUseCase.Interface) {}
 
     async execute<T extends CmsEntryValues>(
         model: CmsModel,

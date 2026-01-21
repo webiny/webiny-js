@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { CreateEntryRevisionFromUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntryRevisionFrom/index.js";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
-import { PageModel } from "~/domain/page/abstractions.js";
+import { PageModel, type WbPage } from "~/domain/page/abstractions.js";
 import { EntryToPageMapper } from "~/domain/page/EntryToPageMapper.js";
 import {
     PageNotFoundError,
@@ -19,7 +19,7 @@ class CreatePageRevisionFromRepositoryImpl implements RepositoryAbstraction.Inte
 
     async execute(params: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
         // First, get the existing page to validate it exists
-        const getResult = await this.getEntryById.execute(this.pageModel, params.id);
+        const getResult = await this.getEntryById.execute<WbPage>(this.pageModel, params.id);
 
         if (getResult.isFail()) {
             if (getResult.error.code === "Cms/Entry/NotFound") {
@@ -29,7 +29,10 @@ class CreatePageRevisionFromRepositoryImpl implements RepositoryAbstraction.Inte
         }
 
         // Create revision from the existing page
-        const result = await this.createRevisionFrom.execute(this.pageModel, params.id, {});
+        const result = await this.createRevisionFrom.execute(this.pageModel, params.id, {
+            location: getResult.value.location,
+            values: {}
+        });
 
         if (result.isFail()) {
             if (result.error.code === "Cms/Entry/ValidationError") {

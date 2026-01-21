@@ -9,7 +9,7 @@ import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { CmsModel, CmsEntryUniqueValue } from "~/types/index.js";
 
 class GetUniqueFieldValuesRepositoryImpl implements RepositoryAbstraction.Interface {
-    constructor(private storageOperations: StorageOperations.Interface) {}
+    public constructor(private storageOperations: StorageOperations.Interface) {}
 
     async execute(
         model: CmsModel,

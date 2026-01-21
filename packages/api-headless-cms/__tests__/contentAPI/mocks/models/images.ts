@@ -1,8 +1,8 @@
-import type { CmsGroup, CmsModel } from "~tests/types";
+import type { CmsGroup, TestCmsModel } from "~tests/types";
 import { createModelField } from "~/utils/createModelField.js";
 
-export const createImageModel = (group: Pick<CmsGroup, "slug">): CmsModel => {
-    const model: CmsModel = {
+export const createImageModel = (group: Pick<CmsGroup, "slug">): TestCmsModel => {
+    const model: TestCmsModel = {
         name: "Images Model",
         modelId: "imagesModel",
         singularApiName: "ImagesModel",

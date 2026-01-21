@@ -27,7 +27,10 @@ class ListOwnWorkflowStatesUseCaseImpl implements UseCase.Interface {
             ...params,
             where: {
                 ...params?.where,
-                isActive: true,
+                values: {
+                    ...params?.where?.values,
+                    isActive: true
+                },
                 createdBy: identity.id
             }
         });

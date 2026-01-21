@@ -6,7 +6,7 @@ import { filterAsync } from "~/utils/filterAsync.js";
 import { ModelBuilder } from "./ModelBuilder.js";
 
 export class ModelsProvider implements ProviderAbstraction.Interface {
-    constructor(
+    public constructor(
         private getModels: () => ModelFactory.Interface[],
         private fieldsRegistry: FieldBuilderRegistry.Interface,
         private accessControl: AccessControl.Interface | undefined

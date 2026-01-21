@@ -14,7 +14,7 @@ import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
  * - Delegate to repository for data fetching
  */
 class GetLatestEntriesByIdsUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(
+    public constructor(
         private repository: GetLatestEntriesByIdsRepository.Interface,
         private accessControl: AccessControl.Interface
     ) {}

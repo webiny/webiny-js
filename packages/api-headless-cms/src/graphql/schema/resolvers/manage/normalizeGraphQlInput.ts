@@ -40,9 +40,9 @@ class GraphQlInputNormalizer {
     }
 
     async normalize(model: CmsModel, data: GenericRecord<string>) {
-        const output = structuredClone(data);
+        const values = structuredClone(data.values || {});
 
-        await this.traverser.traverse(output, async ({ path, value, field }) => {
+        await this.traverser.traverse(values, async ({ path, value, field }) => {
             const fieldPlugin = this.fieldTypePlugins[field.type];
             if (fieldPlugin && typeof fieldPlugin.manage.normalizeInput === "function") {
                 const normalizedValue = await fieldPlugin.manage.normalizeInput({
@@ -51,10 +51,10 @@ class GraphQlInputNormalizer {
                     input: value
                 });
 
-                set(output, path, normalizedValue);
+                set(values, path, normalizedValue);
             }
         });
 
-        return output;
+        return { ...data, values };
     }
 }

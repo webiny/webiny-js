@@ -10,7 +10,7 @@ import { createFields } from "~/operations/entry/filtering/createFields";
 import { filter } from "~/operations/entry/filtering";
 import { getSearchableFields } from "@webiny/api-headless-cms/crud/contentEntry/searchableFields";
 
-describe("filtering", () => {
+describe("filtering cms ddb", () => {
     let plugins: PluginsContainer;
     let model: CmsModel;
     let fields: Record<string, Field>;
@@ -106,7 +106,9 @@ describe("filtering", () => {
         const result = filter({
             items: records,
             where: {
-                title_contains: "tttt"
+                values: {
+                    title_contains: "tttt"
+                }
             },
             plugins,
             fields
@@ -131,8 +133,10 @@ describe("filtering", () => {
         const resultBoth = filter({
             items: records,
             where: {
-                options: {
-                    keys_contains: "the modeled entry kkkk"
+                values: {
+                    options: {
+                        keys_contains: "the modeled entry kkkk"
+                    }
                 }
             },
             plugins,
@@ -161,8 +165,10 @@ describe("filtering", () => {
         const resultNumber2 = filter({
             items: records,
             where: {
-                options: {
-                    keys_contains: " - 2"
+                values: {
+                    options: {
+                        keys_contains: " - 2"
+                    }
                 }
             },
             plugins,
@@ -197,8 +203,10 @@ describe("filtering", () => {
         const resultNumber3 = filter({
             items: records,
             where: {
-                options: {
-                    keys_contains: " - 3"
+                values: {
+                    options: {
+                        keys_contains: " - 3"
+                    }
                 }
             },
             plugins,
@@ -214,9 +222,11 @@ describe("filtering", () => {
         const resultRed = filter({
             items: records,
             where: {
-                options: {
-                    variant: {
-                        colors: ["red"]
+                values: {
+                    options: {
+                        variant: {
+                            colors: ["red"]
+                        }
                     }
                 }
             },
@@ -250,9 +260,11 @@ describe("filtering", () => {
         const resultTeal = filter({
             items: records,
             where: {
-                options: {
-                    variant: {
-                        colors: ["teal"]
+                values: {
+                    options: {
+                        variant: {
+                            colors: ["teal"]
+                        }
                     }
                 }
             },
@@ -286,9 +298,11 @@ describe("filtering", () => {
         const resultBoth = filter({
             items: records,
             where: {
-                options: {
-                    variant: {
-                        colors_in: ["teal", "green"]
+                values: {
+                    options: {
+                        variant: {
+                            colors_in: ["teal", "green"]
+                        }
                     }
                 }
             },
@@ -322,9 +336,11 @@ describe("filtering", () => {
         const resultNoneOrange = filter({
             items: records,
             where: {
-                options: {
-                    variant: {
-                        colors_in: ["orange"]
+                values: {
+                    options: {
+                        variant: {
+                            colors_in: ["orange"]
+                        }
                     }
                 }
             },
@@ -337,9 +353,11 @@ describe("filtering", () => {
         const resultNoneEmpty = filter({
             items: records,
             where: {
-                options: {
-                    variant: {
-                        colors_in: []
+                values: {
+                    options: {
+                        variant: {
+                            colors_in: []
+                        }
                     }
                 }
             },

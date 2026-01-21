@@ -37,7 +37,7 @@ interface CmsModelData {
     name: string;
     description: string;
     group: string;
-    singleton?: boolean;
+    singleEntry?: boolean;
     singularApiName: string;
     pluralApiName: string;
     defaultFields: boolean;
@@ -139,14 +139,14 @@ const NewContentModelDialog = ({ open, onClose }: NewContentModelDialogProps) =>
             // @ts-expect-error
             const tags: string[] = Array.isArray(data.tags) ? data.tags : [];
             /**
-             * If a model is a singleton, we add a special tag to it.
+             * If a model is a singleEntry, we add a special tag to it.
              * + we need to put the pluralApiName to something that is not used.
              */
-            if (data.singleton) {
+            if (data.singleEntry) {
                 tags.push(CMS_MODEL_SINGLETON_TAG);
                 data.pluralApiName = `${data.singularApiName}Unused`;
             }
-            delete data.singleton;
+            delete data.singleEntry;
             await createContentModel({
                 variables: {
                     data: {
@@ -160,7 +160,7 @@ const NewContentModelDialog = ({ open, onClose }: NewContentModelDialogProps) =>
     );
 
     return (
-        <Form<CmsModelData> data={{ group, singleton: false }} onSubmit={onSubmit}>
+        <Form<CmsModelData> data={{ group, singleEntry: false }} onSubmit={onSubmit}>
             {({ Bind, submit, data }) => {
                 return (
                     <Dialog
@@ -213,7 +213,7 @@ const NewContentModelDialog = ({ open, onClose }: NewContentModelDialogProps) =>
                                             <Switch
                                                 description={t`Create a model that can hold only one entry. Cannot be changed later.`}
                                                 label={t`Single entry model`}
-                                                data-testid="cms.newcontentmodeldialog.singleton"
+                                                data-testid="cms.newcontentmodeldialog.singleEntry"
                                             />
                                         </Bind>
                                     </Grid.Column>
@@ -221,7 +221,7 @@ const NewContentModelDialog = ({ open, onClose }: NewContentModelDialogProps) =>
                                         <Bind
                                             name={"pluralApiName"}
                                             validators={
-                                                data.singleton
+                                                data.singleEntry
                                                     ? []
                                                     : [
                                                           validation.create(
@@ -232,7 +232,7 @@ const NewContentModelDialog = ({ open, onClose }: NewContentModelDialogProps) =>
                                             }
                                         >
                                             <Input
-                                                disabled={data.singleton}
+                                                disabled={data.singleEntry}
                                                 label={t`Plural API Name`}
                                                 description={t`The plural API name of the content model. For example: AuthorCategories.`}
                                                 data-testid="cms.newcontentmodeldialog.pluralApiName"

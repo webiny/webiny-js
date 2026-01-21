@@ -34,7 +34,7 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
     return function createFieldResolvers(params: CreateFieldResolvers) {
         const { graphQLType, fields, isRoot = false, extraResolvers = {} } = params;
 
-        const fieldResolvers = { ...extraResolvers };
+        const fieldResolvers: Resolvers<any> = {};
         const typeResolvers = {};
 
         for (const field of fields) {
@@ -83,15 +83,29 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
             }
 
             const { fieldId } = field;
+            /**
+             * Figure out a better way to extract value from parent.
+             * // TODO fix
+             */
+            const getValue = (parent: any) => {
+                if (!parent?.values || !parent?.values[fieldId]) {
+                    return {
+                        isRoot: false,
+                        value: parent?.[fieldId]
+                    };
+                }
+                return {
+                    isRoot: true,
+                    value: parent.values[fieldId]
+                };
+            };
+
             fieldResolvers[fieldId] = async (parent, args, context: CmsContext, info) => {
                 /**
                  * This is required because due to ref field can be requested without the populated data.
                  * At that point there is no .values  no fieldId property on the parent
                  */
-                const value =
-                    parent?.values?.[fieldId] === undefined
-                        ? parent?.[fieldId]
-                        : parent?.values?.[fieldId];
+                const { isRoot: valueIsRoot, value } = getValue(parent);
                 if (value === undefined) {
                     return undefined;
                 }
@@ -100,19 +114,45 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
                     context,
                     model,
                     field,
-                    value: isRoot ? parent.values?.[fieldId] : parent[fieldId]
+                    value
                 });
 
-                set(isRoot ? parent.values : parent, fieldId, transformedValue);
+                set(
+                    valueIsRoot && parent.values ? parent.values : parent,
+                    fieldId,
+                    transformedValue
+                );
 
                 if (!resolver) {
-                    return isRoot ? parent.values[fieldId] : parent[fieldId];
+                    return valueIsRoot && parent.values[fieldId]
+                        ? parent.values[fieldId]
+                        : parent[fieldId];
                 }
 
-                return await resolver(isRoot ? parent.values : parent, args, context, info);
+                return await resolver(valueIsRoot ? parent.values : parent, args, context, info);
             };
         }
 
-        return { [graphQLType]: fieldResolvers, ...typeResolvers };
+        /**
+         * Difference between root and non-root (object and dz, etc... fields) is that root has a values wrapper.
+         * Subtypes must not have it.
+         */
+        if (!isRoot) {
+            return {
+                [graphQLType]: {
+                    ...fieldResolvers,
+                    ...extraResolvers
+                },
+                ...typeResolvers
+            };
+        }
+
+        return {
+            [graphQLType]: {
+                ...extraResolvers
+            },
+            [`${graphQLType}Values`]: fieldResolvers,
+            ...typeResolvers
+        };
     };
 };

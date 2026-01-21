@@ -1,15 +1,17 @@
 import { Result } from "@webiny/feature/api";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries";
-import { WorkflowStateModel, WorkflowStateMapper } from "~/domain/workflowState/abstractions.js";
 import type { IWorkflowStateRecord } from "~/domain/workflowState/abstractions.js";
+import { WorkflowStateMapper, WorkflowStateModel } from "~/domain/workflowState/abstractions.js";
 import { WorkflowStatePersistenceError } from "~/domain/workflowState/errors.js";
 import { ListWorkflowStatesRepository as Repository } from "./abstractions.js";
+import { CmsFieldInputToWhereMapper } from "@webiny/api-headless-cms/features/mapper/abstractions.js";
 
 class ListWorkflowStatesRepositoryImpl implements Repository.Interface {
     constructor(
         private listEntries: ListLatestEntriesUseCase.Interface,
         private model: WorkflowStateModel.Interface,
-        private mapper: WorkflowStateMapper.Interface
+        private mapper: WorkflowStateMapper.Interface,
+        private cmsFieldInputToWhereMapper: CmsFieldInputToWhereMapper.Interface
     ) {}
 
     async execute(params: Repository.Params = {}): Repository.Return {
@@ -19,9 +21,10 @@ class ListWorkflowStatesRepositoryImpl implements Repository.Interface {
                 limit: 50,
                 sort: ["createdOn_DESC"],
                 ...params,
-                where: {
-                    ...params.where
-                }
+                where: this.cmsFieldInputToWhereMapper.map({
+                    input: params.where,
+                    fields: this.model.fields
+                })
             }
         );
 
@@ -42,5 +45,10 @@ class ListWorkflowStatesRepositoryImpl implements Repository.Interface {
 
 export const ListWorkflowStatesRepository = Repository.createImplementation({
     implementation: ListWorkflowStatesRepositoryImpl,
-    dependencies: [ListLatestEntriesUseCase, WorkflowStateModel, WorkflowStateMapper]
+    dependencies: [
+        ListLatestEntriesUseCase,
+        WorkflowStateModel,
+        WorkflowStateMapper,
+        CmsFieldInputToWhereMapper
+    ]
 });

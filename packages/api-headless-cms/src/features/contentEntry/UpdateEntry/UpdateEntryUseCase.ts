@@ -33,7 +33,7 @@ import { createUpdateEntryData } from "~/crud/contentEntry/entryDataFactories/cr
  * - Delegate persistence to repository
  */
 class UpdateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(
+    public constructor(
         private eventPublisher: EventPublisher.Interface,
         private repository: UpdateEntryRepository.Interface,
         private accessControl: AccessControl.Interface,
@@ -57,7 +57,7 @@ class UpdateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         try {
-            const result = await this.getRevisionByIdUseCase.execute(model, id);
+            const result = await this.getRevisionByIdUseCase.execute<T>(model, id);
 
             if (result.isFail()) {
                 return Result.fail(result.error);
@@ -71,7 +71,7 @@ class UpdateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
             }
 
             // Transform raw input to updated domain entry
-            const { entry, input } = await createUpdateEntryData({
+            const { entry, input } = await createUpdateEntryData<T>({
                 model,
                 rawInput,
                 options,
@@ -114,7 +114,7 @@ class UpdateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
                 })
             );
 
-            return Result.ok(entry as CmsEntry<T>);
+            return Result.ok(entry);
         } catch (error) {
             // Handle errors from createUpdateEntryData or other operations
             return Result.fail(error as UseCaseAbstraction.Error);

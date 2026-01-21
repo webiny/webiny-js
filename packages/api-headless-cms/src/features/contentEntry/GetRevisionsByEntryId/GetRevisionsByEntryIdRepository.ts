@@ -11,28 +11,28 @@ import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
  * Returns array of entry revisions.
  */
 class GetRevisionsByEntryIdRepositoryImpl implements RepositoryAbstraction.Interface {
-    constructor(
+    public constructor(
         private entryFromStorageTransform: EntryFromStorageTransform.Interface,
         private storageOperations: StorageOperations.Interface
     ) {}
 
-    async execute<T extends CmsEntryValues>(
+    public async execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         entryId: string
     ): Promise<Result<CmsEntry<T>[], RepositoryAbstraction.Error>> {
         try {
-            const result = await this.storageOperations.entries.getRevisions(model, {
+            const result = await this.storageOperations.entries.getRevisions<T>(model, {
                 id: entryId
             });
 
             // Transform storage entries to domain entries
             const items = await Promise.all(
                 result.map(async entry => {
-                    return this.entryFromStorageTransform(model, entry);
+                    return this.entryFromStorageTransform<T>(model, entry);
                 })
             );
 
-            return Result.ok(items as CmsEntry<T>[]);
+            return Result.ok(items);
         } catch (error) {
             return Result.fail(new EntryPersistenceError(error as Error));
         }

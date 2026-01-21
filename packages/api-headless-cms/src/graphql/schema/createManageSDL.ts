@@ -76,15 +76,20 @@ export const createManageSDL: CreateManageSDL = ({
     // Had to remove /* GraphQL */ because prettier would not format the code correctly.
     return `
         """${model.description || singularName}"""
+        
+        type ${singularName}Values {
+            ${fields.map(f => f.fields).join("\n") || "_empty: String"}
+        }
+        
         type ${singularName} {
             id: ID!
             entryId: String!
             
             ${onByMetaGqlFields}
             meta: ${singularName}Meta
-            ${fields.map(f => f.fields).join("\n")}
-            # Advanced Content Organization - make required in 5.38.0
             wbyAco_location: WbyAcoLocation
+            
+            values: ${singularName}Values
         }
 
         type ${singularName}Meta {
@@ -112,6 +117,10 @@ export const createManageSDL: CreateManageSDL = ({
 
         ${inputFields.map(f => f.typeDefs).join("\n")}
         
+        input ${singularName}InputValues {
+            ${inputGqlFields || "_empty: String"}
+        }
+        
         input ${singularName}Input {
             id: ID
             
@@ -122,22 +131,32 @@ export const createManageSDL: CreateManageSDL = ({
             
             wbyAco_location: WbyAcoLocationInput
             
-            ${inputGqlFields}
-            
+            values: ${singularName}InputValues
+        }
+        
+        input ${singularName}GetWhereInputValues {
+            ${getFilterFieldsRender.fieldFiltersAsString() || "_empty: String"}
         }
         
         input ${singularName}GetWhereInput {
-            ${getFilterFieldsRender}
+            ${getFilterFieldsRender.baseFiltersAsString()}
+            values: ${singularName}GetWhereInputValues
+        }
+        
+        input ${singularName}ListWhereInputValues {
+            ${listFilterFieldsRender.fieldFiltersAsString() || "_empty: String"}
         }
 
         input ${singularName}ListWhereInput {
+            ${listFilterFieldsRender.baseFiltersAsString()}
+
             state: ListWhereInputCmsEntryState
             wbyAco_location: WbyAcoLocationWhereInput
-            ${listFilterFieldsRender}
+            
+            values: ${singularName}ListWhereInputValues
             AND: [${singularName}ListWhereInput!]
             OR: [${singularName}ListWhereInput!]
         }
-
 
         type ${singularName}Response {
             data: ${singularName}

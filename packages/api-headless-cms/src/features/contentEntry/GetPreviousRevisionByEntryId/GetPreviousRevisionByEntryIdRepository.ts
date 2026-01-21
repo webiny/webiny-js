@@ -16,7 +16,7 @@ import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
  * Returns the previous revision for a given entry (includes deleted entries).
  */
 class GetPreviousRevisionByEntryIdRepositoryImpl implements RepositoryAbstraction.Interface {
-    constructor(
+    public constructor(
         private entryFromStorageTransform: EntryFromStorageTransform.Interface,
         private storageOperations: StorageOperations.Interface
     ) {}
@@ -26,7 +26,10 @@ class GetPreviousRevisionByEntryIdRepositoryImpl implements RepositoryAbstractio
         params: CmsEntryStorageOperationsGetPreviousRevisionParams
     ): Promise<Result<CmsEntry<T>, RepositoryAbstraction.Error>> {
         try {
-            const entry = await this.storageOperations.entries.getPreviousRevision(model, params);
+            const entry = await this.storageOperations.entries.getPreviousRevision<T>(
+                model,
+                params
+            );
 
             if (!entry) {
                 return Result.fail(new EntryNotFoundError(params.entryId));
@@ -35,7 +38,7 @@ class GetPreviousRevisionByEntryIdRepositoryImpl implements RepositoryAbstractio
             // Transform storage entry to domain entry
             const transformedEntry = await this.entryFromStorageTransform(model, entry);
 
-            return Result.ok(transformedEntry as CmsEntry<T>);
+            return Result.ok(transformedEntry);
         } catch (error) {
             return Result.fail(new EntryPersistenceError(error as Error));
         }

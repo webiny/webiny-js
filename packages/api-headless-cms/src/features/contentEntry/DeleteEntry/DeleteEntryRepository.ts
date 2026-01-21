@@ -9,7 +9,7 @@ import { StorageOperations } from "~/features/shared/abstractions.js";
  * DeleteEntryRepository - Handles storage operations for permanently deleting entries.
  */
 class DeleteEntryRepositoryImpl implements RepositoryAbstraction.Interface {
-    constructor(private storageOperations: StorageOperations.Interface) {}
+    public constructor(private storageOperations: StorageOperations.Interface) {}
 
     async execute(
         model: CmsModel,

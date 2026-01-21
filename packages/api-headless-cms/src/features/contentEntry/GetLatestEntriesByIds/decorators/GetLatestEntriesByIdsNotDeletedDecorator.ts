@@ -12,7 +12,7 @@ import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 class GetLatestEntriesByIdsNotDeletedDecoratorImpl
     implements GetLatestEntriesByIdsUseCase.Interface
 {
-    constructor(private decoratee: GetLatestEntriesByIdsUseCase.Interface) {}
+    public constructor(private decoratee: GetLatestEntriesByIdsUseCase.Interface) {}
 
     async execute<T extends CmsEntryValues>(
         model: CmsModel,

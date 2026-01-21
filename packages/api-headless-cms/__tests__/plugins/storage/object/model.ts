@@ -15,11 +15,7 @@ export const createObjectMockModel = (): CmsModel => {
             displayName: "admin",
             id: "admin"
         },
-
-        group: {
-            name: "Group",
-            id: "group"
-        },
+        group: "group",
         description: "Object model for testing.",
         layout: [["titleId"], ["objectId"]],
         fields: [
@@ -31,7 +27,9 @@ export const createObjectMockModel = (): CmsModel => {
                 storageId: "textWithDefaultStorageId",
                 settings: {
                     defaultValue: "field with default value"
-                }
+                },
+                listValidation: [],
+                validation: []
             },
             {
                 fieldId: "titleFieldId",
@@ -39,7 +37,9 @@ export const createObjectMockModel = (): CmsModel => {
                 multipleValues: false,
                 type: "text",
                 id: "titleId",
-                label: "Title"
+                label: "Title",
+                listValidation: [],
+                validation: []
             },
             {
                 id: "objectId",
@@ -48,6 +48,8 @@ export const createObjectMockModel = (): CmsModel => {
                 label: "Object",
                 type: "object",
                 multipleValues: false,
+                listValidation: [],
+                validation: [],
                 settings: {
                     fields: [
                         {
@@ -56,7 +58,9 @@ export const createObjectMockModel = (): CmsModel => {
                             multipleValues: false,
                             type: "text",
                             id: "titleId",
-                            label: "Title"
+                            label: "Title",
+                            listValidation: [],
+                            validation: []
                         },
                         {
                             fieldId: "dateFieldId",
@@ -66,7 +70,9 @@ export const createObjectMockModel = (): CmsModel => {
                             storageId: "dateStorageId",
                             id: "dateId",
                             label: "Date",
-                            type: "datetime"
+                            type: "datetime",
+                            listValidation: [],
+                            validation: []
                         },
                         {
                             fieldId: "dateMultipleFieldId",
@@ -77,7 +83,9 @@ export const createObjectMockModel = (): CmsModel => {
                             id: "dateMultipleId",
                             label: "Date Multiple",
                             type: "datetime",
-                            multipleValues: true
+                            multipleValues: true,
+                            listValidation: [],
+                            validation: []
                         },
                         {
                             fieldId: "nestedTextWithDefaultFieldId",
@@ -87,7 +95,9 @@ export const createObjectMockModel = (): CmsModel => {
                             storageId: "nestedTextWithDefaultStorageId",
                             settings: {
                                 defaultValue: "nested field with default value"
-                            }
+                            },
+                            listValidation: [],
+                            validation: []
                         }
                     ],
                     layout: [["titleId"], ["dateId"], ["dateMultipleId"]]

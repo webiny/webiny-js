@@ -45,8 +45,14 @@ describe("Content entries - Entry Meta Fields", () => {
         // 2. After the entry is updated, "modified" meta fields should be populated.
         //    We must see the same change when listing entries.
         ({ data: revision1 } = await manageApiIdentityA.updateTestEntry({
-            revision: revision1.id,
-            data: { title: "Fruits 2" }
+            variables: {
+                revision: revision1.id,
+                data: {
+                    values: {
+                        title: "Fruits 2"
+                    }
+                }
+            }
         }));
 
         ({ data: entriesList } = await manageApiIdentityA.listTestEntries());
@@ -74,7 +80,9 @@ describe("Content entries - Entry Meta Fields", () => {
         // 3. A new revision should have updated revision-level meta
         // fields, while entry-level meta fields should remain the same.
         let { data: revision2 } = await manageApiIdentityA.createTestEntryFrom({
-            revision: revision1.id
+            variables: {
+                revision: revision1.id
+            }
         });
 
         ({ data: entriesList } = await manageApiIdentityA.listTestEntries());
@@ -109,8 +117,16 @@ describe("Content entries - Entry Meta Fields", () => {
         expect(entriesList[0]).toMatchObject(matchObject3);
 
         // Refresh.
-        ({ data: revision1 } = await manageApiIdentityA.getTestEntry({ revision: revision1.id }));
-        ({ data: revision2 } = await manageApiIdentityA.getTestEntry({ revision: revision2.id }));
+        ({ data: revision1 } = await manageApiIdentityA.getTestEntry({
+            variables: {
+                revision: revision1.id
+            }
+        }));
+        ({ data: revision2 } = await manageApiIdentityA.getTestEntry({
+            variables: {
+                revision: revision2.id
+            }
+        }));
         ({ data: entriesList } = await manageApiIdentityA.listTestEntries());
 
         // Revision-level meta fields should be updated.
@@ -134,22 +150,44 @@ describe("Content entries - Entry Meta Fields", () => {
         let { data: revision1 } = await manageApiIdentityA.createTestEntry();
 
         let { data: revision2 } = await manageApiIdentityA.createTestEntryFrom({
-            revision: revision1.id
+            variables: {
+                revision: revision1.id
+            }
         });
 
         let { data: revision3 } = await manageApiIdentityA.createTestEntryFrom({
-            revision: revision2.id
+            variables: {
+                revision: revision2.id
+            }
         });
 
         await manageApiIdentityB.updateTestEntry({
-            revision: revision1.id,
-            data: { title: "Fruits Update" }
+            variables: {
+                revision: revision1.id,
+                data: {
+                    values: {
+                        title: "Fruits Update"
+                    }
+                }
+            }
         });
 
         // Refresh.
-        ({ data: revision1 } = await manageApiIdentityA.getTestEntry({ revision: revision1.id }));
-        ({ data: revision2 } = await manageApiIdentityA.getTestEntry({ revision: revision2.id }));
-        ({ data: revision3 } = await manageApiIdentityA.getTestEntry({ revision: revision3.id }));
+        ({ data: revision1 } = await manageApiIdentityA.getTestEntry({
+            variables: {
+                revision: revision1.id
+            }
+        }));
+        ({ data: revision2 } = await manageApiIdentityA.getTestEntry({
+            variables: {
+                revision: revision2.id
+            }
+        }));
+        ({ data: revision3 } = await manageApiIdentityA.getTestEntry({
+            variables: {
+                revision: revision3.id
+            }
+        }));
 
         const { data: entriesList } = await manageApiIdentityA.listTestEntries();
 
@@ -188,20 +226,30 @@ describe("Content entries - Entry Meta Fields", () => {
         const { title, slug } = revision1;
 
         let { data: revision2 } = await manageApiIdentityA.createTestEntryFrom({
-            revision: revision1.id
+            variables: {
+                revision: revision1.id
+            }
         });
 
         const { data: revision3 } = await manageApiIdentityA.createTestEntryFrom({
-            revision: revision2.id
+            variables: {
+                revision: revision2.id
+            }
         });
 
         // Delete revision 3 and ensure that revision 2's entry-level meta fields are propagated.
         await manageApiIdentityB.deleteTestEntry({
-            revision: revision3.id
+            variables: {
+                revision: revision3.id
+            }
         });
 
         // Refresh.
-        ({ data: revision2 } = await manageApiIdentityA.getTestEntry({ revision: revision2.id }));
+        ({ data: revision2 } = await manageApiIdentityA.getTestEntry({
+            variables: {
+                revision: revision2.id
+            }
+        }));
         let { data: entriesList } = await manageApiIdentityA.listTestEntries();
 
         expect(revision2.createdOn).toBe(revision3.createdOn);
@@ -223,11 +271,17 @@ describe("Content entries - Entry Meta Fields", () => {
 
         // Delete revision 2 and ensure that revision 1's entry-level meta fields are propagated.
         await manageApiIdentityB.deleteTestEntry({
-            revision: revision2.id
+            variables: {
+                revision: revision2.id
+            }
         });
 
         // Refresh.
-        ({ data: revision1 } = await manageApiIdentityA.getTestEntry({ revision: revision1.id }));
+        ({ data: revision1 } = await manageApiIdentityA.getTestEntry({
+            variables: {
+                revision: revision1.id
+            }
+        }));
         ({ data: entriesList } = await manageApiIdentityA.listTestEntries());
 
         expect(revision1.createdOn).toBe(revision2.createdOn);

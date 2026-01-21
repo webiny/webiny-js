@@ -15,7 +15,7 @@ import { GroupNotAuthorizedError } from "~/domain/contentModelGroup/errors.js";
  * - Return the group or appropriate error
  */
 class GetGroupUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(
+    public constructor(
         private repository: GetGroupRepository.Interface,
         private accessControl: AccessControl.Interface
     ) {}

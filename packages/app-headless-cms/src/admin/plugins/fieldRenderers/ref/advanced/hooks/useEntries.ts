@@ -49,7 +49,9 @@ export const useEntries = (params: Params) => {
                         return null;
                     }
                     return {
-                        [`${field.fieldId}_contains`]: query
+                        values: {
+                            [`${field.fieldId}_contains`]: query
+                        }
                     };
                 })
                 .filter(Boolean);

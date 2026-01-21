@@ -18,7 +18,9 @@ describe("equals filter", () => {
 
     it("should add equal filter - null", async () => {
         const where: CmsEntryListWhere = {
-            title: null
+            values: {
+                title: null
+            }
         };
 
         execFiltering({
@@ -45,7 +47,9 @@ describe("equals filter", () => {
     it("should add equal filter - string", async () => {
         const title = "Webiny Serverless";
         const where: CmsEntryListWhere = {
-            title
+            values: {
+                title
+            }
         };
 
         execFiltering({
@@ -71,7 +75,9 @@ describe("equals filter", () => {
 
     it("should add equal filter - boolean", async () => {
         const where: CmsEntryListWhere = {
-            isMarried: true
+            values: {
+                isMarried: true
+            }
         };
 
         execFiltering({
@@ -97,7 +103,9 @@ describe("equals filter", () => {
 
     it("should add equal filter - number", async () => {
         const where: CmsEntryListWhere = {
-            age: 2
+            values: {
+                age: 2
+            }
         };
 
         execFiltering({

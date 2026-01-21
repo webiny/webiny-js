@@ -5,7 +5,7 @@ import {
 } from "./abstractions.js";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
 import { FolderModel } from "~/domain/folder/abstractions.js";
-import type { Folder } from "~/folder/folder.types.js";
+import type { CmsEntryFolder, Folder } from "~/folder/folder.types.js";
 import { EntryToFolderMapper } from "../shared/EntryToFolderMapper.js";
 import { FolderNotFoundError, FolderPersistenceError } from "~/domain/folder/errors.js";
 
@@ -16,7 +16,7 @@ class GetFolderRepositoryImpl implements IGetFolderRepository {
     ) {}
 
     async execute(id: string): Promise<Result<Folder, RepositoryAbstraction.Error>> {
-        const result = await this.getEntryById.execute(this.folderModel, id);
+        const result = await this.getEntryById.execute<CmsEntryFolder>(this.folderModel, id);
 
         if (result.isFail()) {
             if (result.error.code === "Cms/Entry/NotFound") {

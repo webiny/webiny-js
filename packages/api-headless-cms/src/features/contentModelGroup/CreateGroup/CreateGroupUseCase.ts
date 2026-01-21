@@ -32,7 +32,7 @@ import type { CmsGroupCreateInput } from "~/types/index.js";
  * - Publish after event or error event
  */
 class CreateGroupUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(
+    public constructor(
         private eventPublisher: EventPublisher.Interface,
         private repository: CreateGroupRepository.Interface,
         private accessControl: AccessControl.Interface,

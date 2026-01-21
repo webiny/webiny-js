@@ -11,7 +11,7 @@ import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
  * Returns array of entries.
  */
 class GetEntriesByIdsRepositoryImpl implements RepositoryAbstraction.Interface {
-    constructor(
+    public constructor(
         private entryFromStorageTransform: EntryFromStorageTransform.Interface,
         private storageOperations: StorageOperations.Interface
     ) {}
@@ -21,7 +21,7 @@ class GetEntriesByIdsRepositoryImpl implements RepositoryAbstraction.Interface {
         ids: string[]
     ): Promise<Result<CmsEntry<T>[], RepositoryAbstraction.Error>> {
         try {
-            const result = await this.storageOperations.entries.getByIds(model, { ids });
+            const result = await this.storageOperations.entries.getByIds<T>(model, { ids });
 
             // Transform storage entries to domain entries
             const items = await Promise.all(
@@ -30,7 +30,7 @@ class GetEntriesByIdsRepositoryImpl implements RepositoryAbstraction.Interface {
                 })
             );
 
-            return Result.ok(items as CmsEntry<T>[]);
+            return Result.ok(items);
         } catch (error) {
             return Result.fail(new EntryPersistenceError(error as Error));
         }

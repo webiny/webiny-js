@@ -13870,7 +13870,7 @@ __metadata:
     "@webiny/validation": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     apollo-graphql: "npm:^0.9.7"
-    dot-prop: "npm:^6.0.1"
+    dot-prop-immutable: "npm:^2.1.1"
     graphql: "npm:^16.12.0"
     graphql-tag: "npm:^2.12.6"
     jsdom: "npm:^25.0.1"

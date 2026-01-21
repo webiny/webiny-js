@@ -12,39 +12,49 @@ const productFields = `
     lastPublishedOn
     firstPublishedOn
     # user defined fields
-    title
-    category {
-        id
+    values {
         title
-    }
-    image
-    price
-    inStock
-    itemsInStock
-    availableOn
-    color
-    availableSizes
-    richText
-    variant {
-        name
-        price
-        images
         category {
             id
-            title
-        }
-        options {
-            name
-            price
-            image
-            longText
-            category {
-                id
+            values {
                 title
             }
-            categories {
+        }
+        image
+        price
+        inStock
+        itemsInStock
+        availableOn
+        color
+        availableSizes
+        richText
+        variant {
+            name
+            price
+            images
+            category {
                 id
-                title
+                values {
+                    title
+                }
+            }
+            options {
+                name
+                price
+                image
+                longText
+                category {
+                    id
+                    values {
+                        title
+                    }
+                }
+                categories {
+                    id
+                    values {
+                        title
+                    }
+                }
             }
         }
     }

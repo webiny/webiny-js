@@ -10,7 +10,7 @@ import { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
  * Delegates to GetEntriesByIdsUseCase and returns the first entry.
  */
 class GetEntryByIdUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(private getEntriesByIdsUseCase: GetEntriesByIdsUseCase.Interface) {}
+    public constructor(private getEntriesByIdsUseCase: GetEntriesByIdsUseCase.Interface) {}
 
     async execute<T extends CmsEntryValues>(
         model: CmsModel,

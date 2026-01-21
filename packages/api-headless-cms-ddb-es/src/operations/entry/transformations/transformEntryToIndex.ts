@@ -1,21 +1,24 @@
 import type { PluginsContainer } from "@webiny/plugins";
 import type {
     CmsEntry,
+    CmsEntryValues,
     CmsStorageEntry,
     StorageOperationsCmsModel
 } from "@webiny/api-headless-cms/types/index.js";
 import { prepareEntryToIndex } from "~/helpers/index.js";
 
-interface TransformEntryToIndexParams {
+interface TransformEntryToIndexParams<T extends CmsEntryValues = CmsEntryValues> {
     plugins: PluginsContainer;
-    model: StorageOperationsCmsModel;
-    entry: CmsEntry;
-    storageEntry: CmsStorageEntry;
+    model: StorageOperationsCmsModel<T>;
+    entry: CmsEntry<T>;
+    storageEntry: CmsStorageEntry<T>;
 }
 
-export const transformEntryToIndex = (params: TransformEntryToIndexParams) => {
+export const transformEntryToIndex = <T extends CmsEntryValues = CmsEntryValues>(
+    params: TransformEntryToIndexParams<T>
+) => {
     const { plugins, model, entry, storageEntry } = params;
-    const result = prepareEntryToIndex({
+    const result = prepareEntryToIndex<T>({
         plugins,
         model,
         entry: structuredClone(entry),

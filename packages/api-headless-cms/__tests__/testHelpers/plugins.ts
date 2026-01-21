@@ -11,11 +11,13 @@ import type { HeadlessCmsStorageOperations } from "~/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { IdentityData } from "@webiny/api-core/features/IdentityContext";
 import { createApiCore } from "@webiny/api-core";
-import type { ApiKey } from "@webiny/api-core/types/security.js";
 import apiKeyAuthentication from "@webiny/api-core/legacy/security/plugins/apiKeyAuthentication";
 import apiKeyAuthorization from "@webiny/api-core/legacy/security/plugins/apiKeyAuthorization.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import { GetApiKeyByTokenUseCase } from "@webiny/api-core/features/security/apiKeys/GetApiKeyByToken/index.js";
+import { Result } from "@webiny/feature/api/index.js";
+import { ApiKeyNotFoundError } from "@webiny/api-core/features/security/apiKeys/shared/errors.js";
 
 export interface CreateHandlerCoreParams {
     setupTenancyAndSecurityGraphQL?: boolean;
@@ -66,28 +68,28 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
                 type: "context",
                 name: "context-security-tenant",
                 async apply(context) {
-                    context.security.getApiKeyByToken = async (
-                        token: string
-                    ): Promise<ApiKey | null> => {
-                        if (!token || token !== "aToken") {
-                            return null;
+                    context.container.registerInstance(GetApiKeyByTokenUseCase, {
+                        execute: async (token: string) => {
+                            if (!token || token !== "aToken") {
+                                return Result.fail(new ApiKeyNotFoundError());
+                            }
+                            const apiKey = "a1234567890";
+                            return Result.ok({
+                                id: apiKey,
+                                name: apiKey,
+                                slug: tenant.id,
+                                permissions: identity?.permissions || permissions || [],
+                                token,
+                                createdBy: {
+                                    id: "test",
+                                    displayName: "test",
+                                    type: "admin"
+                                },
+                                description: "test",
+                                createdOn: new Date().toISOString()
+                            });
                         }
-                        const apiKey = "a1234567890";
-                        return {
-                            id: apiKey,
-                            name: apiKey,
-                            tenant: tenant.id,
-                            permissions: identity?.permissions || [],
-                            token,
-                            createdBy: {
-                                id: "test",
-                                displayName: "test",
-                                type: "admin"
-                            },
-                            description: "test",
-                            createdOn: new Date().toISOString()
-                        };
-                    };
+                    });
                 }
             } as ContextPlugin<TestContext>,
             apiKeyAuthentication({ identityType: "api-key" }),

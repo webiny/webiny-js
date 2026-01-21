@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import type { CmsEntry } from "~/types";
 import { useReviewManageHandler } from "../testHelpers/useReviewManageHandler";
@@ -7,11 +7,9 @@ import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandle
 import { useReviewReadHandler } from "../testHelpers/useReviewReadHandler";
 import { useAuthorManageHandler } from "../testHelpers/useAuthorManageHandler";
 import { useWrapManageHandler } from "~tests/testHelpers/useWrapManageHandler";
-import {
-    setupContentModelGroup,
-    setupContentModels as setupContentModelsBase
-} from "~tests/testHelpers/setup";
 import { useWrapReadHandler } from "~tests/testHelpers/useWrapReadHandler";
+import { setupGroupAndModels } from "~tests/testHelpers/setup";
+import type { IManageQueryBaseResponse } from "~tests/testHelpers/types.js";
 
 interface CreateCategoryParams {
     title?: string;
@@ -37,53 +35,49 @@ describe("refField", () => {
 
     const mainHandler = useGraphQLHandler(manageOpts);
 
-    const setupContentModels = async (
-        handler: ReturnType<typeof useGraphQLHandler>,
-        models?: string[]
-    ) => {
-        const group = await setupContentModelGroup(handler);
-        return await setupContentModelsBase(
-            handler,
-            group,
-            models || ["category", "product", "review", "author"]
-        );
-    };
-
     const createCategory = async (params?: CreateCategoryParams) => {
         const { createCategory, publishCategory } = useCategoryManageHandler({
             ...manageOpts
         });
         const [createCategoryResponse] = await createCategory({
-            data: {
-                title: "Vegetables",
-                slug: "vegetables",
-                ...params
+            variables: {
+                data: {
+                    values: {
+                        title: "Vegetables",
+                        slug: "vegetables",
+                        ...params
+                    }
+                }
             }
         });
         const [publishCategoryResponse] = await publishCategory({
-            revision: createCategoryResponse.data.createCategory.data.id
+            variables: {
+                revision: createCategoryResponse.data.createCategory.data!.id
+            }
         });
 
-        return publishCategoryResponse.data.publishCategory.data as CmsEntry;
+        return publishCategoryResponse.data.publishCategory.data!;
     };
 
-    const createProduct = async (category: CmsEntry, params?: CreateProductParams) => {
+    const createProduct = async (category: Pick<CmsEntry, "id">, params?: CreateProductParams) => {
         const { createProduct, publishProduct } = useProductManageHandler({
             ...manageOpts
         });
 
         const [createProductResponse] = await createProduct({
             data: {
-                title: "Potato",
-                price: 100,
-                availableOn: "2020-12-25",
-                color: "white",
-                availableSizes: ["s", "m"],
-                image: "file.jpg",
-                ...params,
-                category: {
-                    modelId: "category",
-                    id: category.id
+                values: {
+                    title: "Potato",
+                    price: 100,
+                    availableOn: "2020-12-25",
+                    color: "white",
+                    availableSizes: ["s", "m"],
+                    image: "file.jpg",
+                    ...params,
+                    category: {
+                        modelId: "category",
+                        id: category.id
+                    }
                 }
             }
         });
@@ -103,7 +97,9 @@ describe("refField", () => {
             revision: createProductResponse.data.createProduct.data.id
         });
 
-        return publishProductResponse.data.publishProduct.data;
+        return publishProductResponse.data.publishProduct.data as IManageQueryBaseResponse<
+            Required<CreateProductParams>
+        >;
     };
 
     const createAuthor = async (params?: CreateAuthorParams) => {
@@ -112,8 +108,10 @@ describe("refField", () => {
         });
         const [createResponse] = await createAuthor({
             data: {
-                fullName: "John Doe",
-                ...params
+                values: {
+                    fullName: "John Doe",
+                    ...params
+                }
             }
         });
 
@@ -121,12 +119,19 @@ describe("refField", () => {
             revision: createResponse.data.createAuthor.data.id
         });
 
-        return publishAuthorResponse.data.publishAuthor.data;
+        return publishAuthorResponse.data.publishAuthor.data as IManageQueryBaseResponse<
+            Required<CreateAuthorParams>
+        >;
     };
 
-    it("should create review connected to a product", async () => {
-        await setupContentModels(mainHandler);
+    beforeEach(async () => {
+        await setupGroupAndModels({
+            manager: mainHandler,
+            models: ["category", "product", "review", "author", "wrap", "fruit", "bug"]
+        });
+    });
 
+    it("should create review connected to a product", async () => {
         const category = await createCategory();
         const product = await createProduct(category);
         const author = await createAuthor();
@@ -142,16 +147,18 @@ describe("refField", () => {
 
         const [createResponse] = await createReview({
             data: {
-                product: {
-                    modelId: "product",
-                    id: product.id
-                },
-                author: {
-                    modelId: "author",
-                    id: author.id
-                },
-                text: `review text`,
-                rating: 5
+                values: {
+                    product: {
+                        modelId: "product",
+                        id: product.id
+                    },
+                    author: {
+                        modelId: "author",
+                        id: author.id
+                    },
+                    text: `review text`,
+                    rating: 5
+                }
             }
         });
 
@@ -181,8 +188,6 @@ describe("refField", () => {
                             type: "admin"
                         },
                         savedOn: publishedReview.savedOn,
-                        text: "review text",
-                        rating: 5,
                         lastPublishedOn,
                         firstPublishedOn,
                         modifiedOn,
@@ -192,22 +197,28 @@ describe("refField", () => {
                             revisions: [
                                 {
                                     id: review.id,
-                                    text: review.text
+                                    values: {
+                                        text: review.values.text
+                                    }
                                 }
                             ],
                             status: "published",
-                            title: review.text,
+                            title: review.values.text,
                             version: 1
                         },
-                        product: {
-                            id: product.id,
-                            entryId: product.entryId,
-                            modelId: "product"
-                        },
-                        author: {
-                            modelId: "author",
-                            entryId: author.entryId,
-                            id: author.id
+                        values: {
+                            text: "review text",
+                            rating: 5,
+                            product: {
+                                id: product.id,
+                                entryId: product.entryId,
+                                modelId: "product"
+                            },
+                            author: {
+                                modelId: "author",
+                                entryId: author.entryId,
+                                id: author.id
+                            }
                         }
                     },
                     error: null
@@ -224,11 +235,6 @@ describe("refField", () => {
                         {
                             id: review.id,
                             entryId: review.entryId,
-                            author: {
-                                id: author.id,
-                                entryId: author.entryId,
-                                modelId: "author"
-                            },
                             createdOn: review.createdOn,
                             createdBy: {
                                 id: "id-12345678",
@@ -238,27 +244,36 @@ describe("refField", () => {
                             lastPublishedOn,
                             firstPublishedOn,
                             modifiedOn,
+                            savedOn: publishedReview.savedOn,
                             meta: {
                                 locked: true,
                                 modelId: "review",
                                 revisions: [
                                     {
                                         id: review.id,
-                                        text: review.text
+                                        values: {
+                                            text: review.values.text
+                                        }
                                     }
                                 ],
                                 status: "published",
-                                title: review.text,
+                                title: review.values.text,
                                 version: 1
                             },
-                            product: {
-                                id: product.id,
-                                entryId: product.entryId,
-                                modelId: "product"
-                            },
-                            rating: 5,
-                            savedOn: publishedReview.savedOn,
-                            text: review.text
+                            values: {
+                                author: {
+                                    id: author.id,
+                                    entryId: author.entryId,
+                                    modelId: "author"
+                                },
+                                product: {
+                                    id: product.id,
+                                    entryId: product.entryId,
+                                    modelId: "product"
+                                },
+                                rating: 5,
+                                text: review.values.text
+                            }
                         }
                     ],
                     error: null,
@@ -288,15 +303,21 @@ describe("refField", () => {
                         id: review.id,
                         createdOn: review.createdOn,
                         savedOn: publishedReview.savedOn,
-                        text: "review text",
-                        rating: 5,
-                        product: {
-                            id: product.id,
-                            title: "Potato"
-                        },
-                        author: {
-                            id: author.id,
-                            fullName: author.fullName
+                        values: {
+                            text: "review text",
+                            rating: 5,
+                            product: {
+                                id: product.id,
+                                values: {
+                                    title: "Potato"
+                                }
+                            },
+                            author: {
+                                id: author.id,
+                                values: {
+                                    fullName: author.values.fullName
+                                }
+                            }
                         }
                     },
                     error: null
@@ -306,18 +327,10 @@ describe("refField", () => {
     });
 
     it("should properly order related items from multiple models", async () => {
-        const manageHandler = useWrapManageHandler(manageOpts);
+        const wrapManageHandler = useWrapManageHandler(manageOpts);
         const readHandler = useWrapReadHandler({
             ...readOpts
         });
-        await setupContentModels(manageHandler, [
-            "wrap",
-            "category",
-            "author",
-            "product",
-            "fruit",
-            "bug"
-        ]);
 
         const categoryOne = await createCategory({
             title: "Category One",
@@ -379,18 +392,22 @@ describe("refField", () => {
                 modelId: "author"
             }
         ];
-        const [createResponse] = await manageHandler.createWrap({
+        const [createResponse] = await wrapManageHandler.createWrap({
             data: {
-                title: "Wrap One",
-                references
+                values: {
+                    title: "Wrap One",
+                    references
+                }
             }
         });
         expect(createResponse).toMatchObject({
             data: {
                 createWrap: {
                     data: {
-                        title: "Wrap One",
-                        references
+                        values: {
+                            title: "Wrap One",
+                            references
+                        }
                     },
                     error: null
                 }
@@ -398,19 +415,21 @@ describe("refField", () => {
         });
 
         for (const index in references) {
-            const responseReference = createResponse.data.createWrap.data.references[index];
+            const responseReference = createResponse.data.createWrap.data.values.references[index];
             expect(responseReference).toMatchObject(references[index]);
         }
 
-        const [publishResponse] = await manageHandler.publishWrap({
+        const [publishResponse] = await wrapManageHandler.publishWrap({
             revision: createResponse.data.createWrap.data.id
         });
         expect(publishResponse).toMatchObject({
             data: {
                 publishWrap: {
                     data: {
-                        title: "Wrap One",
-                        references,
+                        values: {
+                            title: "Wrap One",
+                            references
+                        },
                         meta: {
                             status: "published"
                         }
@@ -429,7 +448,9 @@ describe("refField", () => {
                 listWraps: {
                     data: [
                         {
-                            references
+                            values: {
+                                references
+                            }
                         }
                     ],
                     error: null,
@@ -444,14 +465,15 @@ describe("refField", () => {
     });
 
     it("should create a product which is not connected to category and list and filter by the category value", async () => {
-        await setupContentModels(mainHandler);
         const { createProduct, listProducts } = useProductManageHandler({
             ...manageOpts
         });
 
         const [listEmptyResult] = await listProducts({
             where: {
-                category: null
+                values: {
+                    category: null
+                }
             }
         });
         expect(listEmptyResult).toMatchObject({
@@ -478,7 +500,9 @@ describe("refField", () => {
             category: null
         };
         const [createResponse] = await createProduct({
-            data
+            data: {
+                values: data
+            }
         });
 
         expect(createResponse).toMatchObject({
@@ -486,8 +510,10 @@ describe("refField", () => {
                 createProduct: {
                     data: {
                         id: expect.any(String),
-                        ...data,
-                        category: null
+                        values: {
+                            ...data,
+                            category: null
+                        }
                     },
                     error: null
                 }
@@ -503,8 +529,10 @@ describe("refField", () => {
                         {
                             id: expect.any(String),
                             entryId: expect.any(String),
-                            ...data,
-                            category: null
+                            values: {
+                                ...data,
+                                category: null
+                            }
                         }
                     ],
                     error: null,
@@ -519,7 +547,9 @@ describe("refField", () => {
 
         const [whereNullResult] = await listProducts({
             where: {
-                category: null
+                values: {
+                    category: null
+                }
             }
         });
         expect(whereNullResult).toMatchObject({
@@ -529,8 +559,10 @@ describe("refField", () => {
                         {
                             id: expect.any(String),
                             entryId: expect.any(String),
-                            ...data,
-                            category: null
+                            values: {
+                                ...data,
+                                category: null
+                            }
                         }
                     ],
                     error: null,
@@ -545,7 +577,9 @@ describe("refField", () => {
 
         const [whereUndefinedResult] = await listProducts({
             where: {
-                category: undefined
+                values: {
+                    category: undefined
+                }
             }
         });
         expect(whereUndefinedResult).toMatchObject({
@@ -555,8 +589,10 @@ describe("refField", () => {
                         {
                             id: expect.any(String),
                             entryId: expect.any(String),
-                            ...data,
-                            category: null
+                            values: {
+                                ...data,
+                                category: null
+                            }
                         }
                     ],
                     error: null,

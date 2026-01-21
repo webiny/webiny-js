@@ -7,7 +7,7 @@ export interface IFileFieldBuilder extends FieldBuilder<"file">, RequiredValidat
 }
 
 class FileFieldBuilder extends FieldBuilder<"file"> implements IFileFieldBuilder {
-    constructor() {
+    public constructor() {
         super("file");
     }
 

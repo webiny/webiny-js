@@ -2,7 +2,7 @@ import { Result } from "@webiny/feature/api";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry";
 import { CreateRedirectRepository as RepositoryAbstraction } from "./abstractions.js";
 import { RedirectModel } from "~/domain/redirect/abstractions.js";
-import { RedirectValidationError, RedirectPersistenceError } from "~/domain/redirect/errors.js";
+import { RedirectPersistenceError, RedirectValidationError } from "~/domain/redirect/errors.js";
 import { EntryToRedirectMapper } from "~/domain/redirect/EntryToRedirectMapper.js";
 
 class CreateRedirectRepositoryImpl implements RepositoryAbstraction.Interface {
@@ -12,7 +12,10 @@ class CreateRedirectRepositoryImpl implements RepositoryAbstraction.Interface {
     ) {}
 
     async execute(data: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
-        const result = await this.createEntry.execute(this.redirectModel, data);
+        const result = await this.createEntry.execute(this.redirectModel, {
+            location: data.location,
+            values: data
+        });
 
         if (result.isFail()) {
             if (result.error.code === "Cms/Entry/ValidationError") {

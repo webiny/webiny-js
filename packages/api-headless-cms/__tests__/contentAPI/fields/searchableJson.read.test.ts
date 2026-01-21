@@ -35,7 +35,9 @@ describe("searchable-json field - read - author", () => {
 
         const createdEntry = await context.cms.createEntry<IAuthorWithSearchableJsonCmsEntryValues>(
             model,
-            values
+            {
+                values
+            }
         );
         entry = await context.cms.publishEntry<IAuthorWithSearchableJsonCmsEntryValues>(
             model,
@@ -75,24 +77,29 @@ describe("searchable-json field - read - author", () => {
     it("should find nothing because subfield does not exist", async () => {
         const [searchUnknownResult] = await reader.listAuthors({
             where: {
-                info: {
-                    unknownId: "value"
+                values: {
+                    info: {
+                        unknownId: "value"
+                    }
                 }
             }
         });
+        expect(searchUnknownResult.errors).toBeUndefined();
         expect(searchUnknownResult.data.content.data).toHaveLength(0);
     });
 
     it.skip("should find entry because subfield does not exist - negate", async () => {
         const [searchUnknownNotResult] = await reader.listAuthors({
             where: {
-                info: {
-                    unknownId_not: "value"
+                values: {
+                    info: {
+                        unknownId_not: "value"
+                    }
                 }
             }
         });
         expect(searchUnknownNotResult.data.content.data).toHaveLength(1);
-        expect(searchUnknownNotResult.data.content.data[0].name).toBe("John Doe");
+        expect(searchUnknownNotResult.data.content.data[0].values.name).toBe("John Doe");
     });
     /**
      * Name
@@ -100,15 +107,19 @@ describe("searchable-json field - read - author", () => {
     it("should use name to search for an entry - equal", async () => {
         const [searchNameResult] = await reader.listAuthors({
             where: {
-                name: "John Doe"
+                values: {
+                    name: "John Doe"
+                }
             }
         });
         expect(searchNameResult.data.content.data).toHaveLength(1);
-        expect(searchNameResult.data.content.data[0].name).toBe("John Doe");
+        expect(searchNameResult.data.content.data[0].values.name).toBe("John Doe");
 
         const [searchNameFailResult] = await reader.listAuthors({
             where: {
-                name: "Jane Doe"
+                values: {
+                    name: "Jane Doe"
+                }
             }
         });
         expect(searchNameFailResult.data.content.data).toHaveLength(0);
@@ -117,32 +128,40 @@ describe("searchable-json field - read - author", () => {
     it("should use name to search for an entry - not_equal", async () => {
         const [searchNameFailResult] = await reader.listAuthors({
             where: {
-                name_not: "John Doe"
+                values: {
+                    name_not: "John Doe"
+                }
             }
         });
         expect(searchNameFailResult.data.content.data).toHaveLength(0);
 
         const [searchNameResult] = await reader.listAuthors({
             where: {
-                name_not: "Jane Doe"
+                values: {
+                    name_not: "Jane Doe"
+                }
             }
         });
         expect(searchNameResult.data.content.data).toHaveLength(1);
-        expect(searchNameResult.data.content.data[0].name).toBe("John Doe");
+        expect(searchNameResult.data.content.data[0].values.name).toBe("John Doe");
     });
 
     it("should use name to search for an entry - contains", async () => {
         const [searchNameResult] = await reader.listAuthors({
             where: {
-                name_contains: "John"
+                values: {
+                    name_contains: "John"
+                }
             }
         });
         expect(searchNameResult.data.content.data).toHaveLength(1);
-        expect(searchNameResult.data.content.data[0].name).toBe("John Doe");
+        expect(searchNameResult.data.content.data[0].values.name).toBe("John Doe");
 
         const [searchNameFailResult] = await reader.listAuthors({
             where: {
-                name_contains: "Jane"
+                values: {
+                    name_contains: "Jane"
+                }
             }
         });
         expect(searchNameFailResult.data.content.data).toHaveLength(0);
@@ -151,18 +170,22 @@ describe("searchable-json field - read - author", () => {
     it("should use name to search for an entry - not_contains", async () => {
         const [searchNameFailResult] = await reader.listAuthors({
             where: {
-                name_not_contains: "John"
+                values: {
+                    name_not_contains: "John"
+                }
             }
         });
         expect(searchNameFailResult.data.content.data).toHaveLength(0);
 
         const [searchNameResult] = await reader.listAuthors({
             where: {
-                name_not_contains: "Jane"
+                values: {
+                    name_not_contains: "Jane"
+                }
             }
         });
         expect(searchNameResult.data.content.data).toHaveLength(1);
-        expect(searchNameResult.data.content.data[0].name).toBe("John Doe");
+        expect(searchNameResult.data.content.data[0].values.name).toBe("John Doe");
     });
     /**
      * Info.Age
@@ -171,18 +194,22 @@ describe("searchable-json field - read - author", () => {
     it("should use info.age to search for an entry - equal", async () => {
         const [searchAgeResult] = await reader.listAuthors({
             where: {
-                info: {
-                    age: 30
+                values: {
+                    info: {
+                        age: 30
+                    }
                 }
             }
         });
         expect(searchAgeResult.data.content.data).toHaveLength(1);
-        expect(searchAgeResult.data.content.data[0].name).toBe("John Doe");
+        expect(searchAgeResult.data.content.data[0].values.name).toBe("John Doe");
 
         const [searchAgeFailResult] = await reader.listAuthors({
             where: {
-                info: {
-                    age: 31
+                values: {
+                    info: {
+                        age: 31
+                    }
                 }
             }
         });
@@ -192,8 +219,10 @@ describe("searchable-json field - read - author", () => {
     it.skip("should use info.age to search for an entry - not_equal", async () => {
         const [searchAgeFailResult] = await reader.listAuthors({
             where: {
-                info: {
-                    age_not: 30
+                values: {
+                    info: {
+                        age_not: 30
+                    }
                 }
             }
         });
@@ -201,31 +230,37 @@ describe("searchable-json field - read - author", () => {
 
         const [searchAgeResult] = await reader.listAuthors({
             where: {
-                info: {
-                    age_not: 31
+                values: {
+                    info: {
+                        age_not: 31
+                    }
                 }
             }
         });
 
         expect(searchAgeResult.data.content.data).toHaveLength(1);
-        expect(searchAgeResult.data.content.data[0].name).toBe("John Doe");
+        expect(searchAgeResult.data.content.data[0].values.name).toBe("John Doe");
     });
 
     it.skip("should use info.age to search for an entry - gte", async () => {
         const [searchAgeResult] = await reader.listAuthors({
             where: {
-                info: {
-                    age_gte: 30
+                values: {
+                    info: {
+                        age_gte: 30
+                    }
                 }
             }
         });
         expect(searchAgeResult.data.content.data).toHaveLength(1);
-        expect(searchAgeResult.data.content.data[0].name).toBe("John Doe");
+        expect(searchAgeResult.data.content.data[0].values.name).toBe("John Doe");
 
         const [searchAgeFailResult] = await reader.listAuthors({
             where: {
-                info: {
-                    age_gte: 31
+                values: {
+                    info: {
+                        age_gte: 31
+                    }
                 }
             }
         });
@@ -235,18 +270,22 @@ describe("searchable-json field - read - author", () => {
     it.skip("should use info.age to search for an entry - lte", async () => {
         const [searchAgeResult] = await reader.listAuthors({
             where: {
-                info: {
-                    age_lte: 30
+                values: {
+                    info: {
+                        age_lte: 30
+                    }
                 }
             }
         });
         expect(searchAgeResult.data.content.data).toHaveLength(1);
-        expect(searchAgeResult.data.content.data[0].name).toBe("John Doe");
+        expect(searchAgeResult.data.content.data[0].values.name).toBe("John Doe");
 
         const [searchAgeFailResult] = await reader.listAuthors({
             where: {
-                info: {
-                    age_lte: 29
+                values: {
+                    info: {
+                        age_lte: 29
+                    }
                 }
             }
         });
@@ -258,18 +297,22 @@ describe("searchable-json field - read - author", () => {
     it("should use info.hobbies to search for an entry - equal", async () => {
         const [searchHobbiesResult] = await reader.listAuthors({
             where: {
-                info: {
-                    hobbies: "reading"
+                values: {
+                    info: {
+                        hobbies: "reading"
+                    }
                 }
             }
         });
         expect(searchHobbiesResult.data.content.data).toHaveLength(1);
-        expect(searchHobbiesResult.data.content.data[0].name).toBe("John Doe");
+        expect(searchHobbiesResult.data.content.data[0].values.name).toBe("John Doe");
 
         const [searchHobbiesFailResult] = await reader.listAuthors({
             where: {
-                info: {
-                    hobbies: "swimming"
+                values: {
+                    info: {
+                        hobbies: "swimming"
+                    }
                 }
             }
         });
@@ -281,21 +324,25 @@ describe("searchable-json field - read - author", () => {
     it.skip("should use info.address.street to search for an entry - equal", async () => {
         const [searchStreetResult] = await reader.listAuthors({
             where: {
-                info: {
-                    address: {
-                        street: "123 Main St"
+                values: {
+                    info: {
+                        address: {
+                            street: "123 Main St"
+                        }
                     }
                 }
             }
         });
         expect(searchStreetResult.data.content.data).toHaveLength(1);
-        expect(searchStreetResult.data.content.data[0].name).toBe("John Doe");
+        expect(searchStreetResult.data.content.data[0].values.name).toBe("John Doe");
 
         const [searchStreetFailResult] = await reader.listAuthors({
             where: {
-                info: {
-                    address: {
-                        street: "456 Elm St"
+                values: {
+                    info: {
+                        address: {
+                            street: "456 Elm St"
+                        }
                     }
                 }
             }
@@ -306,9 +353,11 @@ describe("searchable-json field - read - author", () => {
     it.skip("should use info.address.street to search for an entry - not_equal", async () => {
         const [searchStreetFailResult] = await reader.listAuthors({
             where: {
-                info: {
-                    address: {
-                        street_not: "123 Main St"
+                values: {
+                    info: {
+                        address: {
+                            street_not: "123 Main St"
+                        }
                     }
                 }
             }
@@ -317,35 +366,41 @@ describe("searchable-json field - read - author", () => {
 
         const [searchStreetResult] = await reader.listAuthors({
             where: {
-                info: {
-                    address: {
-                        street_not: "456 Elm St"
+                values: {
+                    info: {
+                        address: {
+                            street_not: "456 Elm St"
+                        }
                     }
                 }
             }
         });
         expect(searchStreetResult.data.content.data).toHaveLength(1);
-        expect(searchStreetResult.data.content.data[0].name).toBe("John Doe");
+        expect(searchStreetResult.data.content.data[0].values.name).toBe("John Doe");
     });
 
     it.skip("should use info.address.street to search for an entry - contains", async () => {
         const [searchStreetResult] = await reader.listAuthors({
             where: {
-                info: {
-                    address: {
-                        street_contains: "Main"
+                values: {
+                    info: {
+                        address: {
+                            street_contains: "Main"
+                        }
                     }
                 }
             }
         });
         expect(searchStreetResult.data.content.data).toHaveLength(1);
-        expect(searchStreetResult.data.content.data[0].name).toBe("John Doe");
+        expect(searchStreetResult.data.content.data[0].values.name).toBe("John Doe");
 
         const [searchStreetFailResult] = await reader.listAuthors({
             where: {
-                info: {
-                    address: {
-                        street_contains: "Elm"
+                values: {
+                    info: {
+                        address: {
+                            street_contains: "Elm"
+                        }
                     }
                 }
             }
@@ -356,9 +411,11 @@ describe("searchable-json field - read - author", () => {
     it.skip("should use info.address.street to search for an entry - not_contains", async () => {
         const [searchStreetFailResult] = await reader.listAuthors({
             where: {
-                info: {
-                    address: {
-                        street_not_contains: "Main"
+                values: {
+                    info: {
+                        address: {
+                            street_not_contains: "Main"
+                        }
                     }
                 }
             }
@@ -367,14 +424,16 @@ describe("searchable-json field - read - author", () => {
 
         const [searchStreetResult] = await reader.listAuthors({
             where: {
-                info: {
-                    address: {
-                        street_not_contains: "Elm"
+                values: {
+                    info: {
+                        address: {
+                            street_not_contains: "Elm"
+                        }
                     }
                 }
             }
         });
         expect(searchStreetResult.data.content.data).toHaveLength(1);
-        expect(searchStreetResult.data.content.data[0].name).toBe("John Doe");
+        expect(searchStreetResult.data.content.data[0].values.name).toBe("John Doe");
     });
 });

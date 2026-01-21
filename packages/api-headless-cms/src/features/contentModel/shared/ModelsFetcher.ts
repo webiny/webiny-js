@@ -21,7 +21,7 @@ import type { CmsModel } from "~/types/index.js";
  * 4. Final merged list is cached per tenant + identity
  */
 class ModelsFetcherImpl implements FetcherAbstraction.Interface {
-    constructor(
+    public constructor(
         private modelCache: ModelCache.Interface,
         private pluginModelsProvider: PluginModelsProvider.Interface,
         private storageOperations: StorageOperations.Interface,

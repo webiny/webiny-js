@@ -10,7 +10,7 @@ import { EntryToStorageTransform } from "~/legacy/abstractions.js";
  * MoveEntryToBinRepository - Handles storage operations for soft deleting entries.
  */
 class MoveEntryToBinRepositoryImpl implements RepositoryAbstraction.Interface {
-    constructor(
+    public constructor(
         private entryToStorageTransform: EntryToStorageTransform.Interface,
         private storageOperations: StorageOperations.Interface
     ) {}

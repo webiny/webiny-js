@@ -13,14 +13,18 @@ describe.skip("File Model Extensions", () => {
                     id: "carMake",
                     fieldId: "carMake",
                     label: "Car Make",
-                    type: "text"
+                    type: "text",
+                    listValidation: [],
+                    validation: []
                 });
 
                 modifier.addField({
                     id: "year",
                     fieldId: "year",
                     label: "Year of manufacturing",
-                    type: "number"
+                    type: "number",
+                    listValidation: [],
+                    validation: []
                 });
                 modifier.addField({
                     id: "aDateTime",
@@ -33,7 +37,9 @@ describe.skip("File Model Extensions", () => {
                     settings: {
                         type: "dateTimeWithoutTimezone",
                         defaultSetValue: "current"
-                    }
+                    },
+                    listValidation: [],
+                    validation: []
                 });
                 modifier.addField({
                     id: "article",
@@ -49,7 +55,9 @@ describe.skip("File Model Extensions", () => {
                                 modelId: "article"
                             }
                         ]
-                    }
+                    },
+                    listValidation: [],
+                    validation: []
                 });
             })
         ]

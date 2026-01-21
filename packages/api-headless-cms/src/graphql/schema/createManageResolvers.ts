@@ -107,7 +107,7 @@ export const createManageResolvers: CreateManageResolvers = ({
                     context,
                     model,
                     field,
-                    value: entry.values[field.fieldId]
+                    value: entry.values[field.fieldId as keyof CmsEntry["values"]]
                 });
             },
             image: (entry: Pick<CmsEntry, "values">) => {

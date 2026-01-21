@@ -1,11 +1,12 @@
-import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
+import { createImplementation, Result } from "@webiny/feature/api";
 import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
 import { TenantContext } from "@webiny/api-core/features/TenantContext";
 import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
-import { CreateEntryRevisionFromUseCase as UseCaseAbstraction } from "./abstractions.js";
-import { CreateEntryRevisionFromRepository } from "./abstractions.js";
-import { AccessControl } from "~/features/shared/abstractions.js";
+import {
+    CreateEntryRevisionFromRepository,
+    CreateEntryRevisionFromUseCase as UseCaseAbstraction
+} from "./abstractions.js";
+import { AccessControl, CmsContext } from "~/features/shared/abstractions.js";
 import { GetRevisionByIdUseCase } from "~/features/contentEntry/GetRevisionById/index.js";
 import { GetLatestRevisionByEntryIdUseCase } from "~/features/contentEntry/GetLatestRevisionByEntryId/index.js";
 import type {
@@ -16,14 +17,13 @@ import type {
     CreateCmsEntryOptionsInput
 } from "~/types/index.js";
 import {
-    EntryRevisionBeforeCreateEvent,
     EntryRevisionAfterCreateEvent,
+    EntryRevisionBeforeCreateEvent,
     EntryRevisionCreateErrorEvent
 } from "./events.js";
 import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import { parseIdentifier } from "@webiny/utils";
 import { createEntryRevisionFromData } from "~/crud/contentEntry/entryDataFactories/index.js";
-import { CmsContext } from "~/features/shared/abstractions.js";
 
 /**
  * CreateEntryRevisionFromUseCase - Orchestrates creating a new revision from an existing entry.
@@ -39,7 +39,7 @@ import { CmsContext } from "~/features/shared/abstractions.js";
  * - Delegate to repository for storage operations
  */
 class CreateEntryRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(
+    public constructor(
         private repository: CreateEntryRevisionFromRepository.Interface,
         private accessControl: AccessControl.Interface,
         private getRevisionById: GetRevisionByIdUseCase.Interface,
@@ -64,7 +64,7 @@ class CreateEntryRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface
 
         // Get the source entry
         const { id: uniqueId } = parseIdentifier(sourceId);
-        const originalResult = await this.getRevisionById.execute(model, sourceId);
+        const originalResult = await this.getRevisionById.execute<T>(model, sourceId);
 
         if (originalResult.isFail()) {
             return Result.fail(originalResult.error);
@@ -73,7 +73,7 @@ class CreateEntryRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface
         const originalEntry = originalResult.value;
 
         // Get the latest revision for version calculation
-        const latestResult = await this.getLatestRevision.execute(model, { id: uniqueId });
+        const latestResult = await this.getLatestRevision.execute<T>(model, { id: uniqueId });
 
         if (latestResult.isFail()) {
             return Result.fail(latestResult.error);
@@ -82,7 +82,7 @@ class CreateEntryRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface
         const latestStorageEntry = latestResult.value;
 
         // Prepare entry data
-        const { entry, input } = await createEntryRevisionFromData({
+        const { entry, input } = await createEntryRevisionFromData<T>({
             sourceId,
             model,
             rawInput,
@@ -118,7 +118,7 @@ class CreateEntryRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface
             );
 
             // Delegate to repository
-            const result = await this.repository.execute(model, entry);
+            const result = await this.repository.execute<T>(model, entry);
 
             if (result.isFail()) {
                 await this.eventPublisher.publish(
@@ -133,7 +133,7 @@ class CreateEntryRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface
                 return Result.fail(result.error);
             }
 
-            const createdEntry = result.value as CmsEntry<T>;
+            const createdEntry = result.value;
 
             // Publish after event
             await this.eventPublisher.publish(

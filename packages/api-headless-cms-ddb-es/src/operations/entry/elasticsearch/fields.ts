@@ -463,7 +463,13 @@ export const createModelFields = ({ plugins, model }: Params) => {
         ...buildFieldsList({
             fields,
             plugins: fieldTypePlugins,
-            parents: []
+            parents: [
+                {
+                    fieldId: "values",
+                    type: "object",
+                    storageId: "values"
+                }
+            ]
         })
     };
 };

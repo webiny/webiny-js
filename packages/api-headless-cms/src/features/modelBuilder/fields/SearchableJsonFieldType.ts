@@ -7,7 +7,7 @@ class SearchableJsonFieldBuilder
     extends FieldBuilder<"searchable-json">
     implements ISearchableJsonFieldBuilder
 {
-    constructor() {
+    public constructor() {
         super("searchable-json");
     }
 }
