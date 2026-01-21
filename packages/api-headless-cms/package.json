@@ -19,7 +19,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@babel/code-frame": "^7.27.1",
+    "@babel/code-frame": "^7.28.6",
     "@graphql-tools/merge": "^9.1.7",
     "@graphql-tools/schema": "^10.0.31",
     "@webiny/api": "0.0.0",

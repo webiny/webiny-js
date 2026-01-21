@@ -6,6 +6,7 @@ import {
     commandsRegistryService,
     getArgvService,
     getCliRunnerService,
+    getIsCiService,
     globalOptionsRegistryService,
     getProjectSdkService,
     loggerService,
@@ -25,6 +26,7 @@ import {
     enableTelemetryCommand,
     extensionCommand,
     infoCommand,
+    isCi,
     missingFilesInBuildGracefulErrorHandler,
     openCommand,
     outputCommand,
@@ -80,6 +82,7 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
     container.register(verifyDepsCommand).inSingletonScope();
     container.register(destroyCommand).inSingletonScope();
     container.register(infoCommand).inSingletonScope();
+    container.register(isCi).inSingletonScope();
     container.register(openCommand).inSingletonScope();
     container.register(outputCommand).inSingletonScope();
     container.register(watchCommand).inSingletonScope();
@@ -105,6 +108,7 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
     container.register(commandsRegistryService).inSingletonScope();
     container.register(getArgvService).inSingletonScope();
     container.register(getCliRunnerService).inSingletonScope();
+    container.register(getIsCiService).inSingletonScope();
     container.register(globalOptionsRegistryService).inSingletonScope();
     container.register(getProjectSdkService).inSingletonScope();
     container.register(loggerService).inSingletonScope();
