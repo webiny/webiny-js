@@ -9,6 +9,7 @@ import type { IScheduledAction } from "~/shared/abstractions.js";
 import { ScheduledActionModel } from "~/shared/abstractions.js";
 import { ScheduledActionPersistenceError } from "~/domain/errors.js";
 import { CmsFieldInputToWhereMapper } from "@webiny/api-headless-cms/features/mapper/abstractions.js";
+import type { GenericRecord } from "@webiny/api/types.js";
 
 /**
  * Lists scheduled actions with optional filtering
@@ -26,13 +27,13 @@ class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
         private cmsFieldInputToWhereMapper: CmsFieldInputToWhereMapper.Interface
     ) {}
 
-    async execute(
+    async execute<T extends GenericRecord>(
         params: IListScheduledActionsParams
-    ): Promise<Result<IListScheduledActionsResponse, UseCaseAbstraction.Error>> {
+    ): Promise<Result<IListScheduledActionsResponse<T>, UseCaseAbstraction.Error>> {
         const { where, sort, limit, after } = params;
 
         // List entries from CMS
-        const listResult = await this.listEntriesUseCase.execute<IScheduledAction>(this.model, {
+        const listResult = await this.listEntriesUseCase.execute<IScheduledAction<T>>(this.model, {
             where: this.cmsFieldInputToWhereMapper.map({
                 input: where,
                 fields: this.model.fields
@@ -49,17 +50,19 @@ class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
         const { entries, meta } = listResult.value;
 
         // Transform entries to IScheduledAction format
-        const scheduledActions: IScheduledAction[] = entries.map(entry => ({
-            id: entry.entryId,
-            title: entry.values.title,
-            namespace: entry.values.namespace,
-            actionType: entry.values.actionType,
-            targetId: entry.values.targetId,
-            scheduledBy: entry.values.scheduledBy,
-            scheduledFor: entry.values.scheduledFor,
-            payload: entry.values.payload,
-            error: entry.values.error
-        }));
+        const scheduledActions: IScheduledAction<T>[] = entries.map(entry => {
+            return {
+                id: entry.entryId,
+                title: entry.values.title,
+                namespace: entry.values.namespace,
+                actionType: entry.values.actionType,
+                targetId: entry.values.targetId,
+                scheduledBy: entry.values.scheduledBy,
+                scheduledFor: entry.values.scheduledFor,
+                payload: entry.values.payload,
+                error: entry.values.error
+            };
+        });
 
         return Result.ok({
             items: scheduledActions,

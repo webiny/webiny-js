@@ -16,6 +16,7 @@ import {
 import { ScheduledActionId } from "~/domain/ScheduledActionId.js";
 import { ScheduledActionIdWithVersion } from "~/domain/ScheduledActionIdWithVersion.js";
 import { isValidDate } from "~/domain/isValidDate.js";
+import type { GenericRecord } from "@webiny/api/types.js";
 
 /**
  * Schedules an action for future execution
@@ -40,9 +41,9 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         private deleteEntryUseCase: DeleteEntryUseCase.Interface
     ) {}
 
-    async execute(
-        params: UseCaseAbstraction.Params
-    ): Promise<Result<IScheduledAction, UseCaseAbstraction.Error>> {
+    async execute<T extends GenericRecord>(
+        params: UseCaseAbstraction.Params<T>
+    ): Promise<Result<IScheduledAction<T>, UseCaseAbstraction.Error>> {
         const identity = this.identityContext.getIdentity();
 
         if (!isValidDate(params.scheduleFor)) {
@@ -86,7 +87,7 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
     /**
      * Creates a new schedule
      */
-    private async createSchedule(
+    private async createSchedule<T extends GenericRecord>(
         id: string,
         title: string,
         namespace: string,
@@ -94,11 +95,11 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         targetId: string,
         scheduleFor: string,
         identity: Identity,
-        payload?: any
-    ): Promise<Result<IScheduledAction, UseCaseAbstraction.Error>> {
+        payload: T
+    ): Promise<Result<IScheduledAction<T>, UseCaseAbstraction.Error>> {
         const { id: scheduleId } = parseIdentifier(id);
 
-        const scheduledAction: IScheduledAction = {
+        const scheduledAction: IScheduledAction<T> = {
             id: scheduleId,
             title,
             namespace,
@@ -114,10 +115,13 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         };
 
         // Create CMS entry
-        const createResult = await this.createEntryUseCase.execute<IScheduledAction>(this.model, {
-            id: scheduleId,
-            values: scheduledAction
-        });
+        const createResult = await this.createEntryUseCase.execute<IScheduledAction<T>>(
+            this.model,
+            {
+                id: scheduleId,
+                values: scheduledAction
+            }
+        );
 
         if (createResult.isFail()) {
             return Result.fail(
@@ -149,12 +153,12 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
     /**
      * Updates an existing schedule (reschedule)
      */
-    private async reschedule(
-        existing: IScheduledAction,
+    private async reschedule<T extends GenericRecord>(
+        existing: IScheduledAction<T>,
         scheduleFor: string,
         identity: Identity,
         payload?: any
-    ): Promise<Result<IScheduledAction, UseCaseAbstraction.Error>> {
+    ): Promise<Result<IScheduledAction<T>, UseCaseAbstraction.Error>> {
         // Make sure we don't unset the existing payload.
         if (!payload && existing.payload) {
             payload = existing.payload;
@@ -162,7 +166,7 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
 
         // Update CMS entry
         const existingEntryId = ScheduledActionIdWithVersion.from(existing.id);
-        const updateResult = await this.updateEntryUseCase.execute(this.model, existingEntryId, {
+        const updateResult = await this.updateEntryUseCase.execute<IScheduledAction<T>>(this.model, existingEntryId, {
             values: {
                 scheduledBy: {
                     id: identity.id,

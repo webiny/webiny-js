@@ -1,9 +1,8 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
+import { createAbstraction, Result } from "@webiny/feature/api";
 import type { IScheduledAction } from "@webiny/api-scheduler";
 import {
-    ScheduledActionPersistenceError,
     InvalidScheduleDateError,
+    ScheduledActionPersistenceError,
     SchedulerServiceError
 } from "@webiny/api-scheduler/domain/errors.js";
 import type { ModelNotFoundError } from "@webiny/api-headless-cms/domain/contentModel/errors.js";
@@ -20,6 +19,12 @@ import type { EntryNotFoundError } from "@webiny/api-headless-cms/domain/content
  */
 
 export type ScheduleEntryActionType = "Publish" | "Unpublish";
+
+export interface IScheduleActionPayload {
+    modelId: string;
+}
+
+export interface IScheduleActionWithPayload extends IScheduledAction<IScheduleActionPayload> {}
 
 export interface IScheduleEntryActionInput {
     modelId: string;
@@ -42,7 +47,7 @@ type ScheduleEntryActionError = IScheduleEntryActionErrors[keyof IScheduleEntryA
 export interface IScheduleEntryActionUseCase {
     execute(
         input: IScheduleEntryActionInput
-    ): Promise<Result<IScheduledAction, ScheduleEntryActionError>>;
+    ): Promise<Result<IScheduledAction<IScheduleActionPayload>, ScheduleEntryActionError>>;
 }
 
 export const ScheduleEntryActionUseCase = createAbstraction<IScheduleEntryActionUseCase>(

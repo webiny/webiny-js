@@ -14,6 +14,7 @@ import { ScheduledActionNotFoundError, ScheduledActionPersistenceError } from "~
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
 import { ScheduledActionIdWithVersion } from "~/domain/ScheduledActionIdWithVersion.js";
+import type { GenericRecord } from "@webiny/api/types.js";
 
 /**
  * Executes a scheduled action
@@ -34,9 +35,11 @@ class ExecuteScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface 
         private model: ScheduledActionModel.Interface
     ) {}
 
-    async execute(id: string): Promise<Result<void, UseCaseAbstraction.Error>> {
+    async execute<T extends GenericRecord>(
+        id: string
+    ): Promise<Result<void, UseCaseAbstraction.Error>> {
         // Load scheduled action
-        const getResult = await this.getScheduledActionUseCase.execute(id);
+        const getResult = await this.getScheduledActionUseCase.execute<T>(id);
 
         if (getResult.isFail()) {
             const error = getResult.error;
@@ -59,7 +62,7 @@ class ExecuteScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface 
             );
 
             // Update entry with error for debugging
-            await this.updateEntryUseCase.execute<IScheduledAction>(this.model, scheduleId, {
+            await this.updateEntryUseCase.execute<IScheduledAction<T>>(this.model, scheduleId, {
                 values: {
                     error: error.message
                 }
@@ -92,7 +95,7 @@ class ExecuteScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface 
             );
 
             // Update entry with error for debugging
-            await this.updateEntryUseCase.execute<IScheduledAction>(this.model, scheduleId, {
+            await this.updateEntryUseCase.execute<IScheduledAction<T>>(this.model, scheduleId, {
                 values: {
                     error: executionError.message
                 }

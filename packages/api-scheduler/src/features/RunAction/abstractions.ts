@@ -1,11 +1,11 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
+import { createAbstraction, Result } from "@webiny/feature/api";
 import type { IScheduledAction } from "~/shared/abstractions.js";
 import {
-    ScheduledActionPersistenceError,
     InvalidScheduleDateError,
+    ScheduledActionPersistenceError,
     SchedulerServiceError
 } from "~/domain/errors.js";
+import type { GenericRecord } from "@webiny/api/types.js";
 
 /**
  * RunActionUseCase - Schedule an action for immediate execution
@@ -25,21 +25,21 @@ export interface IRunActionErrors {
 
 type RunActionError = IRunActionErrors[keyof IRunActionErrors];
 
-interface IRunActionParams {
+interface IRunActionParams<T extends GenericRecord> {
     namespace: string;
     actionType: string;
     targetId: string;
-    payload?: any;
+    payload: T;
 }
 
 export interface IRunActionUseCase {
-    execute(params: IRunActionParams): Promise<Result<IScheduledAction, RunActionError>>;
+    execute<T extends GenericRecord>(params: IRunActionParams<T>): Promise<Result<IScheduledAction<T>, RunActionError>>;
 }
 
 export const RunActionUseCase = createAbstraction<IRunActionUseCase>("RunActionUseCase");
 
 export namespace RunActionUseCase {
     export type Interface = IRunActionUseCase;
-    export type Params = IRunActionParams;
+    export type Params<T extends GenericRecord> = IRunActionParams<T>;
     export type Error = RunActionError;
 }

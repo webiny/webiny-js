@@ -1,11 +1,11 @@
 import { ScheduledActionHandler } from "@webiny/api-scheduler";
-import type { IScheduledAction } from "@webiny/api-scheduler";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
 import { GetPublishedEntriesByIdsUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetPublishedEntriesByIds";
 import { PublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/PublishEntry";
 import { UnpublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UnpublishEntry";
 import { RepublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/RepublishEntry";
+import type { IScheduleActionWithPayload } from "~/features/ScheduleEntryAction/index.js";
 
 /**
  * Handler for publishing CMS entries
@@ -27,11 +27,11 @@ class PublishEntryActionHandlerImpl implements ScheduledActionHandler.Interface 
         private republishEntryUseCase: RepublishEntryUseCase.Interface
     ) {}
 
-    canHandle(namespace: string, actionType: string): boolean {
+    public canHandle(namespace: string, actionType: string): boolean {
         return namespace.startsWith("Cms/Entry/") && actionType === "Publish";
     }
 
-    async handle(action: IScheduledAction): Promise<void> {
+    public async handle(action: IScheduleActionWithPayload): Promise<void> {
         const { payload } = action;
 
         const modelId = payload.modelId as string;
@@ -49,7 +49,11 @@ class PublishEntryActionHandlerImpl implements ScheduledActionHandler.Interface 
         const model = modelResult.value;
 
         // Fetch the target entry
-        const targetEntryResult = await this.getEntryByIdUseCase.execute(model, action.targetId);
+        const targetEntryResult =
+            await this.getEntryByIdUseCase.execute<IScheduleActionWithPayload>(
+                model,
+                action.targetId
+            );
         if (targetEntryResult.isFail()) {
             console.error(
                 `Failed to get entry "${action.targetId}" for scheduled publish action:`,
@@ -61,9 +65,10 @@ class PublishEntryActionHandlerImpl implements ScheduledActionHandler.Interface 
         const targetEntry = targetEntryResult.value;
 
         // Get published entries
-        const publishedEntriesResult = await this.getPublishedEntriesByIdsUseCase.execute(model, [
-            targetEntry.id
-        ]);
+        const publishedEntriesResult =
+            await this.getPublishedEntriesByIdsUseCase.execute<IScheduleActionWithPayload>(model, [
+                targetEntry.id
+            ]);
 
         if (publishedEntriesResult.isFail()) {
             console.error(
@@ -79,7 +84,11 @@ class PublishEntryActionHandlerImpl implements ScheduledActionHandler.Interface 
          * Scenario 1: Entry has no published revision -> publish it
          */
         if (!publishedTargetEntry) {
-            const publishResult = await this.publishEntryUseCase.execute(model, targetEntry.id);
+            const publishResult =
+                await this.publishEntryUseCase.execute<IScheduleActionWithPayload>(
+                    model,
+                    targetEntry.id
+                );
             if (publishResult.isFail()) {
                 console.error(`Failed to publish entry "${action.targetId}":`, publishResult.error);
                 throw new Error(`Failed to publish entry: ${action.targetId}`);
@@ -105,10 +114,11 @@ class PublishEntryActionHandlerImpl implements ScheduledActionHandler.Interface 
         /**
          * Scenario 3: A different revision is published -> unpublish old, publish new
          */
-        const unpublishResult = await this.unpublishEntryUseCase.execute(
-            model,
-            publishedTargetEntry.id
-        );
+        const unpublishResult =
+            await this.unpublishEntryUseCase.execute<IScheduleActionWithPayload>(
+                model,
+                publishedTargetEntry.id
+            );
         if (unpublishResult.isFail()) {
             console.error(
                 `Failed to unpublish old revision "${publishedTargetEntry.id}":`,
@@ -117,7 +127,10 @@ class PublishEntryActionHandlerImpl implements ScheduledActionHandler.Interface 
             throw new Error(`Failed to unpublish old revision: ${publishedTargetEntry.id}`);
         }
 
-        const publishResult = await this.publishEntryUseCase.execute(model, targetEntry.id);
+        const publishResult = await this.publishEntryUseCase.execute<IScheduleActionWithPayload>(
+            model,
+            targetEntry.id
+        );
         if (publishResult.isFail()) {
             console.error(`Failed to publish entry "${action.targetId}":`, publishResult.error);
             throw new Error(`Failed to publish entry: ${action.targetId}`);

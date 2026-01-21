@@ -1,4 +1,5 @@
 import { IScheduledAction, ScheduledActionHandler } from "~/shared/abstractions.js";
+import type { GenericRecord } from "@webiny/api/types.js";
 
 /**
  * Composite handler that iterates through all registered handlers
@@ -8,13 +9,13 @@ import { IScheduledAction, ScheduledActionHandler } from "~/shared/abstractions.
  * and the DI container will automatically inject all registered handlers.
  */
 class ScheduledActionHandlerCompositeImpl implements ScheduledActionHandler.Interface {
-    constructor(private handlers: ScheduledActionHandler.Interface[]) {}
+    public constructor(private handlers: ScheduledActionHandler.Interface[]) {}
 
-    canHandle(namespace: string, actionType: string): boolean {
+    public canHandle(namespace: string, actionType: string): boolean {
         return this.handlers.some(handler => handler.canHandle(namespace, actionType));
     }
 
-    async handle(action: IScheduledAction): Promise<void> {
+    public async handle<T extends GenericRecord>(action: IScheduledAction<T>): Promise<void> {
         const handler = this.handlers.find(h => h.canHandle(action.namespace, action.actionType));
 
         if (!handler) {
