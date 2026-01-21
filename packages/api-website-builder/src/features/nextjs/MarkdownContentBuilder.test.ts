@@ -70,26 +70,84 @@ describe("MarkdownContentBuilder", () => {
     });
 
     describe("replace", () => {
-        it("should replace section content by id", () => {
+        it("should replace section content with string", () => {
             builder.add("section1", "Original content").replace("section1", "Replaced content");
 
             expect(builder.build()).toBe("Replaced content");
         });
 
-        it("should handle replacing non-existent id gracefully", () => {
-            builder.add("section1", "First").replace("non-existent", "Replacement");
+        it("should replace section content with callback", () => {
+            builder
+                .add("section1", "Original content")
+                .replace("section1", current => current.toUpperCase());
+
+            expect(builder.build()).toBe("ORIGINAL CONTENT");
+        });
+
+        it("should pass current content to callback", () => {
+            builder.add("section1", "Hello").replace("section1", current => `${current} World`);
+
+            expect(builder.build()).toBe("Hello World");
+        });
+
+        it("should handle callback that transforms content", () => {
+            builder
+                .add("code", '```bash\necho "test"\n```')
+                .replace("code", current => current.replace("bash", "javascript"));
+
+            expect(builder.build()).toBe('```javascript\necho "test"\n```');
+        });
+
+        it("should handle callback returning empty string", () => {
+            builder.add("section1", "Original").replace("section1", () => "");
+
+            expect(builder.build()).toBe("");
+        });
+
+        it("should handle replacing non-existent id with callback gracefully", () => {
+            builder
+                .add("section1", "First")
+                .replace("non-existent", current => current + " modified");
 
             expect(builder.build()).toBe("First");
         });
 
-        it("should maintain section position when replacing", () => {
+        it("should maintain section position when replacing with callback", () => {
             builder
                 .add("section1", "First")
                 .add("section2", "Second")
                 .add("section3", "Third")
-                .replace("section2", "Replaced");
+                .replace("section2", current => current.toUpperCase());
 
-            expect(builder.build()).toBe("First\nReplaced\nThird");
+            expect(builder.build()).toBe("First\nSECOND\nThird");
+        });
+    });
+
+    describe("complex scenarios with callbacks", () => {
+        it("should support plugin decoration with transformations", () => {
+            builder
+                .setVariable("API_KEY", "wat_12345")
+                .add("section1", "Key: {API_KEY}")
+                .add("code", "```bash\nAPI_KEY={API_KEY}\n```");
+
+            // Plugin adds warning to code section
+            builder.replace("code", current => {
+                return `⚠️ **Security Warning**: Keep this private!\n\n${current}`;
+            });
+
+            const result = builder.build();
+            expect(result).toContain("Security Warning");
+            expect(result).toContain("```bash");
+        });
+
+        it("should chain multiple replace operations", () => {
+            builder
+                .add("text", "hello world")
+                .replace("text", s => s.toUpperCase())
+                .replace("text", s => `**${s}**`)
+                .replace("text", s => `${s}!!!`);
+
+            expect(builder.build()).toBe("**HELLO WORLD**!!!");
         });
     });
 

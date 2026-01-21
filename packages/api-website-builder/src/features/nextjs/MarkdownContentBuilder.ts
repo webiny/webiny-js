@@ -10,7 +10,7 @@ export interface IPositionOptions {
 export interface IMarkdownContentBuilder {
     add(id: string, text: string, position?: IPositionOptions): this;
     remove(id: string): this;
-    replace(id: string, text: string): this;
+    replace(id: string, markdown: string | ((currentContent: string) => string)): this;
     setVariable(key: string, value: string): this;
     setVariables(vars: Record<string, string>): this;
     getVariable(key: string): string | undefined;
@@ -49,10 +49,14 @@ export class MarkdownContentBuilder implements IMarkdownContentBuilder {
         return this;
     }
 
-    replace(id: string, markdown: string): this {
+    replace(id: string, markdown: string | ((currentContent: string) => string)): this {
         const section = this.sections.find(s => s.id === id);
         if (section) {
-            section.content = markdown;
+            if (typeof markdown === "function") {
+                section.content = markdown(section.content);
+            } else {
+                section.content = markdown;
+            }
         }
         return this;
     }
