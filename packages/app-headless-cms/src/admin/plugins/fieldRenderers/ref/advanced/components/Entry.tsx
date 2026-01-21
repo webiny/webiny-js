@@ -101,33 +101,38 @@ export const Entry = ({
             }}
             data-role="ref-field-entry"
             className={cn(
-                "w-full rounded-md bg-neutral-light hover:bg-neutral-dimmed border-md border-transparent data-[selected=true]:border-accent-dimmed",
+                "flex items-center justify-between gap-md w-full rounded-md bg-neutral-light p-sm-extra pr-lg hover:bg-neutral-dimmed border-md border-transparent data-[selected=true]:border-accent-dimmed",
                 { "hover:cursor-pointer": !!onChange }
             )}
         >
-            <div className="flex items-center justify-between gap-lg min-w-0 p-sm-extra pr-lg">
+            {onChange && (
                 <div>
-                    {onChange && (
-                        <Checkbox
-                            checked={selected}
-                            onChange={() =>
-                                onChange({
-                                    id: entry.id,
-                                    modelId: entry.model.modelId
-                                })
-                            }
-                        />
-                    )}
+                    <Checkbox
+                        checked={selected}
+                        onChange={() =>
+                            onChange({
+                                id: entry.id,
+                                modelId: entry.model.modelId
+                            })
+                        }
+                    />
                 </div>
+            )}
+            <div
+                className={
+                    "grid grid-cols-[auto_1fr_auto] items-center gap-lg text-sm text-neutral-muted w-full min-w-0"
+                }
+            >
                 <Image title={entry.title} src={entry.image} />
-                <div
-                    className={
-                        "flex flex-col gap-xxs overflow-hidden flex-1 min-w-0 text-sm text-neutral-muted"
-                    }
-                >
+                <div className={"overflow-hidden"}>
                     <div>{entry.model.name}</div>
 
-                    <div className={"text-md text-neutral-primary font-semibold mb-sm"}>
+                    <div
+                        title={entry.title}
+                        className={
+                            "text-md text-neutral-primary font-semibold mb-sm text-ellipsis overflow-hidden whitespace-nowrap block"
+                        }
+                    >
                         {entry.title}
                     </div>
 
