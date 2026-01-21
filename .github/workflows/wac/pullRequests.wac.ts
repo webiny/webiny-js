@@ -1,5 +1,5 @@
-import {createWorkflow, NormalJob} from "github-actions-wac";
-import {createJob} from "./jobs/index.js";
+import { createWorkflow, NormalJob } from "github-actions-wac";
+import { createJob } from "./jobs/index.js";
 import {
     NODE_VERSION,
     BUILD_PACKAGES_RUNNER,
@@ -14,15 +14,15 @@ import {
     createYarnCacheSteps,
     withCommonParams
 } from "./steps/index.js";
-import {AbstractStorageOps, DdbOsStorageOps, DdbStorageOps} from "./storageOps/index.js";
+import { AbstractStorageOps, DdbOsStorageOps, DdbStorageOps } from "./storageOps/index.js";
 
 // Will print "next" or "dev". Important for caching (via actions/cache).
 const DIR_WEBINY_JS = "${{ github.base_ref }}";
 
-const installBuildSteps = createInstallBuildSteps({workingDirectory: DIR_WEBINY_JS});
-const yarnCacheSteps = createYarnCacheSteps({workingDirectory: DIR_WEBINY_JS});
-const globalBuildCacheSteps = createGlobalBuildCacheSteps({workingDirectory: DIR_WEBINY_JS});
-const runBuildCacheSteps = createRunBuildCacheSteps({workingDirectory: DIR_WEBINY_JS});
+const installBuildSteps = createInstallBuildSteps({ workingDirectory: DIR_WEBINY_JS });
+const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: DIR_WEBINY_JS });
+const globalBuildCacheSteps = createGlobalBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
+const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
 
 const ddbStorageOps = new DdbStorageOps();
 const ddbOsStorageOps = new DdbOsStorageOps();
@@ -35,7 +35,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
 
     const constantsJob: NormalJob = createJob({
         needs: ["constants", "build"],
-        checkout: {path: DIR_WEBINY_JS},
+        checkout: { path: DIR_WEBINY_JS },
         name: `Vitest (${storageOps ? storageOps.displayName : "No storage"}) - Constants`,
         outputs: {
             "vitest-test-commands":
@@ -49,7 +49,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
                 run: runNodeScript(
                     "listVitestTestCommands",
                     `["${storageOps?.id || ""}", \${{ needs.constants.outputs.changed-packages }}]`,
-                    {outputAs: "vitest-test-commands"}
+                    { outputAs: "vitest-test-commands" }
                 )
             },
             {
@@ -60,7 +60,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
         ]
     });
 
-    const env: Record<string, string> = {AWS_REGION};
+    const env: Record<string, string> = { AWS_REGION };
 
     if (storageOps) {
         env["WEBINY_STORAGE"] = storageOps.id;
@@ -86,7 +86,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
         env,
         if: `needs.${jobNames.constants}.outputs.vitest-test-commands != '[]'`,
         awsAuth: !!storageOps,
-        checkout: {path: DIR_WEBINY_JS},
+        checkout: { path: DIR_WEBINY_JS },
         steps: [
             ...yarnCacheSteps,
             ...runBuildCacheSteps,
@@ -122,7 +122,7 @@ export const pullRequests = createWorkflow({
         validateCommits: createJob({
             name: "Validate commit messages",
             if: "github.base_ref != 'dev'",
-            steps: [{uses: "webiny/action-conventional-commits@v1.3.1"}]
+            steps: [{ uses: "webiny/action-conventional-commits@v1.3.1" }]
         }),
         // Don't allow "feat" commits to be merged into "dev" branch.
         validateCommitsDev: createJob({
@@ -189,7 +189,7 @@ export const pullRequests = createWorkflow({
                     run: runNodeScript(
                         "listChangedPackages",
                         "${{ steps.detect-changed-files.outputs.changed_files }}",
-                        {outputAs: "changed-packages"}
+                        { outputAs: "changed-packages" }
                     )
                 },
                 {
@@ -221,7 +221,7 @@ export const pullRequests = createWorkflow({
                                 "${{ needs.constants.outputs.latest-webiny-version }}",
                             baseBranch: "${{ github.base_ref }}"
                         }),
-                        {outputAs: "milestone"}
+                        { outputAs: "milestone" }
                     )
                 },
                 {
@@ -238,7 +238,7 @@ export const pullRequests = createWorkflow({
             name: "Build",
             needs: "constants",
             "runs-on": BUILD_PACKAGES_RUNNER,
-            checkout: {path: DIR_WEBINY_JS},
+            checkout: { path: DIR_WEBINY_JS },
             steps: [
                 ...yarnCacheSteps,
                 ...globalBuildCacheSteps,
@@ -252,23 +252,23 @@ export const pullRequests = createWorkflow({
         staticCodeAnalysis: createJob({
             needs: ["constants"],
             name: "Static code analysis",
-            checkout: {path: DIR_WEBINY_JS},
+            checkout: { path: DIR_WEBINY_JS },
             steps: [
                 ...yarnCacheSteps,
                 ...runBuildCacheSteps,
                 ...withCommonParams(
                     [
-                        {name: "Install dependencies", run: "yarn --immutable"},
-                        {name: "Check code formatting", run: "yarn prettier:check"},
-                        {name: "Check dependencies", run: "yarn adio"},
-                        {name: "Check TS configs", run: "yarn check-ts-configs"},
-                        {name: "ESLint", run: "yarn eslint"},
+                        { name: "Install dependencies", run: "yarn --immutable" },
+                        { name: "Check code formatting", run: "yarn prettier:check" },
+                        { name: "Check dependencies", run: "yarn adio" },
+                        { name: "Check TS configs", run: "yarn check-ts-configs" },
+                        { name: "ESLint", run: "yarn eslint" },
                         {
                             name: "Check Package Node Modules",
                             run: "yarn check-package-dependencies"
                         }
                     ],
-                    {"working-directory": DIR_WEBINY_JS}
+                    { "working-directory": DIR_WEBINY_JS }
                 )
             ]
         }),
@@ -279,7 +279,7 @@ export const pullRequests = createWorkflow({
         staticCodeAnalysisVerifyDependencies: createJob({
             needs: ["constants", "build"],
             name: "Static code analysis (verify dependencies)",
-            checkout: {path: DIR_WEBINY_JS},
+            checkout: { path: DIR_WEBINY_JS },
             steps: [
                 ...yarnCacheSteps,
                 ...runBuildCacheSteps,
@@ -294,7 +294,7 @@ export const pullRequests = createWorkflow({
         staticCodeAnalysisTs: createJob({
             name: "Static code analysis (TypeScript)",
             "runs-on": BUILD_PACKAGES_RUNNER,
-            checkout: {path: DIR_WEBINY_JS},
+            checkout: { path: DIR_WEBINY_JS },
             steps: [
                 ...yarnCacheSteps,
 
@@ -304,10 +304,10 @@ export const pullRequests = createWorkflow({
 
                 ...withCommonParams(
                     [
-                        {name: "Install dependencies", run: "yarn --immutable"},
-                        {name: "Check types for Cypress tests", run: "yarn cy:ts"}
+                        { name: "Install dependencies", run: "yarn --immutable" },
+                        { name: "Check types for Cypress tests", run: "yarn cy:ts" }
                     ],
-                    {"working-directory": DIR_WEBINY_JS}
+                    { "working-directory": DIR_WEBINY_JS }
                 )
             ]
         }),
