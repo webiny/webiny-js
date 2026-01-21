@@ -166,7 +166,7 @@ export class BindingsResolver {
     }
 
     private resolveBinding(binding: ValueBinding | undefined, context: Record<string, any>): any {
-        if (!binding) {
+        if (typeof binding === "undefined") {
             return undefined;
         }
 

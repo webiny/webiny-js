@@ -3,6 +3,7 @@ import type { CmsModel } from "~/types.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { DropdownMenu, Text, Icon } from "@webiny/admin-ui";
+import { normalizeIcon } from "~/utils/normalizeIcon.js";
 
 interface IconProps {
     model: Pick<CmsModel, "icon">;
@@ -14,7 +15,7 @@ const DisplayIcon = ({ model }: IconProps) => {
     }
     return (
         <Icon
-            icon={<FontAwesomeIcon icon={(model.icon || "").split("/") as IconProp} />}
+            icon={<FontAwesomeIcon icon={normalizeIcon(model.icon) as IconProp} />}
             label={"Model icon"}
             size={"lg"}
             className={"text-neutral-strong"}

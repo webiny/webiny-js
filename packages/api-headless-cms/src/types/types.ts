@@ -27,6 +27,12 @@ import type {
     TruthfulInterfaceGenerator
 } from "@webiny/api";
 
+export type CmsIcon = {
+    type: string;
+    name: string;
+    value?: string;
+};
+
 export interface CmsError {
     message: string;
     code: string;
@@ -238,7 +244,7 @@ export interface CmsGroupCreateInput {
     name: string;
     slug?: string;
     description?: string | null;
-    icon: string;
+    icon?: CmsIcon | null;
 }
 
 /**
@@ -251,7 +257,7 @@ export interface CmsGroupUpdateInput {
     name?: string;
     slug?: string;
     description?: string;
-    icon?: string;
+    icon?: CmsIcon;
 }
 
 /**

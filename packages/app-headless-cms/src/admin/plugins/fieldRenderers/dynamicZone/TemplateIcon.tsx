@@ -1,6 +1,7 @@
 import React from "react";
 import type { FontAwesomeIconProps } from "@fortawesome/react-fontawesome";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { normalizeIcon } from "~/utils/normalizeIcon.js";
 
 interface TemplateIconProps {
     icon: string;
@@ -9,7 +10,7 @@ interface TemplateIconProps {
 }
 
 export const TemplateIcon = ({ icon, size, style }: TemplateIconProps) => {
-    const faIcon = icon ? (icon.split("/") as FontAwesomeIconProps["icon"]) : undefined;
+    const faIcon = normalizeIcon(icon);
 
     return faIcon ? (
         <FontAwesomeIcon

@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { useGraphQLHandler } from "~tests/testHelpers/useGraphQLHandler";
 import { ContextPlugin } from "@webiny/api";
+import { createIcon } from "~tests/__helpers/icon.js";
 
 describe("benchmark points", () => {
     let elapsed = 0;
@@ -30,7 +31,7 @@ describe("benchmark points", () => {
         const data = {
             name: "My group",
             slug: "my-group",
-            icon: "fas/star",
+            icon: createIcon("fas/star"),
             description: "My group description"
         };
         const [result] = await createContentModelGroupMutation({

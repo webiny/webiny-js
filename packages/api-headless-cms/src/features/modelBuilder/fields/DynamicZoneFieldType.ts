@@ -1,13 +1,13 @@
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
 import { FieldBuilder } from "./FieldBuilder.js";
 import { type IFieldBuilderRegistry } from "../abstractions.js";
-import type { CmsModelFieldValidation } from "~/types/index.js";
+import type { CmsIcon, CmsModelFieldValidation } from "~/types/index.js";
 
 interface IDynamicZoneTemplate {
     id: string;
     name: string;
     gqlTypeName: string;
-    icon: string;
+    icon: CmsIcon | undefined;
     description: string;
     fields: any[];
     layout: string[][];
@@ -21,7 +21,7 @@ export interface IDynamicZoneFieldBuilder extends FieldBuilder<"dynamicZone"> {
         config: {
             name: string;
             gqlTypeName: string;
-            icon?: string;
+            icon?: CmsIcon;
             description?: string;
             fields: (registry: IFieldBuilderRegistry) => Record<string, FieldBuilder<any>>;
             layout?: string[][];
@@ -32,7 +32,7 @@ export interface IDynamicZoneFieldBuilder extends FieldBuilder<"dynamicZone"> {
 interface IDynamicZoneFieldBuilderTemplateConfig {
     name: string;
     gqlTypeName: string;
-    icon?: string;
+    icon?: CmsIcon;
     description?: string;
     fields: (registry: IFieldBuilderRegistry) => Record<string, FieldBuilder<any>>;
     layout?: string[][];
@@ -71,7 +71,7 @@ class DynamicZoneFieldBuilder
             id,
             name: config.name,
             gqlTypeName: config.gqlTypeName,
-            icon: config.icon || "",
+            icon: config.icon,
             description: config.description || "",
             fields,
             layout: config.layout || [],

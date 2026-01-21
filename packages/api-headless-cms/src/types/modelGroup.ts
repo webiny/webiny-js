@@ -1,4 +1,5 @@
 import type { CmsIdentity } from "./identity.js";
+import type { CmsIcon } from "~/types/types.js";
 
 /**
  * @category Database model
@@ -45,7 +46,7 @@ export interface CmsGroup {
     /**
      * Icon for the group. In a form of "ico/ico".
      */
-    icon: string;
+    icon: CmsIcon | null;
     /**
      * CreatedBy reference object.
      */

@@ -12,5 +12,30 @@ export const IconPicker = (props: Omit<IconPickerProps, "icons">) => {
         }, []);
     }, []);
 
-    return <AdminIconPicker size={"lg"} icons={icons} {...props} />;
+    const onChange = (value: string | null) => {
+        if (props.onChange) {
+            if (!value) {
+                props.onChange(null);
+                return;
+            }
+
+            props.onChange({
+                type: "icon",
+                name: value
+            });
+        }
+    };
+
+    let value = null;
+    if (props.value) {
+        if (typeof props.value === "string") {
+            value = props.value;
+        } else {
+            value = props.value.name;
+        }
+    }
+
+    return (
+        <AdminIconPicker size={"lg"} icons={icons} {...props} onChange={onChange} value={value} />
+    );
 };

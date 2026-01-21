@@ -71,6 +71,7 @@ class CreateModelUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const model: CmsModel = {
             ...data,
+            icon: data.icon ?? null,
             modelId: data.modelId ?? "", // Will be set by repository
             tenant: tenant.id,
             createdOn: new Date().toISOString(),

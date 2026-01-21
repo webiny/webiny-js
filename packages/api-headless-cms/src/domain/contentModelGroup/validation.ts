@@ -5,8 +5,25 @@ const str = zod.string().trim();
 
 const name = str.max(100);
 const description = str.max(255).optional().nullish();
-const icon = str.min(1).max(255);
-
+const icon = zod
+    .object({
+        type: zod.string(),
+        name: zod.string(),
+        value: zod.string().optional()
+    })
+    .passthrough()
+    .optional()
+    .nullish()
+    .default(null)
+    .transform(value => {
+        if (typeof value === "string") {
+            return {
+                type: "icon",
+                name: value
+            };
+        }
+        return value;
+    });
 export const createGroupCreateValidation = () => {
     return zod.object({
         id: str.optional().nullish(),

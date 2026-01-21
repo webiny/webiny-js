@@ -9,7 +9,10 @@ class MyGroupsFactoryImpl implements ModelGroupFactory.Interface {
             {
                 slug: "my-group",
                 name: "My Group",
-                icon: "icon-name"
+                icon: {
+                    type: "icon",
+                    name: "icon-name"
+                }
             }
         ];
     }
@@ -40,7 +43,10 @@ describe("ModelGroupFactory test", () => {
                         {
                             slug: "my-group",
                             name: "My Group",
-                            icon: "icon-name"
+                            icon: {
+                                type: "icon",
+                                name: "icon-name"
+                            }
                         }
                     ],
                     error: null

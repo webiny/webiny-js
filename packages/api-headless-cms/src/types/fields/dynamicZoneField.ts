@@ -1,11 +1,12 @@
 import type { CmsModelField, CmsModelFieldValidation } from "../modelField.js";
+import type { CmsIcon } from "~/types/index.js";
 
 export interface CmsDynamicZoneTemplate {
     id: string;
     name: string;
     gqlTypeName: string;
     description: string;
-    icon: string;
+    icon?: CmsIcon;
     fields: CmsModelField[];
     layout: string[][];
     validation: CmsModelFieldValidation[];

@@ -1,5 +1,6 @@
 import type { CmsIdentity } from "./identity.js";
 import type { CmsModelField, CmsModelFieldInput } from "./modelField.js";
+import type { CmsIcon } from "~/types/types.js";
 
 /**
  * Base CMS Model. Should not be exported and used outside of this package.
@@ -45,7 +46,7 @@ export interface CmsModel {
     /**
      * Icon for the content model.
      */
-    icon?: string | null;
+    icon: CmsIcon | null;
     /**
      * Description for the content model.
      */
@@ -178,6 +179,7 @@ export interface CmsModelCreateInput {
     titleFieldId?: string | null;
     descriptionFieldId?: string | null;
     imageFieldId?: string | null;
+    icon?: CmsIcon | null;
 }
 
 /**

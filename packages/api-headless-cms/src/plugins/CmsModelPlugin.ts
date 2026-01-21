@@ -67,6 +67,7 @@ interface CmsPrivateModel
         | "fields"
         | "isPlugin"
         | "layout"
+        | "icon"
         | "titleFieldId"
         | "description"
     > {
@@ -122,6 +123,7 @@ export class CmsModelPlugin extends Plugin {
             fields: [],
             isPlugin: true,
             isPrivate,
+            icon: null,
             layout: [],
             modelId: input.modelId,
             name: input.name,
