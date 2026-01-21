@@ -28,15 +28,19 @@ export const createReadResolvers: CreateReadResolvers = ({ models, model, fieldT
         isRoot: true
     });
 
+    const key = model.singularApiName as keyof typeof fieldResolvers;
+    // @ts-expect-error
+    if (!fieldResolvers[key].modelId) {
+        // @ts-expect-error
+        fieldResolvers[key].modelId = () => {
+            return model.modelId;
+        };
+    }
+
     return {
         Query: {
             [`get${model.singularApiName}`]: resolveGet({ model, fieldTypePlugins }),
             [`list${model.pluralApiName}`]: resolveList({ model, fieldTypePlugins })
-        },
-        [model.singularApiName]: {
-            modelId: () => {
-                return model.modelId;
-            }
         },
         ...fieldResolvers
     };

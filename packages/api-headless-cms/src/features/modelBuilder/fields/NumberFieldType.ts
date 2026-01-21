@@ -9,7 +9,7 @@ export interface INumberFieldBuilder
         LteValidator {}
 
 class NumberFieldBuilder extends FieldBuilder<"number"> implements INumberFieldBuilder {
-    constructor() {
+    public constructor() {
         super("number");
     }
 

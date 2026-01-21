@@ -19,7 +19,9 @@ describe("contains filter", () => {
     it("should add contains filter", async () => {
         const title = "Webiny";
         const where: CmsEntryListWhere = {
-            title_contains: title
+            values: {
+                title_contains: title
+            }
         };
 
         execFiltering({

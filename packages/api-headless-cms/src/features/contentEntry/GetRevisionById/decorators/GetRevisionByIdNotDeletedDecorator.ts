@@ -2,7 +2,7 @@ import { createDecorator } from "@webiny/feature/api";
 import { GetRevisionByIdUseCase } from "../abstractions.js";
 import { Result } from "@webiny/feature/api";
 import { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
-import type { CmsEntry, CmsModel } from "~/types/index.js";
+import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 
 /**
  * GetRevisionByIdNotDeletedDecorator - Filters out deleted entries.
@@ -11,13 +11,13 @@ import type { CmsEntry, CmsModel } from "~/types/index.js";
  * if the entry is marked as deleted (wbyDeleted flag).
  */
 class GetRevisionByIdNotDeletedDecorator implements GetRevisionByIdUseCase.Interface {
-    constructor(private decoratee: GetRevisionByIdUseCase.Interface) {}
+    public constructor(private decoratee: GetRevisionByIdUseCase.Interface) {}
 
-    async execute(
+    async execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         id: string
-    ): Promise<Result<CmsEntry, GetRevisionByIdUseCase.Error>> {
-        const result = await this.decoratee.execute(model, id);
+    ): Promise<Result<CmsEntry<T>, GetRevisionByIdUseCase.Error>> {
+        const result = await this.decoratee.execute<T>(model, id);
 
         if (result.isFail()) {
             return result;

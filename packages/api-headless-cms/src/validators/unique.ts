@@ -27,7 +27,9 @@ export const createUniqueValidator = (): CmsModelFieldValidatorPlugin => {
                     const listResult = await listLatest.execute(model, {
                         where: {
                             entryId_not: entry ? entry.entryId : undefined,
-                            [field.fieldId]: value
+                            values: {
+                                [field.fieldId]: value
+                            }
                         },
                         limit: 1
                     });

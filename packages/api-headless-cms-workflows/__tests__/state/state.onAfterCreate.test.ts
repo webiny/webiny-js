@@ -27,7 +27,9 @@ describe("state onAfterCreate", () => {
 
         // Create an entry
         const entryResult = await createEntry.execute(model, {
-            name: "John Doe"
+            values: {
+                name: "John Doe"
+            }
         });
         expect(entryResult.isOk()).toBe(true);
         const entry = entryResult.value!;

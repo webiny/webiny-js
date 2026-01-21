@@ -13,7 +13,7 @@ import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
  * - Handle storage errors
  */
 class MoveEntryRepositoryImpl implements RepositoryAbstraction.Interface {
-    constructor(private storageOperations: StorageOperations.Interface) {}
+    public constructor(private storageOperations: StorageOperations.Interface) {}
 
     async execute(
         model: CmsModel,

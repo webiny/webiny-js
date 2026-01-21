@@ -451,9 +451,11 @@ export const createContentEntriesSchema = ({
                                 search: !!query ? query : undefined,
                                 fields: fields || []
                             });
-
+                            // TODO figure a better way to handle errors in parallel execution
+                            if (result.isFail()) {
+                                throw result.error;
+                            }
                             const { entries } = result.value;
-
                             return entries.map((entry: CmsEntry) => {
                                 return createCmsEntryRecord(model, entry);
                             });

@@ -4,6 +4,7 @@ import * as babel from "@babel/core";
 import glob from "fast-glob";
 
 const BABEL_COMPILE_EXTENSIONS = [".js", ".jsx", ".ts", ".tsx"];
+const BABEL_SKIP_EXTENSIONS = [".d.ts"];
 
 const withSourceMapUrl = (file, code) => {
     const { name } = parse(file);
@@ -39,7 +40,10 @@ export const babelCompile = async ({ cwd }) => {
 
     for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        if (BABEL_COMPILE_EXTENSIONS.includes(extname(file))) {
+        if (
+            fileEndsWith(file, BABEL_COMPILE_EXTENSIONS) &&
+            !fileEndsWith(file, BABEL_SKIP_EXTENSIONS)
+        ) {
             compilations.push(
                 babel
                     .transformFileAsync(file, {
@@ -48,23 +52,11 @@ export const babelCompile = async ({ cwd }) => {
                     })
                     .then(results => [file, results])
             );
-        } else {
-            copies.push(
-                new Promise((resolve, reject) => {
-                    try {
-                        const destPath = getDistCopyFilePath({ file, cwd });
-                        if (!fs.existsSync(dirname(destPath))) {
-                            fs.mkdirSync(dirname(destPath), { recursive: true });
-                        }
-
-                        fs.copyFileSync(file, destPath);
-                        resolve();
-                    } catch (e) {
-                        reject(e);
-                    }
-                })
-            );
+            continue;
         }
+
+        // All other files should be copied as-is.
+        copies.push(copyFile(file, cwd));
     }
 
     // At this point, just wait for compilations to be completed, so we can proceed with writing the files ASAP.
@@ -89,3 +81,23 @@ export const babelCompile = async ({ cwd }) => {
     // Wait until all files have been written to disk.
     return Promise.all([...writes, ...copies]);
 };
+
+function copyFile(file, cwd) {
+    return new Promise((resolve, reject) => {
+        try {
+            const destPath = getDistCopyFilePath({ file, cwd });
+            if (!fs.existsSync(dirname(destPath))) {
+                fs.mkdirSync(dirname(destPath), { recursive: true });
+            }
+
+            fs.copyFileSync(file, destPath);
+            resolve();
+        } catch (e) {
+            reject(e);
+        }
+    });
+}
+
+function fileEndsWith(file, extensions) {
+    return extensions.some(ext => file.endsWith(ext));
+}

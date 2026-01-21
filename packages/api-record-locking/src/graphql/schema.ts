@@ -142,7 +142,7 @@ export const createGraphQLSchema = async (
             }
 
             input RecordLockingListWhereInput {
-                ${listFilterFieldsRender}
+                ${listFilterFieldsRender.allFiltersAsString()}
             }
 
             enum RecordLockingListSorter {

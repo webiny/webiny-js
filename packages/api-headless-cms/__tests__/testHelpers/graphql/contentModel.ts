@@ -2,6 +2,7 @@ import type { CmsModel, CmsModelField } from "~/types";
 
 const DATA_FIELD = /* GraphQL*/ `
     {
+        tenant
         modelId
         singularApiName
         pluralApiName
@@ -85,7 +86,7 @@ export interface CreateContentModelMutationVariables {
     data: {
         name: string;
         modelId?: string;
-        group: string | { id: string; name: string };
+        group: string;
         singularApiName: string;
         pluralApiName: string;
         description?: string;
@@ -101,7 +102,7 @@ export interface CreateContentModelFromMutationVariables {
     data: {
         name: string;
         modelId?: string;
-        group: string | { id: string; name: string };
+        group: string;
         singularApiName: string;
         pluralApiName: string;
         description?: string;
@@ -114,15 +115,12 @@ export interface CreateContentModelFromMutationVariables {
 }
 
 export interface CreateContentModelMutationResponse {
-    errors?: any[];
-    data: {
-        createContentModel: {
-            data: CmsModel;
-            error: {
-                message: string;
-                code: any;
-                data: any;
-            };
+    createContentModel: {
+        data: CmsModel;
+        error: {
+            message: string;
+            code: any;
+            data: any;
         };
     };
 }

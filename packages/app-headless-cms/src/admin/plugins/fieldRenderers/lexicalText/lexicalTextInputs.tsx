@@ -24,11 +24,11 @@ const plugin: CmsModelFieldRendererPlugin = {
         name: t`Lexical Text Inputs`,
         description: t`Renders a list of lexical editors.`,
         canUse({ field }) {
-            return (
-                field.type === "rich-text" &&
-                !!field.multipleValues &&
+            return [
+                field.type === "rich-text",
+                !!field.multipleValues,
                 !get(field, "predefinedValues.enabled")
-            );
+            ].every(Boolean);
         },
         render(props) {
             const { field } = props;

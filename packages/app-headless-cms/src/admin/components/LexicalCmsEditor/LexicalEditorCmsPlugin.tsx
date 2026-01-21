@@ -3,7 +3,6 @@ import React from "react";
 import {
     TypographyAction,
     LexicalEditorConfig,
-    FontSizeAction,
     FontColorAction,
     Divider,
     BoldAction,
@@ -18,7 +17,6 @@ import {
     ImagesPlugin,
     QuotePlugin,
     CodeHighlightPlugin,
-    FloatingLinkEditorPlugin,
     LinkPlugin,
     ListPlugin,
     TypographyPlugin,
@@ -32,9 +30,8 @@ const { ToolbarElement, Plugin } = LexicalEditorConfig;
 
 export const LexicalEditorCmsPlugin: FC = () => {
     return (
-        <CompositionScope name={"cms"}>
+        <CompositionScope name={"cms"} inherit={true}>
             <LexicalEditorConfig>
-                <ToolbarElement name="fontSize" element={<FontSizeAction />} />
                 <ToolbarElement name="fontColor" element={<FontColorAction />} />
                 <ToolbarElement name="typography" element={<TypographyAction />} />
                 <ToolbarElement name="textAlignment" element={<TextAlignmentAction />} />
@@ -56,10 +53,6 @@ export const LexicalEditorCmsPlugin: FC = () => {
                 <Plugin name={"codeHighlight"} element={<CodeHighlightPlugin />} />
                 <Plugin name={"typography"} element={<TypographyPlugin />} />
                 <Plugin name={"link"} element={<LinkPlugin />} />
-                <Plugin
-                    name={"floatingLinkEditor"}
-                    element={<FloatingLinkEditorPlugin anchorElem={() => document.body} />}
-                />
                 <Plugin name={"images"} element={<ImagesPlugin />} />
                 <Plugin name={"quote"} element={<QuotePlugin />} />
                 <TypographyAction.TypographyDropDown element={<TypographyDropDown />} />

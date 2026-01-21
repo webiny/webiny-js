@@ -20,7 +20,7 @@ import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
  * - Returns entry regardless of deleted state (decorators handle filtering)
  */
 class GetLatestRevisionByEntryIdUseCaseImpl implements BaseUseCaseAbstraction.Interface {
-    constructor(
+    public constructor(
         private repository: GetLatestRevisionByEntryIdRepository.Interface,
         private accessControl: AccessControl.Interface
     ) {}

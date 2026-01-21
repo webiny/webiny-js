@@ -12,10 +12,16 @@ export namespace RedirectModel {
     export type Interface = CmsModel;
 }
 
+export interface CmsEntryWbRedirect {
+    redirectFrom: string;
+    redirectTo: string;
+    redirectType: string;
+    isEnabled: boolean;
+}
 /**
  * WbRedirect domain entity
  */
-export interface WbRedirect {
+export interface WbRedirect extends CmsEntryWbRedirect {
     id: string;
     location: WbLocation;
     createdOn: string;
@@ -25,8 +31,4 @@ export interface WbRedirect {
     modifiedOn: string | null;
     modifiedBy: WbIdentity | null;
     tenant: string;
-    redirectFrom: string;
-    redirectTo: string;
-    redirectType: string;
-    isEnabled: boolean;
 }

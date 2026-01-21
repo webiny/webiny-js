@@ -1,7 +1,7 @@
 import { createImplementation } from "@webiny/di";
 import chalk from "chalk";
 import util from "util";
-import { UiService, StdioService } from "~/abstractions/index.js";
+import { UiService, StdioService, IsCi } from "~/abstractions/index.js";
 
 const NEW_LINE = "\n";
 const PIPE_SYMBOL = "┃";
@@ -15,9 +15,10 @@ const LOG_COLORS = {
 } as const;
 
 export class DefaultUiService implements UiService.Interface {
-    constructor(private readonly stdio: StdioService.Interface) {
-        this.stdio = stdio;
-    }
+    constructor(
+        private readonly stdio: StdioService.Interface,
+        private readonly isCi: IsCi.Interface
+    ) {}
 
     raw(text: string) {
         this.stdio.getStdout().write(text);
@@ -58,6 +59,12 @@ export class DefaultUiService implements UiService.Interface {
     }
 
     private typedColorizedText(type: keyof typeof LOG_COLORS, text: string, ...args: any[]) {
+        // Use plain text format in CI environments.
+        if (this.isCi.execute()) {
+            const prefix = `${type}: `;
+            return this.text(prefix + util.format(text, ...args));
+        }
+
         const prefix = `${LOG_COLORS[type](PIPE_SYMBOL)} `;
 
         // Replace all placeholders (match with `/%[a-zA-Z]/g` regex) with colorized values.
@@ -72,5 +79,5 @@ export class DefaultUiService implements UiService.Interface {
 export const uiService = createImplementation({
     abstraction: UiService,
     implementation: DefaultUiService,
-    dependencies: [StdioService]
+    dependencies: [StdioService, IsCi]
 });

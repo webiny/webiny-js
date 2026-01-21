@@ -1,5 +1,4 @@
 export * from "./createTheme.js";
-export type * from "./types.js";
-export * from "./utils/findTypographyStyleByHtmlTag.js";
-export * from "./utils/toTypographyEmotionMap.js";
-export * from "./utils/styleObjectToString.js";
+export * from "./types.js";
+export * from "./Theme.js";
+export * from "./toTypographyMap.js";

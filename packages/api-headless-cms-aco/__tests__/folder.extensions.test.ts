@@ -12,14 +12,18 @@ describe.skip("Folder Model Extensions", () => {
                     id: "carMake",
                     fieldId: "carMake",
                     label: "Car Make",
-                    type: "text"
+                    type: "text",
+                    listValidation: [],
+                    validation: []
                 });
 
                 modifier.addField({
                     id: "year",
                     fieldId: "year",
                     label: "Year of manufacturing",
-                    type: "number"
+                    type: "number",
+                    listValidation: [],
+                    validation: []
                 });
 
                 modifier.addField({
@@ -33,7 +37,9 @@ describe.skip("Folder Model Extensions", () => {
                     settings: {
                         type: "dateTimeWithoutTimezone",
                         defaultSetValue: "current"
-                    }
+                    },
+                    listValidation: [],
+                    validation: []
                 });
 
                 modifier.addField({
@@ -50,7 +56,9 @@ describe.skip("Folder Model Extensions", () => {
                                 modelId: "article"
                             }
                         ]
-                    }
+                    },
+                    listValidation: [],
+                    validation: []
                 });
 
                 modifier.addField({
@@ -58,7 +66,9 @@ describe.skip("Folder Model Extensions", () => {
                     fieldId: "field",
                     label: "Field",
                     type: "text",
-                    modelIds: ["article", "author"]
+                    modelIds: ["article", "author"],
+                    listValidation: [],
+                    validation: []
                 });
             })
         ]

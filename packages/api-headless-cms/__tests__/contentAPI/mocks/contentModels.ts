@@ -5,26 +5,29 @@ import { createModelPlugin } from "~/plugins";
 export interface Fruit {
     id?: string;
     entryId?: string;
-    name: string;
-    isSomething: boolean;
-    rating: number;
-    numbers: number[];
-    email: string;
-    url: string;
-    lowerCase: string;
-    upperCase: string;
-    date: string;
-    dateTime: string;
-    dateTimeZ: string;
-    time: string;
-    description: string;
-    slug?: string | null;
+    values: {
+        name: string;
+        isSomething: boolean;
+        rating: number;
+        numbers: number[];
+        email: string;
+        url: string;
+        lowerCase: string;
+        upperCase: string;
+        date: string;
+        dateTime: string;
+        dateTimeZ: string;
+        time: string;
+        description: string;
+        slug?: string | null;
+    };
 }
 
 const ids = {
     // product category
     field11: "title",
     field12: "slug",
+    field13: "separator",
     // product
     field201: "title",
     field202: "category",
@@ -171,7 +174,7 @@ const models: CmsModel[] = [
         singularApiName: "CategoryApiNameWhichIsABitDifferentThanModelId",
         pluralApiName: "CategoriesApiModel",
         group: "a-sample-content-model-group",
-        layout: [[ids.field11], [ids.field12]],
+        layout: [[ids.field11], [ids.field13], [ids.field12]],
         fields: [
             {
                 id: ids.field11,
@@ -203,6 +206,19 @@ const models: CmsModel[] = [
                 renderer: {
                     name: "renderer"
                 }
+            },
+            {
+                id: ids.field13,
+                type: "text:separator",
+                fieldId: "separator",
+                storageId: "text@separator",
+                label: "Separator",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                listValidation: [],
+                validation: []
             },
             {
                 id: ids.field12,

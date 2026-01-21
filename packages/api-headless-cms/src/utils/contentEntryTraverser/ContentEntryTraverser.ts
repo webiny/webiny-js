@@ -1,10 +1,10 @@
 import type {
+    CmsEntryValues,
     CmsModelAst,
-    CmsModelFieldAstNodeField,
     CmsModelFieldAstNode,
-    ContentEntryValueVisitor,
     CmsModelFieldAstNodeCollection,
-    CmsEntryValues
+    CmsModelFieldAstNodeField,
+    ContentEntryValueVisitor
 } from "~/types/index.js";
 
 type ParentNode = CmsModelAst | CmsModelFieldAstNode | null;
@@ -26,8 +26,6 @@ const childrenAreCollections = (node: CmsModelFieldAstNode): node is NodeWithCol
     return node.children.every(node => node.type === "collection");
 };
 
-const emptyValues = [null, undefined];
-
 export interface IContentEntryTraverser {
     traverse(values: CmsEntryValues, visitor: ContentEntryValueVisitor): Promise<void>;
 }
@@ -39,23 +37,27 @@ export class ContentEntryTraverser implements IContentEntryTraverser {
         this.modelAst = modelAst;
     }
 
-    async traverse(values: CmsEntryValues, visitor: ContentEntryValueVisitor) {
-        await this.visitTree(this.modelAst, values, [], visitor);
+    async traverse<T extends CmsEntryValues = CmsEntryValues>(
+        values: T,
+        visitor: ContentEntryValueVisitor
+    ) {
+        await this.visitTree<T>(this.modelAst, values, [], visitor);
     }
 
-    private async visitTree(
+    private async visitTree<T extends CmsEntryValues = CmsEntryValues>(
         root: CmsModelAst | CmsModelFieldAstNode,
-        values: CmsEntryValues,
+        values: T,
         path: string[],
         visitor: ContentEntryValueVisitor
     ) {
         for (const node of root.children) {
             const context: VisitorContext = { node, parent: root };
             const field = this.getFieldFromNode(context);
-            let value = values[field.fieldId];
+            const fieldIdKey = field.fieldId as keyof T;
+            let value = values[fieldIdKey];
 
             // We do not descend into nodes if they're `null` or `undefined`.
-            if (nodeHasChildren(node) && emptyValues.includes(value)) {
+            if (nodeHasChildren(node) && (value === null || value === undefined)) {
                 continue;
             }
 
@@ -76,23 +78,22 @@ export class ContentEntryTraverser implements IContentEntryTraverser {
             );
 
             // Refetch the value from the original input, in case the value changed within the visitor.
-            value = values[field.fieldId];
+            value = values[fieldIdKey];
 
             if (nodeHasChildren(node) && childrenAreCollections(node)) {
                 if (field.multipleValues) {
                     const arrayValue = this.ensureArray(value);
                     for (let i = 0; i < arrayValue.length; i++) {
-                        await this.findCollectionAndVisit(
+                        await this.findCollectionAndVisit<T>(
                             node,
                             arrayValue[i],
                             [...fieldPath, i.toString()],
                             visitor
                         );
                     }
-                } else {
-                    await this.findCollectionAndVisit(node, value, fieldPath, visitor);
+                    continue;
                 }
-                continue;
+                await this.findCollectionAndVisit<T>(node, value as T, fieldPath, visitor);
             }
 
             if (field.multipleValues) {
@@ -108,7 +109,7 @@ export class ContentEntryTraverser implements IContentEntryTraverser {
                 continue;
             }
 
-            await this.visitTree(node, value, fieldPath, visitor);
+            await this.visitTree<T>(node, value as T, fieldPath, visitor);
         }
     }
 
@@ -120,15 +121,15 @@ export class ContentEntryTraverser implements IContentEntryTraverser {
         return value;
     }
 
-    private findCollectionAndVisit(
+    private findCollectionAndVisit<T extends CmsEntryValues = CmsEntryValues>(
         node: NodeWithCollections,
-        values: CmsEntryValues,
+        values: T,
         path: string[],
         visitor: ContentEntryValueVisitor
     ) {
         const collection = node.children.find(child => {
             // Use the `discriminator` to find the correct value.
-            return values[child.collection.discriminator] === child.collection.id;
+            return values[child.collection.discriminator as keyof T] === child.collection.id;
         });
 
         if (!collection) {

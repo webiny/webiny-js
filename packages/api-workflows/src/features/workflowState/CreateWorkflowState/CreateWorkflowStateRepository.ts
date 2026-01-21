@@ -1,6 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
-import { WorkflowStateModel, WorkflowStateMapper } from "~/domain/workflowState/abstractions.js";
+import { WorkflowStateMapper, WorkflowStateModel } from "~/domain/workflowState/abstractions.js";
 import { WorkflowStatePersistenceError } from "~/domain/workflowState/errors.js";
 import { CreateWorkflowStateRepository as Repository } from "./abstractions.js";
 
@@ -13,10 +13,9 @@ class CreateWorkflowStateRepositoryImpl implements Repository.Interface {
 
     async execute(input: Repository.Input): Repository.Return {
         try {
-            const createResult = await this.createEntry.execute<Repository.Input>(
-                this.model,
-                input
-            );
+            const createResult = await this.createEntry.execute<Repository.Input>(this.model, {
+                values: input
+            });
 
             if (createResult.isFail()) {
                 return Result.fail(new WorkflowStatePersistenceError(createResult.error));

@@ -1,4 +1,4 @@
-import type { CmsModel, CmsFieldTypePlugins, ApiEndpoint } from "~/types/index.js";
+import type { ApiEndpoint, CmsFieldTypePlugins, CmsModel } from "~/types/index.js";
 import { renderListFilterFields } from "~/utils/renderListFilterFields.js";
 import { renderSortEnum } from "~/utils/renderSortEnum.js";
 import { renderFields } from "~/utils/renderFields.js";
@@ -62,27 +62,41 @@ export const createReadSDL: CreateReadSDL = ({
 
     return `
         """${model.description || singularName}"""
+        type ${singularName}Values {
+            ${fieldsRender.map(f => f.fields).join("\n") || "_empty: String"}
+        }
+        
         type ${singularName} {
             id: ID!
             entryId: String!
             ${hasModelIdField ? "" : "modelId: String!"}
             
             ${onByMetaGqlFields}
-            ${fieldsRender.map(f => f.fields).join("\n")}
+            values: ${singularName}Values
         }
         
         ${fieldsRender
             .map(f => f.typeDefs)
             .filter(Boolean)
             .join("\n")}
-        
-        input ${singularName}GetWhereInput {
-            ${getFilterFieldsRender}
+            
+        input ${singularName}GetWhereInputValues {
+            ${getFilterFieldsRender.fieldFiltersAsString() || "_empty: String"}
         }
         
+        input ${singularName}GetWhereInput {
+            ${getFilterFieldsRender.baseFiltersAsString()}
+            values: ${singularName}GetWhereInputValues
+        }
+        
+        input ${singularName}ListWhereInputValues {
+            ${listFilterFieldsRender.fieldFiltersAsString() || "_empty: String"}
+        }
         
         input ${singularName}ListWhereInput {
-            ${listFilterFieldsRender}
+            ${listFilterFieldsRender.baseFiltersAsString()}
+            
+            values: ${singularName}ListWhereInputValues
             AND: [${singularName}ListWhereInput!]
             OR: [${singularName}ListWhereInput!]
         }

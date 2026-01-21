@@ -4,7 +4,7 @@ import { FieldBuilder } from "./FieldBuilder.js";
 export interface IJsonFieldBuilder extends FieldBuilder<"json"> {}
 
 class JsonFieldBuilder extends FieldBuilder<"json"> implements IJsonFieldBuilder {
-    constructor() {
+    public constructor() {
         super("json");
     }
 }

@@ -3,6 +3,7 @@ import { RichTextEditor, StaticToolbar } from "@webiny/lexical-editor";
 import type { RichTextEditorProps } from "@webiny/lexical-editor/types.js";
 import { FileManager } from "@webiny/app-admin";
 import type { EditorTheme } from "@webiny/lexical-theme";
+import { createLexicalTokens } from "@webiny/lexical-theme/createLexicalEditorTokens.js";
 import { useWebsiteBuilderTheme } from "~/BaseEditor/components/index.js";
 import "./wbStaticToolbar.css";
 
@@ -25,6 +26,8 @@ const styles: React.CSSProperties = {
 
 const toolbar = <StaticToolbar className={"wb-static-toolbar"} />;
 
+const lexicalTokens = createLexicalTokens("wb-lx-");
+
 export const LexicalEditor = (props: Omit<RichTextEditorProps, "theme">) => {
     const { theme } = useWebsiteBuilderTheme();
 
@@ -38,9 +41,9 @@ export const LexicalEditor = (props: Omit<RichTextEditorProps, "theme">) => {
     );
 
     const editorTheme: EditorTheme = {
-        emotionMap: {},
-        styles: theme?.styles ?? {},
-        ...theme?.lexical
+        colors: theme?.colors ?? [],
+        typography: theme?.typography ?? {},
+        tokens: lexicalTokens
     };
 
     /**

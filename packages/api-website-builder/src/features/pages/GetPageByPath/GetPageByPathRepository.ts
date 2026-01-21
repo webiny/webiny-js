@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { GetEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntry";
 import { GetPageByPathRepository as RepositoryAbstraction } from "./abstractions.js";
-import { PageModel } from "~/domain/page/abstractions.js";
+import { type CmsEntryWbPage, PageModel } from "~/domain/page/abstractions.js";
 import { EntryToPageMapper } from "~/domain/page/EntryToPageMapper.js";
 import { PageNotFoundError, PagePersistenceError } from "~/domain/page/errors.js";
 
@@ -12,10 +12,12 @@ class GetPageByPathRepositoryImpl implements RepositoryAbstraction.Interface {
     ) {}
 
     async execute(path: string): RepositoryAbstraction.Return {
-        const result = await this.getEntry.execute(this.pageModel, {
+        const result = await this.getEntry.execute<CmsEntryWbPage>(this.pageModel, {
             where: {
-                properties: {
-                    path
+                values: {
+                    properties: {
+                        path
+                    }
                 },
                 published: true
             }

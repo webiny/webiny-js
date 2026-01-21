@@ -1,9 +1,8 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { filterMocks } from "./mocks/filter.mock";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 import { userMock } from "~tests/mocks/user.mock";
 import { Operation } from "~/filter/filter.types";
-import { until } from "@webiny/project-utils/testing/helpers/until.js";
 
 describe("`filter` CRUD", () => {
     const { aco } = useGraphQlHandler();
@@ -35,16 +34,11 @@ describe("`filter` CRUD", () => {
         });
 
         // Let's check whether both of the filter exists, listing them by `namespace`.
-        const [listResponse1] = await until(
-            () => {
-                return aco.listFilters({
-                    where: { namespace: "demo-1" }
-                });
-            },
-            result => {
-                return result[0].data.aco.listFilters.data.length === 2;
+        const [listResponse1] = await aco.listFilters({
+            where: {
+                namespace: "demo-1"
             }
-        );
+        });
 
         expect(listResponse1).toEqual({
             data: {

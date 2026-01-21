@@ -100,6 +100,7 @@ class RecordLocking<T extends IPossiblyRecordLockingRecord = IPossiblyRecordLock
             const { id: entryId } = parseIdentifier(record.id);
             return {
                 ...record,
+                $type: "RECORD",
                 $lockingType: type,
                 $locked: record.$locked,
                 $selectable: record.$locked ? false : record.$selectable,

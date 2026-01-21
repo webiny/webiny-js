@@ -76,7 +76,9 @@ function FormInner<T extends GenericFormData = GenericFormData>(
         }
 
         // Set the new form data.
-        presenter.setData(props.data as T);
+        requestAnimationFrame(() => {
+            presenter.setData(props.data as T);
+        });
 
         // Keep the new props.data for future comparison.
         dataRef.current = props.data;

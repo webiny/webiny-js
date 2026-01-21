@@ -13,7 +13,7 @@ import { PluginsContainer } from "~/legacy/abstractions.js";
  * for converting models to AST representation (used for GraphQL schema generation)
  */
 class ModelToAstConverterImpl implements ConverterAbstraction.Interface {
-    constructor(private pluginsContainer: PluginsContainer.Interface) {}
+    public constructor(private pluginsContainer: PluginsContainer.Interface) {}
 
     toAst(model: CmsModel): CmsModelAst {
         const fieldTypePlugins = this.pluginsContainer.byType<CmsModelFieldToGraphQLPlugin>(

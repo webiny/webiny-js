@@ -19,7 +19,7 @@ import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
  * - Delegate to repository for storage operations
  */
 class DeleteEntryUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(
+    public constructor(
         private moveEntryToBin: MoveEntryToBinUseCase.Interface,
         private repository: DeleteEntryRepository.Interface,
         private accessControl: AccessControl.Interface,

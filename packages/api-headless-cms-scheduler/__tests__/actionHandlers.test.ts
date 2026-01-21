@@ -8,7 +8,7 @@ import { createMockTargetModelPlugins, MOCK_TARGET_MODEL_ID } from "~tests/mocks
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
-import { ListScheduledActionsUseCase, ExecuteScheduledActionUseCase } from "@webiny/api-scheduler";
+import { ExecuteScheduledActionUseCase, ListScheduledActionsUseCase } from "@webiny/api-scheduler";
 
 describe("Action Handlers", () => {
     let context: CmsContext;
@@ -35,7 +35,9 @@ describe("Action Handlers", () => {
 
         const modelResult = await getModel.execute(MOCK_TARGET_MODEL_ID);
         const entryResult = await createEntry.execute(modelResult.value, {
-            title: "First entry"
+            values: {
+                title: "First entry"
+            }
         });
 
         expect(entryResult.value.status).toBe("draft");
@@ -50,7 +52,9 @@ describe("Action Handlers", () => {
 
         // Assert scheduled actions
         const actionsResponse = await listScheduledActions.execute({
-            where: { namespace_startsWith: "Cms/Entry" }
+            where: {
+                namespace_startsWith: "Cms/Entry"
+            }
         });
 
         expect(actionsResponse.value.items).toHaveLength(1);

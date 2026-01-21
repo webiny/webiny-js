@@ -19,8 +19,8 @@ export interface IRecordLockingProviderProps {
 export const RecordLockingContext = React.createContext({} as unknown as IRecordLockingContext);
 
 const isSameArray = (
-    existingRecords: Pick<IPossiblyRecordLockingRecord["data"], "id" | "savedOn">[],
-    newRecords: Pick<IPossiblyRecordLockingRecord["data"], "id" | "savedOn">[]
+    existingRecords: Pick<IPossiblyRecordLockingRecord, "id" | "savedOn">[],
+    newRecords: Pick<IPossiblyRecordLockingRecord, "id" | "savedOn">[]
 ): boolean => {
     if (existingRecords.length !== newRecords.length) {
         return false;

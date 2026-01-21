@@ -12,9 +12,11 @@ const DATA_FIELD = /* GraphQL */ `
     {
         id
         entryId
-        title
         wbyAco_location {
             folderId
+        }
+        values {
+            title
         }
     }
 `;

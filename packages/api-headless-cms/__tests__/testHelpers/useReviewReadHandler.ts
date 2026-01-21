@@ -7,16 +7,22 @@ const reviewFields = `
     id
     createdOn
     savedOn
-    text
-    product {
-        id
-        title
+    values {
+        text
+        product {
+            id
+            values {
+                title
+            }
+        }
+        author {
+            id
+            values {
+                fullName
+            }
+        }
+        rating
     }
-    author {
-        id
-        fullName
-    }
-    rating
 `;
 
 const errorFields = `

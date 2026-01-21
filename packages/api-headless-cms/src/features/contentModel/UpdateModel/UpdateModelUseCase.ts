@@ -33,7 +33,7 @@ import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
  * Note: Repository handles domain validations (API name uniqueness, field validation, etc.)
  */
 class UpdateModelUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(
+    public constructor(
         private getModelUseCase: GetModelUseCase.Interface,
         private eventPublisher: EventPublisher.Interface,
         private repository: UpdateModelRepository.Interface,

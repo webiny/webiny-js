@@ -17,7 +17,7 @@ export interface IDateTimeFieldBuilder
 }
 
 class DateTimeFieldBuilder extends FieldBuilder<"datetime"> implements IDateTimeFieldBuilder {
-    constructor() {
+    public constructor() {
         super("datetime");
     }
 

@@ -1,13 +1,17 @@
-import type { CategoryManager, ProductCategory } from "../../types";
+import type { CategoryManager } from "../../types";
 
 export const createCategoryFactory = (manager: CategoryManager) => {
-    return async (): Promise<ProductCategory> => {
+    return async () => {
         const [createCategoryResponse] = await manager.createCategory({
-            data: {
-                title: "Items",
-                slug: "items"
+            variables: {
+                data: {
+                    values: {
+                        title: "Items",
+                        slug: "items"
+                    }
+                }
             }
         });
-        return createCategoryResponse.data.createCategory.data as ProductCategory;
+        return createCategoryResponse.data.createCategory.data!;
     };
 };

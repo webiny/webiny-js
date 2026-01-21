@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry";
 import type { CmsEntry } from "@webiny/api-headless-cms/types/index.js";
-import { LockEntryRepository as RepositoryAbstraction, LockEntryInput } from "./abstractions.js";
+import { LockEntryInput, LockEntryRepository as RepositoryAbstraction } from "./abstractions.js";
 import { RecordLockingConfig, RecordLockingModel } from "~/domain/abstractions.js";
 import type { ILockRecord } from "~/domain/LockRecord.js";
 import { LockRecord } from "~/domain/LockRecord.js";
@@ -28,7 +28,7 @@ class LockEntryRepositoryImpl implements RepositoryAbstraction.Interface {
 
             const result = await this.createEntry.execute(this.model, {
                 id,
-                ...values
+                values
             });
 
             if (result.isFail()) {

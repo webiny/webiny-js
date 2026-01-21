@@ -5,7 +5,6 @@ import type {
     WebsiteBuilderThemeInput
 } from "~/types/WebsiteBuilderTheme.js";
 import { defaultBreakpoints } from "~/defaultBreakpoints.js";
-import { createLexicalTheme } from "~/lexical/createLexicalTheme.js";
 
 export class Theme {
     static from(input: WebsiteBuilderThemeInput): WebsiteBuilderTheme {
@@ -28,17 +27,11 @@ export class Theme {
 
         return {
             css: input.css,
-            cssVariables: input.cssVariables,
             fonts: input.fonts,
             breakpoints: breakpoints.sort((a, b) => b.maxWidth - a.maxWidth),
-            lexical: createLexicalTheme(input?.lexical),
-            styles: {
-                colors: {
-                    ...input?.styles?.colors
-                },
-                typography: {
-                    ...input?.styles?.typography
-                }
+            colors: input?.colors ?? [],
+            typography: {
+                ...input?.typography
             }
         };
     }

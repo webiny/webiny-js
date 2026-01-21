@@ -14,12 +14,12 @@ import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
  * - Delegate to repository for data fetching
  */
 class GetRevisionsByEntryIdUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(
+    public constructor(
         private repository: GetRevisionsByEntryIdRepository.Interface,
         private accessControl: AccessControl.Interface
     ) {}
 
-    async execute<T extends CmsEntryValues = CmsEntryValues>(
+    public async execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         entryId: string
     ): Promise<Result<CmsEntry<T>[], UseCaseAbstraction.Error>> {

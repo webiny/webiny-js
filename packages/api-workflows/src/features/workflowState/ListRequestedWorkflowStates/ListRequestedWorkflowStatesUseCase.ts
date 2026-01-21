@@ -33,11 +33,14 @@ class ListRequestedWorkflowStatesUseCaseImpl implements UseCase.Interface {
             ...params,
             where: {
                 ...params?.where,
-                isActive: true,
                 createdBy_not: identity.id,
-                steps: {
-                    teams: {
-                        id_in: teams.map(team => team.id)
+                values: {
+                    ...params?.where?.values,
+                    isActive: true,
+                    steps: {
+                        teams: {
+                            id_in: teams.map(team => team.id)
+                        }
                     }
                 }
             }

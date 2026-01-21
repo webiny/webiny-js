@@ -1,13 +1,14 @@
-import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
-import { ValidateEntryUseCase as UseCaseAbstraction } from "./abstractions.js";
-import { AccessControl } from "~/features/shared/abstractions.js";
+import { createImplementation, Result } from "@webiny/feature/api";
+import {
+    type IValidateEntryUserCaseExecuteResult,
+    ValidateEntryUseCase as UseCaseAbstraction
+} from "./abstractions.js";
+import { AccessControl, CmsContext } from "~/features/shared/abstractions.js";
 import { GetRevisionByIdUseCase } from "~/features/contentEntry/GetRevisionById/index.js";
-import type { CmsModel, CmsModelFieldValidation } from "~/types/index.js";
+import type { CmsEntryValues, CmsModel, UpdateCmsEntryInput } from "~/types/index.js";
 import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import { mapAndCleanUpdatedInputData } from "~/crud/contentEntry/entryDataFactories/index.js";
 import { validateModelEntryData } from "~/crud/contentEntry/entryDataValidation.js";
-import { CmsContext } from "~/features/shared/abstractions.js";
 
 /**
  * ValidateEntryUseCase - Orchestrates entry data validation.
@@ -20,17 +21,17 @@ import { CmsContext } from "~/features/shared/abstractions.js";
  * - Return validation results
  */
 class ValidateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(
+    public constructor(
         private accessControl: AccessControl.Interface,
         private getRevisionById: GetRevisionByIdUseCase.Interface,
         private cmsContext: CmsContext.Interface
     ) {}
 
-    async execute(
+    public async execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         id: string | null,
-        inputData: Record<string, any>
-    ): Promise<Result<CmsModelFieldValidation[], UseCaseAbstraction.Error>> {
+        inputData: UpdateCmsEntryInput<T>
+    ): Promise<Result<IValidateEntryUserCaseExecuteResult[], UseCaseAbstraction.Error>> {
         // Check access control
         const canAccess = await this.accessControl.canAccessEntry({ model, rwd: "w" });
         if (!canAccess) {
@@ -38,7 +39,7 @@ class ValidateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         // Map and clean input data
-        const input = mapAndCleanUpdatedInputData(model, inputData || {});
+        const input = mapAndCleanUpdatedInputData<T>(model, inputData.values || ({} as T));
 
         // Optionally get the entry being validated
         let originalEntry = undefined;
@@ -67,7 +68,7 @@ class ValidateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         const validationResult = await validateModelEntryData({
             context: this.cmsContext,
             model,
-            data: input,
+            values: input,
             entry: originalEntry
         });
 

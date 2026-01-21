@@ -1,15 +1,12 @@
-import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
+import { createImplementation, Result } from "@webiny/feature/api";
 import { ListEntriesRepository as RepositoryAbstraction } from "./abstractions.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type {
-    CmsEntry,
     CmsEntryListParams,
     CmsEntryMeta,
     CmsEntryStorageOperationsListParams,
     CmsEntryValues,
-    CmsModel,
-    ICmsEntryLocation
+    CmsModel
 } from "~/types/index.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
 import { EntryFromStorageTransform, SearchableFieldsProvider } from "~/legacy/abstractions.js";
@@ -19,7 +16,7 @@ import { EntryFromStorageTransform, SearchableFieldsProvider } from "~/legacy/ab
  * Returns entries with pagination metadata.
  */
 class ListEntriesRepositoryImpl implements RepositoryAbstraction.Interface {
-    constructor(
+    public constructor(
         private searchableFieldsProvider: SearchableFieldsProvider.Interface,
         private entryFromStorageTransform: EntryFromStorageTransform.Interface,
         private storageOperations: StorageOperations.Interface
@@ -35,7 +32,7 @@ class ListEntriesRepositoryImpl implements RepositoryAbstraction.Interface {
             const where: NonNullable<CmsEntryListParams["where"]> = params.where ?? {};
 
             if (where.location) {
-                where.wbyAco_location = where.location as ICmsEntryLocation;
+                where.wbyAco_location = where.location;
                 delete where.location;
             }
 
@@ -47,7 +44,7 @@ class ListEntriesRepositoryImpl implements RepositoryAbstraction.Interface {
                 fields: this.searchableFieldsProvider({ fields: model.fields })
             };
 
-            const result = await this.storageOperations.entries.list(model, listParams);
+            const result = await this.storageOperations.entries.list<T>(model, listParams);
 
             // Transform storage entries to domain entries
             const items = await Promise.all(
@@ -62,7 +59,7 @@ class ListEntriesRepositoryImpl implements RepositoryAbstraction.Interface {
                 cursor: result.hasMoreItems ? result.cursor : null
             };
 
-            return Result.ok({ entries: items as CmsEntry<T>[], meta });
+            return Result.ok({ entries: items, meta });
         } catch (error) {
             return Result.fail(new EntryPersistenceError(error as Error));
         }

@@ -23,24 +23,6 @@ export const ApplyTheme = () => {
             }
         }
 
-        if (theme.cssVariables) {
-            const existing = document.querySelector(`style[id="wb-editor-css-variables"]`);
-
-            const style = document.createElement("style");
-            style.id = "wb-editor-css-variables";
-            style.innerHTML = `:root {
-                ${Object.entries(theme.cssVariables)
-                    .map(([key, value]) => `${key}: ${value}`)
-                    .join("\n")}
-            `;
-
-            if (existing) {
-                existing.replaceWith(style);
-            } else {
-                document.head.appendChild(style);
-            }
-        }
-
         if (theme.fonts) {
             theme.fonts.forEach(font => {
                 const existing = document.querySelector(`link[href="${font}"]`);
@@ -54,6 +36,13 @@ export const ApplyTheme = () => {
                 document.head.appendChild(link);
             });
         }
+
+        return () => {
+            const existing = document.querySelector(`style[id="wb-editor-css"]`);
+            if (existing) {
+                existing.remove();
+            }
+        };
     }, [theme]);
 
     return null;

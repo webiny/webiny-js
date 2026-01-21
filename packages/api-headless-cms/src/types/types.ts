@@ -18,6 +18,14 @@ import type { CmsGroup } from "./modelGroup.js";
 import type { CmsIdentity } from "./identity.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
+import type {
+    DateStringInterfaceGenerator,
+    IdentityInterfaceGenerator,
+    IdInterfaceGenerator,
+    IdMixedInterfaceGenerator,
+    NumericInterfaceGenerator,
+    TruthfulInterfaceGenerator
+} from "@webiny/api";
 
 export interface CmsError {
     message: string;
@@ -112,11 +120,11 @@ export interface CmsModelDateTimeField extends CmsModelField {
  * @category ModelField
  * @category FieldValidation
  */
-export interface CmsModelFieldValidatorValidateParams<T = any> {
+export interface CmsModelFieldValidatorValidateParams<T extends CmsEntryValues = CmsEntryValues> {
     /**
      * A value to be validated.
      */
-    value: T;
+    value: T[keyof T];
     /**
      * Options from the CmsModelField validations.
      *
@@ -140,7 +148,7 @@ export interface CmsModelFieldValidatorValidateParams<T = any> {
      * If entry is sent it means it is an update operation.
      * First usage is for the unique field value.
      */
-    entry?: CmsEntry;
+    entry?: CmsEntry<T>;
 }
 
 /**
@@ -148,9 +156,10 @@ export interface CmsModelFieldValidatorValidateParams<T = any> {
  *
  * @category CmsModel
  */
-export interface StorageOperationsCmsModel extends CmsModel {
-    convertValueKeyToStorage: CmsModelConverterCallable;
-    convertValueKeyFromStorage: CmsModelConverterCallable;
+export interface StorageOperationsCmsModel<T extends CmsEntryValues = CmsEntryValues>
+    extends CmsModel {
+    convertValueKeyToStorage: CmsModelConverterCallable<T>;
+    convertValueKeyFromStorage: CmsModelConverterCallable<T>;
 }
 
 /**
@@ -316,7 +325,7 @@ export interface IEntryState {
  * @category Database model
  * @category CmsEntry
  */
-export interface CmsEntry<T = CmsEntryValues> {
+export interface CmsEntry<TValues extends CmsEntryValues = CmsEntryValues> {
     /**
      * Tenant id which is this entry for. Can be used in case of shared storage.
      */
@@ -473,7 +482,7 @@ export interface CmsEntry<T = CmsEntryValues> {
      *
      * @see CmsModelField
      */
-    values: T;
+    values: TValues;
     /**
      * Advanced Content Organization
      */
@@ -500,7 +509,7 @@ export interface CmsEntry<T = CmsEntryValues> {
     state?: IEntryState;
 }
 
-export interface CmsStorageEntry extends CmsEntry {
+export interface CmsStorageEntry<T extends CmsEntryValues = CmsEntryValues> extends CmsEntry<T> {
     [key: string]: any;
 }
 
@@ -567,139 +576,12 @@ export interface CmsModelContext {
  */
 export type CmsEntryStatus = "published" | "unpublished" | "draft";
 
-export interface CmsEntryListWhereRef {
-    id?: string;
-    id_in?: string[];
-    id_not?: string;
-    id_not_in?: string[];
-    entryId?: string;
-    entryId_not?: string;
-    entryId_in?: string[];
-    entryId_not_in?: string[];
-}
+export interface CmsEntryListWhereRef
+    extends IdInterfaceGenerator<"id">,
+        IdInterfaceGenerator<"entryId">,
+        IdInterfaceGenerator<"modelId"> {}
 
-/**
- * Entry listing where params.
- *
- * @category CmsEntry
- * @category GraphQL params
- */
-export interface CmsEntryListWhere {
-    /**
-     * Fields.
-     */
-    id?: string;
-    id_in?: string[];
-    id_not?: string;
-    id_not_in?: string[];
-    /**
-     * Generated ID without the version.
-     */
-    entryId?: string;
-    entryId_not?: string;
-    entryId_in?: string[];
-    entryId_not_in?: string[];
-    /**
-     * Status of the entry.
-     */
-    status?: CmsEntryStatus;
-    status_not?: CmsEntryStatus;
-    status_in?: CmsEntryStatus[];
-    status_not_in?: CmsEntryStatus[];
-
-    /**
-     * Revision-level meta fields. 👇
-     */
-    revisionCreatedBy?: string;
-    revisionCreatedBy_not?: string;
-    revisionCreatedBy_in?: string[];
-    revisionCreatedBy_not_in?: string[];
-
-    revisionModifiedBy?: string;
-    revisionModifiedBy_not?: string;
-    revisionModifiedBy_in?: string[];
-    revisionModifiedBy_not_in?: string[];
-
-    revisionSavedBy?: string;
-    revisionSavedBy_not?: string;
-    revisionSavedBy_in?: string[];
-    revisionSavedBy_not_in?: string[];
-
-    revisionFirstPublishedBy?: string;
-    revisionFirstPublishedBy_not?: string;
-    revisionFirstPublishedBy_in?: string[];
-    revisionFirstPublishedBy_not_in?: string[];
-
-    revisionLastPublishedBy?: string;
-    revisionLastPublishedBy_not?: string;
-    revisionLastPublishedBy_in?: string[];
-    revisionLastPublishedBy_not_in?: string[];
-
-    /**
-     * Entry-level meta fields. 👇
-     */
-    createdBy?: string;
-    createdBy_not?: string;
-    createdBy_in?: string[];
-    createdBy_not_in?: string[];
-
-    modifiedBy?: string;
-    modifiedBy_not?: string;
-    modifiedBy_in?: string[];
-    modifiedBy_not_in?: string[];
-
-    savedBy?: string;
-    savedBy_not?: string;
-    savedBy_in?: string[];
-    savedBy_not_in?: string[];
-
-    firstPublishedBy?: string;
-    firstPublishedBy_not?: string;
-    firstPublishedBy_in?: string[];
-    firstPublishedBy_not_in?: string[];
-
-    lastPublishedBy?: string;
-    lastPublishedBy_not?: string;
-    lastPublishedBy_in?: string[];
-    lastPublishedBy_not_in?: string[];
-
-    /**
-     * Version of the entry.
-     *
-     * It is not meant to be used via the API.
-     * @internal
-     */
-    version?: number;
-    version_lt?: number;
-    version_gt?: number;
-    /**
-     * Each storage operations implementation MUST determine how to use this field.
-     * In SQL, it can be a `published` field, and in DynamoDB it can be an SK.
-     *
-     * It is not meant to be used via the API.
-     * @internal
-     */
-    published?: boolean;
-    /**
-     * Each storage operations implementation MUST determine how to use this field.
-     * In SQL, it can be a `latest` field, and in DynamoDB it can be an SK.
-     *
-     * It is not meant to be used via the API.
-     * @internal
-     */
-    latest?: boolean;
-    /**
-     * ACO related parameters.
-     */
-    wbyAco_location?: {
-        folderId?: string;
-        folderId_not?: string;
-        folderId_in?: string[];
-        folderId_not_in?: string[];
-        AND?: CmsEntryListWhere[];
-        OR?: CmsEntryListWhere[];
-    };
-
+export interface CmsEntryListWhereValues {
     /**
      * This is to allow querying by any content model field defined by the user.
      */
@@ -712,9 +594,85 @@ export interface CmsEntryListWhere {
         | string[]
         | number[]
         | null
-        | CmsEntryListWhere[]
-        | CmsEntryListWhere
+        | CmsEntryListWhereValues[]
+        | CmsEntryListWhereValues
         | CmsEntryListWhereRef;
+}
+/**
+ * Entry listing where params.
+ *
+ * @category CmsEntry
+ * @category GraphQL params
+ */
+
+export interface CmsEntryListWhere
+    extends IdMixedInterfaceGenerator<"id">,
+        IdMixedInterfaceGenerator<"entryId">,
+        IdInterfaceGenerator<"status", CmsEntryStatus>,
+        /**
+         * Revision-level meta fields. 👇
+         */
+        IdentityInterfaceGenerator<"revisionCreatedBy">,
+        IdentityInterfaceGenerator<"revisionModifiedBy">,
+        IdentityInterfaceGenerator<"revisionSavedBy">,
+        IdentityInterfaceGenerator<"revisionFirstPublishedBy">,
+        IdentityInterfaceGenerator<"revisionLastPublishedBy">,
+        /**
+         * Entry-level meta fields. 👇
+         */
+        IdentityInterfaceGenerator<"createdBy">,
+        IdentityInterfaceGenerator<"modifiedBy">,
+        IdentityInterfaceGenerator<"savedBy">,
+        IdentityInterfaceGenerator<"firstPublishedBy">,
+        IdentityInterfaceGenerator<"lastPublishedBy">,
+        DateStringInterfaceGenerator<"createdOn">,
+        DateStringInterfaceGenerator<"savedOn">,
+        DateStringInterfaceGenerator<"deletedOn">,
+        /**
+         * Version of the entry.
+         *
+         * It is not meant to be used via the API.
+         * @internal
+         */
+        NumericInterfaceGenerator<"version">,
+        /**
+         * Each storage operations implementation MUST determine how to use this field.
+         * In SQL, it can be a `published` field, and in DynamoDB it can be an SK.
+         *
+         * It is not meant to be used via the API.
+         * @internal
+         */
+        TruthfulInterfaceGenerator<"published">,
+        /**
+         * Each storage operations implementation MUST determine how to use this field.
+         * In SQL, it can be a `latest` field, and in DynamoDB it can be an SK.
+         *
+         * It is not meant to be used via the API.
+         * @internal
+         */
+        TruthfulInterfaceGenerator<"latest"> {
+    /**
+     * ACO related parameters.
+     */
+    wbyAco_location?: {
+        folderId?: string;
+        folderId_not?: string;
+        folderId_in?: string[];
+        folderId_not_in?: string[];
+    };
+    location?: {
+        folderId?: string;
+        folderId_not?: string;
+        folderId_in?: string[];
+        folderId_not_in?: string[];
+    };
+
+    values?: CmsEntryListWhereValues;
+    /**
+     * Is the entry in the bin?
+     */
+    wbyDeleted?: boolean;
+    wbyDeleted_not?: boolean;
 
     /**
      * To allow querying via nested queries, we added the AND / OR properties.
@@ -784,7 +742,7 @@ export interface CmsEntryMeta {
  * @category Context
  * @category CmsEntry
  */
-export type CreateCmsEntryInput<TValues = CmsEntryValues> = TValues & {
+export interface CreateCmsEntryInput<TValues extends CmsEntryValues = CmsEntryValues> {
     id?: string;
     status?: CmsEntryStatus;
 
@@ -797,6 +755,7 @@ export type CreateCmsEntryInput<TValues = CmsEntryValues> = TValues & {
     deletedOn?: Date | string | null;
     restoredOn?: Date | string | null;
     createdBy?: CmsIdentity;
+    modifiedBy?: CmsIdentity;
     savedBy?: CmsIdentity;
     deletedBy?: CmsIdentity | null;
     restoredBy?: CmsIdentity | null;
@@ -822,13 +781,18 @@ export type CreateCmsEntryInput<TValues = CmsEntryValues> = TValues & {
     revisionLastPublishedOn?: Date | string;
     revisionFirstPublishedBy?: CmsIdentity;
     revisionLastPublishedBy?: CmsIdentity;
-
+    // TODO remove wbyAco_location
     wbyAco_location?: {
+        folderId?: string | null;
+    };
+    location?: {
         folderId?: string | null;
     };
 
     state?: Partial<IEntryState>;
-};
+
+    values: TValues | undefined;
+}
 
 export interface CreateCmsEntryOptionsInput {
     skipValidators?: string[];
@@ -838,7 +802,7 @@ export interface CreateCmsEntryOptionsInput {
  * @category Context
  * @category CmsEntry
  */
-export interface CreateFromCmsEntryInput {
+export interface CreateFromCmsEntryInput<TValues extends CmsEntryValues = CmsEntryValues> {
     /**
      * Revision-level meta fields. 👇
      */
@@ -869,7 +833,7 @@ export interface CreateFromCmsEntryInput {
 
     state?: Partial<IEntryState>;
 
-    [key: string]: any;
+    values: TValues;
 }
 
 export interface CreateRevisionCmsEntryOptionsInput {
@@ -880,7 +844,7 @@ export interface CreateRevisionCmsEntryOptionsInput {
  * @category Context
  * @category CmsEntry
  */
-export type UpdateCmsEntryInput<TValues extends CmsEntryValues = CmsEntryValues> = TValues & {
+export interface UpdateCmsEntryInput<TValues extends CmsEntryValues = CmsEntryValues> {
     /**
      * Revision-level meta fields. 👇
      */
@@ -921,8 +885,14 @@ export type UpdateCmsEntryInput<TValues extends CmsEntryValues = CmsEntryValues>
         folderId?: string | null;
     };
 
+    location?: {
+        folderId?: string | null;
+    };
+
     state?: Partial<IEntryState>;
-};
+
+    values?: Partial<TValues>;
+}
 
 export interface UpdateCmsEntryOptionsInput {
     skipValidators?: string[];
@@ -1183,56 +1153,52 @@ export interface CmsEntryStorageOperationsListParams {
     after?: string | null;
 }
 
-export interface CmsEntryStorageOperationsCreateParams<
-    T extends CmsStorageEntry = CmsStorageEntry
-> {
+export interface CmsEntryStorageOperationsCreateParams<T extends CmsEntryValues = CmsEntryValues> {
     /**
      * Real entry, with no transformations on it.
      */
-    entry: CmsEntry;
+    entry: CmsEntry<T>;
     /**
      * Entry prepared for the storage.
      */
-    storageEntry: T;
+    storageEntry: CmsStorageEntry<T>;
 }
 
 export interface CmsEntryStorageOperationsCreateRevisionFromParams<
-    T extends CmsStorageEntry = CmsStorageEntry
+    T extends CmsEntryValues = CmsEntryValues
 > {
     /**
      * Real entry, with no transformations on it.
      */
-    entry: CmsEntry;
+    entry: CmsEntry<T>;
     /**
      * Entry prepared for the storage.
      */
-    storageEntry: T;
+    storageEntry: CmsStorageEntry<T>;
 }
 
-export interface CmsEntryStorageOperationsUpdateParams<
-    T extends CmsStorageEntry = CmsStorageEntry
-> {
+export interface CmsEntryStorageOperationsUpdateParams<T extends CmsEntryValues = CmsEntryValues> {
     /**
      * Real entry, with no transformations on it.
      */
-    entry: CmsEntry;
+    entry: CmsEntry<T>;
     /**
      * Entry prepared for the storage.
      */
-    storageEntry: T;
+    storageEntry: CmsStorageEntry<T>;
 }
 
 export interface CmsEntryStorageOperationsDeleteRevisionParams<
-    T extends CmsStorageEntry = CmsStorageEntry
+    T extends CmsEntryValues = CmsEntryValues
 > {
     /**
      * Entry that was deleted.
      */
-    entry: CmsEntry;
+    entry: CmsEntry<T>;
     /**
      * Entry that was deleted, directly from storage, with transformations.
      */
-    storageEntry: T;
+    storageEntry: CmsStorageEntry<T>;
     /**
      * Entry that was set as latest.
      */
@@ -1240,70 +1206,68 @@ export interface CmsEntryStorageOperationsDeleteRevisionParams<
     /**
      * Entry that was set as latest, directly from storage, with transformations.
      */
-    latestStorageEntry: T | null;
+    latestStorageEntry: CmsStorageEntry<T> | null;
 }
 
-export interface CmsEntryStorageOperationsDeleteParams {
-    entry: CmsEntry;
+export interface CmsEntryStorageOperationsDeleteParams<T extends CmsEntryValues = CmsEntryValues> {
+    entry: CmsEntry<T>;
 }
 
 export interface CmsEntryStorageOperationsMoveToBinParams<
-    T extends CmsStorageEntry = CmsStorageEntry
+    T extends CmsEntryValues = CmsEntryValues
 > {
     /**
      * The modified entry that is going to be saved as published.
      * Entry is in its original form.
      */
-    entry: CmsEntry;
+    entry: CmsEntry<T>;
     /**
      * The modified entry and prepared for the storage.
      */
-    storageEntry: T;
+    storageEntry: CmsStorageEntry<T>;
 }
 
 export interface CmsEntryStorageOperationsRestoreFromBinParams<
-    T extends CmsStorageEntry = CmsStorageEntry
+    T extends CmsEntryValues = CmsEntryValues
 > {
     /**
      * The modified entry that is going to be saved as restored.
      * Entry is in its original form.
      */
-    entry: CmsEntry;
+    entry: CmsEntry<T>;
     /**
      * The modified entry and prepared for the storage.
      */
-    storageEntry: T;
+    storageEntry: CmsStorageEntry<T>;
 }
 
 export interface CmsEntryStorageOperationsDeleteEntriesParams {
     entries: string[];
 }
 
-export interface CmsEntryStorageOperationsPublishParams<
-    T extends CmsStorageEntry = CmsStorageEntry
-> {
+export interface CmsEntryStorageOperationsPublishParams<T extends CmsEntryValues = CmsEntryValues> {
     /**
      * The modified entry that is going to be saved as published.
      * Entry is in its original form.
      */
-    entry: CmsEntry;
+    entry: CmsEntry<T>;
     /**
      * The modified entry and prepared for the storage.
      */
-    storageEntry: T;
+    storageEntry: CmsStorageEntry<T>;
 }
 
 export interface CmsEntryStorageOperationsUnpublishParams<
-    T extends CmsStorageEntry = CmsStorageEntry
+    T extends CmsEntryValues = CmsEntryValues
 > {
     /**
      * The modified entry that is going to be saved as unpublished.
      */
-    entry: CmsEntry;
+    entry: CmsEntry<T>;
     /**
      * The modified entry that is going to be saved as unpublished, with transformations on it.
      */
-    storageEntry: T;
+    storageEntry: CmsStorageEntry<T>;
 }
 
 export interface CmsEntryStorageOperationsGetUniqueFieldValuesParams {
@@ -1374,86 +1338,98 @@ export interface CmsEntryStorageOperationsListResponse<
  * @category StorageOperations
  * @category CmsEntry
  */
-export interface CmsEntryStorageOperations<T extends CmsStorageEntry = CmsStorageEntry> {
+export interface CmsEntryStorageOperations {
     /**
      * Get all the entries of the ids.
      */
-    getByIds: (model: CmsModel, params: CmsEntryStorageOperationsGetByIdsParams) => Promise<T[]>;
+    getByIds: <T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        params: CmsEntryStorageOperationsGetByIdsParams
+    ) => Promise<CmsEntry<T>[]>;
     /**
      * Get all the published entries of the ids.
      */
-    getPublishedByIds: (
+    getPublishedByIds: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryStorageOperationsGetPublishedByIdsParams
-    ) => Promise<T[]>;
+    ) => Promise<CmsEntry<T>[]>;
     /**
      * Get all the latest entries of the ids.
      */
-    getLatestByIds: (
+    getLatestByIds: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryStorageOperationsGetLatestByIdsParams
-    ) => Promise<T[]>;
+    ) => Promise<CmsEntry<T>[]>;
     /**
      * Get all revisions of the given entry id.
      */
-    getRevisions: (
+    getRevisions: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryStorageOperationsGetRevisionsParams
-    ) => Promise<T[]>;
+    ) => Promise<CmsEntry<T>[]>;
     /**
      * Get the entry by the given revision id.
      */
-    getRevisionById: (
+    getRevisionById: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryStorageOperationsGetRevisionParams
-    ) => Promise<T | null>;
+    ) => Promise<CmsEntry<T> | null>;
     /**
      * Get the published entry by given entryId.
      */
-    getPublishedRevisionByEntryId: (
+    getPublishedRevisionByEntryId: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryStorageOperationsGetPublishedRevisionParams
-    ) => Promise<T | null>;
+    ) => Promise<CmsEntry<T> | null>;
     /**
      * Get the latest entry by given entryId.
      */
-    getLatestRevisionByEntryId: (
+    getLatestRevisionByEntryId: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryStorageOperationsGetLatestRevisionParams
-    ) => Promise<T | null>;
+    ) => Promise<CmsEntry<T> | null>;
     /**
      * Get the revision of the entry before given one.
      */
-    getPreviousRevision: (
+    getPreviousRevision: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryStorageOperationsGetPreviousRevisionParams
-    ) => Promise<T | null>;
+    ) => Promise<CmsEntry<T> | null>;
     /**
      * Gets entry by given params.
      */
-    get: (model: CmsModel, params: CmsEntryStorageOperationsGetParams) => Promise<T | null>;
+    get: <T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        params: CmsEntryStorageOperationsGetParams
+    ) => Promise<CmsEntry<T> | null>;
     /**
      * List all entries. Filterable via params.
      */
-    list: (
+    list: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryStorageOperationsListParams
-    ) => Promise<CmsEntryStorageOperationsListResponse<T>>;
+    ) => Promise<CmsEntryStorageOperationsListResponse<CmsEntry<T>>>;
     /**
      * Create a new entry.
      */
-    create: (model: CmsModel, params: CmsEntryStorageOperationsCreateParams<T>) => Promise<T>;
+    create: <T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        params: CmsEntryStorageOperationsCreateParams<T>
+    ) => Promise<CmsEntry<T>>;
     /**
      * Create a new entry from existing one.
      */
-    createRevisionFrom: (
+    createRevisionFrom: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryStorageOperationsCreateRevisionFromParams<T>
-    ) => Promise<T>;
+    ) => Promise<CmsEntry<T>>;
     /**
      * Update existing entry.
      */
-    update: (model: CmsModel, params: CmsEntryStorageOperationsUpdateParams<T>) => Promise<T>;
+    update: <T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        params: CmsEntryStorageOperationsUpdateParams<T>
+    ) => Promise<CmsEntry<T>>;
     /**
      * Move entry and all its entries into a new folder.
      */
@@ -1461,7 +1437,7 @@ export interface CmsEntryStorageOperations<T extends CmsStorageEntry = CmsStorag
     /**
      * Delete the entry revision.
      */
-    deleteRevision: (
+    deleteRevision: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryStorageOperationsDeleteRevisionParams<T>
     ) => Promise<void>;
@@ -1476,10 +1452,10 @@ export interface CmsEntryStorageOperations<T extends CmsStorageEntry = CmsStorag
     /**
      * Restore the entry from the bin.
      */
-    restoreFromBin: (
+    restoreFromBin: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryStorageOperationsRestoreFromBinParams<T>
-    ) => Promise<T>;
+    ) => Promise<CmsEntry<T>>;
     /**
      * Delete multiple entries, with a limit on how much can be deleted in one call.
      */
@@ -1490,11 +1466,17 @@ export interface CmsEntryStorageOperations<T extends CmsStorageEntry = CmsStorag
     /**
      * Publish the entry.
      */
-    publish: (model: CmsModel, params: CmsEntryStorageOperationsPublishParams<T>) => Promise<T>;
+    publish: <T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        params: CmsEntryStorageOperationsPublishParams<T>
+    ) => Promise<CmsEntry<T>>;
     /**
      * Unpublish the entry.
      */
-    unpublish: (model: CmsModel, params: CmsEntryStorageOperationsUnpublishParams<T>) => Promise<T>;
+    unpublish: <T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        params: CmsEntryStorageOperationsUnpublishParams<T>
+    ) => Promise<CmsEntry<T>>;
     /**
      * Method to list all the unique values for the given field id.
      * Simplest use case would be to aggregate tags for some content.

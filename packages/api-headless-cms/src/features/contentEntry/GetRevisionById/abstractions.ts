@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import type { CmsEntry, CmsModel } from "~/types/index.js";
+import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import type { EntryNotFoundError, EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 
 /**
@@ -8,7 +8,10 @@ import type { EntryNotFoundError, EntryPersistenceError } from "~/domain/content
  * Returns the entry or fails with EntryNotFoundError if not found or deleted.
  */
 export interface IGetRevisionByIdUseCase {
-    execute(model: CmsModel, id: string): Promise<Result<CmsEntry, UseCaseError>>;
+    execute<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        id: string
+    ): Promise<Result<CmsEntry<T>, UseCaseError>>;
 }
 
 export interface IGetRevisionByIdUseCaseErrors {
@@ -31,7 +34,10 @@ export namespace GetRevisionByIdUseCase {
  * Returns the entry or fails with EntryNotFoundError if not found.
  */
 export interface IGetRevisionByIdRepository {
-    execute(model: CmsModel, id: string): Promise<Result<CmsEntry, RepositoryError>>;
+    execute<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        id: string
+    ): Promise<Result<CmsEntry<T>, RepositoryError>>;
 }
 
 export interface IGetRevisionByIdRepositoryErrors {

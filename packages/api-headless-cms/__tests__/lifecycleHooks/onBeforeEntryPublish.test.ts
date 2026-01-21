@@ -43,9 +43,11 @@ describe("onEntryBeforePublish", () => {
         }
 
         const entry = await context.cms.createEntry(model, {
-            title: "Article #1",
-            desiredEmbargoDate: null,
-            articleEmbargoDate: null
+            values: {
+                title: "Article #1",
+                desiredEmbargoDate: null,
+                articleEmbargoDate: null
+            }
         });
 
         const publishedEntry = await context.cms.publishEntry(model, entry.id);
@@ -57,7 +59,9 @@ describe("onEntryBeforePublish", () => {
         });
 
         const revision1 = await context.cms.createEntryRevisionFrom(model, publishedEntry.id, {
-            desiredEmbargoDate: "2024-04-20T00:00:00.000Z"
+            values: {
+                desiredEmbargoDate: "2024-04-20T00:00:00.000Z"
+            }
         });
 
         const publishedEntry1 = await context.cms.publishEntry(model, revision1.id);
@@ -68,7 +72,9 @@ describe("onEntryBeforePublish", () => {
         });
 
         const revision2 = await context.cms.createEntryRevisionFrom(model, publishedEntry.id, {
-            desiredEmbargoDate: "2024-04-25T00:00:00.000Z"
+            values: {
+                desiredEmbargoDate: "2024-04-25T00:00:00.000Z"
+            }
         });
 
         const publishedEntry2 = await context.cms.publishEntry(model, revision2.id);

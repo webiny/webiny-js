@@ -1,24 +1,21 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { CmsGroup } from "~/types";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
+import { setupGroupAndModels } from "~tests/testHelpers/setup.js";
 
-describe("content model test", () => {
+describe("content model unique model id test", () => {
     const manageHandlerOpts = { path: "manage" };
 
-    const { createContentModelGroupMutation } = useGraphQLHandler(manageHandlerOpts);
+    const manager = useGraphQLHandler(manageHandlerOpts);
 
     let contentModelGroup: CmsGroup;
 
     beforeEach(async () => {
-        const [createCMG] = await createContentModelGroupMutation({
-            data: {
-                name: "Group",
-                slug: "group",
-                icon: "ico/ico",
-                description: "description"
-            }
+        const result = await setupGroupAndModels({
+            manager,
+            models: undefined
         });
-        contentModelGroup = createCMG.data.createContentModelGroup.data;
+        contentModelGroup = result.group;
     });
 
     it("should not allow creation of a model with an existing modelId", async () => {

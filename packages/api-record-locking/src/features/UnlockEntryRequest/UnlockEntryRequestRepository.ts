@@ -24,8 +24,12 @@ class UnlockEntryRequestRepositoryImpl implements RepositoryAbstraction.Interfac
                 version: 1
             });
 
+            const recordValues = record.toObject();
             const result = await this.identityContext.withoutAuthorization(async () => {
-                return await this.updateEntry.execute(this.model, id, record.toObject());
+                return await this.updateEntry.execute(this.model, id, {
+                    ...recordValues,
+                    values: recordValues
+                });
             });
 
             if (result.isFail()) {

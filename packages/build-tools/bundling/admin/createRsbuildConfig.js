@@ -12,7 +12,18 @@ export const createRsbuildConfig = ({ cwd }) => {
     const mode = getMode();
 
     return /** @type {import("@rsbuild/core").RsbuildConfig} */ ({
-        source: { entry: { index: paths.admin.entryFile }, define: envVars },
+        source: {
+            entry: {
+                index: paths.admin.entryFile
+            },
+            define: envVars
+        },
+        resolve: {
+            alias: {
+                // This is a temporary fix, until we sort out the `react-butterfiles` dependency.
+                "react-butterfiles": "@webiny/app/react-butterfiles"
+            }
+        },
         output: { distPath: { root: paths.admin.outputFolder } },
         mode,
         dev: { hmr: true },
@@ -30,8 +41,7 @@ export const createRsbuildConfig = ({ cwd }) => {
         },
         server: { port: 3001 },
         html: {
-            title: "Webiny",
-            favicon: paths.admin.faviconFile
+            template: paths.projectRootFolder + "/public/index.html"
         },
         plugins: [
             pluginTypeCheck({
@@ -49,12 +59,8 @@ export const createRsbuildConfig = ({ cwd }) => {
                     svgoConfig: {
                         plugins: [
                             {
-                                name: "preset-default",
+                                name: "pres" + "et-default",
                                 params: { overrides: { removeViewBox: false } }
-                            },
-                            {
-                                name: "removeAttrs",
-                                params: { attrs: "(width|height)" }
                             }
                         ]
                     }
@@ -68,12 +74,6 @@ const getPaths = cwd => {
     const adminRootFolderPath = cwd;
     const adminOutputFolderPath = path.join(adminRootFolderPath, "build");
     const adminEntryFilePath = path.join(adminRootFolderPath, "src", "index.tsx");
-    const adminFaviconFilePath = path.join(
-        adminRootFolderPath,
-        "public",
-        "favicons",
-        "favicon.ico"
-    );
 
     const adminTsConfigFilePath = path.join(adminRootFolderPath, "tsconfig.json");
 
@@ -83,8 +83,7 @@ const getPaths = cwd => {
             rootFolder: adminRootFolderPath,
             tsConfig: adminTsConfigFilePath,
             outputFolder: adminOutputFolderPath,
-            entryFile: adminEntryFilePath,
-            faviconFile: adminFaviconFilePath
+            entryFile: adminEntryFilePath
         }
     };
 };

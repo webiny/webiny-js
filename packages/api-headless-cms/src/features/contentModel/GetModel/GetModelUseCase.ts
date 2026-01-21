@@ -15,7 +15,7 @@ import { ModelNotAuthorizedError } from "~/domain/contentModel/errors.js";
  * - Return the model or appropriate error
  */
 class GetModelUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(
+    public constructor(
         private repository: GetModelRepository.Interface,
         private accessControl: AccessControl.Interface
     ) {}

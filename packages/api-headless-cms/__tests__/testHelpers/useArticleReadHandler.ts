@@ -16,19 +16,26 @@ const fields = `
         displayName
         type
     }
-    title
-    body
-    categories {
-        id
-        entryId
-        modelId
+    # user defined fields
+    values {
         title
-    }
-    category {
-        id
-        entryId
-        modelId
-        title
+        body
+        categories {
+            id
+            entryId
+            modelId
+            values {
+                title
+            }
+        }
+        category {
+            id
+            entryId
+            modelId
+            values {
+                title
+            }
+        }
     }
 `;
 

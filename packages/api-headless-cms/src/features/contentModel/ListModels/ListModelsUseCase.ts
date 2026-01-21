@@ -16,7 +16,7 @@ import { filterAsync } from "~/utils/filterAsync.js";
  * - Return all accessible models
  */
 class ListModelsUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(
+    public constructor(
         private repository: ListModelsRepository.Interface,
         private accessControl: AccessControl.Interface
     ) {}
