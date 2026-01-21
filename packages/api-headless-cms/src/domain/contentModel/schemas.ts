@@ -42,6 +42,25 @@ const str = zod.string().trim();
 const shortString = str.max(255);
 const optionalShortString = shortString.optional();
 const optionalNullishShortString = optionalShortString.nullish();
+const icon = zod
+    .object({
+        type: zod.string(),
+        name: zod.string(),
+        value: zod.string().optional()
+    })
+    .passthrough()
+    .optional()
+    .nullish()
+    .default(null)
+    .transform(value => {
+        if (typeof value === "string") {
+            return {
+                type: "icon",
+                name: value
+            };
+        }
+        return value;
+    });
 
 const fieldSchema = zod.object({
     id: shortString,
@@ -207,7 +226,7 @@ export const createModelCreateValidation = () => {
             return value || "";
         }),
         group: shortString,
-        icon: optionalNullishShortString,
+        icon,
         fields: zod.array(fieldSchema).default([]),
         layout: zod.array(zod.array(shortString)).default([]),
         tags: zod.array(shortString).optional(),
@@ -235,7 +254,7 @@ export const createModelUpdateValidation = () => {
         }, refinementPluralValidationMessage),
         description: optionalNullishShortString,
         group: optionalShortString,
-        icon: optionalNullishShortString,
+        icon,
         fields: zod.array(fieldSchema),
         layout: zod.array(zod.array(shortString)),
         titleFieldId: optionalShortString.nullish(),
@@ -259,7 +278,7 @@ export const createModelCreateFromValidation = () => {
         ),
         description: optionalNullishShortString,
         group: shortString,
-        icon: optionalNullishShortString,
+        icon,
         locale: optionalShortString
     });
 };

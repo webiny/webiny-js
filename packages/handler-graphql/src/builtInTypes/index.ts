@@ -7,3 +7,4 @@ export * from "./LongScalar.js";
 export * from "./NumberScalar.js";
 export * from "./RefInputScalar.js";
 export * from "./TimeScalar.js";
+export * from "./IconScalar.js";

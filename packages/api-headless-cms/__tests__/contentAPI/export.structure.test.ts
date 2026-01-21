@@ -3,6 +3,7 @@ import { useGraphQLHandler } from "~tests/testHelpers/useGraphQLHandler";
 import type { CmsGroup } from "~tests/types";
 import models from "./mocks/contentModels";
 import type { CmsModel, CmsModelField } from "~/types";
+import { createIcon } from "~tests/__helpers/icon.js";
 
 interface JsonResult {
     groups: CmsGroup[];
@@ -11,13 +12,13 @@ interface JsonResult {
 
 const groups: Omit<CmsGroup, "id">[] = [
     {
-        icon: "fas/star",
+        icon: createIcon("fas/star"),
         slug: "group-1",
         name: "Group 1",
         description: "Group 1 description"
     },
     {
-        icon: "fas/star",
+        icon: createIcon("fas/star"),
         slug: "group-2",
         name: "Group 2",
         description: "Group 2 description"
@@ -84,7 +85,7 @@ describe("export cms structure", () => {
                     titleFieldId: model.titleFieldId,
                     pluralApiName: model.pluralApiName,
                     singularApiName: model.singularApiName,
-                    icon: model.icon || "fa/fas",
+                    icon: model.icon || createIcon("fa/fas"),
                     description: model.description || ""
                 }
             });

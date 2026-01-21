@@ -9,7 +9,8 @@ import {
     LongScalar,
     NumberScalar,
     RefInputScalar,
-    TimeScalar
+    TimeScalar,
+    IconScalar
 } from "@webiny/handler-graphql/builtInTypes/index.js";
 import type { GraphQLScalarType } from "graphql";
 import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
@@ -36,6 +37,7 @@ export const createBaseContentSchema = ({ context }: Params): ICmsGraphQLSchemaP
             scalar DateTime
             scalar DateTimeZ
             scalar Time
+            scalar Icon
 
             type Query
 
@@ -62,6 +64,7 @@ export const createBaseContentSchema = ({ context }: Params): ICmsGraphQLSchemaP
             DateTimeZ: DateTimeZScalar,
             Date: DateScalar,
             Time: TimeScalar,
+            Icon: IconScalar,
             Mutation: {
                 _empty: () => "_empty"
             }

@@ -3,6 +3,7 @@ import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { CmsGroup, CmsModel } from "~/types";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
 import { createModelField } from "~/utils/createModelField.js";
+import { createIcon } from "~tests/__helpers/icon.js";
 
 const contentModelPlugin = new CmsModelPlugin({
     name: "Product",
@@ -10,6 +11,7 @@ const contentModelPlugin = new CmsModelPlugin({
     singularApiName: "Product",
     pluralApiName: "Products",
     tenant: "root",
+    icon: createIcon("ico/ico"),
     group: "e-commerce",
     fields: [
         createModelField({
@@ -173,7 +175,7 @@ describe("content model plugins", () => {
             data: {
                 name: "Group",
                 slug: "group",
-                icon: "ico/ico",
+                icon: createIcon("ico/ico"),
                 description: "description"
             }
         });
@@ -183,7 +185,7 @@ describe("content model plugins", () => {
                     data: {
                         name: "Group",
                         slug: "group",
-                        icon: "ico/ico",
+                        icon: createIcon("ico/ico"),
                         description: "description"
                     },
                     error: null
@@ -316,7 +318,10 @@ describe("content model plugins", () => {
                         titleFieldId: "name",
                         descriptionFieldId: "descr",
                         imageFieldId: null,
-                        icon: null
+                        icon: {
+                            name: "ico/ico",
+                            type: "icon"
+                        }
                     },
                     error: null
                 }
@@ -364,7 +369,10 @@ describe("content model plugins", () => {
                                 }
                             ],
                             group: "e-commerce",
-                            icon: null,
+                            icon: {
+                                name: "ico/ico",
+                                type: "icon"
+                            },
                             layout: [["name"], ["sku", "price"], ["descr"]],
                             modelId: "product",
                             name: "Product",
@@ -579,7 +587,7 @@ describe("content model plugins", () => {
             data: {
                 name: "Group",
                 slug: "group",
-                icon: "ico/ico",
+                icon: createIcon("ico/ico"),
                 description: "description"
             }
         }).then(([response]) => response.data.createContentModelGroup.data);
@@ -622,6 +630,7 @@ describe("content model plugins", () => {
         try {
             new CmsModelPlugin({
                 name: "test",
+                icon: null,
                 layout: [],
                 fields: [
                     createModelField({
@@ -665,6 +674,7 @@ describe("content model plugins", () => {
         titleFieldId: "title",
         name: "Test Model",
         description: "",
+        icon: null,
         group: "name"
     };
 

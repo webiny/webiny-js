@@ -17,7 +17,7 @@ export const createGroupsSchema = ({ context }: Params): ICmsGraphQLSchemaPlugin
                 name: String!
                 slug: String
                 description: String
-                icon: String!
+                icon: Icon!
             }
 
             type CmsContentModelGroupResponse {
@@ -146,7 +146,7 @@ export const createGroupsSchema = ({ context }: Params): ICmsGraphQLSchemaPlugin
                 totalContentModels: Int!
                 slug: String!
                 description: String
-                icon: String
+                icon: Icon
                 createdBy: CmsIdentity
 
                 # Returns true if the content model group is registered via a plugin.

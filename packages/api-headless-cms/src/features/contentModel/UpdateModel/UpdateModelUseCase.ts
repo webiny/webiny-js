@@ -79,6 +79,7 @@ class UpdateModelUseCaseImpl implements UseCaseAbstraction.Interface {
         const model: CmsModel = {
             ...original,
             ...data,
+            icon: data.icon ?? original.icon,
             // Handle optional field IDs explicitly
             titleFieldId:
                 data.titleFieldId === undefined

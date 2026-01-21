@@ -7,8 +7,8 @@ import { Icon, Loader } from "@webiny/admin-ui";
 import { useModels, usePermission } from "@webiny/app-headless-cms/admin/hooks/index.js";
 import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { createAppName } from "~/utils/appName.js";
+import { normalizeIcon } from "@webiny/app-headless-cms/utils/normalizeIcon.js";
 
 const {
     Admin: { WorkflowsEditor },
@@ -50,9 +50,15 @@ const ModelIcon = ({ model }: IModelIconProps) => {
     if (!model.icon) {
         return null;
     }
+
+    const icon = normalizeIcon(model.icon);
+    if (!icon) {
+        return null;
+    }
+
     return (
         <Icon
-            icon={<FontAwesomeIcon icon={(model.icon || "").split("/") as IconProp} />}
+            icon={<FontAwesomeIcon icon={icon} />}
             label={model.name}
             size={"sm"}
             className={"text-neutral-strong"}

@@ -1,5 +1,5 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { CmsGroup } from "~/types/index.js";
+import type { CmsGroup, CmsIcon } from "~/types/index.js";
 import type { ICache } from "~/utils/caching/types.js";
 
 /**
@@ -25,7 +25,7 @@ export namespace GroupCache {
 interface IModelGroup {
     slug: string;
     name: string;
-    icon: string;
+    icon: CmsIcon;
 }
 
 export interface IModelGroupFactory {

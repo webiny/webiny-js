@@ -3,7 +3,10 @@ import type { CmsGroupCreateInput } from "@webiny/api-headless-cms/types/index.j
 export const createGroupData = (): CmsGroupCreateInput => {
     return {
         id: "mocks",
-        icon: "fas/star",
+        icon: {
+            type: "icon",
+            name: "fas/star"
+        },
         name: "Mocks",
         description: "A group for mock models",
         slug: "mocks"

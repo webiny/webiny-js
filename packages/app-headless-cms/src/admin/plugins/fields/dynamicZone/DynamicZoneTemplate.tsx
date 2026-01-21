@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { set } from "dot-prop-immutable";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { ReactComponent as ArrowUpIcon } from "@webiny/icons/expand_less.svg";
@@ -16,6 +15,7 @@ import {
 import type { CmsDynamicZoneTemplate, CmsEditorFieldsLayout, CmsModelField } from "~/types.js";
 import { TemplateDialog } from "./TemplateDialog.js";
 import { FieldEditor } from "~/admin/components/FieldEditor/index.js";
+import { normalizeIcon } from "~/utils/normalizeIcon.js";
 
 interface DynamicZoneTemplateProps {
     index: number;
@@ -95,7 +95,7 @@ export const DynamicZoneTemplate = ({
         });
     }, callbackDeps);
 
-    const icon = template.icon ? (template.icon.split("/") as IconProp) : undefined;
+    const icon = normalizeIcon(template.icon);
 
     return (
         <AccordionItem

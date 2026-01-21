@@ -110,7 +110,10 @@ describe("All Field Types Model", () => {
                                 .template("textBlock", {
                                     name: "Text Block",
                                     gqlTypeName: "TextBlock",
-                                    icon: "fas/paragraph",
+                                    icon: {
+                                        type: "icon",
+                                        name: "fas/paragraph"
+                                    },
                                     description: "A simple text block",
                                     fields: f => ({
                                         heading: f.text().label("Heading"),
@@ -121,7 +124,10 @@ describe("All Field Types Model", () => {
                                 .template("imageBlock", {
                                     name: "Image Block",
                                     gqlTypeName: "ImageBlock",
-                                    icon: "fas/image",
+                                    icon: {
+                                        type: "icon",
+                                        name: "fas/image"
+                                    },
                                     description: "An image with caption",
                                     fields: f => ({
                                         image: f.file().label("Image").imagesOnly(),
@@ -133,7 +139,10 @@ describe("All Field Types Model", () => {
                                 .template("statsBlock", {
                                     name: "Stats Block",
                                     gqlTypeName: "StatsBlock",
-                                    icon: "fas/chart-bar",
+                                    icon: {
+                                        type: "icon",
+                                        name: "fas/chart-bar"
+                                    },
                                     description: "Display statistics",
                                     fields: f => ({
                                         stats: f
@@ -319,7 +328,10 @@ describe("All Field Types Model", () => {
         expect(model!.group).toEqual("test");
 
         // Verify icon
-        expect(model!.icon).toBe("fas/database");
+        expect(model!.icon).toStrictEqual({
+            type: "icon",
+            name: "fas/database"
+        });
 
         // Verify description
         expect(model!.description).toBe("A complete public model with all fields");

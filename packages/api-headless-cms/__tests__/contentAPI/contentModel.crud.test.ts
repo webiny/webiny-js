@@ -7,6 +7,7 @@ import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandle
 import { assignModelEvents, pubSubTracker } from "./mocks/lifecycleHooks";
 import { useBugManageHandler } from "../testHelpers/useBugManageHandler";
 import { createModelField } from "~/utils/createModelField.js";
+import { createIcon } from "~tests/__helpers/icon.js";
 
 const getTypeFields = (type: any) => {
     return type.fields.filter((f: any) => f.name !== "_empty").map((f: any) => f.name);
@@ -57,7 +58,7 @@ describe("content model test", () => {
             data: {
                 name: "Group",
                 slug: "group",
-                icon: "ico/ico",
+                icon: createIcon("ico/ico"),
                 description: "description"
             }
         });
@@ -127,7 +128,7 @@ describe("content model test", () => {
                 singularApiName: "TestContentModel",
                 pluralApiName: "TestContentModels",
                 group: contentModelGroup.slug,
-                icon: "fa/fas"
+                icon: createIcon("fa/fas")
             }
         });
 
@@ -150,7 +151,7 @@ describe("content model test", () => {
                         layout: [],
                         plugin: false,
                         group: contentModelGroup.slug,
-                        icon: "fa/fas",
+                        icon: createIcon("fa/fas"),
                         tenant: "root"
                     },
                     error: null
@@ -205,7 +206,7 @@ describe("content model test", () => {
                 description: "changed description",
                 fields: [],
                 layout: [],
-                icon: "fa/updated"
+                icon: createIcon("fa/updated")
             }
         });
 
@@ -214,7 +215,7 @@ describe("content model test", () => {
             name: "changed name",
             description: "changed description",
             savedOn: expect.stringMatching(/^20/),
-            icon: "fa/updated"
+            icon: createIcon("fa/updated")
         };
 
         expect(changedUpdateResponse).toEqual({
@@ -1464,7 +1465,7 @@ describe("content model test", () => {
                 slug: "a-custom-group-slug",
                 name: "My Group With ID",
                 description: "A group with ID",
-                icon: "fa/fas"
+                icon: createIcon("fa/fas")
             }
         });
 

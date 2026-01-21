@@ -28,6 +28,7 @@ import { FullyDeleteModelDialog } from "~/admin/views/contentModels/fullDelete/F
 import { Button, DropdownMenu, Icon, IconButton, Select, Tooltip } from "@webiny/admin-ui";
 import { CMS_MODEL_SINGLETON_TAG } from "@webiny/app-headless-cms-common";
 import { Routes } from "~/routes.js";
+import { normalizeIcon } from "~/utils/normalizeIcon.js";
 
 const t = i18n.namespace("FormsApp.ContentModelsDataList");
 
@@ -77,7 +78,7 @@ const DisplayIcon = ({ model }: IconProps) => {
                     size={"lg"}
                     color={"inherit"}
                     label={"Content model icon"}
-                    icon={<FontAwesomeIcon icon={(model.icon || "").split("/") as IconProp} />}
+                    icon={<FontAwesomeIcon icon={normalizeIcon(model.icon) as IconProp} />}
                 />
             </div>
         </UIL.ListItemGraphic>

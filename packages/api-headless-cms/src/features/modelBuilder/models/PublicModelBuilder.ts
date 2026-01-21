@@ -3,6 +3,7 @@ import camelCase from "lodash/camelCase.js";
 import pluralize from "pluralize";
 import { createModelPlugin } from "~/plugins/CmsModelPlugin.js";
 import { BaseModelBuilder } from "./BaseModelBuilder.js";
+import type { CmsIcon } from "~/types/index.js";
 
 const createApiName = (name: string) => {
     return upperFirst(camelCase(name));
@@ -12,12 +13,25 @@ const createPluralApiName = (name: string) => {
     return pluralize(createApiName(name));
 };
 
+class Icon {
+    static from(icon: string | CmsIcon): CmsIcon {
+        if (typeof icon === "string") {
+            return {
+                type: "icon",
+                name: icon
+            };
+        }
+
+        return icon;
+    }
+}
+
 export class PublicModelBuilder extends BaseModelBuilder {
     private publicConfig: {
         singularApiName?: string;
         pluralApiName?: string;
         group?: string;
-        icon?: string;
+        icon?: CmsIcon;
         description?: string;
         titleFieldId?: string;
         descriptionFieldId?: string;
@@ -40,8 +54,8 @@ export class PublicModelBuilder extends BaseModelBuilder {
         return this;
     }
 
-    icon(icon: string): this {
-        this.publicConfig.icon = icon;
+    icon(icon: string | CmsIcon): this {
+        this.publicConfig.icon = Icon.from(icon);
         return this;
     }
 
@@ -90,7 +104,7 @@ export class PublicModelBuilder extends BaseModelBuilder {
             singularApiName: this.publicConfig.singularApiName || createApiName(this.config.name),
             pluralApiName: this.publicConfig.pluralApiName || createPluralApiName(this.config.name),
             group: this.publicConfig.group,
-            icon: this.publicConfig.icon,
+            icon: this.publicConfig.icon ?? null,
             description: this.publicConfig.description || null,
             titleFieldId: this.publicConfig.titleFieldId ?? "",
             descriptionFieldId: this.publicConfig.descriptionFieldId,
