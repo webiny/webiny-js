@@ -18,7 +18,7 @@ import { Infra } from "~/index.js";
 
 const p = createPathResolver(import.meta.dirname);
 
-export const Webiny = () => {
+export const ProjectAws = () => {
     return (
         <>
             <Project />

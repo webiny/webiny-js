@@ -1,7 +1,7 @@
 import React from "react";
 import { Okta } from "@webiny/okta";
 
-export const MyIdpExtension = () => {
+const MyIdpExtension = () => {
     return (
         <Okta
             issuer={String(process.env.OKTA_ISSUER)}
@@ -10,3 +10,5 @@ export const MyIdpExtension = () => {
         />
     );
 };
+
+export default MyIdpExtension;

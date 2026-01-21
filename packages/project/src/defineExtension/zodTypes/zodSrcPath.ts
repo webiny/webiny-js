@@ -63,12 +63,16 @@ export const zodSrcPath = (options: ZodSrcPathOptions) => {
                     .replace(path.extname(absoluteSrcPath), "");
 
                 const importedModule = await import(absoluteSrcPath);
-                const exportedImplementation = importedModule?.[exportName];
+                
+                // Support both default and named exports.
+                const exportedImplementation = 
+                    importedModule?.default ?? importedModule?.[exportName];
+                
                 if (!exportedImplementation) {
                     ctx.addIssue({
                         code: z.ZodIssueCode.custom,
                         message: ProjectError.formatMessage(
-                            `The file %s must export a class named %s.`,
+                            `The file %s must export a class named %s or as a default export.`,
                             src,
                             exportName
                         )

@@ -29,7 +29,9 @@ class MyCustomCommandImpl implements CliCommandFactory.Interface<IMyCustomComman
     }
 }
 
-export const MyCustomCommand = CliCommandFactory.createImplementation({
+const MyCustomCommand = CliCommandFactory.createImplementation({
     implementation: MyCustomCommandImpl,
     dependencies: [UiService]
 });
+
+export default MyCustomCommand;

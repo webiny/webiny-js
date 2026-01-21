@@ -10,7 +10,9 @@ class MyApiKeyAfterUpdateImpl implements ApiKeyAfterUpdateHandler.Interface {
     }
 }
 
-export const MyApiKeyAfterUpdate = ApiKeyAfterUpdateHandler.createImplementation({
+const MyApiKeyAfterUpdate = ApiKeyAfterUpdateHandler.createImplementation({
     implementation: MyApiKeyAfterUpdateImpl,
     dependencies: [Logger]
 });
+
+export default MyApiKeyAfterUpdate;

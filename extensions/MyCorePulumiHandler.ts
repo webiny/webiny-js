@@ -9,7 +9,9 @@ class MyCorePulumiHandlerImpl implements CorePulumi.Interface {
     }
 }
 
-export const MyCorePulumiHandler = CorePulumi.createImplementation({
+const MyCorePulumiHandler = CorePulumi.createImplementation({
     implementation: MyCorePulumiHandlerImpl,
     dependencies: [UiService]
 });
+
+export default MyCorePulumiHandler;

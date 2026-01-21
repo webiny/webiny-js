@@ -2,7 +2,7 @@ import React from "react";
 import { PageListConfig } from "@webiny/app-website-builder";
 import { RetailPageForm } from "./RetailPageForm";
 
-export const Extension = () => {
+const Extension = () => {
     return (
         <PageListConfig>
             {/*<PageListConfig.PageType name={"static"} remove={true} />*/}
@@ -21,3 +21,5 @@ export const Extension = () => {
         </PageListConfig>
     );
 };
+
+export default Extension;
