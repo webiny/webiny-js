@@ -15652,6 +15652,7 @@ __metadata:
     "@webiny/pulumi-sdk": "npm:0.0.0"
     "@webiny/telemetry": "npm:0.0.0"
     chalk: "npm:^4.1.2"
+    ci-info: "npm:^4.3.1"
     execa: "npm:^5.1.1"
     find-up: "npm:^5.0.0"
     get-yarn-workspaces: "npm:1.0.2"
