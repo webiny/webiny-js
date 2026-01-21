@@ -13,10 +13,7 @@ export const group = groupPlugin.contentModelGroup;
 export const modelPlugin = createModelPlugin({
     modelId: "author",
     name: "Author",
-    group: {
-        id: group.id,
-        name: group.name
-    },
+    group: group.slug,
     titleFieldId: "name",
     description: "",
     singularApiName: "Author",
@@ -28,7 +25,9 @@ export const modelPlugin = createModelPlugin({
             storageId: "text@name",
             fieldId: "name",
             type: "text",
-            label: "Name"
+            label: "Name",
+            validation: [],
+            listValidation: []
         }
     ]
 });

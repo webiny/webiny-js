@@ -25,7 +25,11 @@ describe("HCMS Entries -> onEntryBeforeRestoreFromBin", () => {
 
         // Let's create the entry
         const [createEntryResponse] = await cms.createEntry(model, {
-            data: { title: "Entry 1" }
+            data: {
+                values: {
+                    title: "Entry 1"
+                }
+            }
         });
 
         const entry = createEntryResponse.data[`create${model.singularApiName}`]?.data;
@@ -88,7 +92,9 @@ describe("HCMS Entries -> onEntryBeforeRestoreFromBin", () => {
         // Let's create the entry inside the folder we have just created
         const [createEntryResponse] = await cms.createEntry(model, {
             data: {
-                title: "Entry 1",
+                values: {
+                    title: "Entry 1"
+                },
                 wbyAco_location: {
                     folderId: folder.id
                 }
@@ -155,7 +161,9 @@ describe("HCMS Entries -> onEntryBeforeRestoreFromBin", () => {
         // Let's create the entry inside the folder we have just created
         const [createEntryResponse] = await cms.createEntry(model, {
             data: {
-                title: "Entry 1",
+                values: {
+                    title: "Entry 1"
+                },
                 wbyAco_location: {
                     folderId: folder.id
                 }
