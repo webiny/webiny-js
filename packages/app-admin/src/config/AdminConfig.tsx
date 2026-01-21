@@ -69,11 +69,10 @@ export const useAdminConfig = () => {
         menus: baseConfig.menus ?? [],
         userMenus: baseConfig.userMenus ?? [],
         supportMenus: baseConfig.supportMenus ?? [],
-        tenant: baseConfig.tenant || {},
-        title: baseConfig.title || baseConfig.tenant?.name || "",
+        title: baseConfig.title,
         logo: {
-            squareLogo: baseConfig.squareLogo || baseConfig.tenant?.squareLogo,
-            horizontalLogo: baseConfig.horizontalLogo || baseConfig.tenant?.horizontalLogo
+            squareLogo: baseConfig.squareLogo,
+            horizontalLogo: baseConfig.horizontalLogo
         },
         widgets: baseConfig.widgets ?? [],
         lexicalTheme
