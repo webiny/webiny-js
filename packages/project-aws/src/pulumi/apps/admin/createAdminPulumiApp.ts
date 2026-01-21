@@ -2,13 +2,14 @@ import { type CorePulumiApp, createReactPulumiApp } from "~/pulumi/apps/index.js
 import { getProjectSdk } from "@webiny/project";
 import { AdminPulumi } from "@webiny/project/abstractions/index.js";
 import { AdminCustomDomains as adminCustomDomainsExt } from "~/pulumi/extensions/AdminCustomDomains.js";
+import { withServiceManifest } from "~/pulumi/index.js";
 
 export type AdminPulumiApp = ReturnType<typeof createReactPulumiApp>;
 
 export const createAdminPulumiApp = async () => {
     const sdk = await getProjectSdk();
     const projectConfig = await sdk.getProjectConfig();
-    return createReactPulumiApp({
+    const baseApp = createReactPulumiApp({
         name: "admin",
         folder: "apps/admin",
         domains: () => {
@@ -35,4 +36,22 @@ export const createAdminPulumiApp = async () => {
             });
         }
     });
+
+    const app = withServiceManifest(baseApp);
+
+    app.addHandler(() => {
+        app.addServiceManifest({
+            name: "admin",
+            manifest: {
+                cloudfront: {
+                    distributionId: baseApp.resources.cloudfront.output.id,
+                    domain: baseApp.resources.cloudfront.output.domainName.apply(
+                        v => `https://${v}`
+                    )
+                }
+            }
+        });
+    });
+
+    return app;
 };
