@@ -19,14 +19,24 @@ export const AdminExtension = defineExtension({
             .join("apps", "admin", "src", "Extensions.tsx")
             .toString();
 
-        // Generate a constant hash-based component name to avoid using timestamps
+        // Resolve to absolute path for file operations.
+        let absoluteSrcPath: string;
+        if (params.src.startsWith("/extensions/")) {
+            // Resolve from project root.
+            absoluteSrcPath = ctx.project.paths.rootFolder.join(params.src).toString();
+        } else {
+            // Treat as absolute path.
+            absoluteSrcPath = params.src;
+        }
+
+        // Generate a constant hash-based component name to avoid using timestamps.
         const hash = crypto.createHash("sha256").update(params.src).digest("hex");
         const componentName = `AdminExtension_${hash.slice(-10)}`;
 
         const project = new Project();
 
         const importPath = path
-            .relative(path.dirname(extensionsTsxFilePath), params.src)
+            .relative(path.dirname(extensionsTsxFilePath), absoluteSrcPath)
             .replace(".tsx", ".js");
 
         project.addSourceFileAtPath(extensionsTsxFilePath);
@@ -47,17 +57,14 @@ export const AdminExtension = defineExtension({
         }
 
         // Check if the file has a default export by importing it.
-        let absoluteSrcPath: string;
-        if (params.src.startsWith("/extensions/")) {
-            // Resolve from project root.
-            absoluteSrcPath = ctx.project.paths.rootFolder.join(params.src).toString();
-        } else {
-            // Treat as absolute path.
-            absoluteSrcPath = params.src;
-        }
 
         const importedModule = await import(absoluteSrcPath);
         const hasDefaultExport = "default" in importedModule;
+
+        // Export name is always the file name without extension.
+        const exportName = path
+            .basename(absoluteSrcPath)
+            .replace(path.extname(absoluteSrcPath), "");
 
         // Support both default and named exports.
         if (hasDefaultExport) {
@@ -66,11 +73,6 @@ export const AdminExtension = defineExtension({
                 moduleSpecifier: importPath
             });
         } else {
-            // Try "Extension" first, then fall back to filename-based export
-            const exportName = "Extension" in importedModule 
-                ? "Extension" 
-                : path.basename(params.src).replace(path.extname(params.src), "");
-            
             source.insertImportDeclaration(index, {
                 namedImports: [{ name: exportName, alias: componentName }],
                 moduleSpecifier: importPath
