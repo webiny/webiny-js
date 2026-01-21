@@ -1,6 +1,7 @@
 import type { PluginsContainer } from "@webiny/plugins";
 import type {
     CmsEntry,
+    CmsEntryValues,
     CmsStorageEntry,
     StorageOperationsCmsModel
 } from "@webiny/api-headless-cms/types/index.js";
@@ -16,43 +17,45 @@ import {
 } from "~/operations/entry/recordType.js";
 import WebinyError from "@webiny/error";
 
-interface BaseTransformerParams {
+interface BaseTransformerParams<T extends CmsEntryValues = CmsEntryValues> {
     plugins: PluginsContainer;
-    model: StorageOperationsCmsModel;
+    model: StorageOperationsCmsModel<T>;
 }
 
-interface EntryTransformerParams extends BaseTransformerParams {
-    entry: CmsEntry;
-    storageEntry: CmsEntry;
+interface EntryTransformerParams<T extends CmsEntryValues = CmsEntryValues>
+    extends BaseTransformerParams<T> {
+    entry: CmsEntry<T>;
+    storageEntry: CmsEntry<T>;
     transformedToIndex?: never;
 }
 
-interface TransformedEntryTransformerParams extends BaseTransformerParams {
+interface TransformedEntryTransformerParams<T extends CmsEntryValues = CmsEntryValues>
+    extends BaseTransformerParams<T> {
     entry?: never;
     storageEntry?: never;
-    transformedToIndex: CmsIndexEntry;
+    transformedToIndex: CmsIndexEntry<T>;
 }
 
-interface TransformedKeysEntry {
-    entry: CmsEntry;
-    storageEntry: CmsEntry;
+interface TransformedKeysEntry<T extends CmsEntryValues = CmsEntryValues> {
+    entry: CmsEntry<T>;
+    storageEntry: CmsEntry<T>;
 }
 
-interface ModifiedEntryValues {
-    entry: CmsEntry;
-    storageEntry: CmsEntry;
+interface ModifiedEntryValues<T extends CmsEntryValues = CmsEntryValues> {
+    entry: CmsEntry<T>;
+    storageEntry: CmsEntry<T>;
 }
 
-interface TransformerResult {
-    transformEntryKeys: () => TransformedKeysEntry;
-    transformToIndex: () => CmsIndexEntry;
+interface TransformerResult<T extends CmsEntryValues = CmsEntryValues> {
+    transformEntryKeys: () => TransformedKeysEntry<T>;
+    transformToIndex: () => CmsIndexEntry<T>;
     getElasticsearchLatestEntryData: () => Promise<Record<string, any>>;
     getElasticsearchPublishedEntryData: () => Promise<Record<string, any>>;
 }
 
-export const createTransformer = (
-    params: EntryTransformerParams | TransformedEntryTransformerParams
-): TransformerResult => {
+export const createTransformer = <T extends CmsEntryValues = CmsEntryValues>(
+    params: EntryTransformerParams<T> | TransformedEntryTransformerParams<T>
+): TransformerResult<T> => {
     const {
         plugins,
         model,
@@ -61,9 +64,9 @@ export const createTransformer = (
         transformedToIndex: initialTransformedEntryToIndex = undefined
     } = params;
 
-    let transformedEntryKeys: TransformedKeysEntry | undefined = undefined;
-    let transformedEntryToIndex: CmsIndexEntry | undefined = initialTransformedEntryToIndex;
-    let modifiedEntryValues: ModifiedEntryValues | undefined = undefined;
+    let transformedEntryKeys: TransformedKeysEntry<T> | undefined = undefined;
+    let transformedEntryToIndex: CmsIndexEntry<T> | undefined = initialTransformedEntryToIndex;
+    let modifiedEntryValues: ModifiedEntryValues<T> | undefined = undefined;
     let elasticsearchLatestEntry: any = undefined;
     let elasticsearchPublishedEntry: any = undefined;
 
@@ -84,18 +87,18 @@ export const createTransformer = (
         if (modifiedEntryValues) {
             return modifiedEntryValues;
         }
-        const modifiedEntry = modifyEntryValuesCallable({
+        const modifiedEntry = modifyEntryValuesCallable<T>({
             plugins: modifierPlugins,
             model,
             entry: baseEntry
         });
-        const modifiedStorageEntry = modifyEntryValuesCallable({
+        const modifiedStorageEntry = modifyEntryValuesCallable<T>({
             plugins: modifierPlugins,
             model,
             entry: baseStorageEntry
         });
 
-        return (modifiedEntryValues = transformEntryKeys({
+        return (modifiedEntryValues = transformEntryKeys<T>({
             model,
             entry: modifiedEntry,
             storageEntry: modifiedStorageEntry
@@ -126,8 +129,8 @@ export const createTransformer = (
             if (transformedEntryToIndex) {
                 return transformedEntryToIndex;
             }
-            let entry: CmsEntry;
-            let storageEntry: CmsStorageEntry;
+            let entry: CmsEntry<T>;
+            let storageEntry: CmsStorageEntry<T>;
             /**
              * In case there are value modifier plugins, we need to
              * - run modifiers
@@ -144,7 +147,7 @@ export const createTransformer = (
                 entry = result.entry;
                 storageEntry = result.storageEntry;
             }
-            return (transformedEntryToIndex = transformEntryToIndex({
+            return (transformedEntryToIndex = transformEntryToIndex<T>({
                 plugins,
                 model,
                 entry,

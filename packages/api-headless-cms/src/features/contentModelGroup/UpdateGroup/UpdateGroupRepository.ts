@@ -17,7 +17,7 @@ import type { CmsGroup } from "~/types/index.js";
  * - Clear GroupCache after successful update
  */
 class UpdateGroupRepositoryImpl implements RepositoryAbstraction.Interface {
-    constructor(
+    public constructor(
         private groupCache: GroupCache.Interface,
         private pluginGroupsProvider: PluginGroupsProvider.Interface,
         private storageOperations: StorageOperations.Interface

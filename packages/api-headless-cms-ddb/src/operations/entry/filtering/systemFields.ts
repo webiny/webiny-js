@@ -135,6 +135,13 @@ export const createSystemFields = (): CmsModelField[] => {
                     })
                 ]
             }
+        }),
+        createModelField({
+            id: "values",
+            type: "object",
+            storageId: "values",
+            fieldId: "values",
+            label: "Values"
         })
     ];
 };

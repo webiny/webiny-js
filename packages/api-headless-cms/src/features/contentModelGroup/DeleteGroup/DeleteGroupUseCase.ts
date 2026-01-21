@@ -21,7 +21,7 @@ import { GroupNotAuthorizedError } from "~/domain/contentModelGroup/errors.js";
  * - Publish after event or error event
  */
 class DeleteGroupUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(
+    public constructor(
         private eventPublisher: EventPublisher.Interface,
         private repository: DeleteGroupRepository.Interface,
         private getGroupUseCase: GetGroupUseCase.Interface,

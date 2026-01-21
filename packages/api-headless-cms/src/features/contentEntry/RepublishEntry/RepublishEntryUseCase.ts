@@ -6,7 +6,7 @@ import { RepublishEntryUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { RepublishEntryRepository } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import { GetRevisionByIdUseCase } from "~/features/contentEntry/GetRevisionById/index.js";
-import type { CmsEntry, CmsModel } from "~/types/index.js";
+import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import {
     EntryBeforeRepublishEvent,
     EntryAfterRepublishEvent,
@@ -28,7 +28,7 @@ import { CmsContext } from "~/features/shared/abstractions.js";
  * - Delegate to repository for storage operations (update + publish)
  */
 class RepublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(
+    public constructor(
         private repository: RepublishEntryRepository.Interface,
         private accessControl: AccessControl.Interface,
         private getRevisionById: GetRevisionByIdUseCase.Interface,
@@ -37,10 +37,10 @@ class RepublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         private cmsContext: CmsContext.Interface
     ) {}
 
-    async execute(
+    public async execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         id: string
-    ): Promise<Result<CmsEntry, UseCaseAbstraction.Error>> {
+    ): Promise<Result<CmsEntry<T>, UseCaseAbstraction.Error>> {
         // Check access control (write and publish)
         const canAccess = await this.accessControl.canAccessEntry({ model, rwd: "w", pw: "p" });
         if (!canAccess) {
@@ -48,7 +48,7 @@ class RepublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         // Get the entry to republish
-        const result = await this.getRevisionById.execute(model, id);
+        const result = await this.getRevisionById.execute<T>(model, id);
 
         if (result.isFail()) {
             return Result.fail(new EntryNotFoundError(id));
@@ -69,7 +69,7 @@ class RepublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         // Prepare entry data for republishing
-        const { entry } = await createRepublishEntryData({
+        const { entry } = await createRepublishEntryData<T>({
             context: this.cmsContext,
             model,
             originalEntry,
@@ -86,7 +86,7 @@ class RepublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
             );
 
             // Delegate to repository (update + publish)
-            const repositoryResult = await this.repository.execute(model, entry);
+            const repositoryResult = await this.repository.execute<T>(model, entry);
 
             if (repositoryResult.isFail()) {
                 await this.eventPublisher.publish(

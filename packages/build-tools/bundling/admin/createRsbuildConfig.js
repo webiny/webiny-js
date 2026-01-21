@@ -18,6 +18,12 @@ export const createRsbuildConfig = ({ cwd }) => {
             },
             define: envVars
         },
+        resolve: {
+            alias: {
+                // This is a temporary fix, until we sort out the `react-butterfiles` dependency.
+                "react-butterfiles": "@webiny/app/react-butterfiles"
+            }
+        },
         output: { distPath: { root: paths.admin.outputFolder } },
         mode,
         dev: { hmr: true },
@@ -53,7 +59,7 @@ export const createRsbuildConfig = ({ cwd }) => {
                     svgoConfig: {
                         plugins: [
                             {
-                                name: "preset-default",
+                                name: "pres" + "et-default",
                                 params: { overrides: { removeViewBox: false } }
                             }
                         ]

@@ -70,8 +70,14 @@ describe("Write Permissions Checks", () => {
         const testEntry = await manageApiA.createTestEntry();
 
         const failedUpdateTestEntryResponse = await manageApiB.updateTestEntry({
-            revision: testEntry.data.id,
-            data: { title: "Test - UPDATE" }
+            variables: {
+                revision: testEntry.data.id,
+                data: {
+                    values: {
+                        title: "Test - UPDATE"
+                    }
+                }
+            }
         });
 
         expectNotAuthorized(failedUpdateTestEntryResponse, {
@@ -91,12 +97,22 @@ describe("Write Permissions Checks", () => {
         });
 
         const updateTestEntryResponse = await manageApiC.updateTestEntry({
-            revision: testEntry.data.id,
-            data: { title: "Test - UPDATE" }
+            variables: {
+                revision: testEntry.data.id,
+                data: {
+                    values: {
+                        title: "Test - UPDATE"
+                    }
+                }
+            }
         });
 
         expect(updateTestEntryResponse).toMatchObject({
-            data: { title: "Test - UPDATE" },
+            data: {
+                values: {
+                    title: "Test - UPDATE"
+                }
+            },
             error: null
         });
     });

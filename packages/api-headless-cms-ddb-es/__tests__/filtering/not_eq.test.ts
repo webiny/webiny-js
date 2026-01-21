@@ -18,7 +18,9 @@ describe("not equals filter", () => {
 
     it("should add not equal filter - null", async () => {
         const where: CmsEntryListWhere = {
-            title_not: null
+            values: {
+                title_not: null
+            }
         };
 
         execFiltering({
@@ -45,7 +47,9 @@ describe("not equals filter", () => {
     it("should add not equal filter - string", async () => {
         const title = "Webiny Serverless";
         const where: CmsEntryListWhere = {
-            title_not: title
+            values: {
+                title_not: title
+            }
         };
 
         execFiltering({
@@ -71,7 +75,9 @@ describe("not equals filter", () => {
 
     it("should add not equal filter - boolean", async () => {
         const where: CmsEntryListWhere = {
-            isMarried_not: true
+            values: {
+                isMarried_not: true
+            }
         };
 
         execFiltering({
@@ -101,7 +107,9 @@ describe("not equals filter", () => {
 
     it("should add not equal filter - number", async () => {
         const where: CmsEntryListWhere = {
-            age_not: 2
+            values: {
+                age_not: 2
+            }
         };
 
         execFiltering({

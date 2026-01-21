@@ -315,17 +315,24 @@ describe("Form", () => {
     });
 
     test("should set new data through props", async () => {
-        const user = userEvent.setup();
         const onSubmit = vi.fn();
 
         const { rerender } = render(<EmptyForm onSubmit={onSubmit} data={{}} />);
 
+        const user = userEvent.setup();
         const submitBtn = screen.getByRole("button", { name: /submit/i });
+
         await user.click(submitBtn);
 
         expect(onSubmit).toHaveBeenLastCalledWith({});
 
         rerender(<EmptyForm onSubmit={onSubmit} data={{ email: "test@example.com" }} />);
+
+        /**
+         * Internally, form presenter is update via a requestAnimationFrame, so we need to wait for it.
+         */
+        await new Promise(resolve => requestAnimationFrame(resolve));
+
         await user.click(submitBtn);
 
         await waitFor(() => onSubmit.mock.calls.length > 0);

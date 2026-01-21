@@ -5,9 +5,9 @@ import { UpdatePageRepository as RepositoryAbstraction } from "./abstractions.js
 import { PageModel } from "~/domain/page/abstractions.js";
 import { EntryToPageMapper } from "~/domain/page/EntryToPageMapper.js";
 import {
-    PageValidationError,
     PageNotFoundError,
-    PagePersistenceError
+    PagePersistenceError,
+    PageValidationError
 } from "~/domain/page/errors.js";
 
 class UpdatePageRepositoryImpl implements RepositoryAbstraction.Interface {
@@ -32,7 +32,10 @@ class UpdatePageRepositoryImpl implements RepositoryAbstraction.Interface {
         }
 
         // Update the entry
-        const result = await this.updateEntry.execute(this.pageModel, id, data);
+        const result = await this.updateEntry.execute(this.pageModel, id, {
+            location: data.location,
+            values: data
+        });
 
         if (result.isFail()) {
             if (result.error.code === "Cms/Entry/ValidationError") {

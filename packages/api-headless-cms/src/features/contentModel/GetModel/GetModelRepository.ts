@@ -12,7 +12,7 @@ import type { CmsModel } from "~/types/index.js";
  * - Return the model or NotFoundError
  */
 class GetModelRepositoryImpl implements RepositoryAbstraction.Interface {
-    constructor(private modelsFetcher: ModelsFetcher.Interface) {}
+    public constructor(private modelsFetcher: ModelsFetcher.Interface) {}
 
     async execute(modelId: string): Promise<Result<CmsModel, RepositoryAbstraction.Error>> {
         const result = await this.modelsFetcher.fetchById(modelId);

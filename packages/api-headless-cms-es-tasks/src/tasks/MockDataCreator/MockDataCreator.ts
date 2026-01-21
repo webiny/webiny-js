@@ -101,7 +101,8 @@ export class MockDataCreator<I extends IMockDataCreatorInput, O extends IMockDat
 
             const createResult = await createEntry.execute(model, {
                 id: `${taskId}${mdbid()}`,
-                ...mockData
+                location: mockData.wbyAco_location,
+                values: mockData
             });
 
             if (createResult.isFail()) {

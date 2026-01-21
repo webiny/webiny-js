@@ -1,7 +1,6 @@
 import type {
     CmsContext as BaseContext,
     CmsEntryListParams,
-    CmsEntryListWhere,
     CmsEntryMeta,
     CmsModel
 } from "@webiny/api-headless-cms/types/index.js";
@@ -12,6 +11,7 @@ import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { BaseError, Result } from "@webiny/feature/api";
+import type { IdInterfaceGenerator, NumericInterfaceGenerator } from "@webiny/api";
 
 export * from "./handler/types.js";
 export * from "./response/abstractions/index.js";
@@ -101,38 +101,25 @@ export type IUpdateTaskResponse<
 > = ITask<T, O>;
 export type IDeleteTaskResponse = boolean;
 
-export interface IListTaskParamsWhere extends CmsEntryListWhere {
-    parentId?: string;
-    parentId_not?: string;
-    parentId_in?: string[];
-    parentId_not_in?: string[];
-    definitionId?: string;
-    definitionId_not?: string;
-    definitionId_in?: string[];
-    definitionId_not_in?: string[];
-    taskStatus?: string;
-    taskStatus_not?: string;
-    taskStatus_in?: string[];
-    taskStatus_not_in?: string[];
+export interface IListTaskParamsWhere
+    extends IdInterfaceGenerator<"id">,
+        IdInterfaceGenerator<"parentId">,
+        IdInterfaceGenerator<"definitionId">,
+        IdInterfaceGenerator<"taskStatus"> {
+    //
 }
 
 export interface IListTaskParams extends Omit<CmsEntryListParams, "fields" | "search"> {
     where?: IListTaskParamsWhere;
 }
 
-export interface IListTaskLogParamsWhere extends CmsEntryListWhere {
-    task?: string;
-    task_in?: string[];
-    task_not?: string;
-    iteration?: number;
-    iteration_not?: number;
-    iteration_gte?: number;
-    iteration_gt?: number;
-    iteration_lte?: number;
-    iteration_lt?: number;
-}
+export interface IListTaskLogParamsWhere
+    extends IdInterfaceGenerator<"id">,
+        IdInterfaceGenerator<"task">,
+        NumericInterfaceGenerator<"iteration"> {}
 
-export interface IListTaskLogParams extends Omit<CmsEntryListParams, "fields" | "search"> {
+export interface IListTaskLogParams
+    extends Omit<CmsEntryListParams, "fields" | "search" | "where"> {
     where?: IListTaskLogParamsWhere;
 }
 

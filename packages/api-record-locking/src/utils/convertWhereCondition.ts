@@ -3,10 +3,8 @@ import { createLockRecordDatabaseId } from "~/utils/lockRecordDatabaseId.js";
 
 type IWhere = IRecordLockingListLockRecordsParams["where"] | undefined;
 
-const attachPrefix = (value: string | string[] | undefined) => {
-    if (!value) {
-        return value;
-    } else if (Array.isArray(value)) {
+const attachPrefix = (value: string | string[]) => {
+    if (Array.isArray(value)) {
         return value.map(createLockRecordDatabaseId);
     }
     return createLockRecordDatabaseId(value);
@@ -18,7 +16,7 @@ export const convertWhereCondition = (where: IWhere): IWhere => {
     }
     for (const key in where) {
         if (key.startsWith("AND") || key.startsWith("OR")) {
-            const value = where[key] as IWhere[] | undefined;
+            const value = where[key as keyof typeof where] as IWhere[] | undefined;
             if (!value) {
                 continue;
             }
@@ -29,8 +27,15 @@ export const convertWhereCondition = (where: IWhere): IWhere => {
         } else if (key.startsWith("id") === false) {
             continue;
         }
-        const newKey = key.replace("id", "entryId");
-        where[newKey] = attachPrefix(where[key] as string | string[] | undefined);
+        const value = where[key as keyof typeof where];
+        if (!value) {
+            continue;
+        }
+
+        const newKey = key.replace("id", "entryId") as keyof typeof where;
+        // @ts-expect-error
+        where[newKey] = attachPrefix(where[key]);
+        // @ts-expect-error
         delete where[key];
     }
     return where;

@@ -5,7 +5,7 @@ import { createMockIdentity } from "~tests/mocks/identity";
 import { TaskDataStatus } from "~/types";
 import { createTaskDefinition } from "~tests/helpers/createTaskDefinition.js";
 
-describe("trigger crud", () => {
+describe("tasks - trigger crud", () => {
     const handler = useRawHandler({
         plugins: [...createMockTaskDefinitions()]
     });

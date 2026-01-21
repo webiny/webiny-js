@@ -26,7 +26,9 @@ class MovePageRepositoryImpl implements RepositoryAbstraction.Interface {
 
         // Update the page location with the new folderId
         const result = await this.updateEntry.execute(this.pageModel, params.id, {
-            location: { folderId: params.folderId }
+            location: {
+                folderId: params.folderId
+            }
         });
 
         if (result.isFail()) {

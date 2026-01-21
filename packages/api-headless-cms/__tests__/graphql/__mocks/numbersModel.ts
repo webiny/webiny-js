@@ -1,11 +1,11 @@
 import type { CmsGroup } from "~/types";
-import type { CmsModel } from "../../types";
+import type { TestCmsModel } from "../../types";
 import { createModelField } from "~/utils/createModelField.js";
 
 const floats = [2, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 20];
 
-export const createNumbersModel = (group: CmsGroup): CmsModel => {
-    const model: CmsModel = {
+export const createNumbersModel = (group: CmsGroup): TestCmsModel => {
+    const model: TestCmsModel = {
         modelId: "numberModel",
         singularApiName: "NumberModel",
         pluralApiName: "NumberModels",
@@ -66,10 +66,12 @@ export const createNumbersEntryMutation = (data: Data) => {
                     createNumberModel(data: $data) {
                         data {
                             id
-                            integer
-                            ${floats.map(f => {
-                                return `float${f}`;
-                            })}
+                            values {
+                                integer
+                                ${floats.map(f => {
+                                    return `float${f}`;
+                                })}
+                            }
                         }
                         error {
                             message
@@ -79,7 +81,9 @@ export const createNumbersEntryMutation = (data: Data) => {
                     }
                 }`,
             variables: {
-                data
+                data: {
+                    values: data
+                }
             }
         }
     };
@@ -92,10 +96,12 @@ export const listNumbersEntryQuery = () => {
                 listNumberModels {
                     data {
                         id
-                        integer
-                        ${floats.map(f => {
-                            return `float${f}`;
-                        })}
+                        values {
+                            integer
+                            ${floats.map(f => {
+                                return `float${f}`;
+                            })}
+                        }
                     }
                     error {
                         message
@@ -115,10 +121,12 @@ export const getNumbersEntryQuery = (revision: string) => {
                     getNumberModel(revision: $revision) {
                         data {
                             id
-                            integer
-                            ${floats.map(f => {
-                                return `float${f}`;
-                            })}
+                            values {
+                                integer
+                                ${floats.map(f => {
+                                    return `float${f}`;
+                                })}
+                            }
                         }
                         error {
                             message

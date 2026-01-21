@@ -5,7 +5,7 @@ import { MoveEntryUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { MoveEntryRepository } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import { GetRevisionByIdUseCase } from "~/features/contentEntry/GetRevisionById/index.js";
-import type { CmsEntry, CmsModel } from "~/types/index.js";
+import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import { EntryBeforeMoveEvent, EntryAfterMoveEvent, EntryMoveErrorEvent } from "./events.js";
 import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
@@ -21,18 +21,18 @@ import { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
  * - Delegate to repository for storage operations
  */
 class MoveEntryUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(
+    public constructor(
         private repository: MoveEntryRepository.Interface,
         private accessControl: AccessControl.Interface,
         private getRevisionById: GetRevisionByIdUseCase.Interface,
         private eventPublisher: EventPublisher.Interface
     ) {}
 
-    async execute(
+    async execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         id: string,
         folderId: string
-    ): Promise<Result<CmsEntry, UseCaseAbstraction.Error>> {
+    ): Promise<Result<CmsEntry<T>, UseCaseAbstraction.Error>> {
         // Check access control
         const canAccess = await this.accessControl.canAccessEntry({ model, rwd: "w" });
         if (!canAccess) {
@@ -40,7 +40,7 @@ class MoveEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         // Get the entry to move
-        const result = await this.getRevisionById.execute(model, id);
+        const result = await this.getRevisionById.execute<T>(model, id);
 
         if (result.isFail()) {
             return Result.fail(new EntryNotFoundError(id));

@@ -17,11 +17,9 @@ export interface CmsValidateStructureMutationVariables {
 }
 
 export interface CmsValidateStructureMutationResponse {
-    data: {
-        validateImportStructure: {
-            data: HeadlessCmsImportValidateResponse | null;
-            error: CmsError | null;
-        };
+    validateImportStructure: {
+        data: HeadlessCmsImportValidateResponse | null;
+        error: CmsError | null;
     };
 }
 

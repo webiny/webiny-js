@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { configurations } from "~/configurations";
-import { CmsModel } from "@webiny/api-headless-cms/types";
 import { getElasticsearchIndexPrefix } from "@webiny/api-elasticsearch";
 
 describe("Elasticsearch index", () => {
@@ -13,7 +12,7 @@ describe("Elasticsearch index", () => {
             model: {
                 tenant,
                 modelId: "testModel"
-            } as CmsModel
+            }
         });
 
         expect(index).toEqual(`${prefix}${tenant}-headless-cms-testModel`.toLowerCase());
@@ -47,7 +46,7 @@ describe("Elasticsearch index", () => {
                 model: {
                     tenant,
                     modelId: "testModel"
-                } as CmsModel
+                }
             });
             expect(noLocaleIndex).toEqual(`${prefix}root-headless-cms-testModel`.toLowerCase());
         }

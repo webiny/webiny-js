@@ -18,7 +18,9 @@ describe("lesser than filter", () => {
 
     it("should add lesser than filter", async () => {
         const where: CmsEntryListWhere = {
-            age_lt: 766
+            values: {
+                age_lt: 766
+            }
         };
 
         execFiltering({

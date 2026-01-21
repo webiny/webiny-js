@@ -10,7 +10,7 @@ import { EntryAfterUnpublishEvent } from "./events.js";
 import { EntryUnpublishErrorEvent } from "./events.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import { GetPublishedRevisionByEntryIdUseCase } from "~/features/contentEntry/GetPublishedRevisionByEntryId/index.js";
-import type { CmsEntry } from "~/types/index.js";
+import type { CmsEntry, CmsEntryValues } from "~/types/index.js";
 import type { CmsModel } from "~/types/index.js";
 import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
@@ -29,7 +29,7 @@ import { createUnpublishEntryData } from "~/crud/contentEntry/entryDataFactories
  * - Delegate persistence to repository
  */
 class UnpublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(
+    public constructor(
         private eventPublisher: EventPublisher.Interface,
         private repository: UnpublishEntryRepository.Interface,
         private accessControl: AccessControl.Interface,
@@ -37,10 +37,10 @@ class UnpublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         private getPublishedRevisionByEntryId: GetPublishedRevisionByEntryIdUseCase.Interface
     ) {}
 
-    async execute(
+    async execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         id: string
-    ): Promise<Result<CmsEntry, UseCaseAbstraction.Error>> {
+    ): Promise<Result<CmsEntry<T>, UseCaseAbstraction.Error>> {
         // Check initial access control
         const canAccess = await this.accessControl.canAccessEntry({ model, pw: "u" });
         if (!canAccess) {
@@ -51,7 +51,7 @@ class UnpublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         const { id: entryId } = parseIdentifier(id);
 
         // Get published revision
-        const publishedResult = await this.getPublishedRevisionByEntryId.execute(model, entryId);
+        const publishedResult = await this.getPublishedRevisionByEntryId.execute<T>(model, entryId);
 
         if (publishedResult.isFail()) {
             return Result.fail(publishedResult.error);
@@ -80,7 +80,7 @@ class UnpublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         // Transform to unpublish data
-        const { entry } = await createUnpublishEntryData({
+        const { entry } = await createUnpublishEntryData<T>({
             originalEntry,
             getIdentity: () => this.identityContext.getIdentity()
         });
@@ -90,7 +90,7 @@ class UnpublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
             await this.eventPublisher.publish(new EntryBeforeUnpublishEvent({ entry, model }));
 
             // Persist unpublish
-            const unpublishResult = await this.repository.execute(model, entry);
+            const unpublishResult = await this.repository.execute<T>(model, entry);
             if (unpublishResult.isFail()) {
                 await this.eventPublisher.publish(
                     new EntryUnpublishErrorEvent({ entry, model, error: unpublishResult.error })

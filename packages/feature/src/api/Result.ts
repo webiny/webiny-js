@@ -67,6 +67,7 @@ export class Result<TValue, TError = never> {
      */
     public get value(): TValue {
         if (!this._isOk) {
+            console.error(this.error);
             throw new Error("Tried to get value from a failed Result.");
         }
 

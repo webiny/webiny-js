@@ -19,15 +19,13 @@ class UpdateFileRepositoryImpl implements RepositoryAbstraction.Interface {
     async update(file: File): Promise<Result<void, RepositoryAbstraction.Error>> {
         const entry = FileToEntryMapper.toEntry(file);
 
-        const valuesToUpdate = {
-            wbyAco_location: file.location,
-            ...entry.values
-        };
-
         // Files are not versioned, so we're always updating the same revision
         const id = `${file.id}#0001`;
 
-        const result = await this.updateEntry.execute(this.fileModel, id, valuesToUpdate);
+        const result = await this.updateEntry.execute(this.fileModel, id, {
+            wbyAco_location: file.location,
+            values: entry.values
+        });
 
         if (result.isFail()) {
             const error = result.error;

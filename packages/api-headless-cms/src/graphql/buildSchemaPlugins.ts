@@ -18,10 +18,18 @@ export const buildSchemaPlugins = async (
 ): Promise<ICmsGraphQLSchemaPlugin[]> => {
     return [
         // Base GQL types and scalars
-        createBaseContentSchema(params),
-        createModelsSchema(params),
-        createContentEntriesSchema(params),
-        createGroupsSchema(params),
+        createBaseContentSchema({
+            context: params.context
+        }),
+        createModelsSchema({
+            context: params.context
+        }),
+        createContentEntriesSchema({
+            context: params.context
+        }),
+        createGroupsSchema({
+            context: params.context
+        }),
         // Dynamic schema
         ...(await generateSchemaPlugins(params))
     ].filter(Boolean);

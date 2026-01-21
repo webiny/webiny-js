@@ -7,7 +7,7 @@ import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEnt
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
 import { FolderModel } from "~/domain/folder/abstractions.js";
-import type { CreateFolderParams, Folder } from "~/folder/folder.types.js";
+import type { CmsEntryFolder, CreateFolderParams, Folder } from "~/folder/folder.types.js";
 import { EntryToFolderMapper } from "../shared/EntryToFolderMapper.js";
 import { FolderPersistenceError, FolderValidationError } from "~/domain/folder/errors.js";
 import { Path } from "~/utils/Path.js";
@@ -43,10 +43,12 @@ class CreateFolderRepositoryImpl implements ICreateFolderRepository {
         }
 
         // Create the entry
-        const result = await this.createEntry.execute(this.folderModel, {
-            ...data,
-            parentId: data.parentId || null,
-            path: pathResult.value
+        const result = await this.createEntry.execute<CmsEntryFolder>(this.folderModel, {
+            values: {
+                ...data,
+                parentId: data.parentId || null,
+                path: pathResult.value
+            }
         });
 
         if (result.isFail()) {
@@ -68,12 +70,14 @@ class CreateFolderRepositoryImpl implements ICreateFolderRepository {
     }): Promise<Result<void, RepositoryAbstraction.Error>> {
         const { type, slug, parentId, excludeId } = params;
 
-        const result = await this.listLatestEntries.execute(this.folderModel, {
+        const result = await this.listLatestEntries.execute<CmsEntryFolder>(this.folderModel, {
             where: {
                 latest: true,
-                type,
-                slug,
-                parentId,
+                values: {
+                    type,
+                    slug,
+                    parentId
+                },
                 ...(excludeId ? { id_not: excludeId } : {})
             },
             limit: 1
@@ -106,7 +110,10 @@ class CreateFolderRepositoryImpl implements ICreateFolderRepository {
             return Result.ok(Path.create(slug));
         }
 
-        const parentResult = await this.getEntryById.execute(this.folderModel, parentId);
+        const parentResult = await this.getEntryById.execute<CmsEntryFolder>(
+            this.folderModel,
+            parentId
+        );
 
         if (parentResult.isFail()) {
             return Result.fail(

@@ -18,7 +18,9 @@ describe("not startsWith filter", () => {
     it("should add not_startsWith filter", async () => {
         const title = "webiny";
         const where: CmsEntryListWhere = {
-            title_not_startsWith: title
+            values: {
+                title_not_startsWith: title
+            }
         };
 
         execFiltering({

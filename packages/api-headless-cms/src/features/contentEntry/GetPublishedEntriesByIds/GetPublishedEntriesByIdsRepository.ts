@@ -1,5 +1,4 @@
-import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
+import { createImplementation, Result } from "@webiny/feature/api";
 import { GetPublishedEntriesByIdsRepository as RepositoryAbstraction } from "./abstractions.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
@@ -11,17 +10,19 @@ import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
  * Returns array of published entries.
  */
 class GetPublishedEntriesByIdsRepositoryImpl implements RepositoryAbstraction.Interface {
-    constructor(
+    public constructor(
         private entryFromStorageTransform: EntryFromStorageTransform.Interface,
         private storageOperations: StorageOperations.Interface
     ) {}
 
-    async execute<T extends CmsEntryValues>(
+    public async execute<T extends CmsEntryValues>(
         model: CmsModel,
         ids: string[]
     ): Promise<Result<CmsEntry<T>[], RepositoryAbstraction.Error>> {
         try {
-            const result = await this.storageOperations.entries.getPublishedByIds(model, { ids });
+            const result = await this.storageOperations.entries.getPublishedByIds<T>(model, {
+                ids
+            });
 
             // Transform storage entries to domain entries
             const items = await Promise.all(
@@ -30,7 +31,7 @@ class GetPublishedEntriesByIdsRepositoryImpl implements RepositoryAbstraction.In
                 })
             );
 
-            return Result.ok(items as CmsEntry<T>[]);
+            return Result.ok(items);
         } catch (error) {
             return Result.fail(new EntryPersistenceError(error as Error));
         }

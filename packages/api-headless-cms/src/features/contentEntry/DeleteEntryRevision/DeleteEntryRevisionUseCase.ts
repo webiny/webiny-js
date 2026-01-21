@@ -31,7 +31,7 @@ import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
  * - Delegate to repository for storage operations
  */
 class DeleteEntryRevisionUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(
+    public constructor(
         private repository: DeleteEntryRevisionRepository.Interface,
         private accessControl: AccessControl.Interface,
         private getRevisionById: GetRevisionByIdUseCase.Interface,

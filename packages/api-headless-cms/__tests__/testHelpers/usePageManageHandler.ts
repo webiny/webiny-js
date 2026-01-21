@@ -7,113 +7,115 @@ const singularPageApiName = pageModel.singularApiName;
 
 const pageFields = `
     id
-    content {
-        ...on ${singularPageApiName}_Content_Hero {
-            title
-            date
-            time
-            dateTimeWithoutTimezone
-            dateTimeWithTimezone
-            _templateId
-            __typename
-        }
-        ...on ${singularPageApiName}_Content_SimpleText {
-            text
-            _templateId
-            __typename
-        }
-        ...on ${singularPageApiName}_Content_Objecting {
-            nestedObject {
+    values {
+        content {
+            ...on ${singularPageApiName}_Content_Hero {
+                title
+                date
+                time
+                dateTimeWithoutTimezone
+                dateTimeWithTimezone
+                _templateId
                 __typename
-                objectTitle
-                objectNestedObject {
-                    nestedObjectNestedTitle
-                    date
-                    time
-                    dateTimeWithoutTimezone
-                    dateTimeWithTimezone
-                }
             }
-            dynamicZone {
+            ...on ${singularPageApiName}_Content_SimpleText {
+                text
+                _templateId
                 __typename
-                ... on ${singularPageApiName}_Content_Objecting_DynamicZone_SuperNestedObject {
-                    authors {
-                        id
-                        modelId
+            }
+            ...on ${singularPageApiName}_Content_Objecting {
+                nestedObject {
+                    __typename
+                    objectTitle
+                    objectNestedObject {
+                        nestedObjectNestedTitle
+                        date
+                        time
+                        dateTimeWithoutTimezone
+                        dateTimeWithTimezone
                     }
                 }
+                dynamicZone {
+                    __typename
+                    ... on ${singularPageApiName}_Content_Objecting_DynamicZone_SuperNestedObject {
+                        authors {
+                            id
+                            modelId
+                        }
+                    }
+                }
+                _templateId
+                __typename
             }
-            _templateId
-            __typename
-        }
-        ...on ${singularPageApiName}_Content_Author {
-            author {
-                id
-                modelId
+            ...on ${singularPageApiName}_Content_Author {
+                author {
+                    id
+                    modelId
+                }
+                authors {
+                    id
+                    modelId
+                }
+                _templateId
+                __typename
             }
-            authors {
-                id
-                modelId
+        }
+        header {
+            ...on ${singularPageApiName}_Header_TextHeader {
+                title
+                __typename
             }
-            _templateId
-            __typename
+            ...on ${singularPageApiName}_Header_ImageHeader {
+                title
+                image
+                __typename
+            }
         }
-    }
-    header {
-        ...on ${singularPageApiName}_Header_TextHeader {
-            title
-            __typename
+        objective {
+            ...on ${singularPageApiName}_Objective_Objecting {
+                nestedObject {
+                    objectTitle
+                    objectBody
+                    objectNestedObject {
+                        nestedObjectNestedTitle
+                        date
+                        time
+                        dateTimeWithoutTimezone
+                        dateTimeWithTimezone
+                    }
+                }
+                __typename
+            }
         }
-        ...on ${singularPageApiName}_Header_ImageHeader {
-            title
-            image
-            __typename
-        }
-    }
-    objective {
-        ...on ${singularPageApiName}_Objective_Objecting {
-            nestedObject {
-                objectTitle
-                objectBody
-                objectNestedObject {
-                    nestedObjectNestedTitle
-                    date
-                    time
-                    dateTimeWithoutTimezone
-                    dateTimeWithTimezone
+        reference {
+            ...on ${singularPageApiName}_Reference_Author {
+                __typename
+                author {
+                    id
+                    modelId
+                    __typename
                 }
             }
-            __typename
         }
-    }
-    reference {
-        ...on ${singularPageApiName}_Reference_Author {
-            __typename
-            author {
-                id
-                modelId
+        references1 {
+            ...on ${singularPageApiName}_References1_Authors {
+                authors {
+                    id
+                    modelId
+                    __typename
+                }
                 __typename
             }
         }
-    }
-    references1 {
-        ...on ${singularPageApiName}_References1_Authors {
-            authors {
-                id
-                modelId
+        references2 {
+            ...on ${singularPageApiName}_References2_Author {
+                author {
+                    id
+                    modelId
+                    __typename
+                }
                 __typename
             }
-            __typename
-        }
-    }
-    references2 {
-        ...on ${singularPageApiName}_References2_Author {
-            author {
-                id
-                modelId
-                __typename
-            }
-            __typename
         }
     }
 `;

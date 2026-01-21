@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { useGraphQLHandler } from "./setup/useGraphQLHandler";
 import { ROOT_FOLDER } from "~/constants";
 
@@ -13,7 +13,9 @@ const createExpectedListResponse = (folderId?: string) => {
                     {
                         id,
                         entryId,
-                        title: "Test entry",
+                        values: {
+                            title: "Test entry"
+                        },
                         wbyAco_location: {
                             folderId: folderId || null
                         }
@@ -39,9 +41,11 @@ describe("extending the GraphQL", () => {
         const [createResponse] = await createEntry({
             data: {
                 id: entryId,
-                title: "Test entry",
                 wbyAco_location: {
                     folderId: ROOT_FOLDER
+                },
+                values: {
+                    title: "Test entry"
                 }
             }
         });
@@ -51,9 +55,11 @@ describe("extending the GraphQL", () => {
                     data: {
                         id,
                         entryId,
-                        title: "Test entry",
                         wbyAco_location: {
                             folderId: ROOT_FOLDER
+                        },
+                        values: {
+                            title: "Test entry"
                         }
                     },
                     error: null
@@ -104,9 +110,11 @@ describe("extending the GraphQL", () => {
         const [createResponse] = await createEntry({
             data: {
                 id: entryId,
-                title: "Test entry",
                 wbyAco_location: {
                     folderId: "rootTestingFolder"
+                },
+                values: {
+                    title: "Test entry"
                 }
             }
         });

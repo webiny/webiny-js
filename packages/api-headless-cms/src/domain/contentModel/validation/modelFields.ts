@@ -203,7 +203,10 @@ const createGraphQLSchema = async (params: CreateGraphQLSchemaParams): Promise<a
 
     const modelPlugins = await buildSchemaPlugins({
         context,
-        models: models.concat([model])
+        /**
+         * Must remove the current model from the list, as we are possibly updating it - there would be two if we didn't.
+         */
+        models: models.filter(m => m.modelId !== model.modelId).concat([model])
     });
 
     const plugins = context.plugins

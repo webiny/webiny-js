@@ -2,7 +2,7 @@ import type { CmsGroup as BaseCmsGroup, CmsModel as BaseCmsModel } from "~/types
 import type { useCategoryManageHandler } from "./testHelpers/useCategoryManageHandler";
 import type { useProductManageHandler } from "./testHelpers/useProductManageHandler";
 
-export type CmsModel = Omit<
+export type TestCmsModel = Omit<
     BaseCmsModel,
     "tenant" | "createdOn" | "createdBy" | "savedOn" | "isPrivate"
 >;
@@ -22,8 +22,10 @@ export type ProductManager = ReturnType<typeof useProductManageHandler>;
 export interface ProductCategory {
     id: string;
     entryId: string;
-    title: string;
-    slug: string;
+    values: {
+        title: string;
+        slug: string;
+    };
 }
 
 /**

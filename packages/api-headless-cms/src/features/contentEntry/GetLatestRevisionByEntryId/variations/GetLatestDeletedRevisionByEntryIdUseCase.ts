@@ -17,7 +17,7 @@ import { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
  * Returns null if the entry doesn't exist or is not deleted (wbyDeleted !== true).
  */
 class GetLatestDeletedRevisionByEntryIdUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(private baseUseCase: GetLatestRevisionByEntryIdBaseUseCase.Interface) {}
+    public constructor(private baseUseCase: GetLatestRevisionByEntryIdBaseUseCase.Interface) {}
 
     async execute<T extends CmsEntryValues>(
         model: CmsModel,

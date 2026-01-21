@@ -9,13 +9,13 @@ export interface CmsModelFieldsWithParent extends CmsModelField {
     parent?: CmsModelField | null;
 }
 
-export interface CmsModelConverterCallable {
-    (params: ConverterCollectionConvertParams): CmsEntryValues;
+export interface CmsModelConverterCallable<T extends CmsEntryValues = CmsEntryValues> {
+    (params: ConverterCollectionConvertParams<T>): T;
 }
 
-export interface ConverterCollectionConvertParams {
+export interface ConverterCollectionConvertParams<T extends CmsEntryValues = CmsEntryValues> {
     fields: CmsModelFieldsWithParent[];
-    values?: CmsEntryValues;
+    values?: T;
 }
 
 export interface ConverterCollectionParams {
@@ -75,54 +75,56 @@ export class ConverterCollection {
         return converter;
     }
 
-    public convertToStorage(params: ConverterCollectionConvertParams): CmsEntryValues | undefined {
+    public convertToStorage<T extends CmsEntryValues = CmsEntryValues>(
+        params: ConverterCollectionConvertParams<T>
+    ): T | undefined {
         const { fields, values: inputValues } = params;
         if (inputValues === undefined) {
             return undefined;
         }
 
-        this.attachHasOwnProperty(inputValues);
+        this.attachHasOwnProperty<T>(inputValues);
 
-        return fields.reduce<CmsEntryValues>((output, field) => {
+        return fields.reduce<T>((output, field) => {
             const converter = this.getConverter(field.type);
             if (inputValues === null || inputValues.hasOwnProperty(field.fieldId) === false) {
                 return output;
             }
             const values = converter.convertToStorage({
                 field,
-                value: inputValues[field.fieldId]
+                value: inputValues[field.fieldId as keyof T]
             });
 
             return {
                 ...output,
                 ...values
             };
-        }, {});
+        }, {} as T);
     }
 
-    public convertFromStorage(
-        params: ConverterCollectionConvertParams
-    ): CmsEntryValues | undefined {
+    public convertFromStorage<T extends CmsEntryValues = CmsEntryValues>(
+        params: ConverterCollectionConvertParams<T>
+    ): T | undefined {
         const { fields, values: inputValues } = params;
         if (inputValues === undefined) {
             return undefined;
         }
 
-        return fields.reduce((output, field) => {
+        return fields.reduce<T>((output, field) => {
             const converter = this.getConverter(field.type);
             if (inputValues === null || inputValues.hasOwnProperty(field.storageId) === false) {
                 return output;
             }
             const values = converter.convertFromStorage({
                 field,
-                value: inputValues[field.storageId]
+                value: inputValues[field.storageId as keyof T]
             });
 
             return {
                 ...output,
                 ...values
             };
-        }, {});
+        }, {} as T);
     }
 
     /**
@@ -131,7 +133,7 @@ export class ConverterCollection {
      *
      * TODO add more checks if required
      */
-    private attachHasOwnProperty(values: CmsEntryValues) {
+    private attachHasOwnProperty<T extends CmsEntryValues = CmsEntryValues>(values: T) {
         if (
             // null or undefined?
             values === null ||

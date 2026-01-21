@@ -1,11 +1,13 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { useProductManageHandler } from "../testHelpers/useProductManageHandler";
-import { createInitFactory } from "./product/init";
 import { createEntriesFactory } from "./product/entries";
 import { createCategoryFactory } from "./product/category";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
-import { Product, ProductCategory } from "../types";
+import { Product } from "../types";
 import { createGetProduct } from "./product/getProductFactory";
+import { setupGroupAndModels } from "~tests/testHelpers/setup.js";
+import type { IManageQueryBaseResponse } from "~tests/testHelpers/types.js";
+import type { ICategoryResponseValues } from "~tests/testHelpers/category/manage/types.js";
 
 describe("complex product nestedObject filtering", () => {
     const options = {
@@ -17,16 +19,18 @@ describe("complex product nestedObject filtering", () => {
 
     const { listProducts } = manager;
 
-    const init = createInitFactory(manager);
-    const createEntries = createEntriesFactory(manager);
     const createCategory = createCategoryFactory(categoryManager);
+    const createEntries = createEntriesFactory(manager);
 
-    let category: ProductCategory;
-    let products: Product[];
+    let category: IManageQueryBaseResponse<ICategoryResponseValues>;
+    let products: IManageQueryBaseResponse<Product>[];
     let getProduct: ReturnType<typeof createGetProduct>;
 
     beforeEach(async () => {
-        await init();
+        await setupGroupAndModels({
+            manager,
+            models: ["product", "category"]
+        });
         category = await createCategory();
         products = await createEntries(category);
         getProduct = createGetProduct(products);
@@ -38,8 +42,10 @@ describe("complex product nestedObject filtering", () => {
          */
         const [responseVariantNameV1] = await listProducts({
             where: {
-                variant: {
-                    name_contains: "v1"
+                values: {
+                    variant: {
+                        name_contains: "v1"
+                    }
                 }
             }
         });
@@ -62,8 +68,10 @@ describe("complex product nestedObject filtering", () => {
          */
         const [responseVariantPriceBetween] = await listProducts({
             where: {
-                variant: {
-                    price_between: [675, 685]
+                values: {
+                    variant: {
+                        price_between: [675, 685]
+                    }
                 }
             }
         });
@@ -85,15 +93,17 @@ describe("complex product nestedObject filtering", () => {
          */
         const [responseVariantCategoryPriceBetween] = await listProducts({
             where: {
-                price_between: [675, 785],
-                category: {
-                    id: category.id
-                },
-                variant: {
+                values: {
+                    price_between: [675, 785],
                     category: {
                         id: category.id
                     },
-                    price_between: [675, 681]
+                    variant: {
+                        category: {
+                            id: category.id
+                        },
+                        price_between: [675, 681]
+                    }
                 }
             }
         });

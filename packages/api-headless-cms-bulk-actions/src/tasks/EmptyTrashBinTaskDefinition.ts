@@ -80,7 +80,9 @@ class EmptyTrashBinTask
             for (const model of models) {
                 // Query parameters for fetching deleted entries older than a minute ago.
                 const listEntriesParams = {
-                    where: { deletedOn_lt: calculateDateTimeString() },
+                    where: {
+                        deletedOn_lt: calculateDateTimeString()
+                    },
                     limit: 50
                 };
 

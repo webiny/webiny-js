@@ -24,7 +24,7 @@ export const createFullTextSearch = (params: Params) => {
             /**
              * As fields is a mapped Field objects where key is a path to the value, we can directly find the related field.
              */
-            const field = fieldDefinitions[target];
+            const field = fieldDefinitions[`values.${target}`] || fieldDefinitions[target];
 
             if (!field) {
                 throw new WebinyError(`Unknown field "${target}" in the model.`, "UNKNOWN_FIELD", {

@@ -2,6 +2,7 @@ import type {
     CmsContext,
     CmsDynamicZoneTemplate,
     CmsEntry,
+    CmsEntryValues,
     CmsModel,
     CmsModelField,
     CmsModelFieldValidation,
@@ -13,21 +14,20 @@ import { EntryValidationError } from "~/domain/contentEntry/errors.js";
 
 type PluginValidationCallable = (params: CmsModelFieldValidatorValidateParams) => Promise<boolean>;
 type PluginValidationList = Record<string, PluginValidationCallable[]>;
-type InputData = Record<string, any>;
 
-interface ExecuteValidationParams {
+interface ExecuteValidationParams<TValues extends CmsEntryValues = CmsEntryValues> {
     validatorList: PluginValidationList;
     field: CmsModelField;
     model: CmsModel;
-    data: InputData;
+    values: TValues;
     context: CmsContext;
-    entry?: CmsEntry;
+    entry?: CmsEntry<TValues>;
 }
 
 type PossibleValue = boolean | number | string | null | undefined;
 
-const validateValue = async (
-    params: ExecuteValidationParams,
+const validateValue = async <TValues extends CmsEntryValues = CmsEntryValues>(
+    params: ExecuteValidationParams<TValues>,
     fieldValidators: CmsModelFieldValidation[],
     value: PossibleValue | PossibleValue[]
 ): Promise<string | null> => {
@@ -69,7 +69,7 @@ const validatePredefinedValue = (field: CmsModelField, value: any | any[]): stri
         return null;
     } else if (Array.isArray(predefinedValues) === false || predefinedValues.length === 0) {
         return "Missing predefined values to validate against.";
-    } else if (value == "" || value == null || value == undefined) {
+    } else if (value === "" || value === null || value === undefined) {
         return null;
     }
     for (const predefinedValue of predefinedValues) {
@@ -96,11 +96,14 @@ const getFieldValidation = (
  * When multiple values is selected we must run validations on the array containing the values
  * And then on each value in the array
  */
-const runFieldMultipleValuesValidations = async (
-    params: ExecuteValidationParams
+const runFieldMultipleValuesValidations = async <TValues extends CmsEntryValues = CmsEntryValues>(
+    params: ExecuteValidationParams<TValues>
 ): Promise<string | null> => {
-    const { field, data } = params;
-    const values = data?.[field.fieldId];
+    const { field, values: initialValues } = params;
+    const values = initialValues[field.fieldId as keyof TValues] as
+        | PossibleValue[]
+        | null
+        | undefined;
     const valuesError = await validateValue(
         params,
         getFieldValidation(field.listValidation),
@@ -127,11 +130,11 @@ const runFieldMultipleValuesValidations = async (
 /**
  * Runs validation on given value.
  */
-const runFieldValueValidations = async (
-    params: ExecuteValidationParams
+const runFieldValueValidations = async <TValues extends CmsEntryValues = CmsEntryValues>(
+    params: ExecuteValidationParams<TValues>
 ): Promise<string | null> => {
-    const { data, field } = params;
-    const value = data[field.fieldId];
+    const { values, field } = params;
+    const value = values[field.fieldId as keyof TValues] as PossibleValue | null | undefined;
     const error = await validateValue(params, field.validation || [], value);
     if (error) {
         return error;
@@ -147,16 +150,18 @@ const execValidation = async (params: ExecuteValidationParams): Promise<string |
     return await runFieldValueValidations(params);
 };
 
-export interface ValidateModelEntryDataParams {
+interface IValidateModelEntryDataParams<TValues extends CmsEntryValues = CmsEntryValues> {
     context: CmsContext;
     model: CmsModel;
-    data: InputData;
-    entry?: CmsEntry;
+    values: TValues;
+    entry?: CmsEntry<TValues>;
     skipValidators?: string[];
 }
 
-export const validateModelEntryData = async (params: ValidateModelEntryDataParams) => {
-    const { context, model, entry, data, skipValidators } = params;
+export const validateModelEntryData = async <TValues extends CmsEntryValues = CmsEntryValues>(
+    params: IValidateModelEntryDataParams
+) => {
+    const { context, model, entry, values, skipValidators } = params;
 
     const isValidatorSkipped = (plugin: CmsModelFieldValidatorPlugin) => {
         if (!skipValidators) {
@@ -194,21 +199,25 @@ export const validateModelEntryData = async (params: ValidateModelEntryDataParam
         return [];
     }
 
-    return await validate({
+    return await validate<TValues>({
         validatorList,
         context,
         model,
-        entry,
+        entry: entry as CmsEntry<TValues>,
         parents: [],
         fields: model.fields,
-        data: {
-            ...entry?.values,
-            ...data
+        values: {
+            ...(entry?.values as TValues),
+            ...values
         }
     });
 };
 
-export const validateModelEntryDataOrThrow = async (params: ValidateModelEntryDataParams) => {
+export const validateModelEntryDataOrThrow = async <
+    TValues extends CmsEntryValues = CmsEntryValues
+>(
+    params: IValidateModelEntryDataParams<TValues>
+) => {
     const invalidFields = await validateModelEntryData(params);
     if (invalidFields.length === 0) {
         return;
@@ -227,20 +236,18 @@ interface FieldError {
     parents: string[];
 }
 
-interface ValidateParams {
+interface ValidateFieldParams<TValues extends CmsEntryValues = CmsEntryValues> {
     validatorList: PluginValidationList;
     parents: string[];
     model: CmsModel;
-    data: InputData;
+    values: TValues;
     context: CmsContext;
-    fields: CmsModelField[];
-    entry?: CmsEntry;
+    field: CmsModelField;
+    entry?: CmsEntry<TValues>;
 }
 
-const executeFieldValidation = async (
-    params: Omit<ValidateParams, "fields"> & {
-        field: CmsModelField;
-    }
+const executeFieldValidation = async <TValues extends CmsEntryValues = CmsEntryValues>(
+    params: ValidateFieldParams<TValues>
 ): Promise<FieldError[]> => {
     // TODO put per-field validation into plugins.
     const { field } = params;
@@ -269,20 +276,20 @@ const executeFieldValidation = async (
                 parents: params.parents
             });
         }
-        const objectValue = params.data?.[field.fieldId];
+        const objectValue = params.values[field.fieldId as keyof TValues];
         if (!objectValue) {
             return validations;
         }
-        const values = Array.isArray(objectValue) ? objectValue : [objectValue];
+        const values = (Array.isArray(objectValue) ? objectValue : [objectValue]) as TValues[];
         for (const index in values) {
             const parents = field.multipleValues ? [field.fieldId, index] : [field.fieldId];
-            const value = values[index];
+            const value = values[index] as TValues;
             for (const childField of fields) {
-                const errors = await executeFieldValidation({
+                const errors = await executeFieldValidation<typeof value>({
                     ...params,
                     parents: params.parents.concat(parents),
                     field: childField,
-                    data: value
+                    values: value
                 });
                 if (errors.length === 0) {
                     continue;
@@ -316,11 +323,13 @@ const executeFieldValidation = async (
         const templates = (field.settings?.templates || []) as CmsDynamicZoneTemplate[];
         for (const template of templates) {
             const fields = template.fields;
-            const fieldData = params.data?.[field.fieldId];
+            const fieldData = params.values[field.fieldId as keyof TValues];
             if (!fieldData) {
                 continue;
             }
-            const values = Array.isArray(fieldData) ? fieldData : [fieldData];
+            const values: TValues[keyof TValues][] = Array.isArray(fieldData)
+                ? fieldData
+                : [fieldData];
             for (const index in values) {
                 const templateValue = values[index]?.[template.gqlTypeName];
                 if (!templateValue) {
@@ -342,7 +351,7 @@ const executeFieldValidation = async (
                         ...params,
                         parents: params.parents.concat(parents),
                         field: childField,
-                        data: templateValue
+                        values: templateValue
                     });
                     if (errors.length === 0) {
                         continue;
@@ -371,18 +380,36 @@ const executeFieldValidation = async (
     ];
 };
 
-const validate = async (params: ValidateParams): Promise<any[]> => {
+interface ValidateFieldsParams<TValues extends CmsEntryValues = CmsEntryValues> {
+    validatorList: PluginValidationList;
+    parents: string[];
+    model: CmsModel;
+    values: TValues;
+    fields: CmsModelField[];
+    context: CmsContext;
+    entry?: CmsEntry<TValues>;
+}
+
+const validate = async <TValues extends CmsEntryValues = CmsEntryValues>(
+    params: ValidateFieldsParams<TValues>
+): Promise<FieldError[]> => {
     const { fields } = params;
     const errors: FieldError[] = [];
-    for (const field of fields) {
-        const results = await executeFieldValidation({
-            ...params,
-            field
-        });
-        if (results.length === 0) {
+
+    const results = await Promise.all(
+        fields.map(async field => {
+            return await executeFieldValidation<TValues>({
+                ...params,
+                field
+            });
+        })
+    );
+
+    for (const result of results) {
+        if (result.length === 0) {
             continue;
         }
-        errors.push(...results);
+        errors.push(...result);
     }
     return errors;
 };

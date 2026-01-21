@@ -1,7 +1,7 @@
 import { createDecorator, Result } from "@webiny/feature/api";
 import { MoveEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/MoveEntry/abstractions.js";
 import { GetRevisionByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetRevisionById/abstractions.js";
-import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
+import type { CmsEntryValues, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 import { ROOT_FOLDER } from "~/constants.js";
 import { EntryNotAuthorizedError } from "@webiny/api-headless-cms/domain/contentEntry/errors.js";
@@ -13,19 +13,19 @@ class MoveEntryWithFlpDecoratorImpl implements MoveEntryUseCase.Interface {
         private decoratee: MoveEntryUseCase.Interface
     ) {}
 
-    async execute(
+    public async execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         id: string,
         targetFolderId: string
-    ): ReturnType<MoveEntryUseCase.Interface["execute"]> {
+    ) {
         if (!this.folderLevelPermissions.canUseFolderLevelPermissions()) {
-            return this.decoratee.execute(model, id, targetFolderId);
+            return this.decoratee.execute<T>(model, id, targetFolderId);
         }
 
         // First, get the entry to check its current folder
-        const entryResult = await this.getRevisionById.execute(model, id);
+        const entryResult = await this.getRevisionById.execute<T>(model, id);
         if (entryResult.isFail()) {
-            return this.decoratee.execute(model, id, targetFolderId);
+            return this.decoratee.execute<T>(model, id, targetFolderId);
         }
 
         const entry = entryResult.value;
@@ -33,7 +33,7 @@ class MoveEntryWithFlpDecoratorImpl implements MoveEntryUseCase.Interface {
 
         // If the entry is in the same folder we are trying to move it to, just continue
         if (currentFolderId === targetFolderId) {
-            return this.decoratee.execute(model, id, targetFolderId);
+            return this.decoratee.execute<T>(model, id, targetFolderId);
         }
 
         // If current folder is not ROOT, check for access
@@ -66,7 +66,7 @@ class MoveEntryWithFlpDecoratorImpl implements MoveEntryUseCase.Interface {
             }
         }
 
-        return this.decoratee.execute(model, id, targetFolderId);
+        return this.decoratee.execute<T>(model, id, targetFolderId);
     }
 }
 

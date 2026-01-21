@@ -30,7 +30,9 @@ describe("Delete Permissions Checks", () => {
         });
 
         const failedEntryDeletion = await manageApiB.deleteTestEntry({
-            revision: testEntry.data.id
+            variables: {
+                revision: testEntry.data.id
+            }
         });
 
         expectNotAuthorized(failedEntryDeletion, {
@@ -51,7 +53,9 @@ describe("Delete Permissions Checks", () => {
         });
 
         const entryDeletion = await manageApiC.deleteTestEntry({
-            revision: testEntry.data.id
+            variables: {
+                revision: testEntry.data.id
+            }
         });
 
         expect(entryDeletion).toMatchObject({

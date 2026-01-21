@@ -58,7 +58,7 @@ describe("content model test no field plugin", () => {
                 modelId: "testContentModel",
                 singularApiName: "TestContentModel",
                 pluralApiName: "TestContentModels",
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         }).then(async ([response]) => {
             expect(response).toMatchObject({
@@ -145,7 +145,7 @@ describe("content model test no field plugin", () => {
                 modelId: "event",
                 singularApiName: "Event",
                 pluralApiName: "Events",
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
 
@@ -205,7 +205,7 @@ describe("content model test no field plugin", () => {
                 modelId: "bug",
                 singularApiName: "Bug",
                 pluralApiName: "Bugs",
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
 

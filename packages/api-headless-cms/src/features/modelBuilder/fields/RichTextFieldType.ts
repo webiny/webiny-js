@@ -6,7 +6,7 @@ export interface IRichTextFieldBuilder extends FieldBuilder<"rich-text"> {
 }
 
 class RichTextFieldBuilder extends FieldBuilder<"rich-text"> implements IRichTextFieldBuilder {
-    constructor() {
+    public constructor() {
         super("rich-text");
     }
 

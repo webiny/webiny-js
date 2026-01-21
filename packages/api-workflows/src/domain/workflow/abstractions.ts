@@ -20,11 +20,14 @@ export interface IWorkflowStep {
     notifications?: IWorkflowStepNotification[];
 }
 
-export interface IWorkflow {
-    id: string;
+export interface IWorkflowValues {
     app: string;
     name: string;
     steps: NonEmptyArray<IWorkflowStep>;
+}
+
+export interface IWorkflow extends IWorkflowValues {
+    id: string;
 }
 
 // Abstractions

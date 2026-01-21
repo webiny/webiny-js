@@ -1,75 +1,71 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { useCategoryManageHandler } from "../../testHelpers/useCategoryManageHandler";
 import { useArticleManageHandler } from "../../testHelpers/useArticleManageHandler";
 import { useArticleReadHandler } from "../../testHelpers/useArticleReadHandler";
 import { useGraphQLHandler } from "../../testHelpers/useGraphQLHandler";
-import { setupContentModelGroup, setupContentModels } from "../../testHelpers/setup";
+import { setupGroupAndModels } from "../../testHelpers/setup";
 import { GenericRecord } from "@webiny/api/types";
 import slugify from "slugify";
+import type {
+    ICategoryInputValues,
+    ICategoryResponseValues
+} from "~tests/testHelpers/category/manage/types.js";
+import type { IManageQueryBaseResponse } from "~tests/testHelpers/types.js";
 
 interface ICreateCategoryItemPrams {
     manager: ReturnType<typeof useCategoryManageHandler>;
     publish: boolean;
-    data: GenericRecord;
+    values: ICategoryInputValues;
 }
 
-const createCategoryItem = async ({ manager, publish, data }: ICreateCategoryItemPrams) => {
-    const [response] = await manager.createCategory({ data });
-    const category = response?.data?.createCategory?.data;
-    const error = response?.data?.createCategory?.error;
-    if (!category?.id || error) {
-        console.log(error.message);
-        console.log(JSON.stringify(error.data));
-        throw new Error("Could not create category.");
-    }
-    if (!publish) {
-        return category;
-    }
-    const [publishResponse] = await manager.publishCategory({
-        revision: category.id
+const createCategoryItem = async ({ manager, publish, values }: ICreateCategoryItemPrams) => {
+    const [response] = await manager.createCategory({
+        variables: {
+            data: {
+                values,
+                status: publish ? "published" : undefined
+            }
+        }
     });
-    if (publishResponse?.data?.publishCategory?.error) {
-        console.log(publishResponse?.data?.publishCategory?.error?.message);
-        throw new Error("Could not publish category.");
+    if (response.data.createCategory.error) {
+        throw new Error(response.data.createCategory.error.message);
     }
-    return publishResponse.data.publishCategory.data;
+    return response.data.createCategory.data!;
 };
+
+interface IArticleValues {
+    title: string;
+    body: string;
+    categories: {
+        modelId: string;
+        entryId: string;
+        id: string;
+    }[];
+    category: {
+        modelId: string;
+        entryId: string;
+        id: string;
+    };
+}
 
 interface ICreateArticleItemPrams {
     manager: ReturnType<typeof useArticleManageHandler>;
     publish: boolean;
-    data: GenericRecord;
+    values: GenericRecord;
 }
 
-const createArticleItem = async ({ manager, publish, data }: ICreateArticleItemPrams) => {
-    const [response] = await manager.createArticle({ data });
-    const article = response?.data?.createArticle?.data;
-    const error = response?.data?.createArticle?.error;
-    if (!article?.id || error) {
-        console.log(error.message);
-        console.log(JSON.stringify(error.data));
-        throw new Error("Could not create article.");
-    }
-    if (!publish) {
-        return article;
-    }
-    const [publishResponse] = await manager.publishArticle({
-        revision: article.id
+const createArticleItem = async ({ manager, publish, values }: ICreateArticleItemPrams) => {
+    const [response] = await manager.createArticle({
+        data: {
+            values,
+            status: publish ? "published" : undefined
+        }
     });
-    if (publishResponse?.data?.publishArticle?.error) {
-        console.log(publishResponse?.data?.publishArticle?.error?.message);
-        throw new Error("Could not publish article.");
+    if (response.data.createArticle.error) {
+        throw new Error(response.data.createArticle.error.message);
     }
-    return publishResponse.data.publishArticle.data;
+    return response.data.createArticle.data! as IManageQueryBaseResponse<IArticleValues>;
 };
-
-interface ICategoryItem {
-    id: string;
-    entryId: string;
-    title: string;
-    slug: string;
-    published: boolean;
-}
 
 const categoryNames = ["Tech", "Health", "Space", "Food", "Science", "Sports"];
 
@@ -77,44 +73,45 @@ describe("published and unpublished references", () => {
     const manageOpts = { path: "manage" };
     const readOpts = { path: "read" };
 
-    const mainManager = useGraphQLHandler(manageOpts);
+    const manager = useGraphQLHandler(manageOpts);
+
+    beforeEach(async () => {
+        await setupGroupAndModels({
+            manager,
+            models: ["category", "article"]
+        });
+    });
 
     it("should populate reference field with some published and some unpublished records", async () => {
-        const group = await setupContentModelGroup(mainManager);
-        await setupContentModels(mainManager, group, ["category", "article"]);
-
         const categoryManager = useCategoryManageHandler(manageOpts);
         const articleManager = useArticleManageHandler(manageOpts);
         const articleRead = useArticleReadHandler(readOpts);
 
-        const categories: ICategoryItem[] = [];
+        const categories: IManageQueryBaseResponse<ICategoryResponseValues>[] = [];
 
         for (const index in categoryNames) {
             const title = categoryNames[index];
             const published = Number(index) % 2 === 0;
             const category = await createCategoryItem({
                 manager: categoryManager,
-                data: {
+                values: {
                     title: title,
                     slug: slugify(title)
                 },
                 publish: published
             });
-            categories.push({
-                ...category,
-                published
-            });
+            categories.push(category);
         }
         expect(categories.length).toBe(categoryNames.length);
 
-        const firstUnpublishedCategoryId = categories.find(c => !c.published)!.id;
+        const firstUnpublishedCategoryId = categories.find(c => c.meta.status !== "published")!.id;
         expect(firstUnpublishedCategoryId).toMatch(/^([a-zA-Z0-9]+)#0001$/);
         /**
          * Create an article and make sure all the categories are in it.
          */
         const createdArticle = await createArticleItem({
             manager: articleManager,
-            data: {
+            values: {
                 title: "Tech article",
                 body: null,
                 category: {
@@ -139,7 +136,7 @@ describe("published and unpublished references", () => {
             };
         });
         const expectedPublishedCategories = categories
-            .filter(c => c.published)
+            .filter(c => c.meta.status === "published")
             .map(c => {
                 return {
                     id: c.id,
@@ -149,15 +146,15 @@ describe("published and unpublished references", () => {
             });
         expect(expectedAllCategories).toHaveLength(expectedPublishedCategories.length * 2);
 
-        expect(createdArticle.categories).toEqual(expectedAllCategories);
+        expect(createdArticle.values.categories).toEqual(expectedAllCategories);
 
         const [articleManageGetResponse] = await articleManager.getArticle({
             revision: createdArticle.id
         });
-        expect(articleManageGetResponse?.data?.getArticle?.data?.categories).toEqual(
+        expect(articleManageGetResponse?.data?.getArticle?.data?.values?.categories).toEqual(
             expectedAllCategories
         );
-        expect(articleManageGetResponse?.data?.getArticle?.data?.category).toMatchObject({
+        expect(articleManageGetResponse?.data?.getArticle?.data?.values?.category).toMatchObject({
             id: firstUnpublishedCategoryId
         });
         /**
@@ -166,10 +163,10 @@ describe("published and unpublished references", () => {
         const [publishResponse] = await articleManager.publishArticle({
             revision: createdArticle.id
         });
-        expect(publishResponse?.data?.publishArticle?.data?.categories).toEqual(
+        expect(publishResponse?.data?.publishArticle?.data?.values?.categories).toEqual(
             expectedAllCategories
         );
-        expect(publishResponse?.data?.publishArticle?.data?.category).toMatchObject({
+        expect(publishResponse?.data?.publishArticle?.data?.values?.category).toMatchObject({
             id: firstUnpublishedCategoryId
         });
         /**
@@ -180,10 +177,12 @@ describe("published and unpublished references", () => {
         const [articleManageGetPublishedResponse] = await articleManager.getArticle({
             revision: createdArticle.id
         });
-        expect(articleManageGetPublishedResponse?.data?.getArticle?.data?.categories).toEqual(
-            expectedAllCategories
-        );
-        expect(articleManageGetPublishedResponse?.data?.getArticle?.data?.category).toMatchObject({
+        expect(
+            articleManageGetPublishedResponse?.data?.getArticle?.data?.values?.categories
+        ).toEqual(expectedAllCategories);
+        expect(
+            articleManageGetPublishedResponse?.data?.getArticle?.data?.values?.category
+        ).toMatchObject({
             id: firstUnpublishedCategoryId
         });
         /**
@@ -196,12 +195,14 @@ describe("published and unpublished references", () => {
                 id: createdArticle.id
             }
         });
-        expect(articleReadGetPublishedResponse?.data?.getArticle?.data?.categories).toMatchObject(
-            expectedPublishedCategories
-        );
-        expect(articleReadGetPublishedResponse?.data?.getArticle?.data?.categories).toHaveLength(
-            expectedPublishedCategories.length
-        );
-        expect(articleReadGetPublishedResponse?.data?.getArticle?.data?.category).toBeNull();
+        expect(
+            articleReadGetPublishedResponse?.data?.getArticle?.data?.values?.categories
+        ).toMatchObject(expectedPublishedCategories);
+        expect(
+            articleReadGetPublishedResponse?.data?.getArticle?.data?.values?.categories
+        ).toHaveLength(expectedPublishedCategories.length);
+        expect(
+            articleReadGetPublishedResponse?.data?.getArticle?.data?.values?.category
+        ).toBeNull();
     });
 });

@@ -1,17 +1,15 @@
-import omit from "lodash/omit.js";
 import { Result } from "@webiny/feature/api";
 import {
-    UpdateFolderRepository as RepositoryAbstraction,
-    type IUpdateFolderRepository
+    type IUpdateFolderRepository,
+    UpdateFolderRepository as RepositoryAbstraction
 } from "./abstractions.js";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries";
 import { FolderModel } from "~/domain/folder/abstractions.js";
-import type { Folder, UpdateFolderParams } from "~/folder/folder.types.js";
+import type { CmsEntryFolder, Folder, UpdateFolderParams } from "~/folder/folder.types.js";
 import { EntryToFolderMapper } from "../shared/EntryToFolderMapper.js";
 import { FolderPersistenceError, FolderValidationError } from "~/domain/folder/errors.js";
-import { ENTRY_META_FIELDS } from "@webiny/api-headless-cms/constants.js";
 import { Path } from "~/utils/Path.js";
 
 class UpdateFolderRepositoryImpl implements IUpdateFolderRepository {
@@ -27,7 +25,10 @@ class UpdateFolderRepositoryImpl implements IUpdateFolderRepository {
         data: UpdateFolderParams
     ): Promise<Result<Folder, RepositoryAbstraction.Error>> {
         // Get the original folder
-        const originalResult = await this.getEntryById.execute(this.folderModel, id);
+        const originalResult = await this.getEntryById.execute<CmsEntryFolder>(
+            this.folderModel,
+            id
+        );
 
         if (originalResult.isFail()) {
             return Result.fail(new FolderPersistenceError(originalResult.error));
@@ -57,14 +58,12 @@ class UpdateFolderRepositoryImpl implements IUpdateFolderRepository {
             return Result.fail(pathResult.error);
         }
 
-        // Prepare the input by merging original with updates
-        const input = {
-            ...omit(original, [...ENTRY_META_FIELDS, "id", "entryId"]),
-            ...data,
-            path: pathResult.value
-        };
-
-        const result = await this.updateEntry.execute(this.folderModel, id, input);
+        const result = await this.updateEntry.execute<CmsEntryFolder>(this.folderModel, id, {
+            values: {
+                ...data,
+                path: pathResult.value
+            }
+        });
 
         if (result.isFail()) {
             return Result.fail(new FolderPersistenceError(result.error));
@@ -82,13 +81,15 @@ class UpdateFolderRepositoryImpl implements IUpdateFolderRepository {
     }): Promise<Result<void, RepositoryAbstraction.Error>> {
         const { id, type, slug, parentId } = params;
 
-        const result = await this.listLatestEntries.execute(this.folderModel, {
+        const result = await this.listLatestEntries.execute<CmsEntryFolder>(this.folderModel, {
             where: {
                 latest: true,
-                type,
-                slug,
-                parentId,
-                id_not: id
+                id_not: id,
+                values: {
+                    type,
+                    slug,
+                    parentId
+                }
             },
             limit: 1
         });
@@ -120,7 +121,10 @@ class UpdateFolderRepositoryImpl implements IUpdateFolderRepository {
             return Result.ok(Path.create(slug));
         }
 
-        const parentResult = await this.getEntryById.execute(this.folderModel, parentId);
+        const parentResult = await this.getEntryById.execute<CmsEntryFolder>(
+            this.folderModel,
+            parentId
+        );
 
         if (parentResult.isFail()) {
             return Result.fail(

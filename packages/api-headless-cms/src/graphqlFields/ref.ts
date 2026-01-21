@@ -47,6 +47,10 @@ const createFilteringTypeDef = () => {
             entryId_not: String
             entryId_in: [String!]
             entryId_not_in: [String!]
+            modelId: String
+            modelId_not: String
+            modelId_in: [String!]
+            modelId_not_in: [String!]
         }
     `;
 };
@@ -151,8 +155,17 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
                         })
                     );
                 }
+                /**
+                 * Get value either from values or root - just in case.
+                 */
+                const getValue = (parent: any): RefFieldValue | RefFieldValue[] => {
+                    if (parent.values) {
+                        return parent.values[field.fieldId];
+                    }
+                    return parent[field.fieldId];
+                };
 
-                return async (parent, args, context: CmsContext) => {
+                return async (parent: CmsEntry, args: any, context: CmsContext) => {
                     const { cms, container } = context;
 
                     const getModel = container.resolve(GetModelUseCase);
@@ -160,7 +173,7 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
                     const getLatestByIds = container.resolve(GetLatestEntriesByIdsUseCase);
 
                     // Get field value for this entry
-                    const initialValue = parent[field.fieldId] as RefFieldValue | RefFieldValue[];
+                    const initialValue = getValue(parent);
 
                     if (!initialValue) {
                         return null;

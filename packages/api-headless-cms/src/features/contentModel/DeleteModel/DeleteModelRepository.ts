@@ -19,7 +19,7 @@ import type { CmsModel } from "~/types/index.js";
  * Note: Entry validation and cleanup is handled by decorator
  */
 class DeleteModelRepositoryImpl implements RepositoryAbstraction.Interface {
-    constructor(
+    public constructor(
         private modelCache: ModelCache.Interface,
         private modelsFetcher: ModelsFetcher.Interface,
         private storageOperations: StorageOperations.Interface
