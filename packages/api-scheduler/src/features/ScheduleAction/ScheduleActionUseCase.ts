@@ -104,17 +104,19 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
             namespace,
             actionType,
             targetId,
-            scheduledBy: identity,
+            scheduledBy: {
+                id: identity.id,
+                type: identity.type,
+                displayName: identity.displayName
+            },
             scheduledFor: scheduleFor,
             payload
         };
 
         // Create CMS entry
         const createResult = await this.createEntryUseCase.execute<IScheduledAction>(this.model, {
-            ...scheduledAction,
-            values: {
-                ...scheduledAction
-            }
+            id: scheduleId,
+            values: scheduledAction
         });
 
         if (createResult.isFail()) {
@@ -162,7 +164,11 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         const existingEntryId = ScheduledActionIdWithVersion.from(existing.id);
         const updateResult = await this.updateEntryUseCase.execute(this.model, existingEntryId, {
             values: {
-                scheduledBy: identity,
+                scheduledBy: {
+                    id: identity.id,
+                    type: identity.type,
+                    displayName: identity.displayName
+                },
                 scheduledFor: scheduleFor,
                 payload
             }
@@ -186,7 +192,11 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
 
         return Result.ok({
             ...existing,
-            scheduledBy: identity,
+            scheduledBy: {
+                id: identity.id,
+                type: identity.type,
+                displayName: identity.displayName
+            },
             scheduledFor: scheduleFor,
             payload
         });

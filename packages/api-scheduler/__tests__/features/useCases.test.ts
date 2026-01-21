@@ -1,0 +1,99 @@
+import { beforeEach, describe, expect, it } from "vitest";
+import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
+import { useHandler } from "~tests/__mocks/context/useHandler.js";
+import { createMockScheduleClient } from "~tests/__mocks/scheduleClient.js";
+import { SchedulerService } from "~/shared/abstractions.js";
+import { VoidSchedulerService } from "~/features/SchedulerService/VoidSchedulerService.js";
+import { ScheduleActionUseCase } from "~/features/ScheduleAction/index.js";
+import { GetScheduledActionUseCase } from "~/features/GetScheduledAction/index.js";
+import { ListScheduledActionsUseCase } from "~/features/ListScheduledActions/index.js";
+import { CancelScheduledActionUseCase } from "~/features/CancelScheduledAction/index.js";
+import { PublishTestEntryActionHandlerImpl } from "~tests/__mocks/PublishTestEntryActionHandler.js";
+
+describe("Combined Use Cases", () => {
+    let context: CmsContext;
+
+    beforeEach(async () => {
+        const contextHandler = useHandler({
+            getScheduleClient: () => {
+                return createMockScheduleClient();
+            }
+        });
+        context = await contextHandler.handler();
+        context.container.registerInstance(SchedulerService, new VoidSchedulerService());
+    });
+
+    it("should resolve ScheduledActionModel from container", async () => {
+        const resolved = context.container.resolve(ScheduleActionUseCase);
+
+        expect(resolved.execute).toBeFunction();
+    });
+
+    it("should create, get, list, update and delete a scheduled action", async () => {
+        const scheduleActionUseCase = context.container.resolve(ScheduleActionUseCase);
+        const getScheduledActionUseCase = context.container.resolve(GetScheduledActionUseCase);
+        const listScheduledActionsUseCase = context.container.resolve(ListScheduledActionsUseCase);
+        const cancelScheduledActionUseCase = context.container.resolve(
+            CancelScheduledActionUseCase
+        );
+
+        const scheduledFor = new Date();
+        scheduledFor.setHours(scheduledFor.getHours() + 1);
+        const updatedScheduledFor = new Date();
+        updatedScheduledFor.setHours(updatedScheduledFor.getHours() + 2);
+
+        const createResult = await scheduleActionUseCase.execute({
+            namespace: PublishTestEntryActionHandlerImpl.name,
+            actionType: "Publish",
+            targetId: "target-id#0001",
+            scheduleFor: scheduledFor.toISOString(),
+            payload: {
+                some: "data"
+            },
+            title: "Publish Article - target-id#0001"
+        });
+
+        expect(createResult.isOk()).toBe(true);
+
+        const getResult = await getScheduledActionUseCase.execute(createResult.value.id);
+
+        expect(getResult.isOk()).toBeTrue();
+        expect(getResult.value).toEqual({
+            ...createResult.value
+        });
+
+        const updateResult = await scheduleActionUseCase.execute({
+            namespace: PublishTestEntryActionHandlerImpl.name,
+            actionType: "Publish",
+            targetId: "target-id#0001",
+            scheduleFor: updatedScheduledFor.toISOString(),
+            payload: {
+                some: "data"
+            },
+            title: "Publish Article - target-id#0001"
+        });
+
+        expect(updateResult.isOk()).toBeTrue();
+        expect(updateResult.value).toEqual({
+            ...createResult.value,
+            error: undefined,
+            scheduledFor: updatedScheduledFor.toISOString()
+        });
+
+        const listResult = await listScheduledActionsUseCase.execute({
+            where: {}
+        });
+        expect(listResult.isOk()).toBeTrue();
+        expect(listResult.value.items).toHaveLength(1);
+        expect(listResult.value.items[0]).toEqual({
+            ...updateResult.value
+        });
+
+        const cancelResult = await cancelScheduledActionUseCase.execute(updateResult.value.id);
+        expect(cancelResult.isOk()).toBeTrue();
+
+        const getAfterCancelResult = await getScheduledActionUseCase.execute(createResult.value.id);
+        expect(getAfterCancelResult.isFail()).toBeTrue();
+        expect(getAfterCancelResult.error.code).toBe("Scheduler/ScheduledAction/NotFound");
+    });
+});

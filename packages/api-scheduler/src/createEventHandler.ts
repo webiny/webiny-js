@@ -3,9 +3,10 @@ import type { HandlerFactoryParams } from "@webiny/handler-aws/types.js";
 import { createSourceHandler } from "@webiny/handler-aws/sourceHandler.js";
 import { createEventHandler, createHandler } from "@webiny/handler-aws/raw/index.js";
 import { SCHEDULED_CMS_ACTION_EVENT_IDENTIFIER } from "~/constants.js";
+import { ExecuteScheduledActionUseCase } from "~/features/ExecuteScheduledAction/index.js";
 
 export interface IScheduledActionEventPayload {
-    id: string; // id of the scheduled action
+    id: string;
     scheduleFor: string;
 }
 
@@ -30,14 +31,7 @@ const canHandle = (event: Partial<IScheduledActionEvent>): boolean => {
 
 const handler = createSourceHandler<IScheduledActionEvent, HandlerParams>({
     name: "handler-aws-event-bridge-scheduled-cms-action-event",
-    canUse: event => {
-        const can = canHandle(event);
-        console.log({
-            canHandleScheduler: can,
-            event
-        });
-        return can;
-    },
+    canUse: canHandle,
     handle: async ({ params, event, context }) => {
         return createHandler(params)(event, context);
     }
@@ -47,14 +41,7 @@ registry.register(handler);
 
 export const createScheduledActionEventHandler = () => {
     return createEventHandler<IScheduledActionEvent>({
-        canHandle: event => {
-            const can = canHandle(event);
-            console.log({
-                canHandleScheduleAction: can,
-                event
-            });
-            return can;
-        },
+        canHandle,
         handle: async params => {
             const { payload, context } = params;
             console.log({
@@ -63,19 +50,17 @@ export const createScheduledActionEventHandler = () => {
             });
             const input = payload[SCHEDULED_CMS_ACTION_EVENT_IDENTIFIER];
 
+            const executeScheduledAction = context.container.resolve(ExecuteScheduledActionUseCase);
+            const result = await executeScheduledAction.execute(input.id);
+
+            if (result.isFail()) {
+                const error = result.error;
+                console.error(error.code, error.message);
+                throw error;
+            }
             return {
-                input,
-                payload
+                success: true
             };
-
-            // const executeScheduledAction = context.container.resolve(ExecuteScheduledActionUseCase);
-            // const result = await executeScheduledAction.execute(input.id);
-
-            // if (result.isFail()) {
-            //     const error = result.error;
-            //     console.error(error.code, error.message);
-            //     throw error;
-            // }
         }
     });
 };

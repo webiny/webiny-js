@@ -27,6 +27,10 @@ class GetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
             this.model,
             scheduleId
         );
+        console.log({
+            isFail: entryResult.isFail(),
+            scheduleId
+        });
 
         if (entryResult.isFail()) {
             if (entryResult.error.code === "Cms/Entry/NotFound") {

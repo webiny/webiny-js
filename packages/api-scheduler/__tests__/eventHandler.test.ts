@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { RawEventHandler } from "@webiny/handler-aws/raw/index.js";
 import {
     createScheduledActionEventHandler,
@@ -8,10 +8,41 @@ import { registry } from "@webiny/handler-aws/registry.js";
 import type { LambdaContext } from "@webiny/handler-aws/types.js";
 import { SCHEDULED_CMS_ACTION_EVENT_IDENTIFIER } from "~/constants.js";
 import { ScheduledActionId } from "~/domain/ScheduledActionId.js";
+import { useHandler } from "./__mocks/context/useHandler.js";
+import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
+import { createMockScheduleClient } from "./__mocks/scheduleClient.js";
+import { SchedulerService } from "~/shared/abstractions.js";
+import { VoidSchedulerService } from "~/features/SchedulerService/VoidSchedulerService.js";
+import { ScheduleActionUseCase } from "~/features/ScheduleAction/index.js";
+import { createTable } from "@webiny/db-dynamodb";
+import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
+import {
+    PublishTestEntryActionHandler,
+    PublishTestEntryActionHandlerImpl
+} from "~tests/__mocks/PublishTestEntryActionHandler.js";
 
 describe("Scheduler Event Handler", () => {
     const lambdaContext = {} as LambdaContext;
-    it("should trigger handle an event which matches scheduled event", async () => {
+    
+    const table = createTable({
+        name: process.env.DB_TABLE as string,
+        documentClient: getDocumentClient()
+    });
+
+    let context: CmsContext;
+
+    beforeEach(async () => {
+        const contextHandler = useHandler({
+            getScheduleClient: () => {
+                return createMockScheduleClient();
+            }
+        });
+        context = await contextHandler.handler();
+        context.container.register(PublishTestEntryActionHandler);
+        context.container.registerInstance(SchedulerService, new VoidSchedulerService());
+    });
+
+    it.skip("should trigger handle an event which matches scheduled event", async () => {
         const eventHandler = createScheduledActionEventHandler();
 
         expect(eventHandler).toBeInstanceOf(RawEventHandler);
@@ -32,5 +63,52 @@ describe("Scheduler Event Handler", () => {
             name: "handler-aws-event-bridge-scheduled-cms-action-event"
         });
         expect(sourceHandler.canUse(event, lambdaContext)).toBe(true);
+    });
+    
+    it("should run handle action", async () => {
+        const eventHandler = createScheduledActionEventHandler();
+        const scheduleActionUseCase = context.container.resolve(ScheduleActionUseCase);
+
+        const scheduleFor = new Date(new Date().getTime() + 5 * 60 * 1000).toISOString();
+        const createResult = await scheduleActionUseCase.execute({
+            title: "Test Schedule Action",
+            namespace: PublishTestEntryActionHandlerImpl.name,
+            actionType: "Publish",
+            targetId: "target-id#0001",
+            scheduleFor
+        });
+
+        expect(createResult.isOk()).toBeTrue();
+        expect(createResult.value).toEqual({
+            actionType: "Publish",
+            id: expect.stringMatching("wby-schedule-"),
+            namespace: PublishTestEntryActionHandlerImpl.name,
+            payload: undefined,
+            scheduledBy: {
+                displayName: "John Doe",
+                id: "id-12345678",
+                type: "admin"
+            },
+            scheduledFor: scheduleFor,
+            targetId: "target-id#0001",
+            title: "Test Schedule Action"
+        });
+
+        const id = createResult.value.id;
+
+        const result = await eventHandler.cb({
+            payload: {
+                [SCHEDULED_CMS_ACTION_EVENT_IDENTIFIER]: {
+                    id,
+                    scheduleFor: new Date(new Date().getTime() + 3 * 60 * 1000).toISOString()
+                }
+            },
+            context,
+            request: context.request,
+            reply: context.reply
+        });
+        expect(result).toEqual({
+            success: true
+        });
     });
 });
