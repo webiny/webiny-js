@@ -60,6 +60,7 @@ export const Entry = ({
         [onMoveUpClick, index]
     );
 
+
     const onMoveDown = useCallback(
         (ev: React.MouseEvent) => {
             if (!onMoveDownClick) {
