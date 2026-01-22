@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { useHandler } from "~tests/mocks/context/useHandler.js";
+import { useHandler } from "./__mocks/context/useHandler.js";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
-import { createMockScheduleClient } from "./mocks/scheduleClient.js";
+import { createMockScheduleClient } from "./__mocks/scheduleClient.js";
 import { createHeadlessCmsScheduler } from "~/index.js";
 import { ScheduleEntryActionUseCase } from "~/features/ScheduleEntryAction/index.js";
-import { createMockTargetModelPlugins, MOCK_TARGET_MODEL_ID } from "~tests/mocks/targetModel.js";
+import { createMockTargetModelPlugins, MOCK_TARGET_MODEL_ID } from "./__mocks/targetModel.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";

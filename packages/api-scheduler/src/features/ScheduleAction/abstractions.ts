@@ -1,11 +1,11 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
+import { createAbstraction, Result } from "@webiny/feature/api";
 import type { IScheduledAction } from "~/shared/abstractions.js";
 import {
-    ScheduledActionPersistenceError,
     InvalidScheduleDateError,
+    ScheduledActionPersistenceError,
     SchedulerServiceError
 } from "~/domain/errors.js";
+import type { GenericRecord } from "@webiny/api/types.js";
 
 /**
  * ScheduleActionUseCase - Schedule an action for future execution
@@ -23,17 +23,19 @@ export interface IScheduleActionErrors {
 
 type ScheduleActionError = IScheduleActionErrors[keyof IScheduleActionErrors];
 
-interface IScheduleActionParams {
+interface IScheduleActionParams<T extends GenericRecord> {
     namespace: string;
     actionType: string;
     targetId: string;
     scheduleFor: string;
     title: string;
-    payload?: any;
+    payload: T;
 }
 
 export interface IScheduleActionUseCase {
-    execute(params: IScheduleActionParams): Promise<Result<IScheduledAction, ScheduleActionError>>;
+    execute<T extends GenericRecord>(
+        params: IScheduleActionParams<T>
+    ): Promise<Result<IScheduledAction<T>, ScheduleActionError>>;
 }
 
 export const ScheduleActionUseCase =
@@ -41,6 +43,6 @@ export const ScheduleActionUseCase =
 
 export namespace ScheduleActionUseCase {
     export type Interface = IScheduleActionUseCase;
-    export type Params = IScheduleActionParams;
+    export type Params<T extends GenericRecord> = IScheduleActionParams<T>;
     export type Error = ScheduleActionError;
 }

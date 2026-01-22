@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { until } from "@webiny/project-utils/testing/helpers/until";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
-import { createMockScheduleClient } from "./mocks/scheduleClient.js";
+import { createMockScheduleClient } from "./__mocks/scheduleClient.js";
 import { ExecuteScheduledActionUseCase } from "~/features/ExecuteScheduledAction/abstractions.js";
 import { ScheduleActionUseCase } from "~/features/ScheduleAction/abstractions.js";
 import { GetScheduledActionUseCase } from "~/features/GetScheduledAction/abstractions.js";
@@ -9,8 +9,10 @@ import { ScheduledActionHandler } from "~/shared/abstractions.js";
 import { ScheduledActionId } from "~/domain/ScheduledActionId.js";
 import { ListScheduledActionsUseCase } from "~/features/ListScheduledActions/index.js";
 import { CancelScheduledActionUseCase } from "~/features/CancelScheduledAction/index.js";
-import { useHandler } from "~tests/mocks/context/useHandler.js";
+import { useHandler } from "./__mocks/context/useHandler.js";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
+import { mockClient } from "aws-sdk-client-mock";
+import { SchedulerClient } from "@webiny/aws-sdk/client-scheduler/index.js";
 
 describe("Scheduler", () => {
     const targetId = "target-id#0001";
@@ -20,6 +22,8 @@ describe("Scheduler", () => {
     let context: CmsContext;
 
     beforeEach(async () => {
+        const mockedSchedulerClient = mockClient(SchedulerClient);
+        mockedSchedulerClient.resolves({});
         const contextHandler = useHandler({
             getScheduleClient: () => {
                 return createMockScheduleClient();

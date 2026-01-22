@@ -2,6 +2,7 @@ import { Result } from "@webiny/feature/api";
 import { RunActionUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { ScheduleActionUseCase } from "~/features/ScheduleAction/abstractions.js";
 import type { IScheduledAction } from "~/shared/abstractions.js";
+import type { GenericRecord } from "@webiny/api/types.js";
 
 /**
  * Schedules an action for immediate execution
@@ -15,9 +16,9 @@ import type { IScheduledAction } from "~/shared/abstractions.js";
 class RunActionUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(private scheduleActionUseCase: ScheduleActionUseCase.Interface) {}
 
-    async execute(
-        params: UseCaseAbstraction.Params
-    ): Promise<Result<IScheduledAction, UseCaseAbstraction.Error>> {
+    async execute<T extends GenericRecord>(
+        params: UseCaseAbstraction.Params<T>
+    ): Promise<Result<IScheduledAction<T>, UseCaseAbstraction.Error>> {
         // Delegate to ScheduleAction
         const result = await this.scheduleActionUseCase.execute({
             ...params,

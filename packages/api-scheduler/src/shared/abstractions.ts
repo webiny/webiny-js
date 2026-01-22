@@ -1,5 +1,6 @@
 import type { CmsModel } from "@webiny/api-headless-cms/types/model.js";
 import { createAbstraction } from "@webiny/feature/api";
+import type { GenericRecord } from "@webiny/api/types.js";
 
 /**
  * Identity type - represents who scheduled an action
@@ -13,7 +14,7 @@ export interface Identity {
 /**
  * Scheduled Action Record - The data stored for a scheduled action
  */
-export interface IScheduledAction<TPayload = any> {
+export interface IScheduledAction<T extends GenericRecord> {
     id: string;
     namespace: string; // Resource scope: "Cms/Entry/Article", "Mailer/Email"
     actionType: string; // Operation: "Publish", "Unpublish", "Send", "Delete"
@@ -21,7 +22,7 @@ export interface IScheduledAction<TPayload = any> {
     scheduledBy: Identity;
     scheduledFor: string;
     title?: string;
-    payload?: TPayload; // Action-specific data
+    payload: T; // Action-specific data
     error?: string; // Error if execution failed
 }
 
@@ -43,7 +44,7 @@ export interface IScheduledActionHandler {
     /**
      * Executes the scheduled action
      */
-    handle(action: IScheduledAction): Promise<void>;
+    handle(action: IScheduledAction<any>): Promise<void>;
 }
 
 export const ScheduledActionHandler =
@@ -58,9 +59,19 @@ export namespace ScheduledActionHandler {
  *
  * Abstracts the underlying scheduling infrastructure (AWS EventBridge, Azure Logic Apps, etc.)
  */
+
+export interface ISchedulerServiceCreateParams {
+    id: string;
+    scheduleFor: Date;
+}
+export interface ISchedulerServiceUpdateParams {
+    id: string;
+    scheduleFor: Date;
+}
+
 export interface ISchedulerService {
-    create(params: { id: string; scheduleFor: Date }): Promise<void>;
-    update(params: { id: string; scheduleFor: Date }): Promise<void>;
+    create(params: ISchedulerServiceCreateParams): Promise<void>;
+    update(params: ISchedulerServiceUpdateParams): Promise<void>;
     delete(id: string): Promise<void>;
     exists(id: string): Promise<boolean>;
 }

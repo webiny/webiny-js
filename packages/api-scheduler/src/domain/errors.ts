@@ -8,8 +8,10 @@ export class ScheduledActionNotFoundError extends BaseError<{ scheduleId: string
 
     constructor(scheduleId: string) {
         super({
-            message: `Scheduled action "${scheduleId}" was not found`,
-            data: { scheduleId }
+            message: `Scheduled action "${scheduleId}" was not found.`,
+            data: {
+                scheduleId
+            }
         });
     }
 }

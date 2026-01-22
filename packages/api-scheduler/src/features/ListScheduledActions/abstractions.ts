@@ -3,6 +3,7 @@ import { Result } from "@webiny/feature/api";
 import type { IScheduledAction } from "~/shared/abstractions.js";
 import { ScheduledActionPersistenceError } from "~/domain/errors.js";
 import type { CmsEntryListSort, CmsEntryMeta } from "@webiny/api-headless-cms/types/index.js";
+import type { GenericRecord } from "@webiny/api/types.js";
 
 /**
  * ListScheduledActionsUseCase - List scheduled actions with optional filtering
@@ -36,8 +37,8 @@ export interface IListScheduledActionsParams {
     after?: string;
 }
 
-export interface IListScheduledActionsResponse {
-    items: IScheduledAction[];
+export interface IListScheduledActionsResponse<T extends GenericRecord> {
+    items: IScheduledAction<T>[];
     meta: CmsEntryMeta;
 }
 
@@ -48,9 +49,9 @@ export interface IListScheduledActionsErrors {
 type ListScheduledActionsError = IListScheduledActionsErrors[keyof IListScheduledActionsErrors];
 
 export interface IListScheduledActionsUseCase {
-    execute(
+    execute<T extends GenericRecord>(
         params: IListScheduledActionsParams
-    ): Promise<Result<IListScheduledActionsResponse, ListScheduledActionsError>>;
+    ): Promise<Result<IListScheduledActionsResponse<T>, ListScheduledActionsError>>;
 }
 
 export const ListScheduledActionsUseCase = createAbstraction<IListScheduledActionsUseCase>(
