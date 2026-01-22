@@ -1,7 +1,6 @@
 import React from "react";
 import { Input } from "@webiny/admin-ui";
 import type { ElementInputRendererProps } from "~/BaseEditor/index.js";
-import type { NumberInput } from "@webiny/website-builder-sdk";
 
 export const NumberInputRenderer = ({
     value,
@@ -12,26 +11,17 @@ export const NumberInputRenderer = ({
 }: ElementInputRendererProps) => {
     const commitValue = (newValue: string) => {
         const number = parseInt(newValue);
-        const minValue = (input as NumberInput).minValue;
-
-        if (!isNaN(number) || (minValue && number < minValue)) {
-            return;
-        }
 
         onChange(({ value }) => {
-            value.set(number);
+            value.set(isNaN(number) ? "" : number);
         });
     };
 
     const previewValue = (newValue: string) => {
         const number = parseInt(newValue);
 
-        if (isNaN(number)) {
-            return;
-        }
-
         onPreviewChange(({ value }) => {
-            value.set(number);
+            value.set(isNaN(number) ? "" : number);
         });
     };
 
