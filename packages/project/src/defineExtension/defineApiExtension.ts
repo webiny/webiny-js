@@ -54,13 +54,9 @@ export const defineApiExtension = (params: DefineApiExtensionParams) =>
             const exportNameAlias = `ApiExtension_${hash.slice(-10)}`;
 
             // 3. Calculate import path relative to `extensions.ts` file.
-            const importPath = [
-                path.relative(
-                    path.dirname(extensionsTsFilePath),
-                    path.dirname(absoluteExtensionFilePath)
-                ),
-                extensionFileName.replace(".ts", ".js")
-            ].join("/");
+            const importPath = path
+                .relative(path.dirname(extensionsTsFilePath), absoluteExtensionFilePath)
+                .replace(".ts", ".js");
 
             const project = new Project();
             project.addSourceFileAtPath(extensionsTsFilePath);
@@ -80,9 +76,11 @@ export const defineApiExtension = (params: DefineApiExtensionParams) =>
                 index = last.getChildIndex() + 1;
             }
 
-            // Check if the file has a default export by importing it.
-            const importedModule = await import(absoluteExtensionFilePath);
-            const hasDefaultExport = "default" in importedModule;
+            // Check if the file has a default export using AST parsing.
+            const extensionProject = new Project();
+            extensionProject.addSourceFileAtPath(absoluteExtensionFilePath);
+            const extensionSource = extensionProject.getSourceFileOrThrow(absoluteExtensionFilePath);
+            const hasDefaultExport = extensionSource.getDefaultExportSymbol() !== undefined;
 
             // Support both default and named exports.
             if (hasDefaultExport) {
