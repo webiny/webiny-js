@@ -46,7 +46,7 @@ export const defineApiExtension = (params: DefineApiExtensionParams) =>
             const extensionFileName = path.basename(absoluteExtensionFilePath);
 
             // 1. Export name is always the file name without extension.
-            const exportName = params.exportName ?? extensionFileName.replace(".ts", "");
+            const exportName = params.exportName ?? path.parse(extensionFileName).name;
 
             // 2. Alias name is "ApiExtension_" + hash of the file path. This way we
             //    avoid potential naming conflicts and keep the identifier constant.
@@ -56,7 +56,7 @@ export const defineApiExtension = (params: DefineApiExtensionParams) =>
             // 3. Calculate import path relative to `extensions.ts` file.
             const importPath = path
                 .relative(path.dirname(extensionsTsFilePath), absoluteExtensionFilePath)
-                .replace(".ts", ".js");
+                .replace(/\.tsx?$/, ".js");
 
             const project = new Project();
             project.addSourceFileAtPath(extensionsTsFilePath);
