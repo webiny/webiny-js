@@ -139,6 +139,29 @@ export const pullRequests = createWorkflow({
                 }
             ]
         }),
+        autoFormat: createJob({
+            name: "Auto-format code",
+            if: "github.event.pull_request.head.repo.fork == false",
+            checkout: { path: DIR_WEBINY_JS },
+            steps: [
+                ...yarnCacheSteps,
+                ...withCommonParams(
+                    [
+                        { name: "Install dependencies", run: "yarn --immutable" },
+                        { name: "Run Prettier", run: "yarn prettier:fix" },
+                        {
+                            name: "Commit and push changes",
+                            uses: "stefanzweifel/git-auto-commit-action@v5",
+                            with: {
+                                "commit_message": "chore: auto-format code",
+                                "file_pattern": "*.js *.jsx *.ts *.tsx *.json *.scss *.yml"
+                            }
+                        }
+                    ],
+                    { "working-directory": DIR_WEBINY_JS }
+                )
+            ]
+        }),
         constants: createJob({
             name: "Create constants",
             outputs: {
