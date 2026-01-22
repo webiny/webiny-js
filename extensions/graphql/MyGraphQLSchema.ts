@@ -25,7 +25,9 @@ class Schema implements GraphQLSchemaFactory.Interface {
     }
 }
 
-export const MyGraphQLSchema = GraphQLSchemaFactory.createImplementation({
+const MyGraphQLSchema = GraphQLSchemaFactory.createImplementation({
     implementation: Schema,
     dependencies: [IdentityContext]
 });
+
+export default MyGraphQLSchema;

@@ -1,0 +1,61 @@
+import React from "react";
+import {
+    AdminAfterDeploy,
+    AdminBeforeBuild,
+    AdminBeforeWatch,
+    AfterDeploy,
+    ApiAfterDeploy,
+    BeforeDeploy,
+    DatabaseSetup,
+    ExtensionDefinitions,
+    Project,
+    ProjectDecorator,
+    ProjectImplementation
+} from "@webiny/project/extensions/index.js";
+import { createPathResolver } from "@webiny/project";
+import { CliCommand } from "@webiny/cli-core/extensions/index.js";
+import { Infra } from "~/index.js";
+
+const p = createPathResolver(import.meta.dirname);
+
+export const ProjectAws = () => {
+    return (
+        <>
+            <Project />
+            <ProjectDecorator src={p("ProjectAws/BuildAppWorkspace.js")} />
+
+            {/* Database Setup - default to DynamoDB only */}
+            <DatabaseSetup setupName="ddb" />
+
+            {/* Set database setup output value in Core stack */}
+            <Infra.Core.Pulumi src={p("ProjectAws/SetDatabaseSetupOutput.js")} />
+
+            {/* Stack Output Services */}
+            <ProjectImplementation src={p("ProjectAws/CoreStackOutputService.js")} singleton />
+            <ProjectImplementation src={p("ProjectAws/ApiStackOutputService.js")} singleton />
+            <ProjectImplementation src={p("ProjectAws/AdminStackOutputService.js")} singleton />
+
+            <ProjectImplementation src={p("../features/InvokeLambdaFunction.js")} singleton />
+            <ProjectImplementation src={p("../features/ApiGqlClient.js")} singleton />
+
+            <AdminAfterDeploy src={p("ProjectAws/UploadAdminAppToS3.js")} />
+
+            {/* We'll bring this back once needed. */}
+            {/* <ApiAfterDeploy src={p("ProjectAws/ExecuteDataMigrations.js")} /> */}
+
+            <ApiAfterDeploy src={p("ProjectAws/AutoInstall/AutoInstallAfterApiDeploy.js")} />
+            <ExtensionDefinitions src={p("ProjectAws/definitions.js")} />
+
+            {/* Admin env vars */}
+            <AdminBeforeBuild src={p("ProjectAws/SetAdminEnvVars/SetAdminEnvVarsBeforeBuild.js")} />
+            <AdminBeforeWatch src={p("ProjectAws/SetAdminEnvVars/SetAdminEnvVarsBeforeWatch.js")} />
+
+            {/* Blue-green */}
+            <CliCommand src={p("ProjectAws/BlueGreenDeployments/SetPrimaryVariantCliCommand.js")} />
+            <BeforeDeploy src={p("ProjectAws/BlueGreenDeployments/EnsureVariantBeforeDeploy.js")} />
+            <AfterDeploy
+                src={p("ProjectAws/BlueGreenDeployments/PrintDeploymentInfoAfterDeploy.js")}
+            />
+        </>
+    );
+};

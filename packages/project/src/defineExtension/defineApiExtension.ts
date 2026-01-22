@@ -80,10 +80,22 @@ export const defineApiExtension = (params: DefineApiExtensionParams) =>
                 index = last.getChildIndex() + 1;
             }
 
-            source.insertImportDeclaration(index, {
-                namedImports: [{ name: exportName, alias: exportNameAlias }],
-                moduleSpecifier: importPath
-            });
+            // Check if the file has a default export by importing it.
+            const importedModule = await import(absoluteExtensionFilePath);
+            const hasDefaultExport = "default" in importedModule;
+
+            // Support both default and named exports.
+            if (hasDefaultExport) {
+                source.insertImportDeclaration(index, {
+                    defaultImport: exportNameAlias,
+                    moduleSpecifier: importPath
+                });
+            } else {
+                source.insertImportDeclaration(index, {
+                    namedImports: [{ name: exportName, alias: exportNameAlias }],
+                    moduleSpecifier: importPath
+                });
+            }
 
             const pluginsArray = source.getFirstDescendant(node =>
                 Node.isArrayLiteralExpression(node)

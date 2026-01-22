@@ -3,7 +3,7 @@ import { AdminConfig } from "webiny/admin/configs";
 
 const { Theme } = AdminConfig;
 
-export const Extension = () => {
+const AdminTheme = () => {
     return (
         <AdminConfig.Public>
             <Theme.Color palette={"primary"} color={"purple"} />
@@ -11,3 +11,5 @@ export const Extension = () => {
         </AdminConfig.Public>
     );
 };
+
+export default AdminTheme;

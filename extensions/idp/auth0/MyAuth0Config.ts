@@ -22,7 +22,9 @@ class MyIdpConfig implements Auth0IdpConfig.Interface {
     }
 }
 
-export const MyAuth0Config = Auth0IdpConfig.createImplementation({
+const MyAuth0Config = Auth0IdpConfig.createImplementation({
     implementation: MyIdpConfig,
     dependencies: []
 });
+
+export default MyAuth0Config;
