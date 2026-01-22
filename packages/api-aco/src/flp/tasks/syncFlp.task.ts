@@ -56,7 +56,7 @@ class SyncFlpTaskImpl implements TaskDefinition.Interface<ISyncFlpTaskInput> {
                 // Some folder types are fixed: pages and files.
                 const folderTypes = [FM_FILE_TYPE];
 
-                // List all non-private models for the current locale.
+                // List all non-private models
                 const modelsResult = await this.listModels.execute();
                 if (modelsResult.isOk()) {
                     const models = modelsResult.value;

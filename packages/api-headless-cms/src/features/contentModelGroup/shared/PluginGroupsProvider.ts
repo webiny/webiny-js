@@ -61,7 +61,7 @@ class PluginGroupsProviderImpl implements ProviderAbstraction.Interface {
 
             const groups = pluginGroups
                 // Filter by tenant if specified in plugin
-                // If not specified, plugin group is available for all tenants/locales
+                // If not specified, plugin group is available for all tenants
                 .filter(plugin => {
                     const { tenant: t } = plugin.contentModelGroup;
                     if (t && t !== tenant.id) {

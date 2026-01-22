@@ -109,7 +109,6 @@ export interface CreateContentModelFromMutationVariables {
         fields?: Omit<CmsModelField, "storageId">[];
         layout?: string[][];
         titleFieldId?: string;
-        locale?: `${Lowercase<string>}-${Uppercase<string>}`;
         icon?: CmsIcon;
     };
 }

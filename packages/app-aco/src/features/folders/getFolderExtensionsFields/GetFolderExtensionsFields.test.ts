@@ -128,7 +128,6 @@ describe("GetFolderExtensionsFields", () => {
         pluralApiName: "AcoFolders",
         singularApiName: "AcoFolder",
         titleFieldId: "title",
-        locale: "en-US",
         tenant: "root",
         authorization: {
             permissions: false

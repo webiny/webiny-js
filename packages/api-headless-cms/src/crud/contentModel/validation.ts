@@ -307,8 +307,7 @@ export const createModelCreateFromValidation = () => {
         ),
         description: optionalNullishShortString,
         group: shortString,
-        icon,
-        locale: optionalShortString
+        icon
     });
 };
 

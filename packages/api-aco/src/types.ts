@@ -10,7 +10,6 @@ import type { Container } from "@webiny/di";
 import { FolderLevelPermissions } from "./features/flp/FolderLevelPermissions/index.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
-import type { I18NLocale } from "@webiny/api-core/types/i18n.js";
 
 export * from "./filter/filter.types.js";
 export type * from "./folder/folder.types.js";
@@ -52,7 +51,6 @@ export interface AdvancedContentOrganisation {
 }
 
 export interface CreateAcoParams {
-    getLocale: () => I18NLocale;
     getTenant: () => Tenant;
     storageOperations: AcoStorageOperations;
     folderLevelPermissions: FolderLevelPermissions.Interface;

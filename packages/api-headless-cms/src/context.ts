@@ -43,10 +43,7 @@ const getParameters = async (context: CmsContext): Promise<CmsParametersPluginRe
             return result;
         }
     }
-    throw new WebinyError(
-        "Could not determine locale and/or type of the CMS.",
-        "CMS_LOCALE_AND_TYPE_ERROR"
-    );
+    throw new WebinyError("Could not determine type of the CMS.", "CMS_TYPE_ERROR");
 };
 
 export interface CrudParams {

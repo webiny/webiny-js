@@ -3,7 +3,6 @@ export type { HigherOrderComponent, ProviderProps, ComposeProps } from "@webiny/
 // UI components
 export * from "./base/ui/Tags.js";
 export * from "./base/ui/Layout.js";
-export * from "./base/ui/LocaleSelector.js";
 export * from "./base/ui/TenantSelector.js";
 export type { LayoutProps } from "./base/ui/Layout.js";
 export * from "./base/ui/Navigation.js";
@@ -54,11 +53,3 @@ export { useAuthentication } from "./presentation/security/hooks/useAuthenticati
 export { useSecurity } from "./presentation/security/hooks/useSecurity.js";
 
 export * from "@webiny/app/renderApp.js";
-
-// Exporting chosen utils from `@webiny/app` package.
-export * from "@webiny/app/utils/getApiUrl.js";
-export * from "@webiny/app/utils/getGqlApiUrl.js";
-export * from "@webiny/app/utils/getHeadlessCmsGqlApiUrl.js";
-export * from "@webiny/app/utils/getLocaleCode.js";
-export * from "@webiny/app/utils/getTenantId.js";
-export * from "@webiny/app/utils/isLocalhost.js";

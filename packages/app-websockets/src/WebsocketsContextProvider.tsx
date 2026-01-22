@@ -30,7 +30,6 @@ export const WebsocketsContext = React.createContext<IWebsocketsContext>(
 
 interface ICurrentData {
     tenant?: string;
-    locale?: string;
 }
 
 export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps) => {
@@ -118,10 +117,7 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
             } else if (current.tenant === tenant) {
                 return;
             } else if (socketsRef.current) {
-                await socketsRef.current.close(
-                    WebsocketsCloseCode.NORMAL,
-                    "Changing tenant/locale."
-                );
+                await socketsRef.current.close(WebsocketsCloseCode.NORMAL, "Changing tenant.");
             }
             const url = getUrl();
 

@@ -10,7 +10,6 @@ describe("Custom permissions filtering test", () => {
         expect(filterOutCustomWbyAppsPermissions(customPermissions)).toEqual([
             { something: "custom" },
             { name: "custom" },
-            { name: "content.i18n", locales: ["en-US"] },
             { name: "pb.*" },
             { name: "cms.*" },
             { name: "security.*" },

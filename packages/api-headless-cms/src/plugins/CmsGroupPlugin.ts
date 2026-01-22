@@ -3,12 +3,10 @@ import type { CmsGroup as BaseCmsGroup } from "~/types/index.js";
 
 export interface CmsGroupInput extends Omit<BaseCmsGroup, "tenant" | "isPlugin"> {
     tenant?: string;
-    locale?: string;
 }
 
 export interface CmsGroup extends Omit<BaseCmsGroup, "tenant"> {
     tenant?: string;
-    locale?: string;
 }
 
 export class CmsGroupPlugin extends Plugin {

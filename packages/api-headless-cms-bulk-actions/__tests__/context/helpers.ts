@@ -2,7 +2,6 @@ import type { IdentityData } from "@webiny/api-core/features/security/IdentityCo
 
 export interface PermissionsArg {
     name: string;
-    locales?: string[];
     rwd?: string;
     pw?: string;
     own?: boolean;
@@ -26,10 +25,6 @@ export const createPermissions = (permissions?: PermissionsArg[]): PermissionsAr
         {
             name: "task.entry",
             rwd: "rwd"
-        },
-        {
-            name: "content.i18n",
-            locales: ["en-US", "de-DE"]
         },
         {
             name: "*"

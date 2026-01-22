@@ -5,7 +5,6 @@ const whitelistedHeaders = [
     "authorization",
     "cache-control",
     "content-type",
-    "x-i18n-Locale",
     "x-tenant",
     "x-apollo-tracing",
     "apollo-query-plan-experimental"

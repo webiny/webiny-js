@@ -21,15 +21,7 @@ const createCacheKey = (context: Context) => {
     // @ts-expect-error TODO: We should not be accessing `context` like this here.
     const tenant = context.tenancy?.getCurrentTenant();
 
-    // TODO: `getContentLocale` should be injected as a parameter.
-    // @ts-expect-error TODO: We should not be accessing `context` like this here.
-    const contentLocale = context.i18n?.getContentLocale();
-
-    return [
-        tenant ? `tenant:${tenant.id}` : null,
-        contentLocale ? `locale:${contentLocale.code}` : null,
-        plugins.length.toString()
-    ]
+    return [tenant ? `tenant:${tenant.id}` : null, plugins.length.toString()]
         .filter(Boolean)
         .join("#");
 };

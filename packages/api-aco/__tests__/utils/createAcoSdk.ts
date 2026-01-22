@@ -4,7 +4,6 @@ import * as FILTER_GQL from "~tests/graphql/filter.gql.js";
 interface InvokeParams {
     httpMethod?: "POST";
     type?: string;
-    locale?: string;
     body: {
         query: string;
         variables?: Record<string, any>;

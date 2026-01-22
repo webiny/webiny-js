@@ -28,7 +28,6 @@ import { ListFlpsFeature } from "~/features/flp/ListFlps/feature.js";
 import { GetFlpFeature } from "~/features/flp/GetFlp/feature.js";
 import { ListFolderLevelPermissionsTargetsFeature } from "~/features/folder/ListFolderLevelPermissionsTargets/feature.js";
 import { Tenant } from "@webiny/api-core/types/tenancy";
-import { getLocale } from "@webiny/api-core/legacy/i18n/getLocale.js";
 import { CmsFlpFeature } from "~/features/cms/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { FolderModel as FolderModelAbstraction } from "~/domain/folder/abstractions.js";
@@ -73,7 +72,6 @@ const setupAcoContext = async (
     });
 
     const flpCrudMethods = createFlpCrudMethods({
-        getLocale,
         getTenant,
         storageOperations
     });
@@ -139,7 +137,6 @@ const setupAcoContext = async (
     context.aco = {
         filter: createFilterCrudMethods({
             container: context.container,
-            getLocale,
             getTenant,
             storageOperations,
             folderLevelPermissions

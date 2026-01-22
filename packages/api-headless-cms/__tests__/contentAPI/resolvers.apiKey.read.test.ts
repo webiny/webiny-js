@@ -12,10 +12,6 @@ const createIdentity = (permissions: any[] = []): IdentityData => {
         type: "api-key",
         permissions: [
             {
-                name: "content.i18n",
-                locales: ["en-US"]
-            },
-            {
                 name: "cms.endpoint.read"
             },
             {

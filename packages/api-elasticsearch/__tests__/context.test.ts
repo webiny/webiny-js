@@ -98,7 +98,7 @@ describe("ElasticsearchContext", () => {
             return pl.getOperator() === operator;
         });
         /**
-         * There is a possibility that we have multiple operators for single operation, depending on the locale.
+         * There is a possibility that we have multiple operators for single operation.
          */
         expect(operatorPlugins.length).toBeGreaterThan(0);
         /**

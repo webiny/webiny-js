@@ -5,24 +5,21 @@ import {
     type CreateFlpParams,
     type UpdateFlpParams
 } from "~/types.js";
-import type { I18NLocale } from "@webiny/api-core/types/i18n.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 
 export interface CreateFlpCrudMethodsParams {
-    getLocale: () => I18NLocale;
     getTenant: () => Tenant;
     storageOperations: AcoStorageOperations;
 }
 
 export const createFlpCrudMethods = ({
     storageOperations,
-    getTenant,
-    getLocale
+    getTenant
 }: CreateFlpCrudMethodsParams): AcoFolderLevelPermissionsCrud => {
     return {
         async create(params: CreateFlpParams) {
             return await storageOperations.flp.create({
-                data: { ...params, tenant: getTenant().id, locale: getLocale().code }
+                data: { ...params, tenant: getTenant().id }
             });
         },
         async update(id: string, data: UpdateFlpParams) {
@@ -42,8 +39,7 @@ export const createFlpCrudMethods = ({
                 original,
                 data: {
                     ...data,
-                    tenant: getTenant().id,
-                    locale: getLocale().code
+                    tenant: getTenant().id
                 }
             });
         },
@@ -59,8 +55,7 @@ export const createFlpCrudMethods = ({
                             original,
                             data: {
                                 ...data,
-                                tenant: getTenant().id,
-                                locale: getLocale().code
+                                tenant: getTenant().id
                             }
                         };
                     })
@@ -90,8 +85,7 @@ export const createFlpCrudMethods = ({
             await storageOperations.flp.delete({
                 flp: {
                     ...flp,
-                    tenant: getTenant().id,
-                    locale: getLocale().code
+                    tenant: getTenant().id
                 }
             });
 
@@ -100,16 +94,14 @@ export const createFlpCrudMethods = ({
         async get(id: string) {
             return await storageOperations.flp.get({
                 id,
-                tenant: getTenant().id,
-                locale: getLocale().code
+                tenant: getTenant().id
             });
         },
         async list({ where }) {
             return await storageOperations.flp.list({
                 where: {
                     ...where,
-                    tenant: getTenant().id,
-                    locale: getLocale().code
+                    tenant: getTenant().id
                 }
             });
         }

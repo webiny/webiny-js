@@ -35,15 +35,9 @@ describe.skip(`Custom permissions (no WCP access) test`, () => {
         expect(await context.security.listPermissions()).toEqual([
             { something: "custom" },
             { name: "custom" },
-            {
-                locales: ["en-US"],
-                name: "content.i18n"
-            },
-            { name: "pb.*" },
             { name: "cms.*" },
             { name: "security.*" },
             { name: "adminUsers.*" },
-            { name: "i18n.*" },
             { name: "*" }
         ]);
     });

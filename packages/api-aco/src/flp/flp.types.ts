@@ -46,20 +46,17 @@ export interface AcoFolderLevelPermissionsCrud {
 export interface StorageOperationsListFlpsParams {
     where: ListFlpsParams["where"] & {
         tenant: string;
-        locale: string;
     };
 }
 
 export interface StorageOperationsGetFlpParams {
     id: string;
     tenant: string;
-    locale: string;
 }
 
 export type StorageOperationsCreateFlpParams = {
     data: FolderLevelPermission & {
         tenant: string;
-        locale: string;
     };
 };
 
@@ -67,14 +64,12 @@ export type StorageOperationsUpdateFlpParams = {
     original: FolderLevelPermission;
     data: UpdateFlpParams & {
         tenant: string;
-        locale: string;
     };
 };
 
 export type StorageOperationsDeleteFlpParams = {
     flp: FolderLevelPermission & {
         tenant: string;
-        locale: string;
     };
 };
 
@@ -83,7 +78,6 @@ export interface StorageOperationsBatchUpdateFlpParams {
         original: FolderLevelPermission;
         data: UpdateFlpParams & {
             tenant: string;
-            locale: string;
         };
     }>;
 }

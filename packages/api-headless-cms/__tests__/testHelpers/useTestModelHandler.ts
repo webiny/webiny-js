@@ -55,14 +55,11 @@ const extractGqlResponseListData = (
     return extractGqlResponseData(gqlHandlerInvokeResponse) as GqlResponseListData;
 };
 
-interface UseTestModelHandlerParams extends GraphQLHandlerParams {
-    locale?: string;
-}
+interface UseTestModelHandlerParams extends GraphQLHandlerParams {}
 
 export const useTestModelHandler = (params: UseTestModelHandlerParams) => {
-    const locale = params.locale || "en-US";
-    const manageGqlHandler = useGraphQLHandler({ ...params, path: `manage/${locale}` });
-    const readGqlHandler = useGraphQLHandler({ ...params, path: `read/${locale}` });
+    const manageGqlHandler = useGraphQLHandler({ ...params, path: `manage` });
+    const readGqlHandler = useGraphQLHandler({ ...params, path: `read` });
 
     return {
         read: {

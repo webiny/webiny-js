@@ -13,7 +13,6 @@ describe("Content Traverser", () => {
             path: "/cms/manage/en-US",
             headers: {
                 "x-webiny-cms-endpoint": "manage",
-                "x-webiny-cms-locale": "en-US",
                 "x-tenant": tenant.id
             }
         });

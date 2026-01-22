@@ -29,7 +29,6 @@ describe("Where mapper for custom GraphQL where input", async () => {
             path: "/cms/manage/en-US",
             headers: {
                 "x-webiny-cms-endpoint": "manage",
-                "x-webiny-cms-locale": "en-US",
                 "x-tenant": "root"
             }
         });

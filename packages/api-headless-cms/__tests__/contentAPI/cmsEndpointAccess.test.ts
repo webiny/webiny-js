@@ -13,10 +13,6 @@ describe("Endpoint access", () => {
     const previewOpts = { path: "preview" };
     const defaultPermissions = [
         {
-            name: "content.i18n",
-            locales: ["en-US"]
-        },
-        {
             name: "cms.settings"
         },
         {

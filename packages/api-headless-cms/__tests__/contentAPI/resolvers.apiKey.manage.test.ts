@@ -16,10 +16,6 @@ const createIdentity = (permissions: any[] = []): IdentityData => {
                 rwd: "r"
             },
             {
-                name: "content.i18n",
-                locales: ["en-US"]
-            },
-            {
                 name: "cms.endpoint.manage"
             },
             {
