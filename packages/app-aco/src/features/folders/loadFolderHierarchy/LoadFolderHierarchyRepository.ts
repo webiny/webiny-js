@@ -10,6 +10,8 @@ import {
 } from "~/features/folders/abstractions.js";
 
 class LoadFolderHierarchyRepositoryImpl implements RepositoryAbstraction.Interface {
+    private pendingPromises = new Map<string, Promise<void>>();
+
     constructor(
         private cache: FoldersCache.Interface,
         private loadedCache: LoadedFoldersCache.Interface,
@@ -18,7 +20,29 @@ class LoadFolderHierarchyRepositoryImpl implements RepositoryAbstraction.Interfa
     ) {}
 
     async execute(id: string) {
-        if (this.loadedCache.getItem(item => item === id)) {
+        // Return pending promise if one exists
+        const pendingPromise = this.pendingPromises.get(id);
+        if (pendingPromise) {
+            return pendingPromise;
+        }
+
+        // Create new promise and cache it
+        const promise = this.loadFolders(id);
+
+        // Store the promise
+        this.pendingPromises.set(id, promise);
+
+        // Clean up after completion (success or failure)
+        promise.finally(() => {
+            this.pendingPromises.delete(id);
+        });
+
+        return promise;
+    }
+
+    private async loadFolders(id: string) {
+        const existingCache = this.loadedCache.getItem(item => item === id);
+        if (existingCache) {
             return;
         }
 
