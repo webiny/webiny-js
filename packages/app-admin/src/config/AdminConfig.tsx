@@ -10,6 +10,8 @@ import { Theme } from "./AdminConfig/Theme.js";
 import { Dashboard } from "./AdminConfig/Dashboard.js";
 import { type WidgetConfig } from "./AdminConfig/Widget.js";
 import { LexicalTheme } from "./AdminConfig/LexicalTheme.js";
+import { Title } from "./AdminConfig/Title.js";
+import { Logo } from "./AdminConfig/Logo.js";
 import { createAdminConfig } from "./createAdminConfig.js";
 import type { EditorTheme } from "@webiny/lexical-theme";
 import { createLexicalTokens } from "@webiny/lexical-theme/createLexicalEditorTokens.js";
@@ -25,6 +27,9 @@ interface AdminConfig {
     supportMenus: SupportMenuConfig[];
     userMenus: UserMenuConfig[];
     tenant: TenantConfig;
+    title: string;
+    squareLogo: React.ReactNode;
+    horizontalLogo: React.ReactNode;
     widgets: WidgetConfig[];
     lexicalTheme: EditorTheme;
 }
@@ -64,7 +69,11 @@ export const useAdminConfig = () => {
         menus: baseConfig.menus ?? [],
         userMenus: baseConfig.userMenus ?? [],
         supportMenus: baseConfig.supportMenus ?? [],
-        tenant: baseConfig.tenant || {},
+        title: baseConfig.title,
+        logo: {
+            squareLogo: baseConfig.squareLogo,
+            horizontalLogo: baseConfig.horizontalLogo
+        },
         widgets: baseConfig.widgets ?? [],
         lexicalTheme
     };
@@ -92,6 +101,8 @@ export const AdminConfig = Object.assign(Private, {
     Menu,
     Route,
     Tenant,
+    Title,
+    Logo,
     Dashboard,
     LexicalTheme,
     useAdminConfig

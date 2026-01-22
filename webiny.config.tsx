@@ -8,7 +8,8 @@ export const Extensions = () => {
     return (
         <>
             {/* Admin 👇 */}
-            {/*<Admin.Extension src={"/extensions/AdminLogo/AdminLogo.tsx"} />*/}
+            {/*<Admin.Extension src={"/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />*/}
+            {/*<Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />*/}
 
             {/* Infra 👇 */}
             <Infra.PulumiResourceNamePrefix prefix={"myproj-"} />

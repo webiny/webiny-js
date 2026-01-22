@@ -153,7 +153,7 @@ export const ContentEntryFormProvider = ({
         >
             {formProps => {
                 const context: ContentEntryFormContext = {
-                    entry: formProps.data,
+                    entry: { ...initialEntry, values: formProps.data },
                     saveEntry,
                     invalidFields
                 };

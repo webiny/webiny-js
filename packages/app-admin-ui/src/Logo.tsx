@@ -6,11 +6,11 @@ const minHeight = { minHeight: 48 };
 
 export const Logo = LogoRenderer.createDecorator(() => {
     return function Logo() {
-        const { tenant } = useAdminConfig();
+        const { logo } = useAdminConfig();
         const isInNavigation = useIsInNavigation();
 
-        const logo = isInNavigation ? tenant.squareLogo : tenant.horizontalLogo;
+        const logoElement = isInNavigation ? logo.squareLogo : logo.horizontalLogo;
 
-        return <div style={minHeight}>{logo || null}</div>;
+        return <div style={minHeight}>{logoElement || null}</div>;
     };
 });

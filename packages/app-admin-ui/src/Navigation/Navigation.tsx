@@ -6,18 +6,18 @@ import { SimpleLink } from "@webiny/app-admin";
 
 export const Navigation = NavigationRenderer.createDecorator(() => {
     return function Navigation() {
-        const { menus, tenant } = useAdminConfig();
+        const { menus, title, logo } = useAdminConfig();
 
-        const title = <SimpleLink to={"/"}>{tenant.name}</SimpleLink>;
+        const titleElement = <SimpleLink to={"/"}>{title}</SimpleLink>;
         const icon = (
             <SimpleLink to={"/"}>
-                <Sidebar.Icon element={tenant.squareLogo} label={"Webiny"} />
+                <Sidebar.Icon element={logo.squareLogo} label={"Webiny"} />
             </SimpleLink>
         );
 
         return (
             <Sidebar
-                title={title}
+                title={titleElement}
                 icon={icon}
                 footer={<SidebarMenuItems menus={menus} where={{ tags: ["footer"] }} />}
             >
