@@ -6,6 +6,7 @@ import { PublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEn
 import { UnpublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UnpublishEntry";
 import { RepublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/RepublishEntry";
 import type { IScheduleActionWithPayload } from "~/features/ScheduleEntryAction/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 /**
  * Handler for publishing CMS entries
@@ -24,7 +25,8 @@ class PublishEntryActionHandlerImpl implements ScheduledActionHandler.Interface 
         private getPublishedEntriesByIdsUseCase: GetPublishedEntriesByIdsUseCase.Interface,
         private publishEntryUseCase: PublishEntryUseCase.Interface,
         private unpublishEntryUseCase: UnpublishEntryUseCase.Interface,
-        private republishEntryUseCase: RepublishEntryUseCase.Interface
+        private republishEntryUseCase: RepublishEntryUseCase.Interface,
+        private identityContext: IdentityContext.Interface
     ) {}
 
     public canHandle(namespace: string, actionType: string): boolean {
@@ -41,7 +43,10 @@ class PublishEntryActionHandlerImpl implements ScheduledActionHandler.Interface 
         if (modelResult.isFail()) {
             console.error(
                 `Failed to get model "${modelId}" for scheduled publish action:`,
-                modelResult.error
+                modelResult.error,
+                {
+                    identity: this.identityContext.getIdentity()
+                }
             );
             throw new Error(`Model not found: ${modelId}`);
         }
@@ -146,6 +151,7 @@ export const PublishEntryActionHandler = ScheduledActionHandler.createImplementa
         GetPublishedEntriesByIdsUseCase,
         PublishEntryUseCase,
         UnpublishEntryUseCase,
-        RepublishEntryUseCase
+        RepublishEntryUseCase,
+        IdentityContext
     ]
 });

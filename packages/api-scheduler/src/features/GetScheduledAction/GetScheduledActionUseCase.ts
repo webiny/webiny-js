@@ -21,7 +21,9 @@ class GetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
         private model: ScheduledActionModel.Interface
     ) {}
 
-    async execute<T extends GenericRecord>(id: string): Promise<Result<IScheduledAction<T>, UseCaseAbstraction.Error>> {
+    async execute<T extends GenericRecord>(
+        id: string
+    ): Promise<Result<IScheduledAction<T>, UseCaseAbstraction.Error>> {
         // Get entry from CMS
         const scheduleId = ScheduledActionIdWithVersion.from(id);
         const entryResult = await this.getEntryByIdUseCase.execute<IScheduledAction<T>>(

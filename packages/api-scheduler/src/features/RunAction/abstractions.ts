@@ -33,7 +33,9 @@ interface IRunActionParams<T extends GenericRecord> {
 }
 
 export interface IRunActionUseCase {
-    execute<T extends GenericRecord>(params: IRunActionParams<T>): Promise<Result<IScheduledAction<T>, RunActionError>>;
+    execute<T extends GenericRecord>(
+        params: IRunActionParams<T>
+    ): Promise<Result<IScheduledAction<T>, RunActionError>>;
 }
 
 export const RunActionUseCase = createAbstraction<IRunActionUseCase>("RunActionUseCase");

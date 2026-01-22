@@ -21,7 +21,9 @@ export interface IGetScheduledActionErrors {
 type GetScheduledActionError = IGetScheduledActionErrors[keyof IGetScheduledActionErrors];
 
 export interface IGetScheduledActionUseCase {
-    execute<T extends GenericRecord>(scheduleId: string): Promise<Result<IScheduledAction<T>, GetScheduledActionError>>;
+    execute<T extends GenericRecord>(
+        scheduleId: string
+    ): Promise<Result<IScheduledAction<T>, GetScheduledActionError>>;
 }
 
 export const GetScheduledActionUseCase = createAbstraction<IGetScheduledActionUseCase>(

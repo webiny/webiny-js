@@ -18,6 +18,7 @@ import {
     PublishTestEntryActionHandler,
     PublishTestEntryActionHandlerImpl
 } from "~tests/__mocks/PublishTestEntryActionHandler.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 describe("Scheduler Event Handler", () => {
     const lambdaContext = {} as LambdaContext;
@@ -68,7 +69,10 @@ describe("Scheduler Event Handler", () => {
             namespace: PublishTestEntryActionHandlerImpl.name,
             actionType: "Publish",
             targetId: "target-id#0001",
-            scheduleFor
+            scheduleFor,
+            payload: {
+                something: true
+            }
         });
 
         expect(createResult.isOk()).toBeTrue();
@@ -76,7 +80,9 @@ describe("Scheduler Event Handler", () => {
             actionType: "Publish",
             id: expect.stringMatching("wby-schedule-"),
             namespace: PublishTestEntryActionHandlerImpl.name,
-            payload: undefined,
+            payload: {
+                something: true
+            },
             scheduledBy: {
                 displayName: "John Doe",
                 id: "id-12345678",
@@ -86,6 +92,12 @@ describe("Scheduler Event Handler", () => {
             targetId: "target-id#0001",
             title: "Test Schedule Action"
         });
+        /**
+         * Use anonymous identity to start the event handler - this way we make sure that the action handler
+         * uses the identity stored on the scheduled action itself.
+         */
+        const identityContext = context.container.resolve(IdentityContext);
+        identityContext.setIdentity(undefined);
 
         const id = createResult.value.id;
 

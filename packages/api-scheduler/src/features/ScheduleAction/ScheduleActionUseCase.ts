@@ -166,17 +166,21 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
 
         // Update CMS entry
         const existingEntryId = ScheduledActionIdWithVersion.from(existing.id);
-        const updateResult = await this.updateEntryUseCase.execute<IScheduledAction<T>>(this.model, existingEntryId, {
-            values: {
-                scheduledBy: {
-                    id: identity.id,
-                    type: identity.type,
-                    displayName: identity.displayName
-                },
-                scheduledFor: scheduleFor,
-                payload
+        const updateResult = await this.updateEntryUseCase.execute<IScheduledAction<T>>(
+            this.model,
+            existingEntryId,
+            {
+                values: {
+                    scheduledBy: {
+                        id: identity.id,
+                        type: identity.type,
+                        displayName: identity.displayName
+                    },
+                    scheduledFor: scheduleFor,
+                    payload
+                }
             }
-        });
+        );
 
         if (updateResult.isFail()) {
             return Result.fail(
