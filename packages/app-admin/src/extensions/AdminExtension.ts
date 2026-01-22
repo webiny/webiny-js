@@ -19,14 +19,28 @@ export const AdminExtension = defineExtension({
             .join("apps", "admin", "src", "Extensions.tsx")
             .toString();
 
-        // Generate a constant hash-based component name to avoid using timestamps
-        const hash = crypto.createHash("sha256").update(params.src).digest("hex");
+        const { src: extensionFilePath } = params;
+
+        // Resolve to absolute path for file operations.
+        let absoluteExtensionFilePath: string;
+        if (extensionFilePath.startsWith("/extensions/")) {
+            // Resolve from project root.
+            absoluteExtensionFilePath = ctx.project.paths.rootFolder
+                .join(extensionFilePath)
+                .toString();
+        } else {
+            // Treat as absolute path.
+            absoluteExtensionFilePath = extensionFilePath;
+        }
+
+        // Generate a constant hash-based component name to avoid using timestamps.
+        const hash = crypto.createHash("sha256").update(extensionFilePath).digest("hex");
         const componentName = `AdminExtension_${hash.slice(-10)}`;
 
         const project = new Project();
 
         const importPath = path
-            .relative(path.dirname(extensionsTsxFilePath), params.src)
+            .relative(path.dirname(extensionsTsxFilePath), absoluteExtensionFilePath)
             .replace(".tsx", ".js");
 
         project.addSourceFileAtPath(extensionsTsxFilePath);

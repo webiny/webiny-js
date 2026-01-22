@@ -4,11 +4,11 @@ import { ReactComponent as SquareLogo } from "./Tenant/wby-square.svg";
 import { ReactComponent as HorizontalLogo } from "./Tenant/wby-horizontal.svg";
 
 export const Tenant = React.memo(() => {
-    const { Tenant } = AdminConfig;
+    const { Title, Logo } = AdminConfig;
     return (
         <AdminConfig.Public>
-            <Tenant.Name value={"Webiny"} />
-            <Tenant.Logo
+            <Title value={"Webiny"} />
+            <Logo
                 squareLogo={<SquareLogo alt={"Webiny"} width={32} />}
                 horizontalLogo={<HorizontalLogo width={175} />}
             />
