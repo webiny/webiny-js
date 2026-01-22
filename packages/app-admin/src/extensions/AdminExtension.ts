@@ -11,7 +11,8 @@ export const AdminExtension = defineExtension({
     multiple: true,
     paramsSchema: ({ project }) => {
         return z.object({
-            src: zodSrcPath({ project })
+            src: zodSrcPath({ project }),
+            exportName: z.string().optional()
         });
     },
     async build(params, ctx) {
@@ -33,6 +34,11 @@ export const AdminExtension = defineExtension({
             absoluteExtensionFilePath = extensionFilePath;
         }
 
+        const extensionFileName = path.basename(absoluteExtensionFilePath);
+
+        // Export name can be customized or defaults to the file name without extension.
+        const exportName = params.exportName ?? path.parse(extensionFileName).name;
+
         // Generate a constant hash-based component name to avoid using timestamps.
         const hash = crypto.createHash("sha256").update(extensionFilePath).digest("hex");
         const componentName = `AdminExtension_${hash.slice(-10)}`;
@@ -41,7 +47,7 @@ export const AdminExtension = defineExtension({
 
         const importPath = path
             .relative(path.dirname(extensionsTsxFilePath), absoluteExtensionFilePath)
-            .replace(".tsx", ".js");
+            .replace(/\.tsx?$/, ".js");
 
         project.addSourceFileAtPath(extensionsTsxFilePath);
 
@@ -66,7 +72,7 @@ export const AdminExtension = defineExtension({
             index = last.getChildIndex() + 1;
         }
 
-        // Import as default export if available, otherwise import named "Extension" export
+        // Import as default export if available, otherwise import named export
         if (hasDefaultExport) {
             source.insertImportDeclaration(index, {
                 defaultImport: componentName,
@@ -74,7 +80,7 @@ export const AdminExtension = defineExtension({
             });
         } else {
             source.insertImportDeclaration(index, {
-                namedImports: [{ name: "Extension", alias: componentName }],
+                namedImports: [{ name: exportName, alias: componentName }],
                 moduleSpecifier: importPath
             });
         }
