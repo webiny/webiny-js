@@ -1,6 +1,5 @@
 import os from "os";
-// @ts-expect-error `tar` has no types.
-import tar from "tar";
+import * as tar from "tar";
 import fs from "fs";
 import path from "path";
 // @ts-expect-error `tar` has no types.
