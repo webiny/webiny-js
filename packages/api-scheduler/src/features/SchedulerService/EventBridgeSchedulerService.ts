@@ -118,6 +118,9 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
         try {
             await client.send(new DeleteScheduleCommand({ Name: id }));
         } catch (ex) {
+            if (ex.name === "ResourceNotFoundException") {
+                return;
+            }
             throw WebinyError.from(ex);
         }
     }
@@ -129,7 +132,6 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
             await client.send(new GetScheduleCommand({ Name: id }));
             return true;
         } catch (ex) {
-            console.error(ex);
             if (ex.name === "ResourceNotFoundException") {
                 return false;
             }
