@@ -79,7 +79,8 @@ export const defineApiExtension = (params: DefineApiExtensionParams) =>
             // Check if the file has a default export using AST parsing.
             const extensionProject = new Project();
             extensionProject.addSourceFileAtPath(absoluteExtensionFilePath);
-            const extensionSource = extensionProject.getSourceFileOrThrow(absoluteExtensionFilePath);
+            const extensionSource =
+                extensionProject.getSourceFileOrThrow(absoluteExtensionFilePath);
             const hasDefaultExport = extensionSource.getDefaultExportSymbol() !== undefined;
 
             // Support both default and named exports.
