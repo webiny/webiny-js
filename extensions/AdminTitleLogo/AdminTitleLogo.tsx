@@ -5,7 +5,7 @@ import horizontalLogo from "./logo.png";
 
 const { Title, Logo } = AdminConfig;
 
-export const Extension = () => {
+const AdminTitleLogo = () => {
     return (
         <AdminConfig.Public>
             <Title value={"ACME Corp"} />
@@ -16,3 +16,5 @@ export const Extension = () => {
         </AdminConfig.Public>
     );
 };
+
+export default AdminTitleLogo;
