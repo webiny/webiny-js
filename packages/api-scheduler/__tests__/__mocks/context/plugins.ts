@@ -11,7 +11,7 @@ import type {
     SchedulerClient,
     SchedulerClientConfig
 } from "@webiny/aws-sdk/client-scheduler/index.js";
-import { createSchedulerManifestPlugin } from "~tests/mocks/schedulerManifestPlugin.js";
+import { createSchedulerManifestPlugin } from "./../schedulerManifestPlugin.js";
 import apiKeyAuthentication from "@webiny/api-core/legacy/security/plugins/apiKeyAuthentication.js";
 import apiKeyAuthorization from "@webiny/api-core/legacy/security/plugins/apiKeyAuthorization.js";
 import { createApiCore } from "@webiny/api-core";

@@ -1,7 +1,7 @@
-import type { IScheduledAction } from "@webiny/api-scheduler";
+import type { IScheduleActionWithPayload } from "~/features/ScheduleEntryAction/index.js";
 
 export class ActionMapper {
-    static fromScheduledAction(action: IScheduledAction<{ modelId: string }>) {
+    static fromScheduledAction(action: IScheduleActionWithPayload) {
         return {
             id: action.id,
             targetId: action.targetId,

@@ -14,6 +14,11 @@ import { ScheduledActionNotFoundError, ScheduledActionPersistenceError } from "~
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
 import { ScheduledActionIdWithVersion } from "~/domain/ScheduledActionIdWithVersion.js";
+import type { GenericRecord } from "@webiny/api/types.js";
+import {
+    AuthenticatedIdentity,
+    IdentityContext
+} from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 /**
  * Executes a scheduled action
@@ -26,17 +31,28 @@ import { ScheduledActionIdWithVersion } from "~/domain/ScheduledActionIdWithVers
  * 5. Update entry with error on failure (for debugging/audit)
  */
 class ExecuteScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(
+    public constructor(
         private getScheduledActionUseCase: GetScheduledActionUseCase.Interface,
         private actionHandler: ScheduledActionHandler.Interface,
         private deleteEntryUseCase: DeleteEntryUseCase.Interface,
         private updateEntryUseCase: UpdateEntryUseCase.Interface,
-        private model: ScheduledActionModel.Interface
+        private model: ScheduledActionModel.Interface,
+        private identityContext: IdentityContext.Interface
     ) {}
 
-    async execute(id: string): Promise<Result<void, UseCaseAbstraction.Error>> {
+    public async execute<T extends GenericRecord>(
+        id: string
+    ): Promise<Result<void, UseCaseAbstraction.Error>> {
+        // return this.identityContext.withoutAuthorization(async () => {
+        return this.executeAction<T>(id);
+        // });
+    }
+
+    private async executeAction<T extends GenericRecord>(
+        id: string
+    ): Promise<Result<void, UseCaseAbstraction.Error>> {
         // Load scheduled action
-        const getResult = await this.getScheduledActionUseCase.execute(id);
+        const getResult = await this.getScheduledActionUseCase.execute<T>(id);
 
         if (getResult.isFail()) {
             const error = getResult.error;
@@ -47,8 +63,24 @@ class ExecuteScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface 
 
             return Result.fail(error);
         }
-
         const scheduledAction = getResult.value;
+
+        /**
+         * When executing the scheduled action, we need a user which has access to perform the action.
+         * We will set a user which created the scheduled action as the execution user.
+         */
+        const scheduledBy = scheduledAction.scheduledBy;
+        this.identityContext.setIdentity(
+            new AuthenticatedIdentity({
+                id: scheduledBy.id,
+                type: scheduledBy.type,
+                displayName: scheduledBy.displayName ?? "",
+                context: {
+                    canAccessTenant: true
+                }
+            })
+        );
+
         const scheduleId = ScheduledActionIdWithVersion.from(id);
 
         // Check if the handler can handle this action
@@ -59,7 +91,7 @@ class ExecuteScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface 
             );
 
             // Update entry with error for debugging
-            await this.updateEntryUseCase.execute<IScheduledAction>(this.model, scheduleId, {
+            await this.updateEntryUseCase.execute<IScheduledAction<T>>(this.model, scheduleId, {
                 values: {
                     error: error.message
                 }
@@ -92,7 +124,7 @@ class ExecuteScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface 
             );
 
             // Update entry with error for debugging
-            await this.updateEntryUseCase.execute<IScheduledAction>(this.model, scheduleId, {
+            await this.updateEntryUseCase.execute<IScheduledAction<T>>(this.model, scheduleId, {
                 values: {
                     error: executionError.message
                 }
@@ -110,6 +142,7 @@ export const ExecuteScheduledActionUseCase = UseCaseAbstraction.createImplementa
         ScheduledActionHandler,
         DeleteEntryUseCase,
         UpdateEntryUseCase,
-        ScheduledActionModel
+        ScheduledActionModel,
+        IdentityContext
     ]
 });

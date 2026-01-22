@@ -1,10 +1,15 @@
 import { Result } from "@webiny/feature/api";
-import { ScheduleEntryActionUseCase as UseCaseAbstraction } from "./abstractions.js";
+import {
+    type IScheduleActionPayload,
+    ScheduleEntryActionUseCase as UseCaseAbstraction
+} from "./abstractions.js";
 import type { IScheduledAction } from "@webiny/api-scheduler";
 import { ScheduleActionUseCase } from "@webiny/api-scheduler";
 import { RunActionUseCase } from "@webiny/api-scheduler";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById/index.js";
+import type { ModelNotFoundError } from "@webiny/api-headless-cms/domain/contentModel/errors.js";
+import type { EntryNotFoundError } from "@webiny/api-headless-cms/domain/contentEntry/errors.js";
 
 /**
  * Schedules a CMS entry action (publish or unpublish)
@@ -24,12 +29,12 @@ class ScheduleEntryActionUseCaseImpl implements UseCaseAbstraction.Interface {
 
     async execute(
         input: UseCaseAbstraction.Input
-    ): Promise<Result<IScheduledAction, UseCaseAbstraction.Error>> {
+    ): Promise<Result<IScheduledAction<IScheduleActionPayload>, UseCaseAbstraction.Error>> {
         const namespace = `Cms/Entry/${input.modelId}`;
 
         // Handle immediate execution
         if (input.immediately) {
-            const result = await this.runActionUseCase.execute({
+            const result = await this.runActionUseCase.execute<IScheduleActionPayload>({
                 namespace,
                 actionType: input.actionType,
                 targetId: input.targetId,
@@ -53,7 +58,7 @@ class ScheduleEntryActionUseCaseImpl implements UseCaseAbstraction.Interface {
         // Fetch the target model
         const modelResult = await this.getModelUseCase.execute(input.modelId);
         if (modelResult.isFail()) {
-            return Result.fail(modelResult.error as any);
+            return Result.fail(modelResult.error as ModelNotFoundError);
         }
 
         const model = modelResult.value;
@@ -61,14 +66,14 @@ class ScheduleEntryActionUseCaseImpl implements UseCaseAbstraction.Interface {
         // Fetch entry to get title
         const entryResult = await this.getEntryByIdUseCase.execute(model, input.targetId);
         if (entryResult.isFail()) {
-            return Result.fail(entryResult.error as any);
+            return Result.fail(entryResult.error as EntryNotFoundError);
         }
 
         const entry = entryResult.value;
         const title = entry.values[model.titleFieldId] || "Unknown entry title";
 
         // Schedule with title metadata
-        const scheduleResult = await this.scheduleActionUseCase.execute({
+        const scheduleResult = await this.scheduleActionUseCase.execute<IScheduleActionPayload>({
             namespace,
             actionType: input.actionType,
             targetId: input.targetId,

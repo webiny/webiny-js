@@ -50,6 +50,15 @@ export const Entry = ({
 }: EntryPropsWithRemove | EntryProps) => {
     const { getLink } = useRouter();
 
+    const onSelect = useCallback(() => {
+        if (onChange) {
+            onChange({
+                id: entry.id,
+                modelId: entry.model.modelId
+            });
+        }
+    }, [onChange, entry.id, entry.model.modelId]);
+
     const onMoveUp = useCallback(
         (ev: React.MouseEvent) => {
             if (!onMoveUpClick) {
@@ -91,14 +100,7 @@ export const Entry = ({
     return (
         <div
             data-selected={selected}
-            onClick={() => {
-                if (onChange) {
-                    onChange({
-                        id: entry.id,
-                        modelId: entry.model.modelId
-                    });
-                }
-            }}
+            onClick={onSelect}
             data-role="ref-field-entry"
             className={cn(
                 "flex items-center justify-between gap-md w-full rounded-md bg-neutral-light p-sm-extra pr-lg hover:bg-neutral-dimmed border-md border-transparent data-[selected=true]:border-accent-dimmed",
@@ -109,12 +111,10 @@ export const Entry = ({
                 <div>
                     <Checkbox
                         checked={selected}
-                        onChange={() =>
-                            onChange({
-                                id: entry.id,
-                                modelId: entry.model.modelId
-                            })
-                        }
+                        onChange={() => {
+                            // We're not calling the onSelect callback here because
+                            // the parent div already does that on click.
+                        }}
                     />
                 </div>
             )}

@@ -9,7 +9,11 @@ const setupGroup = async (context: CmsContext) => {
     return context.cms.createGroup({
         name: "Test Group",
         description: "Test Group Description",
-        icon: "fa/fas",
+        icon: {
+            type: "fa/fas",
+            name: "fa/fas",
+            value: "fa/fas"
+        },
         slug: "test-group"
     });
 };
@@ -27,7 +31,7 @@ const modelData = {
 const createModelData = (group: CmsGroup): CmsModelCreateInput => {
     return {
         ...modelData,
-        group: group.id
+        group: group.slug
     };
 };
 

@@ -5,6 +5,7 @@ import { ScheduledActionModel, SchedulerService } from "~/shared/abstractions.js
 import { ScheduledActionNotFoundError, ScheduledActionPersistenceError } from "~/domain/errors.js";
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
 import { ScheduledActionIdWithVersion } from "~/domain/ScheduledActionIdWithVersion.js";
+import { EntryNotFoundError } from "@webiny/api-headless-cms/domain/contentEntry/errors.js";
 
 /**
  * Cancels a scheduled action
@@ -24,7 +25,6 @@ class CancelScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
     ) {}
 
     async execute(id: string): Promise<Result<void, UseCaseAbstraction.Error>> {
-        console.log("Cancel schedule", id);
         // Check if scheduled action exists
         const getResult = await this.getScheduledActionUseCase.execute(id);
 
@@ -39,12 +39,17 @@ class CancelScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         const scheduleId = ScheduledActionIdWithVersion.from(id);
-        console.log("scheduleId", scheduleId);
 
         // Delete EventBridge schedule
         // Note: We continue even if this fails, as the schedule might already be executed/deleted
         try {
-            await this.schedulerService.delete(id);
+            const eventBridgeSchedule = await this.schedulerService.exists(id);
+            /**
+             * No point to even try deleting if it doesn't exist.
+             */
+            if (eventBridgeSchedule) {
+                await this.schedulerService.delete(id);
+            }
         } catch (error) {
             console.warn(
                 `Failed to delete EventBridge schedule: ${scheduleId}. Continuing with CMS entry deletion.`,
@@ -59,7 +64,12 @@ class CancelScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
         });
 
         if (deleteResult.isFail()) {
-            console.log("deleteResultError", deleteResult.error);
+            /**
+             * Some process could have already deleted the entry, in which case we can safely ignore this error.
+             */
+            if (deleteResult.error instanceof EntryNotFoundError) {
+                return Result.ok();
+            }
             return Result.fail(
                 new ScheduledActionPersistenceError(new Error(deleteResult.error.message))
             );

@@ -10,7 +10,10 @@ import {
 } from "~/graphql/schema.js";
 import { createZodError } from "@webiny/utils";
 import { ListScheduledActionsUseCase } from "@webiny/api-scheduler/features/ListScheduledActions";
-import { ScheduleEntryActionUseCase } from "~/features/ScheduleEntryAction/index.js";
+import {
+    type IScheduleActionPayload,
+    ScheduleEntryActionUseCase
+} from "~/features/ScheduleEntryAction/index.js";
 import { CancelScheduledEntryActionUseCase } from "~/features/CancelScheduledEntryAction/index.js";
 import { ActionMapper } from "~/graphql/ActionMapper.js";
 
@@ -146,7 +149,7 @@ export const createSchedulerGraphQL = () => {
 
                         const listActions = context.container.resolve(ListScheduledActionsUseCase);
 
-                        const actions = await listActions.execute({
+                        const actions = await listActions.execute<IScheduleActionPayload>({
                             where: { namespace: `Cms/Entry/${args.modelId}`, targetId: args.id }
                         });
 
@@ -182,7 +185,7 @@ export const createSchedulerGraphQL = () => {
                             where["actionType"] = typeMap[type];
                         }
 
-                        const actions = await listActions.execute({
+                        const actions = await listActions.execute<IScheduleActionPayload>({
                             where: { ...where, namespace: `Cms/Entry/${args.modelId}` },
                             sort: validated.data.sort,
                             limit: validated.data.limit,

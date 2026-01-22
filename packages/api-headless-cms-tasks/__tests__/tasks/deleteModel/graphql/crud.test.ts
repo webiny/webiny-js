@@ -3,7 +3,7 @@ import { useHandler } from "~tests/context/useHandler";
 import type { IStoreValue } from "~/features/DeleteModelTask/types.js";
 import { createStoreKey } from "~/helpers/store.js";
 
-describe("crud", () => {
+describe("headless cms tasks crud", () => {
     it("should list models being deleted", async () => {
         const { handler, identity, tenant } = useHandler();
         const context = await handler();
@@ -42,7 +42,11 @@ describe("crud", () => {
             name: "group",
             description: "description",
             id: "group",
-            icon: "icon"
+            icon: {
+                type: "icon",
+                name: "icon",
+                value: "icon"
+            }
         });
 
         const model = await context.cms.createModel({

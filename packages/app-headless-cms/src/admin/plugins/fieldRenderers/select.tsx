@@ -33,7 +33,7 @@ const plugin: CmsModelFieldRendererPlugin = {
                                 options={options}
                                 placeholder={field.placeholderText}
                                 data-testid={`fr.input.select.${field.label}`}
-                                value={String(value)}
+                                value={typeof value !== "undefined" ? String(value) : undefined}
                                 onChange={value => {
                                     if (field.type === "number") {
                                         onChange(Number(value));

@@ -38,7 +38,7 @@ const plugin: CmsModelFieldRendererPlugin = {
                                     value: String(option.value),
                                     selected: option.selected
                                 }))}
-                                value={String(value)}
+                                value={typeof value !== "undefined" ? String(value) : undefined}
                                 onChange={value => {
                                     if (field.type === "number") {
                                         onChange(Number(value));

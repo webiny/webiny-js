@@ -6,7 +6,7 @@ import { SCHEDULED_CMS_ACTION_EVENT_IDENTIFIER } from "~/constants.js";
 import { ExecuteScheduledActionUseCase } from "~/features/ExecuteScheduledAction/index.js";
 
 export interface IScheduledActionEventPayload {
-    id: string; // id of the scheduled action
+    id: string;
     scheduleFor: string;
 }
 
@@ -31,9 +31,7 @@ const canHandle = (event: Partial<IScheduledActionEvent>): boolean => {
 
 const handler = createSourceHandler<IScheduledActionEvent, HandlerParams>({
     name: "handler-aws-event-bridge-scheduled-cms-action-event",
-    canUse: event => {
-        return canHandle(event);
-    },
+    canUse: canHandle,
     handle: async ({ params, event, context }) => {
         return createHandler(params)(event, context);
     }
@@ -43,9 +41,7 @@ registry.register(handler);
 
 export const createScheduledActionEventHandler = () => {
     return createEventHandler<IScheduledActionEvent>({
-        canHandle: event => {
-            return canHandle(event);
-        },
+        canHandle,
         handle: async params => {
             const { payload, context } = params;
             const input = payload[SCHEDULED_CMS_ACTION_EVENT_IDENTIFIER];
@@ -58,6 +54,9 @@ export const createScheduledActionEventHandler = () => {
                 console.error(error.code, error.message);
                 throw error;
             }
+            return {
+                success: true
+            };
         }
     });
 };
