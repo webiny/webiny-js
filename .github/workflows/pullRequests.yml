@@ -61,6 +61,7 @@ jobs:
         with:
           commit_message: 'chore: auto-format code'
           file_pattern: '*.js *.jsx *.ts *.tsx *.json *.scss *.yml'
+          repository: ${{ github.base_ref }}
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'

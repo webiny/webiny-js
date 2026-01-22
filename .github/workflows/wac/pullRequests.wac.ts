@@ -157,7 +157,8 @@ export const pullRequests = createWorkflow({
                     uses: "stefanzweifel/git-auto-commit-action@v5",
                     with: {
                         "commit_message": "chore: auto-format code",
-                        "file_pattern": "*.js *.jsx *.ts *.tsx *.json *.scss *.yml"
+                        "file_pattern": "*.js *.jsx *.ts *.tsx *.json *.scss *.yml",
+                        "repository": DIR_WEBINY_JS
                     }
                 }
             ]
