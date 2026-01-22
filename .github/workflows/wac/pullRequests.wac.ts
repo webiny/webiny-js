@@ -149,17 +149,18 @@ export const pullRequests = createWorkflow({
                     [
                         { name: "Install dependencies", run: "yarn --immutable" },
                         { name: "Run Prettier", run: "yarn prettier:fix" },
-                        {
-                            name: "Commit and push changes",
-                            uses: "stefanzweifel/git-auto-commit-action@v5",
-                            with: {
-                                "commit_message": "chore: auto-format code",
-                                "file_pattern": "*.js *.jsx *.ts *.tsx *.json *.scss *.yml"
-                            }
-                        }
                     ],
                     { "working-directory": DIR_WEBINY_JS }
-                )
+                ),
+                {
+                    name: "Commit and push changes",
+                    uses: "stefanzweifel/git-auto-commit-action@v5",
+                    with: {
+                        "commit_message": "chore: auto-format code",
+                        "file_pattern": "*.js *.jsx *.ts *.tsx *.json *.scss *.yml",
+                        "repository": DIR_WEBINY_JS
+                    }
+                }
             ]
         }),
         constants: createJob({
