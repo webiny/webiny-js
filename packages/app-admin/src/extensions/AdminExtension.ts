@@ -52,6 +52,12 @@ export const AdminExtension = defineExtension({
             return;
         }
 
+        // Check if the extension file has a default export or named export
+        const extensionProject = new Project();
+        extensionProject.addSourceFileAtPath(absoluteExtensionFilePath);
+        const extensionSource = extensionProject.getSourceFileOrThrow(absoluteExtensionFilePath);
+        const hasDefaultExport = extensionSource.getDefaultExportSymbol() !== undefined;
+
         let index = 1;
 
         const importDeclarations = source.getImportDeclarations();
@@ -60,10 +66,18 @@ export const AdminExtension = defineExtension({
             index = last.getChildIndex() + 1;
         }
 
-        source.insertImportDeclaration(index, {
-            namedImports: [{ name: "Extension", alias: componentName }],
-            moduleSpecifier: importPath
-        });
+        // Import as default export if available, otherwise import named "Extension" export
+        if (hasDefaultExport) {
+            source.insertImportDeclaration(index, {
+                defaultImport: componentName,
+                moduleSpecifier: importPath
+            });
+        } else {
+            source.insertImportDeclaration(index, {
+                namedImports: [{ name: "Extension", alias: componentName }],
+                moduleSpecifier: importPath
+            });
+        }
 
         const extensionsIdentifier = source.getFirstDescendant(node => {
             if (!Node.isIdentifier(node)) {
