@@ -58,15 +58,23 @@ export const listScheduleSchema = zod.object({
         .optional(),
     sort: zod
         .array(
-            zod.string().refine((value): value is CmsEntryListSortAsc | CmsEntryListSortDesc => {
-                const [field, direction] = value.split("_");
-                if (!field) {
-                    return false;
-                } else if (direction !== "ASC" && direction !== "DESC") {
-                    return false;
-                }
-                return true;
-            })
+            zod
+                .string()
+                .refine((value): value is CmsEntryListSortAsc | CmsEntryListSortDesc => {
+                    const [field, direction] = value.split("_");
+                    if (!field) {
+                        return false;
+                    } else if (direction !== "ASC" && direction !== "DESC") {
+                        return false;
+                    }
+                    return true;
+                })
+                .transform(value => {
+                    if (!value) {
+                        return value;
+                    }
+                    return `values_${value}` as typeof value;
+                })
         )
         .optional(),
     limit: zod.number().optional(),

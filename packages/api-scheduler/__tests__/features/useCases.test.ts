@@ -81,8 +81,10 @@ describe("Combined Use Cases", () => {
         });
 
         const listResult = await listScheduledActionsUseCase.execute({
-            where: {}
+            where: {},
+            sort: ["scheduledFor_DESC"]
         });
+
         expect(listResult.isOk()).toBeTrue();
         expect(listResult.value.items).toHaveLength(1);
         expect(listResult.value.items[0]).toEqual({

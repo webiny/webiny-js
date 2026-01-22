@@ -10,6 +10,7 @@ import { ScheduledActionModel } from "~/shared/abstractions.js";
 import { ScheduledActionPersistenceError } from "~/domain/errors.js";
 import { CmsFieldInputToWhereMapper } from "@webiny/api-headless-cms/features/mapper/abstractions.js";
 import type { GenericRecord } from "@webiny/api/types.js";
+import { remapSortToCms } from "./remapSortToCms.js";
 
 /**
  * Lists scheduled actions with optional filtering
@@ -30,8 +31,12 @@ class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
     async execute<T extends GenericRecord>(
         params: IListScheduledActionsParams
     ): Promise<Result<IListScheduledActionsResponse<T>, UseCaseAbstraction.Error>> {
-        const { where, sort, limit, after } = params;
+        const { where, sort: sortInput, limit, after } = params;
 
+        const sort = remapSortToCms({
+            input: sortInput,
+            fields: this.model.fields
+        });
         // List entries from CMS
         const listResult = await this.listEntriesUseCase.execute<IScheduledAction<T>>(this.model, {
             where: this.cmsFieldInputToWhereMapper.map({

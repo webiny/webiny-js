@@ -1,7 +1,7 @@
 import { createFeature } from "@webiny/feature/api";
 import { ScheduleEntryActionUseCase } from "./ScheduleEntryActionUseCase.js";
 import { PublishEntryActionHandler } from "./actionHandlers/PublishEntryActionHandler.js";
-// import { UnpublishEntryActionHandler } from "./actionHandlers/UnpublishEntryActionHandler.js";
+import { UnpublishEntryActionHandler } from "./actionHandlers/UnpublishEntryActionHandler.js";
 
 /**
  * ScheduleEntryAction Feature
@@ -14,6 +14,6 @@ export const ScheduleEntryActionFeature = createFeature({
     register(container) {
         container.register(ScheduleEntryActionUseCase);
         container.register(PublishEntryActionHandler);
-        // container.register(UnpublishEntryActionHandler);
+        container.register(UnpublishEntryActionHandler);
     }
 });

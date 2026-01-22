@@ -55,10 +55,6 @@ class ExecuteScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface 
         const getResult = await this.getScheduledActionUseCase.execute<T>(id);
 
         if (getResult.isFail()) {
-            console.log({
-                noScheduledActionFound: id,
-                reason: getResult.error.message
-            });
             const error = getResult.error;
 
             if (error.code === "Scheduler/ScheduledAction/NotFound") {
@@ -89,10 +85,6 @@ class ExecuteScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface 
 
         // Check if the handler can handle this action
         if (!this.actionHandler.canHandle(scheduledAction.namespace, scheduledAction.actionType)) {
-            console.log({
-                noHandlerFound: id,
-                scheduledAction
-            });
             const error = new HandlerNotFoundError(
                 scheduledAction.namespace,
                 scheduledAction.actionType
