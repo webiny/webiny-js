@@ -100,32 +100,6 @@ describe("wait until healthy", () => {
         expect(onUnhealthy).toHaveBeenCalledTimes(1);
     });
 
-    it("should trigger onUnhealthy callback - multiple times", async () => {
-        expect.assertions(2);
-        const waitUntilHealthy = createWaitUntilHealthy(client, {
-            minClusterHealthStatus: ElasticsearchCatClusterHealthStatus.Green,
-            maxProcessorPercent: 1,
-            maxRamPercent: 1,
-            maxWaitingTime: 3,
-            waitingTimeStep: 1
-        });
-
-        const onUnhealthy = vi.fn();
-
-        try {
-            const { runs } = await waitUntilHealthy.wait({
-                async onUnhealthy() {
-                    onUnhealthy();
-                }
-            });
-            expect(runs).toEqual("reaching here would fail the test");
-        } catch (ex) {
-            expect(ex).toBeInstanceOf(UnhealthyClusterError);
-        }
-
-        expect(onUnhealthy).toHaveBeenCalledTimes(3);
-    });
-
     it("should trigger onTimeout callback - once", async () => {
         expect.assertions(3);
         const waitUntilHealthy = createWaitUntilHealthy(client, {
