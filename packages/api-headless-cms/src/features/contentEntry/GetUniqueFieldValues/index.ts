@@ -1,1 +1,1 @@
-export { GetUniqueFieldValuesUseCase } from "./abstractions.js";
+export { GetUniqueFieldValuesUseCase, GetUniqueFieldValuesRepository } from "./abstractions.js";

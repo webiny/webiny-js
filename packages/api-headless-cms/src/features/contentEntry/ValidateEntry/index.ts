@@ -1,1 +1,1 @@
-export * from "./abstractions.js";
+export { ValidateEntryUseCase } from "./abstractions.js";

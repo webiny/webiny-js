@@ -1,2 +1,5 @@
-export * from "./abstractions.js";
-export * from "./events.js";
+export {
+    CreateEntryRevisionFromRepository,
+    CreateEntryRevisionFromUseCase
+} from "./abstractions.js";
+export { EntryRevisionAfterCreateHandler, EntryRevisionBeforeCreateHandler } from "./events.js";

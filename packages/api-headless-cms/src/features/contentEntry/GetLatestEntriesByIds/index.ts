@@ -1,1 +1,1 @@
-export { GetLatestEntriesByIdsUseCase } from "./abstractions.js";
+export { GetLatestEntriesByIdsUseCase, GetLatestEntriesByIdsRepository } from "./abstractions.js";

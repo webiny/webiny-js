@@ -2,5 +2,6 @@ export {
     GetLatestRevisionByEntryIdUseCase,
     GetLatestDeletedRevisionByEntryIdUseCase,
     GetLatestRevisionByEntryIdIncludingDeletedUseCase,
-    GetLatestRevisionByEntryIdRepository
+    GetLatestRevisionByEntryIdRepository,
+    GetLatestRevisionByEntryIdBaseUseCase
 } from "./abstractions.js";

@@ -1,1 +1,4 @@
-export { GetPublishedEntriesByIdsUseCase } from "./abstractions.js";
+export {
+    GetPublishedEntriesByIdsUseCase,
+    GetPublishedEntriesByIdsRepository
+} from "./abstractions.js";
