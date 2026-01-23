@@ -7,8 +7,8 @@ const STORAGE_OPTIONS: Record<StorageOps, { value: StorageOps; name: string }> =
         value: "ddb",
         name: "DynamoDB (for small and medium sized projects)"
     },
-    "ddb-os,ddb": {
-        value: "ddb-os,ddb",
+    "ddb-os": {
+        value: "ddb-os",
         name: "Amazon DynamoDB + Amazon OpenSearch (for larger projects)"
     }
 };
