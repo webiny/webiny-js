@@ -266,7 +266,7 @@ jobs:
       - name: Run tests
         run: yarn test ${{ matrix.testCommand.cmd }}
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-  vitest-ddbOs-constants:
+  vitest-ddb-os-constants:
     needs:
       - build
     name: Vitest (DDB+OS) - Constants
@@ -290,10 +290,10 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-  vitest-ddbOs-run:
+  vitest-ddb-os-run:
     needs:
       - constants
-      - vitest-ddbOs-constants
+      - vitest-ddb-os-constants
     name: ${{ matrix.testCommand.title }}
     strategy:
       fail-fast: false
@@ -304,7 +304,8 @@ jobs:
           - 24
         testCommand: >-
           ${{
-          fromJSON(needs.vitest-ddbOs-constants.outputs.vitest-test-commands) }}
+          fromJSON(needs.vitest-ddb-os-constants.outputs.vitest-test-commands)
+          }}
     runs-on: ${{ matrix.os }}
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
