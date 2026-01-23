@@ -1,3 +1,7 @@
+## Plan Mode
+1. Make the plan extremely concise. Sacrifice grammar for the sake of concision.
+2. At the end of each plan, give me a list of unresolved questions to answer, if any.
+
 ### Code
 1. When writing comments, use `//` for single-line comments and `/* ... */` for multi-line comments. Always end comments with a period.
 
