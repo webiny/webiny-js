@@ -408,7 +408,7 @@ jobs:
         working-directory: ${{ github.base_ref }}
     permissions:
       id-token: write
-  vitest-ddbOs-constants:
+  vitest-ddb-os-constants:
     needs:
       - constants
       - build
@@ -439,11 +439,11 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-  vitest-ddbOs-run:
+  vitest-ddb-os-run:
     needs:
       - constants
       - build
-      - vitest-ddbOs-constants
+      - vitest-ddb-os-constants
     name: ${{ matrix.testCommand.title }}
     strategy:
       fail-fast: false
@@ -454,7 +454,8 @@ jobs:
           - 24
         testCommand: >-
           ${{
-          fromJSON(needs.vitest-ddbOs-constants.outputs.vitest-test-commands) }}
+          fromJSON(needs.vitest-ddb-os-constants.outputs.vitest-test-commands)
+          }}
     runs-on: ${{ matrix.os }}
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -465,7 +466,7 @@ jobs:
       OPENSEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_3_ENDPOINT }}
       OPENSEARCH_INDEX_PREFIX: ${{ matrix.testCommand.id }}
     if: >-
-      needs.vitest-ddbOs-constants.outputs.vitest-test-commands != '[]' &&
+      needs.vitest-ddb-os-constants.outputs.vitest-test-commands != '[]' &&
       needs.constants.outputs.is-fork-pr != 'true'
     steps:
       - uses: actions/setup-node@v4
