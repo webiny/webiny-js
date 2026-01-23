@@ -22,7 +22,7 @@ const schemaList = new Map<string, SchemaCache>();
 
 /**
  * Gets an existing schema or rewrites existing one or creates a completely new one
- * depending on the schemaId created from type and locale parameters
+ * depending on the schemaId created from type
  */
 export const getSchema = async (params: GetSchemaParams): Promise<GraphQLSchema> => {
     const { context } = params;

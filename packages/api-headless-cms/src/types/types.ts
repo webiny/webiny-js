@@ -982,18 +982,8 @@ export interface BaseCmsSecurityPermission extends SecurityPermission {
  * @category CmsModel
  */
 export interface CmsModelPermission extends BaseCmsSecurityPermission {
-    /**
-     * An object representing `key: model.modelId` values where key is locale code.
-     */
-    models?: {
-        [key: string]: string[];
-    };
-    /**
-     * {locale: groupId[]} map, where key is a locale code.
-     */
-    groups?: {
-        [key: string]: string[];
-    };
+    models?: string[];
+    groups?: string[];
 }
 
 /**
@@ -1003,12 +993,7 @@ export interface CmsModelPermission extends BaseCmsSecurityPermission {
  * @category CmsGroup
  */
 export interface CmsGroupPermission extends BaseCmsSecurityPermission {
-    /**
-     * {locale: groupId[]} map, where key is a locale code.
-     */
-    groups?: {
-        [key: string]: string[];
-    };
+    groups?: string[];
 }
 
 /**
@@ -1019,18 +1004,8 @@ export interface CmsGroupPermission extends BaseCmsSecurityPermission {
  */
 export interface CmsEntryPermission extends BaseCmsSecurityPermission {
     pw?: string;
-    /**
-     * An object representing `key: model.modelId` values where key is locale code.
-     */
-    models?: {
-        [key: string]: string[];
-    };
-    /**
-     * {locale: groupId[]} map, where key is a locale code.
-     */
-    groups?: {
-        [key: string]: string[];
-    };
+    models?: string[];
+    groups?: string[];
 }
 
 export interface CmsGroupStorageOperationsGetParams {

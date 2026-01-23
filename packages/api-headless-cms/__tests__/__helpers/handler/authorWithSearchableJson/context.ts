@@ -16,7 +16,6 @@ export const createAuthorWithSearchableJsonContextHandler = () => {
                 path,
                 headers: {
                     "x-webiny-cms-endpoint": "manage",
-                    "x-webiny-cms-locale": "en-US",
                     "x-tenant": result.tenant.id,
                     ...payload?.headers
                 },

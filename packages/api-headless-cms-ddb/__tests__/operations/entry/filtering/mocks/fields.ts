@@ -51,13 +51,9 @@ export const createModel = (): CmsModel => {
             }
         ],
         layout: [],
-        locale: "en-US",
         tenant: "root",
         description: "",
-        group: {
-            id: "group",
-            name: "Group"
-        },
+        group: "group",
         titleFieldId: "title"
     };
 };

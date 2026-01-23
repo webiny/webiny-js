@@ -51,7 +51,6 @@ export const useHandler = (params: UseHandlerParams = {}) => {
             createIndexConfigurationPlugin(),
             new CmsParametersPlugin(async () => {
                 return {
-                    locale: "en-US",
                     type: "manage"
                 };
             }),

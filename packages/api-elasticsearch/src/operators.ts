@@ -15,8 +15,6 @@ import {
     ElasticsearchQueryBuilderOperatorStartsWithPlugin,
     ElasticsearchQueryBuilderOperatorNotStartsWithPlugin
 } from "~/plugins/operator/index.js";
-import type { PluginsContainer } from "@webiny/plugins";
-import { ElasticsearchQueryBuilderOperatorPlugin } from "~/plugins/definition/ElasticsearchQueryBuilderOperatorPlugin.js";
 
 const operators = [
     new ElasticsearchQueryBuilderOperatorBetweenPlugin(),
@@ -40,39 +38,3 @@ const operators = [
  * This way, we make it easier to upgrade.
  */
 export const getElasticsearchOperators = () => operators;
-
-export const getElasticsearchOperatorPluginsByLocale = (
-    plugins: PluginsContainer,
-    locale: string
-): Record<string, ElasticsearchQueryBuilderOperatorPlugin> => {
-    /**
-     * We always set the last one operator plugin added.
-     * This way user can override the plugins.
-     */
-    return plugins
-        .byType<ElasticsearchQueryBuilderOperatorPlugin>(
-            ElasticsearchQueryBuilderOperatorPlugin.type
-        )
-        .reduce(
-            (acc, plugin) => {
-                const op = plugin.getOperator();
-                /**
-                 * We only allow the plugins which can pass the locale test.
-                 * The default plugins always return true.
-                 */
-                if (plugin.isLocaleSupported(locale) === false) {
-                    return acc;
-                }
-                /**
-                 * We also only allow the override of the plugins if the new plugin is NOT a default one.
-                 * If a user names the plugin with .default, we cannot do anything about it.
-                 */
-                if (!!acc[op] && (plugin.name || "").match(/\.default$/)) {
-                    return acc;
-                }
-                acc[op] = plugin;
-                return acc;
-            },
-            {} as Record<string, ElasticsearchQueryBuilderOperatorPlugin>
-        );
-};

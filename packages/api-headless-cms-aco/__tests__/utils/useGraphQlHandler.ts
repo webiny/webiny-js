@@ -43,7 +43,6 @@ export interface UseGQLHandlerParams {
 interface InvokeParams {
     httpMethod?: "POST";
     type?: string;
-    locale?: string;
     body: {
         query: string;
         variables?: Record<string, any>;
@@ -78,7 +77,6 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             ...createTenancyAndSecurity({ permissions, identity: identity || defaultIdentity }),
             new CmsParametersPlugin(async () => {
                 return {
-                    locale: "en-US",
                     type: "manage"
                 };
             }),
@@ -117,14 +115,13 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const invokeCms = async ({
         httpMethod = "POST",
         type = "manage",
-        locale = "en-US",
         body,
         headers = {},
         ...rest
     }: InvokeParams) => {
         const response = await handler(
             {
-                path: `/cms/${type}/${locale}`,
+                path: `/cms/${type}`,
                 httpMethod,
                 headers: {
                     ["x-tenant"]: "root",

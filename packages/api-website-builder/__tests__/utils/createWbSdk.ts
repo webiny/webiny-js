@@ -4,7 +4,6 @@ import * as REDIRECTS_GQL from "~tests/graphql/redirects.gql.js";
 interface InvokeParams {
     httpMethod?: "POST";
     type?: string;
-    locale?: string;
     body: {
         query: string;
         variables?: Record<string, any>;

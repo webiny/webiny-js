@@ -41,7 +41,6 @@ const model = {
     modelId: "testModel",
     name: "testModel",
     tenant: "root",
-    locale: "en-US",
     fields: [],
     layout: []
 } as unknown as CmsModel;

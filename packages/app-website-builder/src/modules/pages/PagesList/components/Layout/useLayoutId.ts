@@ -3,7 +3,7 @@ import { useTenancy } from "@webiny/app-admin";
 /**
  * Generates a `layoutId` to be used with the `<SplitView />` component.
  * The `layoutId` is essential for saving user preferences into localStorage.
- * The generation of the `layoutId` takes into account the current `tenantId`, `localeCode`, and the provided `applicationId`.
+ * The generation of the `layoutId` takes into account the current `tenantId` and the provided `applicationId`.
  *
  *  TODO: export the useLayoutId from a generic use package, such as app-admin. At the moment is not possible because of circular dependency issues.
  */
@@ -11,7 +11,7 @@ const useLayoutId = (applicationId: string) => {
     const { tenant } = useTenancy();
 
     if (!tenant) {
-        console.warn("Missing tenant or localeCode while creating layoutId");
+        console.warn("Missing tenant while creating layoutId");
         return null;
     }
 

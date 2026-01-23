@@ -48,7 +48,6 @@ export const useContextHandler = <C extends Context = Context>(
                 path: "/cms/manage/en-US",
                 headers: {
                     "x-webiny-cms-endpoint": "manage",
-                    "x-webiny-cms-locale": "en-US",
                     "x-tenant": "root"
                 },
                 ...input

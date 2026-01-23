@@ -37,7 +37,6 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
         name: "Root",
         parent: null
     };
-    const locale = "en-US";
     const {
         permissions,
         identity,
@@ -53,7 +52,6 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
     return {
         storageOperations: cmsStorage.storageOperations,
         tenant,
-        locale,
         plugins: [
             topPlugins,
             createApiCore({

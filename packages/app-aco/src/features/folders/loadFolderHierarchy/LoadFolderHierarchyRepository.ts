@@ -26,16 +26,13 @@ class LoadFolderHierarchyRepositoryImpl implements RepositoryAbstraction.Interfa
             return pendingPromise;
         }
 
-        // Create new promise and cache it
-        const promise = this.loadFolders(id);
+        // Create new promise with cleanup and cache it
+        const promise = this.loadFolders(id).finally(() => {
+            this.pendingPromises.delete(id);
+        });
 
         // Store the promise
         this.pendingPromises.set(id, promise);
-
-        // Clean up after completion (success or failure)
-        promise.finally(() => {
-            this.pendingPromises.delete(id);
-        });
 
         return promise;
     }

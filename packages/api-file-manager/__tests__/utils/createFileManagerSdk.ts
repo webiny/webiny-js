@@ -4,7 +4,6 @@ import * as SETTINGS_GQL from "~tests/graphql/fileManagerSettings.js";
 interface InvokeParams {
     httpMethod?: "POST";
     type?: string;
-    locale?: string;
     body: {
         query: string;
         variables?: Record<string, any>;

@@ -32,7 +32,6 @@ export interface UseGQLHandlerParams {
 interface InvokeParams {
     httpMethod?: "POST";
     type?: string;
-    locale?: string;
     body: {
         query: string;
         variables?: Record<string, any>;

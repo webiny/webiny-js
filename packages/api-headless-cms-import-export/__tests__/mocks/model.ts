@@ -15,7 +15,6 @@ export const getModel = (id: string) => {
 export const model = {
     createdOn: new Date().toISOString(),
     savedOn: new Date().toISOString(),
-    locale: "en-US",
     titleFieldId: "fullName",
     lockedFields: [],
     name: "Author",

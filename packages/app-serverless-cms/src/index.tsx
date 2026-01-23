@@ -10,8 +10,6 @@ export {
     LayoutRenderer,
     LoginScreen,
     LoginScreenRenderer,
-    LocaleSelector,
-    LocaleSelectorRenderer,
     Brand,
     BrandRenderer,
     Provider,

@@ -2,7 +2,6 @@ import type { IdentityData } from "@webiny/api-core/features/IdentityContext";
 
 export interface PermissionsArg {
     name: string;
-    locales?: string[];
     rwd?: string;
     pw?: string;
     own?: boolean;

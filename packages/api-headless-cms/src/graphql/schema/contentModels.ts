@@ -176,7 +176,6 @@ export const createModelsSchema = ({
                 group: String!
                 icon: Icon
                 description: String
-                locale: String
             }
 
             input CmsContentModelUpdateInput {

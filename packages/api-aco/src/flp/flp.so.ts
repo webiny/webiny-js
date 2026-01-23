@@ -20,13 +20,11 @@ interface StorageOperationsConfig {
 
 interface CreateKeysParams {
     tenant: string;
-    locale: string;
     id: string;
 }
 
 interface CreateGsiKeysParams {
     tenant: string;
-    locale: string;
     id: string;
     type: string;
     path: string;
@@ -52,12 +50,12 @@ class FolderLevelPermissionsStorageOperations
     }
 
     public async list({
-        where: { tenant, locale, type, path_startsWith, parentId }
+        where: { tenant, type, path_startsWith, parentId }
     }: StorageOperationsListFlpsParams): Promise<FolderLevelPermission[]> {
         try {
             if (parentId) {
                 const entries = await this.entity.queryAll({
-                    partitionKey: `T#${tenant}#L#${locale}#FLP`,
+                    partitionKey: `T#${tenant}#FLP`,
                     options: {
                         index: "GSI2",
                         eq: parentId
@@ -68,7 +66,7 @@ class FolderLevelPermissionsStorageOperations
 
             if (path_startsWith) {
                 const entries = await this.entity.queryAll({
-                    partitionKey: `T#${tenant}#L#${locale}#AT#${type}#FLP`,
+                    partitionKey: `T#${tenant}#AT#${type}#FLP`,
                     options: {
                         index: "GSI1",
                         beginsWith: path_startsWith
@@ -79,7 +77,6 @@ class FolderLevelPermissionsStorageOperations
 
             throw new WebinyError("Missing required parameters.", "LIST_FLP_MISSING_PARAMETERS", {
                 tenant,
-                locale,
                 type,
                 path_startsWith,
                 parentId
@@ -94,11 +91,10 @@ class FolderLevelPermissionsStorageOperations
 
     public async get({
         tenant,
-        locale,
         id
     }: StorageOperationsGetFlpParams): Promise<FolderLevelPermission | null> {
         try {
-            const entry = await this.entity.get(this.createKeys({ tenant, locale, id }));
+            const entry = await this.entity.get(this.createKeys({ tenant, id }));
 
             if (!entry) {
                 return null;
@@ -109,7 +105,7 @@ class FolderLevelPermissionsStorageOperations
             throw WebinyError.from(err, {
                 message: "Could not load folder level permission.",
                 code: "GET_FLP_ERROR",
-                data: { tenant, locale, id }
+                data: { tenant, id }
             });
         }
     }
@@ -226,19 +222,19 @@ class FolderLevelPermissionsStorageOperations
         }
     }
 
-    private createKeys({ id, tenant, locale }: CreateKeysParams) {
+    private createKeys({ id, tenant }: CreateKeysParams) {
         return {
-            PK: `T#${tenant}#L#${locale}#FLP#${id}`,
+            PK: `T#${tenant}#FLP#${id}`,
             SK: `A`,
             TYPE: "aco.flp"
         };
     }
 
-    private createGsiKeys({ tenant, locale, type, path, parentId }: CreateGsiKeysParams) {
+    private createGsiKeys({ tenant, type, path, parentId }: CreateGsiKeysParams) {
         return {
-            GSI1_PK: `T#${tenant}#L#${locale}#AT#${type}#FLP`,
+            GSI1_PK: `T#${tenant}#AT#${type}#FLP`,
             GSI1_SK: path,
-            GSI2_PK: `T#${tenant}#L#${locale}#FLP`,
+            GSI2_PK: `T#${tenant}#FLP`,
             GSI2_SK: parentId,
             GSI_TENANT: tenant
         };
