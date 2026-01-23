@@ -1,4 +1,4 @@
-export type StorageOps = "ddb" | "ddb-os,ddb";
+export type StorageOps = "ddb" | "ddb-os";
 
 export interface AwsProjectParams {
     region: string;
