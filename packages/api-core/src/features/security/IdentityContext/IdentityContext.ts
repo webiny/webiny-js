@@ -4,11 +4,11 @@ import { createImplementation } from "@webiny/di";
 import { IdentityContext as Abstraction } from "./abstractions.js";
 import { Identity } from "./Identity.js";
 import { AnonymousIdentity } from "./AnonymousIdentity.js";
-import { AuthorizationContext } from "~/features/security/authorization/AuthorizationContext/index.js";
-import { filterOutCustomWbyAppsPermissions } from "~/features/security/utils/filterOutCustomWbyAppsPermissions.js";
+import { AuthorizationContext } from "../authorization/AuthorizationContext/index.js";
+import { filterOutCustomWbyAppsPermissions } from "../utils/filterOutCustomWbyAppsPermissions.js";
 import type { SecurityPermission } from "~/types/security.js";
-import type { AaclPermission } from "~/features/wcp/WcpContext/types.js";
-import { WcpContext } from "~/features/wcp/WcpContext/index.js";
+import type { AaclPermission } from "../../wcp/WcpContext/types.js";
+import { WcpContext } from "../../wcp/WcpContext/index.js";
 
 const identityStorage = new AsyncLocalStorage<Identity | undefined>();
 

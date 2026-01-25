@@ -22,7 +22,7 @@ class AuthenticationContextImpl implements Abstraction.Interface {
         await this.eventPublisher.publish(new BeforeAuthenticationEvent({ token }));
 
         try {
-            return this.processAuthenticators(token);
+            return await this.processAuthenticators(token);
         } catch (error) {
             throw AuthenticationError.from(error);
         }

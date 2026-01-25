@@ -37,7 +37,7 @@ type Children = {
  * This components is responsible for running the Authenticator, and rendering the appropriate UI.
  */
 const LoginScreen = observer(({ children, ...props }: CustomIdpProps & Children) => {
-    const { identity, login } = useAuthentication();
+    const auth = useAuthentication();
     const goToLogin = props.goToLogin();
     const getFreshTokens = props.getFreshTokens();
     const onLogout = props.onLogout();
@@ -65,11 +65,11 @@ const LoginScreen = observer(({ children, ...props }: CustomIdpProps & Children)
      * Once the user is authenticated with your IDP, we need to log in using Webiny authentication.
      */
     useEffect(() => {
-        if (!isAuthenticated) {
+        if (!isAuthenticated || auth.isAuthenticated) {
             return;
         }
 
-        login({
+        auth.login({
             idTokenProvider: () => {
                 return authenticator.getIdToken();
             },
@@ -77,11 +77,11 @@ const LoginScreen = observer(({ children, ...props }: CustomIdpProps & Children)
                 authenticator.logout("userAction");
             }
         });
-    }, [authenticator, isAuthenticated, login]);
+    }, [isAuthenticated, auth.isAuthenticated]);
 
     return (
         <>
-            {isAuthenticated && identity ? children : null}
+            {isAuthenticated && auth.identity.isAuthenticated ? children : null}
             {!isAuthenticated && isRefreshing ? (
                 <OverlayLoader title={"Verifying identity..."} />
             ) : null}

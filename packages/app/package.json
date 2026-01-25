@@ -14,14 +14,6 @@
     "Adrian Smijulj <adrian@webiny.com>"
   ],
   "license": "MIT",
-  "exports": {
-    "./features/envConfig": "./features/envConfig/index.js",
-    "./features/localStorage": "./features/localStorage/index.js",
-    "./features/router": "./features/router/index.js",
-    "./features/graphqlClient": "./features/graphqlClient/index.js",
-    "./*": "./*",
-    ".": "./index.js"
-  },
   "webiny": {
     "exports": {
       "./features/envConfig/index.ts": {

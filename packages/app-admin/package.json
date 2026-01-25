@@ -10,12 +10,6 @@
   },
   "author": "Pavel Denisjuk",
   "license": "MIT",
-  "exports": {
-    "./features/wcp": "./features/wcp/index.js",
-    "./features/tenancy": "./features/tenancy/index.js",
-    "./*": "./*",
-    ".": "./index.js"
-  },
   "webiny": {
     "exports": {
       "./config/AdminConfig.tsx": {

@@ -1,5 +1,5 @@
 import { GraphQLSchemaFactory } from "webiny/api/graphql";
-import { IdentityContext } from "webiny/api/security/features/IdentityContext";
+import { IdentityContext } from "webiny/api/security";
 
 class Schema implements GraphQLSchemaFactory.Interface {
     constructor(private identityContext: IdentityContext.Interface) {}

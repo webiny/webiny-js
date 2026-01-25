@@ -350,6 +350,19 @@ export const createHandler = (params: CreateHandlerParams) => {
             console.warn("Reply already sent, cannot send the result (handler:setErrorHandler).");
             return reply;
         }
+
+        if (error.code?.startsWith("Authentication/")) {
+            return reply
+                .status(401)
+                .headers({ "Cache-Control": "no-store" })
+                .send(
+                    JSON.stringify({
+                        message: error.message,
+                        code: error.code
+                    })
+                );
+        }
+
         return reply
             .status(500)
             .headers({

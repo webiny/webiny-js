@@ -50,13 +50,12 @@ class GraphQLClientImpl implements GraphQLClient.Interface {
 
         // Check for generic API errors
         if (response.status !== 200) {
-            console.error(json);
-            throw new Error(`Request error: ${JSON.stringify(json.message)}`);
+            throw { message: json.message, code: json.code };
         }
 
         // Check for GraphQL errors
         if (json.errors && json.errors.length > 0) {
-            throw new Error(`GraphQL errors: ${JSON.stringify(json.errors)}`);
+            throw new Error(`GraphQL error`, { cause: json.errors });
         }
         return json.data as TResult;
     }

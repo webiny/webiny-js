@@ -26,7 +26,7 @@ export function createRootContainer() {
     EnvConfigFeature.register(container, {
         deploymentId,
         apiUrl: String(process.env.REACT_APP_API_URL),
-        debug: process.env.REACT_APP_DEBUG === "true",
+        debug: process.env.WEBINY_ADMIN_DEBUG === "true",
         graphqlApiUrl: String(process.env.REACT_APP_GRAPHQL_API_URL),
         telemetryEnabled: process.env.REACT_APP_WEBINY_TELEMETRY === "true",
         telemetryUserId: process.env.REACT_APP_WEBINY_TELEMETRY_USER_ID,

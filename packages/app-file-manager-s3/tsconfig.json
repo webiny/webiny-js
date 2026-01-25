@@ -9,10 +9,6 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
-      "@webiny/app/features/envConfig": ["../app/src/features/envConfig/index.js"],
-      "@webiny/app/features/localStorage": ["../app/src/features/localStorage/index.js"],
-      "@webiny/app/features/router": ["../app/src/features/router/index.js"],
-      "@webiny/app/features/graphqlClient": ["../app/src/features/graphqlClient/index.js"],
       "@webiny/app/*": ["../app/src/*"],
       "@webiny/app": ["../app/src"]
     },

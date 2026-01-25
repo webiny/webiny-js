@@ -2,11 +2,11 @@ import React from "react";
 import { EnvVar } from "@webiny/project/extensions/index.js";
 import { Api, Admin } from "@webiny/project-aws";
 
-interface Auth0Props {
+export interface IdpProps {
     secretKey: string;
 }
 
-export const Auth0 = (props: Auth0Props) => {
+export const CustomIdp = (props: IdpProps) => {
     return (
         <>
             {/* Lambda vars */}
@@ -14,9 +14,9 @@ export const Auth0 = (props: Auth0Props) => {
             {/* Admin app vars */}
             <EnvVar varName={"WEBINY_ADMIN_IDP_SECRET_KEY"} value={props.secretKey} />
             {/* Api extensions */}
-            <Api.Extension src={import.meta.dirname + "/api/CustomIdentityProvider.js"} />
+            <Api.Extension src={import.meta.dirname + "/api/CustomIdentityProvider.ts"} />
             {/* Admin extensions */}
-            <Admin.Extension src={import.meta.dirname + "/admin/Extension.js"} />
+            <Admin.Extension src={import.meta.dirname + "/admin/Extension.tsx"} />
         </>
     );
 };

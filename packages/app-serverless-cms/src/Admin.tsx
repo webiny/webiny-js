@@ -8,7 +8,7 @@ import { GraphQLPlayground } from "@webiny/app-graphql-playground";
 import { AccessManagement } from "@webiny/app-security-access-management";
 import { imagePlugin } from "@webiny/app/plugins/index.js";
 import fileStorageS3Plugin from "@webiny/app-file-manager-s3";
-import { createApolloClient as defaultApolloClientFactory } from "./apolloClientFactory.js";
+import { createApolloClient } from "./apolloClientFactory.js";
 import apolloLinks from "./apolloLinks.js";
 import { AuditLogs } from "@webiny/app-audit-logs";
 import { LexicalEditorActions } from "@webiny/lexical-editor-actions";
@@ -25,14 +25,12 @@ import { WebsiteBuilderWorkflows } from "@webiny/app-website-builder-workflows";
 import { Container } from "@webiny/di";
 import type { PluginCollection } from "@webiny/plugins/types.js";
 
-export interface AdminProps extends Omit<BaseAdminProps, "createApolloClient"> {
-    createApolloClient?: BaseAdminProps["createApolloClient"];
+export interface AdminProps
+    extends Omit<BaseAdminProps, "createApolloClient" | "createLegacyPlugins"> {
     children?: React.ReactNode;
 }
 
 const App = (props: AdminProps) => {
-    const createApolloClient = props.createApolloClient || defaultApolloClientFactory;
-
     const createLegacyPlugins = (container: Container): PluginCollection => {
         return [imagePlugin(), fileStorageS3Plugin(), apolloLinks(container)];
     };

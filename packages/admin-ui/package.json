@@ -9,9 +9,6 @@
   },
   "description": "The UI component library for Webiny's Admin app.",
   "license": "MIT",
-  "exports": {
-    ".": "./index.js"
-  },
   "webiny": {
     "exports": {
       "./index.ts": "admin/ui"

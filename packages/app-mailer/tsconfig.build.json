@@ -16,8 +16,6 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/admin-ui/*": ["../admin-ui/src/*"],
       "@webiny/admin-ui": ["../admin-ui/src"],
-      "@webiny/app-admin/features/wcp": ["../app-admin/src/features/wcp/index.js"],
-      "@webiny/app-admin/features/tenancy": ["../app-admin/src/features/tenancy/index.js"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/form/*": ["../form/src/*"],

@@ -2,7 +2,7 @@ import { verify } from "jsonwebtoken";
 import { JwtIdentityProvider } from "webiny/api/security";
 import { TenantContext } from "webiny/api/tenancy";
 
-const JWT_SECRET = process.env.WEBINY_JWT_SECRET as string;
+const JWT_SECRET = process.env.WEBINY_API_IDP_SECRET_KEY as string;
 
 class CustomIdentityProviderImpl implements JwtIdentityProvider.Interface {
     constructor(private tenantContext: TenantContext.Interface) {}
