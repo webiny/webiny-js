@@ -2,6 +2,8 @@ import { ListPackagesService, UiService } from "../../abstractions/index.js";
 import fs from "fs";
 import path from "path";
 
+const ambientDeclaration = (file: string) => !file.endsWith(".d.ts");
+
 export interface GenerateWebinyPkg {
     execute(): Promise<void>;
 }
@@ -61,7 +63,7 @@ export class GenerateWebinyPkg implements GenerateWebinyPkg {
         srcPath: string,
         wbyPkg: ListPackagesService.Package
     ) {
-        const staticFiles = this.getAllFiles(srcStaticPath);
+        const staticFiles = this.getAllFiles(srcStaticPath).filter(ambientDeclaration);
 
         for (const staticFile of staticFiles) {
             const relativePath = path.relative(srcStaticPath, staticFile);

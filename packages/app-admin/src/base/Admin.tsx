@@ -1,4 +1,6 @@
 import React from "react";
+import type { Container } from "@webiny/di";
+import { plugins } from "@webiny/plugins";
 import { App, DiContainerProvider } from "@webiny/app";
 import type { ApolloClientFactory } from "./providers/ApolloProvider.js";
 import { createApolloProvider } from "./providers/ApolloProvider.js";
@@ -14,17 +16,21 @@ import { createTenancyProvider } from "~/presentation/tenancy/createTenancyProvi
 import { TelemetryAdminAppStart } from "./TelemetryAdminAppStart.js";
 import { ApolloClientFeature } from "~/features/apolloClient/feature.js";
 import { SecurityFeature } from "~/features/security/SecurityFeature.js";
+import type { PluginCollection } from "@webiny/plugins/types.js";
 
 export interface AdminProps {
     createApolloClient: ApolloClientFactory;
+    createLegacyPlugins: (container: Container) => PluginCollection;
     children?: React.ReactNode;
 }
 
 const container = createRootContainer();
 
-export const Admin = ({ children, createApolloClient }: AdminProps) => {
+export const Admin = ({ children, createApolloClient, createLegacyPlugins }: AdminProps) => {
     const uri = process.env.REACT_APP_GRAPHQL_API_URL as string;
     const apolloClient = createApolloClient({ uri });
+
+    plugins.register(...createLegacyPlugins(container));
 
     ApolloClientFeature.register(container, apolloClient);
     SecurityFeature.register(container);

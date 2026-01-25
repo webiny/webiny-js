@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useFeature, useTenancy } from "@webiny/app-admin";
+import { useFeature, useTenantContext } from "@webiny/app-admin";
 import { AuthenticationContextFeature } from "@webiny/app-admin/features/security/AuthenticationContext/feature.js";
 import type {
     IncomingGenericData,
@@ -33,7 +33,7 @@ interface ICurrentData {
 }
 
 export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps) => {
-    const { tenant } = useTenancy();
+    const { tenant } = useTenantContext();
     const { authenticationContext } = useFeature(AuthenticationContextFeature);
 
     const socketsRef = useRef<IWebsocketsManager>();

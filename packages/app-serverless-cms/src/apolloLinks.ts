@@ -1,8 +1,10 @@
 import { ConsoleLinkPlugin } from "@webiny/app/plugins/ConsoleLinkPlugin.js";
 import { NetworkErrorLinkPlugin } from "@webiny/app/plugins/NetworkErrorLinkPlugin.js";
 import { OmitTypenameLinkPlugin } from "@webiny/app/plugins/OmitTypenameLinkPlugin.js";
+import { Container } from "@webiny/di";
+import { EventPublisher } from "@webiny/app/features/eventPublisher/index.js";
 
-export default [
+export default (container: Container) => [
     /**
      * This link removes `__typename` from the variables being sent to the API.
      */
@@ -14,5 +16,5 @@ export default [
     /**
      * This plugin creates an ApolloLink that checks for `NetworkError` and shows an ErrorOverlay in the browser.
      */
-    new NetworkErrorLinkPlugin()
+    new NetworkErrorLinkPlugin(() => container.resolve(EventPublisher))
 ];

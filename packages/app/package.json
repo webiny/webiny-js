@@ -22,6 +22,67 @@
     "./*": "./*",
     ".": "./index.js"
   },
+  "webiny": {
+    "exports": {
+      "./features/envConfig/index.ts": {
+        "exportPath": "./admin/envConfig",
+        "namedExports": [
+          "EnvConfig"
+        ]
+      },
+      "./features/graphqlClient/abstractions.ts": {
+        "exportPath": "./admin/graphqlClient",
+        "namedExports": [
+          "GraphQLClient"
+        ]
+      },
+      "./errors/index.ts": {
+        "exportPath": "./admin",
+        "namedExports": [
+          "NetworkErrorEventHandler"
+        ]
+      },
+      "./features/localStorage/abstractions.ts": {
+        "exportPath": "./admin/localStorage",
+        "namedExports": [
+          "LocalStorageService"
+        ]
+      },
+      "./presentation/localStorage/index.ts": {
+        "exportPath": "./admin/localStorage",
+        "namedExports": [
+          "useLocalStorage",
+          "useLocalStorageValue",
+          "useLocalStorageValues"
+        ]
+      },
+      "./features/router/Route.ts": {
+        "exportPath": "./admin/router",
+        "namedExports": [
+          "Route"
+        ]
+      },
+      "./presentation/router/components/RouteLink.tsx": {
+        "exportPath": "./admin/router",
+        "namedExports": [
+          "RouteLinkComponent"
+        ]
+      },
+      "./presentation/router/components/SimpleLink.tsx": {
+        "exportPath": "./admin/router",
+        "namedExports": [
+          "LinkComponent"
+        ]
+      },
+      "./presentation/router/index.ts": {
+        "exportPath": "./admin/router",
+        "namedExports": [
+          "useRoute",
+          "useRouter"
+        ]
+      }
+    }
+  },
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
     "@emotion/styled": "11.10.6",

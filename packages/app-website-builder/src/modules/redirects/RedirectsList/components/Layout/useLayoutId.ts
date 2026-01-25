@@ -1,4 +1,4 @@
-import { useTenancy } from "@webiny/app-admin";
+import { useTenantContext } from "@webiny/app-admin";
 
 /**
  * Generates a `layoutId` to be used with the `<SplitView />` component.
@@ -8,7 +8,7 @@ import { useTenancy } from "@webiny/app-admin";
  *  TODO: export the useLayoutId from a generic use package, such as app-admin. At the moment is not possible because of circular dependency issues.
  */
 const useLayoutId = (applicationId: string) => {
-    const { tenant } = useTenancy();
+    const { tenant } = useTenantContext();
 
     if (!tenant) {
         console.warn("Missing tenant while creating layoutId");

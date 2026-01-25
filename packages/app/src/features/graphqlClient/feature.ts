@@ -3,6 +3,7 @@ import { BatchingGraphQLClient } from "./BatchingGraphQLClient.js";
 import { FetchGraphQLClient } from "./FetchGraphQLClient.js";
 import { createFeature } from "~/shared/di/createFeature.js";
 import { RetryGraphQLClient } from "./RetryGraphQLClient.js";
+import { NetworkErrorPublishing } from "./NetworkErrorPublishing.js";
 
 export const GraphQLClientFeature = createFeature({
     name: "GraphQLClient",
@@ -24,6 +25,8 @@ export const GraphQLClientFeature = createFeature({
         if (options.retry) {
             container.registerDecorator(RetryGraphQLClient);
         }
+
+        container.registerDecorator(NetworkErrorPublishing);
     },
     resolve(container) {
         return {

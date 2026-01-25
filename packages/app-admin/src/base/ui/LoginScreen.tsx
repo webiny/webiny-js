@@ -25,3 +25,5 @@ export const LoginScreenRenderer = makeDecoratable(
     "LoginScreenRenderer",
     createVoidComponent<LoginScreenProps>()
 );
+
+export const LoginScreenComponent = LoginScreenRenderer;

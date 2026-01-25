@@ -28,7 +28,12 @@ class OidcJwtIdentityProviderImpl implements JwtIdentityProvider.Interface {
         }
 
         // Call config.getIdentity to get IdentityData
-        const identity = await provider.getIdentity(verifiedPayload);
+        const providerIdentity = await provider.getIdentity(verifiedPayload);
+
+        const identity: IdentityData = {
+            ...providerIdentity,
+            type: providerIdentity.type ?? "admin"
+        };
 
         // Handle default values
         const context = identity.context ?? { canAccessTenant: true, defaultTenantId: "root" };
@@ -55,6 +60,19 @@ class OidcJwtIdentityProviderImpl implements JwtIdentityProvider.Interface {
         token: string,
         header: JwtIdentityProvider.JwtHeader
     ) {
+        // If the implementation specifies a custom verification function, use it.
+        let verifiedPayload: JwtIdentityProvider.JwtPayload | undefined;
+        if (typeof provider.verifyToken === "function") {
+            // Use custom verification
+            const result = await provider.verifyToken(token);
+            if (result) {
+                return result;
+            }
+            return null;
+        }
+
+        // Otherwise, continue with OIDC best practices, using JWKs.
+
         // Fetch JWKs from cache
         const jwks = await this.jwksCache.getKeys(provider.issuer);
 
@@ -62,16 +80,6 @@ class OidcJwtIdentityProviderImpl implements JwtIdentityProvider.Interface {
         const jwk = jwks.find(key => key.kid === header.kid);
         if (!jwk) {
             return null;
-        }
-
-        // Verify token using JWK
-        let verifiedPayload: JwtIdentityProvider.JwtPayload | undefined;
-        if (typeof provider.verifyToken === "function") {
-            // Use custom verification
-            const result = await provider.verifyToken(token);
-            if (result) {
-                verifiedPayload = result;
-            }
         }
 
         if (!verifiedPayload) {

@@ -3,5 +3,6 @@
   "compilerOptions": {
     "noEmit": true,
     "emitDeclarationOnly": false
-  }
+  },
+  "references": [{ "path": "./packages/webiny" }]
 }

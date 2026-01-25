@@ -7,10 +7,12 @@ import { HistoryRouterGateway } from "@webiny/app/features/router/HistoryRouterG
 import { EnvConfigFeature } from "@webiny/app/features/envConfig/feature.js";
 import { GraphQLClientFeature } from "@webiny/app/features/graphqlClient/feature.js";
 import { LocalStorageFeature } from "@webiny/app/features/localStorage/feature.js";
+import { EventPublisherFeature } from "@webiny/app/features/eventPublisher/feature.js";
 import { WcpFeature } from "~/features/wcp/feature.js";
 import { TenancyFeature } from "~/features/tenancy/feature.js";
 import { SystemInstallerFeature } from "~/presentation/installation/presenters/SystemInstaller/feature.js";
 import { TelemetryFeature } from "~/features/telemetry/feature.js";
+import { ErrorOverlayNetworkErrorHandler } from "~/errors/ErrorOverlayNetworkErrorHandler.js";
 
 const isUndefined = (value: any) => [undefined, "undefined"].includes(value);
 
@@ -40,6 +42,8 @@ export function createRootContainer() {
 
     RouterFeature.register(container);
 
+    EventPublisherFeature.register(container);
+
     GraphQLClientFeature.register(container, { batching: true, retry: true });
 
     LocalStorageFeature.register(container, { prefix: `webiny/${deploymentId}` });
@@ -51,6 +55,9 @@ export function createRootContainer() {
     SystemInstallerFeature.register(container);
 
     TelemetryFeature.register(container);
+
+    // Register network error handlers
+    container.register(ErrorOverlayNetworkErrorHandler).inSingletonScope();
 
     return container;
 }
