@@ -34,7 +34,16 @@ class JwtAuthenticatorImpl implements Authenticator.Interface {
                 );
 
                 if (identity) {
-                    return identity;
+                    // We treat all IDP identities as external by default.
+                    const isExternal = identity.profile?.external ?? true;
+                    return {
+                        ...identity,
+                        type: identity.type ?? "admin",
+                        profile: {
+                            ...(identity.profile ?? {}),
+                            external: isExternal
+                        }
+                    };
                 }
             }
         }

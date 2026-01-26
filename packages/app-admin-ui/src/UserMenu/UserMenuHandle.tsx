@@ -15,7 +15,10 @@ export const UserMenuHandle = UserMenuHandleRendererSpec.createDecorator(() => {
         const profile = identity.profile;
 
         const { firstName, lastName, avatar } = profile || {};
-        const fullName = `${firstName} ${lastName}`;
+        let fullName = `${firstName} ${lastName}`;
+        if (fullName.trim() === "") {
+            fullName = identity.displayName;
+        }
 
         return (
             <div className={"flex gap-x-sm cursor-pointer"}>

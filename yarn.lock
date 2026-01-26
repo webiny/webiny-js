@@ -15268,6 +15268,7 @@ __metadata:
     "@webiny/app-websockets": "npm:0.0.0"
     "@webiny/app-workflows": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^0.2.3"
     "@webiny/lexical-editor-actions": "npm:0.0.0"
     "@webiny/lexical-theme": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
@@ -25758,6 +25759,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jwt-decode@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "jwt-decode@npm:4.0.0"
+  checksum: 10/87b569e4a9a0067fb0d592bcf3b2ac3e638e49beee28620eeb07bef1b4470f4077dea68c15d191dd68e076846c3af8394be3bcaecffedc6e97433b221fdbbcf3
+  languageName: node
+  linkType: hard
+
 "keyv@npm:^4.0.0, keyv@npm:^4.5.3, keyv@npm:^4.5.4":
   version: 4.5.4
   resolution: "keyv@npm:4.5.4"
@@ -31477,6 +31485,7 @@ __metadata:
     husky: "npm:^4.3.8"
     inquirer: "npm:^12.11.1"
     jest-extended: "npm:^6.0.0"
+    jwt-decode: "npm:^4.0.0"
     lerna: "npm:8.1.2"
     lint-staged: "npm:^16.2.7"
     listr: "npm:^0.14.3"
@@ -35133,10 +35142,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "webiny@workspace:packages/webiny"
   dependencies:
+    "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
+    "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/cli-core": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"

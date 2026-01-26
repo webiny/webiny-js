@@ -10,18 +10,84 @@
   },
   "author": "Pavel Denisjuk",
   "license": "MIT",
-  "exports": {
-    "./features/wcp": "./features/wcp/index.js",
-    "./features/tenancy": "./features/tenancy/index.js",
-    "./*": "./*",
-    ".": "./index.js"
-  },
   "webiny": {
     "exports": {
+      "./base/ui/Logo.tsx": {
+        "exportPath": "./admin/ui",
+        "namedExports": [
+          "Logo"
+        ]
+      },
+      "./components/RegisterFeature.tsx": {
+        "exportPath": "./admin",
+        "namedExports": [
+          "RegisterFeature"
+        ]
+      },
       "./config/AdminConfig.tsx": {
         "exportPath": "./admin/configs",
         "namedExports": [
           "AdminConfig"
+        ]
+      },
+      "./features/security/LogIn/index.ts": {
+        "exportPath": "./admin/security",
+        "namedExports": [
+          "LogInUseCase"
+        ]
+      },
+      "./features/security/LogOut/index.ts": {
+        "exportPath": "./admin/security",
+        "namedExports": [
+          "LogOutUseCase"
+        ]
+      },
+      "./features/security/AuthenticationContext/index.ts": {
+        "exportPath": "./admin/security",
+        "namedExports": [
+          "AuthenticationContext"
+        ]
+      },
+      "./features/security/IdentityContext/index.ts": {
+        "exportPath": "./admin/security",
+        "namedExports": [
+          "IdentityContext"
+        ]
+      },
+      "./features/tenancy/abstractions.ts": {
+        "exportPath": "./admin/tenancy",
+        "namedExports": [
+          "TenantContext"
+        ]
+      },
+      "./presentation/tenancy/useTenantContext.ts": {
+        "exportPath": "./admin/tenancy",
+        "namedExports": [
+          "useTenantContext"
+        ]
+      },
+      "./presentation/security/hooks/useAuthentication.ts": {
+        "exportPath": "./admin/security",
+        "namedExports": [
+          "useAuthentication"
+        ]
+      },
+      "./presentation/security/hooks/useIdentity.ts": {
+        "exportPath": "./admin/security",
+        "namedExports": [
+          "useIdentity"
+        ]
+      },
+      "./presentation/security/components/HasPermission.tsx": {
+        "exportPath": "./admin/security",
+        "namedExports": [
+          "HasPermissionComponent"
+        ]
+      },
+      "./base/ui/LoginScreen.tsx": {
+        "exportPath": "./admin/security",
+        "namedExports": [
+          "LoginScreenComponent"
         ]
       }
     }

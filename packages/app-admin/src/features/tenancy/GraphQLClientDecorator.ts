@@ -1,9 +1,9 @@
 import { GraphQLClient } from "@webiny/app/features/graphqlClient/index.js";
-import { TenancyService } from "~/features/tenancy/abstractions.js";
+import { TenantContext } from "~/features/tenancy/abstractions.js";
 
 class GraphQLClientWithTenantId implements GraphQLClient.Interface {
     constructor(
-        private context: TenancyService.Interface,
+        private context: TenantContext.Interface,
         private decoratee: GraphQLClient.Interface
     ) {}
 
@@ -23,5 +23,5 @@ class GraphQLClientWithTenantId implements GraphQLClient.Interface {
 
 export const GraphQLClientDecorator = GraphQLClient.createDecorator({
     decorator: GraphQLClientWithTenantId,
-    dependencies: [TenancyService]
+    dependencies: [TenantContext]
 });

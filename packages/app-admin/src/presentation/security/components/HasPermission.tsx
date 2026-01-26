@@ -39,3 +39,5 @@ export const HasPermission = ({ children, ...props }: HasPermissionProps) => {
 
     return null;
 };
+
+export const HasPermissionComponent = HasPermission;

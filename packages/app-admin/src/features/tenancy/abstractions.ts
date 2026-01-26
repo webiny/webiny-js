@@ -5,14 +5,14 @@ export interface Tenant {
     name: string;
 }
 
-export interface ITenancyService {
+export interface ITenantContext {
     getCurrentTenant(): string | null;
     setTenant(tenantId: string | null): void;
     onTenantChange(callback: (tenantId: string | null) => void): () => void;
 }
 
-export const TenancyService = new Abstraction<ITenancyService>("TenancyService");
+export const TenantContext = new Abstraction<ITenantContext>("TenantContext");
 
-export namespace TenancyService {
-    export type Interface = ITenancyService;
+export namespace TenantContext {
+    export type Interface = ITenantContext;
 }

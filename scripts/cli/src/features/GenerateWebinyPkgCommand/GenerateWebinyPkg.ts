@@ -2,6 +2,8 @@ import { ListPackagesService, UiService } from "../../abstractions/index.js";
 import fs from "fs";
 import path from "path";
 
+const ambientDeclaration = (file: string) => !file.endsWith(".d.ts");
+
 export interface GenerateWebinyPkg {
     execute(): Promise<void>;
 }
@@ -61,7 +63,7 @@ export class GenerateWebinyPkg implements GenerateWebinyPkg {
         srcPath: string,
         wbyPkg: ListPackagesService.Package
     ) {
-        const staticFiles = this.getAllFiles(srcStaticPath);
+        const staticFiles = this.getAllFiles(srcStaticPath).filter(ambientDeclaration);
 
         for (const staticFile of staticFiles) {
             const relativePath = path.relative(srcStaticPath, staticFile);
@@ -118,10 +120,14 @@ export class GenerateWebinyPkg implements GenerateWebinyPkg {
                     : wbyPkgExportPathOrSettings;
 
             // 3. Create the export TS file.
-            const exportPath = path
-                .join(pkgWithExports.name, basePkgFilePath)
-                .replace(".tsx", ".js")
-                .replace(".ts", ".js");
+            const exportPath =
+                // If exporting from package index.ts, we must use the package name as the export path.
+                basePkgFilePath === "./index.ts"
+                    ? pkgWithExports.name
+                    : path
+                          .join(pkgWithExports.name, basePkgFilePath)
+                          .replace(".tsx", ".js")
+                          .replace(".ts", ".js");
 
             let namedExports = "*";
             if (wbyPkgExportSettings.namedExports && wbyPkgExportSettings.namedExports.length > 0) {

@@ -1,5 +1,4 @@
 import React, { memo } from "react";
-import { plugins } from "@webiny/plugins";
 import type { AdminProps as BaseAdminProps } from "@webiny/app-admin";
 import { Admin as BaseAdmin, SystemInstallerProvider } from "@webiny/app-admin";
 import { HeadlessCMS } from "@webiny/app-headless-cms";
@@ -9,7 +8,7 @@ import { GraphQLPlayground } from "@webiny/app-graphql-playground";
 import { AccessManagement } from "@webiny/app-security-access-management";
 import { imagePlugin } from "@webiny/app/plugins/index.js";
 import fileStorageS3Plugin from "@webiny/app-file-manager-s3";
-import { createApolloClient as defaultApolloClientFactory } from "./apolloClientFactory.js";
+import { createApolloClient } from "./apolloClientFactory.js";
 import apolloLinks from "./apolloLinks.js";
 import { AuditLogs } from "@webiny/app-audit-logs";
 import { LexicalEditorActions } from "@webiny/lexical-editor-actions";
@@ -23,19 +22,24 @@ import { SchedulerConfigs } from "@webiny/app-headless-cms-scheduler";
 import { Components as WorkflowComponents } from "@webiny/app-workflows";
 import { CmsWorkflows } from "@webiny/app-headless-cms-workflows";
 import { WebsiteBuilderWorkflows } from "@webiny/app-website-builder-workflows";
+import { Container } from "@webiny/di";
+import type { PluginCollection } from "@webiny/plugins/types.js";
 
-export interface AdminProps extends Omit<BaseAdminProps, "createApolloClient"> {
-    createApolloClient?: BaseAdminProps["createApolloClient"];
+export interface AdminProps
+    extends Omit<BaseAdminProps, "createApolloClient" | "createLegacyPlugins"> {
     children?: React.ReactNode;
 }
 
 const App = (props: AdminProps) => {
-    const createApolloClient = props.createApolloClient || defaultApolloClientFactory;
-
-    plugins.register(imagePlugin(), fileStorageS3Plugin(), apolloLinks);
+    const createLegacyPlugins = (container: Container): PluginCollection => {
+        return [imagePlugin(), fileStorageS3Plugin(), apolloLinks(container)];
+    };
 
     return (
-        <BaseAdmin createApolloClient={createApolloClient}>
+        <BaseAdmin
+            createApolloClient={createApolloClient}
+            createLegacyPlugins={createLegacyPlugins}
+        >
             <AdminUI />
             <AccessManagement />
             <SystemInstallerProvider />

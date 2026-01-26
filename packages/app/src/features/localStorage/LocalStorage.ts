@@ -1,11 +1,8 @@
 import { makeAutoObservable } from "mobx";
-import {
-    LocalStorageService as LocalStorageServiceAbstraction,
-    LocalStorageRepository
-} from "./abstractions.js";
+import { LocalStorage as LocalStorageAbstraction, LocalStorageRepository } from "./abstractions.js";
 import { createImplementation } from "@webiny/di";
 
-class LocalStorageServiceImpl implements LocalStorageServiceAbstraction.Interface {
+class LocalStorageImpl implements LocalStorageAbstraction.Interface {
     constructor(private readonly repo: LocalStorageRepository.Interface) {
         makeAutoObservable(this);
     }
@@ -27,8 +24,8 @@ class LocalStorageServiceImpl implements LocalStorageServiceAbstraction.Interfac
     }
 }
 
-export const LocalStorageService = createImplementation({
-    abstraction: LocalStorageServiceAbstraction,
-    implementation: LocalStorageServiceImpl,
+export const LocalStorage = createImplementation({
+    abstraction: LocalStorageAbstraction,
+    implementation: LocalStorageImpl,
     dependencies: [LocalStorageRepository]
 });

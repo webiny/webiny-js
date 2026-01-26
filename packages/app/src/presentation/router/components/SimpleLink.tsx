@@ -43,3 +43,5 @@ export const SimpleLink = makeDecoratable(
         );
     }
 );
+
+export const LinkComponent = SimpleLink;

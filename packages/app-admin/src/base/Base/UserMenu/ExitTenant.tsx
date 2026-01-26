@@ -2,11 +2,11 @@ import React from "react";
 import { makeDecoratable } from "@webiny/app";
 import { ReactComponent as SignOutIcon } from "@webiny/icons/logout.svg";
 import { useAuthentication } from "~/presentation/security/hooks/useAuthentication.js";
-import { useTenancy } from "~/presentation/tenancy/useTenancy.js";
+import { useTenantContext } from "~/presentation/tenancy/useTenantContext.js";
 import { Menu } from "~/config/AdminConfig/Menu.js";
 
 export const ExitTenant = makeDecoratable("ExitTenant", () => {
-    const tenancy = useTenancy();
+    const tenancy = useTenantContext();
     const { identity, isAuthenticated } = useAuthentication();
 
     if (!isAuthenticated) {

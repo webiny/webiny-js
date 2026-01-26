@@ -1,6 +1,6 @@
 import { ApiKeyAfterUpdateHandler } from "webiny/api/security/features/UpdateApiKey";
 
-import { Logger } from "webiny/api/features/Logger";
+import { Logger } from "webiny/api/logger";
 
 class MyApiKeyAfterUpdateImpl implements ApiKeyAfterUpdateHandler.Interface {
     constructor(private logger: Logger.Interface) {}

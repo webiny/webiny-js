@@ -8,23 +8,33 @@ export type IJwt = {
     payload: IJwtPayload;
 };
 
+export type OptionalExternal<T> = Omit<T, "external"> & { external?: boolean };
+
+export type IProviderIdentityData = Omit<IIdentityData, "type" | "profile"> & {
+    /**
+     * Defaults to `admin` it omitted.
+     */
+    type?: string;
+    profile?: OptionalExternal<NonNullable<IIdentityData["profile"]>>;
+};
+
 // Generic Idp Provider
 export interface IIdentityProvider {
     isApplicable(token: string): boolean;
-    getIdentity(token: string): Promise<IIdentityData | null>;
+    getIdentity(token: string): Promise<IProviderIdentityData | null>;
 }
 
 export const IdentityProvider = createAbstraction<IIdentityProvider>("IdentityProvider");
 
 export namespace IdentityProvider {
     export type Interface = IIdentityProvider;
-    export type IdentityData = IIdentityData;
+    export type IdentityData = IProviderIdentityData;
     export type JwtPayload = IJwtPayload;
 }
 
 export interface IJwtIdentityProvider {
     isApplicable(token: IJwtPayload): boolean;
-    getIdentity(token: string, jwt: IJwt): Promise<IIdentityData | null> | IIdentityData | null;
+    getIdentity(token: string, jwt: IJwt): Promise<IProviderIdentityData | null>;
 }
 
 export const JwtIdentityProvider = createAbstraction<IJwtIdentityProvider>("JwtIdentityProvider");
@@ -34,6 +44,7 @@ export namespace JwtIdentityProvider {
     export type Jwt = IJwt;
     export type JwtPayload = IJwtPayload;
     export type JwtHeader = IJwtHeader;
+    export type IdentityData = IProviderIdentityData;
 }
 
 // OIDC Provider
@@ -41,9 +52,9 @@ export interface IOidcIdentityProvider {
     issuer: string;
     clientId: string;
     isApplicable(token: IJwtPayload): boolean;
-    getIdentity(jwt: IJwtPayload): Promise<IIdentityData> | IIdentityData;
+    getIdentity(jwt: IJwtPayload): Promise<IProviderIdentityData>;
     verifyToken?(token: string): Promise<IJwtPayload | undefined>;
-    verifyTokenClaims?(token: IJwtPayload): Promise<void> | void;
+    verifyTokenClaims?(token: IJwtPayload): Promise<void>;
 }
 
 export const OidcIdentityProvider =
@@ -52,7 +63,7 @@ export const OidcIdentityProvider =
 export namespace OidcIdentityProvider {
     export type Interface = IOidcIdentityProvider;
     export type JwtPayload = IJwtPayload;
-    export type IdentityData = IIdentityData;
+    export type IdentityData = IProviderIdentityData;
 }
 
 interface IJwkCache {

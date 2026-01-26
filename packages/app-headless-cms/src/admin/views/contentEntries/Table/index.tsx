@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { LeftPanel, RightPanel, SplitView, useRoute, useRouter } from "@webiny/app-admin";
 import { AcoProvider, useNavigateFolder } from "@webiny/app-aco";
-import { useTenancy } from "@webiny/app-admin";
+import { useTenantContext } from "@webiny/app-admin";
 import { Sidebar } from "./Sidebar.js";
 import { Main } from "./Main.js";
 import { ContentEntryProvider } from "~/admin/views/contentEntries/ContentEntry/ContentEntryContext.js";
@@ -19,7 +19,7 @@ import { useContentEntryListConfig } from "~/admin/config/contentEntries/index.j
  *  TODO: export the useLayoutId from a generic use package, such as app-admin. At the moment is not possible because of circular dependency issues.
  */
 const useLayoutId = (applicationId: string) => {
-    const { tenant } = useTenancy();
+    const { tenant } = useTenantContext();
 
     if (!tenant) {
         console.warn("Missing tenant while creating layoutId");

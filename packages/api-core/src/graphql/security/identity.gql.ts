@@ -12,6 +12,7 @@ import type { AdminUser } from "~/types/users.js";
 import { AdminUsersRepository } from "~/features/users/shared/abstractions.js";
 import { TeamsRepository } from "~/features/security/teams/shared/abstractions.js";
 import { RolesRepository } from "~/features/security/roles/shared/abstractions.js";
+import { IdentityContext } from "~/features/security/IdentityContext/index.js";
 
 const getDefaultTenant = async (context: SecurityContext) => {
     const identity = context.security.getIdentity();
@@ -78,7 +79,8 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
         },
         SecurityMutation: {
             login: async (_, __, context) => {
-                const identity = context.security.getIdentity();
+                const identityContext = context.container.resolve(IdentityContext);
+                const identity = identityContext.getIdentity();
                 if (identity.isAnonymous()) {
                     return new ErrorResponse({
                         code: "Security/Identity/NotAuthenticated",

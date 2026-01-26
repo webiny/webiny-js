@@ -14,13 +14,78 @@
     "Adrian Smijulj <adrian@webiny.com>"
   ],
   "license": "MIT",
-  "exports": {
-    "./features/envConfig": "./features/envConfig/index.js",
-    "./features/localStorage": "./features/localStorage/index.js",
-    "./features/router": "./features/router/index.js",
-    "./features/graphqlClient": "./features/graphqlClient/index.js",
-    "./*": "./*",
-    ".": "./index.js"
+  "webiny": {
+    "exports": {
+      "./errors/abstractions.ts": {
+        "exportPath": "./admin/security",
+        "namedExports": [
+          "AuthenticationErrorEventHandler"
+        ]
+      },
+      "./shared/di/useFeature.ts": {
+        "exportPath": "./admin",
+        "namedExports": [
+          "useFeature"
+        ]
+      },
+      "./features/envConfig/index.ts": {
+        "exportPath": "./admin/envConfig",
+        "namedExports": [
+          "EnvConfig"
+        ]
+      },
+      "./features/graphqlClient/abstractions.ts": {
+        "exportPath": "./admin/graphqlClient",
+        "namedExports": [
+          "GraphQLClient"
+        ]
+      },
+      "./errors/index.ts": {
+        "exportPath": "./admin",
+        "namedExports": [
+          "NetworkErrorEventHandler"
+        ]
+      },
+      "./features/localStorage/abstractions.ts": {
+        "exportPath": "./admin/localStorage",
+        "namedExports": [
+          "LocalStorage"
+        ]
+      },
+      "./presentation/localStorage/index.ts": {
+        "exportPath": "./admin/localStorage",
+        "namedExports": [
+          "useLocalStorage",
+          "useLocalStorageValue",
+          "useLocalStorageValues"
+        ]
+      },
+      "./features/router/Route.ts": {
+        "exportPath": "./admin/router",
+        "namedExports": [
+          "Route"
+        ]
+      },
+      "./presentation/router/components/RouteLink.tsx": {
+        "exportPath": "./admin/router",
+        "namedExports": [
+          "RouteLinkComponent"
+        ]
+      },
+      "./presentation/router/components/SimpleLink.tsx": {
+        "exportPath": "./admin/router",
+        "namedExports": [
+          "LinkComponent"
+        ]
+      },
+      "./presentation/router/index.ts": {
+        "exportPath": "./admin/router",
+        "namedExports": [
+          "useRoute",
+          "useRouter"
+        ]
+      }
+    }
   },
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",

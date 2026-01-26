@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { autorun } from "mobx";
-import { TenancyFeature } from "~/features/tenancy/feature.js";
 import { useFeature } from "@webiny/app";
+import { TenancyFeature } from "~/features/tenancy/feature.js";
 
-export function useTenancy() {
+export function useTenantContext() {
     const { service } = useFeature(TenancyFeature);
 
     const [tenant, setTenant] = useState(() => service.getCurrentTenant());

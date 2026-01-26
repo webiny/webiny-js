@@ -1,6 +1,7 @@
 import path from "path";
 import rspack from "@rspack/core";
 import { pluginTypeCheck } from "@rsbuild/plugin-type-check";
+import { createImportValidatorPlugin } from "../importValidatorPlugin.js";
 
 export const createRsbuildConfig = ({ cwd }) => {
     const paths = getPaths(cwd);
@@ -46,6 +47,7 @@ export const createRsbuildConfig = ({ cwd }) => {
         },
         mode,
         plugins: [
+            createImportValidatorPlugin(),
             pluginTypeCheck({
                 tsCheckerOptions: {
                     typescript: { configFile: paths.fn.tsConfig },

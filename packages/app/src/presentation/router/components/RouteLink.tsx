@@ -33,3 +33,5 @@ export const RouteLink = makeDecoratable(
         );
     }
 );
+
+export const RouteLinkComponent = RouteLink;

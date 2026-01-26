@@ -63,11 +63,24 @@
           "ApiKeyFactory"
         ]
       },
-      "./features/eventPublisher/index.ts": "./api/features/eventPublisher",
-      "./features/logger/index.ts": "./api/features/Logger",
-      "./features/security/IdentityContext/index.ts": "./api/security/features/IdentityContext",
-      "./features/wcp/WcpContext/index.ts": "./api/wcp/WcpContext",
-      "./features/keyValueStore/index.ts": "./api/features/KeyValueStore",
+      "./features/eventPublisher/index.ts": "./api/eventPublisher",
+      "./features/logger/index.ts": "./api/logger",
+      "./features/security/IdentityContext/index.ts": "./api/security",
+      "./features/keyValueStore/index.ts": "./api/keyValueStore",
+      "./features/tenancy/TenantContext/index.ts": {
+        "exportPath": "./api/tenancy",
+        "namedExports": [
+          "TenantContext"
+        ]
+      },
+      "./features/tenancy/InstallTenant/index.ts": {
+        "exportPath": "./api/tenancy",
+        "namedExports": [
+          "InstallTenantUseCase",
+          "AppInstaller",
+          "TenantInstalledHandler"
+        ]
+      },
       "./features/security/apiKeys/CreateApiKey/index.ts": "./api/security/features/CreateApiKey",
       "./features/security/apiKeys/DeleteApiKey/index.ts": "./api/security/features/DeleteApiKey",
       "./features/security/apiKeys/GetApiKey/index.ts": "./api/security/features/GetApiKey",
@@ -89,15 +102,21 @@
       "./features/security/teams/ListTeams/index.ts": "./api/security/features/ListTeams",
       "./features/security/teams/UpdateTeam/index.ts": "./api/security/features/UpdateTeam",
       "./features/system/InstallSystem/index.ts": "./api/features/InstallSystem",
-      "./features/tenancy/InstallTenant/index.ts": "./api/tenancy/features/InstallTenant",
-      "./features/tenancy/TenantContext/index.ts": "./api/tenancy/features/TenantContext",
       "./features/users/CreateUser/index.ts": "./api/security/features/CreateUser",
       "./features/users/DeleteUser/index.ts": "./api/security/features/DeleteUser",
       "./features/users/UpdateUser/index.ts": "./api/security/features/UpdateUser",
       "./features/users/GetUser/index.ts": "./api/security/features/GetUser",
       "./features/users/ListUsers/index.ts": "./api/security/features/ListUsers",
       "./features/users/ListUserTeams/index.ts": "./api/security/features/ListUserTeams",
-      "./features/users/ExternalIdpUserSync/index.ts": "./api/security/features/ExternalIdpUserSync"
+      "./features/users/ExternalIdpUserSync/index.ts": "./api/security/features/ExternalIdpUserSync",
+      "./idp/index.ts": {
+        "exportPath": "./api/security",
+        "namedExports": [
+          "IdentityProvider",
+          "OidcIdentityProvider",
+          "JwtIdentityProvider"
+        ]
+      }
     }
   },
   "license": "MIT",

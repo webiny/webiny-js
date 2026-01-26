@@ -43,7 +43,7 @@ export type {
     LoginScreenProps
 } from "@webiny/app-admin";
 
-export { useTenancy } from "@webiny/app-admin";
+export { useTenantContext } from "@webiny/app-admin";
 export type { Tenant } from "@webiny/app-admin";
 
 export * from "./apolloClientFactory.js";
