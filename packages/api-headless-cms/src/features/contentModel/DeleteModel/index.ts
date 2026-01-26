@@ -1,2 +1,2 @@
 export { DeleteModelUseCase, DeleteModelRepository } from "./abstractions.js";
-export { ModelAfterDeleteHandler, ModelBeforeDeleteHandler } from "./events.js";
+export { ModelAfterDeleteEventHandler, ModelBeforeDeleteEventHandler } from "./events.js";

@@ -1,2 +1,2 @@
 export { UpdateModelUseCase, UpdateModelRepository } from "./abstractions.js";
-export { ModelAfterUpdateHandler, ModelBeforeUpdateHandler } from "./events.js";
+export { ModelAfterUpdateEventHandler, ModelBeforeUpdateEventHandler } from "./events.js";

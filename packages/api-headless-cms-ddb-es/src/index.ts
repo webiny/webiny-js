@@ -33,9 +33,9 @@ import { CmsEntryFilterPlugin } from "~/plugins/CmsEntryFilterPlugin.js";
 import { StorageOperationsCmsModelPlugin, StorageTransformPlugin } from "@webiny/api-headless-cms";
 import { createCreateIndexTask } from "~/tasks/createIndexTaskPlugin.js";
 import { CompressorPlugin } from "@webiny/api";
-import { ModelAfterCreateHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";
-import { ModelAfterCreateFromHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModelFrom/events.js";
-import { ModelAfterDeleteHandler } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/events.js";
+import { ModelAfterCreateEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";
+import { ModelAfterCreateFromEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModelFrom/events.js";
+import { ModelAfterDeleteEventHandler } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/events.js";
 import { createTable } from "@webiny/db-dynamodb";
 
 export * from "./plugins/index.js";
@@ -166,7 +166,7 @@ export const createStorageOperations: StorageOperationsFactory = params => {
              * TODO @pavel
              * Moved operations to AFTER create/from because at in before the model does not have modelId - to create the index.
              */
-            context.container.registerFactory(ModelAfterCreateHandler, () => ({
+            context.container.registerFactory(ModelAfterCreateEventHandler, () => ({
                 async handle(event) {
                     const { model } = event.payload;
                     await createElasticsearchIndex({
@@ -177,7 +177,7 @@ export const createStorageOperations: StorageOperationsFactory = params => {
                 }
             }));
 
-            context.container.registerFactory(ModelAfterCreateFromHandler, () => ({
+            context.container.registerFactory(ModelAfterCreateFromEventHandler, () => ({
                 async handle(event) {
                     const { model } = event.payload;
                     await createElasticsearchIndex({
@@ -188,7 +188,7 @@ export const createStorageOperations: StorageOperationsFactory = params => {
                 }
             }));
 
-            context.container.registerFactory(ModelAfterDeleteHandler, () => ({
+            context.container.registerFactory(ModelAfterDeleteEventHandler, () => ({
                 async handle(event) {
                     const { model } = event.payload;
                     await deleteElasticsearchIndex({

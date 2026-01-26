@@ -1,22 +1,21 @@
 import { createAbstraction } from "@webiny/feature/api";
-import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import type { IEventHandler } from "@webiny/api-core/features/EventPublisher";
-import type { CmsModel } from "~/types/index.js";
-import type { CmsModelCreateInput } from "~/types/index.js";
+import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
+import type { CmsModel, CmsModelCreateInput } from "~/types/index.js";
 
 /**
  * Event payloads
  */
-export interface ModelBeforeCreatePayload {
+export interface ModelBeforeCreateEventPayload {
     model: CmsModel;
     input: CmsModelCreateInput;
 }
 
-export interface ModelAfterCreatePayload {
+export interface ModelAfterCreateEventPayload {
     model: CmsModel;
 }
 
-export interface ModelCreateErrorPayload {
+export interface ModelCreateErrorEventPayload {
     input: CmsModelCreateInput;
     model: CmsModel;
     error: Error;
@@ -25,19 +24,19 @@ export interface ModelCreateErrorPayload {
 /**
  * ModelBeforeCreateEvent - Published before creating a model
  */
-export class ModelBeforeCreateEvent extends DomainEvent<ModelBeforeCreatePayload> {
+export class ModelBeforeCreateEvent extends DomainEvent<ModelBeforeCreateEventPayload> {
     eventType = "Cms/Model/BeforeCreate" as const;
 
     getHandlerAbstraction() {
-        return ModelBeforeCreateHandler;
+        return ModelBeforeCreateEventHandler;
     }
 }
 
-export const ModelBeforeCreateHandler = createAbstraction<IEventHandler<ModelBeforeCreateEvent>>(
-    "ModelBeforeCreateHandler"
-);
+export const ModelBeforeCreateEventHandler = createAbstraction<
+    IEventHandler<ModelBeforeCreateEvent>
+>("ModelBeforeCreateEventHandler");
 
-export namespace ModelBeforeCreateHandler {
+export namespace ModelBeforeCreateEventHandler {
     export type Interface = IEventHandler<ModelBeforeCreateEvent>;
     export type Event = ModelBeforeCreateEvent;
 }
@@ -45,18 +44,19 @@ export namespace ModelBeforeCreateHandler {
 /**
  * ModelAfterCreateEvent - Published after creating a model
  */
-export class ModelAfterCreateEvent extends DomainEvent<ModelAfterCreatePayload> {
+export class ModelAfterCreateEvent extends DomainEvent<ModelAfterCreateEventPayload> {
     eventType = "Cms/Model/AfterCreate" as const;
 
     getHandlerAbstraction() {
-        return ModelAfterCreateHandler;
+        return ModelAfterCreateEventHandler;
     }
 }
 
-export const ModelAfterCreateHandler =
-    createAbstraction<IEventHandler<ModelAfterCreateEvent>>("ModelAfterCreateHandler");
+export const ModelAfterCreateEventHandler = createAbstraction<IEventHandler<ModelAfterCreateEvent>>(
+    "ModelAfterCreateEventHandler"
+);
 
-export namespace ModelAfterCreateHandler {
+export namespace ModelAfterCreateEventHandler {
     export type Interface = IEventHandler<ModelAfterCreateEvent>;
     export type Event = ModelAfterCreateEvent;
 }
@@ -64,18 +64,19 @@ export namespace ModelAfterCreateHandler {
 /**
  * ModelCreateErrorEvent - Published when create fails
  */
-export class ModelCreateErrorEvent extends DomainEvent<ModelCreateErrorPayload> {
+export class ModelCreateErrorEvent extends DomainEvent<ModelCreateErrorEventPayload> {
     eventType = "Cms/Model/CreateError" as const;
 
     getHandlerAbstraction() {
-        return ModelCreateErrorHandler;
+        return ModelCreateErrorEventHandler;
     }
 }
 
-export const ModelCreateErrorHandler =
-    createAbstraction<IEventHandler<ModelCreateErrorEvent>>("ModelCreateErrorHandler");
+export const ModelCreateErrorEventHandler = createAbstraction<IEventHandler<ModelCreateErrorEvent>>(
+    "ModelCreateErrorEventHandler"
+);
 
-export namespace ModelCreateErrorHandler {
+export namespace ModelCreateErrorEventHandler {
     export type Interface = IEventHandler<ModelCreateErrorEvent>;
     export type Event = ModelCreateErrorEvent;
 }

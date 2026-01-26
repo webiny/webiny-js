@@ -1,6 +1,6 @@
 export { CreateModelUseCase } from "./abstractions.js";
 export {
-    ModelBeforeCreateHandler,
-    ModelAfterCreateHandler,
-    ModelCreateErrorHandler
+    ModelBeforeCreateEventHandler,
+    ModelAfterCreateEventHandler,
+    ModelCreateErrorEventHandler
 } from "./events.js";

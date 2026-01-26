@@ -1,24 +1,23 @@
 import { createAbstraction } from "@webiny/feature/api";
-import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import type { IEventHandler } from "@webiny/api-core/features/EventPublisher";
-import type { CmsModel } from "~/types/index.js";
-import type { CmsModelUpdateInput } from "~/types/index.js";
+import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
+import type { CmsModel, CmsModelUpdateInput } from "~/types/index.js";
 
 /**
  * Event payloads
  */
-export interface ModelBeforeUpdatePayload {
+export interface ModelBeforeUpdateEventPayload {
     model: CmsModel;
     original: CmsModel;
     input: CmsModelUpdateInput;
 }
 
-export interface ModelAfterUpdatePayload {
+export interface ModelAfterUpdateEventPayload {
     model: CmsModel;
     original: CmsModel;
 }
 
-export interface ModelUpdateErrorPayload {
+export interface ModelUpdateErrorEventPayload {
     input: CmsModelUpdateInput;
     model: CmsModel;
     original: CmsModel;
@@ -28,19 +27,19 @@ export interface ModelUpdateErrorPayload {
 /**
  * ModelBeforeUpdateEvent - Published before updating a model
  */
-export class ModelBeforeUpdateEvent extends DomainEvent<ModelBeforeUpdatePayload> {
+export class ModelBeforeUpdateEvent extends DomainEvent<ModelBeforeUpdateEventPayload> {
     eventType = "Cms/Model/BeforeUpdate" as const;
 
     getHandlerAbstraction() {
-        return ModelBeforeUpdateHandler;
+        return ModelBeforeUpdateEventHandler;
     }
 }
 
-export const ModelBeforeUpdateHandler = createAbstraction<IEventHandler<ModelBeforeUpdateEvent>>(
-    "ModelBeforeUpdateHandler"
-);
+export const ModelBeforeUpdateEventHandler = createAbstraction<
+    IEventHandler<ModelBeforeUpdateEvent>
+>("ModelBeforeUpdateEventHandler");
 
-export namespace ModelBeforeUpdateHandler {
+export namespace ModelBeforeUpdateEventHandler {
     export type Interface = IEventHandler<ModelBeforeUpdateEvent>;
     export type Event = ModelBeforeUpdateEvent;
 }
@@ -48,18 +47,19 @@ export namespace ModelBeforeUpdateHandler {
 /**
  * ModelAfterUpdateEvent - Published after updating a model
  */
-export class ModelAfterUpdateEvent extends DomainEvent<ModelAfterUpdatePayload> {
+export class ModelAfterUpdateEvent extends DomainEvent<ModelAfterUpdateEventPayload> {
     eventType = "Cms/Model/AfterUpdate" as const;
 
     getHandlerAbstraction() {
-        return ModelAfterUpdateHandler;
+        return ModelAfterUpdateEventHandler;
     }
 }
 
-export const ModelAfterUpdateHandler =
-    createAbstraction<IEventHandler<ModelAfterUpdateEvent>>("ModelAfterUpdateHandler");
+export const ModelAfterUpdateEventHandler = createAbstraction<IEventHandler<ModelAfterUpdateEvent>>(
+    "ModelAfterUpdateEventHandler"
+);
 
-export namespace ModelAfterUpdateHandler {
+export namespace ModelAfterUpdateEventHandler {
     export type Interface = IEventHandler<ModelAfterUpdateEvent>;
     export type Event = ModelAfterUpdateEvent;
 }
@@ -67,18 +67,19 @@ export namespace ModelAfterUpdateHandler {
 /**
  * ModelUpdateErrorEvent - Published when update fails
  */
-export class ModelUpdateErrorEvent extends DomainEvent<ModelUpdateErrorPayload> {
+export class ModelUpdateErrorEvent extends DomainEvent<ModelUpdateErrorEventPayload> {
     eventType = "Cms/Model/UpdateError" as const;
 
     getHandlerAbstraction() {
-        return ModelUpdateErrorHandler;
+        return ModelUpdateErrorEventHandler;
     }
 }
 
-export const ModelUpdateErrorHandler =
-    createAbstraction<IEventHandler<ModelUpdateErrorEvent>>("ModelUpdateErrorHandler");
+export const ModelUpdateErrorEventHandler = createAbstraction<IEventHandler<ModelUpdateErrorEvent>>(
+    "ModelUpdateErrorEventHandler"
+);
 
-export namespace ModelUpdateErrorHandler {
+export namespace ModelUpdateErrorEventHandler {
     export type Interface = IEventHandler<ModelUpdateErrorEvent>;
     export type Event = ModelUpdateErrorEvent;
 }
