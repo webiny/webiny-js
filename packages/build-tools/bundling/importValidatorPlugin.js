@@ -5,6 +5,8 @@ const cyan = "\x1b[36m";
 const reset = "\x1b[0m";
 const bold = "\x1b[1m";
 
+const whitelist = ["@webiny/cognito", "@webiny/auth0", "@webiny/okta"];
+
 export const createImportValidatorPlugin = () => {
     return {
         name: "extensions-import-validator",
@@ -26,6 +28,11 @@ export const createImportValidatorPlugin = () => {
 
                                         // Check if the import request is a @webiny/* package
                                         if (!request?.startsWith("@webiny/")) {
+                                            return;
+                                        }
+
+                                        // Allow whitelisted packages
+                                        if (whitelist.some(pkg => request.startsWith(pkg))) {
                                             return;
                                         }
 
