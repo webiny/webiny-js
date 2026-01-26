@@ -11,8 +11,6 @@ export const CustomIdp = (props: IdpProps) => {
         <>
             {/* Lambda vars */}
             <EnvVar varName={"WEBINY_API_IDP_SECRET_KEY"} value={props.secretKey} />
-            {/* Admin app vars */}
-            <EnvVar varName={"WEBINY_ADMIN_IDP_SECRET_KEY"} value={props.secretKey} />
             {/* Api extensions */}
             <Api.Extension src={import.meta.dirname + "/api/CustomIdentityProvider.ts"} />
             {/* Admin extensions */}

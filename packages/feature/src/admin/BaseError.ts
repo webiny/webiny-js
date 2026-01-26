@@ -1,4 +1,4 @@
-export interface ErrorOptions {
+export interface IErrorOptions {
     stack?: string;
 }
 
@@ -10,9 +10,13 @@ export abstract class BaseError<TData = void> extends Error {
     public abstract readonly code: string;
     public readonly data: TData extends void ? undefined : TData;
 
-    protected constructor(input: ErrorDataWithOptionalData<TData>, options?: ErrorOptions) {
+    protected constructor(input: ErrorDataWithOptionalData<TData>, options?: IErrorOptions) {
         super(input.message);
         this.stack = options?.stack;
         this.data = input.data as any;
     }
+}
+
+export namespace BaseError {
+    export type ErrorOptions = IErrorOptions;
 }

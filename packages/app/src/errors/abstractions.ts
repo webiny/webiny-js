@@ -17,4 +17,5 @@ export const AuthenticationErrorEventHandler = createAbstraction<
 
 export namespace AuthenticationErrorEventHandler {
     export type Interface = IEventHandler<AuthenticationErrorEvent>;
+    export type Event = AuthenticationErrorEvent;
 }

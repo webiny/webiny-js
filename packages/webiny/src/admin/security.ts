@@ -1,3 +1,7 @@
+export { LogInUseCase } from "@webiny/app-admin/features/security/LogIn/index.js";
+export { LogOutUseCase } from "@webiny/app-admin/features/security/LogOut/index.js";
+export { AuthenticationContext } from "@webiny/app-admin/features/security/AuthenticationContext/index.js";
+export { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/index.js";
 export { useAuthentication } from "@webiny/app-admin/presentation/security/hooks/useAuthentication.js";
 export { useIdentity } from "@webiny/app-admin/presentation/security/hooks/useIdentity.js";
 export { HasPermissionComponent } from "@webiny/app-admin/presentation/security/components/HasPermission.js";

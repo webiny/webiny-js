@@ -4,7 +4,7 @@ import { FeatureDefinition } from "./createFeature.js";
 
 const featureCache = new WeakMap<Container, Map<string, unknown>>();
 
-export function useFeature<TExports>(feature: FeatureDefinition<TExports>): TExports {
+export function useFeature<TExports>(feature: FeatureDefinition<TExports, any[]>): TExports {
     const container = useContainer();
 
     let featureMap = featureCache.get(container);

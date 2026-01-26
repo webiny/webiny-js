@@ -246,7 +246,8 @@
   "packageManager": "yarn@4.12.0",
   "dependencies": {
     "@types/hoist-non-react-statics": "^3.3.7",
-    "@webiny/di": "^0.2.3"
+    "@webiny/di": "^0.2.3",
+    "jwt-decode": "^4.0.0"
   },
   "engines": {
     "node": ">=22.0.0"

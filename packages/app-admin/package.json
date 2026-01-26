@@ -12,10 +12,46 @@
   "license": "MIT",
   "webiny": {
     "exports": {
+      "./components/RegisterFeature.tsx": {
+        "exportPath": "./admin",
+        "namedExports": [
+          "RegisterFeature"
+        ]
+      },
       "./config/AdminConfig.tsx": {
         "exportPath": "./admin/configs",
         "namedExports": [
           "AdminConfig"
+        ]
+      },
+      "./features/security/LogIn/index.ts": {
+        "exportPath": "./admin/security",
+        "namedExports": [
+          "LogInUseCase"
+        ]
+      },
+      "./features/security/LogOut/index.ts": {
+        "exportPath": "./admin/security",
+        "namedExports": [
+          "LogOutUseCase"
+        ]
+      },
+      "./features/security/AuthenticationContext/index.ts": {
+        "exportPath": "./admin/security",
+        "namedExports": [
+          "AuthenticationContext"
+        ]
+      },
+      "./features/security/IdentityContext/index.ts": {
+        "exportPath": "./admin/security",
+        "namedExports": [
+          "IdentityContext"
+        ]
+      },
+      "./features/tenancy/abstractions.ts": {
+        "exportPath": "./admin/tenancy",
+        "namedExports": [
+          "TenantContext"
         ]
       },
       "./presentation/tenancy/useTenantContext.ts": {

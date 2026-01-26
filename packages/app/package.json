@@ -16,6 +16,18 @@
   "license": "MIT",
   "webiny": {
     "exports": {
+      "./errors/abstractions.ts": {
+        "exportPath": "./admin/security",
+        "namedExports": [
+          "AuthenticationErrorEventHandler"
+        ]
+      },
+      "./shared/di/useFeature.ts": {
+        "exportPath": "./admin",
+        "namedExports": [
+          "useFeature"
+        ]
+      },
       "./features/envConfig/index.ts": {
         "exportPath": "./admin/envConfig",
         "namedExports": [

@@ -13,6 +13,18 @@
     "./api": "./api/index.js",
     "./admin": "./admin/index.js"
   },
+  "webiny": {
+    "exports": {
+      "./admin/index.ts": {
+        "exportPath": "./admin",
+        "namedExports": [
+          "createFeature",
+          "createAbstraction",
+          "BaseError"
+        ]
+      }
+    }
+  },
   "dependencies": {
     "@webiny/di": "^0.2.3"
   },

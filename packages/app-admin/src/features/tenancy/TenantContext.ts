@@ -1,11 +1,11 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import { TenancyService as Abstraction } from "./abstractions.js";
+import { TenantContext as Abstraction } from "./abstractions.js";
 import { LocalStorageService } from "@webiny/app/features/localStorage";
 
 const LOCAL_STORAGE_KEY = "tenantId";
 const DEFAULT_TENANT = "root";
 
-class TenancyServiceImpl implements Abstraction.Interface {
+class TenantContextImpl implements Abstraction.Interface {
     private currentTenant: string | null = null;
     private changeCallbacks = new Set<(tenantId: string | null) => void>();
 
@@ -61,7 +61,7 @@ class TenancyServiceImpl implements Abstraction.Interface {
     }
 }
 
-export const TenancyService = Abstraction.createImplementation({
-    implementation: TenancyServiceImpl,
+export const TenantContext = Abstraction.createImplementation({
+    implementation: TenantContextImpl,
     dependencies: [LocalStorageService]
 });

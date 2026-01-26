@@ -5,7 +5,7 @@ import { mdbid } from "@webiny/utils";
 const fastify = Fastify();
 const port = 3000;
 
-const JWT_SECRET = "super_secret_key";
+const JWT_SECRET = "wrong-secret-key";
 const predefinedRedirectUrl = "http://localhost:3001";
 
 // Dummy user ID for token payload.
@@ -79,7 +79,10 @@ fastify.get("/login", async (req, reply) => {
     const timestamp = new Date().toISOString();
     console.log(`[${timestamp}] ----- /login -----\n`);
 
-    const { tenantId } = req.query as { tenantId: string };
+    const { tenantId, error } = req.query as { tenantId: string; error?: string };
+    if (error) {
+        console.log(`Login forced by error: ${error}`);
+    }
     const idToken = generateToken("id", DUMMY_USER_ID, { tenantId });
     console.log(`Created idToken:\n${idToken}\n`);
 
