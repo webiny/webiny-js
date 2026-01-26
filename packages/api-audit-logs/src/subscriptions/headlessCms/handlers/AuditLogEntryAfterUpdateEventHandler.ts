@@ -32,7 +32,7 @@ class AuditLogEntryAfterUpdateHandlerImpl implements EntryAfterUpdateHandler.Int
     }
 }
 
-export const AuditLogEntryAfterUpdateHandler = EntryAfterUpdateHandler.createImplementation({
+export const AuditLogEntryAfterUpdateEventHandler = EntryAfterUpdateHandler.createImplementation({
     implementation: AuditLogEntryAfterUpdateHandlerImpl,
     dependencies: [AuditLogsContext]
 });

@@ -23,7 +23,7 @@ class AuditLogModelAfterCreateHandlerImpl implements ModelAfterCreateHandler.Int
     }
 }
 
-export const AuditLogModelAfterCreateHandler = ModelAfterCreateHandler.createImplementation({
+export const AuditLogModelAfterCreateEventHandler = ModelAfterCreateHandler.createImplementation({
     implementation: AuditLogModelAfterCreateHandlerImpl,
     dependencies: [AuditLogsContext]
 });

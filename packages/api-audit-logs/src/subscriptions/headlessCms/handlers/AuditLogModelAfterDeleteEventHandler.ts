@@ -23,7 +23,7 @@ class AuditLogModelAfterDeleteHandlerImpl implements ModelAfterDeleteHandler.Int
     }
 }
 
-export const AuditLogModelAfterDeleteHandler = ModelAfterDeleteHandler.createImplementation({
+export const AuditLogModelAfterDeleteEventHandler = ModelAfterDeleteHandler.createImplementation({
     implementation: AuditLogModelAfterDeleteHandlerImpl,
     dependencies: [AuditLogsContext]
 });

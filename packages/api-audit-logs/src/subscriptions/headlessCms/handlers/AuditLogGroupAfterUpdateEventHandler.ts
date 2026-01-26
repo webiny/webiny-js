@@ -1,13 +1,13 @@
 import WebinyError from "@webiny/error";
-import { GroupAfterUpdateHandler } from "@webiny/api-headless-cms/features/contentModelGroup/UpdateGroup/index.js";
+import { GroupAfterUpdateEventHandler } from "@webiny/api-headless-cms/features/contentModelGroup/UpdateGroup/index.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 import { AuditLogsContext } from "~/abstractions.js";
 
-class AuditLogGroupAfterUpdateHandlerImpl implements GroupAfterUpdateHandler.Interface {
+class AuditLogGroupAfterUpdateEventHandlerImpl implements GroupAfterUpdateEventHandler.Interface {
     constructor(private context: AuditLogsContext.Interface) {}
 
-    async handle(event: GroupAfterUpdateHandler.Event): Promise<void> {
+    async handle(event: GroupAfterUpdateEventHandler.Event): Promise<void> {
         const { group, original } = event.payload;
 
         try {
@@ -21,14 +21,14 @@ class AuditLogGroupAfterUpdateHandlerImpl implements GroupAfterUpdateHandler.Int
             );
         } catch (error) {
             throw WebinyError.from(error, {
-                message: "Error while executing AuditLogGroupAfterUpdateHandler",
+                message: "Error while executing AuditLogGroupAfterUpdateEventHandler",
                 code: "AUDIT_LOGS_AFTER_GROUP_UPDATE_HANDLER"
             });
         }
     }
 }
 
-export const AuditLogGroupAfterUpdateHandler = GroupAfterUpdateHandler.createImplementation({
-    implementation: AuditLogGroupAfterUpdateHandlerImpl,
+export const AuditLogGroupAfterUpdateEventHandler = GroupAfterUpdateEventHandler.createImplementation({
+    implementation: AuditLogGroupAfterUpdateEventHandlerImpl,
     dependencies: [AuditLogsContext]
 });

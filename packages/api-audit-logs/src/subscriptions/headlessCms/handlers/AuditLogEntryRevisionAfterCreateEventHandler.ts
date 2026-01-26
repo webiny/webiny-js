@@ -29,7 +29,7 @@ class AuditLogEntryRevisionAfterCreateHandlerImpl
     }
 }
 
-export const AuditLogEntryRevisionAfterCreateHandler =
+export const AuditLogEntryRevisionAfterCreateEventHandler =
     EntryRevisionAfterCreateHandler.createImplementation({
         implementation: AuditLogEntryRevisionAfterCreateHandlerImpl,
         dependencies: [AuditLogsContext]

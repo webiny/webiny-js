@@ -1,2 +1,2 @@
 export { CreateGroupRepository, CreateGroupUseCase } from "./abstractions.js";
-export { GroupAfterCreateHandler, GroupBeforeCreateHandler } from "./events.js";
+export { GroupAfterCreateEventHandler, GroupBeforeCreateEventHandler } from "./events.js";

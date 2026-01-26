@@ -1,21 +1,20 @@
 import { createAbstraction } from "@webiny/feature/api";
-import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import type { IEventHandler } from "@webiny/api-core/features/EventPublisher";
-import type { CmsGroup } from "~/types/index.js";
-import type { CmsGroupCreateInput } from "~/types/index.js";
+import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
+import type { CmsGroup, CmsGroupCreateInput } from "~/types/index.js";
 
 /**
  * Event payloads
  */
-export interface GroupBeforeCreatePayload {
+export interface GroupBeforeCreateEventPayload {
     group: CmsGroup;
 }
 
-export interface GroupAfterCreatePayload {
+export interface GroupAfterCreateEventPayload {
     group: CmsGroup;
 }
 
-export interface GroupCreateErrorPayload {
+export interface GroupCreateErrorEventPayload {
     input: CmsGroupCreateInput;
     group: CmsGroup;
     error: Error;
@@ -24,38 +23,39 @@ export interface GroupCreateErrorPayload {
 /**
  * GroupBeforeCreateEvent - Published before creating a group
  */
-export class GroupBeforeCreateEvent extends DomainEvent<GroupBeforeCreatePayload> {
+export class GroupBeforeCreateEventEvent extends DomainEvent<GroupBeforeCreateEventPayload> {
     eventType = "Cms/Group/BeforeCreate" as const;
 
     getHandlerAbstraction() {
-        return GroupBeforeCreateHandler;
+        return GroupBeforeCreateEventHandler;
     }
 }
 
-export const GroupBeforeCreateHandler = createAbstraction<IEventHandler<GroupBeforeCreateEvent>>(
-    "GroupBeforeCreateHandler"
-);
+export const GroupBeforeCreateEventHandler = createAbstraction<
+    IEventHandler<GroupBeforeCreateEventEvent>
+>("GroupBeforeCreateEventHandler");
 
-export namespace GroupBeforeCreateHandler {
-    export type Interface = IEventHandler<GroupBeforeCreateEvent>;
-    export type Event = GroupBeforeCreateEvent;
+export namespace GroupBeforeCreateEventHandler {
+    export type Interface = IEventHandler<GroupBeforeCreateEventEvent>;
+    export type Event = GroupBeforeCreateEventEvent;
 }
 
 /**
  * GroupAfterCreateEvent - Published after creating a group
  */
-export class GroupAfterCreateEvent extends DomainEvent<GroupAfterCreatePayload> {
+export class GroupAfterCreateEvent extends DomainEvent<GroupAfterCreateEventPayload> {
     eventType = "Cms/Group/AfterCreate" as const;
 
     getHandlerAbstraction() {
-        return GroupAfterCreateHandler;
+        return GroupAfterCreateEventHandler;
     }
 }
 
-export const GroupAfterCreateHandler =
-    createAbstraction<IEventHandler<GroupAfterCreateEvent>>("GroupAfterCreateHandler");
+export const GroupAfterCreateEventHandler = createAbstraction<IEventHandler<GroupAfterCreateEvent>>(
+    "GroupAfterCreateEventHandler"
+);
 
-export namespace GroupAfterCreateHandler {
+export namespace GroupAfterCreateEventHandler {
     export type Interface = IEventHandler<GroupAfterCreateEvent>;
     export type Event = GroupAfterCreateEvent;
 }
@@ -63,18 +63,18 @@ export namespace GroupAfterCreateHandler {
 /**
  * GroupCreateErrorEvent - Published when create fails
  */
-export class GroupCreateErrorEvent extends DomainEvent<GroupCreateErrorPayload> {
+export class GroupCreateErrorEvent extends DomainEvent<GroupCreateErrorEventPayload> {
     eventType = "Cms/Group/CreateError" as const;
 
     getHandlerAbstraction() {
-        return GroupCreateErrorHandler;
+        return GroupCreateErrorEventHandler;
     }
 }
 
-export const GroupCreateErrorHandler =
-    createAbstraction<IEventHandler<GroupCreateErrorEvent>>("GroupCreateErrorHandler");
+export const GroupCreateErrorEventHandler =
+    createAbstraction<IEventHandler<GroupCreateErrorEvent>>("GroupCreateErrorEventHandler");
 
-export namespace GroupCreateErrorHandler {
+export namespace GroupCreateErrorEventHandler {
     export type Interface = IEventHandler<GroupCreateErrorEvent>;
     export type Event = GroupCreateErrorEvent;
 }

@@ -28,7 +28,7 @@ class AuditLogEntryAfterRestoreFromBinHandlerImpl
     }
 }
 
-export const AuditLogEntryAfterRestoreFromBinHandler =
+export const AuditLogEntryAfterRestoreFromBinEventHandler =
     EntryAfterRestoreFromBinHandler.createImplementation({
         implementation: AuditLogEntryAfterRestoreFromBinHandlerImpl,
         dependencies: [AuditLogsContext]

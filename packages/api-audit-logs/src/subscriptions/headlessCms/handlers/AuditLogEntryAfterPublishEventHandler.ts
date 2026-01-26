@@ -27,7 +27,7 @@ class AuditLogEntryAfterPublishHandlerImpl implements EntryAfterPublishHandler.I
     }
 }
 
-export const AuditLogEntryAfterPublishHandler = EntryAfterPublishHandler.createImplementation({
+export const AuditLogEntryAfterPublishEventHandler = EntryAfterPublishHandler.createImplementation({
     implementation: AuditLogEntryAfterPublishHandlerImpl,
     dependencies: [AuditLogsContext]
 });

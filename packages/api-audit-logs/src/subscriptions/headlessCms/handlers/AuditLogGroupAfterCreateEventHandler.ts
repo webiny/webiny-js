@@ -1,13 +1,13 @@
 import WebinyError from "@webiny/error";
-import { GroupAfterCreateHandler } from "@webiny/api-headless-cms/features/contentModelGroup/CreateGroup/index.js";
+import { GroupAfterCreateEventHandler } from "@webiny/api-headless-cms/features/contentModelGroup/CreateGroup/index.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 import { AuditLogsContext } from "~/abstractions.js";
 
-class AuditLogGroupAfterCreateHandlerImpl implements GroupAfterCreateHandler.Interface {
+class AuditLogGroupAfterCreateHandlerImpl implements GroupAfterCreateEventHandler.Interface {
     constructor(private context: AuditLogsContext.Interface) {}
 
-    async handle(event: GroupAfterCreateHandler.Event): Promise<void> {
+    async handle(event: GroupAfterCreateEventHandler.Event): Promise<void> {
         const { group } = event.payload;
 
         try {
@@ -23,7 +23,7 @@ class AuditLogGroupAfterCreateHandlerImpl implements GroupAfterCreateHandler.Int
     }
 }
 
-export const AuditLogGroupAfterCreateHandler = GroupAfterCreateHandler.createImplementation({
+export const AuditLogGroupAfterCreateEventHandler = GroupAfterCreateEventHandler.createImplementation({
     implementation: AuditLogGroupAfterCreateHandlerImpl,
     dependencies: [AuditLogsContext]
 });

@@ -6,15 +6,15 @@ import type { CmsGroup } from "~/types/index.js";
 /**
  * Event payloads
  */
-export interface GroupBeforeDeletePayload {
+export interface GroupBeforeDeleteEventPayload {
     group: CmsGroup;
 }
 
-export interface GroupAfterDeletePayload {
+export interface GroupAfterDeleteEventPayload {
     group: CmsGroup;
 }
 
-export interface GroupDeleteErrorPayload {
+export interface GroupDeleteErrorEventPayload {
     group: CmsGroup;
     error: Error;
 }
@@ -22,19 +22,19 @@ export interface GroupDeleteErrorPayload {
 /**
  * GroupBeforeDeleteEvent - Published before deleting a group
  */
-export class GroupBeforeDeleteEvent extends DomainEvent<GroupBeforeDeletePayload> {
+export class GroupBeforeDeleteEvent extends DomainEvent<GroupBeforeDeleteEventPayload> {
     eventType = "Cms/Group/BeforeDelete" as const;
 
     getHandlerAbstraction() {
-        return GroupBeforeDeleteHandler;
+        return GroupBeforeDeleteEventHandler;
     }
 }
 
-export const GroupBeforeDeleteHandler = createAbstraction<IEventHandler<GroupBeforeDeleteEvent>>(
-    "GroupBeforeDeleteHandler"
+export const GroupBeforeDeleteEventHandler = createAbstraction<IEventHandler<GroupBeforeDeleteEvent>>(
+    "GroupBeforeDeleteEventHandler"
 );
 
-export namespace GroupBeforeDeleteHandler {
+export namespace GroupBeforeDeleteEventHandler {
     export type Interface = IEventHandler<GroupBeforeDeleteEvent>;
     export type Event = GroupBeforeDeleteEvent;
 }
@@ -42,18 +42,18 @@ export namespace GroupBeforeDeleteHandler {
 /**
  * GroupAfterDeleteEvent - Published after deleting a group
  */
-export class GroupAfterDeleteEvent extends DomainEvent<GroupAfterDeletePayload> {
+export class GroupAfterDeleteEvent extends DomainEvent<GroupAfterDeleteEventPayload> {
     eventType = "Cms/Group/AfterDelete" as const;
 
     getHandlerAbstraction() {
-        return GroupAfterDeleteHandler;
+        return GroupAfterDeleteEventHandler;
     }
 }
 
-export const GroupAfterDeleteHandler =
-    createAbstraction<IEventHandler<GroupAfterDeleteEvent>>("GroupAfterDeleteHandler");
+export const GroupAfterDeleteEventHandler =
+    createAbstraction<IEventHandler<GroupAfterDeleteEvent>>("GroupAfterDeleteEventHandler");
 
-export namespace GroupAfterDeleteHandler {
+export namespace GroupAfterDeleteEventHandler {
     export type Interface = IEventHandler<GroupAfterDeleteEvent>;
     export type Event = GroupAfterDeleteEvent;
 }
@@ -61,18 +61,18 @@ export namespace GroupAfterDeleteHandler {
 /**
  * GroupDeleteErrorEvent - Published when delete fails
  */
-export class GroupDeleteErrorEvent extends DomainEvent<GroupDeleteErrorPayload> {
+export class GroupDeleteErrorEvent extends DomainEvent<GroupDeleteErrorEventPayload> {
     eventType = "Cms/Group/DeleteError" as const;
 
     getHandlerAbstraction() {
-        return GroupDeleteErrorHandler;
+        return GroupDeleteErrorEventHandler;
     }
 }
 
-export const GroupDeleteErrorHandler =
-    createAbstraction<IEventHandler<GroupDeleteErrorEvent>>("GroupDeleteErrorHandler");
+export const GroupDeleteErrorEventHandler =
+    createAbstraction<IEventHandler<GroupDeleteErrorEvent>>("GroupDeleteErrorEventHandler");
 
-export namespace GroupDeleteErrorHandler {
+export namespace GroupDeleteErrorEventHandler {
     export type Interface = IEventHandler<GroupDeleteErrorEvent>;
     export type Event = GroupDeleteErrorEvent;
 }

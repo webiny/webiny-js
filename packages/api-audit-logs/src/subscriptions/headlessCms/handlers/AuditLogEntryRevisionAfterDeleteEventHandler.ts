@@ -29,7 +29,7 @@ class AuditLogEntryRevisionAfterDeleteHandlerImpl
     }
 }
 
-export const AuditLogEntryRevisionAfterDeleteHandler =
+export const AuditLogEntryRevisionAfterDeleteEventHandler =
     EntryRevisionAfterDeleteHandler.createImplementation({
         implementation: AuditLogEntryRevisionAfterDeleteHandlerImpl,
         dependencies: [AuditLogsContext]

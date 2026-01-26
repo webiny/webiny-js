@@ -27,7 +27,7 @@ class AuditLogEntryAfterUnpublishHandlerImpl implements EntryAfterUnpublishHandl
     }
 }
 
-export const AuditLogEntryAfterUnpublishHandler = EntryAfterUnpublishHandler.createImplementation({
+export const AuditLogEntryAfterUnpublishEventHandler = EntryAfterUnpublishHandler.createImplementation({
     implementation: AuditLogEntryAfterUnpublishHandlerImpl,
     dependencies: [AuditLogsContext]
 });
