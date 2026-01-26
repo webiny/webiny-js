@@ -5,7 +5,7 @@ const cyan = "\x1b[36m";
 const reset = "\x1b[0m";
 const bold = "\x1b[1m";
 
-export const createExtensionsImportValidatorPlugin = () => {
+export const createImportValidatorPlugin = () => {
     return {
         name: "extensions-import-validator",
         setup(api) {

@@ -49,7 +49,7 @@
       "./features/localStorage/abstractions.ts": {
         "exportPath": "./admin/localStorage",
         "namedExports": [
-          "LocalStorageService"
+          "LocalStorage"
         ]
       },
       "./presentation/localStorage/index.ts": {

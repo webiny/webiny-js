@@ -1,6 +1,6 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import { TenantContext as Abstraction } from "./abstractions.js";
-import { LocalStorageService } from "@webiny/app/features/localStorage";
+import { LocalStorage } from "@webiny/app/features/localStorage";
 
 const LOCAL_STORAGE_KEY = "tenantId";
 const DEFAULT_TENANT = "root";
@@ -9,7 +9,7 @@ class TenantContextImpl implements Abstraction.Interface {
     private currentTenant: string | null = null;
     private changeCallbacks = new Set<(tenantId: string | null) => void>();
 
-    constructor(private localStorage: LocalStorageService.Interface) {
+    constructor(private localStorage: LocalStorage.Interface) {
         makeAutoObservable(this, {}, { autoBind: true });
         this.initialize();
     }
@@ -63,5 +63,5 @@ class TenantContextImpl implements Abstraction.Interface {
 
 export const TenantContext = Abstraction.createImplementation({
     implementation: TenantContextImpl,
-    dependencies: [LocalStorageService]
+    dependencies: [LocalStorage]
 });

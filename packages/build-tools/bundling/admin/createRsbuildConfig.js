@@ -1,11 +1,11 @@
+import fs from "fs";
 import path from "path";
 import { pluginReact } from "@rsbuild/plugin-react";
 import { pluginSvgr } from "@rsbuild/plugin-svgr";
 import { pluginSass } from "@rsbuild/plugin-sass";
 import { pluginTypeCheck } from "@rsbuild/plugin-type-check";
 import tailwindcss from "@tailwindcss/postcss";
-import fs from "fs";
-import { createExtensionsImportValidatorPlugin } from "./extensionsImportValidatorPlugin.js";
+import { createImportValidatorPlugin } from "../importValidatorPlugin.js";
 
 export const createRsbuildConfig = ({ cwd }) => {
     const paths = getPaths(cwd);
@@ -45,7 +45,7 @@ export const createRsbuildConfig = ({ cwd }) => {
             template: paths.projectRootFolder + "/public/index.html"
         },
         plugins: [
-            createExtensionsImportValidatorPlugin(),
+            createImportValidatorPlugin(),
             pluginTypeCheck({
                 tsCheckerOptions: {
                     typescript: { configFile: paths.admin.tsConfig },

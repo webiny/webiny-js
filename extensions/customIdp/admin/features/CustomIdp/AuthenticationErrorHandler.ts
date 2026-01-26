@@ -1,14 +1,14 @@
-import { AuthenticationErrorEvent, AuthenticationErrorEventHandler } from "@webiny/app/errors";
+import { AuthenticationErrorEventHandler as EventHandler } from "webiny/admin/security";
 import { TenantContext } from "webiny/admin/tenancy";
 import { IdpRedirectGateway } from "./abstractions.js";
 
-class CustomIdpAuthenticationErrorHandlerImpl implements AuthenticationErrorEventHandler.Interface {
+class AuthenticationErrorHandlerImpl implements EventHandler.Interface {
     constructor(
         private tenantContext: TenantContext.Interface,
         private redirectGateway: IdpRedirectGateway.Interface
     ) {}
 
-    async handle(event: AuthenticationErrorEvent): Promise<void> {
+    async handle(event: EventHandler.Event): Promise<void> {
         const { code, message } = event.payload;
         const tenantId = this.tenantContext.getCurrentTenant() ?? "root";
 
@@ -19,8 +19,7 @@ class CustomIdpAuthenticationErrorHandlerImpl implements AuthenticationErrorEven
     }
 }
 
-export const CustomIdpAuthenticationErrorHandler =
-    AuthenticationErrorEventHandler.createImplementation({
-        implementation: CustomIdpAuthenticationErrorHandlerImpl,
-        dependencies: [TenantContext, IdpRedirectGateway]
-    });
+export const AuthenticationErrorHandler = EventHandler.createImplementation({
+    implementation: AuthenticationErrorHandlerImpl,
+    dependencies: [TenantContext, IdpRedirectGateway]
+});

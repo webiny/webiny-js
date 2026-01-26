@@ -44,6 +44,10 @@ class CustomIdpPresenterImpl implements Abstraction.Interface {
         this.initialize();
     }
 
+    login() {
+        this.redirectToLogin();
+    }
+
     destroy(): void {
         if (this.intervalId) {
             clearInterval(this.intervalId);
@@ -113,7 +117,8 @@ class CustomIdpPresenterImpl implements Abstraction.Interface {
         }
 
         console.log("Logged out:", reason);
-        this.redirectToLogin();
+        // In case you want to redirect to your IDP login page, uncomment the following line:
+        // this.redirectToLogin();
     }
 
     private redirectToLogin(): void {

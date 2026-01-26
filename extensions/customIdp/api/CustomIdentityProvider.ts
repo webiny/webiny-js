@@ -26,6 +26,9 @@ class CustomIdentityProviderImpl implements JwtIdentityProvider.Interface {
             id: String(idToken["sub"]),
             displayName: idToken["email"],
             roles: idToken["roles"],
+            profile: {
+                email: idToken["email"]
+            },
             context: {
                 defaultTenant: tenantId,
                 /**

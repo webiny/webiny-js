@@ -1,5 +1,5 @@
 export {
-    LocalStorageService,
+    LocalStorage,
     LocalStorageGateway,
     LocalStorageRepository,
     LocalStorageConfig

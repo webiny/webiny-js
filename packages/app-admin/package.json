@@ -12,6 +12,12 @@
   "license": "MIT",
   "webiny": {
     "exports": {
+      "./base/ui/Logo.tsx": {
+        "exportPath": "./admin/ui",
+        "namedExports": [
+          "Logo"
+        ]
+      },
       "./components/RegisterFeature.tsx": {
         "exportPath": "./admin",
         "namedExports": [

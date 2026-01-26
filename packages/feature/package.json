@@ -11,7 +11,8 @@
   "license": "MIT",
   "exports": {
     "./api": "./api/index.js",
-    "./admin": "./admin/index.js"
+    "./admin": "./admin/index.js",
+    "./*": "./*"
   },
   "webiny": {
     "exports": {

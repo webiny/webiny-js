@@ -1,12 +1,12 @@
 import { makeAutoObservable } from "mobx";
 import { CustomIdpRepository as Abstraction } from "./abstractions.js";
-import { LocalStorageService } from "webiny/admin/localStorage";
+import { LocalStorage } from "webiny/admin/localStorage";
 
 const ID_TOKEN_KEY = "auth.idToken";
 const REFRESH_TOKEN_KEY = "auth.refreshToken";
 
 class CustomIdpRepositoryImpl implements Abstraction.Interface {
-    constructor(private localStorage: LocalStorageService.Interface) {
+    constructor(private localStorage: LocalStorage.Interface) {
         makeAutoObservable(this);
     }
 
@@ -35,5 +35,5 @@ class CustomIdpRepositoryImpl implements Abstraction.Interface {
 
 export const CustomIdpRepository = Abstraction.createImplementation({
     implementation: CustomIdpRepositoryImpl,
-    dependencies: [LocalStorageService]
+    dependencies: [LocalStorage]
 });

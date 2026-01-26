@@ -56,7 +56,6 @@ export function createRootContainer() {
 
     TelemetryFeature.register(container);
 
-    // Register network error handlers
     container.register(ErrorOverlayNetworkErrorHandler).inSingletonScope();
 
     return container;

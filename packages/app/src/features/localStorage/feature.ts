@@ -1,18 +1,18 @@
 import {
     LocalStorageConfig,
     LocalStorageGateway,
-    LocalStorageService as Abstraction
+    LocalStorage as Abstraction
 } from "./abstractions.js";
 import { BrowserLocalStorageGateway } from "./BrowserLocalStorageGateway.js";
 import { LocalStorageRepository } from "./LocalStorageRepository.js";
-import { LocalStorageService } from "./LocalStorageService.js";
+import { LocalStorage } from "./LocalStorage.js";
 import { createFeature } from "~/shared/di/createFeature.js";
 
 /**
  * LocalStorageFeature wires together:
  *  - BrowserLocalStorageGateway (default gateway)
  *  - LocalStorageRepository (reactive MobX mirror)
- *  - LocalStorageService (thin consumer-facing facade)
+ *  - LocalStorage (thin consumer-facing facade)
  */
 export const LocalStorageFeature = createFeature({
     name: "LocalStorage",
@@ -25,7 +25,7 @@ export const LocalStorageFeature = createFeature({
 
         // Repository & Service
         container.register(LocalStorageRepository).inSingletonScope();
-        container.register(LocalStorageService).inSingletonScope();
+        container.register(LocalStorage).inSingletonScope();
     },
     resolve(container) {
         return {

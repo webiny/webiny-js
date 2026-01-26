@@ -17,7 +17,10 @@ export const UserInfo = ({ accountRoute }: UserInfoProps) => {
     const isDefaultTenant = identity.defaultTenant.id === identity.currentTenant.id;
 
     const { email, firstName, lastName } = identity.profile;
-    const fullName = `${firstName} ${lastName}`;
+    let fullName = `${firstName} ${lastName}`;
+    if (fullName.trim() === "") {
+        fullName = identity.displayName;
+    }
 
     const content = (
         <>

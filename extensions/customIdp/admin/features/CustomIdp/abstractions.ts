@@ -17,6 +17,7 @@ export interface ICustomIdpVm {
 export interface ICustomIdpPresenter {
     vm: ICustomIdpVm;
     init(tokensFromUrl?: ITokens): void;
+    login(): void;
     destroy(): void;
 }
 

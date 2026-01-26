@@ -40,7 +40,8 @@ class NetworkErrorPublishingDecorator implements GraphQLClient.Interface {
         return (
             error.message.includes("Network error") ||
             error.message.includes("Failed to fetch") ||
-            error.message.includes("network failure")
+            error.message.includes("network failure") ||
+            error.message.includes("Local AWS Lambda")
         );
     }
 

@@ -1,3 +1,4 @@
+export { AuthenticationErrorEventHandler } from "@webiny/app/errors/abstractions.js";
 export { LogInUseCase } from "@webiny/app-admin/features/security/LogIn/index.js";
 export { LogOutUseCase } from "@webiny/app-admin/features/security/LogOut/index.js";
 export { AuthenticationContext } from "@webiny/app-admin/features/security/AuthenticationContext/index.js";
