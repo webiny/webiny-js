@@ -1,12 +1,12 @@
-import { EntryAfterDeleteHandler } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/events.js";
+import { EntryAfterDeleteEventHandler } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/events.js";
 import { createWorkflowAppName } from "~/utils/appName.js";
 import { isModelAllowed } from "~/utils/modelAllowed.js";
 import { DeleteTargetWorkflowStateUseCase } from "@webiny/api-workflows/features/workflowState/DeleteTargetWorkflowState/index.js";
 
-class DeleteWorkflowStateOnEntryAfterDeleteImpl implements EntryAfterDeleteHandler.Interface {
+class DeleteWorkflowStateOnEntryAfterDeleteImpl implements EntryAfterDeleteEventHandler.Interface {
     constructor(private deleteTargetState: DeleteTargetWorkflowStateUseCase.Interface) {}
 
-    async handle(event: EntryAfterDeleteHandler.Event): Promise<void> {
+    async handle(event: EntryAfterDeleteEventHandler.Event): Promise<void> {
         const { model, entry, permanent } = event.payload;
 
         if (!isModelAllowed(model) || !permanent) {
@@ -18,7 +18,7 @@ class DeleteWorkflowStateOnEntryAfterDeleteImpl implements EntryAfterDeleteHandl
     }
 }
 
-export const DeleteWorkflowStateOnEntryAfterDelete = EntryAfterDeleteHandler.createImplementation({
+export const DeleteWorkflowStateOnEntryAfterDelete = EntryAfterDeleteEventHandler.createImplementation({
     implementation: DeleteWorkflowStateOnEntryAfterDeleteImpl,
     dependencies: [DeleteTargetWorkflowStateUseCase]
 });

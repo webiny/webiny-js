@@ -1,18 +1,18 @@
 import { createAbstraction } from "@webiny/feature/api";
-import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import type { IEventHandler } from "@webiny/api-core/features/EventPublisher";
+import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import type { CmsEntry, CmsModel, CreateCmsEntryInput } from "~/types/index.js";
 
 /**
  * Event payloads
  */
-export interface EntryBeforeCreatePayload {
+export interface EntryBeforeCreateEventPayload {
     entry: CmsEntry;
     input: CreateCmsEntryInput;
     model: CmsModel;
 }
 
-export interface EntryAfterCreatePayload {
+export interface EntryAfterCreateEventPayload {
     entry: CmsEntry;
     input: CreateCmsEntryInput;
     model: CmsModel;
@@ -21,19 +21,19 @@ export interface EntryAfterCreatePayload {
 /**
  * EntryBeforeCreateEvent - Published before creating an entry
  */
-export class EntryBeforeCreateEvent extends DomainEvent<EntryBeforeCreatePayload> {
+export class EntryBeforeCreateEvent extends DomainEvent<EntryBeforeCreateEventPayload> {
     eventType = "Cms/Entry/BeforeCreate" as const;
 
     getHandlerAbstraction() {
-        return EntryBeforeCreateHandler;
+        return EntryBeforeCreateEventHandler;
     }
 }
 
-export const EntryBeforeCreateHandler = createAbstraction<IEventHandler<EntryBeforeCreateEvent>>(
-    "EntryBeforeCreateHandler"
-);
+export const EntryBeforeCreateEventHandler = createAbstraction<
+    IEventHandler<EntryBeforeCreateEvent>
+>("EntryBeforeCreateEventHandler");
 
-export namespace EntryBeforeCreateHandler {
+export namespace EntryBeforeCreateEventHandler {
     export type Interface = IEventHandler<EntryBeforeCreateEvent>;
     export type Event = EntryBeforeCreateEvent;
 }
@@ -41,18 +41,19 @@ export namespace EntryBeforeCreateHandler {
 /**
  * EntryAfterCreateEvent - Published after creating an entry
  */
-export class EntryAfterCreateEvent extends DomainEvent<EntryAfterCreatePayload> {
+export class EntryAfterCreateEvent extends DomainEvent<EntryAfterCreateEventPayload> {
     eventType = "Cms/Entry/AfterCreate" as const;
 
     getHandlerAbstraction() {
-        return EntryAfterCreateHandler;
+        return EntryAfterCreateEventHandler;
     }
 }
 
-export const EntryAfterCreateHandler =
-    createAbstraction<IEventHandler<EntryAfterCreateEvent>>("EntryAfterCreateHandler");
+export const EntryAfterCreateEventHandler = createAbstraction<IEventHandler<EntryAfterCreateEvent>>(
+    "EntryAfterCreateEventHandler"
+);
 
-export namespace EntryAfterCreateHandler {
+export namespace EntryAfterCreateEventHandler {
     export type Interface = IEventHandler<EntryAfterCreateEvent>;
     export type Event = EntryAfterCreateEvent;
 }

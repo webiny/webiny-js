@@ -1,15 +1,15 @@
 import WebinyError from "@webiny/error";
-import { EntryRevisionAfterDeleteHandler } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntryRevision/index.js";
+import { EntryRevisionAfterDeleteEventHandler } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntryRevision/index.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 import { AuditLogsContext } from "~/abstractions.js";
 
-class AuditLogEntryRevisionAfterDeleteHandlerImpl
-    implements EntryRevisionAfterDeleteHandler.Interface
+class AuditLogEntryRevisionAfterDeleteEventHandlerImpl
+    implements EntryRevisionAfterDeleteEventHandler.Interface
 {
     constructor(private context: AuditLogsContext.Interface) {}
 
-    async handle(event: EntryRevisionAfterDeleteHandler.Event): Promise<void> {
+    async handle(event: EntryRevisionAfterDeleteEventHandler.Event): Promise<void> {
         const { model, entry } = event.payload;
 
         if (model.isPrivate) {
@@ -22,7 +22,7 @@ class AuditLogEntryRevisionAfterDeleteHandlerImpl
             await createAuditLog("Entry revision deleted", entry, entry.id, this.context);
         } catch (error) {
             throw WebinyError.from(error, {
-                message: "Error while executing AuditLogEntryRevisionAfterDeleteHandler",
+                message: "Error while executing AuditLogEntryRevisionAfterDeleteEventHandler",
                 code: "AUDIT_LOGS_AFTER_ENTRY_REVISION_DELETE_HANDLER"
             });
         }
@@ -30,7 +30,7 @@ class AuditLogEntryRevisionAfterDeleteHandlerImpl
 }
 
 export const AuditLogEntryRevisionAfterDeleteEventHandler =
-    EntryRevisionAfterDeleteHandler.createImplementation({
-        implementation: AuditLogEntryRevisionAfterDeleteHandlerImpl,
+    EntryRevisionAfterDeleteEventHandler.createImplementation({
+        implementation: AuditLogEntryRevisionAfterDeleteEventHandlerImpl,
         dependencies: [AuditLogsContext]
     });

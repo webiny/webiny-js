@@ -4,4 +4,4 @@ export {
     MoveEntryToBinUseCase,
     MoveEntryToBinRepository
 } from "./abstractions.js";
-export { EntryBeforeDeleteHandler, EntryAfterDeleteHandler } from "./events.js";
+export { EntryBeforeDeleteEventHandler, EntryAfterDeleteEventHandler } from "./events.js";

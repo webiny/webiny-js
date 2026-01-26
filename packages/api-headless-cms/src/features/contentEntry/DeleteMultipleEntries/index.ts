@@ -1,2 +1,2 @@
 export { DeleteMultipleEntriesRepository, DeleteMultipleEntriesUseCase } from "./abstractions.js";
-export { EntryAfterDeleteMultipleHandler, EntryBeforeDeleteMultipleHandler } from "./events.js";
+export { EntryAfterDeleteMultipleEventHandler, EntryBeforeDeleteMultipleEventHandler } from "./events.js";

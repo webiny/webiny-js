@@ -4,7 +4,7 @@ import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 import { AuditLogsContext } from "~/abstractions.js";
 
-class AuditLogGroupAfterDeleteHandlerImpl implements GroupAfterDeleteEventHandler.Interface {
+class AuditLogGroupAfterDeleteHandlerEventImpl implements GroupAfterDeleteEventHandler.Interface {
     constructor(private context: AuditLogsContext.Interface) {}
 
     async handle(event: GroupAfterDeleteEventHandler.Event): Promise<void> {
@@ -16,7 +16,7 @@ class AuditLogGroupAfterDeleteHandlerImpl implements GroupAfterDeleteEventHandle
             await createAuditLog("Group deleted", group, group.id, this.context);
         } catch (error) {
             throw WebinyError.from(error, {
-                message: "Error while executing AuditLogGroupAfterDeleteHandler",
+                message: "Error while executing AuditLogGroupAfterDeleteHandlerEvent",
                 code: "AUDIT_LOGS_AFTER_GROUP_DELETE_HANDLER"
             });
         }
@@ -24,6 +24,6 @@ class AuditLogGroupAfterDeleteHandlerImpl implements GroupAfterDeleteEventHandle
 }
 
 export const AuditLogGroupAfterDeleteEventHandler = GroupAfterDeleteEventHandler.createImplementation({
-    implementation: AuditLogGroupAfterDeleteHandlerImpl,
+    implementation: AuditLogGroupAfterDeleteHandlerEventImpl,
     dependencies: [AuditLogsContext]
 });

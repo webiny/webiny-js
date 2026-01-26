@@ -1,27 +1,28 @@
 import { createAbstraction } from "@webiny/feature/api";
-import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import type { IEventHandler } from "@webiny/api-core/features/EventPublisher";
+import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import type {
-    EntryBeforeMovePayload,
-    EntryAfterMovePayload,
-    EntryMoveErrorPayload
+    EntryAfterMoveEventPayload,
+    EntryBeforeMoveEventPayload,
+    EntryMoveErrorEventPayload
 } from "./abstractions.js";
 
 /**
  * Before move entry event
  */
-export class EntryBeforeMoveEvent extends DomainEvent<EntryBeforeMovePayload> {
+export class EntryBeforeMoveEvent extends DomainEvent<EntryBeforeMoveEventPayload> {
     eventType = "Cms/Entry/BeforeMove" as const;
 
     getHandlerAbstraction() {
-        return EntryBeforeMoveHandler;
+        return EntryBeforeMoveEventHandler;
     }
 }
 
-export const EntryBeforeMoveHandler =
-    createAbstraction<IEventHandler<EntryBeforeMoveEvent>>("EntryBeforeMoveHandler");
+export const EntryBeforeMoveEventHandler = createAbstraction<IEventHandler<EntryBeforeMoveEvent>>(
+    "EntryBeforeMoveEventHandler"
+);
 
-export namespace EntryBeforeMoveHandler {
+export namespace EntryBeforeMoveEventHandler {
     export type Interface = IEventHandler<EntryBeforeMoveEvent>;
     export type Event = EntryBeforeMoveEvent;
 }
@@ -29,18 +30,19 @@ export namespace EntryBeforeMoveHandler {
 /**
  * After move entry event
  */
-export class EntryAfterMoveEvent extends DomainEvent<EntryAfterMovePayload> {
+export class EntryAfterMoveEvent extends DomainEvent<EntryAfterMoveEventPayload> {
     eventType = "Cms/Entry/AfterMove" as const;
 
     getHandlerAbstraction() {
-        return EntryAfterMoveHandler;
+        return EntryAfterMoveEventHandler;
     }
 }
 
-export const EntryAfterMoveHandler =
-    createAbstraction<IEventHandler<EntryAfterMoveEvent>>("EntryAfterMoveHandler");
+export const EntryAfterMoveEventHandler = createAbstraction<IEventHandler<EntryAfterMoveEvent>>(
+    "EntryAfterMoveEventHandler"
+);
 
-export namespace EntryAfterMoveHandler {
+export namespace EntryAfterMoveEventHandler {
     export type Interface = IEventHandler<EntryAfterMoveEvent>;
     export type Event = EntryAfterMoveEvent;
 }
@@ -48,18 +50,19 @@ export namespace EntryAfterMoveHandler {
 /**
  * Move entry error event
  */
-export class EntryMoveErrorEvent extends DomainEvent<EntryMoveErrorPayload> {
+export class EntryMoveErrorEvent extends DomainEvent<EntryMoveErrorEventPayload> {
     eventType = "Cms/Entry/MoveError" as const;
 
     getHandlerAbstraction() {
-        return EntryMoveErrorHandler;
+        return EntryMoveErrorEventHandler;
     }
 }
 
-export const EntryMoveErrorHandler =
-    createAbstraction<IEventHandler<EntryMoveErrorEvent>>("EntryMoveErrorHandler");
+export const EntryMoveErrorEventHandler = createAbstraction<IEventHandler<EntryMoveErrorEvent>>(
+    "EntryMoveErrorEventHandler"
+);
 
-export namespace EntryMoveErrorHandler {
+export namespace EntryMoveErrorEventHandler {
     export type Interface = IEventHandler<EntryMoveErrorEvent>;
     export type Event = EntryMoveErrorEvent;
 }

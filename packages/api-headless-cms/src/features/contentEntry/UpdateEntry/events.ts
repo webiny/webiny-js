@@ -1,19 +1,19 @@
 import { createAbstraction } from "@webiny/feature/api";
-import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import type { IEventHandler } from "@webiny/api-core/features/EventPublisher";
+import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import type { CmsEntry, CmsModel, UpdateCmsEntryInput } from "~/types/index.js";
 
 /**
  * Event payloads
  */
-export interface EntryBeforeUpdatePayload {
+export interface EntryBeforeUpdateEventPayload {
     entry: CmsEntry;
     original: CmsEntry;
     input: UpdateCmsEntryInput;
     model: CmsModel;
 }
 
-export interface EntryAfterUpdatePayload {
+export interface EntryAfterUpdateEventPayload {
     entry: CmsEntry;
     original: CmsEntry;
     input: UpdateCmsEntryInput;
@@ -23,19 +23,19 @@ export interface EntryAfterUpdatePayload {
 /**
  * EntryBeforeUpdateEvent - Published before updating an entry
  */
-export class EntryBeforeUpdateEvent extends DomainEvent<EntryBeforeUpdatePayload> {
+export class EntryBeforeUpdateEvent extends DomainEvent<EntryBeforeUpdateEventPayload> {
     eventType = "Cms/Entry/BeforeUpdate" as const;
 
     getHandlerAbstraction() {
-        return EntryBeforeUpdateHandler;
+        return EntryBeforeUpdateEventHandler;
     }
 }
 
-export const EntryBeforeUpdateHandler = createAbstraction<IEventHandler<EntryBeforeUpdateEvent>>(
-    "EntryBeforeUpdateHandler"
-);
+export const EntryBeforeUpdateEventHandler = createAbstraction<
+    IEventHandler<EntryBeforeUpdateEvent>
+>("EntryBeforeUpdateEventHandler");
 
-export namespace EntryBeforeUpdateHandler {
+export namespace EntryBeforeUpdateEventHandler {
     export type Interface = IEventHandler<EntryBeforeUpdateEvent>;
     export type Event = EntryBeforeUpdateEvent;
 }
@@ -43,18 +43,19 @@ export namespace EntryBeforeUpdateHandler {
 /**
  * EntryAfterUpdateEvent - Published after updating an entry
  */
-export class EntryAfterUpdateEvent extends DomainEvent<EntryAfterUpdatePayload> {
+export class EntryAfterUpdateEvent extends DomainEvent<EntryAfterUpdateEventPayload> {
     eventType = "Cms/Entry/AfterUpdate" as const;
 
     getHandlerAbstraction() {
-        return EntryAfterUpdateHandler;
+        return EntryAfterUpdateEventHandler;
     }
 }
 
-export const EntryAfterUpdateHandler =
-    createAbstraction<IEventHandler<EntryAfterUpdateEvent>>("EntryAfterUpdateHandler");
+export const EntryAfterUpdateEventHandler = createAbstraction<IEventHandler<EntryAfterUpdateEvent>>(
+    "EntryAfterUpdateEventHandler"
+);
 
-export namespace EntryAfterUpdateHandler {
+export namespace EntryAfterUpdateEventHandler {
     export type Interface = IEventHandler<EntryAfterUpdateEvent>;
     export type Event = EntryAfterUpdateEvent;
 }

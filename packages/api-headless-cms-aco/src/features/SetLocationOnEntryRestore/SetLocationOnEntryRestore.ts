@@ -1,11 +1,11 @@
 import { ROOT_FOLDER } from "@webiny/api-headless-cms/constants.js";
-import { EntryBeforeRestoreFromBinHandler } from "@webiny/api-headless-cms/features/contentEntry/RestoreEntryFromBin/events.js";
+import { EntryBeforeRestoreFromBinEventHandler } from "@webiny/api-headless-cms/features/contentEntry/RestoreEntryFromBin/events.js";
 import { GetFolderUseCase } from "@webiny/api-aco/features/folder/GetFolder/abstractions.js";
 
-export class SetLocationOnEntryRestore implements EntryBeforeRestoreFromBinHandler.Interface {
+export class SetLocationOnEntryRestore implements EntryBeforeRestoreFromBinEventHandler.Interface {
     constructor(private getFolderUseCase: GetFolderUseCase.Interface) {}
 
-    async handle(event: EntryBeforeRestoreFromBinHandler.Event): Promise<void> {
+    async handle(event: EntryBeforeRestoreFromBinEventHandler.Event): Promise<void> {
         const { entry } = event.payload;
 
         /**
@@ -29,7 +29,7 @@ export class SetLocationOnEntryRestore implements EntryBeforeRestoreFromBinHandl
     }
 }
 
-export const SetLocationOnEntryRestoreImpl = EntryBeforeRestoreFromBinHandler.createImplementation({
+export const SetLocationOnEntryRestoreImpl = EntryBeforeRestoreFromBinEventHandler.createImplementation({
     implementation: SetLocationOnEntryRestore,
     dependencies: [GetFolderUseCase]
 });

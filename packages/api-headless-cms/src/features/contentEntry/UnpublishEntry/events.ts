@@ -7,18 +7,18 @@ import type { CmsModel } from "~/types/index.js";
 /**
  * Event payloads
  */
-export interface EntryBeforeUnpublishPayload {
+export interface EntryBeforeUnpublishEventPayload {
     entry: CmsEntry;
     model: CmsModel;
 }
 
-export interface EntryAfterUnpublishPayload {
+export interface EntryAfterUnpublishEventPayload {
     entry: CmsEntry;
     storageEntry: any;
     model: CmsModel;
 }
 
-export interface EntryUnpublishErrorPayload {
+export interface EntryUnpublishErrorEventPayload {
     entry: CmsEntry;
     model: CmsModel;
     error: Error;
@@ -27,19 +27,19 @@ export interface EntryUnpublishErrorPayload {
 /**
  * EntryBeforeUnpublishEvent - Published before unpublishing an entry
  */
-export class EntryBeforeUnpublishEvent extends DomainEvent<EntryBeforeUnpublishPayload> {
+export class EntryBeforeUnpublishEvent extends DomainEvent<EntryBeforeUnpublishEventPayload> {
     eventType = "Cms/Entry/BeforeUnpublish" as const;
 
     getHandlerAbstraction() {
-        return EntryBeforeUnpublishHandler;
+        return EntryBeforeUnpublishEventHandler;
     }
 }
 
-export const EntryBeforeUnpublishHandler = createAbstraction<
+export const EntryBeforeUnpublishEventHandler = createAbstraction<
     IEventHandler<EntryBeforeUnpublishEvent>
->("EntryBeforeUnpublishHandler");
+>("EntryBeforeUnpublishEventHandler");
 
-export namespace EntryBeforeUnpublishHandler {
+export namespace EntryBeforeUnpublishEventHandler {
     export type Interface = IEventHandler<EntryBeforeUnpublishEvent>;
     export type Event = EntryBeforeUnpublishEvent;
 }
@@ -47,19 +47,19 @@ export namespace EntryBeforeUnpublishHandler {
 /**
  * EntryAfterUnpublishEvent - Published after unpublishing an entry
  */
-export class EntryAfterUnpublishEvent extends DomainEvent<EntryAfterUnpublishPayload> {
+export class EntryAfterUnpublishEvent extends DomainEvent<EntryAfterUnpublishEventPayload> {
     eventType = "Cms/Entry/AfterUnpublish" as const;
 
     getHandlerAbstraction() {
-        return EntryAfterUnpublishHandler;
+        return EntryAfterUnpublishEventHandler;
     }
 }
 
-export const EntryAfterUnpublishHandler = createAbstraction<
+export const EntryAfterUnpublishEventHandler = createAbstraction<
     IEventHandler<EntryAfterUnpublishEvent>
->("EntryAfterUnpublishHandler");
+>("EntryAfterUnpublishEventHandler");
 
-export namespace EntryAfterUnpublishHandler {
+export namespace EntryAfterUnpublishEventHandler {
     export type Interface = IEventHandler<EntryAfterUnpublishEvent>;
     export type Event = EntryAfterUnpublishEvent;
 }
@@ -67,19 +67,19 @@ export namespace EntryAfterUnpublishHandler {
 /**
  * EntryUnpublishErrorEvent - Published when unpublish fails
  */
-export class EntryUnpublishErrorEvent extends DomainEvent<EntryUnpublishErrorPayload> {
+export class EntryUnpublishErrorEvent extends DomainEvent<EntryUnpublishErrorEventPayload> {
     eventType = "Cms/Entry/UnpublishError" as const;
 
     getHandlerAbstraction() {
-        return EntryUnpublishErrorHandler;
+        return EntryUnpublishErrorEventHandler;
     }
 }
 
-export const EntryUnpublishErrorHandler = createAbstraction<
+export const EntryUnpublishErrorEventHandler = createAbstraction<
     IEventHandler<EntryUnpublishErrorEvent>
->("EntryUnpublishErrorHandler");
+>("EntryUnpublishErrorEventHandler");
 
-export namespace EntryUnpublishErrorHandler {
+export namespace EntryUnpublishErrorEventHandler {
     export type Interface = IEventHandler<EntryUnpublishErrorEvent>;
     export type Event = EntryUnpublishErrorEvent;
 }

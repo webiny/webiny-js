@@ -35,7 +35,7 @@ export namespace RepublishEntryUseCase {
 /**
  * Payload for before republish event
  */
-export interface EntryBeforeRepublishPayload {
+export interface EntryBeforeRepublishEventPayload {
     entry: CmsEntry;
     model: CmsModel;
 }
@@ -43,7 +43,7 @@ export interface EntryBeforeRepublishPayload {
 /**
  * Payload for after republish event
  */
-export interface EntryAfterRepublishPayload {
+export interface EntryAfterRepublishEventPayload {
     entry: CmsEntry;
     model: CmsModel;
 }
@@ -51,7 +51,7 @@ export interface EntryAfterRepublishPayload {
 /**
  * Payload for republish error event
  */
-export interface EntryRepublishErrorPayload {
+export interface EntryRepublishErrorEventPayload {
     entry: CmsEntry;
     model: CmsModel;
     error: Error;

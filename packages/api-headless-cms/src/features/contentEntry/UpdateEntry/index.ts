@@ -1,2 +1,2 @@
 export { UpdateEntryUseCase, UpdateEntryRepository } from "./abstractions.js";
-export { EntryAfterUpdateHandler, EntryBeforeUpdateHandler } from "./events.js";
+export { EntryAfterUpdateEventHandler, EntryBeforeUpdateEventHandler } from "./events.js";

@@ -4,7 +4,7 @@ import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 import { AuditLogsContext } from "~/abstractions.js";
 
-class AuditLogModelAfterCreateHandlerImpl implements ModelAfterCreateEventHandler.Interface {
+class AuditLogModelAfterCreateEventHandlerImpl implements ModelAfterCreateEventHandler.Interface {
     constructor(private context: AuditLogsContext.Interface) {}
 
     async handle(event: ModelAfterCreateEventHandler.Event): Promise<void> {
@@ -16,7 +16,7 @@ class AuditLogModelAfterCreateHandlerImpl implements ModelAfterCreateEventHandle
             await createAuditLog("Model created", model, model.modelId, this.context);
         } catch (error) {
             throw WebinyError.from(error, {
-                message: "Error while executing AuditLogModelAfterCreateHandler",
+                message: "Error while executing AuditLogModelAfterCreateEventHandler",
                 code: "AUDIT_LOGS_AFTER_MODEL_CREATE_HANDLER"
             });
         }
@@ -24,6 +24,6 @@ class AuditLogModelAfterCreateHandlerImpl implements ModelAfterCreateEventHandle
 }
 
 export const AuditLogModelAfterCreateEventHandler = ModelAfterCreateEventHandler.createImplementation({
-    implementation: AuditLogModelAfterCreateHandlerImpl,
+    implementation: AuditLogModelAfterCreateEventHandlerImpl,
     dependencies: [AuditLogsContext]
 });

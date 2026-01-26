@@ -1,13 +1,13 @@
 import WebinyError from "@webiny/error";
-import { ModelAfterUpdateHandler } from "@webiny/api-headless-cms/features/contentModel/UpdateModel/index.js";
+import { ModelAfterUpdateEventHandler } from "@webiny/api-headless-cms/features/contentModel/UpdateModel/index.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 import { AuditLogsContext } from "~/abstractions.js";
 
-class AuditLogModelAfterUpdateHandlerImpl implements ModelAfterUpdateHandler.Interface {
+class AuditLogModelAfterUpdateEventHandlerImpl implements ModelAfterUpdateEventHandler.Interface {
     constructor(private context: AuditLogsContext.Interface) {}
 
-    async handle(event: ModelAfterUpdateHandler.Event): Promise<void> {
+    async handle(event: ModelAfterUpdateEventHandler.Event): Promise<void> {
         const { model, original } = event.payload;
 
         try {
@@ -21,14 +21,15 @@ class AuditLogModelAfterUpdateHandlerImpl implements ModelAfterUpdateHandler.Int
             );
         } catch (error) {
             throw WebinyError.from(error, {
-                message: "Error while executing AuditLogModelAfterUpdateHandler",
+                message: "Error while executing AuditLogModelAfterUpdateEventHandler",
                 code: "AUDIT_LOGS_AFTER_MODEL_UPDATE_HANDLER"
             });
         }
     }
 }
 
-export const AuditLogModelAfterUpdateEventHandler = ModelAfterUpdateHandler.createImplementation({
-    implementation: AuditLogModelAfterUpdateHandlerImpl,
-    dependencies: [AuditLogsContext]
-});
+export const AuditLogModelAfterUpdateEventHandler =
+    ModelAfterUpdateEventHandler.createImplementation({
+        implementation: AuditLogModelAfterUpdateEventHandlerImpl,
+        dependencies: [AuditLogsContext]
+    });

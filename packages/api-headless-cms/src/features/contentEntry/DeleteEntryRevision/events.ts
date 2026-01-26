@@ -1,9 +1,9 @@
 import { createAbstraction } from "@webiny/feature/api";
-import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import type { IEventHandler } from "@webiny/api-core/features/EventPublisher";
+import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import type {
-    EntryRevisionBeforeDeletePayload,
     EntryRevisionAfterDeletePayload,
+    EntryRevisionBeforeDeletePayload,
     EntryRevisionDeleteErrorPayload
 } from "./abstractions.js";
 
@@ -14,15 +14,15 @@ export class EntryRevisionBeforeDeleteEvent extends DomainEvent<EntryRevisionBef
     eventType = "Cms/Entry/RevisionBeforeDelete" as const;
 
     getHandlerAbstraction() {
-        return EntryRevisionBeforeDeleteHandler;
+        return EntryRevisionBeforeDeleteEventHandler;
     }
 }
 
-export const EntryRevisionBeforeDeleteHandler = createAbstraction<
+export const EntryRevisionBeforeDeleteEventHandler = createAbstraction<
     IEventHandler<EntryRevisionBeforeDeleteEvent>
->("EntryRevisionBeforeDeleteHandler");
+>("EntryRevisionBeforeDeleteEventHandler");
 
-export namespace EntryRevisionBeforeDeleteHandler {
+export namespace EntryRevisionBeforeDeleteEventHandler {
     export type Interface = IEventHandler<EntryRevisionBeforeDeleteEvent>;
     export type Event = EntryRevisionBeforeDeleteEvent;
 }
@@ -34,15 +34,15 @@ export class EntryRevisionAfterDeleteEvent extends DomainEvent<EntryRevisionAfte
     eventType = "Cms/Entry/RevisionAfterDelete" as const;
 
     getHandlerAbstraction() {
-        return EntryRevisionAfterDeleteHandler;
+        return EntryRevisionAfterDeleteEventHandler;
     }
 }
 
-export const EntryRevisionAfterDeleteHandler = createAbstraction<
+export const EntryRevisionAfterDeleteEventHandler = createAbstraction<
     IEventHandler<EntryRevisionAfterDeleteEvent>
->("EntryRevisionAfterDeleteHandler");
+>("EntryRevisionAfterDeleteEventHandler");
 
-export namespace EntryRevisionAfterDeleteHandler {
+export namespace EntryRevisionAfterDeleteEventHandler {
     export type Interface = IEventHandler<EntryRevisionAfterDeleteEvent>;
     export type Event = EntryRevisionAfterDeleteEvent;
 }
@@ -54,15 +54,15 @@ export class EntryRevisionDeleteErrorEvent extends DomainEvent<EntryRevisionDele
     eventType = "Cms/Entry/RevisionDeleteError" as const;
 
     getHandlerAbstraction() {
-        return EntryRevisionDeleteErrorHandler;
+        return EntryRevisionDeleteErrorEventHandler;
     }
 }
 
-export const EntryRevisionDeleteErrorHandler = createAbstraction<
+export const EntryRevisionDeleteErrorEventHandler = createAbstraction<
     IEventHandler<EntryRevisionDeleteErrorEvent>
->("EntryRevisionDeleteErrorHandler");
+>("EntryRevisionDeleteErrorEventHandler");
 
-export namespace EntryRevisionDeleteErrorHandler {
+export namespace EntryRevisionDeleteErrorEventHandler {
     export type Interface = IEventHandler<EntryRevisionDeleteErrorEvent>;
     export type Event = EntryRevisionDeleteErrorEvent;
 }

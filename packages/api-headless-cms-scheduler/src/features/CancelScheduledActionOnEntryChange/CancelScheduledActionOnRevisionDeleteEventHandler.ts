@@ -1,4 +1,4 @@
-import { EntryAfterDeleteHandler } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/events";
+import { EntryAfterDeleteEventHandler } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/events";
 import { CancelScheduledActionUseCase, ListScheduledActionsUseCase } from "@webiny/api-scheduler";
 
 /**
@@ -8,13 +8,13 @@ import { CancelScheduledActionUseCase, ListScheduledActionsUseCase } from "@webi
  * action for that revision should be canceled since the revision
  * no longer exists.
  */
-class CancelScheduledActionOnDeleteHandlerImpl implements EntryAfterDeleteHandler.Interface {
+class CancelScheduledActionOnDeleteHandlerImpl implements EntryAfterDeleteEventHandler.Interface {
     constructor(
         private listScheduledActions: ListScheduledActionsUseCase.Interface,
         private cancelScheduledEntryAction: CancelScheduledActionUseCase.Interface
     ) {}
 
-    async handle(event: EntryAfterDeleteHandler.Event): Promise<void> {
+    async handle(event: EntryAfterDeleteEventHandler.Event): Promise<void> {
         const { entry, model } = event.payload;
 
         // Skip private models
@@ -41,8 +41,8 @@ class CancelScheduledActionOnDeleteHandlerImpl implements EntryAfterDeleteHandle
     }
 }
 
-export const CancelScheduledActionOnRevisionDeleteHandler =
-    EntryAfterDeleteHandler.createImplementation({
+export const CancelScheduledActionOnRevisionDeleteEventHandler =
+    EntryAfterDeleteEventHandler.createImplementation({
         implementation: CancelScheduledActionOnDeleteHandlerImpl,
         dependencies: [ListScheduledActionsUseCase, CancelScheduledActionUseCase]
     });

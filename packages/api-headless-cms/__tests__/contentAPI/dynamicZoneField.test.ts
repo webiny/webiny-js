@@ -8,12 +8,12 @@ import type { TestCmsModel } from "~tests/types";
 import { ContextPlugin } from "@webiny/api";
 import type { CmsContext, CmsEntry } from "~/types";
 import {
-    EntryAfterCreateHandler,
-    EntryBeforeCreateHandler
+    EntryAfterCreateEventHandler,
+    EntryBeforeCreateEventHandler
 } from "~/features/contentEntry/CreateEntry/events.js";
 import {
-    EntryAfterUpdateHandler,
-    EntryBeforeUpdateHandler
+    EntryAfterUpdateEventHandler,
+    EntryBeforeUpdateEventHandler
 } from "~/features/contentEntry/UpdateEntry/events.js";
 
 const singularPageApiName = pageModel.singularApiName;
@@ -356,7 +356,7 @@ describe("dynamicZone field", () => {
             throw new Error("Missing cms on context.");
         }
 
-        context.container.registerFactory(EntryBeforeCreateHandler, () => ({
+        context.container.registerFactory(EntryBeforeCreateEventHandler, () => ({
             async handle(event) {
                 eventEntryContent.beforeCreate = structuredClone(
                     event.payload.entry
@@ -364,7 +364,7 @@ describe("dynamicZone field", () => {
             }
         }));
 
-        context.container.registerFactory(EntryAfterCreateHandler, () => ({
+        context.container.registerFactory(EntryAfterCreateEventHandler, () => ({
             async handle(event) {
                 eventEntryContent.afterCreate = structuredClone(
                     event.payload.entry
@@ -372,7 +372,7 @@ describe("dynamicZone field", () => {
             }
         }));
 
-        context.container.registerFactory(EntryBeforeUpdateHandler, () => ({
+        context.container.registerFactory(EntryBeforeUpdateEventHandler, () => ({
             async handle(event) {
                 eventEntryContent.beforeUpdate = structuredClone(
                     event.payload.entry
@@ -380,7 +380,7 @@ describe("dynamicZone field", () => {
             }
         }));
 
-        context.container.registerFactory(EntryAfterUpdateHandler, () => ({
+        context.container.registerFactory(EntryAfterUpdateEventHandler, () => ({
             async handle(event) {
                 eventEntryContent.afterUpdate = structuredClone(
                     event.payload.entry

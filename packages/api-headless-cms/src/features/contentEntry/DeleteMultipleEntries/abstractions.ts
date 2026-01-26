@@ -33,7 +33,7 @@ export namespace DeleteMultipleEntriesUseCase {
 /**
  * Payload for before delete multiple event
  */
-export interface EntryBeforeDeleteMultiplePayload {
+export interface EntryBeforeDeleteMultipleEventPayload {
     entries: CmsEntry[];
     ids: string[];
     model: CmsModel;
@@ -42,7 +42,7 @@ export interface EntryBeforeDeleteMultiplePayload {
 /**
  * Payload for after delete multiple event
  */
-export interface EntryAfterDeleteMultiplePayload {
+export interface EntryAfterDeleteMultipleEventPayload {
     entries: CmsEntry[];
     ids: string[];
     model: CmsModel;
@@ -51,7 +51,7 @@ export interface EntryAfterDeleteMultiplePayload {
 /**
  * Payload for delete multiple error event
  */
-export interface EntryDeleteMultipleErrorPayload {
+export interface EntryDeleteMultipleErrorEventPayload {
     entries: CmsEntry[];
     ids: string[];
     model: CmsModel;

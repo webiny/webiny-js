@@ -1,2 +1,2 @@
 export { MoveEntryUseCase, MoveEntryRepository } from "./abstractions.js";
-export { EntryAfterMoveHandler, EntryBeforeMoveHandler } from "./events.js";
+export { EntryAfterMoveEventHandler, EntryBeforeMoveEventHandler } from "./events.js";
