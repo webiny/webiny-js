@@ -23,7 +23,8 @@ class AuditLogGroupAfterCreateEventHandlerImpl implements GroupAfterCreateEventH
     }
 }
 
-export const AuditLogGroupAfterCreateEventHandler = GroupAfterCreateEventHandler.createImplementation({
-    implementation: AuditLogGroupAfterCreateEventHandlerImpl,
-    dependencies: [AuditLogsContext]
-});
+export const AuditLogGroupAfterCreateEventHandler =
+    GroupAfterCreateEventHandler.createImplementation({
+        implementation: AuditLogGroupAfterCreateEventHandlerImpl,
+        dependencies: [AuditLogsContext]
+    });

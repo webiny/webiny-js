@@ -29,7 +29,8 @@ export class SetLocationOnEntryRestore implements EntryBeforeRestoreFromBinEvent
     }
 }
 
-export const SetLocationOnEntryRestoreImpl = EntryBeforeRestoreFromBinEventHandler.createImplementation({
-    implementation: SetLocationOnEntryRestore,
-    dependencies: [GetFolderUseCase]
-});
+export const SetLocationOnEntryRestoreImpl =
+    EntryBeforeRestoreFromBinEventHandler.createImplementation({
+        implementation: SetLocationOnEntryRestore,
+        dependencies: [GetFolderUseCase]
+    });

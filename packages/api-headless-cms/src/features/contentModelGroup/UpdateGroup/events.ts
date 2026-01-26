@@ -54,8 +54,9 @@ export class GroupAfterUpdateEvent extends DomainEvent<GroupAfterUpdateEventPayl
     }
 }
 
-export const GroupAfterUpdateEventHandler =
-    createAbstraction<IEventHandler<GroupAfterUpdateEvent>>("GroupAfterUpdateEventHandler");
+export const GroupAfterUpdateEventHandler = createAbstraction<IEventHandler<GroupAfterUpdateEvent>>(
+    "GroupAfterUpdateEventHandler"
+);
 
 export namespace GroupAfterUpdateEventHandler {
     export type Interface = IEventHandler<GroupAfterUpdateEvent>;

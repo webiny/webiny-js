@@ -9,7 +9,8 @@ class BlockModelActionOnEntryBeforePublishImpl implements EntryBeforePublishEven
     }
 }
 
-export const BlockModelActionOnEntryBeforePublish = EntryBeforePublishEventHandler.createImplementation({
-    implementation: BlockModelActionOnEntryBeforePublishImpl,
-    dependencies: [BlockActionIfModelDisabled]
-});
+export const BlockModelActionOnEntryBeforePublish =
+    EntryBeforePublishEventHandler.createImplementation({
+        implementation: BlockModelActionOnEntryBeforePublishImpl,
+        dependencies: [BlockActionIfModelDisabled]
+    });

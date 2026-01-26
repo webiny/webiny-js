@@ -71,8 +71,9 @@ export class GroupCreateErrorEvent extends DomainEvent<GroupCreateErrorEventPayl
     }
 }
 
-export const GroupCreateErrorEventHandler =
-    createAbstraction<IEventHandler<GroupCreateErrorEvent>>("GroupCreateErrorEventHandler");
+export const GroupCreateErrorEventHandler = createAbstraction<IEventHandler<GroupCreateErrorEvent>>(
+    "GroupCreateErrorEventHandler"
+);
 
 export namespace GroupCreateErrorEventHandler {
     export type Interface = IEventHandler<GroupCreateErrorEvent>;

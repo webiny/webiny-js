@@ -23,7 +23,8 @@ class AuditLogGroupAfterDeleteHandlerEventImpl implements GroupAfterDeleteEventH
     }
 }
 
-export const AuditLogGroupAfterDeleteEventHandler = GroupAfterDeleteEventHandler.createImplementation({
-    implementation: AuditLogGroupAfterDeleteHandlerEventImpl,
-    dependencies: [AuditLogsContext]
-});
+export const AuditLogGroupAfterDeleteEventHandler =
+    GroupAfterDeleteEventHandler.createImplementation({
+        implementation: AuditLogGroupAfterDeleteHandlerEventImpl,
+        dependencies: [AuditLogsContext]
+    });

@@ -8,7 +8,9 @@ import { ListScheduledActionsUseCase, CancelScheduledActionUseCase } from "@webi
  * actions for all of its revisions should be canceled since the entry
  * no longer exists.
  */
-class CancelScheduledActionOnEntryDeleteHandlerImpl implements EntryAfterDeleteEventHandler.Interface {
+class CancelScheduledActionOnEntryDeleteHandlerImpl
+    implements EntryAfterDeleteEventHandler.Interface
+{
     constructor(
         private listScheduledActions: ListScheduledActionsUseCase.Interface,
         private cancelScheduledEntryAction: CancelScheduledActionUseCase.Interface

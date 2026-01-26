@@ -8,7 +8,9 @@ import { CancelScheduledActionUseCase, ListScheduledActionsUseCase } from "@webi
  * action for that revision should be canceled since the manual action
  * takes precedence.
  */
-class CancelScheduledActionOnUnpublishHandlerImpl implements EntryAfterUnpublishEventHandler.Interface {
+class CancelScheduledActionOnUnpublishHandlerImpl
+    implements EntryAfterUnpublishEventHandler.Interface
+{
     constructor(
         private listScheduledActions: ListScheduledActionsUseCase.Interface,
         private cancelScheduledEntryAction: CancelScheduledActionUseCase.Interface

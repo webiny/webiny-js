@@ -9,7 +9,8 @@ class BlockModelActionOnEntryBeforeCreateImpl implements EntryBeforeCreateEventH
     }
 }
 
-export const BlockModelActionOnEntryBeforeCreate = EntryBeforeCreateEventHandler.createImplementation({
-    implementation: BlockModelActionOnEntryBeforeCreateImpl,
-    dependencies: [BlockActionIfModelDisabled]
-});
+export const BlockModelActionOnEntryBeforeCreate =
+    EntryBeforeCreateEventHandler.createImplementation({
+        implementation: BlockModelActionOnEntryBeforeCreateImpl,
+        dependencies: [BlockActionIfModelDisabled]
+    });

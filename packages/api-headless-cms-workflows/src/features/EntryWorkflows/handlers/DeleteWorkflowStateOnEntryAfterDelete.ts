@@ -18,7 +18,8 @@ class DeleteWorkflowStateOnEntryAfterDeleteImpl implements EntryAfterDeleteEvent
     }
 }
 
-export const DeleteWorkflowStateOnEntryAfterDelete = EntryAfterDeleteEventHandler.createImplementation({
-    implementation: DeleteWorkflowStateOnEntryAfterDeleteImpl,
-    dependencies: [DeleteTargetWorkflowStateUseCase]
-});
+export const DeleteWorkflowStateOnEntryAfterDelete =
+    EntryAfterDeleteEventHandler.createImplementation({
+        implementation: DeleteWorkflowStateOnEntryAfterDeleteImpl,
+        dependencies: [DeleteTargetWorkflowStateUseCase]
+    });

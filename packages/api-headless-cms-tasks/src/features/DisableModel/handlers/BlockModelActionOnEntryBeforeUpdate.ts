@@ -9,7 +9,8 @@ class BlockModelActionOnEntryBeforeUpdateImpl implements EntryBeforeUpdateEventH
     }
 }
 
-export const BlockModelActionOnEntryBeforeUpdate = EntryBeforeUpdateEventHandler.createImplementation({
-    implementation: BlockModelActionOnEntryBeforeUpdateImpl,
-    dependencies: [BlockActionIfModelDisabled]
-});
+export const BlockModelActionOnEntryBeforeUpdate =
+    EntryBeforeUpdateEventHandler.createImplementation({
+        implementation: BlockModelActionOnEntryBeforeUpdateImpl,
+        dependencies: [BlockActionIfModelDisabled]
+    });

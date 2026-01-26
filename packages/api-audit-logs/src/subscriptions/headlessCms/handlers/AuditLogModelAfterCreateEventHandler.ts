@@ -23,7 +23,8 @@ class AuditLogModelAfterCreateEventHandlerImpl implements ModelAfterCreateEventH
     }
 }
 
-export const AuditLogModelAfterCreateEventHandler = ModelAfterCreateEventHandler.createImplementation({
-    implementation: AuditLogModelAfterCreateEventHandlerImpl,
-    dependencies: [AuditLogsContext]
-});
+export const AuditLogModelAfterCreateEventHandler =
+    ModelAfterCreateEventHandler.createImplementation({
+        implementation: AuditLogModelAfterCreateEventHandlerImpl,
+        dependencies: [AuditLogsContext]
+    });

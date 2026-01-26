@@ -31,7 +31,8 @@ class AuditLogEntryAfterDeleteHandlerImpl implements EntryAfterDeleteEventHandle
     }
 }
 
-export const AuditLogEntryAfterDeleteEventHandler = EntryAfterDeleteEventHandler.createImplementation({
-    implementation: AuditLogEntryAfterDeleteHandlerImpl,
-    dependencies: [AuditLogsContext]
-});
+export const AuditLogEntryAfterDeleteEventHandler =
+    EntryAfterDeleteEventHandler.createImplementation({
+        implementation: AuditLogEntryAfterDeleteHandlerImpl,
+        dependencies: [AuditLogsContext]
+    });

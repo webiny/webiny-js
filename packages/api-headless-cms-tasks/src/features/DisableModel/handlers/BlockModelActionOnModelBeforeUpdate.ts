@@ -9,7 +9,8 @@ class BlockModelActionOnModelBeforeUpdateImpl implements ModelBeforeUpdateEventH
     }
 }
 
-export const BlockModelActionOnModelBeforeUpdate = ModelBeforeUpdateEventHandler.createImplementation({
-    implementation: BlockModelActionOnModelBeforeUpdateImpl,
-    dependencies: [BlockActionIfModelDisabled]
-});
+export const BlockModelActionOnModelBeforeUpdate =
+    ModelBeforeUpdateEventHandler.createImplementation({
+        implementation: BlockModelActionOnModelBeforeUpdateImpl,
+        dependencies: [BlockActionIfModelDisabled]
+    });
