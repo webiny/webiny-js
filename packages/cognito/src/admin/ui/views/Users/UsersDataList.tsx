@@ -190,7 +190,7 @@ const UsersDataList = () => {
                                     }
                                     fallback={
                                         <Avatar.Fallback delayMs={0}>
-                                            {item.firstName.charAt(0)}
+                                            {item.firstName ? item.firstName.charAt(0) : "A"}
                                         </Avatar.Fallback>
                                     }
                                 />

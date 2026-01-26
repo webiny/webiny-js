@@ -46,13 +46,9 @@ const CognitoIdP = (props: CognitoAdminProps) => {
                     />
 
                     <Menu
-                        name={"cognito.settings"}
-                        parent={"settings"}
-                        element={<Menu.Group text={"Admin Users"} />}
-                    />
-                    <Menu
                         name={"cognito.settings.adminUsers"}
                         parent={"settings"}
+                        after={"security.settings"}
                         element={
                             <Menu.Link
                                 text={"Users"}

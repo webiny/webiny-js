@@ -1,49 +1,44 @@
 import { Result } from "@webiny/feature/api";
-import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry";
-import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
 import { MovePageRepository as RepositoryAbstraction } from "./abstractions.js";
-import { PageModel } from "~/domain/page/abstractions.js";
-import { EntryToPageMapper } from "~/domain/page/EntryToPageMapper.js";
-import { PageNotFoundError, PagePersistenceError } from "~/domain/page/errors.js";
+import { PageModel, type WbPage } from "~/domain/page/abstractions.js";
+import { PagePersistenceError } from "~/domain/page/errors.js";
+import { MoveEntryRepository } from "@webiny/api-headless-cms/features/contentEntry/MoveEntry/index.js";
+import { GetPageByIdRepository } from "~/features/pages/GetPageById/abstractions.js";
 
 class MovePageRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
-        private updateEntry: UpdateEntryUseCase.Interface,
-        private getEntryById: GetEntryByIdUseCase.Interface,
+        private moveEntry: MoveEntryRepository.Interface,
+        private getPageById: GetPageByIdRepository.Interface,
         private pageModel: PageModel.Interface
     ) {}
 
     async execute(params: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
         // First, validate the page exists
-        const getResult = await this.getEntryById.execute(this.pageModel, params.id);
+        const getResult = await this.getPageById.execute(params.id);
 
         if (getResult.isFail()) {
-            if (getResult.error.code === "Cms/Entry/NotFound") {
-                return Result.fail(new PageNotFoundError(params.id));
-            }
-            return Result.fail(new PagePersistenceError(getResult.error));
+            return Result.fail(getResult.error);
         }
 
         // Update the page location with the new folderId
-        const result = await this.updateEntry.execute(this.pageModel, params.id, {
-            location: {
-                folderId: params.folderId
-            }
-        });
+        const result = await this.moveEntry.execute(this.pageModel, params.id, params.folderId);
 
         if (result.isFail()) {
-            if (result.error.code === "Cms/Entry/NotFound") {
-                return Result.fail(new PageNotFoundError(params.id));
-            }
             return Result.fail(new PagePersistenceError(result.error));
         }
 
-        const page = EntryToPageMapper.toPage(result.value);
-        return Result.ok(page);
+        const movedPage: WbPage = {
+            ...getResult.value,
+            location: {
+                folderId: params.folderId
+            }
+        };
+
+        return Result.ok(movedPage);
     }
 }
 
 export const MovePageRepository = RepositoryAbstraction.createImplementation({
     implementation: MovePageRepositoryImpl,
-    dependencies: [UpdateEntryUseCase, GetEntryByIdUseCase, PageModel]
+    dependencies: [MoveEntryRepository, GetPageByIdRepository, PageModel]
 });

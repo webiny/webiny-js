@@ -13,6 +13,16 @@ class ValidateWorkflowStateOnPageBeforePublishImpl implements PageBeforePublishH
             app: WB_PAGE_APP,
             targetRevisionId: page.id
         });
+
+        if (stateResult.isFail()) {
+            if (stateResult.error.code === "Workflows/State/NotFound") {
+                /**
+                 * If page workflows don't have custom states, there is no need to validate anything.
+                 */
+                return;
+            }
+        }
+
         const state = stateResult.value;
 
         if (state?.done) {
