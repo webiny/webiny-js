@@ -1,8 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import {
-    LocalStorage as LocalStorageAbstraction,
-    LocalStorageRepository
-} from "./abstractions.js";
+import { LocalStorage as LocalStorageAbstraction, LocalStorageRepository } from "./abstractions.js";
 import { createImplementation } from "@webiny/di";
 
 class LocalStorageImpl implements LocalStorageAbstraction.Interface {

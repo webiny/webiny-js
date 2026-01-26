@@ -60,8 +60,8 @@ export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
             }),
             graphqlHandlerPlugins(),
             createRootTenantMock(),
-            authenticateUsingHttpHeader(),
             triggerAuthentication(),
+            authenticateUsingHttpHeader(),
             customAuthenticator(),
             customGroupAuthorizer(),
             opts.plugins

@@ -120,10 +120,14 @@ export class GenerateWebinyPkg implements GenerateWebinyPkg {
                     : wbyPkgExportPathOrSettings;
 
             // 3. Create the export TS file.
-            const exportPath = path
-                .join(pkgWithExports.name, basePkgFilePath)
-                .replace(".tsx", ".js")
-                .replace(".ts", ".js");
+            const exportPath =
+                // If exporting from package index.ts, we must use the package name as the export path.
+                basePkgFilePath === "./index.ts"
+                    ? pkgWithExports.name
+                    : path
+                          .join(pkgWithExports.name, basePkgFilePath)
+                          .replace(".tsx", ".js")
+                          .replace(".ts", ".js");
 
             let namedExports = "*";
             if (wbyPkgExportSettings.namedExports && wbyPkgExportSettings.namedExports.length > 0) {

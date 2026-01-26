@@ -10,9 +10,7 @@ type ExtractOptions<TParams extends any[]> = TParams extends [infer First, ...an
 // Conditional props based on whether feature requires options
 type RegisterFeatureProps<TParams extends any[]> = {
     feature: FeatureDefinition<any, TParams>;
-} & (TParams extends []
-    ? { options?: never }
-    : { options: ExtractOptions<TParams> });
+} & (TParams extends [] ? { options?: never } : { options: ExtractOptions<TParams> });
 
 function RegisterFeatureImpl<TParams extends any[]>({
     feature,

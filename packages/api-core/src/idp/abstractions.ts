@@ -8,7 +8,7 @@ export type IJwt = {
     payload: IJwtPayload;
 };
 
-export type OptionalExternal<T> = Omit<T, "external"> & { external?: boolean};
+export type OptionalExternal<T> = Omit<T, "external"> & { external?: boolean };
 
 export type IProviderIdentityData = Omit<IIdentityData, "type" | "profile"> & {
     /**
