@@ -4,6 +4,7 @@
   "references": [
     { "path": "../admin-ui" },
     { "path": "../api-core" },
+    { "path": "../api-headless-cms" },
     { "path": "../app" },
     { "path": "../app-admin" },
     { "path": "../cli-core" },
@@ -142,6 +143,8 @@
       ],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
+      "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
+      "@webiny/api-headless-cms": ["../api-headless-cms/src"],
       "@webiny/app/*": ["../app/src/*"],
       "@webiny/app": ["../app/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
