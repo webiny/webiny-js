@@ -72,6 +72,13 @@
   "webiny": {
     "exports": {
       "./domain/contentEntry/EntryId.ts": "./api/cms/entry",
+      "./types/modelGroup.ts": {
+        "exportPath": "./api/cms/group",
+        "namedExports": [
+          "CmsModelGroup",
+          "CmsGroup"
+        ]
+      },
       "./features/contentModelGroup/shared/index.ts": "./api/cms/group",
       "./features/contentModelGroup/CreateGroup/abstractions.ts": "./api/cms/group",
       "./features/contentModelGroup/CreateGroup/events.ts": "./api/cms/group",
@@ -81,6 +88,12 @@
       "./features/contentModelGroup/DeleteGroup/events.ts": "./api/cms/group",
       "./features/contentModelGroup/ListGroups/abstractions.ts": "./api/cms/group",
       "./features/contentModelGroup/GetGroup/abstractions.ts": "./api/cms/group",
+      "./types/model.ts": {
+        "exportPath": "./api/cms/model",
+        "namedExports": [
+          "CmsModel"
+        ]
+      },
       "./features/modelBuilder/index.ts": "./api/cms/model",
       "./features/contentModel/CreateModel/abstractions.ts": "./api/cms/model",
       "./features/contentModel/CreateModel/events.ts": "./api/cms/model",
@@ -92,6 +105,16 @@
       "./features/contentModel/DeleteModel/events.ts": "./api/cms/model",
       "./features/contentModel/GetModel/index.ts": "./api/cms/model",
       "./features/contentModel/ListModels/index.ts": "./api/cms/model",
+      "./types/types.ts": {
+        "exportPath": "./api/cms/entry",
+        "namedExports": [
+          "CmsEntry",
+          "CmsEntryValues",
+          "ICmsEntryLocation",
+          "CmsEntryStatus",
+          "CONTENT_ENTRY_STATUS"
+        ]
+      },
       "./features/contentEntry/CreateEntry/abstractions.ts": "./api/cms/entry",
       "./features/contentEntry/CreateEntry/events.ts": "./api/cms/entry",
       "./features/contentEntry/CreateEntryRevisionFrom/abstractions.ts": "./api/cms/entry",
