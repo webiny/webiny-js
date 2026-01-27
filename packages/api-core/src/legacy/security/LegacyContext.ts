@@ -11,9 +11,9 @@ import {
 import { GetRoleUseCase } from "~/features/security/roles/GetRole/index.js";
 import { ListRolesUseCase } from "~/features/security/roles/ListRoles/index.js";
 import { CreateRoleUseCase } from "~/features/security/roles/CreateRole/index.js";
-import { UpdateRole } from "~/features/security/roles/UpdateRole/index.js";
+import { UpdateRoleUseCase } from "~/features/security/roles/UpdateRole/index.js";
 import { DeleteRoleUseCase } from "~/features/security/roles/DeleteRole/index.js";
-import { GetTeam } from "~/features/security/teams/GetTeam/index.js";
+import { GetTeamUseCase } from "~/features/security/teams/GetTeam/index.js";
 import { ListTeamsUseCase } from "~/features/security/teams/ListTeams/index.js";
 import { CreateTeam } from "~/features/security/teams/CreateTeam/index.js";
 import { UpdateTeam } from "~/features/security/teams/UpdateTeam/index.js";
@@ -166,7 +166,7 @@ export class LegacyContext {
     }
 
     async updateRole(id: string, input: any) {
-        const useCase = this.container.resolve(UpdateRole);
+        const useCase = this.container.resolve(UpdateRoleUseCase);
         const result = await useCase.execute(id, input);
 
         if (result.isFail()) {
@@ -197,7 +197,7 @@ export class LegacyContext {
     }
 
     async getTeam(params: any) {
-        const useCase = this.container.resolve(GetTeam);
+        const useCase = this.container.resolve(GetTeamUseCase);
         const result = await useCase.execute(params.where);
 
         if (result.isFail()) {

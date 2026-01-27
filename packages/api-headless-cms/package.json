@@ -71,6 +71,7 @@
   "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae",
   "webiny": {
     "exports": {
+      "./domain/contentEntry/EntryId.ts": "./api/cms/entry",
       "./features/contentModelGroup/shared/index.ts": "./api/cms/group",
       "./features/contentModelGroup/CreateGroup/abstractions.ts": "./api/cms/group",
       "./features/contentModelGroup/CreateGroup/events.ts": "./api/cms/group",

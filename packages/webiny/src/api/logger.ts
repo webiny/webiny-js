@@ -1,1 +1,1 @@
-export * from "@webiny/api-core/features/logger/index.js";
+export { Logger } from "@webiny/api-core/features/logger/index.js";

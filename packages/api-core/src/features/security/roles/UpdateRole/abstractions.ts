@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import type { Role, UpdateRoleInput } from "../shared/types.js";
+import type { Role, UpdateRoleInput as UpdateRoleUseCaseInput } from "../shared/types.js";
 import { RolesRepository } from "../shared/abstractions.js";
 import {
     NotAuthorizedError,
@@ -8,33 +8,38 @@ import {
     RoleValidationError
 } from "../shared/errors.js";
 
-export interface IUpdateRoleErrors {
+export interface IUpdateRoleUseCaseErrors {
     notAuthorized: NotAuthorizedError;
     cannotUpdatePlugin: CannotUpdatePluginRolesError;
     validation: RoleValidationError;
 }
 
-type UpdateRoleError = IUpdateRoleErrors[keyof IUpdateRoleErrors] | RolesRepository.Error;
+type UpdateRoleUseCaseError =
+    | IUpdateRoleUseCaseErrors[keyof IUpdateRoleUseCaseErrors]
+    | RolesRepository.Error;
 
-export interface IUpdateRole {
-    execute(id: string, input: UpdateRoleInput): Promise<Result<Role, UpdateRoleError>>;
+export interface IUpdateRoleUseCase {
+    execute(
+        id: string,
+        input: UpdateRoleUseCaseInput
+    ): Promise<Result<Role, UpdateRoleUseCaseError>>;
 }
 
-export const UpdateRole = createAbstraction<IUpdateRole>("UpdateRole");
+export const UpdateRoleUseCase = createAbstraction<IUpdateRoleUseCase>("UpdateRoleUseCase");
 
-export namespace UpdateRole {
-    export type Interface = IUpdateRole;
-    export type Error = UpdateRoleError;
+export namespace UpdateRoleUseCase {
+    export type Interface = IUpdateRoleUseCase;
+    export type Error = UpdateRoleUseCaseError;
 }
 
 export interface RoleBeforeUpdatePayload {
     original: Role;
     updated: Role;
-    input: UpdateRoleInput;
+    input: UpdateRoleUseCaseInput;
 }
 
 export interface RoleAfterUpdatePayload {
     original: Role;
     updated: Role;
-    input: UpdateRoleInput;
+    input: UpdateRoleUseCaseInput;
 }

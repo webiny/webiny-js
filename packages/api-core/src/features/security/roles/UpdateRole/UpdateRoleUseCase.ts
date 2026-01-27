@@ -1,6 +1,5 @@
-import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import { UpdateRole } from "./abstractions.js";
+import { UpdateRoleUseCase as UseCase } from "./abstractions.js";
 import { RolesRepository } from "../shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";
 import { EventPublisher } from "~/features/eventPublisher/index.js";
@@ -13,7 +12,7 @@ import {
     RoleValidationError
 } from "../shared/errors.js";
 
-export class UpdateRoleUseCase {
+class UpdateRoleUseCaseImpl implements UseCase.Interface {
     private repository: RolesRepository.Interface;
     private identityContext: IdentityContext.Interface;
     private eventPublisher: EventPublisher.Interface;
@@ -28,7 +27,7 @@ export class UpdateRoleUseCase {
         this.eventPublisher = eventPublisher;
     }
 
-    async execute(id: string, input: UpdateRoleInput): Promise<Result<Role, UpdateRole.Error>> {
+    async execute(id: string, input: UpdateRoleInput): Promise<Result<Role, UseCase.Error>> {
         const hasPermission = await this.identityContext.getPermission("security.role");
         if (!hasPermission) {
             return Result.fail(new NotAuthorizedError());
@@ -82,8 +81,7 @@ export class UpdateRoleUseCase {
     }
 }
 
-export const UpdateRoleUseCaseImpl = createImplementation({
-    abstraction: UpdateRole,
-    implementation: UpdateRoleUseCase,
+export const UpdateRoleUseCase = UseCase.createImplementation({
+    implementation: UpdateRoleUseCaseImpl,
     dependencies: [RolesRepository, IdentityContext, EventPublisher]
 });

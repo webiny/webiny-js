@@ -4,19 +4,19 @@ import type { Team, GetTeamInput } from "../shared/types.js";
 import { TeamsRepository } from "../shared/abstractions.js";
 import { NotAuthorizedError } from "../shared/errors.js";
 
-export interface IGetTeamErrors {
+export interface IGetTeamUseCaseErrors {
     notAuthorized: NotAuthorizedError;
 }
 
-type GetTeamError = IGetTeamErrors[keyof IGetTeamErrors] | TeamsRepository.Error;
+type GetTeamError = IGetTeamUseCaseErrors[keyof IGetTeamUseCaseErrors] | TeamsRepository.Error;
 
-export interface IGetTeam {
+export interface IGetTeamUseCase {
     execute(params: GetTeamInput): Promise<Result<Team, GetTeamError>>;
 }
 
-export const GetTeam = createAbstraction<IGetTeam>("GetTeam");
+export const GetTeamUseCase = createAbstraction<IGetTeamUseCase>("GetTeamUseCase");
 
-export namespace GetTeam {
-    export type Interface = IGetTeam;
+export namespace GetTeamUseCase {
+    export type Interface = IGetTeamUseCase;
     export type Error = GetTeamError;
 }

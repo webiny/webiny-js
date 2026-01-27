@@ -1,4 +1,9 @@
-import { ListPackagesService, UiService } from "../../abstractions/index.js";
+import {
+    ListPackagesService,
+    MergeExportsService,
+    ScanExportsFoldersService,
+    UiService
+} from "../../abstractions/index.js";
 import fs from "fs";
 import path from "path";
 
@@ -11,7 +16,9 @@ export interface GenerateWebinyPkg {
 export class GenerateWebinyPkg implements GenerateWebinyPkg {
     constructor(
         private ui: UiService.Interface,
-        private listPackagesService: ListPackagesService.Interface
+        private listPackagesService: ListPackagesService.Interface,
+        private scanExportsFoldersService: ScanExportsFoldersService.Interface,
+        private mergeExportsService: MergeExportsService.Interface
     ) {}
 
     async execute(): Promise<void> {
@@ -23,10 +30,6 @@ export class GenerateWebinyPkg implements GenerateWebinyPkg {
 
         // Reset exports in `webiny` package.json
         wbyPkg.packageJson.exports = {};
-
-        const packagesWithExports = fullPackagesList
-            .filter(pkg => pkg !== wbyPkg)
-            .filter(pkg => Boolean(pkg.packageJson.webiny?.exports));
 
         // Clean up the src directory.
         const webinySrcPath = wbyPkg.paths.packageFolder.join("src").toString();
@@ -42,11 +45,44 @@ export class GenerateWebinyPkg implements GenerateWebinyPkg {
             this.generateExportsForStaticFiles(webinySrcStaticPath, webinySrcPath, wbyPkg);
         }
 
-        for (const pkgWithExports of packagesWithExports) {
-            this.ui.newLine();
-            this.ui.info(`%s`, pkgWithExports.name);
+        // Scan for exports folders in all packages
+        const packagesWithoutWebiny = fullPackagesList.filter(pkg => pkg !== wbyPkg);
+        const exportFilesMap = this.scanExportsFoldersService.execute(packagesWithoutWebiny);
 
-            this.generateExportsForPkg(pkgWithExports, wbyPkg);
+        // Process each unique file path
+        for (const [relativePath, exportFiles] of exportFilesMap.entries()) {
+            this.ui.newLine();
+            this.ui.info(`Processing %s from %s package(s)`, relativePath, exportFiles.length);
+
+            // Read file contents from all packages
+            const inputs: MergeExportsService.ExportFileInput[] = [];
+            for (const exportFile of exportFiles) {
+                const fileContent = fs.readFileSync(exportFile.absolutePath, "utf-8");
+                inputs.push({
+                    packageName: exportFile.packageName,
+                    fileContent,
+                    filePath: exportFile.absolutePath
+                });
+
+                this.ui.debug(` From %s`, exportFile.packageName);
+            }
+
+            // Merge exports
+            const mergedContent = this.mergeExportsService.execute(inputs);
+
+            // Write merged file to webiny package
+            const wbyExportTsFilePath = path.join(webinySrcPath, relativePath);
+            fs.mkdirSync(path.dirname(wbyExportTsFilePath), { recursive: true });
+            fs.writeFileSync(wbyExportTsFilePath, mergedContent);
+
+            // Update package.json exports
+            const exportKey = `./${relativePath.replace(/\.ts$/, "")}`;
+            const exportValue = `./${relativePath.replace(/\.ts$/, ".js")}`;
+
+            // @ts-ignore
+            wbyPkg.packageJson.exports![exportKey] = exportValue;
+
+            this.ui.debug(` Generated: %s`, exportKey);
         }
 
         fs.writeFileSync(
@@ -91,79 +127,6 @@ export class GenerateWebinyPkg implements GenerateWebinyPkg {
         }
 
         return arrayOfFiles;
-    }
-
-    private generateExportsForPkg(
-        pkgWithExports: ListPackagesService.Package,
-        wbyPkg: ListPackagesService.Package
-    ) {
-        const pkgExports = pkgWithExports.packageJson.webiny?.exports!;
-
-        for (const [basePkgFilePath, wbyPkgExportPathOrSettings] of Object.entries(pkgExports)) {
-            // 1. Check if the file exists in the base package.
-            const basePkgFullFilePath = pkgWithExports.paths.packageFolder
-                .join("src", basePkgFilePath)
-                .toString();
-
-            if (!fs.existsSync(basePkgFullFilePath)) {
-                this.ui.warning(
-                    ` - Skipping export for %s as the file does not exist in the base package.`,
-                    basePkgFilePath
-                );
-                continue;
-            }
-
-            // 2. Normalize export settings.
-            let wbyPkgExportSettings: ListPackagesService.WebinyPackageExportSettings =
-                typeof wbyPkgExportPathOrSettings === "string"
-                    ? { exportPath: wbyPkgExportPathOrSettings }
-                    : wbyPkgExportPathOrSettings;
-
-            // 3. Create the export TS file.
-            const exportPath =
-                // If exporting from package index.ts, we must use the package name as the export path.
-                basePkgFilePath === "./index.ts"
-                    ? pkgWithExports.name
-                    : path
-                          .join(pkgWithExports.name, basePkgFilePath)
-                          .replace(".tsx", ".js")
-                          .replace(".ts", ".js");
-
-            let namedExports = "*";
-            if (wbyPkgExportSettings.namedExports && wbyPkgExportSettings.namedExports.length > 0) {
-                namedExports = `{ ${wbyPkgExportSettings.namedExports.join(", ")} }`;
-            }
-
-            let wbyExportTsFilePath = [
-                wbyPkg.paths.packageFolder.join("src", wbyPkgExportSettings.exportPath).toString(),
-                ".ts"
-            ].join("");
-
-            const exportStatement = `export ${namedExports} from "${exportPath}";\n`;
-
-            if (fs.existsSync(wbyExportTsFilePath)) {
-                const wbyExportFileContent = fs.readFileSync(wbyExportTsFilePath, "utf-8");
-                fs.writeFileSync(wbyExportTsFilePath, `${wbyExportFileContent}${exportStatement}`);
-            } else {
-                fs.mkdirSync(path.dirname(wbyExportTsFilePath), { recursive: true });
-                fs.writeFileSync(wbyExportTsFilePath, exportStatement);
-            }
-
-            // 4. Update `exports` in `package.json`.
-            const exportEntryKey = `./${path.join(wbyPkgExportSettings.exportPath).replace(/\.js$/, "")}`;
-
-            // @ts-ignore
-            wbyPkg.packageJson.exports![exportEntryKey] = `./${path.relative(
-                wbyPkg.paths.packageFolder.join("src").toString(),
-                wbyExportTsFilePath.replace(".ts", ".js")
-            )}`;
-
-            this.ui.debug(
-                ` %s → %s`,
-                basePkgFilePath,
-                path.join(`webiny`, wbyPkgExportSettings.exportPath)
-            );
-        }
     }
 
     private copyDirectoryRecursive(source: string, target: string) {

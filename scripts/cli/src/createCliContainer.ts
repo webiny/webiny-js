@@ -7,7 +7,10 @@ import {
     getProjectService,
     listPackagesService,
     loggerService,
+    mergeExportsService,
+    parseExportsFileService,
     runCliRunnerService,
+    scanExportsFoldersService,
     stdioService,
     uiService
 } from "./services/index.js";
@@ -27,7 +30,10 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
     container.register(getProjectService).inSingletonScope();
     container.register(listPackagesService).inSingletonScope();
     container.register(loggerService).inSingletonScope();
+    container.register(mergeExportsService).inSingletonScope();
+    container.register(parseExportsFileService).inSingletonScope();
     container.register(runCliRunnerService).inSingletonScope();
+    container.register(scanExportsFoldersService).inSingletonScope();
     container.register(stdioService).inSingletonScope();
     container.register(uiService).inSingletonScope();
 

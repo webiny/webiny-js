@@ -1,1 +1,1 @@
-export * from "@webiny/api-core/features/eventPublisher/index.js";
+export { DomainEvent, EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
