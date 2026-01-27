@@ -1,16 +1,16 @@
-import { ModelAfterDeleteHandler } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/events.js";
+import { ModelAfterDeleteEventHandler } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/events.js";
 import { ListWorkflowsUseCase } from "@webiny/api-workflows/features/workflow/ListWorkflows/index.js";
 import { DeleteWorkflowUseCase } from "@webiny/api-workflows/features/workflow/DeleteWorkflow/index.js";
 import { createWorkflowAppName } from "~/utils/appName.js";
 import { isModelAllowed } from "~/utils/modelAllowed.js";
 
-class DeleteWorkflowsOnModelAfterDeleteImpl implements ModelAfterDeleteHandler.Interface {
+class DeleteWorkflowsOnModelAfterDeleteImpl implements ModelAfterDeleteEventHandler.Interface {
     constructor(
         private listWorkflows: ListWorkflowsUseCase.Interface,
         private deleteWorkflow: DeleteWorkflowUseCase.Interface
     ) {}
 
-    async handle(event: ModelAfterDeleteHandler.Event): Promise<void> {
+    async handle(event: ModelAfterDeleteEventHandler.Event): Promise<void> {
         const { model } = event.payload;
 
         if (!isModelAllowed(model)) {
@@ -40,7 +40,7 @@ class DeleteWorkflowsOnModelAfterDeleteImpl implements ModelAfterDeleteHandler.I
     }
 }
 
-export const DeleteWorkflowsOnModelAfterDelete = ModelAfterDeleteHandler.createImplementation({
+export const DeleteWorkflowsOnModelAfterDelete = ModelAfterDeleteEventHandler.createImplementation({
     implementation: DeleteWorkflowsOnModelAfterDeleteImpl,
     dependencies: [ListWorkflowsUseCase, DeleteWorkflowUseCase]
 });

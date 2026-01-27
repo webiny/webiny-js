@@ -3,7 +3,7 @@ import { createImplementation } from "@webiny/feature/api";
 import { CreateGroupUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { CreateGroupRepository } from "./abstractions.js";
 import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
-import { GroupBeforeCreateEvent } from "./events.js";
+import { GroupBeforeCreateEventEvent } from "./events.js";
 import { GroupAfterCreateEvent } from "./events.js";
 import { GroupCreateErrorEvent } from "./events.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
@@ -84,7 +84,7 @@ class CreateGroupUseCaseImpl implements UseCaseAbstraction.Interface {
 
         try {
             // Publish before event
-            await this.eventPublisher.publish(new GroupBeforeCreateEvent({ group }));
+            await this.eventPublisher.publish(new GroupBeforeCreateEventEvent({ group }));
 
             // Persist via repository
             const result = await this.repository.execute(group);

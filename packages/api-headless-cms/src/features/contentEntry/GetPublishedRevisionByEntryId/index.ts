@@ -1,1 +1,4 @@
-export { GetPublishedRevisionByEntryIdUseCase } from "./abstractions.js";
+export {
+    GetPublishedRevisionByEntryIdUseCase,
+    GetPublishedRevisionByEntryIdRepository
+} from "./abstractions.js";

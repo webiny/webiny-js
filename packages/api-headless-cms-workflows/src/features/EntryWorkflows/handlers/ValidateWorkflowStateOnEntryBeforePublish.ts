@@ -1,13 +1,15 @@
 import { WebinyError } from "@webiny/error";
-import { EntryBeforePublishHandler } from "@webiny/api-headless-cms/features/contentEntry/PublishEntry/events.js";
+import { EntryBeforePublishEventHandler } from "@webiny/api-headless-cms/features/contentEntry/PublishEntry/events.js";
 import { createWorkflowAppName } from "~/utils/appName.js";
 import { isModelAllowed } from "~/utils/modelAllowed.js";
 import { GetTargetWorkflowStateUseCase } from "@webiny/api-workflows/features/workflowState/GetTargetWorkflowState/index.js";
 
-class ValidateWorkflowStateOnEntryBeforePublishImpl implements EntryBeforePublishHandler.Interface {
+class ValidateWorkflowStateOnEntryBeforePublishImpl
+    implements EntryBeforePublishEventHandler.Interface
+{
     constructor(private getTargetState: GetTargetWorkflowStateUseCase.Interface) {}
 
-    async handle(event: EntryBeforePublishHandler.Event): Promise<void> {
+    async handle(event: EntryBeforePublishEventHandler.Event): Promise<void> {
         const { model, entry } = event.payload;
 
         if (!isModelAllowed(model)) {
@@ -45,7 +47,7 @@ class ValidateWorkflowStateOnEntryBeforePublishImpl implements EntryBeforePublis
 }
 
 export const ValidateWorkflowStateOnEntryBeforePublish =
-    EntryBeforePublishHandler.createImplementation({
+    EntryBeforePublishEventHandler.createImplementation({
         implementation: ValidateWorkflowStateOnEntryBeforePublishImpl,
         dependencies: [GetTargetWorkflowStateUseCase]
     });

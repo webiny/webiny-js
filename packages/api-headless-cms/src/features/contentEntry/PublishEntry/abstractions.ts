@@ -34,7 +34,7 @@ export namespace PublishEntryUseCase {
 /**
  * Payload for before publish event
  */
-export interface EntryBeforePublishPayload {
+export interface EntryBeforePublishEventPayload {
     entry: CmsEntry;
     original: CmsEntry;
     model: CmsModel;
@@ -43,7 +43,7 @@ export interface EntryBeforePublishPayload {
 /**
  * Payload for after publish event
  */
-export interface EntryAfterPublishPayload {
+export interface EntryAfterPublishEventPayload {
     entry: CmsEntry;
     original: CmsEntry;
     model: CmsModel;
@@ -52,7 +52,7 @@ export interface EntryAfterPublishPayload {
 /**
  * Payload for publish error event
  */
-export interface EntryPublishErrorPayload {
+export interface EntryPublishErrorEventPayload {
     entry: CmsEntry;
     original: CmsEntry;
     model: CmsModel;

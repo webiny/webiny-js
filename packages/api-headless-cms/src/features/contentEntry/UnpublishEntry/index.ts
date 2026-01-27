@@ -1,2 +1,2 @@
-export { UnpublishEntryUseCase } from "./abstractions.js";
-export * from "./events.js";
+export { UnpublishEntryUseCase, UnpublishEntryRepository } from "./abstractions.js";
+export { EntryAfterUnpublishEventHandler, EntryBeforeUnpublishEventHandler } from "./events.js";

@@ -1,28 +1,28 @@
 import { createAbstraction } from "@webiny/feature/api";
-import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import type { IEventHandler } from "@webiny/api-core/features/EventPublisher";
+import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import type {
-    EntryRevisionBeforeCreatePayload,
-    EntryRevisionAfterCreatePayload,
-    EntryRevisionCreateErrorPayload
+    EntryRevisionAfterCreateEventPayload,
+    EntryRevisionBeforeCreateEventPayload,
+    EntryRevisionCreateErrorEventPayload
 } from "./abstractions.js";
 
 /**
  * Before create entry revision event
  */
-export class EntryRevisionBeforeCreateEvent extends DomainEvent<EntryRevisionBeforeCreatePayload> {
+export class EntryRevisionBeforeCreateEvent extends DomainEvent<EntryRevisionBeforeCreateEventPayload> {
     eventType = "Cms/Entry/RevisionBeforeCreate" as const;
 
     getHandlerAbstraction() {
-        return EntryRevisionBeforeCreateHandler;
+        return EntryRevisionBeforeCreateEventHandler;
     }
 }
 
-export const EntryRevisionBeforeCreateHandler = createAbstraction<
+export const EntryRevisionBeforeCreateEventHandler = createAbstraction<
     IEventHandler<EntryRevisionBeforeCreateEvent>
->("EntryRevisionBeforeCreateHandler");
+>("EntryRevisionBeforeCreateEventHandler");
 
-export namespace EntryRevisionBeforeCreateHandler {
+export namespace EntryRevisionBeforeCreateEventHandler {
     export type Interface = IEventHandler<EntryRevisionBeforeCreateEvent>;
     export type Event = EntryRevisionBeforeCreateEvent;
 }
@@ -30,19 +30,19 @@ export namespace EntryRevisionBeforeCreateHandler {
 /**
  * After create entry revision event
  */
-export class EntryRevisionAfterCreateEvent extends DomainEvent<EntryRevisionAfterCreatePayload> {
+export class EntryRevisionAfterCreateEvent extends DomainEvent<EntryRevisionAfterCreateEventPayload> {
     eventType = "Cms/Entry/RevisionAfterCreate" as const;
 
     getHandlerAbstraction() {
-        return EntryRevisionAfterCreateHandler;
+        return EntryRevisionAfterCreateEventHandler;
     }
 }
 
-export const EntryRevisionAfterCreateHandler = createAbstraction<
+export const EntryRevisionAfterCreateEventHandler = createAbstraction<
     IEventHandler<EntryRevisionAfterCreateEvent>
->("EntryRevisionAfterCreateHandler");
+>("EntryRevisionAfterCreateEventHandler");
 
-export namespace EntryRevisionAfterCreateHandler {
+export namespace EntryRevisionAfterCreateEventHandler {
     export type Interface = IEventHandler<EntryRevisionAfterCreateEvent>;
     export type Event = EntryRevisionAfterCreateEvent;
 }
@@ -50,19 +50,19 @@ export namespace EntryRevisionAfterCreateHandler {
 /**
  * Create entry revision error event
  */
-export class EntryRevisionCreateErrorEvent extends DomainEvent<EntryRevisionCreateErrorPayload> {
+export class EntryRevisionCreateErrorEvent extends DomainEvent<EntryRevisionCreateErrorEventPayload> {
     eventType = "Cms/Entry/RevisionCreateError" as const;
 
     getHandlerAbstraction() {
-        return EntryRevisionCreateErrorHandler;
+        return EntryRevisionCreateErrorEventHandler;
     }
 }
 
-export const EntryRevisionCreateErrorHandler = createAbstraction<
+export const EntryRevisionCreateErrorEventHandler = createAbstraction<
     IEventHandler<EntryRevisionCreateErrorEvent>
->("EntryRevisionCreateErrorHandler");
+>("EntryRevisionCreateErrorEventHandler");
 
-export namespace EntryRevisionCreateErrorHandler {
+export namespace EntryRevisionCreateErrorEventHandler {
     export type Interface = IEventHandler<EntryRevisionCreateErrorEvent>;
     export type Event = EntryRevisionCreateErrorEvent;
 }

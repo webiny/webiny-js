@@ -1,4 +1,4 @@
-import { EntryBeforeCreateHandler } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
+import { EntryBeforeCreateEventHandler } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
@@ -45,7 +45,7 @@ setStorageOps("cms", () => {
      * When creating, updating, creating from, publishing, unpublishing and deleting we need to refresh index.
      */
     const createOrRefreshIndexSubscription = new ContextPlugin(async context => {
-        context.container.registerFactory(EntryBeforeCreateHandler, () => ({
+        context.container.registerFactory(EntryBeforeCreateEventHandler, () => ({
             async handle(event) {
                 const { model } = event.payload;
                 const index = createIndexName(model);

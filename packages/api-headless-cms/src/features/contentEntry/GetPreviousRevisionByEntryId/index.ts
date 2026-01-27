@@ -1,4 +1,5 @@
 export {
     GetPreviousRevisionByEntryIdUseCase,
-    GetPreviousRevisionByEntryIdRepository
+    GetPreviousRevisionByEntryIdRepository,
+    GetPreviousRevisionByEntryIdBaseUseCase
 } from "./abstractions.js";

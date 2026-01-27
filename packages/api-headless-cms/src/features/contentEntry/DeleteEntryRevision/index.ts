@@ -1,6 +1,5 @@
 export { DeleteEntryRevisionUseCase, DeleteEntryRevisionRepository } from "./abstractions.js";
 export {
-    EntryRevisionBeforeDeleteHandler,
-    EntryRevisionAfterDeleteHandler,
-    EntryRevisionDeleteErrorHandler
+    EntryRevisionBeforeDeleteEventHandler,
+    EntryRevisionAfterDeleteEventHandler
 } from "./events.js";

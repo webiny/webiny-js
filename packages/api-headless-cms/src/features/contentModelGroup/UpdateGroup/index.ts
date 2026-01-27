@@ -1,2 +1,2 @@
-export * from "./abstractions.js";
-export * from "./events.js";
+export { UpdateGroupRepository, UpdateGroupUseCase } from "./abstractions.js";
+export { GroupAfterUpdateEventHandler, GroupBeforeUpdateEventHandler } from "./events.js";

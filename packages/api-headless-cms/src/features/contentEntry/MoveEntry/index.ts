@@ -1,2 +1,2 @@
-export * from "./abstractions.js";
-export * from "./events.js";
+export { MoveEntryUseCase, MoveEntryRepository } from "./abstractions.js";
+export { EntryAfterMoveEventHandler, EntryBeforeMoveEventHandler } from "./events.js";

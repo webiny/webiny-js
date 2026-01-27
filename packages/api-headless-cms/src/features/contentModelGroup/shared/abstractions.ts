@@ -29,12 +29,12 @@ interface IModelGroup {
 }
 
 export interface IModelGroupFactory {
-    execute(): Promise<IModelGroup[]> | IModelGroup[];
+    execute(): Promise<IModelGroup[]>;
 }
 
 export const ModelGroupFactory = createAbstraction<IModelGroupFactory>("ModelGroupFactory");
 export namespace ModelGroupFactory {
     export type Interface = IModelGroupFactory;
-    export type Return = Promise<IModelGroup[]> | IModelGroup[];
+    export type Return = Promise<IModelGroup[]>;
     export type Group = IModelGroup;
 }

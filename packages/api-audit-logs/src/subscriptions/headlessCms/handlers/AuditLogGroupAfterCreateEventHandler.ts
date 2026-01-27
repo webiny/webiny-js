@@ -1,13 +1,13 @@
 import WebinyError from "@webiny/error";
-import { GroupAfterCreateHandler } from "@webiny/api-headless-cms/features/contentModelGroup/CreateGroup/index.js";
+import { GroupAfterCreateEventHandler } from "@webiny/api-headless-cms/features/contentModelGroup/CreateGroup/index.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 import { AuditLogsContext } from "~/abstractions.js";
 
-class AuditLogGroupAfterCreateHandlerImpl implements GroupAfterCreateHandler.Interface {
+class AuditLogGroupAfterCreateEventHandlerImpl implements GroupAfterCreateEventHandler.Interface {
     constructor(private context: AuditLogsContext.Interface) {}
 
-    async handle(event: GroupAfterCreateHandler.Event): Promise<void> {
+    async handle(event: GroupAfterCreateEventHandler.Event): Promise<void> {
         const { group } = event.payload;
 
         try {
@@ -16,14 +16,15 @@ class AuditLogGroupAfterCreateHandlerImpl implements GroupAfterCreateHandler.Int
             await createAuditLog("Group created", group, group.id, this.context);
         } catch (error) {
             throw WebinyError.from(error, {
-                message: "Error while executing AuditLogGroupAfterCreateHandler",
+                message: "Error while executing AuditLogGroupAfterCreateEventHandler",
                 code: "AUDIT_LOGS_AFTER_GROUP_CREATE_HANDLER"
             });
         }
     }
 }
 
-export const AuditLogGroupAfterCreateHandler = GroupAfterCreateHandler.createImplementation({
-    implementation: AuditLogGroupAfterCreateHandlerImpl,
-    dependencies: [AuditLogsContext]
-});
+export const AuditLogGroupAfterCreateEventHandler =
+    GroupAfterCreateEventHandler.createImplementation({
+        implementation: AuditLogGroupAfterCreateEventHandlerImpl,
+        dependencies: [AuditLogsContext]
+    });

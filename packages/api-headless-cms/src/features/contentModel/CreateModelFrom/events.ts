@@ -1,24 +1,23 @@
 import { createAbstraction } from "@webiny/feature/api";
-import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import type { IEventHandler } from "@webiny/api-core/features/EventPublisher";
-import type { CmsModel } from "~/types/index.js";
-import type { CmsModelCreateFromInput } from "~/types/index.js";
+import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
+import type { CmsModel, CmsModelCreateFromInput } from "~/types/index.js";
 
 /**
  * Event payloads
  */
-export interface ModelBeforeCreateFromPayload {
+export interface ModelBeforeCreateFromEventPayload {
     model: CmsModel;
     original: CmsModel;
     input: CmsModelCreateFromInput;
 }
 
-export interface ModelAfterCreateFromPayload {
+export interface ModelAfterCreateFromEventPayload {
     model: CmsModel;
     original: CmsModel;
 }
 
-export interface ModelCreateFromErrorPayload {
+export interface ModelCreateFromErrorEventPayload {
     input: CmsModelCreateFromInput;
     model: CmsModel;
     original: CmsModel;
@@ -28,19 +27,19 @@ export interface ModelCreateFromErrorPayload {
 /**
  * ModelBeforeCreateFromEvent - Published before creating a model from existing
  */
-export class ModelBeforeCreateFromEvent extends DomainEvent<ModelBeforeCreateFromPayload> {
+export class ModelBeforeCreateFromEvent extends DomainEvent<ModelBeforeCreateFromEventPayload> {
     eventType = "Cms/Model/BeforeCreateFrom" as const;
 
     getHandlerAbstraction() {
-        return ModelBeforeCreateFromHandler;
+        return ModelBeforeCreateFromEventHandler;
     }
 }
 
-export const ModelBeforeCreateFromHandler = createAbstraction<
+export const ModelBeforeCreateFromEventHandler = createAbstraction<
     IEventHandler<ModelBeforeCreateFromEvent>
->("ModelBeforeCreateFromHandler");
+>("ModelBeforeCreateFromEventHandler");
 
-export namespace ModelBeforeCreateFromHandler {
+export namespace ModelBeforeCreateFromEventHandler {
     export type Interface = IEventHandler<ModelBeforeCreateFromEvent>;
     export type Event = ModelBeforeCreateFromEvent;
 }
@@ -48,19 +47,19 @@ export namespace ModelBeforeCreateFromHandler {
 /**
  * ModelAfterCreateFromEvent - Published after creating a model from existing
  */
-export class ModelAfterCreateFromEvent extends DomainEvent<ModelAfterCreateFromPayload> {
+export class ModelAfterCreateFromEvent extends DomainEvent<ModelAfterCreateFromEventPayload> {
     eventType = "Cms/Model/AfterCreateFrom" as const;
 
     getHandlerAbstraction() {
-        return ModelAfterCreateFromHandler;
+        return ModelAfterCreateFromEventHandler;
     }
 }
 
-export const ModelAfterCreateFromHandler = createAbstraction<
+export const ModelAfterCreateFromEventHandler = createAbstraction<
     IEventHandler<ModelAfterCreateFromEvent>
->("ModelAfterCreateFromHandler");
+>("ModelAfterCreateFromEventHandler");
 
-export namespace ModelAfterCreateFromHandler {
+export namespace ModelAfterCreateFromEventHandler {
     export type Interface = IEventHandler<ModelAfterCreateFromEvent>;
     export type Event = ModelAfterCreateFromEvent;
 }
@@ -68,19 +67,19 @@ export namespace ModelAfterCreateFromHandler {
 /**
  * ModelCreateFromErrorEvent - Published when create from fails
  */
-export class ModelCreateFromErrorEvent extends DomainEvent<ModelCreateFromErrorPayload> {
+export class ModelCreateFromErrorEvent extends DomainEvent<ModelCreateFromErrorEventPayload> {
     eventType = "Cms/Model/CreateFromError" as const;
 
     getHandlerAbstraction() {
-        return ModelCreateFromErrorHandler;
+        return ModelCreateFromErrorEventHandler;
     }
 }
 
-export const ModelCreateFromErrorHandler = createAbstraction<
+export const ModelCreateFromErrorEventHandler = createAbstraction<
     IEventHandler<ModelCreateFromErrorEvent>
->("ModelCreateFromErrorHandler");
+>("ModelCreateFromErrorEventHandler");
 
-export namespace ModelCreateFromErrorHandler {
+export namespace ModelCreateFromErrorEventHandler {
     export type Interface = IEventHandler<ModelCreateFromErrorEvent>;
     export type Event = ModelCreateFromErrorEvent;
 }

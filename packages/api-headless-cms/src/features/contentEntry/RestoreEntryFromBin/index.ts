@@ -1,2 +1,5 @@
-export * from "./abstractions.js";
-export * from "./events.js";
+export { RestoreEntryFromBinRepository, RestoreEntryFromBinUseCase } from "./abstractions.js";
+export {
+    EntryAfterRestoreFromBinEventHandler,
+    EntryBeforeRestoreFromBinEventHandler
+} from "./events.js";

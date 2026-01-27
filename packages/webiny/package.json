@@ -12,6 +12,7 @@
   "dependencies": {
     "@webiny/admin-ui": "0.0.0",
     "@webiny/api-core": "0.0.0",
+    "@webiny/api-headless-cms": "0.0.0",
     "@webiny/app": "0.0.0",
     "@webiny/app-admin": "0.0.0",
     "@webiny/cli-core": "0.0.0",
@@ -69,6 +70,9 @@
     "./api/security/features/ListUsers": "./api/security/features/ListUsers.js",
     "./api/security/features/ListUserTeams": "./api/security/features/ListUserTeams.js",
     "./api/security/features/ExternalIdpUserSync": "./api/security/features/ExternalIdpUserSync.js",
+    "./api/cms/group": "./api/cms/group.js",
+    "./api/cms/model": "./api/cms/model.js",
+    "./api/cms/entry": "./api/cms/entry.js",
     "./admin/security": "./admin/security.js",
     "./admin": "./admin.js",
     "./admin/envConfig": "./admin/envConfig.js",

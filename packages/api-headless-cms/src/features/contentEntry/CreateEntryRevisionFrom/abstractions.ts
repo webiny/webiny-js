@@ -50,7 +50,7 @@ export namespace CreateEntryRevisionFromUseCase {
 /**
  * Payload for before create revision event
  */
-export interface EntryRevisionBeforeCreatePayload {
+export interface EntryRevisionBeforeCreateEventPayload {
     entry: CmsEntry;
     model: CmsModel;
     input: CreateCmsEntryInput;
@@ -60,7 +60,7 @@ export interface EntryRevisionBeforeCreatePayload {
 /**
  * Payload for after create revision event
  */
-export interface EntryRevisionAfterCreatePayload {
+export interface EntryRevisionAfterCreateEventPayload {
     entry: CmsEntry;
     model: CmsModel;
     input: CreateCmsEntryInput;
@@ -70,7 +70,7 @@ export interface EntryRevisionAfterCreatePayload {
 /**
  * Payload for create revision error event
  */
-export interface EntryRevisionCreateErrorPayload {
+export interface EntryRevisionCreateErrorEventPayload {
     entry: CmsEntry;
     model: CmsModel;
     input: CreateCmsEntryInput;

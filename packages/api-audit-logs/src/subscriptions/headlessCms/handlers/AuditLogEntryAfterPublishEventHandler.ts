@@ -1,13 +1,13 @@
 import WebinyError from "@webiny/error";
-import { EntryAfterPublishHandler } from "@webiny/api-headless-cms/features/contentEntry/PublishEntry/index.js";
+import { EntryAfterPublishEventHandler } from "@webiny/api-headless-cms/features/contentEntry/PublishEntry/index.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 import { AuditLogsContext } from "~/abstractions.js";
 
-class AuditLogEntryAfterPublishHandlerImpl implements EntryAfterPublishHandler.Interface {
+class AuditLogEntryAfterPublishEventHandlerImpl implements EntryAfterPublishEventHandler.Interface {
     constructor(private context: AuditLogsContext.Interface) {}
 
-    async handle(event: EntryAfterPublishHandler.Event): Promise<void> {
+    async handle(event: EntryAfterPublishEventHandler.Event): Promise<void> {
         const { model, entry } = event.payload;
 
         if (model.isPrivate) {
@@ -20,14 +20,15 @@ class AuditLogEntryAfterPublishHandlerImpl implements EntryAfterPublishHandler.I
             await createAuditLog("Entry revision published", entry, entry.id, this.context);
         } catch (error) {
             throw WebinyError.from(error, {
-                message: "Error while executing AuditLogEntryAfterPublishHandler",
+                message: "Error while executing AuditLogEntryAfterPublishEventHandler",
                 code: "AUDIT_LOGS_AFTER_ENTRY_REVISION_PUBLISH_HANDLER"
             });
         }
     }
 }
 
-export const AuditLogEntryAfterPublishHandler = EntryAfterPublishHandler.createImplementation({
-    implementation: AuditLogEntryAfterPublishHandlerImpl,
-    dependencies: [AuditLogsContext]
-});
+export const AuditLogEntryAfterPublishEventHandler =
+    EntryAfterPublishEventHandler.createImplementation({
+        implementation: AuditLogEntryAfterPublishEventHandlerImpl,
+        dependencies: [AuditLogsContext]
+    });

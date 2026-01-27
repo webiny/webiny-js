@@ -1,13 +1,13 @@
 import WebinyError from "@webiny/error";
-import { EntryAfterDeleteHandler } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
+import { EntryAfterDeleteEventHandler } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 import { AuditLogsContext } from "~/abstractions.js";
 
-class AuditLogEntryAfterDeleteHandlerImpl implements EntryAfterDeleteHandler.Interface {
+class AuditLogEntryAfterDeleteHandlerImpl implements EntryAfterDeleteEventHandler.Interface {
     constructor(private context: AuditLogsContext.Interface) {}
 
-    async handle(event: EntryAfterDeleteHandler.Event): Promise<void> {
+    async handle(event: EntryAfterDeleteEventHandler.Event): Promise<void> {
         const { model, entry, permanent } = event.payload;
 
         if (model.isPrivate) {
@@ -31,7 +31,8 @@ class AuditLogEntryAfterDeleteHandlerImpl implements EntryAfterDeleteHandler.Int
     }
 }
 
-export const AuditLogEntryAfterDeleteHandler = EntryAfterDeleteHandler.createImplementation({
-    implementation: AuditLogEntryAfterDeleteHandlerImpl,
-    dependencies: [AuditLogsContext]
-});
+export const AuditLogEntryAfterDeleteEventHandler =
+    EntryAfterDeleteEventHandler.createImplementation({
+        implementation: AuditLogEntryAfterDeleteHandlerImpl,
+        dependencies: [AuditLogsContext]
+    });

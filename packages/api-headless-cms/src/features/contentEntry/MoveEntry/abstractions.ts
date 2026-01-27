@@ -34,7 +34,7 @@ export namespace MoveEntryUseCase {
 /**
  * Payload for before move event
  */
-export interface EntryBeforeMovePayload {
+export interface EntryBeforeMoveEventPayload {
     entry: CmsEntry;
     model: CmsModel;
     folderId: string;
@@ -43,7 +43,7 @@ export interface EntryBeforeMovePayload {
 /**
  * Payload for after move event
  */
-export interface EntryAfterMovePayload {
+export interface EntryAfterMoveEventPayload {
     entry: CmsEntry;
     model: CmsModel;
     folderId: string;
@@ -52,7 +52,7 @@ export interface EntryAfterMovePayload {
 /**
  * Payload for move error event
  */
-export interface EntryMoveErrorPayload {
+export interface EntryMoveErrorEventPayload {
     entry: CmsEntry;
     model: CmsModel;
     folderId: string;

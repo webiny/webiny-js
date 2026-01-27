@@ -1,20 +1,20 @@
 import { createAbstraction } from "@webiny/feature/api";
-import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import type { IEventHandler } from "@webiny/api-core/features/EventPublisher";
+import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import type { CmsModel } from "~/types/index.js";
 
 /**
  * Event payloads
  */
-export interface ModelBeforeDeletePayload {
+export interface ModelBeforeDeleteEventPayload {
     model: CmsModel;
 }
 
-export interface ModelAfterDeletePayload {
+export interface ModelAfterDeleteEventPayload {
     model: CmsModel;
 }
 
-export interface ModelDeleteErrorPayload {
+export interface ModelDeleteErrorEventPayload {
     model: CmsModel;
     error: Error;
 }
@@ -22,19 +22,19 @@ export interface ModelDeleteErrorPayload {
 /**
  * ModelBeforeDeleteEvent - Published before deleting a model
  */
-export class ModelBeforeDeleteEvent extends DomainEvent<ModelBeforeDeletePayload> {
+export class ModelBeforeDeleteEvent extends DomainEvent<ModelBeforeDeleteEventPayload> {
     eventType = "Cms/Model/BeforeDelete" as const;
 
     getHandlerAbstraction() {
-        return ModelBeforeDeleteHandler;
+        return ModelBeforeDeleteEventHandler;
     }
 }
 
-export const ModelBeforeDeleteHandler = createAbstraction<IEventHandler<ModelBeforeDeleteEvent>>(
-    "ModelBeforeDeleteHandler"
-);
+export const ModelBeforeDeleteEventHandler = createAbstraction<
+    IEventHandler<ModelBeforeDeleteEvent>
+>("ModelBeforeDeleteEventHandler");
 
-export namespace ModelBeforeDeleteHandler {
+export namespace ModelBeforeDeleteEventHandler {
     export type Interface = IEventHandler<ModelBeforeDeleteEvent>;
     export type Event = ModelBeforeDeleteEvent;
 }
@@ -42,18 +42,19 @@ export namespace ModelBeforeDeleteHandler {
 /**
  * ModelAfterDeleteEvent - Published after deleting a model
  */
-export class ModelAfterDeleteEvent extends DomainEvent<ModelAfterDeletePayload> {
+export class ModelAfterDeleteEvent extends DomainEvent<ModelAfterDeleteEventPayload> {
     eventType = "Cms/Model/AfterDelete" as const;
 
     getHandlerAbstraction() {
-        return ModelAfterDeleteHandler;
+        return ModelAfterDeleteEventHandler;
     }
 }
 
-export const ModelAfterDeleteHandler =
-    createAbstraction<IEventHandler<ModelAfterDeleteEvent>>("ModelAfterDeleteHandler");
+export const ModelAfterDeleteEventHandler = createAbstraction<IEventHandler<ModelAfterDeleteEvent>>(
+    "ModelAfterDeleteEventHandler"
+);
 
-export namespace ModelAfterDeleteHandler {
+export namespace ModelAfterDeleteEventHandler {
     export type Interface = IEventHandler<ModelAfterDeleteEvent>;
     export type Event = ModelAfterDeleteEvent;
 }
@@ -61,18 +62,19 @@ export namespace ModelAfterDeleteHandler {
 /**
  * ModelDeleteErrorEvent - Published when delete fails
  */
-export class ModelDeleteErrorEvent extends DomainEvent<ModelDeleteErrorPayload> {
+export class ModelDeleteErrorEvent extends DomainEvent<ModelDeleteErrorEventPayload> {
     eventType = "Cms/Model/DeleteError" as const;
 
     getHandlerAbstraction() {
-        return ModelDeleteErrorHandler;
+        return ModelDeleteErrorEventHandler;
     }
 }
 
-export const ModelDeleteErrorHandler =
-    createAbstraction<IEventHandler<ModelDeleteErrorEvent>>("ModelDeleteErrorHandler");
+export const ModelDeleteErrorEventHandler = createAbstraction<IEventHandler<ModelDeleteErrorEvent>>(
+    "ModelDeleteErrorEventHandler"
+);
 
-export namespace ModelDeleteErrorHandler {
+export namespace ModelDeleteErrorEventHandler {
     export type Interface = IEventHandler<ModelDeleteErrorEvent>;
     export type Event = ModelDeleteErrorEvent;
 }

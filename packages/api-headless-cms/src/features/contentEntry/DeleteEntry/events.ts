@@ -1,28 +1,28 @@
 import { createAbstraction } from "@webiny/feature/api";
-import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import type { IEventHandler } from "@webiny/api-core/features/EventPublisher";
+import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import type {
-    EntryBeforeDeletePayload,
-    EntryAfterDeletePayload,
-    EntryDeleteErrorPayload
+    EntryAfterDeleteEventPayload,
+    EntryBeforeDeleteEventPayload,
+    EntryDeleteErrorEventPayload
 } from "./abstractions.js";
 
 /**
  * Before delete entry event
  */
-export class EntryBeforeDeleteEvent extends DomainEvent<EntryBeforeDeletePayload> {
+export class EntryBeforeDeleteEvent extends DomainEvent<EntryBeforeDeleteEventPayload> {
     eventType = "Cms/Entry/BeforeDelete" as const;
 
     getHandlerAbstraction() {
-        return EntryBeforeDeleteHandler;
+        return EntryBeforeDeleteEventHandler;
     }
 }
 
-export const EntryBeforeDeleteHandler = createAbstraction<IEventHandler<EntryBeforeDeleteEvent>>(
-    "EntryBeforeDeleteHandler"
-);
+export const EntryBeforeDeleteEventHandler = createAbstraction<
+    IEventHandler<EntryBeforeDeleteEvent>
+>("EntryBeforeDeleteEventHandler");
 
-export namespace EntryBeforeDeleteHandler {
+export namespace EntryBeforeDeleteEventHandler {
     export type Interface = IEventHandler<EntryBeforeDeleteEvent>;
     export type Event = EntryBeforeDeleteEvent;
 }
@@ -30,18 +30,19 @@ export namespace EntryBeforeDeleteHandler {
 /**
  * After delete entry event
  */
-export class EntryAfterDeleteEvent extends DomainEvent<EntryAfterDeletePayload> {
+export class EntryAfterDeleteEvent extends DomainEvent<EntryAfterDeleteEventPayload> {
     eventType = "Cms/Entry/AfterDelete" as const;
 
     getHandlerAbstraction() {
-        return EntryAfterDeleteHandler;
+        return EntryAfterDeleteEventHandler;
     }
 }
 
-export const EntryAfterDeleteHandler =
-    createAbstraction<IEventHandler<EntryAfterDeleteEvent>>("EntryAfterDeleteHandler");
+export const EntryAfterDeleteEventHandler = createAbstraction<IEventHandler<EntryAfterDeleteEvent>>(
+    "EntryAfterDeleteEventHandler"
+);
 
-export namespace EntryAfterDeleteHandler {
+export namespace EntryAfterDeleteEventHandler {
     export type Interface = IEventHandler<EntryAfterDeleteEvent>;
     export type Event = EntryAfterDeleteEvent;
 }
@@ -49,18 +50,19 @@ export namespace EntryAfterDeleteHandler {
 /**
  * Delete entry error event
  */
-export class EntryDeleteErrorEvent extends DomainEvent<EntryDeleteErrorPayload> {
+export class EntryDeleteErrorEvent extends DomainEvent<EntryDeleteErrorEventPayload> {
     eventType = "Cms/Entry/DeleteError" as const;
 
     getHandlerAbstraction() {
-        return EntryDeleteErrorHandler;
+        return EntryDeleteErrorEventHandler;
     }
 }
 
-export const EntryDeleteErrorHandler =
-    createAbstraction<IEventHandler<EntryDeleteErrorEvent>>("EntryDeleteErrorHandler");
+export const EntryDeleteErrorEventHandler = createAbstraction<IEventHandler<EntryDeleteErrorEvent>>(
+    "EntryDeleteErrorEventHandler"
+);
 
-export namespace EntryDeleteErrorHandler {
+export namespace EntryDeleteErrorEventHandler {
     export type Interface = IEventHandler<EntryDeleteErrorEvent>;
     export type Event = EntryDeleteErrorEvent;
 }

@@ -1,28 +1,28 @@
 import { createAbstraction } from "@webiny/feature/api";
-import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import type { IEventHandler } from "@webiny/api-core/features/EventPublisher";
+import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import type {
-    EntryBeforeRepublishPayload,
-    EntryAfterRepublishPayload,
-    EntryRepublishErrorPayload
+    EntryAfterRepublishEventPayload,
+    EntryBeforeRepublishEventPayload,
+    EntryRepublishErrorEventPayload
 } from "./abstractions.js";
 
 /**
  * Before republish entry event
  */
-export class EntryBeforeRepublishEvent extends DomainEvent<EntryBeforeRepublishPayload> {
+export class EntryBeforeRepublishEvent extends DomainEvent<EntryBeforeRepublishEventPayload> {
     eventType = "Cms/Entry/BeforeRepublish" as const;
 
     getHandlerAbstraction() {
-        return EntryBeforeRepublishHandler;
+        return EntryBeforeRepublishEventHandler;
     }
 }
 
-export const EntryBeforeRepublishHandler = createAbstraction<
+export const EntryBeforeRepublishEventHandler = createAbstraction<
     IEventHandler<EntryBeforeRepublishEvent>
->("EntryBeforeRepublishHandler");
+>("EntryBeforeRepublishEventHandler");
 
-export namespace EntryBeforeRepublishHandler {
+export namespace EntryBeforeRepublishEventHandler {
     export type Interface = IEventHandler<EntryBeforeRepublishEvent>;
     export type Event = EntryBeforeRepublishEvent;
 }
@@ -30,19 +30,19 @@ export namespace EntryBeforeRepublishHandler {
 /**
  * After republish entry event
  */
-export class EntryAfterRepublishEvent extends DomainEvent<EntryAfterRepublishPayload> {
+export class EntryAfterRepublishEvent extends DomainEvent<EntryAfterRepublishEventPayload> {
     eventType = "Cms/Entry/AfterRepublish" as const;
 
     getHandlerAbstraction() {
-        return EntryAfterRepublishHandler;
+        return EntryAfterRepublishEventHandler;
     }
 }
 
-export const EntryAfterRepublishHandler = createAbstraction<
+export const EntryAfterRepublishEventHandler = createAbstraction<
     IEventHandler<EntryAfterRepublishEvent>
->("EntryAfterRepublishHandler");
+>("EntryAfterRepublishEventHandler");
 
-export namespace EntryAfterRepublishHandler {
+export namespace EntryAfterRepublishEventHandler {
     export type Interface = IEventHandler<EntryAfterRepublishEvent>;
     export type Event = EntryAfterRepublishEvent;
 }
@@ -50,19 +50,19 @@ export namespace EntryAfterRepublishHandler {
 /**
  * Republish entry error event
  */
-export class EntryRepublishErrorEvent extends DomainEvent<EntryRepublishErrorPayload> {
+export class EntryRepublishErrorEvent extends DomainEvent<EntryRepublishErrorEventPayload> {
     eventType = "Cms/Entry/RepublishError" as const;
 
     getHandlerAbstraction() {
-        return EntryRepublishErrorHandler;
+        return EntryRepublishErrorEventHandler;
     }
 }
 
-export const EntryRepublishErrorHandler = createAbstraction<
+export const EntryRepublishErrorEventHandler = createAbstraction<
     IEventHandler<EntryRepublishErrorEvent>
->("EntryRepublishErrorHandler");
+>("EntryRepublishErrorEventHandler");
 
-export namespace EntryRepublishErrorHandler {
+export namespace EntryRepublishErrorEventHandler {
     export type Interface = IEventHandler<EntryRepublishErrorEvent>;
     export type Event = EntryRepublishErrorEvent;
 }

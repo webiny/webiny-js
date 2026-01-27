@@ -1,28 +1,28 @@
 import { createAbstraction } from "@webiny/feature/api";
-import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import type { IEventHandler } from "@webiny/api-core/features/EventPublisher";
+import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import type {
-    EntryBeforePublishPayload,
-    EntryAfterPublishPayload,
-    EntryPublishErrorPayload
+    EntryAfterPublishEventPayload,
+    EntryBeforePublishEventPayload,
+    EntryPublishErrorEventPayload
 } from "./abstractions.js";
 
 /**
  * Before publish entry event
  */
-export class EntryBeforePublishEvent extends DomainEvent<EntryBeforePublishPayload> {
+export class EntryBeforePublishEvent extends DomainEvent<EntryBeforePublishEventPayload> {
     eventType = "Cms/Entry/BeforePublish" as const;
 
     getHandlerAbstraction() {
-        return EntryBeforePublishHandler;
+        return EntryBeforePublishEventHandler;
     }
 }
 
-export const EntryBeforePublishHandler = createAbstraction<IEventHandler<EntryBeforePublishEvent>>(
-    "EntryBeforePublishHandler"
-);
+export const EntryBeforePublishEventHandler = createAbstraction<
+    IEventHandler<EntryBeforePublishEvent>
+>("EntryBeforePublishEventHandler");
 
-export namespace EntryBeforePublishHandler {
+export namespace EntryBeforePublishEventHandler {
     export type Interface = IEventHandler<EntryBeforePublishEvent>;
     export type Event = EntryBeforePublishEvent;
 }
@@ -30,19 +30,19 @@ export namespace EntryBeforePublishHandler {
 /**
  * After publish entry event
  */
-export class EntryAfterPublishEvent extends DomainEvent<EntryAfterPublishPayload> {
+export class EntryAfterPublishEvent extends DomainEvent<EntryAfterPublishEventPayload> {
     eventType = "Cms/Entry/AfterPublish" as const;
 
     getHandlerAbstraction() {
-        return EntryAfterPublishHandler;
+        return EntryAfterPublishEventHandler;
     }
 }
 
-export const EntryAfterPublishHandler = createAbstraction<IEventHandler<EntryAfterPublishEvent>>(
-    "EntryAfterPublishHandler"
-);
+export const EntryAfterPublishEventHandler = createAbstraction<
+    IEventHandler<EntryAfterPublishEvent>
+>("EntryAfterPublishEventHandler");
 
-export namespace EntryAfterPublishHandler {
+export namespace EntryAfterPublishEventHandler {
     export type Interface = IEventHandler<EntryAfterPublishEvent>;
     export type Event = EntryAfterPublishEvent;
 }
@@ -50,19 +50,19 @@ export namespace EntryAfterPublishHandler {
 /**
  * Publish entry error event
  */
-export class EntryPublishErrorEvent extends DomainEvent<EntryPublishErrorPayload> {
+export class EntryPublishErrorEvent extends DomainEvent<EntryPublishErrorEventPayload> {
     eventType = "Cms/Entry/PublishError" as const;
 
     getHandlerAbstraction() {
-        return EntryPublishErrorHandler;
+        return EntryPublishErrorEventHandler;
     }
 }
 
-export const EntryPublishErrorHandler = createAbstraction<IEventHandler<EntryPublishErrorEvent>>(
-    "EntryPublishErrorHandler"
-);
+export const EntryPublishErrorEventHandler = createAbstraction<
+    IEventHandler<EntryPublishErrorEvent>
+>("EntryPublishErrorEventHandler");
 
-export namespace EntryPublishErrorHandler {
+export namespace EntryPublishErrorEventHandler {
     export type Interface = IEventHandler<EntryPublishErrorEvent>;
     export type Event = EntryPublishErrorEvent;
 }

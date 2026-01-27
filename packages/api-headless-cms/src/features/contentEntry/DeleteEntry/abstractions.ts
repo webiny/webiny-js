@@ -34,7 +34,7 @@ export namespace DeleteEntryUseCase {
 /**
  * Payload for before delete event
  */
-export interface EntryBeforeDeletePayload {
+export interface EntryBeforeDeleteEventPayload {
     entry: CmsEntry;
     model: CmsModel;
     permanent: boolean;
@@ -43,7 +43,7 @@ export interface EntryBeforeDeletePayload {
 /**
  * Payload for after delete event
  */
-export interface EntryAfterDeletePayload {
+export interface EntryAfterDeleteEventPayload {
     entry: CmsEntry;
     model: CmsModel;
     permanent: boolean;
@@ -52,7 +52,7 @@ export interface EntryAfterDeletePayload {
 /**
  * Payload for delete error event
  */
-export interface EntryDeleteErrorPayload {
+export interface EntryDeleteErrorEventPayload {
     entry: CmsEntry;
     model: CmsModel;
     permanent: boolean;

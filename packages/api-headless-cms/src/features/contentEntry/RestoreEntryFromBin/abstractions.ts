@@ -35,7 +35,7 @@ export namespace RestoreEntryFromBinUseCase {
 /**
  * Payload for before restore event
  */
-export interface EntryBeforeRestoreFromBinPayload {
+export interface EntryBeforeRestoreFromBinEventPayload {
     entry: CmsEntry;
     model: CmsModel;
 }
@@ -43,7 +43,7 @@ export interface EntryBeforeRestoreFromBinPayload {
 /**
  * Payload for after restore event
  */
-export interface EntryAfterRestoreFromBinPayload {
+export interface EntryAfterRestoreFromBinEventPayload {
     entry: CmsEntry;
     model: CmsModel;
 }
@@ -51,7 +51,7 @@ export interface EntryAfterRestoreFromBinPayload {
 /**
  * Payload for restore error event
  */
-export interface EntryRestoreFromBinErrorPayload {
+export interface EntryRestoreFromBinErrorEventPayload {
     entry: CmsEntry;
     model: CmsModel;
     error: Error;

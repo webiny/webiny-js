@@ -1,13 +1,13 @@
 import WebinyError from "@webiny/error";
-import { EntryAfterCreateHandler } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
+import { EntryAfterCreateEventHandler } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import { AuditLogsContext } from "~/abstractions.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 
-class AuditLogEntryAfterCreateHandlerImpl implements EntryAfterCreateHandler.Interface {
+class AuditLogEntryAfterCreateHandlerImpl implements EntryAfterCreateEventHandler.Interface {
     constructor(private context: AuditLogsContext.Interface) {}
 
-    async handle(event: EntryAfterCreateHandler.Event): Promise<void> {
+    async handle(event: EntryAfterCreateEventHandler.Event): Promise<void> {
         const { model, entry } = event.payload;
 
         if (model.isPrivate) {
@@ -27,7 +27,8 @@ class AuditLogEntryAfterCreateHandlerImpl implements EntryAfterCreateHandler.Int
     }
 }
 
-export const AuditLogEntryAfterCreateHandler = EntryAfterCreateHandler.createImplementation({
-    implementation: AuditLogEntryAfterCreateHandlerImpl,
-    dependencies: [AuditLogsContext]
-});
+export const AuditLogEntryAfterCreateEventHandler =
+    EntryAfterCreateEventHandler.createImplementation({
+        implementation: AuditLogEntryAfterCreateHandlerImpl,
+        dependencies: [AuditLogsContext]
+    });

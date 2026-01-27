@@ -1,28 +1,28 @@
 import { createAbstraction } from "@webiny/feature/api";
-import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import type { IEventHandler } from "@webiny/api-core/features/EventPublisher";
+import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import type {
-    EntryBeforeDeleteMultiplePayload,
-    EntryAfterDeleteMultiplePayload,
-    EntryDeleteMultipleErrorPayload
+    EntryAfterDeleteMultipleEventPayload,
+    EntryBeforeDeleteMultipleEventPayload,
+    EntryDeleteMultipleErrorEventPayload
 } from "./abstractions.js";
 
 /**
  * Before delete multiple entries event
  */
-export class EntryBeforeDeleteMultipleEvent extends DomainEvent<EntryBeforeDeleteMultiplePayload> {
+export class EntryBeforeDeleteMultipleEvent extends DomainEvent<EntryBeforeDeleteMultipleEventPayload> {
     eventType = "Cms/Entry/BeforeDeleteMultiple" as const;
 
     getHandlerAbstraction() {
-        return EntryBeforeDeleteMultipleHandler;
+        return EntryBeforeDeleteMultipleEventHandler;
     }
 }
 
-export const EntryBeforeDeleteMultipleHandler = createAbstraction<
+export const EntryBeforeDeleteMultipleEventHandler = createAbstraction<
     IEventHandler<EntryBeforeDeleteMultipleEvent>
->("EntryBeforeDeleteMultipleHandler");
+>("EntryBeforeDeleteMultipleEventHandler");
 
-export namespace EntryBeforeDeleteMultipleHandler {
+export namespace EntryBeforeDeleteMultipleEventHandler {
     export type Interface = IEventHandler<EntryBeforeDeleteMultipleEvent>;
     export type Event = EntryBeforeDeleteMultipleEvent;
 }
@@ -30,19 +30,19 @@ export namespace EntryBeforeDeleteMultipleHandler {
 /**
  * After delete multiple entries event
  */
-export class EntryAfterDeleteMultipleEvent extends DomainEvent<EntryAfterDeleteMultiplePayload> {
+export class EntryAfterDeleteMultipleEvent extends DomainEvent<EntryAfterDeleteMultipleEventPayload> {
     eventType = "Cms/Entry/AfterDeleteMultiple" as const;
 
     getHandlerAbstraction() {
-        return EntryAfterDeleteMultipleHandler;
+        return EntryAfterDeleteMultipleEventHandler;
     }
 }
 
-export const EntryAfterDeleteMultipleHandler = createAbstraction<
+export const EntryAfterDeleteMultipleEventHandler = createAbstraction<
     IEventHandler<EntryAfterDeleteMultipleEvent>
->("EntryAfterDeleteMultipleHandler");
+>("EntryAfterDeleteMultipleEventHandler");
 
-export namespace EntryAfterDeleteMultipleHandler {
+export namespace EntryAfterDeleteMultipleEventHandler {
     export type Interface = IEventHandler<EntryAfterDeleteMultipleEvent>;
     export type Event = EntryAfterDeleteMultipleEvent;
 }
@@ -50,19 +50,19 @@ export namespace EntryAfterDeleteMultipleHandler {
 /**
  * Delete multiple entries error event
  */
-export class EntryDeleteMultipleErrorEvent extends DomainEvent<EntryDeleteMultipleErrorPayload> {
+export class EntryDeleteMultipleErrorEvent extends DomainEvent<EntryDeleteMultipleErrorEventPayload> {
     eventType = "Cms/Entry/DeleteMultipleError" as const;
 
     getHandlerAbstraction() {
-        return EntryDeleteMultipleErrorHandler;
+        return EntryDeleteMultipleErrorEventHandler;
     }
 }
 
-export const EntryDeleteMultipleErrorHandler = createAbstraction<
+export const EntryDeleteMultipleErrorEventHandler = createAbstraction<
     IEventHandler<EntryDeleteMultipleErrorEvent>
->("EntryDeleteMultipleErrorHandler");
+>("EntryDeleteMultipleErrorEventHandler");
 
-export namespace EntryDeleteMultipleErrorHandler {
+export namespace EntryDeleteMultipleErrorEventHandler {
     export type Interface = IEventHandler<EntryDeleteMultipleErrorEvent>;
     export type Event = EntryDeleteMultipleErrorEvent;
 }

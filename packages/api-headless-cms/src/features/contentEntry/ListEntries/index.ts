@@ -1,5 +1,7 @@
 export {
     ListLatestEntriesUseCase,
     ListPublishedEntriesUseCase,
-    ListDeletedEntriesUseCase
+    ListDeletedEntriesUseCase,
+    ListEntriesUseCase,
+    ListEntriesRepository
 } from "./abstractions.js";

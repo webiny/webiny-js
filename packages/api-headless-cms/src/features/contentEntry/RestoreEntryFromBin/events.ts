@@ -1,28 +1,28 @@
 import { createAbstraction } from "@webiny/feature/api";
-import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import type { IEventHandler } from "@webiny/api-core/features/EventPublisher";
+import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import type {
-    EntryBeforeRestoreFromBinPayload,
-    EntryAfterRestoreFromBinPayload,
-    EntryRestoreFromBinErrorPayload
+    EntryAfterRestoreFromBinEventPayload,
+    EntryBeforeRestoreFromBinEventPayload,
+    EntryRestoreFromBinErrorEventPayload
 } from "./abstractions.js";
 
 /**
  * Before restore entry from bin event
  */
-export class EntryBeforeRestoreFromBinEvent extends DomainEvent<EntryBeforeRestoreFromBinPayload> {
+export class EntryBeforeRestoreFromBinEvent extends DomainEvent<EntryBeforeRestoreFromBinEventPayload> {
     eventType = "Cms/Entry/BeforeRestoreFromBin" as const;
 
     getHandlerAbstraction() {
-        return EntryBeforeRestoreFromBinHandler;
+        return EntryBeforeRestoreFromBinEventHandler;
     }
 }
 
-export const EntryBeforeRestoreFromBinHandler = createAbstraction<
+export const EntryBeforeRestoreFromBinEventHandler = createAbstraction<
     IEventHandler<EntryBeforeRestoreFromBinEvent>
->("EntryBeforeRestoreFromBinHandler");
+>("EntryBeforeRestoreFromBinEventHandler");
 
-export namespace EntryBeforeRestoreFromBinHandler {
+export namespace EntryBeforeRestoreFromBinEventHandler {
     export type Interface = IEventHandler<EntryBeforeRestoreFromBinEvent>;
     export type Event = EntryBeforeRestoreFromBinEvent;
 }
@@ -30,19 +30,19 @@ export namespace EntryBeforeRestoreFromBinHandler {
 /**
  * After restore entry from bin event
  */
-export class EntryAfterRestoreFromBinEvent extends DomainEvent<EntryAfterRestoreFromBinPayload> {
+export class EntryAfterRestoreFromBinEvent extends DomainEvent<EntryAfterRestoreFromBinEventPayload> {
     eventType = "Cms/Entry/AfterRestoreFromBin" as const;
 
     getHandlerAbstraction() {
-        return EntryAfterRestoreFromBinHandler;
+        return EntryAfterRestoreFromBinEventHandler;
     }
 }
 
-export const EntryAfterRestoreFromBinHandler = createAbstraction<
+export const EntryAfterRestoreFromBinEventHandler = createAbstraction<
     IEventHandler<EntryAfterRestoreFromBinEvent>
->("EntryAfterRestoreFromBinHandler");
+>("EntryAfterRestoreFromBinEventHandler");
 
-export namespace EntryAfterRestoreFromBinHandler {
+export namespace EntryAfterRestoreFromBinEventHandler {
     export type Interface = IEventHandler<EntryAfterRestoreFromBinEvent>;
     export type Event = EntryAfterRestoreFromBinEvent;
 }
@@ -50,19 +50,19 @@ export namespace EntryAfterRestoreFromBinHandler {
 /**
  * Restore entry from bin error event
  */
-export class EntryRestoreFromBinErrorEvent extends DomainEvent<EntryRestoreFromBinErrorPayload> {
+export class EntryRestoreFromBinErrorEvent extends DomainEvent<EntryRestoreFromBinErrorEventPayload> {
     eventType = "Cms/Entry/RestoreFromBinError" as const;
 
     getHandlerAbstraction() {
-        return EntryRestoreFromBinErrorHandler;
+        return EntryRestoreFromBinErrorEventHandler;
     }
 }
 
-export const EntryRestoreFromBinErrorHandler = createAbstraction<
+export const EntryRestoreFromBinErrorEventHandler = createAbstraction<
     IEventHandler<EntryRestoreFromBinErrorEvent>
->("EntryRestoreFromBinErrorHandler");
+>("EntryRestoreFromBinErrorEventHandler");
 
-export namespace EntryRestoreFromBinErrorHandler {
+export namespace EntryRestoreFromBinErrorEventHandler {
     export type Interface = IEventHandler<EntryRestoreFromBinErrorEvent>;
     export type Event = EntryRestoreFromBinErrorEvent;
 }

@@ -68,5 +68,47 @@
     "access": "public",
     "directory": "dist"
   },
-  "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
+  "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae",
+  "webiny": {
+    "exports": {
+      "./features/contentModelGroup/shared/index.ts": "./api/cms/group",
+      "./features/contentModelGroup/CreateGroup/CreateGroupUseCase.ts": "./api/cms/group",
+      "./features/contentModelGroup/CreateGroup/events.ts": "./api/cms/group",
+      "./features/contentModelGroup/UpdateGroup/UpdateGroupUseCase.ts": "./api/cms/group",
+      "./features/contentModelGroup/UpdateGroup/events.ts": "./api/cms/group",
+      "./features/contentModelGroup/DeleteGroup/DeleteGroupUseCase.ts": "./api/cms/group",
+      "./features/contentModelGroup/DeleteGroup/events.ts": "./api/cms/group",
+      "./features/modelBuilder/index.ts": "./api/cms/model",
+      "./features/contentModel/CreateModel/CreateModelUseCase.ts": "./api/cms/model",
+      "./features/contentModel/CreateModel/events.ts": "./api/cms/model",
+      "./features/contentModel/CreateModelFrom/CreateModelFromUseCase.ts": "./api/cms/model",
+      "./features/contentModel/CreateModelFrom/events.ts": "./api/cms/model",
+      "./features/contentModel/UpdateModel/UpdateModelUseCase.ts": "./api/cms/model",
+      "./features/contentModel/UpdateModel/events.ts": "./api/cms/model",
+      "./features/contentModel/DeleteModel/DeleteModelUseCase.ts": "./api/cms/model",
+      "./features/contentModel/DeleteModel/events.ts": "./api/cms/model",
+      "./features/contentEntry/CreateEntry/CreateEntryUseCase.ts": "./api/cms/entry",
+      "./features/contentEntry/CreateEntry/events.ts": "./api/cms/entry",
+      "./features/contentEntry/CreateEntryRevisionFrom/CreateEntryRevisionFromUseCase.ts": "./api/cms/entry",
+      "./features/contentEntry/CreateEntryRevisionFrom/events.ts": "./api/cms/entry",
+      "./features/contentEntry/DeleteEntry/DeleteEntryUseCase.ts": "./api/cms/entry",
+      "./features/contentEntry/DeleteEntry/events.ts": "./api/cms/entry",
+      "./features/contentEntry/DeleteEntryRevision/DeleteEntryRevisionUseCase.ts": "./api/cms/entry",
+      "./features/contentEntry/DeleteEntryRevision/events.ts": "./api/cms/entry",
+      "./features/contentEntry/DeleteMultipleEntries/DeleteMultipleEntriesUseCase.ts": "./api/cms/entry",
+      "./features/contentEntry/DeleteMultipleEntries/events.ts": "./api/cms/entry",
+      "./features/contentEntry/MoveEntry/MoveEntryUseCase.ts": "./api/cms/entry",
+      "./features/contentEntry/MoveEntry/events.ts": "./api/cms/entry",
+      "./features/contentEntry/PublishEntry/PublishEntryUseCase.ts": "./api/cms/entry",
+      "./features/contentEntry/PublishEntry/events.ts": "./api/cms/entry",
+      "./features/contentEntry/RepublishEntry/RepublishEntryUseCase.ts": "./api/cms/entry",
+      "./features/contentEntry/RepublishEntry/events.ts": "./api/cms/entry",
+      "./features/contentEntry/RestoreEntryFromBin/RestoreEntryFromBinRepository.ts": "./api/cms/entry",
+      "./features/contentEntry/RestoreEntryFromBin/events.ts": "./api/cms/entry",
+      "./features/contentEntry/UnpublishEntry/UnpublishEntryUseCase.ts": "./api/cms/entry",
+      "./features/contentEntry/UnpublishEntry/events.ts": "./api/cms/entry",
+      "./features/contentEntry/UpdateEntry/UpdateEntryUseCase.ts": "./api/cms/entry",
+      "./features/contentEntry/UpdateEntry/events.ts": "./api/cms/entry"
+    }
+  }
 }

@@ -1,48 +1,48 @@
 import type { CmsContext } from "~/types";
 import { ContextPlugin } from "@webiny/api";
 import {
-    ModelBeforeCreateHandler,
-    ModelAfterCreateHandler
+    ModelBeforeCreateEventHandler,
+    ModelAfterCreateEventHandler
 } from "~/features/contentModel/CreateModel/events.js";
 import {
-    ModelBeforeCreateFromHandler,
-    ModelAfterCreateFromHandler
+    ModelBeforeCreateFromEventHandler,
+    ModelAfterCreateFromEventHandler
 } from "~/features/contentModel/CreateModelFrom/events.js";
 import {
-    ModelBeforeUpdateHandler,
-    ModelAfterUpdateHandler
+    ModelBeforeUpdateEventHandler,
+    ModelAfterUpdateEventHandler
 } from "~/features/contentModel/UpdateModel/events.js";
 import {
-    ModelBeforeDeleteHandler,
-    ModelAfterDeleteHandler
+    ModelBeforeDeleteEventHandler,
+    ModelAfterDeleteEventHandler
 } from "~/features/contentModel/DeleteModel/events.js";
 import {
-    EntryBeforeCreateHandler,
-    EntryAfterCreateHandler
+    EntryBeforeCreateEventHandler,
+    EntryAfterCreateEventHandler
 } from "~/features/contentEntry/CreateEntry/events.js";
 import {
-    EntryRevisionBeforeCreateHandler,
-    EntryRevisionAfterCreateHandler
+    EntryRevisionBeforeCreateEventHandler,
+    EntryRevisionAfterCreateEventHandler
 } from "~/features/contentEntry/CreateEntryRevisionFrom/events.js";
 import {
-    EntryBeforeUpdateHandler,
-    EntryAfterUpdateHandler
+    EntryBeforeUpdateEventHandler,
+    EntryAfterUpdateEventHandler
 } from "~/features/contentEntry/UpdateEntry/events.js";
 import {
-    EntryBeforeDeleteHandler,
-    EntryAfterDeleteHandler
+    EntryBeforeDeleteEventHandler,
+    EntryAfterDeleteEventHandler
 } from "~/features/contentEntry/DeleteEntry/events.js";
 import {
-    EntryRevisionBeforeDeleteHandler,
-    EntryRevisionAfterDeleteHandler
+    EntryRevisionBeforeDeleteEventHandler,
+    EntryRevisionAfterDeleteEventHandler
 } from "~/features/contentEntry/DeleteEntryRevision/events.js";
 import {
-    EntryBeforePublishHandler,
-    EntryAfterPublishHandler
+    EntryBeforePublishEventHandler,
+    EntryAfterPublishEventHandler
 } from "~/features/contentEntry/PublishEntry/events.js";
 import {
-    EntryBeforeUnpublishHandler,
-    EntryAfterUnpublishHandler
+    EntryBeforeUnpublishEventHandler,
+    EntryAfterUnpublishEventHandler
 } from "~/features/contentEntry/UnpublishEntry/events.js";
 
 class PubSubTracker {
@@ -76,49 +76,49 @@ export const assignModelEvents = () => {
             throw new Error("Missing cms on context.");
         }
 
-        context.container.registerFactory(ModelBeforeCreateHandler, () => ({
+        context.container.registerFactory(ModelBeforeCreateEventHandler, () => ({
             async handle() {
                 pubSubTracker.track("contentModel:beforeCreate");
             }
         }));
 
-        context.container.registerFactory(ModelAfterCreateHandler, () => ({
+        context.container.registerFactory(ModelAfterCreateEventHandler, () => ({
             async handle() {
                 pubSubTracker.track("contentModel:afterCreate");
             }
         }));
 
-        context.container.registerFactory(ModelBeforeCreateFromHandler, () => ({
+        context.container.registerFactory(ModelBeforeCreateFromEventHandler, () => ({
             async handle() {
                 pubSubTracker.track("contentModel:beforeCreateFrom");
             }
         }));
 
-        context.container.registerFactory(ModelAfterCreateFromHandler, () => ({
+        context.container.registerFactory(ModelAfterCreateFromEventHandler, () => ({
             async handle() {
                 pubSubTracker.track("contentModel:afterCreateFrom");
             }
         }));
 
-        context.container.registerFactory(ModelBeforeUpdateHandler, () => ({
+        context.container.registerFactory(ModelBeforeUpdateEventHandler, () => ({
             async handle() {
                 pubSubTracker.track("contentModel:beforeUpdate");
             }
         }));
 
-        context.container.registerFactory(ModelAfterUpdateHandler, () => ({
+        context.container.registerFactory(ModelAfterUpdateEventHandler, () => ({
             async handle() {
                 pubSubTracker.track("contentModel:afterUpdate");
             }
         }));
 
-        context.container.registerFactory(ModelBeforeDeleteHandler, () => ({
+        context.container.registerFactory(ModelBeforeDeleteEventHandler, () => ({
             async handle() {
                 pubSubTracker.track("contentModel:beforeDelete");
             }
         }));
 
-        context.container.registerFactory(ModelAfterDeleteHandler, () => ({
+        context.container.registerFactory(ModelAfterDeleteEventHandler, () => ({
             async handle() {
                 pubSubTracker.track("contentModel:afterDelete");
             }
@@ -132,85 +132,85 @@ export const assignEntryEvents = () => {
             throw new Error("Missing cms on context.");
         }
 
-        context.container.registerFactory(EntryBeforeCreateHandler, () => ({
+        context.container.registerFactory(EntryBeforeCreateEventHandler, () => ({
             async handle() {
                 pubSubTracker.track("contentEntry:beforeCreate");
             }
         }));
 
-        context.container.registerFactory(EntryAfterCreateHandler, () => ({
+        context.container.registerFactory(EntryAfterCreateEventHandler, () => ({
             async handle() {
                 pubSubTracker.track("contentEntry:afterCreate");
             }
         }));
 
-        context.container.registerFactory(EntryRevisionBeforeCreateHandler, () => ({
+        context.container.registerFactory(EntryRevisionBeforeCreateEventHandler, () => ({
             async handle() {
                 pubSubTracker.track("contentEntry:beforeCreateRevisionFrom");
             }
         }));
 
-        context.container.registerFactory(EntryRevisionAfterCreateHandler, () => ({
+        context.container.registerFactory(EntryRevisionAfterCreateEventHandler, () => ({
             async handle() {
                 pubSubTracker.track("contentEntry:afterCreateRevisionFrom");
             }
         }));
 
-        context.container.registerFactory(EntryBeforeUpdateHandler, () => ({
+        context.container.registerFactory(EntryBeforeUpdateEventHandler, () => ({
             async handle() {
                 pubSubTracker.track("contentEntry:beforeUpdate");
             }
         }));
 
-        context.container.registerFactory(EntryAfterUpdateHandler, () => ({
+        context.container.registerFactory(EntryAfterUpdateEventHandler, () => ({
             async handle() {
                 pubSubTracker.track("contentEntry:afterUpdate");
             }
         }));
 
-        context.container.registerFactory(EntryBeforeDeleteHandler, () => ({
+        context.container.registerFactory(EntryBeforeDeleteEventHandler, () => ({
             async handle() {
                 pubSubTracker.track("contentEntry:beforeDelete");
             }
         }));
 
-        context.container.registerFactory(EntryAfterDeleteHandler, () => ({
+        context.container.registerFactory(EntryAfterDeleteEventHandler, () => ({
             async handle() {
                 pubSubTracker.track("contentEntry:afterDelete");
             }
         }));
 
-        context.container.registerFactory(EntryRevisionBeforeDeleteHandler, () => ({
+        context.container.registerFactory(EntryRevisionBeforeDeleteEventHandler, () => ({
             async handle() {
                 pubSubTracker.track("contentEntry:beforeDeleteRevision");
             }
         }));
 
-        context.container.registerFactory(EntryRevisionAfterDeleteHandler, () => ({
+        context.container.registerFactory(EntryRevisionAfterDeleteEventHandler, () => ({
             async handle() {
                 pubSubTracker.track("contentEntry:afterDeleteRevision");
             }
         }));
 
-        context.container.registerFactory(EntryBeforePublishHandler, () => ({
+        context.container.registerFactory(EntryBeforePublishEventHandler, () => ({
             async handle() {
                 pubSubTracker.track("contentEntry:beforePublish");
             }
         }));
 
-        context.container.registerFactory(EntryAfterPublishHandler, () => ({
+        context.container.registerFactory(EntryAfterPublishEventHandler, () => ({
             async handle() {
                 pubSubTracker.track("contentEntry:afterPublish");
             }
         }));
 
-        context.container.registerFactory(EntryBeforeUnpublishHandler, () => ({
+        context.container.registerFactory(EntryBeforeUnpublishEventHandler, () => ({
             async handle() {
                 pubSubTracker.track("contentEntry:beforeUnpublish");
             }
         }));
 
-        context.container.registerFactory(EntryAfterUnpublishHandler, () => ({
+        context.container.registerFactory(EntryAfterUnpublishEventHandler, () => ({
             async handle() {
                 pubSubTracker.track("contentEntry:afterUnpublish");
             }

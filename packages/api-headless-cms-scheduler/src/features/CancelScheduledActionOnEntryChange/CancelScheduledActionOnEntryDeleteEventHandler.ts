@@ -1,4 +1,4 @@
-import { EntryAfterDeleteHandler } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/events";
+import { EntryAfterDeleteEventHandler } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/events";
 import { ListScheduledActionsUseCase, CancelScheduledActionUseCase } from "@webiny/api-scheduler";
 
 /**
@@ -8,13 +8,15 @@ import { ListScheduledActionsUseCase, CancelScheduledActionUseCase } from "@webi
  * actions for all of its revisions should be canceled since the entry
  * no longer exists.
  */
-class CancelScheduledActionOnEntryDeleteHandlerImpl implements EntryAfterDeleteHandler.Interface {
+class CancelScheduledActionOnEntryDeleteHandlerImpl
+    implements EntryAfterDeleteEventHandler.Interface
+{
     constructor(
         private listScheduledActions: ListScheduledActionsUseCase.Interface,
         private cancelScheduledEntryAction: CancelScheduledActionUseCase.Interface
     ) {}
 
-    async handle(event: EntryAfterDeleteHandler.Event): Promise<void> {
+    async handle(event: EntryAfterDeleteEventHandler.Event): Promise<void> {
         const { entry, model } = event.payload;
 
         // Skip private models
@@ -45,8 +47,8 @@ class CancelScheduledActionOnEntryDeleteHandlerImpl implements EntryAfterDeleteH
     }
 }
 
-export const CancelScheduledActionOnEntryDeleteHandler =
-    EntryAfterDeleteHandler.createImplementation({
+export const CancelScheduledActionOnEntryDeleteEventHandler =
+    EntryAfterDeleteEventHandler.createImplementation({
         implementation: CancelScheduledActionOnEntryDeleteHandlerImpl,
         dependencies: [ListScheduledActionsUseCase, CancelScheduledActionUseCase]
     });

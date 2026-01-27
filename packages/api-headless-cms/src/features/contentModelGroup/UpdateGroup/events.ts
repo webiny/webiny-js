@@ -1,23 +1,22 @@
 import { createAbstraction } from "@webiny/feature/api";
-import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import type { IEventHandler } from "@webiny/api-core/features/EventPublisher";
-import type { CmsGroup } from "~/types/index.js";
-import type { CmsGroupUpdateInput } from "~/types/index.js";
+import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
+import type { CmsGroup, CmsGroupUpdateInput } from "~/types/index.js";
 
 /**
  * Event payloads
  */
-export interface GroupBeforeUpdatePayload {
+export interface GroupBeforeUpdateEventPayload {
     original: CmsGroup;
     group: CmsGroup;
 }
 
-export interface GroupAfterUpdatePayload {
+export interface GroupAfterUpdateEventPayload {
     original: CmsGroup;
     group: CmsGroup;
 }
 
-export interface GroupUpdateErrorPayload {
+export interface GroupUpdateErrorEventPayload {
     input: CmsGroupUpdateInput;
     original: CmsGroup;
     group: CmsGroup;
@@ -27,19 +26,19 @@ export interface GroupUpdateErrorPayload {
 /**
  * GroupBeforeUpdateEvent - Published before updating a group
  */
-export class GroupBeforeUpdateEvent extends DomainEvent<GroupBeforeUpdatePayload> {
+export class GroupBeforeUpdateEvent extends DomainEvent<GroupBeforeUpdateEventPayload> {
     eventType = "Cms/Group/BeforeUpdate" as const;
 
     getHandlerAbstraction() {
-        return GroupBeforeUpdateHandler;
+        return GroupBeforeUpdateEventHandler;
     }
 }
 
-export const GroupBeforeUpdateHandler = createAbstraction<IEventHandler<GroupBeforeUpdateEvent>>(
-    "GroupBeforeUpdateHandler"
-);
+export const GroupBeforeUpdateEventHandler = createAbstraction<
+    IEventHandler<GroupBeforeUpdateEvent>
+>("GroupBeforeUpdateEventHandler");
 
-export namespace GroupBeforeUpdateHandler {
+export namespace GroupBeforeUpdateEventHandler {
     export type Interface = IEventHandler<GroupBeforeUpdateEvent>;
     export type Event = GroupBeforeUpdateEvent;
 }
@@ -47,18 +46,19 @@ export namespace GroupBeforeUpdateHandler {
 /**
  * GroupAfterUpdateEvent - Published after updating a group
  */
-export class GroupAfterUpdateEvent extends DomainEvent<GroupAfterUpdatePayload> {
+export class GroupAfterUpdateEvent extends DomainEvent<GroupAfterUpdateEventPayload> {
     eventType = "Cms/Group/AfterUpdate" as const;
 
     getHandlerAbstraction() {
-        return GroupAfterUpdateHandler;
+        return GroupAfterUpdateEventHandler;
     }
 }
 
-export const GroupAfterUpdateHandler =
-    createAbstraction<IEventHandler<GroupAfterUpdateEvent>>("GroupAfterUpdateHandler");
+export const GroupAfterUpdateEventHandler = createAbstraction<IEventHandler<GroupAfterUpdateEvent>>(
+    "GroupAfterUpdateEventHandler"
+);
 
-export namespace GroupAfterUpdateHandler {
+export namespace GroupAfterUpdateEventHandler {
     export type Interface = IEventHandler<GroupAfterUpdateEvent>;
     export type Event = GroupAfterUpdateEvent;
 }
@@ -66,18 +66,19 @@ export namespace GroupAfterUpdateHandler {
 /**
  * GroupUpdateErrorEvent - Published when update fails
  */
-export class GroupUpdateErrorEvent extends DomainEvent<GroupUpdateErrorPayload> {
+export class GroupUpdateErrorEvent extends DomainEvent<GroupUpdateErrorEventPayload> {
     eventType = "Cms/Group/UpdateError" as const;
 
     getHandlerAbstraction() {
-        return GroupUpdateErrorHandler;
+        return GroupUpdateErrorEventHandler;
     }
 }
 
-export const GroupUpdateErrorHandler =
-    createAbstraction<IEventHandler<GroupUpdateErrorEvent>>("GroupUpdateErrorHandler");
+export const GroupUpdateErrorEventHandler = createAbstraction<IEventHandler<GroupUpdateErrorEvent>>(
+    "GroupUpdateErrorEventHandler"
+);
 
-export namespace GroupUpdateErrorHandler {
+export namespace GroupUpdateErrorEventHandler {
     export type Interface = IEventHandler<GroupUpdateErrorEvent>;
     export type Event = GroupUpdateErrorEvent;
 }
