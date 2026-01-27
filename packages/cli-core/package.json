@@ -40,12 +40,6 @@
     "rimraf": "^6.1.2",
     "typescript": "5.9.3"
   },
-  "webiny": {
-    "exports": {
-      "./abstractions/features/CliCommand.ts": "cli/features/CliCommand",
-      "./abstractions/services/UiService.ts": "cli/features/Ui"
-    }
-  },
   "publishConfig": {
     "access": "public",
     "directory": "dist"
