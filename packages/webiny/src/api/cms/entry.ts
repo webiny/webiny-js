@@ -1,5 +1,12 @@
 export { EntryId } from "@webiny/api-headless-cms/domain/contentEntry/EntryId.js";
 export {
+    CmsEntry,
+    CmsEntryValues,
+    ICmsEntryLocation,
+    CmsEntryStatus,
+    CONTENT_ENTRY_STATUS
+} from "@webiny/api-headless-cms/types/types.js";
+export {
     CreateEntryUseCase,
     CreateEntryRepository
 } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/abstractions.js";

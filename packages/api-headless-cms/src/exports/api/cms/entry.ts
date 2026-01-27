@@ -1,6 +1,14 @@
 // Domain
 export { EntryId } from "~/domain/contentEntry/EntryId.js";
 
+export {
+    CmsEntry,
+    CmsEntryValues,
+    ICmsEntryLocation,
+    CmsEntryStatus,
+    CONTENT_ENTRY_STATUS
+} from "~/types/types.js";
+
 // CreateEntry
 export {
     CreateEntryUseCase,

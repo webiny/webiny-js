@@ -4,6 +4,8 @@ export { ModelBuilder } from "~/features/modelBuilder/models/ModelBuilder.js";
 export { FieldBuilder } from "~/features/modelBuilder/fields/FieldBuilder.js";
 export { FieldType } from "~/features/modelBuilder/fields/abstractions.js";
 
+export { CmsModel } from "~/types/model.js";
+
 // CreateModel
 export {
     CreateModelUseCase,
