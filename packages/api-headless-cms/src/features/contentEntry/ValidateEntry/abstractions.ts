@@ -1,4 +1,5 @@
-import { createAbstraction, Result } from "@webiny/feature/api";
+import type { Result } from "@webiny/feature/api";
+import { createAbstraction } from "@webiny/feature/api";
 import type { CmsEntryValues, CmsModel, UpdateCmsEntryInput } from "~/types/index.js";
 import type { EntryNotAuthorizedError, EntryNotFoundError } from "~/domain/contentEntry/errors.js";
 import { GetRevisionByIdUseCase } from "~/features/contentEntry/GetRevisionById/index.js";
@@ -13,12 +14,16 @@ export interface IValidateEntryUserCaseExecuteResult {
  * ValidateEntry Use Case - Validates entry data against model field validators.
  * This can be used to validate data before creating or updating an entry.
  */
+
+export type IValidateEntryUseCaseExecuteResult = Promise<
+    Result<IValidateEntryUserCaseExecuteResult[], UseCaseError>
+>;
 export interface IValidateEntryUseCase {
     execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         id: string | null | undefined,
         input: UpdateCmsEntryInput<T>
-    ): Promise<Result<IValidateEntryUserCaseExecuteResult[], UseCaseError>>;
+    ): IValidateEntryUseCaseExecuteResult;
 }
 
 export interface IValidateEntryUseCaseErrors {
@@ -35,4 +40,5 @@ export const ValidateEntryUseCase =
 export namespace ValidateEntryUseCase {
     export type Interface = IValidateEntryUseCase;
     export type Error = UseCaseError;
+    export type Return = IValidateEntryUseCaseExecuteResult;
 }
