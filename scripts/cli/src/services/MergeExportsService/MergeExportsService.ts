@@ -8,9 +8,10 @@ export class DefaultMergeExportsService implements MergeExportsServiceNamespace.
 
     execute(inputs: MergeExportsServiceNamespace.ExportFileInput[]): string {
         const mergedExports: Array<{
-            namedExports: string[];
+            namedExports: ParseExportsFileService.NamedExport[];
             source: string;
             isWildcard: boolean;
+            isTypeOnly: boolean;
         }> = [];
 
         for (const input of inputs) {
@@ -28,7 +29,8 @@ export class DefaultMergeExportsService implements MergeExportsServiceNamespace.
                 mergedExports.push({
                     namedExports: statement.namedExports,
                     source: sourceWithPackageName,
-                    isWildcard: statement.isWildcard
+                    isWildcard: statement.isWildcard,
+                    isTypeOnly: statement.isTypeOnly
                 });
             }
         }
@@ -38,8 +40,34 @@ export class DefaultMergeExportsService implements MergeExportsServiceNamespace.
             if (exportStatement.isWildcard) {
                 output += `export * from "${exportStatement.source}";\n`;
             } else {
-                const namedExportsStr = exportStatement.namedExports.join(", ");
-                output += `export { ${namedExportsStr} } from "${exportStatement.source}";\n`;
+                // If the entire export declaration is type-only, use: export type { ... } from "..."
+                if (exportStatement.isTypeOnly) {
+                    const namedExportsStr = exportStatement.namedExports
+                        .map(exp => exp.name)
+                        .join(", ");
+                    output += `export type { ${namedExportsStr} } from "${exportStatement.source}";\n`;
+                } else {
+                    // Mixed exports: some might be type-only, some might not
+                    // Separate into type and non-type exports
+                    const typeOnlyExports = exportStatement.namedExports.filter(
+                        exp => exp.isTypeOnly
+                    );
+                    const regularExports = exportStatement.namedExports.filter(
+                        exp => !exp.isTypeOnly
+                    );
+
+                    // Generate regular exports
+                    if (regularExports.length > 0) {
+                        const regularExportsStr = regularExports.map(exp => exp.name).join(", ");
+                        output += `export { ${regularExportsStr} } from "${exportStatement.source}";\n`;
+                    }
+
+                    // Generate type-only exports
+                    if (typeOnlyExports.length > 0) {
+                        const typeOnlyExportsStr = typeOnlyExports.map(exp => exp.name).join(", ");
+                        output += `export { type ${typeOnlyExportsStr} } from "${exportStatement.source}";\n`;
+                    }
+                }
             }
         }
 
