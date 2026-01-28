@@ -1,12 +1,21 @@
 // Domain
 export { EntryId } from "~/domain/contentEntry/EntryId.js";
 
-export {
+export { CONTENT_ENTRY_STATUS } from "~/types/types.js";
+
+export type {
     CmsEntry,
     CmsEntryValues,
     ICmsEntryLocation,
     CmsEntryStatus,
-    CONTENT_ENTRY_STATUS
+    CmsEntryListSort,
+    CmsEntryListWhere,
+    CmsEntryListWhereValues,
+    CmsEntryListWhereRef,
+    CmsEntryMeta,
+    CmsEntryListSortAsc,
+    CmsEntryListSortDesc,
+    IEntryState
 } from "~/types/types.js";
 
 // CreateEntry

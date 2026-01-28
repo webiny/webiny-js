@@ -1,10 +1,18 @@
 export { EntryId } from "@webiny/api-headless-cms/domain/contentEntry/EntryId.js";
-export {
+export { CONTENT_ENTRY_STATUS } from "@webiny/api-headless-cms/types/types.js";
+export type {
     CmsEntry,
     CmsEntryValues,
     ICmsEntryLocation,
     CmsEntryStatus,
-    CONTENT_ENTRY_STATUS
+    CmsEntryListSort,
+    CmsEntryListWhere,
+    CmsEntryListWhereValues,
+    CmsEntryListWhereRef,
+    CmsEntryMeta,
+    CmsEntryListSortAsc,
+    CmsEntryListSortDesc,
+    IEntryState
 } from "@webiny/api-headless-cms/types/types.js";
 export {
     CreateEntryUseCase,

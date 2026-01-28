@@ -1,5 +1,5 @@
 export { ModelGroupFactory } from "@webiny/api-headless-cms/features/contentModelGroup/shared/abstractions.js";
-export { CmsGroup, CmsModelGroup } from "@webiny/api-headless-cms/types/modelGroup.js";
+export type { CmsGroup, CmsModelGroup } from "@webiny/api-headless-cms/types/modelGroup.js";
 export {
     CreateGroupUseCase,
     CreateGroupRepository

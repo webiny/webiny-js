@@ -1,6 +1,6 @@
 export { ModelGroupFactory } from "~/features/contentModelGroup/shared/abstractions.js";
 
-export { CmsGroup, CmsModelGroup } from "~/types/modelGroup.js";
+export type { CmsGroup, CmsModelGroup } from "~/types/modelGroup.js";
 
 // CreateGroup
 export {

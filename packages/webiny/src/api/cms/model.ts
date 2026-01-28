@@ -2,7 +2,22 @@ export { ModelFactory } from "@webiny/api-headless-cms/features/modelBuilder/abs
 export { ModelBuilder } from "@webiny/api-headless-cms/features/modelBuilder/models/ModelBuilder.js";
 export { FieldBuilder } from "@webiny/api-headless-cms/features/modelBuilder/fields/FieldBuilder.js";
 export { FieldType } from "@webiny/api-headless-cms/features/modelBuilder/fields/abstractions.js";
-export { CmsModel } from "@webiny/api-headless-cms/types/model.js";
+export type {
+    CmsModel,
+    CmsModelAuthorization,
+    CmsModelCreateFromInput,
+    CmsModelCreateInput
+} from "@webiny/api-headless-cms/types/model.js";
+export type {
+    CmsModelField,
+    CmsModelFieldSettings,
+    CmsModelFieldPredefinedValues,
+    CmsModelFieldType,
+    ICmsModelFieldStorageId,
+    CmsModelFieldInput,
+    CmsModelFieldValidation,
+    CmsModelUpdateInput
+} from "@webiny/api-headless-cms/types/modelField.js";
 export {
     CreateModelUseCase,
     CreateModelRepository
