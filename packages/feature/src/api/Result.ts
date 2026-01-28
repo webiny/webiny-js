@@ -152,6 +152,6 @@ export class Result<TValue, TError = never> {
 }
 
 export namespace Result {
-    type UnwrapResult<T> = Awaited<T> extends Result<infer Ok, any> ? Ok : never;
-    type UnwrapError<T> = Awaited<T> extends Result<any, infer Err> ? Err : never;
+    export type UnwrapResult<T> = Awaited<T> extends Result<infer Ok, any> ? Ok : never;
+    export type UnwrapError<T> = Awaited<T> extends Result<any, infer Err> ? Err : never;
 }
