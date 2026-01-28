@@ -1,12 +1,16 @@
-import { CliCommandFactory } from "webiny/cli/features/CliCommand";
-import { UiService } from "webiny/cli/features/Ui";
+import { CliCommandFactory } from "webiny/cli/command";
+import { Ui } from "webiny/cli/ui";
+import { Logger } from "webiny/cli/logger";
 
 export interface IMyCustomCommandParams {
     name: string;
 }
 
 class MyCustomCommandImpl implements CliCommandFactory.Interface<IMyCustomCommandParams> {
-    constructor(private ui: UiService.Interface) {}
+    constructor(
+        private readonly ui: Ui.Interface,
+        private readonly logger: Logger.Interface
+    ) {}
 
     execute(): CliCommandFactory.CommandDefinition<IMyCustomCommandParams> {
         return {
@@ -29,9 +33,7 @@ class MyCustomCommandImpl implements CliCommandFactory.Interface<IMyCustomComman
     }
 }
 
-const MyCustomCommand = CliCommandFactory.createImplementation({
+export default CliCommandFactory.createImplementation({
     implementation: MyCustomCommandImpl,
-    dependencies: [UiService]
+    dependencies: [Ui, Logger]
 });
-
-export default MyCustomCommand;
