@@ -70,7 +70,7 @@ class CreateAndInstallTenantUseCase implements UseCaseAbstraction.Interface {
             // Return updated company
             return Result.ok(updateResult.value);
         } catch (error) {
-            return Result.fail(new TenantCreationError(error as Error));
+            return Result.fail(new TenantCreationError(error));
         }
     }
 }

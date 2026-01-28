@@ -1,9 +1,12 @@
 import { ModelFactory } from "webiny/api/cms/model";
+import { TenantModelModifier } from "./TenantModelModifier.js";
 
 export const COMPANY_MODEL_ID = "company";
 
 class CompanyModelFactory implements ModelFactory.Interface {
-    execute(builder: ModelFactory.Builder) {
+    constructor(private modelModifiers: TenantModelModifier.Interface[]) {}
+
+    async execute(builder: ModelFactory.Builder) {
         const model = builder
             .public()
             .modelId(COMPANY_MODEL_ID)
@@ -85,11 +88,15 @@ class CompanyModelFactory implements ModelFactory.Interface {
             }))
             .layout([["name"], ["description"], ["theme"], ["isInstalled"]]);
 
+        for (const modifier of this.modelModifiers) {
+            await modifier.execute(model);
+        }
+
         return [model];
     }
 }
 
 export default ModelFactory.createImplementation({
     implementation: CompanyModelFactory,
-    dependencies: []
+    dependencies: [[TenantModelModifier, { multiple: true }]]
 });
