@@ -38,9 +38,11 @@ import {
 
 // Generic extension that supports any API abstraction.
 import { GenericExtension } from "./GenericExtension.js";
+import { BuildParam } from "./BuildParam.js";
 
 // Exports.
 export { GenericExtension };
+export { BuildParam };
 export { ApiKeyBeforeCreate };
 export { ApiKeyAfterCreate };
 export { ApiKeyBeforeUpdate };
@@ -85,6 +87,7 @@ export { SystemInstalled };
 // Definitions (used internally). 👇
 export const definitions = [
     GenericExtension.def,
+    BuildParam.def,
     ApiKeyBeforeCreate.def,
     ApiKeyAfterCreate.def,
     ApiKeyBeforeUpdate.def,
