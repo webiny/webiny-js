@@ -12,7 +12,7 @@ class TenantModelFactory implements ModelFactory.Interface {
             .modelId(TENANT_MODEL_ID)
             .name("Company")
             .description("Manage system tenants.")
-            .group("Company")
+            .group("hidden")
             .icon("fas/building")
             .singularApiName("Company")
             .pluralApiName("Companies");

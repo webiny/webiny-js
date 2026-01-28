@@ -5,7 +5,8 @@ interface NotAuthorizedResponseArgsType {
     code: string | null;
     data: any | null;
 }
-class NotAuthorizedResponse extends ErrorResponse {
+
+export class NotAuthorizedResponse extends ErrorResponse {
     constructor({ message, code, data }: Partial<NotAuthorizedResponseArgsType> = {}) {
         super({
             message: message || "Not authorized!",

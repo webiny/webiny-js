@@ -4,15 +4,19 @@ import { CreateAndInstallTenantFeature } from "./features/CreateAndInstallTenant
 import { GetTenantByIdFeature } from "./features/GetTenantById/feature.js";
 import { GetCurrentTenantFeature } from "./features/GetCurrentTenant/feature.js";
 import { UpdateTenantFeature } from "./features/UpdateTenant/feature.js";
-
-// Old
-// import { installTenant } from "./graphql/installTenant";
-// import { getCurrentTenant } from "./graphql/getCurrentTenant";
+import InstallTenantSchema from "./graphql/InstallTenantSchema.js";
+import GetCurrentTenantSchema from "./graphql/GetCurrentTenantSchema.js";
 
 export default createFeature({
     name: "TenantManagement",
     register(container) {
         container.register(TenantModel);
+
+        //GraphQL
+        container.register(InstallTenantSchema);
+        container.register(GetCurrentTenantSchema);
+
+        // Features
         CreateAndInstallTenantFeature.register(container);
         GetTenantByIdFeature.register(container);
         GetCurrentTenantFeature.register(container);

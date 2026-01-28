@@ -13,7 +13,7 @@ class UniversalApiKeyFactory implements ApiKeyFactory.Interface {
                 name: "Universal API Key",
                 slug: "universal-key",
                 token: ApiToken.validate(token),
-                permissions: [{ name: "wb.*" }]
+                permissions: [{ name: "wb.*" }, { name: "cms.*" }]
             }
         ];
     }

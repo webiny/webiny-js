@@ -72,11 +72,6 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
         }
     `,
     resolvers: {
-        SecurityQuery: {
-            async getDefaultTenant(_, __, context) {
-                return new Response(getDefaultTenant(context));
-            }
-        },
         SecurityMutation: {
             login: async (_, __, context) => {
                 const identityContext = context.container.resolve(IdentityContext);
