@@ -1,0 +1,1 @@
+export { CoreBeforeBuild } from "@webiny/project/abstractions/features/hooks/CoreBeforeBuild.js";

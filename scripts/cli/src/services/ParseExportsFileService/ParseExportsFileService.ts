@@ -28,16 +28,25 @@ export class DefaultParseExportsFileService implements ParseExportsFileService.I
             }
 
             if (namedExportsNode.length > 0) {
-                const namedExports: string[] = [];
+                // Check if the export declaration is type-only (e.g., export type { Foo } from "...")
+                const isExportTypeOnly = exportDeclaration.isTypeOnly();
+
+                const namedExports: ParseExportsFileService.NamedExport[] = [];
                 for (const namedExport of namedExportsNode) {
                     const name = namedExport.getName();
-                    namedExports.push(name);
+                    // Check if individual named export is type-only
+                    const isNamedTypeOnly = namedExport.isTypeOnly();
+                    namedExports.push({
+                        name,
+                        isTypeOnly: isNamedTypeOnly
+                    });
                 }
 
                 exportStatements.push({
                     namedExports,
                     source: moduleSpecifier,
-                    isWildcard: false
+                    isWildcard: false,
+                    isTypeOnly: isExportTypeOnly
                 });
             }
         }
