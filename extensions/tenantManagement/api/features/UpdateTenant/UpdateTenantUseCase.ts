@@ -1,5 +1,5 @@
 import { Result } from "webiny/api";
-import { Tenant } from "../../domain/Tenant.js";
+import { Tenant } from "../../../shared/Tenant.js";
 import {
     UpdateTenantUseCase as UseCaseAbstraction,
     UpdateTenantRepository,

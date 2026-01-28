@@ -1,14 +1,14 @@
 import React from "react";
-import { Button } from "@webiny/admin-ui";
-import { CompanyEntry } from "../../types";
+import { Button } from "webiny/admin/ui";
+import { TenantEntry } from "../../types";
 import { useInstallTenant } from "./useInstallTenant";
 
 interface InstallTenantProps {
-  company: CompanyEntry;
+  tenant: TenantEntry;
 }
 
-export const InstallTenant = ({ company }: InstallTenantProps) => {
-  const { installTenant, loading } = useInstallTenant(company);
+export const InstallTenant = ({ tenant }: InstallTenantProps) => {
+  const { installTenant, loading } = useInstallTenant(tenant);
 
   return (
     <Button

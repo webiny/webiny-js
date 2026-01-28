@@ -1,6 +1,6 @@
 import { Result } from "webiny/api";
 import { TenantContext } from "webiny/api/tenancy";
-import { Tenant } from "../../domain/Tenant.js";
+import { Tenant } from "../../../shared/Tenant.js";
 import { GetTenantByIdUseCase } from "../GetTenantById/abstractions.js";
 import { GetCurrentTenantUseCase as UseCaseAbstraction } from "./abstractions.js";
 

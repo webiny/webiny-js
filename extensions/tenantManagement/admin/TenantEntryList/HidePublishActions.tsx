@@ -1,4 +1,4 @@
-import { useModel, usePermission } from "@webiny/app-headless-cms";
+import { useModel, usePermission } from "webiny/admin/cms";
 
 export const HideCompanyPublishActions = usePermission.createDecorator(baseHook => {
     return () => {

@@ -1,4 +1,8 @@
-import type { CmsContentEntry } from "@webiny/app-headless-cms-common/types";
-import type { Company as BaseCompany } from "@demo/tenant-management-shared";
+import type { CmsContentEntry } from "webiny/admin/cms";
+import type { TenantValues } from "../shared/Tenant.js";
 
-export interface CompanyEntry extends CmsContentEntry, BaseCompany {}
+type BaseEntry = Omit<CmsContentEntry, "values">;
+
+export interface TenantEntry extends BaseEntry {
+    values: TenantValues;
+}

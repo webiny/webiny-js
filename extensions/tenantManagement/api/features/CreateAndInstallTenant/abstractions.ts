@@ -1,6 +1,6 @@
 import { createAbstraction } from "webiny/api";
 import { Result } from "webiny/api";
-import type { Tenant } from "../../domain/Tenant.js";
+import type { Tenant } from "../../../shared/Tenant.js";
 import {
     type TenantCreationError,
     type TenantInstallationError,

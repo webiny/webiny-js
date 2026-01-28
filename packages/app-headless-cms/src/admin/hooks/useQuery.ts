@@ -4,7 +4,7 @@ import type { DocumentNode } from "graphql";
 import type { OperationVariables, QueryResult } from "@apollo/react-common";
 import type { QueryHookOptions } from "@apollo/react-hooks/lib/types.js";
 
-const useQuery = function <TData = any, TVariables = OperationVariables>(
+export const useQuery = function <TData = any, TVariables = OperationVariables>(
     query: DocumentNode,
     options: QueryHookOptions<TData, TVariables> = {}
 ): QueryResult<TData, TVariables> {

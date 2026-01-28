@@ -2,7 +2,7 @@ import { Result } from "webiny/api";
 import { EntryId } from "webiny/api/cms/entry";
 import { GetEntryUseCase, UpdateEntryUseCase } from "webiny/api/cms/entry";
 import { GetModelUseCase } from "webiny/api/cms/model";
-import { Tenant, TenantDto, TenantValues } from "../../domain/Tenant.js";
+import { Tenant, TenantDto, TenantValues } from "../../../shared/Tenant.js";
 import { TENANT_MODEL_ID } from "../../domain/TenantModel.js";
 import { TenantNotFoundError, TenantPersistenceError } from "../../domain/errors.js";
 import {

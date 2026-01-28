@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import type { Tenant, TenantValues } from "../../domain/Tenant.js";
+import type { Tenant, TenantValues } from "../../../shared/Tenant.js";
 import type { TenantNotFoundError, TenantPersistenceError } from "../../domain/errors.js";
 
 /**

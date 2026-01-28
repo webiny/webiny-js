@@ -1,7 +1,7 @@
 import { Result } from "webiny/api";
 import { EntryId } from "webiny/api/cms/entry";
 import { CreateTenantUseCase, DeleteTenantUseCase, InstallTenantUseCase } from "webiny/api/tenancy";
-import { Tenant } from "../../domain/Tenant.js";
+import { Tenant } from "../../../shared/Tenant.js";
 import {
     TenantCreationError,
     TenantInstallationError,
