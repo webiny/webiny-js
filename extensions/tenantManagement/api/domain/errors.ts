@@ -1,15 +1,15 @@
 import { BaseError } from "@webiny/feature/api";
 
-export class CompanyNotFoundError extends BaseError {
-    override readonly code = "Company/NotFound" as const;
+export class TenantNotFoundError extends BaseError {
+    override readonly code = "Tenant/NotFound" as const;
 
     constructor(id: string) {
-        super({ message: `Company with id "${id}" was not found!` });
+        super({ message: `Tenant with id "${id}" was not found!` });
     }
 }
 
-export class CompanyPersistenceError extends BaseError {
-    override readonly code = "Company/Persistence" as const;
+export class TenantPersistenceError extends BaseError {
+    override readonly code = "Tenant/Persistence" as const;
 
     constructor(error: Error) {
         super({ message: error.message });
@@ -32,10 +32,10 @@ export class TenantInstallationError extends BaseError {
     }
 }
 
-export class CompanyUpdateError extends BaseError {
-    override readonly code = "Company/Update" as const;
+export class TenantUpdateError extends BaseError {
+    override readonly code = "Tenant/Update" as const;
 
     constructor(error: Error) {
-        super({ message: `Failed to update company: ${error.message}` });
+        super({ message: `Failed to update tenant: ${error.message}` });
     }
 }

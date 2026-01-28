@@ -2,15 +2,15 @@ import { Result } from "webiny/api";
 import { EntryId } from "webiny/api/cms/entry";
 import { GetEntryUseCase, UpdateEntryUseCase } from "webiny/api/cms/entry";
 import { GetModelUseCase } from "webiny/api/cms/model";
-import { Company, CompanyDto, CompanyValues } from "../../domain/Company.js";
-import { COMPANY_MODEL_ID } from "../../domain/CompanyModel.js";
-import { CompanyNotFoundError, CompanyPersistenceError } from "../../domain/errors.js";
+import { Tenant, TenantDto, TenantValues } from "../../domain/Tenant.js";
+import { TENANT_MODEL_ID } from "../../domain/TenantModel.js";
+import { TenantNotFoundError, TenantPersistenceError } from "../../domain/errors.js";
 import {
-    UpdateCompanyRepository as RepositoryAbstraction,
-    UpdateCompanyInput
+    UpdateTenantRepository as RepositoryAbstraction,
+    UpdateTenantInput
 } from "./abstractions.js";
 
-class UpdateCompanyRepository implements RepositoryAbstraction.Interface {
+class UpdateTenantRepository implements RepositoryAbstraction.Interface {
     constructor(
         private getModelUseCase: GetModelUseCase.Interface,
         private getEntryUseCase: GetEntryUseCase.Interface,
@@ -19,23 +19,23 @@ class UpdateCompanyRepository implements RepositoryAbstraction.Interface {
 
     async execute(
         id: string,
-        input: UpdateCompanyInput
-    ): Promise<Result<Company, RepositoryAbstraction.Error>> {
+        input: UpdateTenantInput
+    ): Promise<Result<Tenant, RepositoryAbstraction.Error>> {
         try {
             const entryId = EntryId.from(id);
 
-            // Get the company model
-            const modelResult = await this.getModelUseCase.execute(COMPANY_MODEL_ID);
+            // Get the tenant model
+            const modelResult = await this.getModelUseCase.execute(TENANT_MODEL_ID);
             if (modelResult.isFail()) {
                 return Result.fail(
-                    new CompanyPersistenceError(
-                        new Error(`Model "${COMPANY_MODEL_ID}" was not found!`)
+                    new TenantPersistenceError(
+                        new Error(`Model "${TENANT_MODEL_ID}" was not found!`)
                     )
                 );
             }
 
-            // Get the current company entry to verify it exists
-            const getEntryResult = await this.getEntryUseCase.execute<CompanyValues>(
+            // Get the current tenant entry to verify it exists
+            const getEntryResult = await this.getEntryUseCase.execute<TenantValues>(
                 modelResult.value,
                 {
                     where: { entryId: entryId.id, latest: true }
@@ -43,7 +43,7 @@ class UpdateCompanyRepository implements RepositoryAbstraction.Interface {
             );
 
             if (getEntryResult.isFail()) {
-                return Result.fail(new CompanyNotFoundError(id));
+                return Result.fail(new TenantNotFoundError(id));
             }
 
             const updateResult = await this.updateEntryUseCase.execute(
@@ -55,24 +55,24 @@ class UpdateCompanyRepository implements RepositoryAbstraction.Interface {
             );
 
             if (updateResult.isFail()) {
-                return Result.fail(new CompanyPersistenceError(updateResult.error));
+                return Result.fail(new TenantPersistenceError(updateResult.error));
             }
 
             const updatedEntry = updateResult.value;
 
-            const companyDto: CompanyDto = {
+            const tenantDto: TenantDto = {
                 id: updatedEntry.entryId,
-                values: updatedEntry.values as CompanyValues
+                values: updatedEntry.values as TenantValues
             };
 
-            return Result.ok(Company.from(companyDto));
+            return Result.ok(Tenant.from(tenantDto));
         } catch (error) {
-            return Result.fail(new CompanyPersistenceError(error));
+            return Result.fail(new TenantPersistenceError(error));
         }
     }
 }
 
 export default RepositoryAbstraction.createImplementation({
-    implementation: UpdateCompanyRepository,
+    implementation: UpdateTenantRepository,
     dependencies: [GetModelUseCase, GetEntryUseCase, UpdateEntryUseCase]
 });

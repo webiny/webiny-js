@@ -1,73 +1,73 @@
 import { Result } from "webiny/api";
 import { EntryId } from "webiny/api/cms/entry";
 import { CreateTenantUseCase, DeleteTenantUseCase, InstallTenantUseCase } from "webiny/api/tenancy";
-import { Company } from "../../domain/Company.js";
+import { Tenant } from "../../domain/Tenant.js";
 import {
     TenantCreationError,
     TenantInstallationError,
-    CompanyUpdateError
+    TenantUpdateError
 } from "../../domain/errors.js";
-import { GetCompanyByIdUseCase } from "../GetCompanyById/abstractions.js";
-import { UpdateCompanyUseCase } from "../UpdateCompany/abstractions.js";
+import { GetTenantByIdUseCase } from "../GetTenantById/abstractions.js";
+import { UpdateTenantUseCase } from "../UpdateTenant/abstractions.js";
 import { CreateAndInstallTenantUseCase as UseCaseAbstraction } from "./abstractions.js";
 
 class CreateAndInstallTenantUseCase implements UseCaseAbstraction.Interface {
     constructor(
-        private getCompanyByIdUseCase: GetCompanyByIdUseCase.Interface,
+        private getTenantByIdUseCase: GetTenantByIdUseCase.Interface,
         private createTenantUseCase: CreateTenantUseCase.Interface,
         private deleteTenantUseCase: DeleteTenantUseCase.Interface,
         private installTenantUseCase: InstallTenantUseCase.Interface,
-        private updateCompanyUseCase: UpdateCompanyUseCase.Interface
+        private updateTenantUseCase: UpdateTenantUseCase.Interface
     ) {}
 
-    async execute(companyId: string): Promise<Result<Company, UseCaseAbstraction.Error>> {
+    async execute(tenantId: string): Promise<Result<Tenant, UseCaseAbstraction.Error>> {
         try {
-            const entryId = EntryId.from(companyId);
+            const entryId = EntryId.from(tenantId);
 
-            // Get company details
-            const companyResult = await this.getCompanyByIdUseCase.execute(entryId.id);
-            if (companyResult.isFail()) {
-                return Result.fail(companyResult.error);
-            }
-            const company = companyResult.value;
-
-            // Create tenant
-            const tenantResult = await this.createTenantUseCase.execute({
-                id: entryId.id,
-                name: company.values.name,
-                parent: "root",
-                description: company.values.name,
-                tags: []
-            });
-
+            // Get tenant details
+            const tenantResult = await this.getTenantByIdUseCase.execute(entryId.id);
             if (tenantResult.isFail()) {
-                return Result.fail(new TenantCreationError(tenantResult.error));
+                return Result.fail(tenantResult.error);
             }
             const tenant = tenantResult.value;
 
+            // Create tenant
+            const createTenantResult = await this.createTenantUseCase.execute({
+                id: entryId.id,
+                name: tenant.values.name,
+                parent: "root",
+                description: tenant.values.name,
+                tags: []
+            });
+
+            if (createTenantResult.isFail()) {
+                return Result.fail(new TenantCreationError(createTenantResult.error));
+            }
+            const createdTenant = createTenantResult.value;
+
             // Install tenant
             const installResult = await this.installTenantUseCase.execute({
-                tenant: tenant,
+                tenant: createdTenant,
                 installationInput: []
             });
 
             if (installResult.isFail()) {
                 // Delete tenant if installation failed.
-                await this.deleteTenantUseCase.execute(tenant.id);
+                await this.deleteTenantUseCase.execute(createdTenant.id);
 
                 return Result.fail(new TenantInstallationError(installResult.error));
             }
 
-            // Update company entry to mark as installed
-            const updateResult = await this.updateCompanyUseCase.execute(entryId.id, {
+            // Update tenant entry to mark as installed
+            const updateResult = await this.updateTenantUseCase.execute(entryId.id, {
                 isInstalled: true
             });
 
             if (updateResult.isFail()) {
-                return Result.fail(new CompanyUpdateError(updateResult.error));
+                return Result.fail(new TenantUpdateError(updateResult.error));
             }
 
-            // Return updated company
+            // Return updated tenant
             return Result.ok(updateResult.value);
         } catch (error) {
             return Result.fail(new TenantCreationError(error));
@@ -78,10 +78,10 @@ class CreateAndInstallTenantUseCase implements UseCaseAbstraction.Interface {
 export default UseCaseAbstraction.createImplementation({
     implementation: CreateAndInstallTenantUseCase,
     dependencies: [
-        GetCompanyByIdUseCase,
+        GetTenantByIdUseCase,
         CreateTenantUseCase,
         DeleteTenantUseCase,
         InstallTenantUseCase,
-        UpdateCompanyUseCase
+        UpdateTenantUseCase
     ]
 });

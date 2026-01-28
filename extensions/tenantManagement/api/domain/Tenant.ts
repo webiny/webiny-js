@@ -1,4 +1,4 @@
-export interface CompanyValues {
+export interface TenantValues {
     name: string;
     description: string;
     theme: {
@@ -10,12 +10,12 @@ export interface CompanyValues {
     isInstalled: boolean;
 }
 
-export interface CompanyDto {
+export interface TenantDto {
     id: string;
-    values: CompanyValues;
+    values: TenantValues;
 }
 
-export const rootCompanyDto: CompanyDto = {
+export const rootTenantDto: TenantDto = {
     id: "root",
     values: {
         name: "Root",
@@ -30,11 +30,11 @@ export const rootCompanyDto: CompanyDto = {
     }
 };
 
-export class Company {
-    private constructor(private dto: CompanyDto) {}
+export class Tenant {
+    private constructor(private dto: TenantDto) {}
 
-    static from(dto: CompanyDto) {
-        return new Company(dto);
+    static from(dto: TenantDto) {
+        return new Tenant(dto);
     }
 
     get id() {

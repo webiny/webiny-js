@@ -1,56 +1,56 @@
 import { GraphQLSchemaFactory } from "webiny/api/graphql";
 import { TenantContext } from "webiny/api/tenancy";
 
-class GetCurrentCompany implements GraphQLSchemaFactory.Interface {
+class GetCurrentTenant implements GraphQLSchemaFactory.Interface {
     constructor(private tenantContext: TenantContext.Interface) {}
 
     execute() {
         return [
             {
                 typeDefs: /* GraphQL */ `
-                    type CompanyError {
+                    type TenantError {
                         code: String
                         message: String
                         data: JSON
                         stack: String
                     }
 
-                    type CompanyTheme {
+                    type TenantTheme {
                         websiteTitle: String!
                         primaryColor: String!
                         additionalColors: [String!]
                         font: String
                     }
 
-                    type Company {
+                    type Tenant {
                         id: ID!
                         name: String!
                         description: String!
-                        theme: CompanyTheme!
+                        theme: TenantTheme!
                     }
 
-                    type CompanyResponse {
-                        data: Company
-                        error: CompanyError
+                    type TenantResponse {
+                        data: Tenant
+                        error: TenantError
                     }
 
-                    type CompanyThemeResponse {
-                        data: CompanyTheme
-                        error: CompanyError
+                    type TenantThemeResponse {
+                        data: TenantTheme
+                        error: TenantError
                     }
 
                     extend type Query {
-                        currentCompany: CompanyResponse
+                        currentTenant: TenantResponse
                     }
                 `,
                 resolvers: {
                     Query: {
-                        currentCompany: async () => {
+                        currentTenant: async () => {
                             try {
-                                const getCompany = new GetCompanyById(context);
-                                const company = await getCompany.execute(tenant.id);
+                                const getTenant = new GetTenantById(context);
+                                const tenant = await getTenant.execute(tenant.id);
 
-                                return new Response(company);
+                                return new Response(tenant);
                             } catch (e) {
                                 return new ErrorResponse(e);
                             }
@@ -63,6 +63,6 @@ class GetCurrentCompany implements GraphQLSchemaFactory.Interface {
 }
 
 export default GraphQLSchemaFactory.createImplementation({
-    implementation: GetCurrentCompany,
+    implementation: GetCurrentTenant,
     dependencies: [TenantContext]
 });
