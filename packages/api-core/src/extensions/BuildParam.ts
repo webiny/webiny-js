@@ -2,6 +2,8 @@ import { z } from "zod";
 import { Node, Project, ArrayLiteralExpression } from "ts-morph";
 import { defineExtension } from "@webiny/project/defineExtension";
 import crypto from "crypto";
+import path from "path";
+import fs from "fs";
 
 export const BuildParam = defineExtension({
     type: "Api/BuildParam",
@@ -10,7 +12,7 @@ export const BuildParam = defineExtension({
     multiple: true,
     paramsSchema: () => {
         return z.object({
-            key: z.string(),
+            paramName: z.string(),
             value: z.string()
         });
     },
@@ -19,20 +21,57 @@ export const BuildParam = defineExtension({
             .join("apps", "api", "graphql", "src", "extensions.ts")
             .toString();
 
-        const { key, value } = params;
+        const buildParamsDir = ctx.project.paths.workspaceFolder
+            .join("apps", "api", "graphql", "src", "buildParams")
+            .toString();
 
-        // Generate a unique class name based on the key.
-        const hash = crypto.createHash("sha256").update(key).digest("hex");
+        const { paramName, value } = params;
+
+        // Generate a unique class name based on the paramName.
+        const hash = crypto.createHash("sha256").update(paramName).digest("hex");
         const className = `BuildParam_${hash.slice(-10)}`;
+        const fileName = `${className}.ts`;
+        const filePath = path.join(buildParamsDir, fileName);
 
+        // Ensure buildParams directory exists.
+        if (!fs.existsSync(buildParamsDir)) {
+            fs.mkdirSync(buildParamsDir, { recursive: true });
+        }
+
+        // Check if file already exists.
+        if (fs.existsSync(filePath)) {
+            // File exists, just ensure it's imported in extensions.ts
+        } else {
+            // Create the BuildParam implementation file.
+            const fileContent = `import { BuildParam } from "@webiny/api-core/exports/api/buildParam";
+
+export class ${className} implements BuildParam.Interface {
+    key = "${paramName}";
+    value = "${value}";
+}
+`;
+            fs.writeFileSync(filePath, fileContent, "utf8");
+        }
+
+        // Now update extensions.ts to import and register this BuildParam.
         const project = new Project();
         project.addSourceFileAtPath(extensionsTsFilePath);
 
         const source = project.getSourceFileOrThrow(extensionsTsFilePath);
 
-        // Check if this specific BuildParam already exists.
-        const existingClass = source.getClass(className);
-        if (existingClass) {
+        // Calculate import path relative to extensions.ts.
+        let importPath = path
+            .relative(path.dirname(extensionsTsFilePath), filePath)
+            .replace(/\.tsx?$/, ".js");
+
+        // Ensure the path starts with ./
+        if (!importPath.startsWith(".")) {
+            importPath = "./" + importPath;
+        }
+
+        // Check if import already exists.
+        const existingImportDeclaration = source.getImportDeclaration(importPath);
+        if (existingImportDeclaration) {
             return;
         }
 
@@ -44,45 +83,19 @@ export const BuildParam = defineExtension({
             index = last.getChildIndex() + 1;
         }
 
-        // Add import for BuildParam if not present.
-        const buildParamImportPath = "@webiny/api-core/exports/api/buildParam";
-        const existingBuildParamImport = source.getImportDeclaration(buildParamImportPath);
-        if (!existingBuildParamImport) {
-            source.insertImportDeclaration(index, {
-                namedImports: ["BuildParam"],
-                moduleSpecifier: buildParamImportPath
-            });
-        }
+        // Add import for the BuildParam class.
+        source.insertImportDeclaration(index, {
+            namedImports: [className],
+            moduleSpecifier: importPath
+        });
 
-        // Add the class definition before the plugins array.
+        // Add the registration to the plugins array.
         const pluginsArray = source.getFirstDescendant(node =>
             Node.isArrayLiteralExpression(node)
         ) as ArrayLiteralExpression;
 
-        const classIndex = pluginsArray
-            ? pluginsArray.getChildIndex()
-            : source.getStatements().length;
-
-        source.insertClass(classIndex, {
-            name: className,
-            implements: ["BuildParam.Interface"],
-            properties: [
-                {
-                    name: "key",
-                    type: "string",
-                    initializer: `"${key}"`
-                },
-                {
-                    name: "value",
-                    type: "string",
-                    initializer: `"${value}"`
-                }
-            ]
-        });
-
-        // Add the registration to the plugins array.
         pluginsArray.addElement(
-            `\ncreateContextPlugin(ctx => {\n\tctx.container.registerImpl(BuildParam, ${className});\n})`
+            `\ncreateContextPlugin(ctx => {\n\tregisterExtension(ctx.container, ${className});\n})`
         );
 
         {
