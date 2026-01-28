@@ -1,6 +1,5 @@
 import React from "react";
-import { EnvVar } from "@webiny/project/extensions/index.js";
-import { Api, Admin } from "@webiny/project-aws";
+import { EnvVar, Admin, Api } from "webiny/extensions";
 
 export interface IdpProps {
     secretKey: string;
