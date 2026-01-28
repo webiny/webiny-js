@@ -150,3 +150,8 @@ export class Result<TValue, TError = never> {
         return handlers.fail(this._error as TError);
     }
 }
+
+export namespace Result {
+    type UnwrapResult<T> = Awaited<T> extends Result<infer Ok, any> ? Ok : never;
+    type UnwrapError<T> = Awaited<T> extends Result<any, infer Err> ? Err : never;
+}
