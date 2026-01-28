@@ -9,6 +9,10 @@ export default new GraphQLSchemaPlugin<SecurityContext>({
             _empty: String
         }
 
+        type SecurityQuery {
+            _empty: String
+        }
+
         extend type Query {
             security: SecurityQuery
         }

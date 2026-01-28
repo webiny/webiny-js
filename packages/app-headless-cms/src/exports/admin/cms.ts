@@ -3,3 +3,4 @@ export { useLazyQuery } from "~/admin/hooks/useLazyQuery.js";
 export { useMutation } from "~/admin/hooks/useMutation.js";
 export { useModel } from "~/admin/components/ModelProvider/index.js";
 export { usePermission } from "~/admin/hooks/usePermission.js";
+export { Routes } from "~/routes.js";

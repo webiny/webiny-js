@@ -35,7 +35,7 @@ export { ProgressBar } from "@webiny/admin-ui/ProgressBar/index.js";
 export { Radio, RadioGroup } from "@webiny/admin-ui/RadioGroup/index.js";
 export { RangeSlider } from "@webiny/admin-ui/RangeSlider/index.js";
 export { Scrollbar } from "@webiny/admin-ui/Scrollbar/index.js";
-export { ScrollArea, ScrollBar, ScrollPosition } from "@webiny/admin-ui/ScrollArea/index.js";
+export { ScrollArea, ScrollBar } from "@webiny/admin-ui/ScrollArea/index.js";
 export { SegmentedControl } from "@webiny/admin-ui/SegmentedControl/index.js";
 export { Select } from "@webiny/admin-ui/Select/index.js";
 export { Separator } from "@webiny/admin-ui/Separator/index.js";

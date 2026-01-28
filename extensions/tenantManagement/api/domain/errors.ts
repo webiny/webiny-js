@@ -1,4 +1,4 @@
-import { BaseError } from "@webiny/feature/api";
+import { BaseError } from "webiny/api";
 
 export class TenantNotFoundError extends BaseError {
     override readonly code = "Tenant/NotFound" as const;

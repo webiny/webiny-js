@@ -3,7 +3,8 @@ import { Api, Cli, Infra, Project, Security } from "webiny/extensions";
 import { MySchemaExtension } from "./extensions/graphql/MySchemaExtension.js";
 import { Cognito } from "@webiny/cognito";
 // import { CustomIdp } from "./extensions/customIdp/CustomIdp.js";
-// import { MyIdpExtension } from "/extensions/idp/okta/MyIdpExtension.js";
+// import { MyIdpExtension } from "./extensions/idp/okta/MyIdpExtension.js";
+import { TenantManagement } from "./extensions/tenantManagement/TenantManagement.js";
 
 export const Extensions = () => {
     return (
@@ -87,6 +88,8 @@ export const Extensions = () => {
             {/*<CustomIdp secretKey={"my-secret-key"} />*/}
 
             <MySchemaExtension />
+
+            <TenantManagement />
 
             {/* Security 👇 */}
             <Api.Extension src={"/extensions/MyApiKey.ts"} />

@@ -6,7 +6,10 @@ const GET_CURRENT_TENANT = gql`
     query GetCurrentTenant {
         tenantManager {
             getCurrentTenant {
-                data
+                data {
+                    id
+                    values
+                }
                 error {
                     code
                     message

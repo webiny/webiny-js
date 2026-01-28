@@ -98,20 +98,25 @@ export class PublicModelBuilder extends BaseModelBuilder {
             throw new Error("group is required");
         }
 
-        return createModelPlugin({
-            modelId: this.config.modelId,
-            name: this.config.name,
-            singularApiName: this.publicConfig.singularApiName || createApiName(this.config.name),
-            pluralApiName: this.publicConfig.pluralApiName || createPluralApiName(this.config.name),
-            group: this.publicConfig.group,
-            icon: this.publicConfig.icon ?? null,
-            description: this.publicConfig.description || null,
-            titleFieldId: this.publicConfig.titleFieldId ?? "",
-            descriptionFieldId: this.publicConfig.descriptionFieldId,
-            imageFieldId: this.publicConfig.imageFieldId,
-            layout: this.publicConfig.layout || [],
-            fields: this.config.fields,
-            tags: this.getTags()
-        });
+        return createModelPlugin(
+            {
+                modelId: this.config.modelId,
+                name: this.config.name,
+                singularApiName:
+                    this.publicConfig.singularApiName || createApiName(this.config.name),
+                pluralApiName:
+                    this.publicConfig.pluralApiName || createPluralApiName(this.config.name),
+                group: this.publicConfig.group,
+                icon: this.publicConfig.icon ?? null,
+                description: this.publicConfig.description || null,
+                titleFieldId: this.publicConfig.titleFieldId ?? "",
+                descriptionFieldId: this.publicConfig.descriptionFieldId,
+                imageFieldId: this.publicConfig.imageFieldId,
+                layout: this.publicConfig.layout || [],
+                fields: this.config.fields,
+                tags: this.getTags()
+            },
+            { validateLayout: false }
+        );
     }
 }

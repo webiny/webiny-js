@@ -11,12 +11,12 @@ export const TenantEntryList = () => {
             <Browser.Table.Column
                 name={"tenant"}
                 header={"Tenant"}
-                modelIds={["company"]}
+                modelIds={["tenant"]}
                 cell={<TenantCell />}
                 before={"actions"}
             />
             {/* Hide `status` columns, since we don't want to publish companies. */}
-            <Browser.Table.Column name={"status"} modelIds={["company"]} remove />
+            <Browser.Table.Column name={"status"} modelIds={["tenant"]} remove />
             {/* Hide all `publish` actions in the UI. */}
             <HideCompanyPublishActions />
         </ContentEntryListConfig>

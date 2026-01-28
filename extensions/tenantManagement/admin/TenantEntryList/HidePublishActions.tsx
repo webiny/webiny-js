@@ -5,7 +5,7 @@ export const HideCompanyPublishActions = usePermission.createDecorator(baseHook 
         const { model } = useModel();
         const hook = baseHook();
 
-        if (model.modelId === "company") {
+        if (model.modelId === "tenant") {
             return {
                 ...hook,
                 canPublish: () => {

@@ -62,10 +62,8 @@ export const createModelsSchema = ({
 
                 return hasType ? model.tags : ["type:model", ...(model.tags || [])];
             },
-            plugin: async (model, _, context): Promise<boolean> => {
-                return context.plugins
-                    .byType<CmsModelPlugin>(CmsModelPlugin.type)
-                    .some(item => item.contentModel.modelId === model.modelId);
+            plugin: (model: CmsModel) => {
+                return model.isPlugin ?? false;
             }
         }
     };

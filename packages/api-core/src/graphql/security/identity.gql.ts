@@ -28,6 +28,10 @@ const getDefaultTenant = async (context: SecurityContext) => {
 
 export default new GraphQLSchemaPlugin<ApiCoreContext>({
     typeDefs: /* GraphQL */ `
+        type SecurityIdentityTenant {
+            id: ID!
+            name: String!
+        }
         type SecurityIdentityProfileRole {
             id: String!
             slug: String!
@@ -57,8 +61,8 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
             teams: [SecurityIdentityProfileTeam!]!
             permissions: [JSON!]!
             profile: SecurityIdentityProfile!
-            currentTenant: Tenant!
-            defaultTenant: Tenant!
+            currentTenant: SecurityIdentityTenant!
+            defaultTenant: SecurityIdentityTenant!
         }
 
         type SecurityIdentityLoginResponse {

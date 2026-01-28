@@ -24,13 +24,16 @@ class InstallTenantSchema implements GraphQLSchemaFactory.Interface {
                     }
                 `,
                 resolvers: {
+                    Mutation: {
+                        tenantManager: () => ({})
+                    },
                     TenantManagerMutation: {
-                        installTenant: async (_: any, args: { companyId: string }) => {
+                        installTenant: async (_: any, args: { tenantId: string }) => {
                             const identity = this.identityContext.getIdentity();
                             if (!identity.isAdmin()) {
                                 return new NotAuthorizedResponse();
                             }
-                            const result = await this.installTenant.execute(args.companyId);
+                            const result = await this.installTenant.execute(args.tenantId);
                             if (result.isFail()) {
                                 return new ErrorResponse(result.error);
                             }

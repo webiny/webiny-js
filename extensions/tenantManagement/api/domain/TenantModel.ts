@@ -1,7 +1,7 @@
 import { ModelFactory } from "webiny/api/cms/model";
 import { TenantModelModifier } from "./TenantModelModifier.js";
 
-export const TENANT_MODEL_ID = "company";
+export const TENANT_MODEL_ID = "tenant";
 
 class TenantModelFactory implements ModelFactory.Interface {
     constructor(private modelModifiers: TenantModelModifier.Interface[]) {}
@@ -10,32 +10,31 @@ class TenantModelFactory implements ModelFactory.Interface {
         const model = builder
             .public()
             .modelId(TENANT_MODEL_ID)
-            .name("Company")
+            .name("Tenant")
             .description("Manage system tenants.")
             .group("hidden")
             .icon("fas/building")
-            .singularApiName("Company")
-            .pluralApiName("Companies");
+            .singularApiName("Tenant")
+            .pluralApiName("Tenants");
 
         model
             .fields(fields => ({
-                location: fields.location(),
                 name: fields
                     .text()
                     .label("Name")
-                    .helpText("Enter a company name")
+                    .helpText("Enter a tenant name")
                     .required()
                     .renderer("text-input"),
                 description: fields
                     .longText()
                     .label("Description")
-                    .helpText("Enter a short company description")
+                    .helpText("Enter a short tenant description")
                     .renderer("long-text-text-area")
                     .required(),
                 theme: fields
                     .object()
                     .label("Theme")
-                    .helpText("Configure the Admin app theme for this company.")
+                    .helpText("Configure the Admin app theme for this tenant.")
                     .renderer("object-accordion", { open: false })
                     .fields(fields => ({
                         websiteTitle: fields

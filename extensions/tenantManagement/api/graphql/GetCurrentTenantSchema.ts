@@ -35,6 +35,9 @@ class GetCurrentTenantSchema implements GraphQLSchemaFactory.Interface {
                 `,
                 resolvers: {
                     Query: {
+                        tenantManager: () => ({})
+                    },
+                    TenantManagerQuery: {
                         getCurrentTenant: async () => {
                             const identity = this.identityContext.getIdentity();
                             if (identity.isAnonymous()) {

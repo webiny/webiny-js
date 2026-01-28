@@ -1,5 +1,5 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
+import { createAbstraction } from "webiny/api";
+import { Result } from "webiny/api";
 import type { Tenant } from "../../../shared/Tenant.js";
 import type { TenantNotFoundError, TenantPersistenceError } from "../../domain/errors.js";
 

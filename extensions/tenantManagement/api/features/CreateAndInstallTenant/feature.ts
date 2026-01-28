@@ -1,4 +1,4 @@
-import { createFeature } from "@webiny/feature/api";
+import { createFeature } from "webiny/api";
 import CreateAndInstallTenantUseCase from "./CreateAndInstallTenantUseCase.js";
 
 export const CreateAndInstallTenantFeature = createFeature({
