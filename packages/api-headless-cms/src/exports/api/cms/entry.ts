@@ -15,7 +15,21 @@ export type {
     CmsEntryMeta,
     CmsEntryListSortAsc,
     CmsEntryListSortDesc,
-    IEntryState
+    IEntryState,
+    CmsEntryListParams,
+    CmsStorageEntry,
+    CmsEntryGetParams,
+    CmsEntryPermission,
+    UpdateCmsEntryInput,
+    CreateCmsEntryInput,
+    DeleteMultipleEntriesParams,
+    CmsDeleteEntryOptions,
+    UpdateCmsEntryOptionsInput,
+    CreateRevisionCmsEntryOptionsInput,
+    CreateFromCmsEntryInput,
+    CreateCmsEntryOptionsInput,
+    CmsEntryValidateResponse,
+    CmsEntryUniqueValue
 } from "~/types/types.js";
 
 // CreateEntry
