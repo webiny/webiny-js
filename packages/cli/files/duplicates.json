@@ -1,1 +1,1 @@
-[]
+[{"name":"ts-morph","versions":[{"version":"24.0.0","files":[{"file":"/packages/app-admin/package.json","types":["dependencies"]},{"file":"/packages/build-tools/package.json","types":["dependencies"]},{"file":"/packages/project/package.json","types":["dependencies"]},{"file":"/scripts/cjsToEsm/package.json","types":["dependencies"]}]},{"version":"27.0.2","files":[{"file":"/scripts/cli/package.json","types":["dependencies"]}]}]}]
