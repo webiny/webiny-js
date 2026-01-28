@@ -24,7 +24,8 @@
     "mobx": "^6.15.0",
     "mobx-react-lite": "^3.4.3",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.10",
