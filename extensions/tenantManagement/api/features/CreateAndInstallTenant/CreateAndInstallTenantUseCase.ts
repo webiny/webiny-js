@@ -34,9 +34,9 @@ class CreateAndInstallTenantUseCase implements UseCaseAbstraction.Interface {
             // Create tenant
             const tenantResult = await this.createTenantUseCase.execute({
                 id: entryId.id,
-                name: company.name,
+                name: company.values.name,
                 parent: "root",
-                description: company.name,
+                description: company.values.name,
                 tags: []
             });
 

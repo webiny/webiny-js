@@ -1,5 +1,4 @@
-export interface CompanyDto {
-    id: string;
+export interface CompanyValues {
     name: string;
     description: string;
     theme: {
@@ -11,43 +10,38 @@ export interface CompanyDto {
     isInstalled: boolean;
 }
 
-const rootCompanyDto: CompanyDto = {
+export interface CompanyDto {
+    id: string;
+    values: CompanyValues;
+}
+
+export const rootCompanyDto: CompanyDto = {
     id: "root",
-    name: "Root",
-    isInstalled: true,
-    description: "Platform Root",
-    theme: {
-        websiteTitle: "Your Company",
-        primaryColor: "#fa5723",
-        additionalColors: ["#00ccb0", "#0a0a0a", "#616161"],
-        font: "Roboto"
+    values: {
+        name: "Root",
+        isInstalled: true,
+        description: "Platform Root",
+        theme: {
+            websiteTitle: "Your Company",
+            primaryColor: "#fa5723",
+            additionalColors: ["#00ccb0", "#0a0a0a", "#616161"],
+            font: "Roboto"
+        }
     }
 };
 
 export class Company {
-    static createRootCompany() {
-        return Company.from(rootCompanyDto);
-    }
+    private constructor(private dto: CompanyDto) {}
 
     static from(dto: CompanyDto) {
         return new Company(dto);
     }
 
-    private constructor(private readonly dto: CompanyDto) {}
-
     get id() {
         return this.dto.id;
     }
 
-    get name() {
-        return this.dto.name;
-    }
-
-    get isInstalled() {
-        return this.dto.isInstalled;
-    }
-
-    get theme() {
-        return this.dto.theme;
+    get values() {
+        return this.dto.values;
     }
 }

@@ -2,7 +2,7 @@ import { Result } from "webiny/api";
 import { EntryId } from "webiny/api/cms/entry";
 import { GetEntryUseCase, UpdateEntryUseCase } from "webiny/api/cms/entry";
 import { GetModelUseCase } from "webiny/api/cms/model";
-import { Company, CompanyDto } from "../../domain/Company.js";
+import { Company, CompanyDto, CompanyValues } from "../../domain/Company.js";
 import { COMPANY_MODEL_ID } from "../../domain/CompanyModel.js";
 import { CompanyNotFoundError, CompanyPersistenceError } from "../../domain/errors.js";
 import {
@@ -34,8 +34,8 @@ class UpdateCompanyRepository implements RepositoryAbstraction.Interface {
                 );
             }
 
-            // Get the current company entry to merge with updates
-            const getEntryResult = await this.getEntryUseCase.execute<Omit<CompanyDto, "id">>(
+            // Get the current company entry to verify it exists
+            const getEntryResult = await this.getEntryUseCase.execute<CompanyValues>(
                 modelResult.value,
                 {
                     where: { entryId: entryId.id, latest: true }
@@ -62,8 +62,8 @@ class UpdateCompanyRepository implements RepositoryAbstraction.Interface {
 
             const companyDto: CompanyDto = {
                 id: updatedEntry.entryId,
-                ...updatedEntry.values
-            } as CompanyDto;
+                values: updatedEntry.values as CompanyValues
+            };
 
             return Result.ok(Company.from(companyDto));
         } catch (error) {

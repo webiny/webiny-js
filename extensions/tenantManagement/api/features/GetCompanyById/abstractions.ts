@@ -1,7 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { Company } from "../../domain/Company.js";
-import type { CompanyNotFoundError, CompanyPersistenceError } from "./errors.js";
+import type { CompanyNotFoundError, CompanyPersistenceError } from "../../domain/errors.js";
 
 /**
  * GetCompanyById Use Case

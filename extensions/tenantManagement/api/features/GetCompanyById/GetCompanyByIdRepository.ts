@@ -1,7 +1,7 @@
 import { Result } from "webiny/api";
 import { GetEntryUseCase, EntryId } from "webiny/api/cms/entry";
 import { GetModelUseCase } from "webiny/api/cms/model";
-import { Company, CompanyDto } from "../../domain/Company.js";
+import { Company, CompanyDto, CompanyValues } from "../../domain/Company.js";
 import { COMPANY_MODEL_ID } from "../../domain/CompanyModel.js";
 import { CompanyNotFoundError, CompanyPersistenceError } from "../../domain/errors.js";
 import { GetCompanyByIdRepository as RepositoryAbstraction } from "./abstractions.js";
@@ -27,7 +27,7 @@ class GetCompanyByIdRepository implements RepositoryAbstraction.Interface {
             }
 
             // Get the company entry
-            const entryResult = await this.getEntryUseCase.execute<Omit<CompanyDto, "id">>(
+            const entryResult = await this.getEntryUseCase.execute<CompanyValues>(
                 modelResult.value,
                 {
                     where: { entryId: entryId.id, latest: true }
@@ -42,7 +42,7 @@ class GetCompanyByIdRepository implements RepositoryAbstraction.Interface {
 
             const companyDto: CompanyDto = {
                 id: companyEntry.entryId,
-                ...companyEntry.values
+                values: companyEntry.values
             };
 
             return Result.ok(Company.from(companyDto));

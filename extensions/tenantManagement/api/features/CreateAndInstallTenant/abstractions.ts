@@ -1,10 +1,12 @@
 import { createAbstraction } from "webiny/api";
 import { Result } from "webiny/api";
 import type { Company } from "../../domain/Company.js";
-import type {
-    TenantCreationError,
-    TenantInstallationError,
-    CompanyUpdateError
+import {
+    type TenantCreationError,
+    type TenantInstallationError,
+    type CompanyUpdateError,
+    CompanyNotFoundError,
+    CompanyPersistenceError
 } from "../../domain/errors.js";
 
 /**
@@ -17,6 +19,8 @@ export interface ICreateAndInstallTenantUseCase {
 export interface ICreateAndInstallTenantUseCaseErrors {
     tenantCreation: TenantCreationError;
     tenantInstallation: TenantInstallationError;
+    notFound: CompanyNotFoundError;
+    persistence: CompanyPersistenceError;
     companyUpdate: CompanyUpdateError;
 }
 
