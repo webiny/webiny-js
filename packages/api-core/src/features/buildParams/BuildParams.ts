@@ -1,7 +1,7 @@
 import type { Container } from "@webiny/di";
-import { BuildParam, BuildParamRegistry as BuildParamRegistryAbstraction } from "./abstractions.js";
+import { BuildParam, BuildParams as BuildParamsAbstraction } from "./abstractions.js";
 
-export class BuildParamRegistry implements BuildParamRegistryAbstraction.Interface {
+export class BuildParamsImpl implements BuildParamsAbstraction.Interface {
     constructor(private container: Container) {}
 
     get(key: string): string | null {

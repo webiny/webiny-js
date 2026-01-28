@@ -11,12 +11,12 @@ export namespace BuildParam {
     export type Interface = IBuildParam;
 }
 
-export interface IBuildParamRegistry {
+export interface IBuildParams {
     get(key: string): string | null;
 }
 
-export const BuildParamRegistry = createAbstraction<IBuildParamRegistry>("BuildParamRegistry");
+export const BuildParams = createAbstraction<IBuildParams>("BuildParams");
 
-export namespace BuildParamRegistry {
-    export type Interface = IBuildParamRegistry;
+export namespace BuildParams {
+    export type Interface = IBuildParams;
 }
