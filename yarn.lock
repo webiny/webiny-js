@@ -14063,6 +14063,7 @@ __metadata:
     pino: "npm:^9.14.0"
     pino-lambda: "npm:^4.4.1"
     rimraf: "npm:^6.1.2"
+    ts-morph: "npm:^24.0.0"
     typescript: "npm:5.9.3"
     vitest: "npm:^3.2.4"
     zod: "npm:^3.25.76"
