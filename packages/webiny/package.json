@@ -37,6 +37,7 @@
     "./configs/tsconfig.json": "./configs/tsconfig.json",
     "./global.ts": "./global.ts",
     "./admin/ui": "./admin/ui.js",
+    "./api/buildParams": "./api/buildParams.js",
     "./api/eventPublisher": "./api/eventPublisher.js",
     "./api/keyValueStore": "./api/keyValueStore.js",
     "./api/logger": "./api/logger.js",

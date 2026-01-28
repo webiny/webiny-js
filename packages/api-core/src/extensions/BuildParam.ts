@@ -13,7 +13,13 @@ export const BuildParam = defineExtension({
     paramsSchema: () => {
         return z.object({
             paramName: z.string(),
-            value: z.string()
+            value: z.union([
+                z.string(),
+                z.record(z.any()),
+                z.array(z.any()),
+                z.number(),
+                z.boolean()
+            ])
         });
     },
     async build(params, ctx) {
@@ -26,6 +32,9 @@ export const BuildParam = defineExtension({
             .toString();
 
         const { paramName, value } = params;
+
+        // Serialize value to a TypeScript literal.
+        const valueStr = JSON.stringify(value, null, 4);
 
         // Generate a unique class name based on the paramName.
         const hash = crypto.createHash("sha256").update(paramName).digest("hex");
@@ -43,12 +52,17 @@ export const BuildParam = defineExtension({
             // File exists, just ensure it's imported in extensions.ts
         } else {
             // Create the BuildParam implementation file.
-            const fileContent = `import { BuildParam } from "@webiny/api-core/exports/api/buildParam";
+            const fileContent = `import { BuildParam } from "webiny/api/buildParams";
 
-export class ${className} implements BuildParam.Interface {
+class ${className} implements BuildParam.Interface {
     key = "${paramName}";
-    value = "${value}";
+    value = ${valueStr};
 }
+
+export default BuildParam.createImplementation({
+    implementation: ${className},
+    dependencies: []
+});
 `;
             fs.writeFileSync(filePath, fileContent, "utf8");
         }
@@ -83,9 +97,9 @@ export class ${className} implements BuildParam.Interface {
             index = last.getChildIndex() + 1;
         }
 
-        // Add import for the BuildParam class.
+        // Add import for the BuildParam implementation.
         source.insertImportDeclaration(index, {
-            namedImports: [className],
+            defaultImport: className,
             moduleSpecifier: importPath
         });
 

@@ -2,7 +2,7 @@ import { createAbstraction } from "@webiny/feature/api";
 
 export interface IBuildParam {
     key: string;
-    value: string;
+    value: any;
 }
 
 export const BuildParam = createAbstraction<IBuildParam>("BuildParam");
@@ -12,7 +12,7 @@ export namespace BuildParam {
 }
 
 export interface IBuildParams {
-    get(key: string): string | null;
+    get<T = any>(key: string): T | null;
 }
 
 export const BuildParams = createAbstraction<IBuildParams>("BuildParams");

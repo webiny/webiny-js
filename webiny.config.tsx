@@ -23,6 +23,10 @@ export const Extensions = () => {
             <Infra.Aws.DefaultRegion name={"eu-central-1"} />
 
             <Api.BuildParam paramName="MY_CUSTOM_BUILD_PARAM" value="customValue" />
+            <Api.BuildParam
+                paramName="MY_CUSTOM_BUILD_PARAM-2"
+                value={{ myKey: 2, nested: { foo: "bar" } }}
+            />
             {/* Example: Environment-based conditional configuration */}
             {/*<Infra.Env.Is env="prod">
                 <Infra.Aws.Tags tags={{ ENV: "production" }} />
@@ -91,7 +95,7 @@ export const Extensions = () => {
 
             {/* Security 👇 */}
             <Api.Extension src={"/extensions/MyApiKey.ts"} />
-            {/*<Security.ApiKey.AfterUpdate src={"/extensions/MyApiKeyAfterUpdate.ts"} />*/}
+            <Security.ApiKey.AfterUpdate src={"/extensions/MyApiKeyAfterUpdate.ts"} />
 
             {/* 🚧 WIP 👇 */}
             {/*<Security.ApiKeyBeforeCreate src={"/extensions/ApiKeyBeforeCreate.ts"} />*/}

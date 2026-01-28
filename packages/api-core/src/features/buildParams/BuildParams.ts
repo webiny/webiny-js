@@ -4,7 +4,7 @@ import { BuildParam, BuildParams as BuildParamsAbstraction } from "./abstraction
 export class BuildParamsImpl implements BuildParamsAbstraction.Interface {
     constructor(private container: Container) {}
 
-    get(key: string): string | null {
+    get<T = any>(key: string): T | null {
         const params = this.container.resolveAll<BuildParam.Interface>(BuildParam);
         const param = params.find(p => p.key === key);
         return param ? param.value : null;
