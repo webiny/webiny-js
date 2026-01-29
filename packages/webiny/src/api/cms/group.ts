@@ -1,34 +1,19 @@
 export { ModelGroupFactory } from "@webiny/api-headless-cms/features/contentModelGroup/shared/abstractions.js";
 export type { CmsGroup, CmsModelGroup } from "@webiny/api-headless-cms/types/modelGroup.js";
-export {
-    CreateGroupUseCase,
-    CreateGroupRepository
-} from "@webiny/api-headless-cms/features/contentModelGroup/CreateGroup/abstractions.js";
+export { CreateGroupUseCase } from "@webiny/api-headless-cms/features/contentModelGroup/CreateGroup/abstractions.js";
 export {
     GroupBeforeCreateEventHandler,
     GroupAfterCreateEventHandler
 } from "@webiny/api-headless-cms/features/contentModelGroup/CreateGroup/events.js";
-export {
-    UpdateGroupUseCase,
-    UpdateGroupRepository
-} from "@webiny/api-headless-cms/features/contentModelGroup/UpdateGroup/abstractions.js";
+export { UpdateGroupUseCase } from "@webiny/api-headless-cms/features/contentModelGroup/UpdateGroup/abstractions.js";
 export {
     GroupBeforeUpdateEventHandler,
     GroupAfterUpdateEventHandler
 } from "@webiny/api-headless-cms/features/contentModelGroup/UpdateGroup/events.js";
-export {
-    DeleteGroupUseCase,
-    DeleteGroupRepository
-} from "@webiny/api-headless-cms/features/contentModelGroup/DeleteGroup/abstractions.js";
+export { DeleteGroupUseCase } from "@webiny/api-headless-cms/features/contentModelGroup/DeleteGroup/abstractions.js";
 export {
     GroupBeforeDeleteEventHandler,
     GroupAfterDeleteEventHandler
 } from "@webiny/api-headless-cms/features/contentModelGroup/DeleteGroup/events.js";
-export {
-    ListGroupsUseCase,
-    ListGroupsRepository
-} from "@webiny/api-headless-cms/features/contentModelGroup/ListGroups/abstractions.js";
-export {
-    GetGroupUseCase,
-    GetGroupRepository
-} from "@webiny/api-headless-cms/features/contentModelGroup/GetGroup/abstractions.js";
+export { ListGroupsUseCase } from "@webiny/api-headless-cms/features/contentModelGroup/ListGroups/abstractions.js";
+export { GetGroupUseCase } from "@webiny/api-headless-cms/features/contentModelGroup/GetGroup/abstractions.js";
