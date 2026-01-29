@@ -34,6 +34,9 @@ export const CreateEntryUseCase = createAbstraction<ICreateEntryUseCase>("Create
 export namespace CreateEntryUseCase {
     export type Interface = ICreateEntryUseCase;
     export type Error = UseCaseError;
+    export type Return<T extends CmsEntryValues = CmsEntryValues> = Promise<
+        Result<CmsEntry<T>, UseCaseError>
+    >;
 }
 
 /**

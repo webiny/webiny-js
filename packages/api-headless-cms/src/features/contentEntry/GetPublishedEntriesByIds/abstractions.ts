@@ -1,8 +1,9 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
+import { createAbstraction, Result } from "@webiny/feature/api";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
-import type { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
-import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import type {
+    EntryNotAuthorizedError,
+    EntryPersistenceError
+} from "~/domain/contentEntry/errors.js";
 
 /**
  * GetPublishedEntriesByIds Use Case - Fetches published revisions by entry IDs.
@@ -30,6 +31,7 @@ export const GetPublishedEntriesByIdsUseCase = createAbstraction<IGetPublishedEn
 export namespace GetPublishedEntriesByIdsUseCase {
     export type Interface = IGetPublishedEntriesByIdsUseCase;
     export type Error = UseCaseError;
+    export type Return<T extends CmsEntryValues> = Promise<Result<CmsEntry<T>[], UseCaseError>>;
 }
 
 /**

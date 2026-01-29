@@ -27,6 +27,7 @@ export const DeleteEntryRevisionUseCase = createAbstraction<IDeleteEntryRevision
 export namespace DeleteEntryRevisionUseCase {
     export type Interface = IDeleteEntryRevisionUseCase;
     export type Error = UseCaseError;
+    export type Return = Promise<Result<void, UseCaseError>>;
 }
 
 /**

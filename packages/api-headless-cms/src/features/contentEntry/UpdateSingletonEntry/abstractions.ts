@@ -1,14 +1,17 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
-import type { CmsEntry } from "~/types/index.js";
-import type { CmsModel } from "~/types/index.js";
-import type { UpdateCmsEntryInput } from "~/types/index.js";
-import type { UpdateCmsEntryOptionsInput } from "~/types/index.js";
-import {
-    type EntryNotFoundError,
-    type EntryNotAuthorizedError,
-    type EntryValidationError,
-    type EntryPersistenceError
+import { createAbstraction, Result } from "@webiny/feature/api";
+import type {
+    CmsEntry,
+    CmsEntryValues,
+    CmsModel,
+    UpdateCmsEntryInput,
+    UpdateCmsEntryOptionsInput
+} from "~/types/index.js";
+import type {
+    EntryLockedError,
+    EntryNotAuthorizedError,
+    EntryNotFoundError,
+    EntryPersistenceError,
+    EntryValidationError
 } from "~/domain/contentEntry/errors.js";
 
 /**
@@ -17,11 +20,11 @@ import {
  * Updates the singleton entry for a model.
  */
 export interface IUpdateSingletonEntryUseCase {
-    execute(
+    execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
-        data: UpdateCmsEntryInput,
+        data: UpdateCmsEntryInput<T>,
         options?: UpdateCmsEntryOptionsInput
-    ): Promise<Result<CmsEntry, UseCaseError>>;
+    ): Promise<Result<CmsEntry<T>, UseCaseError>>;
 }
 
 export interface IUpdateSingletonEntryUseCaseErrors {
@@ -29,6 +32,7 @@ export interface IUpdateSingletonEntryUseCaseErrors {
     notAuthorized: EntryNotAuthorizedError;
     validation: EntryValidationError;
     persistence: EntryPersistenceError;
+    locked: EntryLockedError;
 }
 
 type UseCaseError = IUpdateSingletonEntryUseCaseErrors[keyof IUpdateSingletonEntryUseCaseErrors];
@@ -40,4 +44,7 @@ export const UpdateSingletonEntryUseCase = createAbstraction<IUpdateSingletonEnt
 export namespace UpdateSingletonEntryUseCase {
     export type Interface = IUpdateSingletonEntryUseCase;
     export type Error = UseCaseError;
+    export type Return<T extends CmsEntryValues = CmsEntryValues> = Promise<
+        Result<CmsEntry<T>, UseCaseError>
+    >;
 }

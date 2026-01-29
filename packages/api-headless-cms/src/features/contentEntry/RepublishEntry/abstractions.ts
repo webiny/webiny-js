@@ -1,9 +1,10 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
+import { createAbstraction, Result } from "@webiny/feature/api";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
-import type { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
-import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
-import type { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
+import type {
+    EntryNotAuthorizedError,
+    EntryNotFoundError,
+    EntryPersistenceError
+} from "~/domain/contentEntry/errors.js";
 
 /**
  * RepublishEntry Use Case - Republishes an already published entry.
@@ -30,6 +31,9 @@ export const RepublishEntryUseCase =
 export namespace RepublishEntryUseCase {
     export type Interface = IRepublishEntryUseCase;
     export type Error = UseCaseError;
+    export type Return<T extends CmsEntryValues = CmsEntryValues> = Promise<
+        Result<CmsEntry<T>, UseCaseError>
+    >;
 }
 
 /**

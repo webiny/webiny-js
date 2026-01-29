@@ -1,11 +1,11 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
-import type { CmsEntry, CmsEntryValues } from "~/types/index.js";
-import type { CmsModel } from "~/types/index.js";
-import type { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
-import type { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
-import type { EntryValidationError } from "~/domain/contentEntry/errors.js";
-import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import { createAbstraction, Result } from "@webiny/feature/api";
+import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
+import type {
+    EntryNotAuthorizedError,
+    EntryNotFoundError,
+    EntryPersistenceError,
+    EntryValidationError
+} from "~/domain/contentEntry/errors.js";
 
 /**
  * UnpublishEntry Use Case
@@ -32,6 +32,9 @@ export const UnpublishEntryUseCase =
 export namespace UnpublishEntryUseCase {
     export type Interface = IUnpublishEntryUseCase;
     export type Error = UseCaseError;
+    export type Return<T extends CmsEntryValues = CmsEntryValues> = Promise<
+        Result<CmsEntry<T>, UseCaseError>
+    >;
 }
 
 /**

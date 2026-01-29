@@ -4,22 +4,8 @@ export { ModelBuilder } from "~/features/modelBuilder/models/ModelBuilder.js";
 export { FieldBuilder } from "~/features/modelBuilder/fields/FieldBuilder.js";
 export { FieldType } from "~/features/modelBuilder/fields/abstractions.js";
 
-export type {
-    CmsModel,
-    CmsModelAuthorization,
-    CmsModelCreateFromInput,
-    CmsModelCreateInput
-} from "~/types/model.js";
-export type {
-    CmsModelField,
-    CmsModelFieldSettings,
-    CmsModelFieldPredefinedValues,
-    CmsModelFieldType,
-    ICmsModelFieldStorageId,
-    CmsModelFieldInput,
-    CmsModelFieldValidation,
-    CmsModelUpdateInput
-} from "~/types/modelField.js";
+export type { CmsModel } from "~/types/model.js";
+export type { CmsModelField } from "~/types/modelField.js";
 
 // CreateModel
 export {

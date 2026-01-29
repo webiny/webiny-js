@@ -1,8 +1,10 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
+import { createAbstraction, Result } from "@webiny/feature/api";
 import type { CmsEntry, CmsEntryGetParams, CmsEntryValues, CmsModel } from "~/types/index.js";
-import type { EntryNotFoundError, EntryPersistenceError } from "~/domain/contentEntry/errors.js";
-import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import type {
+    EntryNotAuthorizedError,
+    EntryNotFoundError,
+    EntryPersistenceError
+} from "~/domain/contentEntry/errors.js";
 
 /**
  * GetEntry Use Case - Gets a single entry by query parameters (where + sort).
@@ -28,4 +30,5 @@ export const GetEntryUseCase = createAbstraction<IGetEntryUseCase>("GetEntryUseC
 export namespace GetEntryUseCase {
     export type Interface = IGetEntryUseCase;
     export type Error = UseCaseError;
+    export type Return<T extends CmsEntryValues> = Promise<Result<CmsEntry<T>, UseCaseError>>;
 }

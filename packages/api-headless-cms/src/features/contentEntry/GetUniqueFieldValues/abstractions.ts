@@ -1,8 +1,9 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
-import type { CmsModel, CmsEntryUniqueValue } from "~/types/index.js";
-import type { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
-import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import { createAbstraction, Result } from "@webiny/feature/api";
+import type { CmsEntryUniqueValue, CmsModel } from "~/types/index.js";
+import type {
+    EntryNotAuthorizedError,
+    EntryPersistenceError
+} from "~/domain/contentEntry/errors.js";
 import type { FieldNotSearchableError, InvalidWhereConditionError } from "./errors.js";
 
 export interface GetUniqueFieldValuesParams {
@@ -42,6 +43,7 @@ export const GetUniqueFieldValuesUseCase = createAbstraction<IGetUniqueFieldValu
 export namespace GetUniqueFieldValuesUseCase {
     export type Interface = IGetUniqueFieldValuesUseCase;
     export type Error = UseCaseError;
+    export type Return = Promise<Result<CmsEntryUniqueValue[], UseCaseError>>;
 }
 
 /**

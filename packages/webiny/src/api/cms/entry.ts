@@ -1,33 +1,5 @@
 export { EntryId } from "@webiny/api-headless-cms/domain/contentEntry/EntryId.js";
-export { CONTENT_ENTRY_STATUS } from "@webiny/api-headless-cms/types/types.js";
-export type {
-    CmsEntry,
-    CmsEntryValues,
-    ICmsEntryLocation,
-    CmsEntryStatus,
-    CmsEntryListSort,
-    CmsEntryListWhere,
-    CmsEntryListWhereValues,
-    CmsEntryListWhereRef,
-    CmsEntryMeta,
-    CmsEntryListSortAsc,
-    CmsEntryListSortDesc,
-    IEntryState,
-    CmsEntryListParams,
-    CmsStorageEntry,
-    CmsEntryGetParams,
-    CmsEntryPermission,
-    UpdateCmsEntryInput,
-    CreateCmsEntryInput,
-    DeleteMultipleEntriesParams,
-    CmsDeleteEntryOptions,
-    UpdateCmsEntryOptionsInput,
-    CreateRevisionCmsEntryOptionsInput,
-    CreateFromCmsEntryInput,
-    CreateCmsEntryOptionsInput,
-    CmsEntryValidateResponse,
-    CmsEntryUniqueValue
-} from "@webiny/api-headless-cms/types/types.js";
+export type { CmsEntry, CmsEntryValues } from "@webiny/api-headless-cms/types/types.js";
 export {
     CreateEntryUseCase,
     CreateEntryRepository

@@ -1,36 +1,7 @@
 // Domain
 export { EntryId } from "~/domain/contentEntry/EntryId.js";
 
-export { CONTENT_ENTRY_STATUS } from "~/types/types.js";
-
-export type {
-    CmsEntry,
-    CmsEntryValues,
-    ICmsEntryLocation,
-    CmsEntryStatus,
-    CmsEntryListSort,
-    CmsEntryListWhere,
-    CmsEntryListWhereValues,
-    CmsEntryListWhereRef,
-    CmsEntryMeta,
-    CmsEntryListSortAsc,
-    CmsEntryListSortDesc,
-    IEntryState,
-    CmsEntryListParams,
-    CmsStorageEntry,
-    CmsEntryGetParams,
-    CmsEntryPermission,
-    UpdateCmsEntryInput,
-    CreateCmsEntryInput,
-    DeleteMultipleEntriesParams,
-    CmsDeleteEntryOptions,
-    UpdateCmsEntryOptionsInput,
-    CreateRevisionCmsEntryOptionsInput,
-    CreateFromCmsEntryInput,
-    CreateCmsEntryOptionsInput,
-    CmsEntryValidateResponse,
-    CmsEntryUniqueValue
-} from "~/types/types.js";
+export type { CmsEntry, CmsEntryValues } from "~/types/types.js";
 
 // CreateEntry
 export {
