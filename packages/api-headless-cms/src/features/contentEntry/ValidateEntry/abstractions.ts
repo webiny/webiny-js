@@ -39,6 +39,8 @@ export const ValidateEntryUseCase =
 
 export namespace ValidateEntryUseCase {
     export type Interface = IValidateEntryUseCase;
+    export type Input<T extends CmsEntryValues = CmsEntryValues> = UpdateCmsEntryInput<T>;
+
     export type Error = UseCaseError;
     export type Return = IValidateEntryUseCaseExecuteResult;
 }

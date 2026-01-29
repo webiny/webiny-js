@@ -1,8 +1,10 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
-import type { CmsEntry, CmsModel, CmsDeleteEntryOptions } from "~/types/index.js";
-import type { EntryNotFoundError, EntryPersistenceError } from "~/domain/contentEntry/errors.js";
-import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import { createAbstraction, Result } from "@webiny/feature/api";
+import type { CmsDeleteEntryOptions, CmsEntry, CmsModel } from "~/types/index.js";
+import type {
+    EntryNotAuthorizedError,
+    EntryNotFoundError,
+    EntryPersistenceError
+} from "~/domain/contentEntry/errors.js";
 
 /**
  * DeleteEntry Use Case - Permanently deletes an entry from the database.
@@ -28,6 +30,7 @@ export const DeleteEntryUseCase = createAbstraction<IDeleteEntryUseCase>("Delete
 
 export namespace DeleteEntryUseCase {
     export type Interface = IDeleteEntryUseCase;
+    export type Options = CmsDeleteEntryOptions;
     export type Error = UseCaseError;
     export type Return = Promise<Result<void, UseCaseError>>;
 }

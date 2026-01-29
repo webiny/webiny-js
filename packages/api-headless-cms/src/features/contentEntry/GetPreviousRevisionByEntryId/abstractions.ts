@@ -35,6 +35,8 @@ export const GetPreviousRevisionByEntryIdBaseUseCase =
 
 export namespace GetPreviousRevisionByEntryIdBaseUseCase {
     export type Interface = IGetPreviousRevisionByEntryIdBaseUseCase;
+    export type Params = CmsEntryStorageOperationsGetPreviousRevisionParams;
+
     export type Error = UseCaseError;
     export type Return<T extends CmsEntryValues> = Promise<Result<CmsEntry<T>, UseCaseError>>;
 }
@@ -49,6 +51,8 @@ export const GetPreviousRevisionByEntryIdUseCase =
 
 export namespace GetPreviousRevisionByEntryIdUseCase {
     export type Interface = IGetPreviousRevisionByEntryIdBaseUseCase;
+    export type Params = CmsEntryStorageOperationsGetPreviousRevisionParams;
+
     export type Error = UseCaseError;
     export type Return<T extends CmsEntryValues> = Promise<Result<CmsEntry<T>, UseCaseError>>;
 }

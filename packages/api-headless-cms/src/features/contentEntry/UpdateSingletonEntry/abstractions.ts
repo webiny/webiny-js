@@ -43,6 +43,9 @@ export const UpdateSingletonEntryUseCase = createAbstraction<IUpdateSingletonEnt
 
 export namespace UpdateSingletonEntryUseCase {
     export type Interface = IUpdateSingletonEntryUseCase;
+    export type Input<T extends CmsEntryValues = CmsEntryValues> = UpdateCmsEntryInput<T>;
+    export type Options = UpdateCmsEntryOptionsInput;
+
     export type Error = UseCaseError;
     export type Return<T extends CmsEntryValues = CmsEntryValues> = Promise<
         Result<CmsEntry<T>, UseCaseError>

@@ -1,5 +1,4 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
+import { createAbstraction, Result } from "@webiny/feature/api";
 import type {
     CmsEntry,
     CmsEntryValues,
@@ -7,8 +6,11 @@ import type {
     CreateCmsEntryInput,
     CreateCmsEntryOptionsInput
 } from "~/types/index.js";
-import type { EntryPersistenceError, EntryValidationError } from "~/domain/contentEntry/errors.js";
-import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import type {
+    EntryNotAuthorizedError,
+    EntryPersistenceError,
+    EntryValidationError
+} from "~/domain/contentEntry/errors.js";
 
 /**
  * CreateEntry Use Case
@@ -33,6 +35,9 @@ export const CreateEntryUseCase = createAbstraction<ICreateEntryUseCase>("Create
 
 export namespace CreateEntryUseCase {
     export type Interface = ICreateEntryUseCase;
+    export type Input<T extends CmsEntryValues = CmsEntryValues> = CreateCmsEntryInput<T>;
+    export type Options = CreateCmsEntryOptionsInput;
+
     export type Error = UseCaseError;
     export type Return<T extends CmsEntryValues = CmsEntryValues> = Promise<
         Result<CmsEntry<T>, UseCaseError>

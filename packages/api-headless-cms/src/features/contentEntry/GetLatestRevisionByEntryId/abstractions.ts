@@ -35,6 +35,8 @@ export const GetLatestRevisionByEntryIdBaseUseCase =
 
 export namespace GetLatestRevisionByEntryIdBaseUseCase {
     export type Interface = IGetLatestRevisionByEntryIdBaseUseCase;
+    export type Params = CmsEntryStorageOperationsGetLatestRevisionParams;
+
     export type Error = UseCaseError;
     export type Return<T extends CmsEntryValues> = Promise<Result<CmsEntry<T>, UseCaseError>>;
 }
@@ -47,6 +49,8 @@ export const GetLatestRevisionByEntryIdUseCase =
 
 export namespace GetLatestRevisionByEntryIdUseCase {
     export type Interface = IGetLatestRevisionByEntryIdBaseUseCase;
+    export type Params = CmsEntryStorageOperationsGetLatestRevisionParams;
+
     export type Error = UseCaseError;
     export type Return<T extends CmsEntryValues> = Promise<Result<CmsEntry<T>, UseCaseError>>;
 }
@@ -61,12 +65,16 @@ export const GetLatestDeletedRevisionByEntryIdUseCase =
 
 export namespace GetLatestDeletedRevisionByEntryIdUseCase {
     export type Interface = IGetLatestRevisionByEntryIdBaseUseCase;
+    export type Params = CmsEntryStorageOperationsGetLatestRevisionParams;
+
     export type Error = UseCaseError;
     export type Return<T extends CmsEntryValues> = Promise<Result<CmsEntry<T>, UseCaseError>>;
 }
 
 export namespace GetLatestNonDeletedRevisionByEntryIdUseCase {
     export type Interface = IGetLatestRevisionByEntryIdBaseUseCase;
+    export type Params = CmsEntryStorageOperationsGetLatestRevisionParams;
+
     export type Error = UseCaseError;
     export type Return<T extends CmsEntryValues> = Promise<Result<CmsEntry<T>, UseCaseError>>;
 }
@@ -81,6 +89,8 @@ export const GetLatestRevisionByEntryIdIncludingDeletedUseCase =
 
 export namespace GetLatestRevisionByEntryIdIncludingDeletedUseCase {
     export type Interface = IGetLatestRevisionByEntryIdBaseUseCase;
+    export type Params = CmsEntryStorageOperationsGetLatestRevisionParams;
+
     export type Error = UseCaseError;
     export type Return<T extends CmsEntryValues> = Promise<Result<CmsEntry<T>, UseCaseError>>;
 }

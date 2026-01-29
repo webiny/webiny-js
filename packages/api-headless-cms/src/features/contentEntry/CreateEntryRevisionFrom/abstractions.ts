@@ -41,6 +41,9 @@ export const CreateEntryRevisionFromUseCase = createAbstraction<ICreateEntryRevi
 
 export namespace CreateEntryRevisionFromUseCase {
     export type Interface = ICreateEntryRevisionFromUseCase;
+    export type Input<T extends CmsEntryValues = CmsEntryValues> = CreateCmsEntryInput<T>;
+    export type Options = CreateCmsEntryOptionsInput;
+
     export type Return<T extends CmsEntryValues = CmsEntryValues> = Promise<
         Result<CmsEntry<T>, UseCaseError>
     >;

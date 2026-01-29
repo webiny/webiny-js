@@ -30,5 +30,6 @@ export const GetEntryUseCase = createAbstraction<IGetEntryUseCase>("GetEntryUseC
 export namespace GetEntryUseCase {
     export type Interface = IGetEntryUseCase;
     export type Error = UseCaseError;
+    export type Params = CmsEntryGetParams;
     export type Return<T extends CmsEntryValues> = Promise<Result<CmsEntry<T>, UseCaseError>>;
 }

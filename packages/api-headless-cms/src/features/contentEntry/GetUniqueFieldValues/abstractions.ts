@@ -42,6 +42,8 @@ export const GetUniqueFieldValuesUseCase = createAbstraction<IGetUniqueFieldValu
 
 export namespace GetUniqueFieldValuesUseCase {
     export type Interface = IGetUniqueFieldValuesUseCase;
+    export type Params = GetUniqueFieldValuesParams;
+
     export type Error = UseCaseError;
     export type Return = Promise<Result<CmsEntryUniqueValue[], UseCaseError>>;
 }

@@ -12,10 +12,13 @@ import type {
 export interface IDeleteMultipleEntriesUseCaseResultItem {
     id: string;
 }
+export interface IDeleteMultipleEntriesUseCaseParams {
+    entries: string[];
+}
 export interface IDeleteMultipleEntriesUseCase {
     execute(
         model: CmsModel,
-        params: { entries: string[] }
+        params: IDeleteMultipleEntriesUseCaseParams
     ): Promise<Result<IDeleteMultipleEntriesUseCaseResultItem[], UseCaseError>>;
 }
 
@@ -32,6 +35,8 @@ export const DeleteMultipleEntriesUseCase = createAbstraction<IDeleteMultipleEnt
 
 export namespace DeleteMultipleEntriesUseCase {
     export type Interface = IDeleteMultipleEntriesUseCase;
+    export type Params = IDeleteMultipleEntriesUseCaseParams;
+
     export type Error = UseCaseError;
     export type Return = Promise<Result<IDeleteMultipleEntriesUseCaseResultItem[], UseCaseError>>;
 }
