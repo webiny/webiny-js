@@ -2,6 +2,7 @@ import { Abstraction } from "@webiny/di";
 
 export interface NamedExport {
     name: string;
+    alias?: string;
     isTypeOnly: boolean;
 }
 

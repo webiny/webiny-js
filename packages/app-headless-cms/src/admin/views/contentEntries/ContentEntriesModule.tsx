@@ -40,6 +40,7 @@ import { FullScreenContentEntry } from "~/admin/views/contentEntries/ContentEntr
 import { ShowRevisionList } from "~/admin/components/ContentEntryForm/Header/ShowRevisionsList/index.js";
 import { ScheduleEntryMenuItem } from "~/admin/components/ContentEntries/Scheduler/actions/ScheduleEntryAction.js";
 import { AdvancedSearchConfigs } from "@webiny/app-aco/components/AdvancedSearch/AdvancedSearchConfigs";
+import { IsModelPublishable } from "~/admin/components/IsModelPublishable.js";
 
 const { Browser } = InternalContentEntryListConfig;
 const { Actions } = ContentEntryEditorConfig;
@@ -49,16 +50,20 @@ export const ContentEntriesModule = () => {
         <>
             <InternalContentEntryListConfig>
                 <AdvancedSearchConfigs />
-                <Browser.Filter name={"status"} element={<FilterByStatus />} />
-                <Browser.BulkAction name={"publish"} element={<ActionPublish />} />
-                <Browser.BulkAction name={"unpublish"} element={<ActionUnpublish />} />
+                <IsModelPublishable>
+                    <Browser.Filter name={"status"} element={<FilterByStatus />} />
+                    <Browser.BulkAction name={"publish"} element={<ActionPublish />} />
+                    <Browser.BulkAction name={"unpublish"} element={<ActionUnpublish />} />
+                </IsModelPublishable>
                 <Browser.BulkAction name={"move"} element={<ActionMove />} />
                 <Browser.BulkAction name={"delete"} element={<ActionDelete />} />
                 <Browser.Folder.Action name={"edit"} element={<EditFolder />} />
                 <Browser.Folder.Action name={"permissions"} element={<SetFolderPermissions />} />
                 <Browser.Folder.Action name={"delete"} element={<DeleteFolder />} />
                 <Browser.Entry.Action name={"edit"} element={<EditEntry />} />
-                <Browser.Entry.Action name={"status"} element={<ChangeEntryStatus />} />
+                <IsModelPublishable>
+                    <Browser.Entry.Action name={"status"} element={<ChangeEntryStatus />} />
+                </IsModelPublishable>
                 <Browser.Entry.Action name={"move"} element={<MoveEntry />} />
                 <Browser.Entry.Action name={"delete"} element={<DeleteEntry />} />
                 <Browser.Table.Column
@@ -90,12 +95,14 @@ export const ContentEntriesModule = () => {
                     sortable={true}
                     className={"cms-aco-list-savedOn"}
                 />
-                <Browser.Table.Column
-                    name={"status"}
-                    header={"Status"}
-                    cell={<CellStatus />}
-                    className={"cms-aco-list-status"}
-                />
+                <IsModelPublishable>
+                    <Browser.Table.Column
+                        name={"status"}
+                        header={"Status"}
+                        cell={<CellStatus />}
+                        className={"cms-aco-list-status"}
+                    />
+                </IsModelPublishable>
                 <Browser.Table.Column
                     name={"actions"}
                     header={""}
@@ -117,10 +124,17 @@ export const ContentEntriesModule = () => {
                 <ShowConfirmationOnDelete />
                 <ShowConfirmationOnDeleteRevision />
                 <Actions.ButtonAction name={"save"} element={<SaveContentButton />} />
-                <Actions.ButtonAction name={"publish"} element={<SaveAndPublishButton />} />
+                <IsModelPublishable>
+                    <Actions.ButtonAction name={"publish"} element={<SaveAndPublishButton />} />
+                </IsModelPublishable>
                 <Actions.MenuItemAction name={"delete"} element={<DeleteEntryMenuItem />} />
-                <Actions.MenuItemAction name={"schedule"} element={<ScheduleEntryMenuItem />} />
-                <Actions.MenuItemAction name={"showRevisionsList"} element={<ShowRevisionList />} />
+                <IsModelPublishable>
+                    <Actions.MenuItemAction name={"schedule"} element={<ScheduleEntryMenuItem />} />
+                    <Actions.MenuItemAction
+                        name={"showRevisionsList"}
+                        element={<ShowRevisionList />}
+                    />
+                </IsModelPublishable>
             </ContentEntryEditorConfig>
             <FullScreenContentEntry />
         </>

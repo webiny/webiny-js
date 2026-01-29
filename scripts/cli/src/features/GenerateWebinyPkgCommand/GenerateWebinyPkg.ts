@@ -45,6 +45,12 @@ export class GenerateWebinyPkg implements GenerateWebinyPkg {
             this.generateExportsForStaticFiles(webinySrcStaticPath, webinySrcPath, wbyPkg);
         }
 
+        // Copy icons from packages/icons/dist to packages/webiny/src/admin/icons
+        const iconsPkg = fullPackagesList.find(pkg => pkg.packageJson.name === "@webiny/icons");
+        if (iconsPkg) {
+            this.copyIconsToWebinyPackage(iconsPkg, wbyPkg);
+        }
+
         // Scan for exports folders in all packages
         const packagesWithoutWebiny = fullPackagesList.filter(pkg => pkg !== wbyPkg);
         const exportFilesMap = this.scanExportsFoldersService.execute(packagesWithoutWebiny);
@@ -150,5 +156,26 @@ export class GenerateWebinyPkg implements GenerateWebinyPkg {
                 fs.copyFileSync(sourcePath, targetPath);
             }
         }
+    }
+
+    private copyIconsToWebinyPackage(
+        iconsPkg: ListPackagesService.Package,
+        wbyPkg: ListPackagesService.Package
+    ) {
+        const iconsSourcePath = iconsPkg.paths.packageFolder.join("dist").toString();
+        const iconsTargetPath = wbyPkg.paths.packageFolder.join("src", "admin", "icons").toString();
+
+        if (!fs.existsSync(iconsSourcePath)) {
+            this.ui.warning("Icons source path not found: %s", iconsSourcePath);
+            return;
+        }
+
+        this.ui.info("Copying icons from %s to %s", iconsSourcePath, iconsTargetPath);
+        this.copyDirectoryRecursive(iconsSourcePath, iconsTargetPath);
+
+        // Generate exports for icon files
+        // if (wbyPkg.packageJson.exports) {
+        //     wbyPkg.packageJson.exports["./admin/icons/*"] = "./admin/icons/*";
+        // }
     }
 }

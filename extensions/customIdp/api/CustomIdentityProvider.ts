@@ -1,6 +1,7 @@
 import { verify } from "jsonwebtoken";
 import { JwtIdentityProvider } from "webiny/api/security";
 import { TenantContext } from "webiny/api/tenancy";
+import {  } from "webiny/api/security/apiKey";
 
 const JWT_SECRET = process.env.WEBINY_API_IDP_SECRET_KEY as string;
 

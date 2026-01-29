@@ -5,6 +5,7 @@ import { ContentEntryEditorConfig, usePermission } from "@webiny/app-headless-cm
 import { useContentEntryForm } from "@webiny/app-headless-cms/admin/components/ContentEntryForm/useContentEntryForm.js";
 import { usePersistEntry } from "@webiny/app-headless-cms/admin/hooks/usePersistEntry.js";
 import { ReactComponent as NewReleaseIcon } from "@webiny/icons/new_releases.svg";
+import { IsModelPublishable } from "@webiny/app-headless-cms/exports/admin/cms.js";
 
 const { Actions } = ContentEntryEditorConfig;
 
@@ -59,10 +60,12 @@ const CreateNewRevisionMenuItem = () => {
 export const CmsEntryFormCreateNewRevisionButton = () => {
     return (
         <ContentEntryEditorConfig>
-            <Actions.MenuItemAction
-                name={"createNewRevision"}
-                element={<CreateNewRevisionMenuItem />}
-            />
+            <IsModelPublishable>
+                <Actions.MenuItemAction
+                    name={"createNewRevision"}
+                    element={<CreateNewRevisionMenuItem />}
+                />
+            </IsModelPublishable>
         </ContentEntryEditorConfig>
     );
 };

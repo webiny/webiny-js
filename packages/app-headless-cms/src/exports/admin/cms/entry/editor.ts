@@ -11,5 +11,5 @@ export {
     ContentEntryFormTitle
 } from "~/admin/views/contentEntries/ContentEntry/FullScreenContentEntry/FullScreenContentEntryHeaderLeft.js";
 // Single entry editor
-export { SingletonContentEntry as SingletonContentEntryEditor } from "~/admin/views/contentEntries/ContentEntry/SingletonContentEntry.js";
-export { useSingletonContentEntry } from "~/admin/views/contentEntries/hooks/useSingletonContentEntry.js";
+export { SingletonContentEntry as SingleEntryContentEntryEditor } from "~/admin/views/contentEntries/ContentEntry/SingletonContentEntry.js";
+export { useSingletonContentEntry as useSingleEntryContentEntry } from "~/admin/views/contentEntries/hooks/useSingletonContentEntry.js";

@@ -12,10 +12,12 @@ class TenantModelFactory implements ModelFactory.Interface {
             .modelId(TENANT_MODEL_ID)
             .name("Tenant")
             .description("Manage system tenants.")
+            .titleFieldId("name")
             .group("hidden")
             .icon("fas/building")
             .singularApiName("Tenant")
-            .pluralApiName("Tenants");
+            .pluralApiName("Tenants")
+            .tags(["$publishing:false"]);
 
         model
             .fields(fields => ({
