@@ -1,5 +1,4 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
+import { createAbstraction, Result } from "@webiny/feature/api";
 import type {
     CmsEntry,
     CmsEntryListParams,
@@ -7,8 +6,10 @@ import type {
     CmsEntryValues,
     CmsModel
 } from "~/types/index.js";
-import type { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
-import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import type {
+    EntryNotAuthorizedError,
+    EntryPersistenceError
+} from "~/domain/contentEntry/errors.js";
 
 export interface IListEntriesResult<T extends CmsEntryValues = CmsEntryValues> {
     entries: CmsEntry<T>[];
@@ -37,6 +38,8 @@ export const ListEntriesUseCase = createAbstraction<IListEntriesUseCase>("ListEn
 
 export namespace ListEntriesUseCase {
     export type Interface = IListEntriesUseCase;
+    export type Params = CmsEntryListParams;
+
     export type Return<T extends CmsEntryValues = CmsEntryValues> = Promise<
         Result<IListEntriesResult<T>, UseCaseError>
     >;
@@ -59,6 +62,8 @@ export const ListLatestEntriesUseCase = createAbstraction<IListLatestEntriesUseC
 
 export namespace ListLatestEntriesUseCase {
     export type Interface = IListLatestEntriesUseCase;
+    export type Params = CmsEntryListParams;
+
     export type Return<T extends CmsEntryValues = CmsEntryValues> = Promise<
         Result<IListEntriesResult<T>, UseCaseError>
     >;
@@ -81,6 +86,8 @@ export const ListPublishedEntriesUseCase = createAbstraction<IListPublishedEntri
 
 export namespace ListPublishedEntriesUseCase {
     export type Interface = IListPublishedEntriesUseCase;
+    export type Params = CmsEntryListParams;
+
     export type Return<T extends CmsEntryValues = CmsEntryValues> = Promise<
         Result<IListEntriesResult<T>, UseCaseError>
     >;
@@ -103,6 +110,8 @@ export const ListDeletedEntriesUseCase = createAbstraction<IListDeletedEntriesUs
 
 export namespace ListDeletedEntriesUseCase {
     export type Interface = IListDeletedEntriesUseCase;
+    export type Params = CmsEntryListParams;
+
     export type Return<T extends CmsEntryValues = CmsEntryValues> = Promise<
         Result<IListEntriesResult<T>, UseCaseError>
     >;

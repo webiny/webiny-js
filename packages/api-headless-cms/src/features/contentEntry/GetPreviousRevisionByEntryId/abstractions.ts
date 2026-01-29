@@ -1,13 +1,12 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
+import { createAbstraction, Result } from "@webiny/feature/api";
 import type {
     CmsEntry,
+    CmsEntryStorageOperationsGetPreviousRevisionParams,
     CmsEntryValues,
-    CmsModel,
-    CmsEntryStorageOperationsGetPreviousRevisionParams
+    CmsModel
 } from "~/types/index.js";
-import { EntryNotFoundError, type EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import { EntryNotFoundError, type EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 
 /**
  * Base internal use case - returns entry regardless of deleted state.
@@ -36,7 +35,10 @@ export const GetPreviousRevisionByEntryIdBaseUseCase =
 
 export namespace GetPreviousRevisionByEntryIdBaseUseCase {
     export type Interface = IGetPreviousRevisionByEntryIdBaseUseCase;
+    export type Params = CmsEntryStorageOperationsGetPreviousRevisionParams;
+
     export type Error = UseCaseError;
+    export type Return<T extends CmsEntryValues> = Promise<Result<CmsEntry<T>, UseCaseError>>;
 }
 
 /**
@@ -49,7 +51,10 @@ export const GetPreviousRevisionByEntryIdUseCase =
 
 export namespace GetPreviousRevisionByEntryIdUseCase {
     export type Interface = IGetPreviousRevisionByEntryIdBaseUseCase;
+    export type Params = CmsEntryStorageOperationsGetPreviousRevisionParams;
+
     export type Error = UseCaseError;
+    export type Return<T extends CmsEntryValues> = Promise<Result<CmsEntry<T>, UseCaseError>>;
 }
 
 /**

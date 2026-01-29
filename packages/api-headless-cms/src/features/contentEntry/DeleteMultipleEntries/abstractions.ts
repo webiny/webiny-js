@@ -1,17 +1,25 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
+import { createAbstraction, Result } from "@webiny/feature/api";
 import type { CmsEntry, CmsModel } from "~/types/index.js";
-import type { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
-import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import type {
+    EntryNotAuthorizedError,
+    EntryPersistenceError
+} from "~/domain/contentEntry/errors.js";
 
 /**
  * DeleteMultipleEntries Use Case - Deletes multiple entries at once.
  */
+
+export interface IDeleteMultipleEntriesUseCaseResultItem {
+    id: string;
+}
+export interface IDeleteMultipleEntriesUseCaseParams {
+    entries: string[];
+}
 export interface IDeleteMultipleEntriesUseCase {
     execute(
         model: CmsModel,
-        params: { entries: string[] }
-    ): Promise<Result<Array<{ id: string }>, UseCaseError>>;
+        params: IDeleteMultipleEntriesUseCaseParams
+    ): Promise<Result<IDeleteMultipleEntriesUseCaseResultItem[], UseCaseError>>;
 }
 
 export interface IDeleteMultipleEntriesUseCaseErrors {
@@ -27,7 +35,10 @@ export const DeleteMultipleEntriesUseCase = createAbstraction<IDeleteMultipleEnt
 
 export namespace DeleteMultipleEntriesUseCase {
     export type Interface = IDeleteMultipleEntriesUseCase;
+    export type Params = IDeleteMultipleEntriesUseCaseParams;
+
     export type Error = UseCaseError;
+    export type Return = Promise<Result<IDeleteMultipleEntriesUseCaseResultItem[], UseCaseError>>;
 }
 
 /**

@@ -40,13 +40,6 @@ export interface CmsError {
     stack?: string;
 }
 
-export interface CmsError {
-    message: string;
-    code: string;
-    data: GenericRecord;
-    stack?: string;
-}
-
 export type ApiEndpoint = "manage" | "preview" | "read";
 
 export interface HeadlessCms extends CmsGroupContext, CmsModelContext, CmsEntryContext {

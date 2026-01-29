@@ -1,9 +1,10 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
+import { createAbstraction, Result } from "@webiny/feature/api";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
-import type { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
-import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
-import type { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
+import type {
+    EntryNotAuthorizedError,
+    EntryNotFoundError,
+    EntryPersistenceError
+} from "~/domain/contentEntry/errors.js";
 
 /**
  * MoveEntry Use Case - Moves an entry to a different folder.
@@ -29,6 +30,9 @@ export const MoveEntryUseCase = createAbstraction<IMoveEntryUseCase>("MoveEntryU
 export namespace MoveEntryUseCase {
     export type Interface = IMoveEntryUseCase;
     export type Error = UseCaseError;
+    export type Return<T extends CmsEntryValues = CmsEntryValues> = Promise<
+        Result<CmsEntry<T>, UseCaseError>
+    >;
 }
 
 /**

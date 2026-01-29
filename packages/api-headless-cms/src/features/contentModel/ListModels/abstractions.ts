@@ -1,7 +1,5 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
-import type { CmsModel } from "~/types/index.js";
-import type { ICmsModelListParams } from "~/types/index.js";
+import { createAbstraction, Result } from "@webiny/feature/api";
+import type { CmsModel, ICmsModelListParams } from "~/types/index.js";
 import {
     ModelNotAuthorizedError,
     type ModelPersistenceError
@@ -25,7 +23,10 @@ export const ListModelsUseCase = createAbstraction<IListModelsUseCase>("ListMode
 
 export namespace ListModelsUseCase {
     export type Interface = IListModelsUseCase;
+    export type Params = ICmsModelListParams;
+
     export type Error = UseCaseError;
+    export type Return = Promise<Result<CmsModel[], UseCaseError>>;
 }
 
 /**

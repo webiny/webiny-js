@@ -1,11 +1,12 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
+import { createAbstraction, Result } from "@webiny/feature/api";
 import type { CmsGroup } from "~/types/index.js";
-import type { GroupNotAuthorizedError } from "~/domain/contentModelGroup/errors.js";
-import type { GroupNotFoundError } from "~/domain/contentModelGroup/errors.js";
-import type { GroupPersistenceError } from "~/domain/contentModelGroup/errors.js";
-import type { GroupCannotDeleteCodeDefinedError } from "~/domain/contentModelGroup/errors.js";
-import type { GroupHasModelsError } from "~/domain/contentModelGroup/errors.js";
+import type {
+    GroupCannotDeleteCodeDefinedError,
+    GroupHasModelsError,
+    GroupNotAuthorizedError,
+    GroupNotFoundError,
+    GroupPersistenceError
+} from "~/domain/contentModelGroup/errors.js";
 
 /**
  * DeleteGroup Use Case
@@ -26,7 +27,9 @@ export const DeleteGroupUseCase = createAbstraction<IDeleteGroupUseCase>("Delete
 
 export namespace DeleteGroupUseCase {
     export type Interface = IDeleteGroupUseCase;
+
     export type Error = UseCaseError;
+    export type Return = Promise<Result<void, UseCaseError>>;
 }
 
 /**

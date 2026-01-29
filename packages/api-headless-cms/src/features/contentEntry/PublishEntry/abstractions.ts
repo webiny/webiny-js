@@ -1,9 +1,11 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
+import { createAbstraction, Result } from "@webiny/feature/api";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
-import type { EntryPersistenceError, EntryValidationError } from "~/domain/contentEntry/errors.js";
-import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
-import type { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
+import type {
+    EntryNotAuthorizedError,
+    EntryNotFoundError,
+    EntryPersistenceError,
+    EntryValidationError
+} from "~/domain/contentEntry/errors.js";
 
 /**
  * PublishEntry Use Case - Publishes an entry revision.
@@ -29,6 +31,9 @@ export const PublishEntryUseCase = createAbstraction<IPublishEntryUseCase>("Publ
 export namespace PublishEntryUseCase {
     export type Interface = IPublishEntryUseCase;
     export type Error = UseCaseError;
+    export type Return<T extends CmsEntryValues = CmsEntryValues> = Promise<
+        Result<CmsEntry<T>, UseCaseError>
+    >;
 }
 
 /**

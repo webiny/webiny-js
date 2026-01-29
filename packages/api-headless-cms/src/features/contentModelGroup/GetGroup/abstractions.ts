@@ -1,11 +1,10 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
+import { createAbstraction, Result } from "@webiny/feature/api";
 import type { CmsGroup } from "~/types/index.js";
+import type { GroupPersistenceError } from "~/domain/contentModelGroup/errors.js";
 import {
     GroupNotAuthorizedError,
     type GroupNotFoundError
 } from "~/domain/contentModelGroup/errors.js";
-import type { GroupPersistenceError } from "~/domain/contentModelGroup/errors.js";
 
 /**
  * GetGroup Use Case
@@ -26,7 +25,9 @@ export const GetGroupUseCase = createAbstraction<IGetGroupUseCase>("GetGroupUseC
 
 export namespace GetGroupUseCase {
     export type Interface = IGetGroupUseCase;
+
     export type Error = UseCaseError;
+    export type Return = Promise<Result<CmsGroup, UseCaseError>>;
 }
 
 /**

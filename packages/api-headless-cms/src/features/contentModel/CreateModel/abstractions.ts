@@ -1,17 +1,15 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
-import type { CmsModel } from "~/types/index.js";
-import type { CmsModelCreateInput } from "~/types/index.js";
+import { createAbstraction, Result } from "@webiny/feature/api";
+import type { CmsModel, CmsModelCreateInput } from "~/types/index.js";
 import {
-    type ModelSlugTakenError,
+    ModelAlreadyExistsError,
     ModelNotAuthorizedError,
-    type ModelValidationError,
     type ModelPersistenceError,
-    ModelAlreadyExistsError
+    type ModelSlugTakenError,
+    type ModelValidationError
 } from "~/domain/contentModel/errors.js";
 import {
-    type GroupNotFoundError,
-    type GroupNotAuthorizedError
+    type GroupNotAuthorizedError,
+    type GroupNotFoundError
 } from "~/domain/contentModelGroup/errors.js";
 
 /**
@@ -37,7 +35,10 @@ export const CreateModelUseCase = createAbstraction<ICreateModelUseCase>("Create
 
 export namespace CreateModelUseCase {
     export type Interface = ICreateModelUseCase;
+    export type Input = CmsModelCreateInput;
+
     export type Error = UseCaseError;
+    export type Return = Promise<Result<CmsModel, UseCaseError>>;
 }
 
 /**

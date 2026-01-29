@@ -1,5 +1,4 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
+import { createAbstraction, Result } from "@webiny/feature/api";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import type { EntryNotFoundError, EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 
@@ -27,6 +26,9 @@ export const GetRevisionByIdUseCase =
 export namespace GetRevisionByIdUseCase {
     export type Interface = IGetRevisionByIdUseCase;
     export type Error = UseCaseError;
+    export type Return<T extends CmsEntryValues = CmsEntryValues> = Promise<
+        Result<CmsEntry<T>, UseCaseError>
+    >;
 }
 
 /**

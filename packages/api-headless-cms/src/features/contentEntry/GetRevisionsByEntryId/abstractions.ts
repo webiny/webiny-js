@@ -1,8 +1,9 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
+import { createAbstraction, Result } from "@webiny/feature/api";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
-import type { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
-import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import type {
+    EntryNotAuthorizedError,
+    EntryPersistenceError
+} from "~/domain/contentEntry/errors.js";
 
 /**
  * GetRevisionsByEntryId Use Case - Fetches all revisions for a given entry ID.
@@ -29,6 +30,7 @@ export const GetRevisionsByEntryIdUseCase = createAbstraction<IGetRevisionsByEnt
 export namespace GetRevisionsByEntryIdUseCase {
     export type Interface = IGetRevisionsByEntryIdUseCase;
     export type Error = UseCaseError;
+    export type Return<T extends CmsEntryValues> = Promise<Result<CmsEntry<T>[], UseCaseError>>;
 }
 
 /**
