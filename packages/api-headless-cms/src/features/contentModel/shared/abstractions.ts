@@ -55,4 +55,7 @@ export const ModelsFetcher = createAbstraction<IModelsFetcher>("ModelsFetcher");
 export namespace ModelsFetcher {
     export type Interface = IModelsFetcher;
     export type Error = ModelsFetcherError;
+
+    export type FetchAllReturn = Promise<Result<CmsModel[], ModelsFetcherError>>;
+    export type FetchByIdReturn = Promise<Result<CmsModel, ModelsFetcherError>>;
 }
