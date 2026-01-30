@@ -52,8 +52,8 @@ export class VerifyDepsCommand implements CliCommandFactory.Interface<unknown> {
                                 if (JSON.stringify(refDep) !== JSON.stringify(fileDep)) {
                                     console.log("Mismatch in dependency:", refDep.name, "in", type);
                                     console.log({
-                                        refDep,
-                                        fileDep
+                                        refDep: JSON.stringify(refDep),
+                                        fileDep: JSON.stringify(fileDep)
                                     });
                                 }
                             }
