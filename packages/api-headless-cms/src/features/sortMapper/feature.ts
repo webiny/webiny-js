@@ -1,10 +1,7 @@
 import { createFeature } from "@webiny/feature/api";
 import { SortMapper } from "./SortMapper.js";
 
-export type {
-    ICmsSortMapperParams,
-    ICmsSortMapper
-} from "./abstractions.js";
+export type { ICmsSortMapperParams, ICmsSortMapper } from "./abstractions.js";
 
 export { CmsSortMapper } from "./abstractions.js";
 

@@ -32,7 +32,8 @@ import { getSearchableFields } from "~/crud/contentEntry/searchableFields.js";
 import { ContentModelGroupFeature } from "~/features/contentModelGroup/ContentModelGroupFeature.js";
 import { ContentModelFeature } from "~/features/contentModel/ContentModelFeature.js";
 import { ModelBuilderFeature } from "~/features/modelBuilder/index.js";
-import { CmsFieldInputToWhereMapperFeature } from "~/features/mapper/feature.js";
+import { CmsFieldInputToWhereMapperFeature } from "~/features/whereMapper/feature.js";
+import { CmsSortMapperFeature } from "~/features/sortMapper/feature.js";
 
 const getParameters = async (context: CmsContext): Promise<CmsParametersPluginResponse> => {
     const plugins = context.plugins.byType<CmsParametersPlugin>(CmsParametersPlugin.type);
@@ -168,6 +169,7 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
         ModelBuilderFeature.register(context.container);
 
         CmsFieldInputToWhereMapperFeature.register(context.container);
+        CmsSortMapperFeature.register(context.container);
 
         if (!storageOperations.init) {
             return;
