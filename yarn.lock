@@ -16242,7 +16242,6 @@ __metadata:
     "@webiny/migrations": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
     "@webiny/pulumi": "npm:0.0.0"
-    "@webiny/tenant-manager": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     chalk: "npm:^4.1.2"
@@ -16486,7 +16485,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/tenant-manager@npm:0.0.0, @webiny/tenant-manager@workspace:packages/tenant-manager":
+"@webiny/tenant-manager@workspace:packages/tenant-manager":
   version: 0.0.0-use.local
   resolution: "@webiny/tenant-manager@workspace:packages/tenant-manager"
   dependencies:

@@ -58,7 +58,6 @@
     "@webiny/migrations": "0.0.0",
     "@webiny/project": "0.0.0",
     "@webiny/pulumi": "0.0.0",
-    "@webiny/tenant-manager": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "chalk": "^4.1.2",

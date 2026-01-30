@@ -14,7 +14,7 @@ import {
 } from "@webiny/project/extensions/index.js";
 import { createPathResolver } from "@webiny/project";
 import { CliCommand } from "@webiny/cli-core/extensions/index.js";
-import { TenantManager } from "@webiny/tenant-manager";
+// import { TenantManager } from "@webiny/tenant-manager";
 import { Infra } from "~/index.js";
 
 const p = createPathResolver(import.meta.dirname);
@@ -59,7 +59,7 @@ export const ProjectAws = () => {
             />
 
             {/* Tenant Manager */}
-            <TenantManager />
+            {/*<TenantManager />*/}
         </>
     );
 };
