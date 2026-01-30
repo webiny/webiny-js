@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { useHandler } from "~tests/testHelpers/useHandler.js";
-import { CmsFieldInputToWhereMapper } from "~/features/mapper/abstractions.js";
+import { CmsFieldInputToWhereMapper } from "~/features/whereMapper/abstractions.js";
 import { useCategoryManageHandler } from "~tests/testHelpers/useCategoryManageHandler.js";
 import { setupGroupAndModels } from "~tests/testHelpers/setup.js";
 import type { CmsModel } from "~/types/index.js";
