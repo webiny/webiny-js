@@ -37,10 +37,7 @@ export const Extensions = () => {
                 paramName="MY_CUSTOM_ADMIN_BUILD_PARAM-2"
                 value={{ myKey: 2, nested: { foo: "bar" } }}
             />
-            <Admin.BuildParam
-                paramName="MY_CUSTOM_ADMIN_BUILD_PARAM"
-                value="customAdminValue"
-            />
+            <Admin.BuildParam paramName="MY_CUSTOM_ADMIN_BUILD_PARAM" value="customAdminValue" />
 
             {/* Example: Environment-based conditional configuration */}
             {/*<Infra.Env.Is env="prod">
