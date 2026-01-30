@@ -3,6 +3,7 @@ export {
     Identity
 } from "@webiny/api-core/features/security/IdentityContext/index.js";
 export { ApiKeyFactory } from "@webiny/api-core/features/security/apiKeys/shared/abstractions.js";
+export { ApiToken } from "@webiny/api-core/domain/security/ApiToken.js";
 export {
     IdentityProvider,
     OidcIdentityProvider,

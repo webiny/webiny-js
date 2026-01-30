@@ -5,6 +5,10 @@ type EnvVariables = Record<string, string | pulumi.Output<string>>;
 
 const variablesRegistry: EnvVariables = {};
 
+if (process.env.DEBUG === "true") {
+    variablesRegistry.NODE_OPTIONS = "--enable-source-maps";
+}
+
 export let sealEnvVariables: () => void;
 
 const magicPrefixes = ["WEBINY_", "WEBINY_API_", "WCP_", "OKTA_", "AUTH0_"];

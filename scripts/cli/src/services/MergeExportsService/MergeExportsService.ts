@@ -43,7 +43,7 @@ export class DefaultMergeExportsService implements MergeExportsServiceNamespace.
                 // If the entire export declaration is type-only, use: export type { ... } from "..."
                 if (exportStatement.isTypeOnly) {
                     const namedExportsStr = exportStatement.namedExports
-                        .map(exp => exp.name)
+                        .map(exp => this.formatExportName(exp))
                         .join(", ");
                     output += `export type { ${namedExportsStr} } from "${exportStatement.source}";\n`;
                 } else {
@@ -58,13 +58,17 @@ export class DefaultMergeExportsService implements MergeExportsServiceNamespace.
 
                     // Generate regular exports
                     if (regularExports.length > 0) {
-                        const regularExportsStr = regularExports.map(exp => exp.name).join(", ");
+                        const regularExportsStr = regularExports
+                            .map(exp => this.formatExportName(exp))
+                            .join(", ");
                         output += `export { ${regularExportsStr} } from "${exportStatement.source}";\n`;
                     }
 
                     // Generate type-only exports
                     if (typeOnlyExports.length > 0) {
-                        const typeOnlyExportsStr = typeOnlyExports.map(exp => exp.name).join(", ");
+                        const typeOnlyExportsStr = typeOnlyExports
+                            .map(exp => this.formatExportName(exp))
+                            .join(", ");
                         output += `export { type ${typeOnlyExportsStr} } from "${exportStatement.source}";\n`;
                     }
                 }
@@ -72,6 +76,13 @@ export class DefaultMergeExportsService implements MergeExportsServiceNamespace.
         }
 
         return output;
+    }
+
+    private formatExportName(exp: ParseExportsFileService.NamedExport): string {
+        if (exp.alias) {
+            return `${exp.name} as ${exp.alias}`;
+        }
+        return exp.name;
     }
 }
 

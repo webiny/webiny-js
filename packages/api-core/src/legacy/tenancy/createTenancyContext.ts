@@ -4,7 +4,6 @@ import type { ApiCoreContext } from "~/types/core.js";
 import { GetTenantByIdUseCase } from "~/features/tenancy/GetTenantById/index.js";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 import { LegacyContext } from "~/legacy/tenancy/LegacyContext.js";
-import { createTenantSchema } from "~/graphql/tenancy/tenant.gql.js";
 import { RootTenantValue } from "~/domain/tenancy/RootTenantValue.js";
 
 export const createTenancyContext = () => {
@@ -49,8 +48,5 @@ export const createTenancyContext = () => {
         // Set up legacy context. We use this API in many places across our codebase, and this will provide
         // a working bridge until everything is migrated to use DI container.
         context.tenancy = new LegacyContext(context.container);
-
-        // Register GraphQL plugins
-        context.plugins.register(createTenantSchema());
     });
 };

@@ -5,6 +5,7 @@ import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
 import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
+import { TenantContext } from "@webiny/api-core/exports/api/tenancy.js";
 
 /**
  * GetEntriesByIdsRepository - Fetches entries by IDs from storage and transforms them.
@@ -12,6 +13,7 @@ import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
  */
 class GetEntriesByIdsRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
+        private tenantContext: TenantContext.Interface,
         private entryFromStorageTransform: EntryFromStorageTransform.Interface,
         private storageOperations: StorageOperations.Interface
     ) {}
@@ -21,7 +23,10 @@ class GetEntriesByIdsRepositoryImpl implements RepositoryAbstraction.Interface {
         ids: string[]
     ): Promise<Result<CmsEntry<T>[], RepositoryAbstraction.Error>> {
         try {
-            const result = await this.storageOperations.entries.getByIds<T>(model, { ids });
+            const modelWithTenant = { ...model, tenant: this.tenantContext.getTenant().id };
+            const result = await this.storageOperations.entries.getByIds<T>(modelWithTenant, {
+                ids
+            });
 
             // Transform storage entries to domain entries
             const items = await Promise.all(
@@ -40,5 +45,5 @@ class GetEntriesByIdsRepositoryImpl implements RepositoryAbstraction.Interface {
 export const GetEntriesByIdsRepository = createImplementation({
     abstraction: RepositoryAbstraction,
     implementation: GetEntriesByIdsRepositoryImpl,
-    dependencies: [EntryFromStorageTransform, StorageOperations]
+    dependencies: [TenantContext, EntryFromStorageTransform, StorageOperations]
 });

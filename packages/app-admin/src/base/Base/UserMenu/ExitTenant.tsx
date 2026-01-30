@@ -21,7 +21,9 @@ export const ExitTenant = makeDecoratable("ExitTenant", () => {
             <Menu.User.Item
                 icon={<Menu.User.Item.Icon element={<SignOutIcon />} label={"Exit tenant"} />}
                 text={"Exit tenant"}
-                onClick={() => tenancy.setTenant(defaultTenant.id)}
+                onClick={() => {
+                    tenancy.setTenant(defaultTenant.id);
+                }}
             />
         );
     }

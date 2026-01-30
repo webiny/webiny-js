@@ -31,7 +31,7 @@ export const Layout = LayoutRenderer.createDecorator(() => {
                     <HeaderBar
                         start={startElement}
                         end={
-                            <div className={"flex"}>
+                            <div className={"flex gap-x-sm items-center justify-end"}>
                                 <TenantSelector />
                                 <UserMenu />
                             </div>

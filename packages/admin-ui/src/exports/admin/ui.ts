@@ -128,7 +128,7 @@ export { RangeSlider } from "~/RangeSlider/index.js";
 export { Scrollbar } from "~/Scrollbar/index.js";
 
 // ScrollArea
-export { ScrollArea, ScrollBar, ScrollPosition } from "~/ScrollArea/index.js";
+export { ScrollArea, ScrollBar } from "~/ScrollArea/index.js";
 
 // SegmentedControl
 export { SegmentedControl } from "~/SegmentedControl/index.js";

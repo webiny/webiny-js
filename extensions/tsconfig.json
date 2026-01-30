@@ -1,0 +1,11 @@
+{
+  "extends": "../tsconfig.json",
+  "include": ["*"],
+  "references": [{ "path": "../packages/webiny" }],
+  "compilerOptions": {
+    "composite": true,
+    "paths": {
+      "webiny/*": ["../packages/webiny/src/*"]
+    }
+  }
+}

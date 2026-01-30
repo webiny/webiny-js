@@ -3,16 +3,13 @@ import { ErrorResponse, Response } from "@webiny/handler-graphql";
 import { EventPublisher } from "~/features/eventPublisher/index.js";
 import type { ApiCoreContext } from "~/types/core.js";
 import { AfterLoginEvent } from "~/features/security/login/index.js";
-import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
-import { GetTenantByIdUseCase } from "~/features/tenancy/GetTenantById/index.js";
-import { GetUserUseCase } from "~/features/users/GetUser/index.js";
-import { ProfileMapper } from "~/graphql/security/ProfileMapper.js";
+import { GetIdentityProfileUseCase } from "~/features/users/GetIdentityProfile/index.js";
 import type { SecurityContext } from "~/types/security.js";
 import type { AdminUser } from "~/types/users.js";
-import { AdminUsersRepository } from "~/features/users/shared/abstractions.js";
 import { TeamsRepository } from "~/features/security/teams/shared/abstractions.js";
 import { RolesRepository } from "~/features/security/roles/shared/abstractions.js";
 import { IdentityContext } from "~/features/security/IdentityContext/index.js";
+import { ProfileMapper } from "./ProfileMapper.js";
 
 const getDefaultTenant = async (context: SecurityContext) => {
     const identity = context.security.getIdentity();
@@ -28,6 +25,10 @@ const getDefaultTenant = async (context: SecurityContext) => {
 
 export default new GraphQLSchemaPlugin<ApiCoreContext>({
     typeDefs: /* GraphQL */ `
+        type SecurityIdentityTenant {
+            id: ID!
+            name: String!
+        }
         type SecurityIdentityProfileRole {
             id: String!
             slug: String!
@@ -57,8 +58,8 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
             teams: [SecurityIdentityProfileTeam!]!
             permissions: [JSON!]!
             profile: SecurityIdentityProfile!
-            currentTenant: Tenant!
-            defaultTenant: Tenant!
+            currentTenant: SecurityIdentityTenant!
+            defaultTenant: SecurityIdentityTenant!
         }
 
         type SecurityIdentityLoginResponse {
@@ -72,11 +73,6 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
         }
     `,
     resolvers: {
-        SecurityQuery: {
-            async getDefaultTenant(_, __, context) {
-                return new Response(getDefaultTenant(context));
-            }
-        },
         SecurityMutation: {
             login: async (_, __, context) => {
                 const identityContext = context.container.resolve(IdentityContext);
@@ -96,28 +92,34 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
                 }
 
                 // Roles and teams are stored in the user record.
-                const usersRepo = context.container.resolve(AdminUsersRepository);
                 const rolesRepo = context.container.resolve(RolesRepository);
                 const teamsRepo = context.container.resolve(TeamsRepository);
+                const getProfile = context.container.resolve(GetIdentityProfileUseCase);
 
-                const adminUserResult = await usersRepo.get({ id: identity.id });
+                const result = await context.security.withoutAuthorization(async () => {
+                    return getProfile.execute(identity.id);
+                });
 
-                if (adminUserResult.isFail()) {
+                if (result.isFail()) {
                     return new ErrorResponse({
                         code: "Security/Identity/NotAuthorized",
                         message: "Missing user profile!"
                     });
                 }
 
-                const user = adminUserResult.value;
+                const user = result.value;
 
                 const [roles, teams] = await Promise.all([
                     getRoles(user, rolesRepo),
                     getTeams(user, teamsRepo)
                 ]);
 
+                const profileMapper = new ProfileMapper();
+                const profile = await profileMapper.toDTO(user);
+
                 return new Response({
                     ...identity.toJson(),
+                    profile,
                     roles,
                     teams
                 });
@@ -129,45 +131,6 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
             },
             currentTenant(_, __, context) {
                 return context.tenancy.getCurrentTenant();
-            },
-            async profile(identity, _, context) {
-                // TODO: refactor this resolver into a proper class with dependencies.
-                const tenantContext = context.container.resolve(TenantContext);
-                const getTenantUseCase = context.container.resolve(GetTenantByIdUseCase);
-                const getUserUseCase = context.container.resolve(GetUserUseCase);
-
-                const profileMapper = new ProfileMapper();
-
-                const adminUser = await context.security.withoutAuthorization(async () => {
-                    return getUserUseCase.execute({ id: identity.id });
-                });
-
-                if (adminUser.isOk()) {
-                    return profileMapper.toDTO(adminUser.value);
-                }
-
-                // TODO: `parent` tenant resolution should be a decorator of the base resolver.
-                // We must also consider an option where we have multi-tenancy, and current identity is
-                // a "parent" tenant user, so naturally, his user profile lives in his original tenant.
-                const tenant = context.tenancy.getCurrentTenant();
-
-                const parentTenantUser = await context.security.withoutAuthorization(async () => {
-                    if (!tenant.parent) {
-                        return null;
-                    }
-
-                    const parentTenantResult = await getTenantUseCase.execute(tenant.parent);
-
-                    return tenantContext.withTenant(parentTenantResult.value, () => {
-                        return getUserUseCase.execute({ id: identity.id });
-                    });
-                });
-
-                if (parentTenantUser && parentTenantUser.isOk()) {
-                    return profileMapper.toDTO(parentTenantUser.value);
-                }
-
-                return {};
             },
             permissions(_, __, context) {
                 return context.security.listPermissions();

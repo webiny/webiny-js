@@ -34,10 +34,13 @@ export class DefaultParseExportsFileService implements ParseExportsFileService.I
                 const namedExports: ParseExportsFileService.NamedExport[] = [];
                 for (const namedExport of namedExportsNode) {
                     const name = namedExport.getName();
+                    const aliasNode = namedExport.getAliasNode();
+                    const alias = aliasNode ? aliasNode.getText() : undefined;
                     // Check if individual named export is type-only
                     const isNamedTypeOnly = namedExport.isTypeOnly();
                     namedExports.push({
                         name,
+                        alias,
                         isTypeOnly: isNamedTypeOnly
                     });
                 }

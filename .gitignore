@@ -55,6 +55,7 @@ packages/*/README.md
 .normalizedFigmaExport.json
 .normalizedPrimitivesFigmaExport.json
 packages/tasks/tpl/*
+packages/webiny/src/admin/icons
 ./nextjs
 
 CLAUDE*.md

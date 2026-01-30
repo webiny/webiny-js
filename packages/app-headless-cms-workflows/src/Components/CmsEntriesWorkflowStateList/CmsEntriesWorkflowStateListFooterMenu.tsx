@@ -4,6 +4,7 @@ import { Sidebar } from "@webiny/admin-ui";
 import { ReactComponent as WorkflowStateListIcon } from "@webiny/icons/work_outline.svg";
 import { Components as WorkflowsComponents } from "@webiny/app-workflows";
 import { useContentEntries } from "@webiny/app-headless-cms/admin/views/contentEntries/hooks/index.js";
+import { IsModelPublishable } from "@webiny/app-headless-cms/exports/admin/cms.js";
 import { createAppName } from "~/utils/appName.js";
 import { useApolloClient } from "@apollo/react-hooks";
 
@@ -22,24 +23,26 @@ export const CmsEntriesWorkflowStateListFooterMenu = Footer.createDecorator(Orig
 
         return (
             <Original {...props}>
-                <WorkflowStateListAppOverlay client={client} app={app}>
-                    {({ showOverlay }) => {
-                        return (
-                            <div className={"list-none"}>
-                                <Sidebar.Item
-                                    onClick={showOverlay}
-                                    text={"Workflow States"}
-                                    icon={
-                                        <Sidebar.Item.Icon
-                                            element={<WorkflowStateListIcon />}
-                                            label={"Workflow States"}
-                                        />
-                                    }
-                                />
-                            </div>
-                        );
-                    }}
-                </WorkflowStateListAppOverlay>
+                <IsModelPublishable>
+                    <WorkflowStateListAppOverlay client={client} app={app}>
+                        {({ showOverlay }) => {
+                            return (
+                                <div className={"list-none"}>
+                                    <Sidebar.Item
+                                        onClick={showOverlay}
+                                        text={"Workflow States"}
+                                        icon={
+                                            <Sidebar.Item.Icon
+                                                element={<WorkflowStateListIcon />}
+                                                label={"Workflow States"}
+                                            />
+                                        }
+                                    />
+                                </div>
+                            );
+                        }}
+                    </WorkflowStateListAppOverlay>
+                </IsModelPublishable>
             </Original>
         );
     };

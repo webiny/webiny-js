@@ -5,16 +5,11 @@ const emptyResolver = () => ({});
 
 export default new GraphQLSchemaPlugin<SecurityContext>({
     typeDefs: /* GraphQL */ `
-        type TenantResponse {
-            data: Tenant
-            error: SecurityError
+        type SecurityMutation {
+            _empty: String
         }
 
         type SecurityQuery {
-            getDefaultTenant: TenantResponse
-        }
-
-        type SecurityMutation {
             _empty: String
         }
 

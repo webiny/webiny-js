@@ -12,6 +12,9 @@ export const createRsbuildConfig = ({ cwd }) => {
         output: {
             module: true,
             target: "node",
+            sourceMap: {
+                js: process.env.DEBUG === "true" ? "source-map" : false
+            },
             filename: {
                 js: pathData => {
                     if (pathData.chunk?.name === "index") {

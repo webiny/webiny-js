@@ -1,7 +1,6 @@
 import { ErrorResponse, NotFoundError, Response } from "@webiny/handler-graphql";
 import type { CmsContext, CmsModel } from "~/types/index.js";
 import type { Resolvers } from "@webiny/handler-graphql/types.js";
-import { CmsModelPlugin } from "~/plugins/CmsModelPlugin.js";
 import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import { createCmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import type { GenericRecord } from "@webiny/api/types.js";
@@ -62,10 +61,8 @@ export const createModelsSchema = ({
 
                 return hasType ? model.tags : ["type:model", ...(model.tags || [])];
             },
-            plugin: async (model, _, context): Promise<boolean> => {
-                return context.plugins
-                    .byType<CmsModelPlugin>(CmsModelPlugin.type)
-                    .some(item => item.contentModel.modelId === model.modelId);
+            plugin: (model: CmsModel) => {
+                return model.isPlugin ?? false;
             }
         }
     };
