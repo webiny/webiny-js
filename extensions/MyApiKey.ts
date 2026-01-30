@@ -13,9 +13,7 @@ class MyApiKeyImpl implements ApiKeyFactory.Interface {
     }
 }
 
-const MyApiKey = ApiKeyFactory.createImplementation({
+export default ApiKeyFactory.createImplementation({
     implementation: MyApiKeyImpl,
     dependencies: []
 });
-
-export default MyApiKey;

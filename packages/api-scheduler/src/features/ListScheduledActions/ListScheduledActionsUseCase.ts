@@ -8,9 +8,8 @@ import {
 import type { IScheduledAction } from "~/shared/abstractions.js";
 import { ScheduledActionModel } from "~/shared/abstractions.js";
 import { ScheduledActionPersistenceError } from "~/domain/errors.js";
-import { CmsFieldInputToWhereMapper } from "@webiny/api-headless-cms/features/mapper/abstractions.js";
+import { CmsSortMapper, CmsWhereMapper } from "@webiny/api-headless-cms";
 import type { GenericRecord } from "@webiny/api/types.js";
-import { remapSortToCms } from "./remapSortToCms.js";
 
 /**
  * Lists scheduled actions with optional filtering
@@ -25,7 +24,8 @@ class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private listEntriesUseCase: ListLatestEntriesUseCase.Interface,
         private model: ScheduledActionModel.Interface,
-        private cmsFieldInputToWhereMapper: CmsFieldInputToWhereMapper.Interface
+        private cmsWhereMapper: CmsWhereMapper.Interface,
+        private cmsSortMapper: CmsSortMapper.Interface
     ) {}
 
     async execute<T extends GenericRecord>(
@@ -33,13 +33,13 @@ class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
     ): Promise<Result<IListScheduledActionsResponse<T>, UseCaseAbstraction.Error>> {
         const { where, sort: sortInput, limit, after } = params;
 
-        const sort = remapSortToCms({
+        const sort = this.cmsSortMapper.map({
             input: sortInput,
             fields: this.model.fields
         });
         // List entries from CMS
         const listResult = await this.listEntriesUseCase.execute<IScheduledAction<T>>(this.model, {
-            where: this.cmsFieldInputToWhereMapper.map({
+            where: this.cmsWhereMapper.map({
                 input: where,
                 fields: this.model.fields
             }),
@@ -78,5 +78,5 @@ class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const ListScheduledActionsUseCase = UseCaseAbstraction.createImplementation({
     implementation: ListScheduledActionsUseCaseImpl,
-    dependencies: [ListLatestEntriesUseCase, ScheduledActionModel, CmsFieldInputToWhereMapper]
+    dependencies: [ListLatestEntriesUseCase, ScheduledActionModel, CmsWhereMapper, CmsSortMapper]
 });

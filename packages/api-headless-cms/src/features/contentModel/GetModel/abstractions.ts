@@ -1,5 +1,4 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
+import { createAbstraction, Result } from "@webiny/feature/api";
 import type { CmsModel } from "~/types/index.js";
 import {
     ModelNotAuthorizedError,
@@ -26,7 +25,9 @@ export const GetModelUseCase = createAbstraction<IGetModelUseCase>("GetModelUseC
 
 export namespace GetModelUseCase {
     export type Interface = IGetModelUseCase;
+
     export type Error = UseCaseError;
+    export type Return = Promise<Result<CmsModel, UseCaseError>>;
 }
 
 /**

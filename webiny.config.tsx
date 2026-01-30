@@ -11,6 +11,11 @@ export const Extensions = () => {
             {/* Admin 👇 */}
             {/*<Admin.Extension src={"/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />*/}
             {/*<Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />*/}
+            {/*<Admin.BuildParam paramName="ADMIN_CUSTOM_PARAM" value="adminValue" />*/}
+            {/*<Admin.BuildParam*/}
+            {/*    paramName="ADMIN_CONFIG"*/}
+            {/*    value={{ theme: "dark", logo: "https://example.com/logo.png" }}*/}
+            {/*/>*/}
 
             {/* Infra 👇 */}
             <Infra.PulumiResourceNamePrefix prefix={"myproj-"} />
@@ -21,6 +26,21 @@ export const Extensions = () => {
             <Infra.Aws.Tags tags={{ OWNER: "me", PROJECT: "my-project" }} />
             <Infra.Aws.Tags tags={{ OWNER2: "me2", PROJECT2: "my-project-2" }} />
             <Infra.Aws.DefaultRegion name={"eu-central-1"} />
+
+            {/*<Api.Extension src={"/extensions/ProductCategoryModel.ts"} />*/}
+            {/*<Api.Extension src={"/extensions/ProductModel.ts"} />*/}
+
+            {/*<Api.BuildParam paramName="MY_CUSTOM_BUILD_PARAM" value="customValue" />*/}
+            {/*<Api.BuildParam*/}
+            {/*    paramName="MY_CUSTOM_BUILD_PARAM-2"*/}
+            {/*    value={{ myKey: 2, nested: { foo: "bar" } }}*/}
+            {/*/>*/}
+
+            {/*<Admin.BuildParam*/}
+            {/*    paramName="MY_CUSTOM_ADMIN_BUILD_PARAM-2"*/}
+            {/*    value={{ myKey: 2, nested: { foo: "bar" } }}*/}
+            {/*/>*/}
+            {/*<Admin.BuildParam paramName="MY_CUSTOM_ADMIN_BUILD_PARAM" value="customAdminValue" />*/}
 
             {/* Example: Environment-based conditional configuration */}
             {/*<Infra.Env.Is env="prod">
@@ -90,7 +110,7 @@ export const Extensions = () => {
 
             {/* Security 👇 */}
             <Api.Extension src={"/extensions/MyApiKey.ts"} />
-            {/*<Security.ApiKey.AfterUpdate src={"/extensions/MyApiKeyAfterUpdate.ts"} />*/}
+            <Security.ApiKey.AfterUpdate src={"/extensions/MyApiKeyAfterUpdate.ts"} />
 
             {/* 🚧 WIP 👇 */}
             {/*<Security.ApiKeyBeforeCreate src={"/extensions/ApiKeyBeforeCreate.ts"} />*/}

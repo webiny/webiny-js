@@ -12,4 +12,5 @@ export const ModelToAstConverter = createAbstraction<IModelToAstConverter>("Mode
 
 export namespace ModelToAstConverter {
     export type Interface = IModelToAstConverter;
+    export type Return = CmsModelAst;
 }

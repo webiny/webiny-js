@@ -1,7 +1,6 @@
 import { ErrorResponse, NotFoundError, Response } from "@webiny/handler-graphql";
 import type { CmsContext, CmsModel } from "~/types/index.js";
 import type { Resolvers } from "@webiny/handler-graphql/types.js";
-import { CmsModelPlugin } from "~/plugins/CmsModelPlugin.js";
 import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import { createCmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import type { GenericRecord } from "@webiny/api/types.js";

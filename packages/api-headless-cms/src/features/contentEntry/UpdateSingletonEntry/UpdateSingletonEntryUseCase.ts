@@ -1,22 +1,14 @@
 import { Result } from "@webiny/feature/api";
 import { UpdateSingletonEntryUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { GetSingletonEntryUseCase } from "~/features/contentEntry/GetSingletonEntry/index.js";
-import type { CmsEntry, CmsEntryValues } from "~/types/index.js";
-import type { CmsModel } from "~/types/index.js";
-import type { UpdateCmsEntryInput } from "~/types/index.js";
-import type { UpdateCmsEntryOptionsInput } from "~/types/index.js";
+import type {
+    CmsEntry,
+    CmsEntryValues,
+    CmsModel,
+    UpdateCmsEntryInput,
+    UpdateCmsEntryOptionsInput
+} from "~/types/index.js";
 import { UpdateEntryUseCase } from "../UpdateEntry/abstractions.js";
-
-// This will be the generic entry use case - using 'any' for now as placeholder
-// You'll need to import the actual abstraction when it's created
-interface UpdateEntryUseCase {
-    execute<T extends CmsEntryValues = CmsEntryValues>(
-        model: CmsModel,
-        entryId: string,
-        data: UpdateCmsEntryInput<T>,
-        options?: UpdateCmsEntryOptionsInput
-    ): Promise<Result<CmsEntry<T>, any>>;
-}
 
 /**
  * UpdateSingletonEntryUseCase - Updates the singleton entry for a model.
@@ -28,7 +20,7 @@ interface UpdateEntryUseCase {
 class UpdateSingletonEntryUseCaseImpl implements UseCaseAbstraction.Interface {
     public constructor(
         private getSingletonEntryUseCase: GetSingletonEntryUseCase.Interface,
-        private updateEntryUseCase: UpdateEntryUseCase
+        private updateEntryUseCase: UpdateEntryUseCase.Interface
     ) {}
 
     async execute<T extends CmsEntryValues = CmsEntryValues>(

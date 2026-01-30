@@ -1,14 +1,13 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
+import { createAbstraction, Result } from "@webiny/feature/api";
 import type { CmsModel } from "~/types/index.js";
 import {
-    ModelNotAuthorizedError,
-    type ModelNotFoundError,
-    type ModelValidationError,
-    type ModelPersistenceError,
     ModelCannotDeleteCodeModelError,
     ModelCannotDeleteHasEntriesError,
-    ModelCannotDeleteHasEntriesInTrashError
+    ModelCannotDeleteHasEntriesInTrashError,
+    ModelNotAuthorizedError,
+    type ModelNotFoundError,
+    type ModelPersistenceError,
+    type ModelValidationError
 } from "~/domain/contentModel/errors.js";
 
 /**
@@ -34,7 +33,9 @@ export const DeleteModelUseCase = createAbstraction<IDeleteModelUseCase>("Delete
 
 export namespace DeleteModelUseCase {
     export type Interface = IDeleteModelUseCase;
+
     export type Error = UseCaseError;
+    export type Return = Promise<Result<void, UseCaseError>>;
 }
 
 /**

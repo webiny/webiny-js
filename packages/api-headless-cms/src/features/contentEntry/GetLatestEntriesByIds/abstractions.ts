@@ -1,8 +1,9 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
+import { createAbstraction, Result } from "@webiny/feature/api";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
-import type { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
-import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import type {
+    EntryNotAuthorizedError,
+    EntryPersistenceError
+} from "~/domain/contentEntry/errors.js";
 
 /**
  * GetLatestEntriesByIds Use Case - Fetches latest revisions by entry IDs.
@@ -29,6 +30,7 @@ export const GetLatestEntriesByIdsUseCase = createAbstraction<IGetLatestEntriesB
 export namespace GetLatestEntriesByIdsUseCase {
     export type Interface = IGetLatestEntriesByIdsUseCase;
     export type Error = UseCaseError;
+    export type Return<T extends CmsEntryValues> = Promise<Result<CmsEntry<T>[], UseCaseError>>;
 }
 
 /**
@@ -55,4 +57,5 @@ export const GetLatestEntriesByIdsRepository = createAbstraction<IGetLatestEntri
 export namespace GetLatestEntriesByIdsRepository {
     export type Interface = IGetLatestEntriesByIdsRepository;
     export type Error = RepositoryError;
+    export type Return<T extends CmsEntryValues> = Promise<Result<CmsEntry<T>[], RepositoryError>>;
 }

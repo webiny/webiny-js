@@ -8,20 +8,20 @@ import {
 import { FileModel } from "~/domain/file/abstractions.js";
 import { FilePersistenceError } from "~/domain/file/errors.js";
 import { EntryToFileMapper } from "../shared/EntryToFileMapper.js";
-import { CmsFieldInputToWhereMapper } from "@webiny/api-headless-cms/features/mapper/feature.js";
+import { CmsWhereMapper } from "@webiny/api-headless-cms";
 import { GenericRecord } from "@webiny/api/types.js";
 
 class ListFilesRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
         private listLatestEntries: ListLatestEntriesUseCase.Interface,
         private fileModel: FileModel.Interface,
-        private cmsFieldInputToWhereMapper: CmsFieldInputToWhereMapper.Interface
+        private cmsWhereMapper: CmsWhereMapper.Interface
     ) {}
 
     async execute(
         input: ListFilesInput
     ): Promise<Result<ListFilesOutput, RepositoryAbstraction.Error>> {
-        const where = this.cmsFieldInputToWhereMapper.map<GenericRecord>({
+        const where = this.cmsWhereMapper.map<GenericRecord>({
             input: input.where || {},
             fields: this.fileModel.fields
         });
@@ -51,5 +51,5 @@ class ListFilesRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const ListFilesRepository = RepositoryAbstraction.createImplementation({
     implementation: ListFilesRepositoryImpl,
-    dependencies: [ListLatestEntriesUseCase, FileModel, CmsFieldInputToWhereMapper]
+    dependencies: [ListLatestEntriesUseCase, FileModel, CmsWhereMapper]
 });

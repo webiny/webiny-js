@@ -1,8 +1,9 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
+import { createAbstraction, Result } from "@webiny/feature/api";
 import type { CmsGroup } from "~/types/index.js";
-import { GroupNotAuthorizedError } from "~/domain/contentModelGroup/errors.js";
-import { type GroupPersistenceError } from "~/domain/contentModelGroup/errors.js";
+import {
+    GroupNotAuthorizedError,
+    type GroupPersistenceError
+} from "~/domain/contentModelGroup/errors.js";
 
 /**
  * ListGroups Use Case
@@ -22,7 +23,9 @@ export const ListGroupsUseCase = createAbstraction<IListGroupsUseCase>("ListGrou
 
 export namespace ListGroupsUseCase {
     export type Interface = IListGroupsUseCase;
+
     export type Error = UseCaseError;
+    export type Return = Promise<Result<CmsGroup[], UseCaseError>>;
 }
 
 /**

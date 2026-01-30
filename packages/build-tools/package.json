@@ -48,7 +48,7 @@
     "sass": "^1.97.2",
     "sass-loader": "^16.0.6",
     "style-loader": "3.3.4",
-    "ts-morph": "^24.0.0",
+    "ts-morph": "^27.0.2",
     "tsx": "^4.21.0",
     "typescript": "5.9.3",
     "url-loader": "^4.1.1",
