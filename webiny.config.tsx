@@ -1,5 +1,5 @@
 import React from "react";
-import { Admin, Api, Cli, Infra, Project, Security } from "webiny/extensions";
+import { Api, Cli, Infra, Project, Security } from "webiny/extensions";
 import { MySchemaExtension } from "./extensions/graphql/MySchemaExtension.js";
 import { Cognito } from "@webiny/cognito";
 // import { CustomIdp } from "./extensions/customIdp/CustomIdp.js";
@@ -27,17 +27,20 @@ export const Extensions = () => {
             <Infra.Aws.Tags tags={{ OWNER2: "me2", PROJECT2: "my-project-2" }} />
             <Infra.Aws.DefaultRegion name={"eu-central-1"} />
 
-            <Api.BuildParam paramName="MY_CUSTOM_BUILD_PARAM" value="customValue" />
-            <Api.BuildParam
-                paramName="MY_CUSTOM_BUILD_PARAM-2"
-                value={{ myKey: 2, nested: { foo: "bar" } }}
-            />
+            {/*<Api.Extension src={"/extensions/ProductCategoryModel.ts"} />*/}
+            {/*<Api.Extension src={"/extensions/ProductModel.ts"} />*/}
 
-            <Admin.BuildParam
-                paramName="MY_CUSTOM_ADMIN_BUILD_PARAM-2"
-                value={{ myKey: 2, nested: { foo: "bar" } }}
-            />
-            <Admin.BuildParam paramName="MY_CUSTOM_ADMIN_BUILD_PARAM" value="customAdminValue" />
+            {/*<Api.BuildParam paramName="MY_CUSTOM_BUILD_PARAM" value="customValue" />*/}
+            {/*<Api.BuildParam*/}
+            {/*    paramName="MY_CUSTOM_BUILD_PARAM-2"*/}
+            {/*    value={{ myKey: 2, nested: { foo: "bar" } }}*/}
+            {/*/>*/}
+
+            {/*<Admin.BuildParam*/}
+            {/*    paramName="MY_CUSTOM_ADMIN_BUILD_PARAM-2"*/}
+            {/*    value={{ myKey: 2, nested: { foo: "bar" } }}*/}
+            {/*/>*/}
+            {/*<Admin.BuildParam paramName="MY_CUSTOM_ADMIN_BUILD_PARAM" value="customAdminValue" />*/}
 
             {/* Example: Environment-based conditional configuration */}
             {/*<Infra.Env.Is env="prod">
