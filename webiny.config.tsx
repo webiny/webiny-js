@@ -131,9 +131,6 @@ export const Extensions = () => {
             {/*    backendSrc={"/extensions/myOktaIdProvider.ts"}*/}
             {/*    adminSrc={"/extensions/myOktaIdProvider.ts"}*/}
             {/*/>*/}
-
-            <Api.Extension src={"/extensions/ProductCategoryModel.ts"} />
-            <Api.Extension src={"/extensions/ProductModel.ts"} />
         </>
     );
 };
