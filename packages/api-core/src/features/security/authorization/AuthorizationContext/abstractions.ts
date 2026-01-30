@@ -15,3 +15,16 @@ export const AuthorizationContext =
 export namespace AuthorizationContext {
     export type Interface = IAuthorizationContext;
 }
+
+export interface IPermissionTransformer {
+    execute(permission: SecurityPermission): SecurityPermission | SecurityPermission[];
+}
+
+export const PermissionTransformer =
+    createAbstraction<IPermissionTransformer>("PermissionTransformer");
+
+export namespace PermissionTransformer {
+    export type Interface = IPermissionTransformer;
+    export type Permission = SecurityPermission;
+    export type Return = SecurityPermission | SecurityPermission[];
+}

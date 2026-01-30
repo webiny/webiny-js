@@ -1,5 +1,5 @@
 import { AsyncLocalStorage } from "async_hooks";
-import { AuthorizationContext as Abstraction } from "./abstractions.js";
+import { AuthorizationContext as Abstraction, PermissionTransformer } from "./abstractions.js";
 import { Authorizer } from "../Authorizer/index.js";
 import type { SecurityPermission } from "~/types/security.js";
 import { Identity } from "~/features/security/IdentityContext/index.js";
@@ -10,7 +10,10 @@ export class AuthorizationContext implements Abstraction.Interface {
     private permissions?: SecurityPermission[];
     private permissionsLoader?: Promise<SecurityPermission[]>;
 
-    constructor(private getAuthorizers: () => Authorizer.Interface[]) {}
+    constructor(
+        private getAuthorizers: () => Authorizer.Interface[],
+        private getTransformers: () => PermissionTransformer.Interface[]
+    ) {}
 
     async loadPermissions(identity: Identity): Promise<SecurityPermission[]> {
         if (this.permissions) {
@@ -25,9 +28,9 @@ export class AuthorizationContext implements Abstraction.Interface {
             // Execute authorizers in sequence until one returns permissions
             const authorizers = this.getAuthorizers();
             for (const authorizer of authorizers) {
-                const result = await authorizer.authorize(identity);
-                if (Array.isArray(result)) {
-                    this.permissions = result;
+                const permissions = await authorizer.authorize(identity);
+                if (Array.isArray(permissions)) {
+                    this.permissions = this.transformPermissions(permissions);
                     return resolve(this.permissions);
                 }
             }
@@ -52,5 +55,19 @@ export class AuthorizationContext implements Abstraction.Interface {
     clearPermissionsCache(): void {
         this.permissions = undefined;
         this.permissionsLoader = undefined;
+    }
+
+    private transformPermissions(permissions: SecurityPermission[]) {
+        const transformers = this.getTransformers();
+        if (transformers.length === 0) {
+            return permissions;
+        }
+
+        return permissions
+            .map(permission => {
+                // A transformer can return one or multiple permissions, so we flatten the result.
+                return transformers.map(t => t.execute(permission)).flat();
+            })
+            .flat();
     }
 }

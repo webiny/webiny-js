@@ -31,6 +31,6 @@ export const LegacyPermissionRenderer = () => {
                 );
             }
         } as AdminAppPermissionRendererPlugin);
-    }, [])
+    }, []);
     return null;
 };

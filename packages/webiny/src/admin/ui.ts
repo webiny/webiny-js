@@ -8,7 +8,25 @@ export { Checkbox } from "@webiny/admin-ui/Checkbox/index.js";
 export { CheckboxGroup } from "@webiny/admin-ui/CheckboxGroup/index.js";
 export { CodeEditor } from "@webiny/admin-ui/CodeEditor/index.js";
 export { ColorPicker } from "@webiny/admin-ui/ColorPicker/index.js";
-export { CloneIcon, CreateIcon, DataList, DataListModal, DataListWithSections, DeleteIcon, DownloadIcon, EditIcon, FilterIcon, ListIcon, LoginIcon, NextPageIcon, OptionsIcon, PreviousPageIcon, RefreshIcon, SortIcon, UploadIcon } from "@webiny/admin-ui/DataList/index.js";
+export {
+    CloneIcon,
+    CreateIcon,
+    DataList,
+    DataListModal,
+    DataListWithSections,
+    DeleteIcon,
+    DownloadIcon,
+    EditIcon,
+    FilterIcon,
+    ListIcon,
+    LoginIcon,
+    NextPageIcon,
+    OptionsIcon,
+    PreviousPageIcon,
+    RefreshIcon,
+    SortIcon,
+    UploadIcon
+} from "@webiny/admin-ui/DataList/index.js";
 export { DataTable } from "@webiny/admin-ui/DataTable/index.js";
 export { DelayedOnChange } from "@webiny/admin-ui/DelayedOnChange/index.js";
 export { Dialog } from "@webiny/admin-ui/Dialog/index.js";

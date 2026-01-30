@@ -29,7 +29,7 @@ export class ModelsProvider implements ProviderAbstraction.Interface {
 
                 allModels.push({
                     ...modelPlugin.contentModel,
-                    tenant,
+                    tenant
                 });
             }
         }
