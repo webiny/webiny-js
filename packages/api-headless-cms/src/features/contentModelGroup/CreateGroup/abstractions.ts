@@ -1,13 +1,13 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
-import type { CmsGroup } from "~/types/index.js";
-import type { CmsGroupCreateInput } from "~/types/index.js";
-import {
-    type GroupSlugTakenError,
-    GroupNotAuthorizedError
+import { createAbstraction, Result } from "@webiny/feature/api";
+import type { CmsGroup, CmsGroupCreateInput } from "~/types/index.js";
+import type {
+    GroupPersistenceError,
+    GroupValidationError
 } from "~/domain/contentModelGroup/errors.js";
-import type { GroupValidationError } from "~/domain/contentModelGroup/errors.js";
-import type { GroupPersistenceError } from "~/domain/contentModelGroup/errors.js";
+import {
+    GroupNotAuthorizedError,
+    type GroupSlugTakenError
+} from "~/domain/contentModelGroup/errors.js";
 
 /**
  * CreateGroup Use Case
@@ -28,7 +28,10 @@ export const CreateGroupUseCase = createAbstraction<ICreateGroupUseCase>("Create
 
 export namespace CreateGroupUseCase {
     export type Interface = ICreateGroupUseCase;
+    export type Input = CmsGroupCreateInput;
+
     export type Error = UseCaseError;
+    export type Return = Promise<Result<CmsGroup, UseCaseError>>;
 }
 
 /**

@@ -1,5 +1,4 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
+import { createAbstraction, Result } from "@webiny/feature/api";
 import type {
     CmsEntry,
     CmsEntryValues,
@@ -9,12 +8,12 @@ import type {
 } from "~/types/index.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import type {
+    EntryLockedError,
+    EntryNotAuthorizedError,
     EntryNotFoundError,
     EntryPersistenceError,
-    EntryValidationError,
-    EntryLockedError
+    EntryValidationError
 } from "~/domain/contentEntry/errors.js";
-import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 
 /**
  * UpdateEntry Use Case
@@ -43,7 +42,14 @@ export const UpdateEntryUseCase = createAbstraction<IUpdateEntryUseCase>("Update
 
 export namespace UpdateEntryUseCase {
     export type Interface = IUpdateEntryUseCase;
+    export type Input<T extends CmsEntryValues = CmsEntryValues> = UpdateCmsEntryInput<T>;
+    export type Meta = GenericRecord;
+    export type Options = UpdateCmsEntryOptionsInput;
+
     export type Error = UseCaseError;
+    export type Return<T extends CmsEntryValues = CmsEntryValues> = Promise<
+        Result<CmsEntry<T>, UseCaseError>
+    >;
 }
 
 /**

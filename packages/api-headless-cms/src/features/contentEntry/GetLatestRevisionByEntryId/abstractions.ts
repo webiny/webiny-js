@@ -1,13 +1,12 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
+import { createAbstraction, Result } from "@webiny/feature/api";
 import type {
     CmsEntry,
+    CmsEntryStorageOperationsGetLatestRevisionParams,
     CmsEntryValues,
-    CmsModel,
-    CmsEntryStorageOperationsGetLatestRevisionParams
+    CmsModel
 } from "~/types/index.js";
-import { EntryNotFoundError, type EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import { EntryNotFoundError, type EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 
 /**
  * Base internal use case - returns entry regardless of deleted state.
@@ -36,7 +35,10 @@ export const GetLatestRevisionByEntryIdBaseUseCase =
 
 export namespace GetLatestRevisionByEntryIdBaseUseCase {
     export type Interface = IGetLatestRevisionByEntryIdBaseUseCase;
+    export type Params = CmsEntryStorageOperationsGetLatestRevisionParams;
+
     export type Error = UseCaseError;
+    export type Return<T extends CmsEntryValues> = Promise<Result<CmsEntry<T>, UseCaseError>>;
 }
 
 /**
@@ -47,7 +49,10 @@ export const GetLatestRevisionByEntryIdUseCase =
 
 export namespace GetLatestRevisionByEntryIdUseCase {
     export type Interface = IGetLatestRevisionByEntryIdBaseUseCase;
+    export type Params = CmsEntryStorageOperationsGetLatestRevisionParams;
+
     export type Error = UseCaseError;
+    export type Return<T extends CmsEntryValues> = Promise<Result<CmsEntry<T>, UseCaseError>>;
 }
 
 /**
@@ -60,12 +65,18 @@ export const GetLatestDeletedRevisionByEntryIdUseCase =
 
 export namespace GetLatestDeletedRevisionByEntryIdUseCase {
     export type Interface = IGetLatestRevisionByEntryIdBaseUseCase;
+    export type Params = CmsEntryStorageOperationsGetLatestRevisionParams;
+
     export type Error = UseCaseError;
+    export type Return<T extends CmsEntryValues> = Promise<Result<CmsEntry<T>, UseCaseError>>;
 }
 
 export namespace GetLatestNonDeletedRevisionByEntryIdUseCase {
     export type Interface = IGetLatestRevisionByEntryIdBaseUseCase;
+    export type Params = CmsEntryStorageOperationsGetLatestRevisionParams;
+
     export type Error = UseCaseError;
+    export type Return<T extends CmsEntryValues> = Promise<Result<CmsEntry<T>, UseCaseError>>;
 }
 
 /**
@@ -78,7 +89,10 @@ export const GetLatestRevisionByEntryIdIncludingDeletedUseCase =
 
 export namespace GetLatestRevisionByEntryIdIncludingDeletedUseCase {
     export type Interface = IGetLatestRevisionByEntryIdBaseUseCase;
+    export type Params = CmsEntryStorageOperationsGetLatestRevisionParams;
+
     export type Error = UseCaseError;
+    export type Return<T extends CmsEntryValues> = Promise<Result<CmsEntry<T>, UseCaseError>>;
 }
 
 /**

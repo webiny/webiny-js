@@ -1,12 +1,10 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
-import type { CmsEntry, CmsEntryValues } from "~/types/index.js";
-import type { CmsModel } from "~/types/index.js";
+import { createAbstraction, Result } from "@webiny/feature/api";
+import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import {
-    type EntryNotFoundError,
     type EntryNotAuthorizedError,
-    type EntryValidationError,
-    type EntryPersistenceError
+    type EntryNotFoundError,
+    type EntryPersistenceError,
+    type EntryValidationError
 } from "~/domain/contentEntry/errors.js";
 
 /**
@@ -36,4 +34,7 @@ export const GetSingletonEntryUseCase = createAbstraction<IGetSingletonEntryUseC
 export namespace GetSingletonEntryUseCase {
     export type Interface = IGetSingletonEntryUseCase;
     export type Error = UseCaseError;
+    export type Return<T extends CmsEntryValues = CmsEntryValues> = Promise<
+        Result<CmsEntry<T>, UseCaseError>
+    >;
 }

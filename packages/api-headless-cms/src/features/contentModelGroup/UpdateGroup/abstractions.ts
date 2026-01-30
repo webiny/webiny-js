@@ -1,14 +1,14 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
-import type { CmsGroup } from "~/types/index.js";
-import type { CmsGroupUpdateInput } from "~/types/index.js";
+import { createAbstraction, Result } from "@webiny/feature/api";
+import type { CmsGroup, CmsGroupUpdateInput } from "~/types/index.js";
+import type {
+    GroupCannotUpdateCodeDefinedError,
+    GroupPersistenceError,
+    GroupValidationError
+} from "~/domain/contentModelGroup/errors.js";
 import {
     GroupNotAuthorizedError,
     type GroupNotFoundError
 } from "~/domain/contentModelGroup/errors.js";
-import type { GroupValidationError } from "~/domain/contentModelGroup/errors.js";
-import type { GroupPersistenceError } from "~/domain/contentModelGroup/errors.js";
-import type { GroupCannotUpdateCodeDefinedError } from "~/domain/contentModelGroup/errors.js";
 
 /**
  * UpdateGroup Use Case
@@ -30,7 +30,10 @@ export const UpdateGroupUseCase = createAbstraction<IUpdateGroupUseCase>("Update
 
 export namespace UpdateGroupUseCase {
     export type Interface = IUpdateGroupUseCase;
+    export type Input = CmsGroupUpdateInput;
+
     export type Error = UseCaseError;
+    export type Return = Promise<Result<CmsGroup, UseCaseError>>;
 }
 
 /**

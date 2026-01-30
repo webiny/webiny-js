@@ -39,7 +39,10 @@ export const UpdateModelUseCase = createAbstraction<IUpdateModelUseCase>("Update
 
 export namespace UpdateModelUseCase {
     export type Interface = IUpdateModelUseCase;
+    export type Input = CmsModelUpdateInput;
+
     export type Error = UseCaseError;
+    export type Return = Promise<Result<CmsModel, UseCaseError>>;
 }
 
 /**
