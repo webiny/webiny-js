@@ -3,7 +3,7 @@ import { ModelFactory } from "@webiny/api-headless-cms/features/modelBuilder/ind
 export const FILTER_MODEL_ID = process.env.WEBINY_API_LEGACY_MODELS ? "acoFilter" : "wbyAcoFilter";
 
 class FilterPrivateModelImpl implements ModelFactory.Interface {
-    execute(builder: ModelFactory.Builder) {
+    public async execute(builder: ModelFactory.Builder) {
         return [
             builder
                 .private()

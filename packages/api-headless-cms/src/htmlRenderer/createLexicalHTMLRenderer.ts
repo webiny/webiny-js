@@ -7,7 +7,7 @@ const isLexicalContents = (contents: RichTextContents): contents is SerializedEd
 };
 
 export const createLexicalHTMLRenderer = () => {
-    return new CmsRichTextRendererPlugin("html", contents => {
+    return new CmsRichTextRendererPlugin("html", async contents => {
         if (!isLexicalContents(contents)) {
             return undefined;
         }

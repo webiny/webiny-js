@@ -44,8 +44,5 @@ export interface ContentEntryNodeContext {
 }
 
 export interface ContentEntryValueVisitor {
-    (
-        params: ContentEntryNode,
-        context: ContentEntryNodeContext
-    ): Promise<void | unknown> | void | unknown;
+    (params: ContentEntryNode, context: ContentEntryNodeContext): Promise<void | unknown>;
 }

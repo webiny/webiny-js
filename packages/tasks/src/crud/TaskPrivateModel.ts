@@ -4,7 +4,7 @@ import { TaskDataStatus } from "~/types.js";
 export const WEBINY_TASK_MODEL_ID = "wbyTask";
 
 class TaskPrivateModelImpl implements ModelFactory.Interface {
-    execute(builder: ModelFactory.Builder) {
+    public async execute(builder: ModelFactory.Builder) {
         return [
             builder
                 .private()

@@ -23,7 +23,7 @@ const states = [
 ];
 
 class WorkflowStateModelImpl implements ModelFactory.Interface {
-    execute(builder: ModelFactory.Builder) {
+    public async execute(builder: ModelFactory.Builder) {
         return [
             builder
                 .private()

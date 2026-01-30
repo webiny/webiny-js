@@ -13,7 +13,7 @@ describe("Private Models", () => {
 
     it("should append fields when .fields() is called multiple times", async () => {
         class TestModelImpl implements ModelFactory.Interface {
-            execute(builder: ModelFactory.Builder) {
+            public async execute(builder: ModelFactory.Builder) {
                 // First call - add base fields
                 const model = builder
                     .private()
@@ -60,7 +60,7 @@ describe("Private Models", () => {
         class ConditionalModelImpl implements ModelFactory.Interface {
             constructor(private includeOptionalFields: boolean) {}
 
-            execute(builder: ModelFactory.Builder) {
+            public async execute(builder: ModelFactory.Builder) {
                 // Always add base fields
                 const model = builder
                     .private()
@@ -120,7 +120,7 @@ describe("Public Models", () => {
 
     it("should append fields when .fields() is called multiple times on public models", async () => {
         class TestPublicModelImpl implements ModelFactory.Interface {
-            execute(builder: ModelFactory.Builder) {
+            public async execute(builder: ModelFactory.Builder) {
                 // First call - add base fields
                 const model = builder
                     .public()
@@ -171,7 +171,7 @@ describe("Public Models", () => {
         class ConditionalPublicModelImpl implements ModelFactory.Interface {
             constructor(private includeValidators: boolean) {}
 
-            execute(builder: ModelFactory.Builder) {
+            public async execute(builder: ModelFactory.Builder) {
                 // Always add base fields
                 const model = builder
                     .public()

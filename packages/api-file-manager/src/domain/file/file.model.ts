@@ -4,9 +4,9 @@ import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 export const FILE_MODEL_ID = process.env.WEBINY_API_LEGACY_MODELS ? "fmFile" : "wbyFmFile";
 
 class FilePrivateModelImpl implements ModelFactory.Interface {
-    constructor(private wcp: WcpContext.Interface) {}
+    public constructor(private wcp: WcpContext.Interface) {}
 
-    execute(builder: ModelFactory.Builder) {
+    public async execute(builder: ModelFactory.Builder) {
         const model = builder.private().modelId(FILE_MODEL_ID).name("FmFile");
         const privateFiles = this.wcp.canUsePrivateFiles();
 

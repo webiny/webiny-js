@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { Container } from "@webiny/di";
 import { ModelBuilderFeature } from "~/features/modelBuilder/feature.js";
 import { ModelFactory, ModelsProvider } from "~/features/modelBuilder/index.js";
-import { createPrivateModelPlugin, createModelField } from "~/index.js";
+import { createModelField, createPrivateModelPlugin } from "~/index.js";
 import { articleModel } from "~tests/contentTraverser/mocks/article.model.js";
 
 describe("Model Builder Comparison - Old vs New API", () => {
@@ -71,7 +71,7 @@ describe("Model Builder Comparison - Old vs New API", () => {
             // NEW WAY - Using builder API via DI
             // ============================================
             class TestModelImpl implements ModelFactory.Interface {
-                execute(builder: ModelFactory.Builder) {
+                public async execute(builder: ModelFactory.Builder) {
                     return [
                         builder
                             .private()
@@ -164,7 +164,7 @@ describe("Model Builder Comparison - Old vs New API", () => {
             // NEW WAY - Using builder API via DI
             // ============================================
             class ArticleModelImpl implements ModelFactory.Interface {
-                execute(builder: ModelFactory.Builder) {
+                public async execute(builder: ModelFactory.Builder) {
                     return [
                         builder
                             .private()
@@ -187,7 +187,10 @@ describe("Model Builder Comparison - Old vs New API", () => {
                                     .template("cv2zf965v324ivdc7e1vt", {
                                         name: "Hero #1",
                                         gqlTypeName: "Hero",
-                                        icon: "fas/flag",
+                                        icon: {
+                                            type: "fas/flag",
+                                            name: "fas/flag"
+                                        },
                                         description: "The top piece of content on every page.",
                                         fields: f => ({
                                             title: f.text().label("Title")
@@ -196,7 +199,10 @@ describe("Model Builder Comparison - Old vs New API", () => {
                                     .template("81qiz2v453wx9uque0gox", {
                                         name: "Simple Text #1",
                                         gqlTypeName: "SimpleText",
-                                        icon: "fas/file-text",
+                                        icon: {
+                                            name: "fas/file-text",
+                                            type: "fas/file-text"
+                                        },
                                         description: "Simple paragraph of text.",
                                         fields: f => ({
                                             text: f.longText().label("Text")
@@ -205,7 +211,10 @@ describe("Model Builder Comparison - Old vs New API", () => {
                                     .template("9ht43gurhegkbdfsaafyads", {
                                         name: "Settings",
                                         gqlTypeName: "Settings",
-                                        icon: "fas/file-text",
+                                        icon: {
+                                            name: "fas/file-text",
+                                            type: "fas/file-text"
+                                        },
                                         description: "Settings",
                                         fields: f => ({
                                             settings: f
@@ -227,7 +236,10 @@ describe("Model Builder Comparison - Old vs New API", () => {
                                                 .template("0emukbsvmzpozx2lzk883", {
                                                     name: "Ad",
                                                     gqlTypeName: "Ad",
-                                                    icon: "fab/buysellads",
+                                                    icon: {
+                                                        name: "fab/buysellads",
+                                                        type: "fab/buysellads"
+                                                    },
                                                     description: "Ad",
                                                     fields: adFields => ({
                                                         authors: adFields

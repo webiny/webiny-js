@@ -3,7 +3,7 @@ import { ModelFactory } from "@webiny/api-headless-cms/features/modelBuilder/ind
 export const RECORD_LOCKING_MODEL_ID = "wbyRecordLock";
 
 class RecordLockingPrivateModelImpl implements ModelFactory.Interface {
-    execute(builder: ModelFactory.Builder) {
+    public async execute(builder: ModelFactory.Builder) {
         return [
             builder
                 .private()
