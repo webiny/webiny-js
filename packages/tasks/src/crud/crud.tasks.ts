@@ -41,7 +41,7 @@ import {
     TaskBeforeDeleteEvent,
     TaskBeforeUpdateEvent
 } from "~/events/index.js";
-import { CmsFieldInputToWhereMapper } from "@webiny/api-headless-cms/features/mapper/feature.js";
+import { CmsWhereMapper } from "@webiny/api-headless-cms";
 
 const createRevisionId = (id: string) => {
     const { id: entryId } = parseIdentifier(id);
@@ -123,7 +123,7 @@ const validateTaskInput = async (params: IValidateParams) => {
 };
 
 export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
-    const cmsFieldInputToWhereMapper = context.container.resolve(CmsFieldInputToWhereMapper);
+    const cmsWhereMapper = context.container.resolve(CmsWhereMapper);
 
     const getTaskModel = async (): Promise<CmsModel> => {
         const identityContext = context.container.resolve(IdentityContext);
@@ -186,7 +186,7 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
             const listLatestEntries = context.container.resolve(ListLatestEntriesUseCase);
             const result = await listLatestEntries.execute<TaskService.Task<T, O>>(model, {
                 ...params,
-                where: cmsFieldInputToWhereMapper.map({
+                where: cmsWhereMapper.map({
                     input: params?.where,
                     fields: model.fields
                 })
@@ -437,7 +437,7 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
             const listLatestEntries = context.container.resolve(ListLatestEntriesUseCase);
             const result = await listLatestEntries.execute<ITaskLog>(model, {
                 ...params,
-                where: cmsFieldInputToWhereMapper.map({
+                where: cmsWhereMapper.map({
                     input: params.where,
                     fields: model.fields
                 })

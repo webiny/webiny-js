@@ -2,20 +2,20 @@ import { Result } from "@webiny/feature/api";
 import { createIdentifier, parseIdentifier } from "@webiny/utils";
 import { type IWorkflow, WorkflowMapper, WorkflowModel } from "~/domain/workflow/abstractions.js";
 import { WorkflowPersistenceError } from "~/domain/workflow/errors.js";
-import { ListWorkflowsRepository as Repository, type IListWorkflowsWhere } from "./abstractions.js";
+import { type IListWorkflowsWhere, ListWorkflowsRepository as Repository } from "./abstractions.js";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
-import { CmsFieldInputToWhereMapper } from "@webiny/api-headless-cms/features/mapper/abstractions.js";
+import { CmsWhereMapper } from "@webiny/api-headless-cms";
 
 class ListWorkflowsRepositoryImpl implements Repository.Interface {
     constructor(
         private listLatestEntries: ListLatestEntriesUseCase.Interface,
         private model: WorkflowModel.Interface,
         private mapper: WorkflowMapper.Interface,
-        private cmsFieldInputToWhereMapper: CmsFieldInputToWhereMapper.Interface
+        private cmsWhereMapper: CmsWhereMapper.Interface
     ) {}
 
     async execute(input: Repository.Params): Repository.Return {
-        const where = this.cmsFieldInputToWhereMapper.map({
+        const where = this.cmsWhereMapper.map({
             input: this.convertListWhere(input.where),
             fields: this.model.fields
         });
@@ -66,10 +66,5 @@ class ListWorkflowsRepositoryImpl implements Repository.Interface {
 
 export const ListWorkflowsRepository = Repository.createImplementation({
     implementation: ListWorkflowsRepositoryImpl,
-    dependencies: [
-        ListLatestEntriesUseCase,
-        WorkflowModel,
-        WorkflowMapper,
-        CmsFieldInputToWhereMapper
-    ]
+    dependencies: [ListLatestEntriesUseCase, WorkflowModel, WorkflowMapper, CmsWhereMapper]
 });

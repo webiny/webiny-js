@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { useHandler } from "~tests/testHelpers/useHandler.js";
-import { CmsFieldInputToWhereMapper } from "~/features/whereMapper/abstractions.js";
+import { CmsWhereMapper } from "~/features/whereMapper/abstractions.js";
 import { useCategoryManageHandler } from "~tests/testHelpers/useCategoryManageHandler.js";
 import { setupGroupAndModels } from "~tests/testHelpers/setup.js";
 import type { CmsModel } from "~/types/index.js";
@@ -33,7 +33,7 @@ describe("Where mapper for custom GraphQL where input", async () => {
             }
         });
 
-        return context.container.resolve(CmsFieldInputToWhereMapper);
+        return context.container.resolve(CmsWhereMapper);
     };
 
     it("should have mapper resolved", async () => {

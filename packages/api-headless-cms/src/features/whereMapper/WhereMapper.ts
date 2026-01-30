@@ -5,7 +5,7 @@
  */
 import { GenericRecord } from "@webiny/api/types.js";
 import { CmsEntryListWhere } from "~/types/types.js";
-import { CmsFieldInputToWhereMapper, ICmsFieldInputToWhereMapperParams } from "./abstractions.js";
+import { CmsWhereMapper, ICmsWhereMapperParams } from "./abstractions.js";
 
 const isPlainObject = (value: unknown): value is Record<string, unknown> => {
     if (!value || typeof value !== "object") {
@@ -25,10 +25,8 @@ interface IMapNodeWhereParams {
     isField: (key: string) => boolean;
 }
 
-class WhereMapperImpl implements CmsFieldInputToWhereMapper.Interface {
-    map<T extends GenericRecord>(
-        params: ICmsFieldInputToWhereMapperParams<T>
-    ): CmsEntryListWhere | undefined {
+class WhereMapperImpl implements CmsWhereMapper.Interface {
+    map<T extends GenericRecord>(params: ICmsWhereMapperParams<T>): CmsEntryListWhere | undefined {
         const { fields: modelFields, input } = params;
         if (!input) {
             return undefined;
@@ -86,7 +84,7 @@ class WhereMapperImpl implements CmsFieldInputToWhereMapper.Interface {
     }
 }
 
-export const WhereMapper = CmsFieldInputToWhereMapper.createImplementation({
+export const WhereMapper = CmsWhereMapper.createImplementation({
     implementation: WhereMapperImpl,
     dependencies: []
 });

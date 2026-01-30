@@ -7,13 +7,13 @@ import {
 } from "./abstractions.js";
 import { FileModel } from "~/domain/file/abstractions.js";
 import { FilePersistenceError } from "~/domain/file/errors.js";
-import { CmsFieldInputToWhereMapper } from "@webiny/api-headless-cms/features/mapper/abstractions.js";
+import { CmsWhereMapper } from "@webiny/api-headless-cms";
 
 class ListTagsRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
         private getUniqueFieldValues: GetUniqueFieldValuesUseCase.Interface,
         private fileModel: FileModel.Interface,
-        private cmsFieldInputToWhereMapper: CmsFieldInputToWhereMapper.Interface
+        private cmsWhereMapper: CmsWhereMapper.Interface
     ) {}
 
     async execute(input: ListTagsInput): Promise<Result<TagItem[], RepositoryAbstraction.Error>> {
@@ -21,7 +21,7 @@ class ListTagsRepositoryImpl implements RepositoryAbstraction.Interface {
             fieldId: "tags",
             // TODO fix with proper types
             // @ts-expect-error
-            where: this.cmsFieldInputToWhereMapper.map({
+            where: this.cmsWhereMapper.map({
                 input: {
                     ...(input.where || {}),
                     latest: true
@@ -51,5 +51,5 @@ class ListTagsRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const ListTagsRepository = RepositoryAbstraction.createImplementation({
     implementation: ListTagsRepositoryImpl,
-    dependencies: [GetUniqueFieldValuesUseCase, FileModel, CmsFieldInputToWhereMapper]
+    dependencies: [GetUniqueFieldValuesUseCase, FileModel, CmsWhereMapper]
 });

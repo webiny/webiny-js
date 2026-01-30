@@ -137,3 +137,8 @@ export {
 
 // ValidateEntry
 export { ValidateEntryUseCase } from "~/features/contentEntry/ValidateEntry/abstractions.js";
+/**
+ * Mapper helpers for custom where and sort inputs.
+ */
+export { CmsWhereMapper } from "~/features/whereMapper/abstractions.js";
+export { CmsSortMapper } from "~/features/sortMapper/abstractions.js";

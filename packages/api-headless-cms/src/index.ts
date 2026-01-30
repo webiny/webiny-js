@@ -64,4 +64,6 @@ export * from "~/utils/RichTextRenderer.js";
 export * from "./graphql/handleRequest.js";
 export * from "./utils/contentEntryTraverser/ContentEntryTraverser.js";
 export * from "./utils/contentModelAst/index.js";
+export { CmsWhereMapper } from "~/features/whereMapper/abstractions.js";
+export { CmsSortMapper } from "~/features/sortMapper/abstractions.js";
 export { entryToStorageTransform, entryFieldFromStorageTransform, entryFromStorageTransform };
