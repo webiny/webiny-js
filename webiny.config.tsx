@@ -1,5 +1,5 @@
 import React from "react";
-import { Api, Cli, Infra, Project, Security } from "webiny/extensions";
+import { Admin, Api, Cli, Infra, Project, Security } from "webiny/extensions";
 import { MySchemaExtension } from "./extensions/graphql/MySchemaExtension.js";
 import { Cognito } from "@webiny/cognito";
 // import { CustomIdp } from "./extensions/customIdp/CustomIdp.js";
@@ -11,6 +11,11 @@ export const Extensions = () => {
             {/* Admin 👇 */}
             {/*<Admin.Extension src={"/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />*/}
             {/*<Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />*/}
+            {/*<Admin.BuildParam paramName="ADMIN_CUSTOM_PARAM" value="adminValue" />*/}
+            {/*<Admin.BuildParam*/}
+            {/*    paramName="ADMIN_CONFIG"*/}
+            {/*    value={{ theme: "dark", logo: "https://example.com/logo.png" }}*/}
+            {/*/>*/}
 
             {/* Infra 👇 */}
             <Infra.PulumiResourceNamePrefix prefix={"myproj-"} />
@@ -27,6 +32,16 @@ export const Extensions = () => {
                 paramName="MY_CUSTOM_BUILD_PARAM-2"
                 value={{ myKey: 2, nested: { foo: "bar" } }}
             />
+
+            <Admin.BuildParam
+                paramName="MY_CUSTOM_ADMIN_BUILD_PARAM-2"
+                value={{ myKey: 2, nested: { foo: "bar" } }}
+            />
+            <Admin.BuildParam
+                paramName="MY_CUSTOM_ADMIN_BUILD_PARAM"
+                value="customAdminValue"
+            />
+
             {/* Example: Environment-based conditional configuration */}
             {/*<Infra.Env.Is env="prod">
                 <Infra.Aws.Tags tags={{ ENV: "production" }} />
@@ -119,6 +134,9 @@ export const Extensions = () => {
             {/*    backendSrc={"/extensions/myOktaIdProvider.ts"}*/}
             {/*    adminSrc={"/extensions/myOktaIdProvider.ts"}*/}
             {/*/>*/}
+
+            <Api.Extension src={"/extensions/ProductCategoryModel.ts"} />
+            <Api.Extension src={"/extensions/ProductModel.ts"} />
         </>
     );
 };

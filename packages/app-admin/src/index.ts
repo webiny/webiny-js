@@ -43,6 +43,9 @@ export { SystemInstallerProvider } from "./presentation/installation/components/
 export type { AaclPermission } from "./features/wcp/types.js";
 export type { Tenant } from "./features/tenancy/types.js";
 
+// Features
+export { BuildParamsFeature } from "./features/buildParams/feature.js";
+
 // Hooks
 export * from "./hooks/index.js";
 export { useWcp } from "./presentation/wcp/useWcp.js";
