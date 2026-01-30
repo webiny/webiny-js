@@ -1,18 +1,15 @@
-import findUp from "find-up";
-import path from "path";
-
-const TEMPLATES_FOLDER_NAME = "_templates";
+import { dirname, join } from "path";
+import { fileURLToPath } from "url";
 
 export const getTemplatesFolderPath = () => {
-    const templatesFolderPath = findUp.sync(TEMPLATES_FOLDER_NAME, {
-        type: "directory",
-        cwd: path.join(import.meta.dirname)
-    });
+    const templatePackage = import.meta.resolve("@webiny/project-aws-template/package.json");
 
-    if (!templatesFolderPath) {
+    if (!templatePackage) {
         // This should never happen because we're controlling the templates.
         throw new Error("Could not find the `appTemplates` folder. Something went terribly wrong.");
     }
 
-    return templatesFolderPath;
+    const cleanPath = fileURLToPath(templatePackage);
+
+    return join(dirname(cleanPath), "template");
 };

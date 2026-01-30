@@ -16192,6 +16192,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/project-aws-template@npm:0.0.0, @webiny/project-aws-template@workspace:packages/project-aws-template":
+  version: 0.0.0-use.local
+  resolution: "@webiny/project-aws-template@workspace:packages/project-aws-template"
+  dependencies:
+    "@webiny/project-aws": "npm:*"
+    "@webiny/tenant-manager": "npm:*"
+    react: "npm:18.2.0"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/project-aws@npm:*, @webiny/project-aws@npm:0.0.0, @webiny/project-aws@workspace:packages/project-aws":
   version: 0.0.0-use.local
   resolution: "@webiny/project-aws@workspace:packages/project-aws"
@@ -16485,7 +16495,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/tenant-manager@workspace:packages/tenant-manager":
+"@webiny/tenant-manager@npm:*, @webiny/tenant-manager@workspace:packages/tenant-manager":
   version: 0.0.0-use.local
   resolution: "@webiny/tenant-manager@workspace:packages/tenant-manager"
   dependencies:
@@ -35189,6 +35199,7 @@ __metadata:
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
+    "@webiny/project-aws-template": "npm:0.0.0"
     "@webiny/tasks": "npm:0.0.0"
     react: "npm:18.2.0"
     rimraf: "npm:^6.1.2"

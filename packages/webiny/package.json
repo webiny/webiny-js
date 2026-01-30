@@ -23,6 +23,7 @@
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/project": "0.0.0",
     "@webiny/project-aws": "0.0.0",
+    "@webiny/project-aws-template": "0.0.0",
     "@webiny/tasks": "0.0.0",
     "react": "18.2.0"
   },

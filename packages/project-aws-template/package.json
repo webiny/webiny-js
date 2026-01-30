@@ -1,0 +1,20 @@
+{
+  "name": "@webiny/project-aws-template",
+  "version": "0.0.0",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "description": "A Webiny AWS project template.",
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/project-aws": "*",
+    "@webiny/tenant-manager": "*",
+    "react": "18.2.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "."
+  }
+}

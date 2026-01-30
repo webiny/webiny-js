@@ -15,13 +15,6 @@ export const TenancyProvider = (props: TenancyProviderProps) => {
         return new URLSearchParams(window.location.search).get("tenantId");
     }, []);
 
-    useEffect(() => {
-        console.log("First mount");
-        return () => {
-            console.log("Unmount");
-        };
-    }, []);
-
     // Handle query string on mount
     useEffect(() => {
         if (tenantId) {
