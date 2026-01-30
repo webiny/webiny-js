@@ -41,6 +41,7 @@
     { "path": "../migrations/tsconfig.build.json" },
     { "path": "../project/tsconfig.build.json" },
     { "path": "../pulumi/tsconfig.build.json" },
+    { "path": "../tenant-manager/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../wcp/tsconfig.build.json" }
   ],
@@ -289,6 +290,8 @@
       "@webiny/project": ["../project/src"],
       "@webiny/pulumi/*": ["../pulumi/src/*"],
       "@webiny/pulumi": ["../pulumi/src"],
+      "@webiny/tenant-manager/*": ["../tenant-manager/src/*"],
+      "@webiny/tenant-manager": ["../tenant-manager/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],

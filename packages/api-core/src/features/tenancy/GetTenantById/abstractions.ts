@@ -8,8 +8,9 @@ export interface IGetTenantByIdUseCase {
     execute(id: string): Promise<Result<Tenant, GetTenantByIdError>>;
 }
 
-export const GetTenantByIdUseCase =
-    createAbstraction<IGetTenantByIdUseCase>("GetTenantByIdUseCase");
+export const GetTenantByIdUseCase = createAbstraction<IGetTenantByIdUseCase>(
+    "Tenancy/GetTenantByIdUseCase"
+);
 
 export namespace GetTenantByIdUseCase {
     export type Interface = IGetTenantByIdUseCase;
@@ -22,8 +23,9 @@ export interface IGetTenantByIdRepository {
     getById(id: string): Promise<Tenant | null>;
 }
 
-export const GetTenantByIdRepository =
-    createAbstraction<IGetTenantByIdRepository>("GetTenantByIdRepository");
+export const GetTenantByIdRepository = createAbstraction<IGetTenantByIdRepository>(
+    "Tenancy/GetTenantByIdRepository"
+);
 
 export namespace GetTenantByIdRepository {
     export type Interface = IGetTenantByIdRepository;
@@ -34,8 +36,9 @@ export interface IGetTenantByIdGateway {
     getTenantById(id: string): Promise<Tenant | null>;
 }
 
-export const GetTenantByIdGateway =
-    createAbstraction<IGetTenantByIdGateway>("GetTenantByIdGateway");
+export const GetTenantByIdGateway = createAbstraction<IGetTenantByIdGateway>(
+    "Tenancy/GetTenantByIdGateway"
+);
 
 export namespace GetTenantByIdGateway {
     export type Interface = IGetTenantByIdGateway;

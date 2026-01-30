@@ -1,21 +1,25 @@
-import React, { useMemo, useEffect, useRef } from "react";
-import { DiContainerProvider, useFeature, useRouter } from "@webiny/app";
+import React, { useMemo, useEffect } from "react";
+import { DiContainerProvider, useFeature } from "@webiny/app";
 import { plugins } from "@webiny/plugins";
 import { TenantHeaderLinkPlugin } from "@webiny/app/plugins/TenantHeaderLinkPlugin.js";
 import { TenancyFeature } from "~/features/tenancy/feature.js";
-import { Routes } from "~/routes.js";
 
 interface TenancyProviderProps {
     children: React.ReactNode;
 }
 
 export const TenancyProvider = (props: TenancyProviderProps) => {
-    const isFirstMount = useRef(true);
-    const { goToRoute } = useRouter();
     const { service, createTenantContainer } = useFeature(TenancyFeature);
 
     const tenantId = useMemo(() => {
         return new URLSearchParams(window.location.search).get("tenantId");
+    }, []);
+
+    useEffect(() => {
+        console.log("First mount");
+        return () => {
+            console.log("Unmount");
+        };
     }, []);
 
     // Handle query string on mount
@@ -35,13 +39,7 @@ export const TenancyProvider = (props: TenancyProviderProps) => {
     // Handle tenant changes (redirect on change)
     useEffect(() => {
         return service.onTenantChange(() => {
-            // Skip redirect on initial mount
-            if (isFirstMount.current) {
-                isFirstMount.current = false;
-                return;
-            }
-
-            goToRoute(Routes.Dashboard);
+            window.location.replace(window.location.origin);
         });
     }, [service]);
 

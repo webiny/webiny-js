@@ -41,6 +41,7 @@
     { "path": "../migrations" },
     { "path": "../project" },
     { "path": "../pulumi" },
+    { "path": "../tenant-manager" },
     { "path": "../utils" },
     { "path": "../wcp" }
   ],
@@ -289,6 +290,8 @@
       "@webiny/project": ["../project/src"],
       "@webiny/pulumi/*": ["../pulumi/src/*"],
       "@webiny/pulumi": ["../pulumi/src"],
+      "@webiny/tenant-manager/*": ["../tenant-manager/src/*"],
+      "@webiny/tenant-manager": ["../tenant-manager/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],

@@ -16250,6 +16250,7 @@ __metadata:
     "@webiny/migrations": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
     "@webiny/pulumi": "npm:0.0.0"
+    "@webiny/tenant-manager": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     chalk: "npm:^4.1.2"
@@ -16490,6 +16491,35 @@ __metadata:
     load-json-file: "npm:6.2.0"
     strip-ansi: "npm:^6.0.1"
     wts-client: "npm:^2.0.0"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/tenant-manager@npm:0.0.0, @webiny/tenant-manager@workspace:packages/tenant-manager":
+  version: 0.0.0-use.local
+  resolution: "@webiny/tenant-manager@workspace:packages/tenant-manager"
+  dependencies:
+    "@apollo/react-hooks": "npm:^3.1.5"
+    "@webiny/admin-ui": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/app": "npm:0.0.0"
+    "@webiny/app-aco": "npm:0.0.0"
+    "@webiny/app-admin": "npm:0.0.0"
+    "@webiny/app-headless-cms": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/form": "npm:0.0.0"
+    "@webiny/handler-graphql": "npm:0.0.0"
+    "@webiny/icons": "npm:0.0.0"
+    "@webiny/plugins": "npm:0.0.0"
+    "@webiny/project-aws": "npm:0.0.0"
+    graphql-tag: "npm:^2.12.6"
+    mobx: "npm:^6.15.0"
+    mobx-react-lite: "npm:^3.4.3"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
+    rimraf: "npm:^6.1.2"
+    typescript: "npm:5.9.3"
   languageName: unknown
   linkType: soft
 

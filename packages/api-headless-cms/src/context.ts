@@ -161,7 +161,7 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
         });
 
         // Register features
-        CmsInstallerFeature.register(context.container, context.cms);
+        CmsInstallerFeature.register(context.container);
         ContentEntriesFeature.register(context.container);
         ContentModelFeature.register(context.container);
         ContentModelGroupFeature.register(context.container);

@@ -78,10 +78,12 @@ export const useCmsData = (): UseCmsDataResponseRecords => {
     const groups = data?.listContentModelGroups.data ?? [];
 
     return {
-        models: (data?.listContentModels.data ?? []).map(model => {
-            // `model.group` is a slug. we need to remap it to actual group object.
-            return { ...model, group: groups.find(item => item.slug === model.group)! };
-        }),
+        models: (data?.listContentModels.data ?? [])
+            .filter(model => model.group !== "hidden")
+            .map(model => {
+                // `model.group` is a slug. we need to remap it to actual group object.
+                return { ...model, group: groups.find(item => item.slug === model.group)! };
+            }),
         groups
     };
 };
