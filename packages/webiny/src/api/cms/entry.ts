@@ -85,3 +85,5 @@ export {
     ListDeletedEntriesUseCase
 } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/abstractions.js";
 export { ValidateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/ValidateEntry/abstractions.js";
+export { CmsWhereMapper } from "@webiny/api-headless-cms/features/whereMapper/abstractions.js";
+export { CmsSortMapper } from "@webiny/api-headless-cms/features/sortMapper/abstractions.js";

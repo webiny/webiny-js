@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import {
-    ListFoldersRepository as RepositoryAbstraction,
-    type IListFoldersRepository
+    type IListFoldersRepository,
+    ListFoldersRepository as RepositoryAbstraction
 } from "./abstractions.js";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries";
 import { FolderModel } from "~/domain/folder/abstractions.js";
@@ -10,13 +10,14 @@ import { EntryToFolderMapper } from "../shared/EntryToFolderMapper.js";
 import { FolderPersistenceError } from "~/domain/folder/errors.js";
 import { createListSort } from "~/utils/createListSort.js";
 import type { ListSort } from "~/types.js";
-import { CmsFieldInputToWhereMapper } from "@webiny/api-headless-cms/features/mapper/abstractions.js";
+import { CmsSortMapper, CmsWhereMapper } from "@webiny/api-headless-cms";
 
 class ListFoldersRepositoryImpl implements IListFoldersRepository {
     constructor(
         private listLatestEntries: ListLatestEntriesUseCase.Interface,
         private folderModel: FolderModel.Interface,
-        private cmsFieldInputToWhereMapper: CmsFieldInputToWhereMapper.Interface
+        private cmsWhereMapper: CmsWhereMapper.Interface,
+        private cmsSortMapper: CmsSortMapper.Interface
     ) {}
 
     async execute(params: ListFoldersParams): RepositoryAbstraction.Return {
@@ -30,8 +31,11 @@ class ListFoldersRepositoryImpl implements IListFoldersRepository {
 
         const result = await this.listLatestEntries.execute<CmsEntryFolder>(this.folderModel, {
             ...params,
-            sort: createListSort(listSort),
-            where: this.cmsFieldInputToWhereMapper.map({
+            sort: this.cmsSortMapper.map({
+                input: createListSort(listSort),
+                fields: this.folderModel.fields
+            }),
+            where: this.cmsWhereMapper.map({
                 input: where,
                 fields: this.folderModel.fields
             })
@@ -49,5 +53,5 @@ class ListFoldersRepositoryImpl implements IListFoldersRepository {
 
 export const ListFoldersRepository = RepositoryAbstraction.createImplementation({
     implementation: ListFoldersRepositoryImpl,
-    dependencies: [ListLatestEntriesUseCase, FolderModel, CmsFieldInputToWhereMapper]
+    dependencies: [ListLatestEntriesUseCase, FolderModel, CmsWhereMapper, CmsSortMapper]
 });

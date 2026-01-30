@@ -7,7 +7,7 @@ import { createOperationsWrapper } from "~/utils/createOperationsWrapper.js";
 import { pickEntryFieldValues } from "~/utils/pickEntryFieldValues.js";
 import type { AcoFilterStorageOperations, Filter } from "./filter.types.js";
 import { ENTRY_META_FIELDS } from "@webiny/api-headless-cms/constants.js";
-import { CmsFieldInputToWhereMapper } from "@webiny/api-headless-cms/features/mapper/abstractions.js";
+import { CmsSortMapper, CmsWhereMapper } from "@webiny/api-headless-cms";
 
 export const createFilterOperations = (
     params: CreateAcoStorageOperationsParams
@@ -19,7 +19,8 @@ export const createFilterOperations = (
         modelName: FILTER_MODEL_ID
     });
 
-    const cmsFieldInputToWhereMapper = container.resolve(CmsFieldInputToWhereMapper);
+    const cmsWhereMapper = container.resolve(CmsWhereMapper);
+    const cmsSortMapper = container.resolve(CmsSortMapper);
 
     return {
         getFilter({ id }) {
@@ -42,8 +43,11 @@ export const createFilterOperations = (
 
                 const [entries, meta] = await cms.listLatestEntries(model, {
                     ...params,
-                    sort: createListSort(sort),
-                    where: cmsFieldInputToWhereMapper.map({
+                    sort: cmsSortMapper.map({
+                        input: createListSort(sort),
+                        fields: model.fields
+                    }),
+                    where: cmsWhereMapper.map({
                         input: {
                             ...where,
                             createdBy
