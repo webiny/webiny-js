@@ -21,7 +21,7 @@ export const createReferenceFile = (
         ui.info("No references found.");
         return;
     }
-    
+
     const json: IDependencyCollection = {
         dependencies: tree.dependencies,
         devDependencies: tree.devDependencies,
