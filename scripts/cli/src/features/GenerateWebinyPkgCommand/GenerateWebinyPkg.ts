@@ -1,11 +1,12 @@
+import fs from "fs";
+import path from "path";
+import type { PackageJson } from "type-fest";
 import {
     ListPackagesService,
     MergeExportsService,
     ScanExportsFoldersService,
     UiService
 } from "../../abstractions/index.js";
-import fs from "fs";
-import path from "path";
 
 const ambientDeclaration = (file: string) => !file.endsWith(".d.ts");
 
@@ -42,7 +43,7 @@ export class GenerateWebinyPkg implements GenerateWebinyPkg {
         if (fs.existsSync(webinySrcStaticPath)) {
             this.copyDirectoryRecursive(webinySrcStaticPath, webinySrcPath);
             // Generate exports for static files
-            this.generateExportsForStaticFiles(webinySrcStaticPath, webinySrcPath, wbyPkg);
+            this.generateExportsForStaticFiles(webinySrcStaticPath, wbyPkg);
         }
 
         // Copy icons from packages/icons/dist to packages/webiny/src/admin/icons
@@ -102,7 +103,6 @@ export class GenerateWebinyPkg implements GenerateWebinyPkg {
 
     private generateExportsForStaticFiles(
         srcStaticPath: string,
-        srcPath: string,
         wbyPkg: ListPackagesService.Package
     ) {
         const staticFiles = this.getAllFiles(srcStaticPath).filter(ambientDeclaration);
@@ -135,7 +135,11 @@ export class GenerateWebinyPkg implements GenerateWebinyPkg {
         return arrayOfFiles;
     }
 
-    private copyDirectoryRecursive(source: string, target: string) {
+    private copyDirectoryRecursive(
+        source: string,
+        target: string,
+        filter?: (name: string) => boolean
+    ) {
         // Create target directory if it doesn't exist
         if (!fs.existsSync(target)) {
             fs.mkdirSync(target, { recursive: true });
@@ -145,12 +149,17 @@ export class GenerateWebinyPkg implements GenerateWebinyPkg {
         const entries = fs.readdirSync(source, { withFileTypes: true });
 
         for (const entry of entries) {
+            // Apply filter if provided
+            if (filter && !filter(entry.name)) {
+                continue;
+            }
+
             const sourcePath = path.join(source, entry.name);
             const targetPath = path.join(target, entry.name);
 
             if (entry.isDirectory()) {
                 // Recursively copy subdirectories
-                this.copyDirectoryRecursive(sourcePath, targetPath);
+                this.copyDirectoryRecursive(sourcePath, targetPath, filter);
             } else {
                 // Copy file
                 fs.copyFileSync(sourcePath, targetPath);
@@ -171,11 +180,16 @@ export class GenerateWebinyPkg implements GenerateWebinyPkg {
         }
 
         this.ui.info("Copying icons from %s to %s", iconsSourcePath, iconsTargetPath);
-        this.copyDirectoryRecursive(iconsSourcePath, iconsTargetPath);
+        this.copyDirectoryRecursive(
+            iconsSourcePath,
+            iconsTargetPath,
+            name => !name.endsWith("package.json")
+        );
 
         // Generate exports for icon files
-        // if (wbyPkg.packageJson.exports) {
-        //     wbyPkg.packageJson.exports["./admin/icons/*"] = "./admin/icons/*";
-        // }
+        const key = `./admin/icons/*`;
+        if (wbyPkg.packageJson.exports) {
+            (wbyPkg.packageJson.exports as PackageJson.ExportConditions)[key] = key;
+        }
     }
 }

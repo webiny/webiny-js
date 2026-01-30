@@ -2,18 +2,7 @@ import { Abstraction } from "@webiny/di";
 import { IPathModel } from "../models";
 import { PackageJson } from "type-fest";
 
-export type ExportPath = string;
-
-export interface IWebinyPackageExportSettings {
-    exportPath: ExportPath;
-    namedExports?: string[];
-}
-
-export type WebinyPackageJson = PackageJson & {
-    webiny?: {
-        exports?: Record<string, ExportPath | IWebinyPackageExportSettings>;
-    };
-};
+export type WebinyPackageJson = PackageJson;
 
 export interface IListPackagesPackage {
     name: string;
@@ -36,6 +25,5 @@ export const ListPackagesService = new Abstraction<IListPackagesService>("ListPa
 export namespace ListPackagesService {
     export type Interface = IListPackagesService;
     export type Package = IListPackagesPackage;
-    export type WebinyPackageExportSettings = IWebinyPackageExportSettings;
     export type Result = IListPackagesServiceResult;
 }
