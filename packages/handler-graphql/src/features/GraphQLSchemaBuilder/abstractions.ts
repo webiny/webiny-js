@@ -1,5 +1,5 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { ResolverDecorator, ResolverDecorators, Resolvers, TypeDefs } from "~/types.js";
+import type { ResolverDecorator, TypeDefs } from "~/types.js";
 import type { Dependency } from "@webiny/di";
 import type { IGraphQLSchema } from "~/graphql/abstractions.public.js";
 
