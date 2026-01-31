@@ -6,7 +6,9 @@ import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/i
 import { ListTenantsUseCase } from "@webiny/api-core/features/tenancy/ListTenants/index.js";
 import { OpensearchTenantIndexFactory } from "~/abstractions/OpensearchTenantIndexFactory.js";
 
-export class CreateIndexesTaskDefinition implements TaskDefinition.Interface<IElasticsearchCreateIndexesTaskInput> {
+export class CreateIndexesTaskDefinition
+    implements TaskDefinition.Interface<IElasticsearchCreateIndexesTaskInput>
+{
     id = "elasticsearchCreateIndexes";
     title = "Create Missing Elasticsearch Indexes";
     /**

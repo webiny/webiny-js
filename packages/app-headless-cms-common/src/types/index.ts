@@ -486,9 +486,8 @@ export interface CmsIconsPlugin extends Plugin {
 /**
  * Transform field value when sending data to the API.
  */
-export interface CmsFieldValueTransformer<
-    TField extends CmsModelField = CmsModelField
-> extends Plugin {
+export interface CmsFieldValueTransformer<TField extends CmsModelField = CmsModelField>
+    extends Plugin {
     /**
      * A plugin type.
      */
