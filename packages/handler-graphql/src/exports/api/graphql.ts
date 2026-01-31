@@ -1,9 +1,4 @@
-export {
-    GraphQLSchemaFactory,
-    GraphQLTypeDefsFactory,
-    GraphQLResolversFactory,
-    GraphQLResolverDecoratorsFactory
-} from "~/graphql/abstractions.js";
+export { GraphQLSchemaFactory } from "~/graphql/abstractions.js";
 
 export {
     ErrorResponse,

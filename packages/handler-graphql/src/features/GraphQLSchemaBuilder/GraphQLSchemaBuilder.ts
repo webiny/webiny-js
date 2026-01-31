@@ -1,100 +1,67 @@
-import { GraphQLSchemaBuilder as Abstraction } from "./abstractions.js";
-import {
-    GraphQLSchemaFactory,
-    GraphQLResolverDecoratorsFactory as DecoratorsFactory,
-    CoreGraphQLSchemaFactory,
-    GraphQLResolversFactory,
-    CoreGraphQLTypeDefsFactory,
-    CoreGraphQLResolversFactory,
-    GraphQLTypeDefsFactory,
-    CoreGraphQLResolverDecoratorsFactory as CoreDecoratorsFactory,
-    CoreGraphQLResolverDecoratorsFactory,
-    GraphQLResolverDecoratorsFactory
-} from "~/graphql/abstractions.js";
+import type { GraphQLSchemaBuilder as Abstraction } from "./abstractions.js";
+import type { IGraphQLSchema } from "~/graphql/abstractions.public.js";
+import type { ResolverDecorator, ResolverDecorators, Resolvers } from "~/types.js";
+import type { Dependency } from "@webiny/di";
 
-class GraphQLSchemaBuilderImpl implements Abstraction.Interface {
-    private readonly typeDefsArray: GraphQLSchemaFactory.TypeDefs[] = [];
-    private readonly resolversArray: GraphQLSchemaFactory.Resolvers[] = [];
-    private readonly decoratorsArray: DecoratorsFactory.ResolverDecorators[] = [];
+export class GraphQLSchemaBuilder implements Abstraction.Interface {
+    private readonly typeDefsArray: string[] = [];
+    private readonly resolvers: Resolvers<any> = {};
+    private readonly resolverDecorators: ResolverDecorators = {};
 
-    constructor(
-        // Core deps
-        private coreSchemas: CoreGraphQLSchemaFactory.Interface[],
-        private coreTypeDefs: CoreGraphQLTypeDefsFactory.Interface[],
-        private coreResolvers: CoreGraphQLResolversFactory.Interface[],
-        private coreDecorators: CoreDecoratorsFactory.Interface[],
-        // Public deps
-        private userSchemas: GraphQLSchemaFactory.Interface[],
-        private userTypeDefs: GraphQLTypeDefsFactory.Interface[],
-        private userResolvers: GraphQLResolversFactory.Interface[],
-        private userDecorators: DecoratorsFactory.Interface[]
-    ) {}
+    addTypeDefs(typeDefs: string): this {
+        this.typeDefsArray.push(typeDefs);
+        return this;
+    }
 
-    async build(): Promise<Abstraction.SchemaParts> {
-        // Process core abstractions first
-        await this.processSchemas(this.coreSchemas);
-        await this.processTypeDefs(this.coreTypeDefs);
-        await this.processResolvers(this.coreResolvers);
-        await this.processDecorators(this.coreDecorators);
+    addResolver<TArgs = any>(config: Abstraction.Config<TArgs>): this {
+        const { path, dependencies = [], resolver } = config;
 
-        // Process public abstractions last
-        await this.processSchemas(this.userSchemas);
-        await this.processTypeDefs(this.userTypeDefs);
-        await this.processResolvers(this.userResolvers);
-        await this.processDecorators(this.userDecorators);
+        const pathParts = path.split(".");
 
+        const graphqlResolver = (parent: any, args: TArgs, context: any, info: any) => {
+            const resolvedDeps = dependencies.map((dep: Dependency) => {
+                const [abstraction] = Array.isArray(dep) ? dep : [dep];
+                return context.container.resolve(abstraction);
+            });
+
+            const actualResolver = resolver(...resolvedDeps);
+
+            return actualResolver({ parent, args, context, info });
+        };
+
+        this.setResolverAtPath(pathParts, graphqlResolver);
+
+        return this;
+    }
+
+    addResolverDecorator(path: string, decorator: ResolverDecorator): this {
+        if (!this.resolverDecorators[path]) {
+            this.resolverDecorators[path] = [];
+        }
+        this.resolverDecorators[path].push(decorator);
+        return this;
+    }
+
+    build(): IGraphQLSchema {
         return {
             typeDefs: this.typeDefsArray.join("\n"),
-            resolvers: this.resolversArray,
-            resolverDecorators: this.decoratorsArray
+            resolvers: this.resolvers,
+            resolverDecorators: this.resolverDecorators
         };
     }
 
-    private async processSchemas(factories: GraphQLSchemaFactory.Interface[]) {
-        await Promise.all(factories.map(factory => factory.execute())).then(schemas => {
-            schemas.flat(1).map(schema => {
-                if (schema.typeDefs) {
-                    this.typeDefsArray.push(schema.typeDefs);
-                }
-                if (schema.resolvers) {
-                    this.resolversArray.push(schema.resolvers);
-                }
-                if (schema.resolverDecorators) {
-                    this.decoratorsArray.push(schema.resolverDecorators);
-                }
-            });
-        });
-    }
+    private setResolverAtPath(pathParts: string[], resolver: any): void {
+        let current: any = this.resolvers;
 
-    private async processTypeDefs(factories: GraphQLTypeDefsFactory.Interface[]) {
-        await Promise.all(factories.map(factory => factory.execute())).then(resolvers => {
-            this.typeDefsArray.push(...resolvers.flat());
-        });
-    }
+        for (let i = 0; i < pathParts.length - 1; i++) {
+            const part = pathParts[i];
+            if (!current[part]) {
+                current[part] = {};
+            }
+            current = current[part];
+        }
 
-    private async processResolvers(factories: GraphQLResolversFactory.Interface[]) {
-        await Promise.all(factories.map(factory => factory.execute())).then(resolvers => {
-            this.resolversArray.push(...resolvers.flat());
-        });
-    }
-
-    private async processDecorators(factories: DecoratorsFactory.Interface[]) {
-        await Promise.all(factories.map(factory => factory.execute())).then(resolvers => {
-            this.decoratorsArray.push(...resolvers.flat());
-        });
+        const finalKey = pathParts[pathParts.length - 1];
+        current[finalKey] = resolver;
     }
 }
-
-export const GraphQLSchemaBuilder = Abstraction.createImplementation({
-    implementation: GraphQLSchemaBuilderImpl,
-    dependencies: [
-        [CoreGraphQLSchemaFactory, { multiple: true }],
-        [CoreGraphQLTypeDefsFactory, { multiple: true }],
-        [CoreGraphQLResolversFactory, { multiple: true }],
-        [CoreGraphQLResolverDecoratorsFactory, { multiple: true }],
-        [GraphQLSchemaFactory, { multiple: true }],
-        [GraphQLTypeDefsFactory, { multiple: true }],
-        [GraphQLResolversFactory, { multiple: true }],
-        [GraphQLResolverDecoratorsFactory, { multiple: true }]
-    ]
-});

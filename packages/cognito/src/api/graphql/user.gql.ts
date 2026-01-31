@@ -3,23 +3,15 @@ import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstra
 import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
 import { GetUserUseCase } from "@webiny/api-core/features/GetUser";
 import NotAuthorizedResponse from "@webiny/api-core/graphql/security/NotAuthorizedResponse.js";
-import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { CreateUserUseCase } from "~/api/features/CreateUser/index.js";
 import { UpdateUserUseCase } from "~/api/features/UpdateUser/index.js";
 import { DeleteUserUseCase } from "~/api/features/DeleteUser/index.js";
 
 class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
-    execute(): CoreGraphQLSchemaFactory.Return {
-        return [
-            {
-                typeDefs: this.getTypeDefs(),
-                resolvers: this.getResolvers()
-            }
-        ];
-    }
-
-    private getTypeDefs() {
-        return /* GraphQL */ `
+    async execute(
+        builder: CoreGraphQLSchemaFactory.SchemaBuilder
+    ): CoreGraphQLSchemaFactory.Return {
+        builder.addTypeDefs(/* GraphQL */ `
             """
             This input type is used by administrators to create other user's accounts within the same tenant.
             """
@@ -66,17 +58,17 @@ class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
 
                 deleteUser(id: ID!): AdminUsersBooleanResponse
             }
-        `;
-    }
+        `);
 
-    private getResolvers(): CoreGraphQLSchemaFactory.Resolvers<ApiCoreContext> {
-        return {
-            AdminUsersMutation: {
-                updateCurrentUser: async (_, args: any, context) => {
-                    const identityContext = context.container.resolve(IdentityContext);
-                    const getUserUseCase = context.container.resolve(GetUserUseCase);
-                    const updateUserUseCase = context.container.resolve(UpdateUserUseCase);
-
+        builder.addResolver({
+            path: "AdminUsersMutation.updateCurrentUser",
+            dependencies: [IdentityContext, GetUserUseCase, UpdateUserUseCase],
+            resolver: (
+                identityContext: IdentityContext.Interface,
+                getUserUseCase: GetUserUseCase.Interface,
+                updateUserUseCase: UpdateUserUseCase.Interface
+            ) => {
+                return async ({ args }) => {
                     const identity = identityContext.getIdentity();
                     if (!identity.isAdmin()) {
                         return new NotAuthorizedResponse();
@@ -105,11 +97,16 @@ class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
 
                         return new Response(updateResult.value);
                     });
-                },
-                createUser: async (_, { data }: any, context) => {
-                    const createUserUseCase = context.container.resolve(CreateUserUseCase);
+                };
+            }
+        });
 
-                    const result = await createUserUseCase.execute(data);
+        builder.addResolver({
+            path: "AdminUsersMutation.createUser",
+            dependencies: [CreateUserUseCase],
+            resolver: (createUserUseCase: CreateUserUseCase.Interface) => {
+                return async ({ args }) => {
+                    const result = await createUserUseCase.execute(args.data);
                     if (result.isFail()) {
                         return new ErrorResponse({
                             message: result.error.message,
@@ -119,13 +116,19 @@ class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                     }
 
                     return new Response(result.value);
-                },
-                updateUser: async (_, { data, id }: any, context) => {
-                    const updateUserUseCase = context.container.resolve(UpdateUserUseCase);
+                };
+            }
+        });
 
-                    const identityContext = context.container.resolve(IdentityContext);
-
-                    if (id === identityContext.getIdentity().id) {
+        builder.addResolver({
+            path: "AdminUsersMutation.updateUser",
+            dependencies: [UpdateUserUseCase, IdentityContext],
+            resolver: (
+                updateUserUseCase: UpdateUserUseCase.Interface,
+                identityContext: IdentityContext.Interface
+            ) => {
+                return async ({ args }) => {
+                    if (args.id === identityContext.getIdentity().id) {
                         return new ErrorResponse({
                             message:
                                 "You're not allowed to update your own account using this API.",
@@ -133,7 +136,7 @@ class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                         });
                     }
 
-                    const result = await updateUserUseCase.execute(id, data);
+                    const result = await updateUserUseCase.execute(args.id, args.data);
                     if (result.isFail()) {
                         return new ErrorResponse({
                             message: result.error.message,
@@ -142,11 +145,16 @@ class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                     }
 
                     return new Response(result.value);
-                },
-                deleteUser: async (_, { id }: any, context) => {
-                    const deleteUserUseCase = context.container.resolve(DeleteUserUseCase);
+                };
+            }
+        });
 
-                    const result = await deleteUserUseCase.execute(id);
+        builder.addResolver({
+            path: "AdminUsersMutation.deleteUser",
+            dependencies: [DeleteUserUseCase],
+            resolver: (deleteUserUseCase: DeleteUserUseCase.Interface) => {
+                return async ({ args }) => {
+                    const result = await deleteUserUseCase.execute(args.id);
                     if (result.isFail()) {
                         return new ErrorResponse({
                             message: result.error.message,
@@ -156,9 +164,11 @@ class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                     }
 
                     return new Response(true);
-                }
+                };
             }
-        };
+        });
+
+        return builder;
     }
 }
 
