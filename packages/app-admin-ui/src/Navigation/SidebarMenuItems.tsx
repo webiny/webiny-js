@@ -44,6 +44,10 @@ export const SidebarMenuItems = (props: MenusProps) => {
             );
         }
 
+        if (m.hideIfEmpty) {
+            return null;
+        }
+
         return React.cloneElement(m.element, { key });
     });
 };

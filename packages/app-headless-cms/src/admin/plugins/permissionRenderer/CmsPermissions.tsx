@@ -121,11 +121,11 @@ export const CMSPermissions = ({ value, onChange }: CMSPermissionsProps) => {
                     permission.pw = (data[`${entity}PW`] || []).join("");
 
                     if (accessScope === "models") {
-                        permission.models = {};
+                        permission.models = [];
                     }
 
                     if (accessScope === "groups") {
-                        permission.groups = {};
+                        permission.groups = [];
                     }
 
                     const props = data[`${entity}Props`];

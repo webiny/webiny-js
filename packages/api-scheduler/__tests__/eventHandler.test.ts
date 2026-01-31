@@ -6,7 +6,7 @@ import {
 } from "~/createEventHandler.js";
 import { registry } from "@webiny/handler-aws/registry.js";
 import type { LambdaContext } from "@webiny/handler-aws/types.js";
-import { SCHEDULED_CMS_ACTION_EVENT_IDENTIFIER } from "~/constants.js";
+import { SCHEDULED_ACTION_EVENT_IDENTIFIER } from "~/constants.js";
 import { ScheduledActionId } from "~/domain/ScheduledActionId.js";
 import { useHandler } from "./__mocks/context/useHandler.js";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
@@ -42,7 +42,7 @@ describe("Scheduler Event Handler", () => {
         expect(eventHandler).toBeInstanceOf(RawEventHandler);
 
         const event: IScheduledActionEvent = {
-            [SCHEDULED_CMS_ACTION_EVENT_IDENTIFIER]: {
+            [SCHEDULED_ACTION_EVENT_IDENTIFIER]: {
                 id: ScheduledActionId.from({
                     namespace: "Cms/Entry/Article",
                     actionType: "Publish",
@@ -103,7 +103,7 @@ describe("Scheduler Event Handler", () => {
 
         const result = await eventHandler.cb({
             payload: {
-                [SCHEDULED_CMS_ACTION_EVENT_IDENTIFIER]: {
+                [SCHEDULED_ACTION_EVENT_IDENTIFIER]: {
                     id,
                     scheduleFor: new Date(new Date().getTime() + 3 * 60 * 1000).toISOString()
                 }

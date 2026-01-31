@@ -1,7 +1,7 @@
 import { ModelFactory } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
 import { TenantModelModifier } from "./TenantModelModifier.js";
 
-export const TENANT_MODEL_ID = "tenant";
+export const TENANT_MODEL_ID = "wbyTenant";
 
 class TenantModelFactory implements ModelFactory.Interface {
     constructor(private modelModifiers: TenantModelModifier.Interface[]) {}

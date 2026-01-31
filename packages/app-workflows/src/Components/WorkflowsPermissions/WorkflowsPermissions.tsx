@@ -1,7 +1,7 @@
 import React from "react";
 import { Accordion } from "@webiny/admin-ui";
 import type { IWorkflowsSecurityPermission } from "~/types.js";
-import { ReactComponent as PermissionsIcon } from "@webiny/icons/devices_other.svg";
+import { ReactComponent as PermissionsIcon } from "@webiny/icons/flowchart.svg";
 import { WorkflowsPermissionsForm } from "~/Components/WorkflowsPermissions/WorkflowsPermissionsForm.js";
 import { useCanUseWorkflows } from "~/hooks/canUseWorkflows.js";
 

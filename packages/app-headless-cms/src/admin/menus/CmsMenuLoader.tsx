@@ -8,16 +8,8 @@ import { Routes } from "~/routes.js";
 
 const { Menu } = AdminConfig;
 
-interface ChildMenuProps {
-    canAccess: boolean;
-}
-
-const CmsContentModelsMenu = ({ canAccess }: ChildMenuProps) => {
+const CmsContentModelsMenu = () => {
     const router = useRouter();
-
-    if (!canAccess) {
-        return null;
-    }
 
     return (
         <Menu
@@ -34,12 +26,9 @@ const CmsContentModelsMenu = ({ canAccess }: ChildMenuProps) => {
     );
 };
 
-const CmsContentGroupsMenu = ({ canAccess }: ChildMenuProps) => {
+const CmsContentGroupsMenu = () => {
     const router = useRouter();
 
-    if (!canAccess) {
-        return null;
-    }
     return (
         <Menu
             name={"headlessCMS.contentModels.groups"}
@@ -84,6 +73,7 @@ const CmsContentMenu = () => (
     <Menu
         name="headlessCMSContent"
         after="headlessCMS"
+        hideIfEmpty={true}
         element={
             <Menu.Item
                 text="Content"
@@ -109,16 +99,17 @@ const CmsMenuLoaderComponent = () => {
         return null;
     }
 
+    const canModelContent = canCreateContentModels || canCreateContentModelGroups;
+
     return (
         <>
-            <CmsContentModelingMenu />
+            {/* Content modeling */}
+            {canModelContent ? <CmsContentModelingMenu /> : null}
+            {canCreateContentModels ? <CmsContentModelsMenu /> : null}
+            {canCreateContentModelGroups ? <CmsContentGroupsMenu /> : null}
+
+            {/* Content */}
             <CmsContentMenu />
-            {(canCreateContentModels || canCreateContentModelGroups) && (
-                <>
-                    <CmsContentModelsMenu canAccess={canCreateContentModels} />
-                    <CmsContentGroupsMenu canAccess={canCreateContentModelGroups} />
-                </>
-            )}
             <ContentGroupsMenuItems />
         </>
     );

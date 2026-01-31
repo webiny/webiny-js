@@ -11,7 +11,7 @@ import {
     type SchedulerClient,
     UpdateScheduleCommand
 } from "@webiny/aws-sdk/client-scheduler";
-import { SCHEDULED_CMS_ACTION_EVENT_IDENTIFIER } from "~/constants.js";
+import { SCHEDULED_ACTION_EVENT_IDENTIFIER } from "~/constants.js";
 import type { IScheduledActionEventPayload } from "~/createEventHandler.js";
 
 export interface ISchedulerConfig {
@@ -148,7 +148,7 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
         params: ISchedulerServiceCreateParams | ISchedulerServiceUpdateParams
     ): string {
         return JSON.stringify({
-            [SCHEDULED_CMS_ACTION_EVENT_IDENTIFIER]: this.createScheduledActionEventPayload(params)
+            [SCHEDULED_ACTION_EVENT_IDENTIFIER]: this.createScheduledActionEventPayload(params)
         });
     }
 

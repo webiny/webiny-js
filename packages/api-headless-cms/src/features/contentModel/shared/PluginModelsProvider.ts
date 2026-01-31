@@ -42,16 +42,15 @@ class PluginModelsProviderImpl implements ProviderAbstraction.Interface {
                 };
             }) as unknown as CmsModel[];
 
-        // Get models from new builder providers
+        const allowedLegacyModels = await filterAsync(legacyModels, model => {
+            return this.accessControl.canAccessModel({ model });
+        });
+
+        // Get models from new builder providers. These already have access control applied.
         const builderModels = await this.modelsProvider.list(tenant);
 
         // Combine both sources
-        const allModels = [...legacyModels, ...builderModels];
-
-        // Apply access control filtering
-        return filterAsync(allModels, model => {
-            return this.accessControl.canAccessModel({ model });
-        });
+        return [...allowedLegacyModels, ...builderModels];
     }
 
     private ensureTypeTag(model: Pick<CmsModel, "tags">) {

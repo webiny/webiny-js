@@ -2,7 +2,7 @@ import { registry } from "@webiny/handler-aws/registry.js";
 import type { HandlerFactoryParams } from "@webiny/handler-aws/types.js";
 import { createSourceHandler } from "@webiny/handler-aws/sourceHandler.js";
 import { createEventHandler, createHandler } from "@webiny/handler-aws/raw/index.js";
-import { SCHEDULED_CMS_ACTION_EVENT_IDENTIFIER } from "~/constants.js";
+import { SCHEDULED_ACTION_EVENT_IDENTIFIER } from "~/constants.js";
 import { ExecuteScheduledActionUseCase } from "~/features/ExecuteScheduledAction/index.js";
 
 export interface IScheduledActionEventPayload {
@@ -11,7 +11,7 @@ export interface IScheduledActionEventPayload {
 }
 
 export interface IScheduledActionEvent {
-    [SCHEDULED_CMS_ACTION_EVENT_IDENTIFIER]: IScheduledActionEventPayload;
+    [SCHEDULED_ACTION_EVENT_IDENTIFIER]: IScheduledActionEventPayload;
 }
 
 export interface HandlerParams extends HandlerFactoryParams {
@@ -21,11 +21,11 @@ export interface HandlerParams extends HandlerFactoryParams {
 const canHandle = (event: Partial<IScheduledActionEvent>): boolean => {
     if (typeof event?.hasOwnProperty !== "function") {
         return false;
-    } else if (!event.hasOwnProperty(SCHEDULED_CMS_ACTION_EVENT_IDENTIFIER)) {
+    } else if (!event.hasOwnProperty(SCHEDULED_ACTION_EVENT_IDENTIFIER)) {
         return false;
     }
 
-    const value = event[SCHEDULED_CMS_ACTION_EVENT_IDENTIFIER];
+    const value = event[SCHEDULED_ACTION_EVENT_IDENTIFIER];
     return !!(value?.id && value?.scheduleFor);
 };
 
@@ -44,7 +44,7 @@ export const createScheduledActionEventHandler = () => {
         canHandle,
         handle: async params => {
             const { payload, context } = params;
-            const input = payload[SCHEDULED_CMS_ACTION_EVENT_IDENTIFIER];
+            const input = payload[SCHEDULED_ACTION_EVENT_IDENTIFIER];
 
             const executeScheduledAction = context.container.resolve(ExecuteScheduledActionUseCase);
             const result = await executeScheduledAction.execute(input.id);

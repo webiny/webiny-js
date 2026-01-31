@@ -23,7 +23,6 @@ const ContentModelGroupPermission = ({
     disabled
 }: ContentModelGroupPermissionProps) => {
     const modelsGroups = useCmsData();
-
     const endpoints = data.endpoints || [];
 
     const disabledPrimaryActions =

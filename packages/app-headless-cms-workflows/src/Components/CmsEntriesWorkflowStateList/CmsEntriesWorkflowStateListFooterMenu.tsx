@@ -1,7 +1,7 @@
 import React from "react";
 import { Components } from "@webiny/app-headless-cms";
 import { Sidebar } from "@webiny/admin-ui";
-import { ReactComponent as WorkflowStateListIcon } from "@webiny/icons/work_outline.svg";
+import { ReactComponent as WorkflowStateListIcon } from "@webiny/icons/flowchart.svg";
 import { Components as WorkflowsComponents } from "@webiny/app-workflows";
 import { useContentEntries } from "@webiny/app-headless-cms/admin/views/contentEntries/hooks/index.js";
 import { IsModelPublishable } from "@webiny/app-headless-cms/exports/admin/cms.js";
