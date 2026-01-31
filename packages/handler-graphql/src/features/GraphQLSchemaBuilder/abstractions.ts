@@ -1,14 +1,21 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { ResolverDecorators, Resolvers, TypeDefs } from "~/types.js";
+import type { ResolverDecorator, ResolverDecorators, Resolvers, TypeDefs } from "~/types.js";
+import type { Dependency } from "@webiny/di";
+import type { IGraphQLSchema } from "~/graphql/abstractions.public.js";
 
-interface ISchemaParts {
-    typeDefs: TypeDefs;
-    resolvers: Resolvers<any>[];
-    resolverDecorators: ResolverDecorators[];
+export interface ResolverConfig<TArgs = any, TParent = any> {
+    path: string;
+    dependencies?: Dependency[];
+    resolver: (
+        ...resolvedDeps: any[]
+    ) => (params: { parent: TParent; args: TArgs; context: any; info: any }) => any;
 }
 
 export interface IGraphQLSchemaBuilder {
-    build(): Promise<ISchemaParts>;
+    addTypeDefs(typeDefs: TypeDefs): this;
+    addResolver<TArgs = any, TParent = any>(config: ResolverConfig<TArgs, TParent>): this;
+    addResolverDecorator(path: string, decorator: ResolverDecorator): this;
+    build(): IGraphQLSchema;
 }
 
 export const GraphQLSchemaBuilder =
@@ -16,5 +23,16 @@ export const GraphQLSchemaBuilder =
 
 export namespace GraphQLSchemaBuilder {
     export type Interface = IGraphQLSchemaBuilder;
-    export type SchemaParts = ISchemaParts;
+    export type Config<TArgs = any> = ResolverConfig<TArgs>;
+}
+
+export interface IGraphQLSchemaComposer {
+    build(): Promise<IGraphQLSchema>;
+}
+
+export const GraphQLSchemaComposer =
+    createAbstraction<IGraphQLSchemaComposer>("GraphQLSchemaComposer");
+
+export namespace GraphQLSchemaComposer {
+    export type Interface = IGraphQLSchemaComposer;
 }

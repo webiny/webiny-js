@@ -1,9 +1,9 @@
 import { createFeature } from "@webiny/feature/api";
-import { GraphQLSchemaBuilder } from "./GraphQLSchemaBuilder.js";
+import { GraphQLSchemaComposer } from "./GraphQLSchemaComposer.js";
 
-export const GraphQLSchemaBuilderFeature = createFeature({
-    name: "GraphQLSchemaBuilder",
+export const GraphQLSchemaComposerFeature = createFeature({
+    name: "GraphQLSchemaComposer",
     register(container) {
-        container.register(GraphQLSchemaBuilder);
+        container.register(GraphQLSchemaComposer);
     }
 });

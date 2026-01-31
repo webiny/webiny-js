@@ -1,7 +1,8 @@
 import { describe, test, expect } from "vitest";
 import useGqlHandler from "./useGqlHandler";
 import { booksSchemaPlugin, booksCrudPlugin } from "~tests/mocks/booksSchema";
-import { GraphQLResolverDecoratorsFactory } from "~/graphql/abstractions";
+import { CoreGraphQLSchemaFactory } from "~/graphql/abstractions";
+import type { GraphQLSchemaBuilder } from "~/features/GraphQLSchemaBuilder/abstractions";
 import { createContextPlugin } from "@webiny/handler";
 import type { Context } from "./types";
 
@@ -89,85 +90,51 @@ describe("GraphQL Handler", () => {
     });
 
     test("should compose resolvers", async () => {
-        // Create decorator implementations
-        class LowerCaseNameDecorator implements GraphQLResolverDecoratorsFactory.Interface {
-            execute() {
-                return [
-                    {
-                        "Book.name": [
-                            (resolver: any) =>
-                                async (parent: any, args: any, context: any, info: any) => {
-                                    const name = (await resolver(
-                                        parent,
-                                        args,
-                                        context,
-                                        info
-                                    )) as string;
-                                    return name.toLowerCase();
-                                }
-                        ]
+        // Create decorator schema using the builder pattern
+        class DecoratorsSchema implements CoreGraphQLSchemaFactory.Interface {
+            async execute(
+                builder: GraphQLSchemaBuilder.Interface
+            ): Promise<GraphQLSchemaBuilder.Interface> {
+                // Add decorator to replace Query.books resolver
+                builder.addResolverDecorator("Query.books", () => async () => {
+                    return [{ name: "Article 1" }];
+                });
+
+                // Add decorator to lowercase Book.name
+                builder.addResolverDecorator(
+                    "Book.name",
+                    (resolver: any) => async (parent: any, args: any, context: any, info: any) => {
+                        const name = (await resolver(parent, args, context, info)) as string;
+                        return name.toLowerCase();
                     }
-                ];
+                );
+
+                // Add decorator to add suffix to Book.name
+                builder.addResolverDecorator(
+                    "Book.name",
+                    (resolver: any) =>
+                        async (...args: any[]) => {
+                            const name = await resolver(...args);
+                            return `${name} (suffix)`;
+                        }
+                );
+
+                return builder;
             }
         }
 
-        class ListBooksDecorator implements GraphQLResolverDecoratorsFactory.Interface {
-            execute() {
-                return [
-                    {
-                        "Query.books": [
-                            () => async () => {
-                                return [{ name: "Article 1" }];
-                            }
-                        ]
-                    }
-                ];
-            }
-        }
-
-        class AddNameSuffixDecorator implements GraphQLResolverDecoratorsFactory.Interface {
-            execute() {
-                return [
-                    {
-                        "Book.name": [
-                            (resolver: any) =>
-                                async (...args: any[]) => {
-                                    const name = await resolver(...args);
-                                    return `${name} (suffix)`;
-                                }
-                        ]
-                    }
-                ];
-            }
-        }
-
-        const LowerCaseNameDecoratorImpl = GraphQLResolverDecoratorsFactory.createImplementation({
-            implementation: LowerCaseNameDecorator,
+        const DecoratorsSchemaImpl = CoreGraphQLSchemaFactory.createImplementation({
+            implementation: DecoratorsSchema,
             dependencies: []
         });
 
-        const ListBooksDecoratorImpl = GraphQLResolverDecoratorsFactory.createImplementation({
-            implementation: ListBooksDecorator,
-            dependencies: []
-        });
-
-        const AddNameSuffixDecoratorImpl = GraphQLResolverDecoratorsFactory.createImplementation({
-            implementation: AddNameSuffixDecorator,
-            dependencies: []
-        });
-
-        const decorator1Plugin = createContextPlugin<Context>(context => {
-            context.container.register(ListBooksDecoratorImpl);
-            context.container.register(LowerCaseNameDecoratorImpl);
-        });
-
-        const decorator2Plugin = createContextPlugin<Context>(context => {
-            context.container.register(AddNameSuffixDecoratorImpl);
+        const decoratorsPlugin = createContextPlugin<Context>(context => {
+            context.container.register(DecoratorsSchemaImpl);
         });
 
         const { invoke } = useGqlHandler({
             debug: true,
-            plugins: [booksCrudPlugin, booksSchemaPlugin, decorator1Plugin, decorator2Plugin]
+            plugins: [booksCrudPlugin, booksSchemaPlugin, decoratorsPlugin]
         });
         const [response] = await invoke({ body: { query: `{ books { name } }` } });
         expect(response.errors).toBeFalsy();

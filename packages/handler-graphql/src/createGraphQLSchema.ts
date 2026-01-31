@@ -17,8 +17,8 @@ import {
 } from "./builtInTypes/index.js";
 import { ResolverDecoration } from "./ResolverDecoration.js";
 import type { GraphQLSchemaPlugin } from "~/plugins/index.js";
-import { GraphQLSchemaBuilder } from "~/features/GraphQLSchemaBuilder/abstractions.js";
-import { GraphQLSchemaBuilderFeature } from "~/features/GraphQLSchemaBuilder/feature.js";
+import { GraphQLSchemaComposer } from "~/features/GraphQLSchemaBuilder/abstractions.js";
+import { GraphQLSchemaComposerFeature } from "~/features/GraphQLSchemaBuilder/feature.js";
 
 export const getSchemaPlugins = (context: Context) => {
     return context.plugins.byType<GraphQLSchemaPlugin>("graphql-schema").filter(pl => {
@@ -30,7 +30,7 @@ export const getSchemaPlugins = (context: Context) => {
 };
 
 export const createGraphQLSchema = async (context: Context) => {
-    GraphQLSchemaBuilderFeature.register(context.container);
+    GraphQLSchemaComposerFeature.register(context.container);
 
     const scalars = context.plugins
         .byType<GraphQLScalarPlugin>("graphql-scalar")
@@ -102,14 +102,18 @@ export const createGraphQLSchema = async (context: Context) => {
     }
 
     // Process new DI implementations
-    const graphQLSchemaBuilder = context.container.resolve(GraphQLSchemaBuilder);
-    const schemaParts = await graphQLSchemaBuilder.build();
+    const graphQLSchemaComposer = context.container.resolve(GraphQLSchemaComposer);
+    const schema = await graphQLSchemaComposer.build();
 
-    typeDefs.push(schemaParts.typeDefs);
-    resolvers.push(...schemaParts.resolvers);
-    schemaParts.resolverDecorators.forEach(decorators => {
-        resolverDecoration.addDecorators(decorators);
-    });
+    if (schema.typeDefs) {
+        typeDefs.push(schema.typeDefs);
+    }
+    if (schema.resolvers) {
+        resolvers.push(schema.resolvers);
+    }
+    if (schema.resolverDecorators) {
+        resolverDecoration.addDecorators(schema.resolverDecorators);
+    }
 
     // Create executable schema
     return makeExecutableSchema({

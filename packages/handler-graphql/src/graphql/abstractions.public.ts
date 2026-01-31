@@ -7,73 +7,26 @@ import type {
     TypeDefs as ITypeDefs,
     ResolverDecorators as IResolverDecorators
 } from "~/types.js";
+import type { GraphQLSchemaBuilder } from "~/features/GraphQLSchemaBuilder/abstractions.js";
 
-export interface IGraphQLResolverDecoratorsFactory {
-    execute(): Promise<IResolverDecorators[]> | IResolverDecorators[];
-}
-
-/**
- * GraphQLResolverDecoratorsFactory
- */
-export const GraphQLResolverDecoratorsFactory =
-    createAbstraction<IGraphQLResolverDecoratorsFactory>("GraphQLResolverDecoratorsFactory");
-
-export namespace GraphQLResolverDecoratorsFactory {
-    export type Interface = IGraphQLResolverDecoratorsFactory;
-    export type ResolverDecorators = IResolverDecorators;
-}
-
-export interface IGraphQLSchema<TContext = any> {
+export interface IGraphQLSchema {
     typeDefs?: ITypeDefs;
-    resolvers?: IResolvers<TContext>;
+    resolvers?: IResolvers<any>;
     resolverDecorators?: IResolverDecorators;
 }
 
 /**
  * GraphQLSchemaFactory
  */
-export interface IGraphQLSchemaFactory<TContext = any> {
-    execute(): Promise<IGraphQLSchema<TContext>[]> | IGraphQLSchema<TContext>[];
+export interface IGraphQLSchemaFactory {
+    execute(builder: GraphQLSchemaBuilder.Interface): Promise<GraphQLSchemaBuilder.Interface>;
 }
 
 export const GraphQLSchemaFactory =
     createAbstraction<IGraphQLSchemaFactory>("GraphQLSchemaFactory");
 
 export namespace GraphQLSchemaFactory {
-    export type Interface<TContext = any> = IGraphQLSchemaFactory<TContext>;
-    export type Return<TContext = any> =
-        | Promise<IGraphQLSchema<TContext>[]>
-        | IGraphQLSchema<TContext>[];
-    export type Schema<TContext = any> = IGraphQLSchema<TContext>;
-    export type TypeDefs = ITypeDefs;
-    export type Resolvers<TContext = any> = IResolvers<TContext>;
-}
-
-/**
- * GraphQLTypeDefsFactory
- */
-export interface IGraphQLTypeDefsFactory {
-    execute(): Promise<ITypeDefs[]> | ITypeDefs[];
-}
-
-export const GraphQLTypeDefsFactory =
-    createAbstraction<IGraphQLTypeDefsFactory>("GraphQLTypeDefsFactory");
-export namespace GraphQLTypeDefsFactory {
-    export type Interface = IGraphQLTypeDefsFactory;
-    export type TypeDefs = ITypeDefs;
-}
-
-/**
- * GraphQLResolversFactory
- */
-export interface IGraphQLResolversFactory<TContext = any> {
-    execute(): Promise<IResolvers<TContext>[]> | IResolvers<TContext>[];
-}
-
-export const GraphQLResolversFactory =
-    createAbstraction<IGraphQLResolversFactory>("GraphQLResolversFactory");
-
-export namespace GraphQLResolversFactory {
-    export type Interface<TContext = any> = IGraphQLResolversFactory<TContext>;
-    export type Resolvers<TContext = any> = IResolvers<TContext>;
+    export type Interface = IGraphQLSchemaFactory;
+    export type SchemaBuilder = GraphQLSchemaBuilder.Interface;
+    export type Return = Promise<GraphQLSchemaBuilder.Interface>;
 }
