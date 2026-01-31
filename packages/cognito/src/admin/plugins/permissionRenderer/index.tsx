@@ -1,6 +1,6 @@
 import React from "react";
 import { Accordion } from "@webiny/admin-ui";
-import { ReactComponent as PermissionsIcon } from "@webiny/icons/security.svg";
+import { ReactComponent as PermissionsIcon } from "@webiny/icons/group.svg";
 import { AdminUsersPermissions } from "./AdminUsersPermissions.js";
 import { PermissionRendererPlugin } from "@webiny/app-admin/plugins/PermissionRendererPlugin.js";
 

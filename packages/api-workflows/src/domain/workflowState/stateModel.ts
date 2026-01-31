@@ -1,7 +1,7 @@
 import { ModelFactory } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
 import { WorkflowStateRecordState } from "~/domain/workflowState/abstractions.js";
 
-export const WORKFLOW_STATE_MODEL_ID = "workflowState";
+export const WORKFLOW_STATE_MODEL_ID = "wbyWorkflowState";
 
 const states = [
     {

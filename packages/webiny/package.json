@@ -47,6 +47,7 @@
   "exports": {
     "./configs/tsconfig.json": "./configs/tsconfig.json",
     "./global.ts": "./global.ts",
+    "./admin/icons/*": "./admin/icons/*",
     "./admin/ui": "./admin/ui.js",
     "./api/buildParams": "./api/buildParams.js",
     "./api/eventPublisher": "./api/eventPublisher.js",

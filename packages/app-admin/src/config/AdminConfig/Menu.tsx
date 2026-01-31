@@ -9,6 +9,7 @@ import { UserMenu } from "./Menu/UserMenu.js";
 
 export interface MenuProps {
     name: string;
+    hideIfEmpty?: boolean;
     parent?: string | null;
     tags?: string[];
     element?: React.ReactElement;
@@ -19,11 +20,15 @@ export interface MenuProps {
     pinnable?: boolean;
 }
 
-export type MenuConfig = Pick<MenuProps, "name" | "parent" | "tags" | "element" | "pinnable">;
+export type MenuConfig = Pick<
+    MenuProps,
+    "name" | "parent" | "tags" | "element" | "pinnable" | "hideIfEmpty"
+>;
 
 const BaseMenu = ({
     name,
     parent = null,
+    hideIfEmpty = false,
     tags = [],
     element,
     remove,
@@ -55,6 +60,11 @@ const BaseMenu = ({
                 after={placeAfter}
             >
                 <Property id={getId(name, "name")} name={"name"} value={name} />
+                <Property
+                    id={getId(name, "hideIfEmpty")}
+                    name={"hideIfEmpty"}
+                    value={hideIfEmpty}
+                />
                 <Property id={getId(name, "parent")} name={"parent"} value={parent} />
                 <Property id={getId(name, "tags")} name={"tags"} value={tags} />
                 <Property id={getId(name, "element")} name={"element"} value={element} />

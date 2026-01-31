@@ -57,7 +57,7 @@ const createRecordsFactory = (params: ICreateSyncBuilderParams) => {
 const getTaskIndex = async (manager: IIndexManager): Promise<string> => {
     const indexes = await manager.list();
     const index = indexes.find(
-        index => index.includes("webinytask") && index.includes("-headless-cms-")
+        index => index.includes("wbytask") && index.includes("-headless-cms-")
     );
     if (!index) {
         throw new Error("No index found.");

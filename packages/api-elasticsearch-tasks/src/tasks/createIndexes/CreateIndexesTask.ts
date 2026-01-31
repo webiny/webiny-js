@@ -76,6 +76,6 @@ export class CreateIndexesTaskDefinition
             this.tenantContext,
             this.indexFactories
         );
-        await onBeforeTrigger.run(["webinytask"]);
+        await onBeforeTrigger.run(["wbytask"]);
     }
 }

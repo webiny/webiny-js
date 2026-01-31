@@ -1,7 +1,7 @@
 import { ModelFactory } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
 import { TaskDataStatus } from "~/types.js";
 
-export const WEBINY_TASK_MODEL_ID = "webinyTask";
+export const WEBINY_TASK_MODEL_ID = "wbyTask";
 
 class TaskPrivateModelImpl implements ModelFactory.Interface {
     execute(builder: ModelFactory.Builder) {

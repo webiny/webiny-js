@@ -1,7 +1,7 @@
 import { ModelFactory } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
 import { TaskLogItemType } from "~/types.js";
 
-export const WEBINY_TASK_LOG_MODEL_ID = "webinyTaskLog";
+export const WEBINY_TASK_LOG_MODEL_ID = "wbyTaskLog";
 
 class TaskLogPrivateModelImpl implements ModelFactory.Interface {
     execute(builder: ModelFactory.Builder) {

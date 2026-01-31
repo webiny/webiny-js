@@ -54,14 +54,14 @@ describe("Create index task", () => {
                 {
                     index: createIndexName({
                         tenant: "root",
-                        modelId: "webinyTask"
+                        modelId: "wbyTask"
                     }),
                     settings: expect.any(Object)
                 },
                 {
                     index: createIndexName({
                         tenant: "root",
-                        modelId: "webinyTaskLog"
+                        modelId: "wbyTaskLog"
                     }),
                     settings: expect.any(Object)
                 },

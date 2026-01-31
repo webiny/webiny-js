@@ -544,8 +544,8 @@ export interface CmsContentFormRendererPlugin extends Plugin {
  */
 export interface CmsSecurityPermission extends Identity.Permission {
     accessLevel?: "full" | "no" | "custom";
-    models?: Record<string, string>;
-    groups?: Record<string, string>;
+    models?: string[];
+    groups?: string[];
     endpoints?: string[];
     rwd?: string;
     own?: boolean;

@@ -48,6 +48,7 @@ export const Menus = React.memo(() => {
             />
             <Menu
                 name={"settings"}
+                hideIfEmpty={true}
                 pin={"end"}
                 element={
                     <Menu.Item
