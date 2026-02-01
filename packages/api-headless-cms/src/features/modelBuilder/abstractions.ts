@@ -7,6 +7,13 @@ import type { PublicModelBuilder } from "./models/PublicModelBuilder.js";
  * Provides access to all registered field types via dynamic methods
  */
 export interface IFieldBuilderRegistry {
+    /**
+     * Mark the next field creation as an extension.
+     * When extending, the registry will create a temporary builder marked with _extendMode,
+     * and BaseModelBuilder will merge its operations into the existing field.
+     */
+    extend(): this;
+
     // Field types will be added via module augmentation by field type implementations
     // Example: text(): ITextFieldBuilder;
 }

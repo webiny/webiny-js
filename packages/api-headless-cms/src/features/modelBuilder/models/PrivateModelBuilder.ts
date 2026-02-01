@@ -9,14 +9,17 @@ export class PrivateModelBuilder extends BaseModelBuilder {
         if (!this.config.name) {
             throw new Error("name is required");
         }
-        if (!this.config.fields) {
+        if (this.fieldBuildersMap.size === 0) {
             throw new Error("fields are required");
         }
+
+        // Build all fields from field builders
+        const fields = Array.from(this.fieldBuildersMap.values()).map(builder => builder.build());
 
         return createPrivateModelPlugin({
             modelId: this.config.modelId,
             name: this.config.name,
-            fields: this.config.fields,
+            fields,
             authorization: false,
             noValidate: true,
             tags: this.getTags()
