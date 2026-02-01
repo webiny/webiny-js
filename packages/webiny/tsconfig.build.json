@@ -15,6 +15,7 @@
     { "path": "../handler-graphql/tsconfig.build.json" },
     { "path": "../project/tsconfig.build.json" },
     { "path": "../project-aws/tsconfig.build.json" },
+    { "path": "../tenant-manager/tsconfig.build.json" },
     { "path": "../tasks/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -170,6 +171,8 @@
       "@webiny/project": ["../project/src"],
       "@webiny/project-aws/*": ["../project-aws/src/*"],
       "@webiny/project-aws": ["../project-aws/src"],
+      "@webiny/tenant-manager/*": ["../tenant-manager/src/*"],
+      "@webiny/tenant-manager": ["../tenant-manager/src"],
       "@webiny/tasks/*": ["../tasks/src/*"],
       "@webiny/tasks": ["../tasks/src"]
     },

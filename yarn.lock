@@ -14626,7 +14626,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-website-builder-workflows@npm:0.0.0, @webiny/api-website-builder-workflows@workspace:packages/api-website-builder-workflows":
+"@webiny/api-website-builder-workflows@npm:*, @webiny/api-website-builder-workflows@workspace:packages/api-website-builder-workflows":
   version: 0.0.0-use.local
   resolution: "@webiny/api-website-builder-workflows@workspace:packages/api-website-builder-workflows"
   dependencies:
@@ -14646,7 +14646,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-website-builder@npm:0.0.0, @webiny/api-website-builder@workspace:packages/api-website-builder":
+"@webiny/api-website-builder@npm:*, @webiny/api-website-builder@npm:0.0.0, @webiny/api-website-builder@workspace:packages/api-website-builder":
   version: 0.0.0-use.local
   resolution: "@webiny/api-website-builder@workspace:packages/api-website-builder"
   dependencies:
@@ -14664,6 +14664,7 @@ __metadata:
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/tasks": "npm:0.0.0"
+    "@webiny/tenant-manager": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     graphql: "npm:^16.12.0"
     lodash: "npm:^4.17.21"
@@ -16197,9 +16198,46 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/project-aws-template@workspace:packages/project-aws-template"
   dependencies:
+    "@webiny/api-aco": "npm:0.0.0"
+    "@webiny/api-audit-logs": "npm:0.0.0"
+    "@webiny/api-background-tasks-ddb": "npm:0.0.0"
+    "@webiny/api-background-tasks-os": "npm:0.0.0"
+    "@webiny/api-core-ddb": "npm:0.0.0"
+    "@webiny/api-dynamodb-to-elasticsearch": "npm:0.0.0"
+    "@webiny/api-elasticsearch": "npm:0.0.0"
+    "@webiny/api-file-manager": "npm:0.0.0"
+    "@webiny/api-file-manager-aco": "npm:0.0.0"
+    "@webiny/api-file-manager-s3": "npm:0.0.0"
+    "@webiny/api-headless-cms-aco": "npm:0.0.0"
+    "@webiny/api-headless-cms-ddb": "npm:0.0.0"
+    "@webiny/api-headless-cms-ddb-es": "npm:0.0.0"
+    "@webiny/api-headless-cms-scheduler": "npm:0.0.0"
+    "@webiny/api-headless-cms-tasks": "npm:0.0.0"
+    "@webiny/api-headless-cms-tasks-ddb-es": "npm:0.0.0"
+    "@webiny/api-headless-cms-workflows": "npm:0.0.0"
+    "@webiny/api-mailer": "npm:0.0.0"
+    "@webiny/api-record-locking": "npm:0.0.0"
+    "@webiny/api-scheduler": "npm:0.0.0"
+    "@webiny/api-website-builder": "npm:*"
+    "@webiny/api-website-builder-workflows": "npm:*"
+    "@webiny/api-websockets": "npm:0.0.0"
+    "@webiny/api-workflows": "npm:0.0.0"
+    "@webiny/app": "npm:0.0.0"
+    "@webiny/app-serverless-cms": "npm:0.0.0"
+    "@webiny/aws-layers": "npm:0.0.0"
+    "@webiny/aws-sdk": "npm:0.0.0"
+    "@webiny/data-migration": "npm:0.0.0"
+    "@webiny/db-dynamodb": "npm:0.0.0"
+    "@webiny/handler-aws": "npm:0.0.0"
+    "@webiny/handler-db": "npm:0.0.0"
+    "@webiny/handler-graphql": "npm:0.0.0"
+    "@webiny/migrations": "npm:0.0.0"
     "@webiny/project-aws": "npm:*"
     "@webiny/tenant-manager": "npm:*"
+    core-js: "npm:3.47.0"
+    cross-fetch: "npm:^3.2.0"
     react: "npm:18.2.0"
+    regenerator-runtime: "npm:^0.14.1"
   languageName: unknown
   linkType: soft
 
@@ -16212,58 +16250,24 @@ __metadata:
     "@pulumi/random": "npm:^4.19.0"
     "@types/lodash": "npm:^4.17.21"
     "@types/ncp": "npm:^2.0.8"
-    "@webiny/api-aco": "npm:0.0.0"
-    "@webiny/api-audit-logs": "npm:0.0.0"
-    "@webiny/api-background-tasks-ddb": "npm:0.0.0"
-    "@webiny/api-background-tasks-os": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
-    "@webiny/api-core-ddb": "npm:0.0.0"
-    "@webiny/api-dynamodb-to-elasticsearch": "npm:0.0.0"
-    "@webiny/api-elasticsearch": "npm:0.0.0"
-    "@webiny/api-file-manager": "npm:0.0.0"
-    "@webiny/api-file-manager-aco": "npm:0.0.0"
-    "@webiny/api-file-manager-s3": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-headless-cms-aco": "npm:0.0.0"
-    "@webiny/api-headless-cms-ddb": "npm:0.0.0"
-    "@webiny/api-headless-cms-ddb-es": "npm:0.0.0"
-    "@webiny/api-headless-cms-scheduler": "npm:0.0.0"
-    "@webiny/api-headless-cms-tasks": "npm:0.0.0"
-    "@webiny/api-headless-cms-tasks-ddb-es": "npm:0.0.0"
-    "@webiny/api-headless-cms-workflows": "npm:0.0.0"
-    "@webiny/api-mailer": "npm:0.0.0"
-    "@webiny/api-record-locking": "npm:0.0.0"
-    "@webiny/api-scheduler": "npm:0.0.0"
-    "@webiny/api-website-builder": "npm:0.0.0"
-    "@webiny/api-website-builder-workflows": "npm:0.0.0"
-    "@webiny/api-websockets": "npm:0.0.0"
-    "@webiny/api-workflows": "npm:0.0.0"
-    "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
-    "@webiny/app-serverless-cms": "npm:0.0.0"
     "@webiny/aws-layers": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/cli-core": "npm:0.0.0"
     "@webiny/data-migration": "npm:0.0.0"
-    "@webiny/db-dynamodb": "npm:0.0.0"
-    "@webiny/handler-aws": "npm:0.0.0"
-    "@webiny/handler-db": "npm:0.0.0"
-    "@webiny/handler-graphql": "npm:0.0.0"
-    "@webiny/migrations": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
     "@webiny/pulumi": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     chalk: "npm:^4.1.2"
-    core-js: "npm:3.47.0"
-    cross-fetch: "npm:^3.2.0"
     find-up: "npm:^5.0.0"
     invariant: "npm:^2.2.4"
     lodash: "npm:^4.17.21"
     mime: "npm:^3.0.0"
     react: "npm:18.2.0"
-    regenerator-runtime: "npm:^0.14.1"
     replace-in-path: "npm:^1.1.0"
     typescript: "npm:5.9.3"
     zod: "npm:^3.25.76"
@@ -16496,7 +16500,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/tenant-manager@npm:*, @webiny/tenant-manager@workspace:packages/tenant-manager":
+"@webiny/tenant-manager@npm:*, @webiny/tenant-manager@npm:0.0.0, @webiny/tenant-manager@workspace:packages/tenant-manager":
   version: 0.0.0-use.local
   resolution: "@webiny/tenant-manager@workspace:packages/tenant-manager"
   dependencies:
@@ -35202,6 +35206,7 @@ __metadata:
     "@webiny/project-aws": "npm:0.0.0"
     "@webiny/project-aws-template": "npm:0.0.0"
     "@webiny/tasks": "npm:0.0.0"
+    "@webiny/tenant-manager": "npm:0.0.0"
     react: "npm:18.2.0"
     rimraf: "npm:^6.1.2"
     typescript: "npm:5.9.3"

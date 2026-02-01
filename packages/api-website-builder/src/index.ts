@@ -32,6 +32,7 @@ import { RedirectPermissionsFeature } from "~/features/redirects/RedirectPermiss
 import { ApiKeyInstallerFeature } from "~/features/installer/feature.js";
 import { NextjsGraphQLSchema } from "~/graphql/nextjs/NextjsGraphQLSchema.js";
 import { NextjsFeature } from "~/features/nextjs/feature.js";
+import { TenantModelExtensionFeature } from "~/features/tenantManager/feature.js";
 
 const createContext = () => {
     return createContextPlugin(
@@ -82,6 +83,7 @@ const createContext = () => {
             RedirectPermissionsFeature.register(container);
             ApiKeyInstallerFeature.register(container);
             NextjsFeature.register(container);
+            TenantModelExtensionFeature.register(container);
 
             // Register GraphQL
             container.register(NextjsGraphQLSchema);

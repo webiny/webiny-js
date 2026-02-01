@@ -6,7 +6,7 @@ import { ReactComponent as PermissionsIcon } from "@webiny/icons/business.svg";
 import { TenantManagerPermissions } from "./TenantManagerPermissions.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 
-const t = i18n.ns("app-website-builder/admin/plugins/permissionRenderer");
+const t = i18n.ns("tenant-manager/admin/permissionRenderer");
 
 export const LegacyPermissionRenderer = () => {
     useEffect(() => {

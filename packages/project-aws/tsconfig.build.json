@@ -2,47 +2,16 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
-    { "path": "../api-aco/tsconfig.build.json" },
-    { "path": "../api-audit-logs/tsconfig.build.json" },
-    { "path": "../api-background-tasks-ddb/tsconfig.build.json" },
-    { "path": "../api-background-tasks-os/tsconfig.build.json" },
     { "path": "../api-core/tsconfig.build.json" },
-    { "path": "../api-core-ddb/tsconfig.build.json" },
-    { "path": "../api-dynamodb-to-elasticsearch/tsconfig.build.json" },
-    { "path": "../api-elasticsearch/tsconfig.build.json" },
-    { "path": "../api-file-manager/tsconfig.build.json" },
-    { "path": "../api-file-manager-aco/tsconfig.build.json" },
-    { "path": "../api-file-manager-s3/tsconfig.build.json" },
     { "path": "../api-headless-cms/tsconfig.build.json" },
-    { "path": "../api-headless-cms-aco/tsconfig.build.json" },
-    { "path": "../api-headless-cms-ddb/tsconfig.build.json" },
-    { "path": "../api-headless-cms-ddb-es/tsconfig.build.json" },
-    { "path": "../api-headless-cms-scheduler/tsconfig.build.json" },
-    { "path": "../api-headless-cms-tasks/tsconfig.build.json" },
-    { "path": "../api-headless-cms-tasks-ddb-es/tsconfig.build.json" },
-    { "path": "../api-headless-cms-workflows/tsconfig.build.json" },
-    { "path": "../api-mailer/tsconfig.build.json" },
-    { "path": "../api-record-locking/tsconfig.build.json" },
-    { "path": "../api-scheduler/tsconfig.build.json" },
-    { "path": "../api-website-builder/tsconfig.build.json" },
-    { "path": "../api-website-builder-workflows/tsconfig.build.json" },
-    { "path": "../api-websockets/tsconfig.build.json" },
-    { "path": "../api-workflows/tsconfig.build.json" },
-    { "path": "../app/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
-    { "path": "../app-serverless-cms/tsconfig.build.json" },
-    { "path": "../aws-sdk/tsconfig.build.json" },
     { "path": "../cli-core/tsconfig.build.json" },
-    { "path": "../data-migration/tsconfig.build.json" },
-    { "path": "../db-dynamodb/tsconfig.build.json" },
-    { "path": "../handler-aws/tsconfig.build.json" },
-    { "path": "../handler-db/tsconfig.build.json" },
-    { "path": "../handler-graphql/tsconfig.build.json" },
-    { "path": "../migrations/tsconfig.build.json" },
     { "path": "../project/tsconfig.build.json" },
     { "path": "../pulumi/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
-    { "path": "../wcp/tsconfig.build.json" }
+    { "path": "../wcp/tsconfig.build.json" },
+    { "path": "../aws-sdk/tsconfig.build.json" },
+    { "path": "../data-migration/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -51,41 +20,6 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
-      "@webiny/api-aco/features/flp/FolderLevelPermissions": [
-        "../api-aco/src/features/flp/FolderLevelPermissions/index.js"
-      ],
-      "@webiny/api-aco/features/folder/CreateFolder": [
-        "../api-aco/src/features/folder/CreateFolder/index.js"
-      ],
-      "@webiny/api-aco/features/folder/UpdateFolder": [
-        "../api-aco/src/features/folder/UpdateFolder/index.js"
-      ],
-      "@webiny/api-aco/features/folder/DeleteFolder": [
-        "../api-aco/src/features/folder/DeleteFolder/index.js"
-      ],
-      "@webiny/api-aco/features/folder/GetAncestors": [
-        "../api-aco/src/features/folder/GetAncestors/index.js"
-      ],
-      "@webiny/api-aco/features/folder/GetFolder": [
-        "../api-aco/src/features/folder/GetFolder/index.js"
-      ],
-      "@webiny/api-aco/features/folder/GetFolderHierarchy": [
-        "../api-aco/src/features/folder/GetFolderHierarchy/index.js"
-      ],
-      "@webiny/api-aco/features/folder/ListFolders": [
-        "../api-aco/src/features/folder/ListFolders/index.js"
-      ],
-      "@webiny/api-aco/features/folder/EnsureFolderIsEmpty": [
-        "../api-aco/src/features/folder/EnsureFolderIsEmpty/index.js"
-      ],
-      "@webiny/api-aco/*": ["../api-aco/src/*"],
-      "@webiny/api-aco": ["../api-aco/src"],
-      "@webiny/api-audit-logs/*": ["../api-audit-logs/src/*"],
-      "@webiny/api-audit-logs": ["../api-audit-logs/src"],
-      "@webiny/api-background-tasks-ddb/*": ["../api-background-tasks-ddb/src/*"],
-      "@webiny/api-background-tasks-ddb": ["../api-background-tasks-ddb/src"],
-      "@webiny/api-background-tasks-os/*": ["../api-background-tasks-os/src/*"],
-      "@webiny/api-background-tasks-os": ["../api-background-tasks-os/src"],
       "@webiny/api-core/features/EventPublisher": [
         "../api-core/src/features/eventPublisher/index.js"
       ],
@@ -206,85 +140,12 @@
       ],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
-      "@webiny/api-core-ddb/*": ["../api-core-ddb/src/*"],
-      "@webiny/api-core-ddb": ["../api-core-ddb/src"],
-      "@webiny/api-dynamodb-to-elasticsearch/*": ["../api-dynamodb-to-elasticsearch/src/*"],
-      "@webiny/api-dynamodb-to-elasticsearch": ["../api-dynamodb-to-elasticsearch/src"],
-      "@webiny/api-elasticsearch/*": ["../api-elasticsearch/src/*"],
-      "@webiny/api-elasticsearch": ["../api-elasticsearch/src"],
-      "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],
-      "@webiny/api-file-manager": ["../api-file-manager/src"],
-      "@webiny/api-file-manager-aco/*": ["../api-file-manager-aco/src/*"],
-      "@webiny/api-file-manager-aco": ["../api-file-manager-aco/src"],
-      "@webiny/api-file-manager-s3/*": ["../api-file-manager-s3/src/*"],
-      "@webiny/api-file-manager-s3": ["../api-file-manager-s3/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
-      "@webiny/api-headless-cms-aco/*": ["../api-headless-cms-aco/src/*"],
-      "@webiny/api-headless-cms-aco": ["../api-headless-cms-aco/src"],
-      "@webiny/api-headless-cms-ddb/*": ["../api-headless-cms-ddb/src/*"],
-      "@webiny/api-headless-cms-ddb": ["../api-headless-cms-ddb/src"],
-      "@webiny/api-headless-cms-ddb-es/*": ["../api-headless-cms-ddb-es/src/*"],
-      "@webiny/api-headless-cms-ddb-es": ["../api-headless-cms-ddb-es/src"],
-      "@webiny/api-headless-cms-scheduler/*": ["../api-headless-cms-scheduler/src/*"],
-      "@webiny/api-headless-cms-scheduler": ["../api-headless-cms-scheduler/src"],
-      "@webiny/api-headless-cms-tasks/*": ["../api-headless-cms-tasks/src/*"],
-      "@webiny/api-headless-cms-tasks": ["../api-headless-cms-tasks/src"],
-      "@webiny/api-headless-cms-tasks-ddb-es/*": ["../api-headless-cms-tasks-ddb-es/src/*"],
-      "@webiny/api-headless-cms-tasks-ddb-es": ["../api-headless-cms-tasks-ddb-es/src"],
-      "@webiny/api-headless-cms-workflows/*": ["../api-headless-cms-workflows/src/*"],
-      "@webiny/api-headless-cms-workflows": ["../api-headless-cms-workflows/src"],
-      "@webiny/api-mailer/*": ["../api-mailer/src/*"],
-      "@webiny/api-mailer": ["../api-mailer/src"],
-      "@webiny/api-record-locking/*": ["../api-record-locking/src/*"],
-      "@webiny/api-record-locking": ["../api-record-locking/src"],
-      "@webiny/api-scheduler/features/ScheduleAction": [
-        "../api-scheduler/src/features/ScheduleAction/index.js"
-      ],
-      "@webiny/api-scheduler/features/GetScheduledAction": [
-        "../api-scheduler/src/features/GetScheduledAction/index.js"
-      ],
-      "@webiny/api-scheduler/features/ListScheduledActions": [
-        "../api-scheduler/src/features/ListScheduledActions/index.js"
-      ],
-      "@webiny/api-scheduler/features/CancelScheduledAction": [
-        "../api-scheduler/src/features/CancelScheduledAction/index.js"
-      ],
-      "@webiny/api-scheduler/features/ExecuteScheduledAction": [
-        "../api-scheduler/src/features/ExecuteScheduledAction/index.js"
-      ],
-      "@webiny/api-scheduler/*": ["../api-scheduler/src/*"],
-      "@webiny/api-scheduler": ["../api-scheduler/src"],
-      "@webiny/api-website-builder/*": ["../api-website-builder/src/*"],
-      "@webiny/api-website-builder": ["../api-website-builder/src"],
-      "@webiny/api-website-builder-workflows/*": ["../api-website-builder-workflows/src/*"],
-      "@webiny/api-website-builder-workflows": ["../api-website-builder-workflows/src"],
-      "@webiny/api-websockets/*": ["../api-websockets/src/*"],
-      "@webiny/api-websockets": ["../api-websockets/src"],
-      "@webiny/api-workflows/*": ["../api-workflows/src/*"],
-      "@webiny/api-workflows": ["../api-workflows/src"],
-      "@webiny/app/*": ["../app/src/*"],
-      "@webiny/app": ["../app/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
-      "@webiny/app-serverless-cms/*": ["../app-serverless-cms/src/*"],
-      "@webiny/app-serverless-cms": ["../app-serverless-cms/src"],
-      "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
-      "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/cli-core/*": ["../cli-core/src/*"],
       "@webiny/cli-core": ["../cli-core/src"],
-      "@webiny/data-migration/*": ["../data-migration/src/*"],
-      "@webiny/data-migration": ["../data-migration/src"],
-      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
-      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
-      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
-      "@webiny/handler-aws": ["../handler-aws/src"],
-      "@webiny/handler-db/*": ["../handler-db/src/*"],
-      "@webiny/handler-db": ["../handler-db/src"],
-      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"],
-      "@webiny/migrations/*": ["../migrations/src/*"],
-      "@webiny/migrations": ["../migrations/src"],
       "@webiny/project/*": ["../project/src/*"],
       "@webiny/project": ["../project/src"],
       "@webiny/pulumi/*": ["../pulumi/src/*"],
@@ -292,7 +153,11 @@
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
-      "@webiny/wcp": ["../wcp/src"]
+      "@webiny/wcp": ["../wcp/src"],
+      "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
+      "@webiny/aws-sdk": ["../aws-sdk/src"],
+      "@webiny/data-migration/*": ["../data-migration/src/*"],
+      "@webiny/data-migration": ["../data-migration/src"]
     },
     "baseUrl": "."
   }

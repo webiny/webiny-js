@@ -20,8 +20,6 @@
     "@webiny/api-record-locking": "latest",
     "@webiny/api-security-cognito": "latest",
     "@webiny/api-core-ddb": "latest",
-    "@webiny/api-website-builder": "latest",
-    "@webiny/api-website-builder-workflows": "latest",
     "@webiny/api-websockets": "latest",
     "@webiny/db-dynamodb": "latest",
     "@webiny/handler-aws": "latest",

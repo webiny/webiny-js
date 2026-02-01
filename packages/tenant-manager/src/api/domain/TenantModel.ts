@@ -1,10 +1,10 @@
 import { ModelFactory } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
-import { TenantModelModifier } from "./TenantModelModifier.js";
+import { TenantModelExtension } from "./TenantModelExtension.js";
 
 export const TENANT_MODEL_ID = "wbyTenant";
 
 class TenantModelFactory implements ModelFactory.Interface {
-    constructor(private modelModifiers: TenantModelModifier.Interface[]) {}
+    constructor(private extensions: TenantModelExtension.Interface[]) {}
 
     async execute(builder: ModelFactory.Builder) {
         const model = builder
@@ -33,64 +33,22 @@ class TenantModelFactory implements ModelFactory.Interface {
                     .helpText("Enter a short tenant description")
                     .renderer("long-text-text-area")
                     .required(),
-                theme: fields
-                    .object()
-                    .label("Theme")
-                    .helpText("Configure the Admin app theme for this tenant.")
-                    .renderer("object-accordion", { open: false })
-                    .fields(fields => ({
-                        websiteTitle: fields
-                            .text()
-                            .label("Website Title")
-                            .helpText("Enter a website title")
-                            .renderer("text-input"),
-                        primaryColor: fields
-                            .text()
-                            .label("Primary Color")
-                            .helpText("Enter a color code (e.g., #000000)")
-                            .renderer("text-input")
-                            .defaultValue([]),
-                        additionalColors: fields
-                            .text()
-                            .list()
-                            .label("Additional Colors")
-                            .helpText("Enter a color code (e.g., #000000)")
-                            .renderer("text-inputs", {
-                                multiValue: {
-                                    addValueButtonLabel: "Add Color"
-                                }
-                            }),
-                        font: fields
-                            .text()
-                            .label("Font")
-                            .helpText("Select a font")
-                            .renderer("radio-buttons")
-                            .predefinedValues([
-                                {
-                                    value: "InterVariable, sans-serif",
-                                    label: "Inter"
-                                },
-                                {
-                                    value: "Menlo, Consolas, Monaco, monospace",
-                                    label: "Menlo"
-                                },
-                                {
-                                    value: "Roboto, sans-serif",
-                                    label: "Roboto"
-                                }
-                            ])
-                    }))
-                    .layout([["websiteTitle"], ["primaryColor"], ["additionalColors"], ["font"]]),
                 isInstalled: fields
                     .boolean()
                     .label("Is installed?")
                     .renderer("hidden")
-                    .defaultValue(false)
+                    .defaultValue(false),
+                extensions: fields.object().renderer("passthrough")
             }))
-            .layout([["name"], ["description"], ["theme"], ["isInstalled"]]);
+            .layout([["name"], ["description"], ["extensions"], ["isInstalled"]]);
 
-        for (const modifier of this.modelModifiers) {
-            await modifier.execute(model);
+        for (const modifier of this.extensions) {
+            model.fields(fields => {
+                const extensions = fields.extend().object();
+                modifier.execute(extensions);
+
+                return { extensions };
+            });
         }
 
         return [model];
@@ -99,5 +57,5 @@ class TenantModelFactory implements ModelFactory.Interface {
 
 export default ModelFactory.createImplementation({
     implementation: TenantModelFactory,
-    dependencies: [[TenantModelModifier, { multiple: true }]]
+    dependencies: [[TenantModelExtension, { multiple: true }]]
 });

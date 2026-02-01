@@ -44,6 +44,7 @@ import { dynamicZoneFieldRenderer } from "~/admin/plugins/fieldRenderers/dynamic
 import { dynamicZoneFieldValidator } from "~/admin/plugins/fieldValidators/dynamicZone.js";
 import { createSeparatorFieldRenderer } from "~/admin/plugins/fieldRenderers/separator/index.js";
 import { separatorField } from "~/admin/plugins/fields/separator/separator.js";
+import { passthroughFieldRenderer } from "~/admin/plugins/fieldRenderers/passthrough.js";
 
 export default [
     headlessCmsPlugins(),
@@ -88,6 +89,7 @@ export default [
     dynamicZoneField,
     dynamicZoneFieldRenderer,
     hiddenFieldRenderer,
+    passthroughFieldRenderer,
     jsonField,
     searchableJsonField
 ];

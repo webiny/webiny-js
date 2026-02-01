@@ -15,6 +15,7 @@
     { "path": "../handler-graphql" },
     { "path": "../project" },
     { "path": "../project-aws" },
+    { "path": "../tenant-manager" },
     { "path": "../tasks" }
   ],
   "compilerOptions": {
@@ -170,6 +171,8 @@
       "@webiny/project": ["../project/src"],
       "@webiny/project-aws/*": ["../project-aws/src/*"],
       "@webiny/project-aws": ["../project-aws/src"],
+      "@webiny/tenant-manager/*": ["../tenant-manager/src/*"],
+      "@webiny/tenant-manager": ["../tenant-manager/src"],
       "@webiny/tasks/*": ["../tasks/src/*"],
       "@webiny/tasks": ["../tasks/src"]
     },
