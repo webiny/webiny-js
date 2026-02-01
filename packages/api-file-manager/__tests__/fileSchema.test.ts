@@ -53,7 +53,7 @@ describe("File Model Modifier test", () => {
 
         const context = await handler();
 
-        const fileModel = await context.cms.getModel("fmFile");
+        const fileModel = await context.cms.getModel("wbyFmFile");
         const models = await context.cms.listModels();
         const fieldPlugins = createFieldTypePluginRecords(context.plugins);
 
