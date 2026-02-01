@@ -8,6 +8,7 @@ import { FolderModel } from "~/domain/folder/abstractions.js";
 import type { CmsEntryFolder, Folder } from "~/folder/folder.types.js";
 import { EntryToFolderMapper } from "../shared/EntryToFolderMapper.js";
 import { FolderNotFoundError, FolderPersistenceError } from "~/domain/folder/errors.js";
+import { EntryId } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
 
 class GetFolderRepositoryImpl implements IGetFolderRepository {
     constructor(
@@ -16,7 +17,11 @@ class GetFolderRepositoryImpl implements IGetFolderRepository {
     ) {}
 
     async execute(id: string): Promise<Result<Folder, RepositoryAbstraction.Error>> {
-        const result = await this.getEntryById.execute<CmsEntryFolder>(this.folderModel, id);
+        const entryId = EntryId.from(id);
+        const result = await this.getEntryById.execute<CmsEntryFolder>(
+            this.folderModel,
+            entryId.toString()
+        );
 
         if (result.isFail()) {
             if (result.error.code === "Cms/Entry/NotFound") {

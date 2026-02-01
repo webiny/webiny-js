@@ -5,6 +5,7 @@ import {
 } from "./abstractions.js";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries";
+import { EntryId } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
 import { FolderModel } from "~/domain/folder/abstractions.js";
 import type {
     CmsEntryFolder,
@@ -60,9 +61,10 @@ class GetFolderHierarchyRepositoryImpl implements IGetFolderHierarchyRepository 
         }
 
         // Get the folder by id
+        const entryId = EntryId.from(params.id);
         const folderResult = await this.getEntryById.execute<CmsEntryFolder>(
             this.folderModel,
-            params.id
+            entryId.toString()
         );
 
         if (folderResult.isFail()) {
@@ -85,7 +87,7 @@ class GetFolderHierarchyRepositoryImpl implements IGetFolderHierarchyRepository 
             this.folderModel,
             {
                 where: {
-                    id_not_in: parentIds,
+                    entryId_not_in: parentIds,
                     values: {
                         type: folder.type,
                         parentId_in: parentIds
@@ -117,7 +119,7 @@ class GetFolderHierarchyRepositoryImpl implements IGetFolderHierarchyRepository 
         while (currentFolder.parentId) {
             const parentResult = await this.getEntryById.execute<CmsEntryFolder>(
                 this.folderModel,
-                currentFolder.parentId
+                EntryId.from(currentFolder.parentId).toString()
             );
 
             if (parentResult.isFail()) {

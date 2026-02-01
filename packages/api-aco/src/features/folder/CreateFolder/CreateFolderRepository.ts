@@ -11,6 +11,7 @@ import type { CmsEntryFolder, CreateFolderParams, Folder } from "~/folder/folder
 import { EntryToFolderMapper } from "../shared/EntryToFolderMapper.js";
 import { FolderPersistenceError, FolderValidationError } from "~/domain/folder/errors.js";
 import { Path } from "~/utils/Path.js";
+import { EntryId } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
 
 class CreateFolderRepositoryImpl implements ICreateFolderRepository {
     constructor(
@@ -78,7 +79,7 @@ class CreateFolderRepositoryImpl implements ICreateFolderRepository {
                     slug,
                     parentId
                 },
-                ...(excludeId ? { id_not: excludeId } : {})
+                ...(excludeId ? { entryId_not: excludeId } : {})
             },
             limit: 1
         });
@@ -112,7 +113,7 @@ class CreateFolderRepositoryImpl implements ICreateFolderRepository {
 
         const parentResult = await this.getEntryById.execute<CmsEntryFolder>(
             this.folderModel,
-            parentId
+            EntryId.from(parentId).toString()
         );
 
         if (parentResult.isFail()) {

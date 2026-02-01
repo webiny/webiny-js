@@ -6,6 +6,7 @@ import {
     type UpdateFlpParams
 } from "~/types.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
+import { EntryId } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
 
 export interface CreateFlpCrudMethodsParams {
     getTenant: () => Tenant;
@@ -92,8 +93,9 @@ export const createFlpCrudMethods = ({
             return true;
         },
         async get(id: string) {
+            const entryId = EntryId.from(id);
             return await storageOperations.flp.get({
-                id,
+                id: entryId.id,
                 tenant: getTenant().id
             });
         },

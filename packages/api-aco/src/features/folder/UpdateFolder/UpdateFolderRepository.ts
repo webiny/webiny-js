@@ -11,6 +11,7 @@ import type { CmsEntryFolder, Folder, UpdateFolderParams } from "~/folder/folder
 import { EntryToFolderMapper } from "../shared/EntryToFolderMapper.js";
 import { FolderPersistenceError, FolderValidationError } from "~/domain/folder/errors.js";
 import { Path } from "~/utils/Path.js";
+import { EntryId } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
 
 class UpdateFolderRepositoryImpl implements IUpdateFolderRepository {
     constructor(
@@ -24,10 +25,12 @@ class UpdateFolderRepositoryImpl implements IUpdateFolderRepository {
         id: string,
         data: UpdateFolderParams
     ): Promise<Result<Folder, RepositoryAbstraction.Error>> {
+        const entryId = EntryId.from(id);
+
         // Get the original folder
         const originalResult = await this.getEntryById.execute<CmsEntryFolder>(
             this.folderModel,
-            id
+            entryId.toString()
         );
 
         if (originalResult.isFail()) {
@@ -58,12 +61,16 @@ class UpdateFolderRepositoryImpl implements IUpdateFolderRepository {
             return Result.fail(pathResult.error);
         }
 
-        const result = await this.updateEntry.execute<CmsEntryFolder>(this.folderModel, id, {
-            values: {
-                ...data,
-                path: pathResult.value
+        const result = await this.updateEntry.execute<CmsEntryFolder>(
+            this.folderModel,
+            entryId.toString(),
+            {
+                values: {
+                    ...data,
+                    path: pathResult.value
+                }
             }
-        });
+        );
 
         if (result.isFail()) {
             return Result.fail(new FolderPersistenceError(result.error));
@@ -84,7 +91,7 @@ class UpdateFolderRepositoryImpl implements IUpdateFolderRepository {
         const result = await this.listLatestEntries.execute<CmsEntryFolder>(this.folderModel, {
             where: {
                 latest: true,
-                id_not: id,
+                entryId_not: id,
                 values: {
                     type,
                     slug,
@@ -123,7 +130,7 @@ class UpdateFolderRepositoryImpl implements IUpdateFolderRepository {
 
         const parentResult = await this.getEntryById.execute<CmsEntryFolder>(
             this.folderModel,
-            parentId
+            EntryId.from(parentId).toString()
         );
 
         if (parentResult.isFail()) {

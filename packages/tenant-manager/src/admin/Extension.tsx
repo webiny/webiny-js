@@ -32,7 +32,9 @@ export const Extension = () => {
                                     icon={
                                         <Menu.Link.Icon element={<TenantIcon />} label={"Tenant"} />
                                     }
-                                    to={getLink(Routes.ContentEntries.List, { modelId: "tenant" })}
+                                    to={getLink(Routes.ContentEntries.List, {
+                                        modelId: "wbyTenant"
+                                    })}
                                 />
                             }
                         />

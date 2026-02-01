@@ -4,8 +4,7 @@ import type { CmsEntryFolder, Folder } from "~/folder/folder.types.js";
 export class EntryToFolderMapper {
     static toFolder(entry: CmsEntry<CmsEntryFolder>): Folder {
         return {
-            id: entry.id,
-            entryId: entry.entryId,
+            id: entry.entryId,
             createdOn: entry.createdOn,
             modifiedOn: entry.modifiedOn ?? null,
             savedOn: entry.savedOn,
