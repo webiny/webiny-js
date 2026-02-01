@@ -13,7 +13,6 @@ export interface CmsEntryFolder {
 
 export interface Folder extends CmsEntryFolder {
     id: string;
-    entryId: string;
     createdOn: string;
     modifiedOn: string | null;
     savedOn: string;

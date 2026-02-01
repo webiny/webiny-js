@@ -161,7 +161,7 @@ export type Document = {
 
 export type PublicPage = Pick<
     Page,
-    "id" | "version" | "properties" | "bindings" | "elements" | "state"
+    "id" | "version" | "properties" | "bindings" | "elements" | "extensions" | "state"
 >;
 
 export type PublicRedirect = {
@@ -214,6 +214,7 @@ export type Page = Document & {
             metaTags: Array<{ property: string; content: string }>;
         };
     };
+    extensions: Record<string, any>;
 };
 
 export type Box = {

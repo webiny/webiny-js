@@ -7,6 +7,7 @@ export const LIST_PUBLISHED_PAGES = /* GraphQL*/ `
                     properties
                     elements
                     bindings
+                    extensions
                 }
                 error {
                     code

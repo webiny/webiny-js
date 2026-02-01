@@ -5,6 +5,7 @@ import type { UpdateFlpParams, UpdateFlpUseCase as UseCaseAbstraction } from "./
 import type { AcoContext, Folder, FolderLevelPermission, FolderPermission } from "~/types.js";
 import { ListFoldersUseCase } from "~/features/folder/ListFolders/index.js";
 import { FolderModel } from "~/domain/folder/abstractions.js";
+import { EntryId } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
 
 interface FlpUpdateData {
     parentId: string;
@@ -148,7 +149,8 @@ export class UpdateFlpUseCase implements UseCaseAbstraction.Interface {
             for (const item of items) {
                 const { id, data } = item;
                 // Directly update the folder in CMS storage to bypass any folder update event triggers.
-                await this.context.cms.updateEntry(folderModel, id, {
+                const entryId = EntryId.from(id);
+                await this.context.cms.updateEntry(folderModel, entryId.toString(), {
                     values: {
                         path: data.path
                     }
