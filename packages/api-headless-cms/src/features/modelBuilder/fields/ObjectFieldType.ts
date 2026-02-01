@@ -1,18 +1,23 @@
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
 import { FieldBuilder } from "./FieldBuilder.js";
 import { FieldBuilderRegistry } from "../abstractions.js";
+import { LayoutBuilder } from "../LayoutBuilder.js";
 
 export interface IObjectFieldBuilder extends FieldBuilder<"object"> {
     required(message?: string): this;
     fields(
         builder: (registry: FieldBuilderRegistry.Interface) => Record<string, FieldBuilder<any>>
     ): this;
-    layout(layout: string[][]): this;
+    layout(layoutOrBuilder: string[][] | ((builder: LayoutBuilder) => void)): this;
 }
 
 export class ObjectFieldBuilder extends FieldBuilder<"object"> implements IObjectFieldBuilder {
+    private layoutBuilder: LayoutBuilder;
+    private fieldBuildersMap = new Map<string, FieldBuilder<any>>();
+
     public constructor(private registry: FieldBuilderRegistry.Interface) {
         super("object");
+        this.layoutBuilder = new LayoutBuilder();
     }
 
     required(message?: string): this {
@@ -28,30 +33,43 @@ export class ObjectFieldBuilder extends FieldBuilder<"object"> implements IObjec
     fields(
         builder: (registry: FieldBuilderRegistry.Interface) => Record<string, FieldBuilder<any>>
     ): this {
+        // Pass existing fields to registry so it can return them when extending
+        (this.registry as any).existingFields = this.fieldBuildersMap;
+
         const fieldBuilders = builder(this.registry);
-        const newFields: any[] = [];
         for (const [key, fieldBuilder] of Object.entries(fieldBuilders)) {
             // Automatically set the fieldId from the object key
-            // This ensures the key and fieldId are always in sync
             fieldBuilder.fieldId(key);
-            newFields.push((fieldBuilder as any).build());
+            // Store builder (not built field)
+            this.fieldBuildersMap.set(key, fieldBuilder);
         }
-        this.config.settings = this.config.settings || {};
-
-        // Append new fields to existing fields (if any)
-        // This allows calling .fields() multiple times to add fields incrementally
-        if (!this.config.settings.fields) {
-            this.config.settings.fields = [];
-        }
-        this.config.settings.fields.push(...newFields);
 
         return this;
     }
 
-    layout(layout: string[][]): this {
-        this.config.settings = this.config.settings || {};
-        this.config.settings.layout = layout;
+    layout(layoutOrBuilder: string[][] | ((builder: LayoutBuilder) => void)): this {
+        if (Array.isArray(layoutOrBuilder)) {
+            // Set base layout and clear modifiers
+            this.layoutBuilder.setLayout(layoutOrBuilder);
+        } else {
+            // Queue the modifier callback
+            this.layoutBuilder.addModifier(layoutOrBuilder);
+        }
+
         return this;
+    }
+
+    override build() {
+        // Build all nested fields from field builders
+        this.config.settings = this.config.settings || {};
+        this.config.settings.fields = Array.from(this.fieldBuildersMap.values()).map(builder =>
+            builder.build()
+        );
+
+        // Build layout
+        this.config.settings.layout = this.layoutBuilder.build();
+
+        return super.build();
     }
 }
 

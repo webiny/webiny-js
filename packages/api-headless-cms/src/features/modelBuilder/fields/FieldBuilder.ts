@@ -15,12 +15,11 @@ export interface FieldBuilderConfig
  * Base FieldBuilder class providing common field configuration methods
  */
 export class FieldBuilder<TType extends string = string> {
+    public readonly type: TType;
     protected config: FieldBuilderConfig;
 
-    public constructor(
-        protected readonly type: TType,
-        label?: string
-    ) {
+    public constructor(type: TType, label?: string) {
+        this.type = type;
         this.config = {
             label: label || "",
             validation: [],

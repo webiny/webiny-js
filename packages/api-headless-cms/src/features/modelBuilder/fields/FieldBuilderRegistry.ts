@@ -9,6 +9,8 @@ import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
 // @ts-expect-error
 class FieldBuilderRegistryImpl implements IFieldBuilderRegistry {
     private fieldTypes = new Map<string, IFieldTypeFactory>();
+    private extendMode = false;
+    public existingFields?: Map<string, any>;
 
     public constructor(fieldTypeFactories: IFieldTypeFactory[]) {
         // Register all field types by their type name
@@ -23,10 +25,29 @@ class FieldBuilderRegistryImpl implements IFieldBuilderRegistry {
         // Return Proxy for dynamic method access
         const proxy = new Proxy(this, {
             get(target, prop: string) {
+                // Handle extend() method
+                if (prop === "extend") {
+                    return () => {
+                        target.extendMode = true;
+                        return proxy;
+                    };
+                }
+
                 // Check if it's a registered field type
                 const factory = target.fieldTypes.get(prop);
                 if (factory) {
-                    return () => factory.create(proxy as IFieldBuilderRegistry);
+                    return () => {
+                        const builder = factory.create(proxy as IFieldBuilderRegistry);
+
+                        // If in extend mode, mark the builder with extend flag
+                        // BaseModelBuilder will handle merging operations by field ID
+                        if (target.extendMode) {
+                            (builder as any)._extendMode = true;
+                            target.extendMode = false; // Reset for next field
+                        }
+
+                        return builder;
+                    };
                 }
 
                 // Otherwise return the actual property

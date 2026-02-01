@@ -4,6 +4,7 @@ import pluralize from "pluralize";
 import { createModelPlugin } from "~/plugins/CmsModelPlugin.js";
 import { BaseModelBuilder } from "./BaseModelBuilder.js";
 import type { CmsIcon } from "~/types/index.js";
+import { LayoutBuilder } from "../LayoutBuilder.js";
 
 const createApiName = (name: string) => {
     return upperFirst(camelCase(name));
@@ -36,8 +37,8 @@ export class PublicModelBuilder extends BaseModelBuilder {
         titleFieldId?: string;
         descriptionFieldId?: string;
         imageFieldId?: string;
-        layout?: string[][];
     } = {};
+    private layoutBuilder: LayoutBuilder;
 
     singularApiName(name: string): this {
         this.publicConfig.singularApiName = name;
@@ -79,8 +80,19 @@ export class PublicModelBuilder extends BaseModelBuilder {
         return this;
     }
 
-    layout(layout: string[][]): this {
-        this.publicConfig.layout = layout;
+    constructor(registry: any) {
+        super(registry);
+        this.layoutBuilder = new LayoutBuilder();
+    }
+
+    layout(layoutOrBuilder: string[][] | ((builder: LayoutBuilder) => void)): this {
+        if (Array.isArray(layoutOrBuilder)) {
+            // Replace layout with array
+            this.layoutBuilder.setLayout(layoutOrBuilder);
+        } else {
+            // Queue the modifier callback
+            this.layoutBuilder.addModifier(layoutOrBuilder);
+        }
         return this;
     }
 
@@ -91,12 +103,15 @@ export class PublicModelBuilder extends BaseModelBuilder {
         if (!this.config.name) {
             throw new Error("name is required");
         }
-        if (!this.config.fields) {
+        if (this.fieldBuildersMap.size === 0) {
             throw new Error("fields are required");
         }
         if (!this.publicConfig.group) {
             throw new Error("group is required");
         }
+
+        // Build all fields from field builders
+        const fields = Array.from(this.fieldBuildersMap.values()).map(builder => builder.build());
 
         return createModelPlugin(
             {
@@ -112,8 +127,8 @@ export class PublicModelBuilder extends BaseModelBuilder {
                 titleFieldId: this.publicConfig.titleFieldId ?? "",
                 descriptionFieldId: this.publicConfig.descriptionFieldId,
                 imageFieldId: this.publicConfig.imageFieldId,
-                layout: this.publicConfig.layout || [],
-                fields: this.config.fields,
+                layout: this.layoutBuilder.build(),
+                fields,
                 tags: this.getTags()
             },
             { validateLayout: false }
