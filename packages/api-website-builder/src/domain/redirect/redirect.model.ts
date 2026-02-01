@@ -1,6 +1,8 @@
 import { createModelField, createPrivateModelPlugin } from "@webiny/api-headless-cms";
 
-export const REDIRECT_MODEL_ID = "wbRedirect";
+export const REDIRECT_MODEL_ID = process.env.WEBINY_API_LEGACY_MODELS
+    ? "wbRedirect"
+    : "wbyWbRedirect";
 
 export const createRedirectModel = () => {
     return createPrivateModelPlugin({

@@ -1,7 +1,7 @@
 import { ModelFactory } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
 import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 
-export const FILE_MODEL_ID = "fmFile";
+export const FILE_MODEL_ID = process.env.WEBINY_API_LEGACY_MODELS ? "fmFile" : "wbyFmFile";
 
 class FilePrivateModelImpl implements ModelFactory.Interface {
     constructor(private wcp: WcpContext.Interface) {}

@@ -1,6 +1,6 @@
 import { createModelField, createPrivateModelPlugin } from "@webiny/api-headless-cms";
 
-export const PAGE_MODEL_ID = "wbPage";
+export const PAGE_MODEL_ID = process.env.WEBINY_API_LEGACY_MODELS ? "wbPage" : "wbyWbPage";
 
 export const createPageModel = () => {
     return createPrivateModelPlugin({

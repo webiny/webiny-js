@@ -26,6 +26,7 @@
     "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
+    "@webiny/tenant-manager": "0.0.0",
     "lodash": "^4.17.21"
   },
   "devDependencies": {

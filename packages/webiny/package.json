@@ -25,6 +25,7 @@
     "@webiny/project-aws": "0.0.0",
     "@webiny/project-aws-template": "0.0.0",
     "@webiny/tasks": "0.0.0",
+    "@webiny/tenant-manager": "0.0.0",
     "react": "18.2.0"
   },
   "devDependencies": {
@@ -110,6 +111,7 @@
     "./infra/features/AdminStackOutputService": "./infra/features/AdminStackOutputService.js",
     "./infra/features/ApiStackOutputService": "./infra/features/ApiStackOutputService.js",
     "./infra/features/CoreStackOutputService": "./infra/features/CoreStackOutputService.js",
-    "./infra/features/InvokeLambdaFunction": "./infra/features/InvokeLambdaFunction.js"
+    "./infra/features/InvokeLambdaFunction": "./infra/features/InvokeLambdaFunction.js",
+    "./api/tenant-manager": "./api/tenant-manager.js"
   }
 }
