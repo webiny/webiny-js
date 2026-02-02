@@ -1,137 +1,74 @@
-import { createImplementation } from "@webiny/di";
+import { createImplementation, Container } from "@webiny/di";
 import {
     GetProjectService,
+    GetProjectConfig,
     InitProjectSdkService
 } from "~/abstractions/index.js";
-import { ImplPathResolver } from "~/utils/index.js";
 import {
-    AdminAfterBuild as AdminAfterBuildExt,
-    AdminAfterDeploy as AdminAfterDeployExt,
-    AdminBeforeBuild as AdminBeforeBuildExt,
-    AdminBeforeDeploy as AdminBeforeDeployExt,
-    AdminBeforeWatch as AdminBeforeWatchExt,
-    AfterBuild as AfterBuildExt,
-    BeforeWatch as BeforeWatchExt,
-    ApiAfterBuild as ApiAfterBuildExt,
-    ApiAfterDeploy as ApiAfterDeployExt,
-    ApiBeforeBuild as ApiBeforeBuildExt,
-    ApiBeforeDeploy as ApiBeforeDeployExt,
-    ApiBeforeWatch as ApiBeforeWatchExt,
-    BeforeBuild as BeforeBuildExt,
-    BeforeDeploy as BeforeDeployExt,
-    AfterDeploy as AfterDeployExt,
-    CoreAfterBuild as CoreAfterBuildExt,
-    CoreAfterDeploy as CoreAfterDeployExt,
-    CoreBeforeBuild as CoreBeforeBuildExt,
-    CoreBeforeDeploy as CoreBeforeDeployExt,
-    CoreBeforeWatch as CoreBeforeWatchExt
-} from "~/extensions/hooks/index.js";
-
+    corePulumi,
+    apiPulumi,
+    adminPulumi
+} from "~/features/index.js";
 import {
-    CorePulumi as CorePulumiExt,
-    ApiPulumi as ApiPulumiExt,
-    AdminPulumi as AdminPulumiExt
-} from "~/extensions/pulumi/index.js";
-
-import { ProjectDecorator as ProjectDecoratorExt } from "~/extensions/ProjectDecorator.js";
-import { ProjectImplementation as ProjectImplementationExt } from "~/extensions/ProjectImplementation.js";
-import { EnvVar as EnvVarExt } from "~/extensions/EnvVar.js";
+    buildAppWithHooks,
+    deployAppClearWatchedLambdaFunctions,
+    deployAppRefreshStackOutputCache,
+    deployAppWithHooks,
+    deployAppWithWatchedLambdaReplacement,
+    watchWithHooks,
+    getPulumiServiceWithDownloadInfo
+} from "~/decorators/index.js";
+import { applyEnvVars } from "./applyEnvVars.js";
+import { registerHooks } from "./registerHooks.js";
+import { registerPulumiExtensions } from "./registerPulumiExtensions.js";
+import { registerImplementations } from "./registerImplementations.js";
+import { registerDecorators } from "./registerDecorators.js";
 
 export class DefaultInitProjectSdkService implements InitProjectSdkService.Interface {
-    constructor(private getProjectService: GetProjectService.Interface) {}
+    constructor(
+        private getProjectService: GetProjectService.Interface,
+        private getProjectConfig: GetProjectConfig.Interface
+    ) {}
 
-    async execute(params: InitProjectSdkService.Params) {
-        const { container, projectExtensions } = params;
+    async execute(container: Container) {
         const project = this.getProjectService.execute();
+        const projectExtensions = await this.getProjectConfig.execute({
+            tags: { runtimeContext: "project" }
+        });
 
         // Apply environment variables from extensions.
-        const envVarExtensions = projectExtensions.extensionsByType(EnvVarExt);
-        for (const envVarExtension of envVarExtensions) {
-            if (!process.env[envVarExtension.params.varName]) {
-                process.env[envVarExtension.params.varName] = envVarExtension.params.value;
-            }
-        }
+        applyEnvVars(projectExtensions);
 
-        // Hooks.
-        const hooksExtensions = [
-            ...projectExtensions.extensionsByType(AdminAfterBuildExt),
-            ...projectExtensions.extensionsByType(BeforeBuildExt),
-            ...projectExtensions.extensionsByType(BeforeWatchExt),
-            ...projectExtensions.extensionsByType(AfterBuildExt),
-            ...projectExtensions.extensionsByType(BeforeDeployExt),
-            ...projectExtensions.extensionsByType(AfterDeployExt),
-            ...projectExtensions.extensionsByType(AdminBeforeBuildExt),
-            ...projectExtensions.extensionsByType(AdminBeforeDeployExt),
-            ...projectExtensions.extensionsByType(AdminBeforeWatchExt),
-            ...projectExtensions.extensionsByType(AdminAfterBuildExt),
-            ...projectExtensions.extensionsByType(AdminAfterDeployExt),
-            ...projectExtensions.extensionsByType(ApiBeforeBuildExt),
-            ...projectExtensions.extensionsByType(ApiBeforeDeployExt),
-            ...projectExtensions.extensionsByType(ApiBeforeWatchExt),
-            ...projectExtensions.extensionsByType(ApiAfterBuildExt),
-            ...projectExtensions.extensionsByType(ApiAfterDeployExt),
-            ...projectExtensions.extensionsByType(CoreBeforeBuildExt),
-            ...projectExtensions.extensionsByType(CoreBeforeDeployExt),
-            ...projectExtensions.extensionsByType(CoreBeforeWatchExt),
-            ...projectExtensions.extensionsByType(CoreAfterBuildExt),
-            ...projectExtensions.extensionsByType(CoreAfterDeployExt)
-        ];
+        // Register hooks from extensions.
+        await registerHooks(container, projectExtensions, project);
 
-        for (const hookExtension of hooksExtensions) {
-            const hookImpl = await ImplPathResolver.importFromPath(
-                hookExtension.params.src,
-                project
-            );
-            container.register(hookImpl).inSingletonScope();
-        }
+        // Register Pulumi extensions.
+        await registerPulumiExtensions(container, projectExtensions, project);
 
-        const pulumiExtensions = [
-            ...projectExtensions.extensionsByType(CorePulumiExt),
-            ...projectExtensions.extensionsByType(ApiPulumiExt),
-            ...projectExtensions.extensionsByType(AdminPulumiExt)
-        ];
+        // Pulumi composites.
+        container.registerComposite(corePulumi);
+        container.registerComposite(apiPulumi);
+        container.registerComposite(adminPulumi);
 
-        for (const pulumiExtension of pulumiExtensions) {
-            const pulumiImpl = await ImplPathResolver.importFromPath(
-                pulumiExtension.params.src,
-                project
-            );
-            container.register(pulumiImpl).inSingletonScope();
-        }
+        // Decorators that must be applied last on top of potentially custom ones.
+        container.registerDecorator(buildAppWithHooks);
+        container.registerDecorator(deployAppWithWatchedLambdaReplacement);
+        container.registerDecorator(deployAppClearWatchedLambdaFunctions);
+        container.registerDecorator(deployAppRefreshStackOutputCache);
+        container.registerDecorator(deployAppWithHooks);
+        container.registerDecorator(watchWithHooks);
+        container.registerDecorator(getPulumiServiceWithDownloadInfo);
 
-        // Register custom implementations first (they replace existing implementations)
-        const projectImplementations = [
-            ...projectExtensions.extensionsByType(ProjectImplementationExt)
-        ];
+        // Register custom implementations first (they replace existing implementations).
+        await registerImplementations(container, projectExtensions, project);
 
-        for (const projectImplementation of projectImplementations) {
-            const projectImplementationImpl = await ImplPathResolver.importFromPath(
-                projectImplementation.params.src,
-                project
-            );
-            const binding = container.register(projectImplementationImpl);
-
-            // Apply singleton scope if specified (defaults to true)
-            if (projectImplementation.params.singleton) {
-                binding.inSingletonScope();
-            }
-        }
-
-        // Register decorators after implementations (they enhance existing implementations)
-        const projectDecorators = [...projectExtensions.extensionsByType(ProjectDecoratorExt)];
-
-        for (const projectDecorator of projectDecorators) {
-            const projectDecoratorImpl = await ImplPathResolver.importFromPath(
-                projectDecorator.params.src,
-                project
-            );
-            container.registerDecorator(projectDecoratorImpl);
-        }
+        // Register decorators after implementations (they enhance existing implementations).
+        await registerDecorators(container, projectExtensions, project);
     }
 }
 
 export const initProjectSdkService = createImplementation({
     abstraction: InitProjectSdkService,
     implementation: DefaultInitProjectSdkService,
-    dependencies: [GetProjectService]
+    dependencies: [GetProjectService, GetProjectConfig]
 });

@@ -10,20 +10,17 @@ import {
     adminBeforeBuild,
     adminBeforeDeploy,
     adminBeforeWatch,
-    adminPulumi,
     apiAfterBuild,
     apiAfterDeploy,
     apiBeforeBuild,
     apiBeforeDeploy,
     apiBeforeWatch,
-    apiPulumi,
     buildApp,
     coreAfterBuild,
     coreAfterDeploy,
     coreBeforeBuild,
     coreBeforeDeploy,
     coreBeforeWatch,
-    corePulumi,
     deployApp,
     destroyApp,
     exportStack,
@@ -89,16 +86,6 @@ import {
     validateProjectConfigService,
     wcpService
 } from "./services/index.js";
-
-import {
-    buildAppWithHooks,
-    deployAppClearWatchedLambdaFunctions,
-    deployAppRefreshStackOutputCache,
-    deployAppWithHooks,
-    deployAppWithWatchedLambdaReplacement,
-    watchWithHooks,
-    getPulumiServiceWithDownloadInfo
-} from "./decorators/index.js";
 
 import {
     GetProjectConfig,
@@ -218,24 +205,7 @@ export const createProjectSdkContainer = async (
     await container.resolve(ValidateProjectConfig).execute(projectExtensions);
 
     // Initialize project SDK extensions (env vars, hooks, pulumi, implementations, decorators).
-    await container.resolve(InitProjectSdkService).execute({
-        container,
-        projectExtensions
-    });
-
-    // Pulumi.
-    container.registerComposite(corePulumi);
-    container.registerComposite(apiPulumi);
-    container.registerComposite(adminPulumi);
-
-    // Decorators that must be applied last on top of potentially custom ones.
-    container.registerDecorator(buildAppWithHooks);
-    container.registerDecorator(deployAppWithWatchedLambdaReplacement);
-    container.registerDecorator(deployAppClearWatchedLambdaFunctions);
-    container.registerDecorator(deployAppRefreshStackOutputCache);
-    container.registerDecorator(deployAppWithHooks);
-    container.registerDecorator(watchWithHooks);
-    container.registerDecorator(getPulumiServiceWithDownloadInfo);
+    await container.resolve(InitProjectSdkService).execute(container);
 
     return container;
 };
