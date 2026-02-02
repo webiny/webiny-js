@@ -74,7 +74,12 @@ export const CmsWorkflowsEditorView = () => {
 
     const apps = useMemo<IWorkflowApplication[]>(() => {
         return models
-            .filter(model => canEdit(model, "cms.contentModel"))
+            .filter(model => {
+                if (model.tags.includes("$publishing:false")) {
+                    return false;
+                }
+                return canEdit(model, "cms.contentModel");
+            })
             .map(model => {
                 return {
                     id: createAppName(model),
