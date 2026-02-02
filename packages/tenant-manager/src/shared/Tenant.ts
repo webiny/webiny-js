@@ -2,6 +2,7 @@ export interface TenantValues {
     name: string;
     description: string;
     isInstalled: boolean;
+    status: "enabled" | "disabled";
     extensions: TenantExtensions;
 }
 
@@ -18,6 +19,7 @@ export const rootTenantDto: TenantDto = {
         name: "Root",
         isInstalled: true,
         description: "Platform Root",
+        status: "enabled",
         extensions: {}
     }
 };

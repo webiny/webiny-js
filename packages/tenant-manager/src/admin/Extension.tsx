@@ -9,6 +9,7 @@ import { CurrentTenantFeature } from "./CurrentTenant/feature.js";
 import { TenantSelector } from "./TenantSelector.js";
 import { IsRootTenant } from "./IsRootTenant.js";
 import { LegacyPermissionRenderer } from "./Permissions/LegacyPermissionRenderer.js";
+import { TENANT_MODEL_ID } from "~/shared/constants.js";
 
 const { Menu } = AdminConfig;
 
@@ -33,7 +34,7 @@ export const Extension = () => {
                                         <Menu.Link.Icon element={<TenantIcon />} label={"Tenant"} />
                                     }
                                     to={getLink(Routes.ContentEntries.List, {
-                                        modelId: "wbyTenant"
+                                        modelId: TENANT_MODEL_ID
                                     })}
                                 />
                             }
