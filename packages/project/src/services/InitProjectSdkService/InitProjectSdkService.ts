@@ -41,19 +41,14 @@ export class DefaultInitProjectSdkService implements InitProjectSdkService.Inter
         applyEnvVars(projectExtensions);
 
         // Set WCP environment variables if project ID exists.
-        const getProjectIdService = container.resolve(GetProjectIdService);
-        const wcpProjectId = await getProjectIdService.execute();
+        const wcpSetEnvVars = new WcpSetEnvVars({
+            getProjectIdService: container.resolve(GetProjectIdService),
+            wcpService: container.resolve(WcpService),
+            loggerService: container.resolve(LoggerService),
+            projectSdkParamsService: container.resolve(ProjectSdkParamsService)
+        });
         
-        if (wcpProjectId) {
-            const wcpSetEnvVars = new WcpSetEnvVars({
-                getProjectIdService,
-                wcpService: container.resolve(WcpService),
-                loggerService: container.resolve(LoggerService),
-                projectSdkParamsService: container.resolve(ProjectSdkParamsService)
-            });
-            
-            await wcpSetEnvVars.execute();
-        }
+        await wcpSetEnvVars.execute();
 
         // Register hooks from extensions.
         await registerHooks(container, projectExtensions, project);
