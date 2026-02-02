@@ -5,9 +5,8 @@ export interface IInitProjectSdkService {
     execute(container: Container): Promise<void>;
 }
 
-export const InitProjectSdkService = createAbstraction<IInitProjectSdkService>(
-    "InitProjectSdkService"
-);
+export const InitProjectSdkService =
+    createAbstraction<IInitProjectSdkService>("InitProjectSdkService");
 
 export namespace InitProjectSdkService {
     export type Interface = IInitProjectSdkService;

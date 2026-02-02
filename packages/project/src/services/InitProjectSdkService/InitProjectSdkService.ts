@@ -4,11 +4,7 @@ import {
     GetProjectConfig,
     InitProjectSdkService
 } from "~/abstractions/index.js";
-import {
-    corePulumi,
-    apiPulumi,
-    adminPulumi
-} from "~/features/index.js";
+import { corePulumi, apiPulumi, adminPulumi } from "~/features/index.js";
 import {
     buildAppWithHooks,
     deployAppClearWatchedLambdaFunctions,
