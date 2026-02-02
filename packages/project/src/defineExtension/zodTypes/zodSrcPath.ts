@@ -4,6 +4,7 @@ import path from "path";
 import fs from "fs";
 import { type IProjectModel } from "~/abstractions/models/index.js";
 import { ProjectError } from "~/ProjectError.js";
+import { ImplPathResolver } from "~/utils/index.js";
 
 /**
  * TypeScript type for source paths.
@@ -62,13 +63,10 @@ export const zodSrcPath = (options: ZodSrcPathOptions) => {
                     .basename(absoluteSrcPath)
                     .replace(path.extname(absoluteSrcPath), "");
 
-                const importedModule = await import(absoluteSrcPath);
-
-                // Support both default and named exports.
-                // Check for 'default' property existence rather than truthiness.
-                const exportedImplementation =
-                    ("default" in importedModule && importedModule.default) ||
-                    importedModule?.[exportName];
+                const exportedImplementation = await ImplPathResolver.importFromPath(
+                    src,
+                    project
+                );
 
                 if (!exportedImplementation) {
                     ctx.addIssue({
