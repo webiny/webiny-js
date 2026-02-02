@@ -33,7 +33,7 @@ export class EntryAssets implements IEntryAssets {
             if (!entry?.values) {
                 continue;
             }
-            await this.traverser.traverse(entry.values, ({ field, value }) => {
+            await this.traverser.traverse(entry.values, async ({ field, value }) => {
                 if (!value || fileTypes.includes(field.type) === false) {
                     return;
                 }

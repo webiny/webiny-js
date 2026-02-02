@@ -9,7 +9,7 @@ export interface CmsRichTextRenderer<T> {
 }
 
 export interface RichTextRendererMiddleware<T> {
-    (contents: RichTextContents, next: CmsRichTextRenderer<T>): Promise<T> | T;
+    (contents: RichTextContents, next: CmsRichTextRenderer<T>): Promise<T>;
 }
 
 interface CmsRichTextRendererConstructorParams<T> {

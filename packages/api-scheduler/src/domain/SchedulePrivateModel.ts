@@ -2,7 +2,7 @@ import { ModelFactory } from "@webiny/api-headless-cms/features/modelBuilder/ind
 import { SCHEDULE_MODEL_ID } from "~/constants.js";
 
 class SchedulePrivateModelImpl implements ModelFactory.Interface {
-    execute(builder: ModelFactory.Builder) {
+    public async execute(builder: ModelFactory.Builder) {
         return [
             builder
                 .private()

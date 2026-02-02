@@ -4,7 +4,7 @@ import { TaskLogItemType } from "~/types.js";
 export const WEBINY_TASK_LOG_MODEL_ID = "wbyTaskLog";
 
 class TaskLogPrivateModelImpl implements ModelFactory.Interface {
-    execute(builder: ModelFactory.Builder) {
+    public async execute(builder: ModelFactory.Builder) {
         return [
             builder
                 .private()

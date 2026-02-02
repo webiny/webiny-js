@@ -34,6 +34,14 @@ export interface IDependencyTreePushParams {
     ignore?: RegExp;
 }
 
+export interface IDependencyCollection {
+    dependencies: IDependency[];
+    devDependencies: IDependency[];
+    peerDependencies: IDependency[];
+    resolutions: IDependency[];
+    references: IReference[];
+}
+
 export interface IDependencyTree {
     dependencies: IDependency[];
     devDependencies: IDependency[];

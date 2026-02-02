@@ -1,7 +1,7 @@
 import { Abstraction } from "@webiny/di";
 
 export interface IOnEntryBeforeCreate {
-    execute(): void | Promise<void>;
+    execute(): Promise<void>;
 }
 
 export const OnEntryBeforeCreate = new Abstraction<IOnEntryBeforeCreate>("OnEntryBeforeCreate");

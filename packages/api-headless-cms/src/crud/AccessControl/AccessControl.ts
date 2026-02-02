@@ -10,10 +10,10 @@ import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 import { NotAuthorizedError } from "~/utils/errors.js";
 
 export interface AccessControlParams {
-    getIdentity: () => SecurityIdentity | Promise<SecurityIdentity>;
-    getGroupsPermissions: () => CmsGroupPermission[] | Promise<CmsGroupPermission[]>;
-    getModelsPermissions: () => CmsModelPermission[] | Promise<CmsModelPermission[]>;
-    getEntriesPermissions: () => CmsEntryPermission[] | Promise<CmsEntryPermission[]>;
+    getIdentity: () => Promise<SecurityIdentity>;
+    getGroupsPermissions: () => Promise<CmsGroupPermission[]>;
+    getModelsPermissions: () => Promise<CmsModelPermission[]>;
+    getEntriesPermissions: () => Promise<CmsEntryPermission[]>;
     listAllGroups: () => Promise<CmsGroup[]>;
 }
 
@@ -69,7 +69,7 @@ export class AccessControl {
     listAllGroupsCallback: AccessControlParams["listAllGroups"];
 
     private fullAccessPermissions: string[];
-    private allGroups: null | CmsGroup[] | Promise<CmsGroup[]>;
+    private allGroups: null | Promise<CmsGroup[]>;
 
     constructor({
         getIdentity,

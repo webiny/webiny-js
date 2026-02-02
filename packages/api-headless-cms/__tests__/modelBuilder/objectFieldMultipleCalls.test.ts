@@ -13,7 +13,7 @@ describe("Object Field Multiple .fields() Calls", () => {
 
     it("should append fields when .fields() is called multiple times on object field", async () => {
         class TestModelImpl implements ModelFactory.Interface {
-            execute(builder: ModelFactory.Builder) {
+            public async execute(builder: ModelFactory.Builder) {
                 return [
                     builder
                         .private()
@@ -69,7 +69,7 @@ describe("Object Field Multiple .fields() Calls", () => {
         class ConditionalObjectModelImpl implements ModelFactory.Interface {
             constructor(private includeExtendedMetadata: boolean) {}
 
-            execute(builder: ModelFactory.Builder) {
+            public async execute(builder: ModelFactory.Builder) {
                 // Create object field with base fields
                 const metadataBuilder = (fields: ModelFactory.FieldBuilder) => {
                     const objField = fields
@@ -137,7 +137,7 @@ describe("Object Field Multiple .fields() Calls", () => {
 
     it("should support nested object fields with multiple .fields() calls", async () => {
         class NestedObjectModelImpl implements ModelFactory.Interface {
-            execute(builder: ModelFactory.Builder) {
+            public async execute(builder: ModelFactory.Builder) {
                 return [
                     builder
                         .private()

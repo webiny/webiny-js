@@ -13,7 +13,7 @@ describe("All Field Types Model", () => {
 
     it("should support all field types with various configurations", async () => {
         class AllFieldsModelImpl implements ModelFactory.Interface {
-            execute(builder: ModelFactory.Builder) {
+            public async execute(builder: ModelFactory.Builder) {
                 return [
                     builder
                         .private()
@@ -283,7 +283,7 @@ describe("All Field Types Model", () => {
 
     it("should support all public-model-specific methods", async () => {
         class FullPublicModelImpl implements ModelFactory.Interface {
-            execute(builder: ModelFactory.Builder) {
+            public async execute(builder: ModelFactory.Builder) {
                 return [
                     builder
                         .public()
@@ -359,7 +359,7 @@ describe("All Field Types Model", () => {
     it("should ensure tags are unique and always include type:model", async () => {
         // Test public model with duplicate tags including "type:model"
         class DuplicateTagsPublicModel implements ModelFactory.Interface {
-            execute(builder: ModelFactory.Builder) {
+            public async execute(builder: ModelFactory.Builder) {
                 return [
                     builder
                         .public()
@@ -386,7 +386,7 @@ describe("All Field Types Model", () => {
 
         // Test private model with duplicate tags
         class DuplicateTagsPrivateModel implements ModelFactory.Interface {
-            execute(builder: ModelFactory.Builder) {
+            public async execute(builder: ModelFactory.Builder) {
                 return [
                     builder
                         .private()
@@ -413,7 +413,7 @@ describe("All Field Types Model", () => {
 
         // Test model without tags still gets type:model
         class NoTagsModel implements ModelFactory.Interface {
-            execute(builder: ModelFactory.Builder) {
+            public async execute(builder: ModelFactory.Builder) {
                 return [
                     builder
                         .public()

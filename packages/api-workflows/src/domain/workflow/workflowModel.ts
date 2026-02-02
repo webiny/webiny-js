@@ -4,7 +4,7 @@ import { WORKFLOW_MODEL_ID } from "~/constants.js";
 export { WORKFLOW_MODEL_ID };
 
 class WorkflowModelImpl implements ModelFactory.Interface {
-    execute(builder: ModelFactory.Builder) {
+    public async execute(builder: ModelFactory.Builder) {
         return [
             builder
                 .private()
