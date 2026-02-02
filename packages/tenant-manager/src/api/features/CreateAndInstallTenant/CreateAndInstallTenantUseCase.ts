@@ -42,7 +42,7 @@ class CreateAndInstallTenantUseCase implements UseCaseAbstraction.Interface {
             await this.coreUpdateTenant.execute(tenant.id, {
                 name: tenant.values.name,
                 description: tenant.values.description,
-                status: "active"
+                status: "enabled"
             });
 
             // Mark tenant installed, and exit early.
@@ -54,6 +54,7 @@ class CreateAndInstallTenantUseCase implements UseCaseAbstraction.Interface {
             id: entryId.id,
             name: tenant.values.name,
             parent: "root",
+            status: "disabled",
             description: tenant.values.name,
             tags: []
         });

@@ -2,6 +2,7 @@ import { createImplementation } from "@webiny/feature/api";
 import { TenantContext as Abstraction } from "./abstractions.js";
 import type { Tenant } from "~/types/tenancy.js";
 import { GetRootTenantUseCase } from "~/features/tenancy/GetRootTenant/index.js";
+import { TenantIsDisabledError } from "./errors.js";
 
 class TenantContextImpl implements Abstraction.Interface {
     private currentTenant: Tenant | null = null;
@@ -13,6 +14,9 @@ class TenantContextImpl implements Abstraction.Interface {
     }
 
     setTenant(tenant: Tenant): void {
+        if (tenant.status === "disabled") {
+            throw new TenantIsDisabledError();
+        }
         this.currentTenant = tenant;
     }
 

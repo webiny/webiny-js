@@ -33,6 +33,7 @@ class InstallSystemUseCaseImpl implements UseCaseAbstraction.Interface {
             id: "root",
             name: "Root",
             tags: [],
+            status: "enabled",
             description: "The top-level Webiny tenant.",
             parent: ""
         });

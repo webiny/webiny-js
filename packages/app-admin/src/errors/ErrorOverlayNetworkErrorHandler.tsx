@@ -5,6 +5,7 @@ import { LocalAwsLambdaTimeoutMessage } from "@webiny/app/plugins/NetworkErrorLi
 import { GqlErrorOverlay } from "@webiny/app/plugins/NetworkErrorLinkPlugin/GqlErrorOverlay.js";
 import { EnvConfig } from "@webiny/app/features/envConfig/index.js";
 import { NetworkErrorEvent, NetworkErrorEventHandler } from "@webiny/app/errors/index.js";
+import { TenantIsDisabled } from "~/errors/TenantIsDisabled.js";
 
 class ErrorOverlayNetworkErrorHandlerImpl implements NetworkErrorEventHandler.Interface {
     private readonly debug: boolean;
@@ -18,13 +19,21 @@ class ErrorOverlayNetworkErrorHandlerImpl implements NetworkErrorEventHandler.In
             return;
         }
 
-        const { errorType, query, message, result } = event.payload;
+        const { errorType, query, message, code, result } = event.payload;
 
         if (errorType === "timeout" && result?.code === "LOCAL_AWS_LAMBDA_TIMEOUT") {
             createErrorOverlay({
                 element: (
                     <ErrorOverlay message={<LocalAwsLambdaTimeoutMessage />} closeable={false} />
                 ),
+                closeable: false
+            });
+            return;
+        }
+
+        if (code === "Tenancy/TenantDisabled") {
+            createErrorOverlay({
+                element: <TenantIsDisabled />,
                 closeable: false
             });
             return;

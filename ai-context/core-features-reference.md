@@ -175,6 +175,12 @@ This document provides the correct import paths and type definitions for commonl
 - **Usage:** Disable a tenant by setting status to "disabled" in both api-core and tenant-manager
 - **Note:** Updates api-core tenant first, then tenant-manager CMS entry
 
+### EnableTenantUseCase
+- **Import:** `import { EnableTenantUseCase } from "packages/tenant-manager/src/api/features/EnableTenant/abstractions.js"`
+- **Interface Type:** See `packages/tenant-manager/src/api/features/EnableTenant/abstractions.ts`
+- **Usage:** Enable a tenant by setting status to "enabled" in both api-core and tenant-manager
+- **Note:** Updates api-core tenant first, then tenant-manager CMS entry
+
 ### UpdateTenantUseCase (Tenant Manager)
 - **Import:** `import { UpdateTenantUseCase } from "packages/tenant-manager/src/api/features/UpdateTenant/abstractions.js"`
 - **Interface Type:** See `packages/tenant-manager/src/api/features/UpdateTenant/abstractions.ts`

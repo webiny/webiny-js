@@ -21,6 +21,7 @@ class NetworkErrorPublishingDecorator implements GraphQLClient.Interface {
 
                 const event = new NetworkErrorEvent({
                     message: (error as Error).message,
+                    code: error.code ?? undefined,
                     operationName: request.operationName,
                     query: request.queryAsString,
                     variables: request.variables,
@@ -38,6 +39,7 @@ class NetworkErrorPublishingDecorator implements GraphQLClient.Interface {
     private isNetworkError(error: Error): boolean {
         // Network errors typically have these patterns in the message
         return (
+            error.message.includes("Tenant is disabled") ||
             error.message.includes("Network error") ||
             error.message.includes("Failed to fetch") ||
             error.message.includes("network failure") ||

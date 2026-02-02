@@ -3,6 +3,7 @@ import { BaseEvent } from "~/features/eventPublisher/index.js";
 
 export interface NetworkErrorPayload {
     message: string;
+    code?: string;
     operationName?: string;
     query?: string;
     variables?: Record<string, any>;

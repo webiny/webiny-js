@@ -3,11 +3,14 @@ import TenantModel from "./domain/TenantModel.js";
 import { CreateAndInstallTenantFeature } from "./features/CreateAndInstallTenant/feature.js";
 import { CreateTenantFeature } from "./features/CreateTenant/feature.js";
 import { DisableTenantFeature } from "./features/DisableTenant/feature.js";
+import { EnableTenantFeature } from "./features/EnableTenant/feature.js";
 import { GetTenantByIdFeature } from "./features/GetTenantById/feature.js";
 import { GetCurrentTenantFeature } from "./features/GetCurrentTenant/feature.js";
 import { UpdateTenantFeature } from "./features/UpdateTenant/feature.js";
 import InstallTenantSchema from "./graphql/InstallTenantSchema.js";
 import CreateTenantSchema from "./graphql/CreateTenantSchema.js";
+import DisableTenantSchema from "./graphql/DisableTenantSchema.js";
+import EnableTenantSchema from "./graphql/EnableTenantSchema.js";
 import GetCurrentTenantSchema from "./graphql/GetCurrentTenantSchema.js";
 import { AddCmsPermissionsFeature } from "~/api/features/AddCmsPermissions/feature.js";
 
@@ -19,12 +22,15 @@ export const Extension = createFeature({
         //GraphQL
         container.register(InstallTenantSchema);
         container.register(CreateTenantSchema);
+        container.register(DisableTenantSchema);
+        container.register(EnableTenantSchema);
         container.register(GetCurrentTenantSchema);
 
         // Features
         CreateAndInstallTenantFeature.register(container);
         CreateTenantFeature.register(container);
         DisableTenantFeature.register(container);
+        EnableTenantFeature.register(container);
         GetTenantByIdFeature.register(container);
         GetCurrentTenantFeature.register(container);
         UpdateTenantFeature.register(container);
