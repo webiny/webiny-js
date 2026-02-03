@@ -14,8 +14,8 @@
     "Adrian Smijulj <adrian@webiny.com>"
   ],
   "dependencies": {
-    "@babel/core": "^7.28.6",
-    "@babel/preset-env": "^7.28.6",
+    "@babel/core": "^7.29.0",
+    "@babel/preset-env": "^7.29.0",
     "@babel/preset-react": "^7.28.5",
     "@babel/preset-typescript": "^7.28.5",
     "@babel/runtime": "^7.28.6",
@@ -37,7 +37,7 @@
     "find-up": "^5.0.0",
     "fs-extra": "^11.3.3",
     "get-yarn-workspaces": "1.0.2",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "postcss-loader": "^8.2.0",
     "process": "^0.11.10",
     "raw-loader": "^4.0.2",

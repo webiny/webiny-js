@@ -15,7 +15,7 @@
   ],
   "dependencies": {
     "get-yarn-workspaces": "1.0.2",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.23"
   },
   "devDependencies": {
     "@elastic/elasticsearch": "7.12.0",

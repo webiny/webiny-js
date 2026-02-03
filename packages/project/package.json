@@ -33,7 +33,7 @@
     "graphql-request": "^7.4.0",
     "humanize-duration": "3.33.2",
     "load-json-file": "6.2.0",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "minimatch": "^5.1.6",
     "mqtt": "^5.14.1",
     "neverthrow": "^8.2.0",
