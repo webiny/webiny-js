@@ -54,7 +54,6 @@ class CreateAndInstallTenantUseCase implements UseCaseAbstraction.Interface {
             id: entryId.id,
             name: tenant.values.name,
             parent: "root",
-            status: "disabled",
             description: tenant.values.name,
             tags: []
         });

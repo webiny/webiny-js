@@ -86,7 +86,8 @@ class InstallTenantUseCaseImpl implements UseCaseAbstraction.Interface {
 
             // Mark the tenant as installed
             await this.updateTenantUseCase.execute(tenant.id, {
-                isInstalled: true
+                isInstalled: true,
+                status: "enabled"
             });
 
             // Publish the installed event

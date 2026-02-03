@@ -24,7 +24,6 @@ export interface CreateTenantInput {
     name: string;
     description: string;
     tags: string[];
-    status: TenantStatus;
     settings?: TenantSettings;
     parent: string;
 }

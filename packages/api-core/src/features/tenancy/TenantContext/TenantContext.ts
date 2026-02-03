@@ -14,7 +14,7 @@ class TenantContextImpl implements Abstraction.Interface {
     }
 
     setTenant(tenant: Tenant): void {
-        if (tenant.status === "disabled") {
+        if (tenant.isInstalled && tenant.status === "disabled") {
             throw new TenantIsDisabledError();
         }
         this.currentTenant = tenant;
