@@ -186,6 +186,7 @@ export namespace TaskDefinition {
     export type ResultAborted = ITaskResultAborted;
     export type CreateInputValidationParams = ITaskCreateInputValidationParams;
     export type TaskCreateData<I = ITaskInput> = ITaskCreateData<I>;
+    export type BeforeTriggerParams<I = ITaskInput> = ITaskBeforeTriggerParams<I>;
     export type LifecycleHookParams<
         I extends ITaskInput = ITaskInput,
         O extends ITaskOutput = ITaskOutput
