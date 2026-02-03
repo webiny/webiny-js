@@ -87,7 +87,7 @@ export class DefaultGetWcpProjectEnvironmentService implements GetWcpProjectEnvi
                 `The "${projectEnvironment.name}" project environment doesn't belong to the "${orgId}" organization.`
             );
             throw new Error(
-                `Cannot proceed because the "${projectEnvironment.name}" project environment doesn't belong to the "${orgId}" organization. Please check your WCP project ID (currently set to "${wcpProjectId}").`
+                `Cannot retrieve project environment because the "${projectEnvironment.name}" project environment doesn't belong to the "${orgId}" organization. Please check your WCP project ID (currently set to "${wcpProjectId}").`
             );
         }
 
@@ -96,7 +96,7 @@ export class DefaultGetWcpProjectEnvironmentService implements GetWcpProjectEnvi
                 `The "${projectEnvironment.name}" project environment doesn't belong to the "${projectId}" project.`
             );
             throw new Error(
-                `Cannot proceed because the "${projectEnvironment.name}" project environment doesn't belong to the "${wcpProjectId}" project. Please check your WCP project ID (currently set to "${wcpProjectId}").`
+                `Cannot retrieve project environment because the "${projectEnvironment.name}" project environment doesn't belong to the "${wcpProjectId}" project. Please check your WCP project ID (currently set to "${wcpProjectId}").`
             );
         }
 
@@ -105,7 +105,7 @@ export class DefaultGetWcpProjectEnvironmentService implements GetWcpProjectEnvi
                 `The "${projectEnvironment.name}" project environment has been disabled.`
             );
             throw new Error(
-                `Cannot proceed because the "${projectEnvironment.name}" project environment has been disabled.`
+                `Cannot retrieve project environment because the "${projectEnvironment.name}" project environment has been disabled.`
             );
         }
 
