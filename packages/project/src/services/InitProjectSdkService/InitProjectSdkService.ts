@@ -6,7 +6,9 @@ import {
     GetProjectIdService,
     WcpService,
     LoggerService,
-    ProjectSdkParamsService
+    ProjectSdkParamsService,
+    GetWcpProjectEnvironmentService,
+    GetWcpProjectLicenseService
 } from "~/abstractions/index.js";
 import { corePulumi, apiPulumi, adminPulumi } from "~/features/index.js";
 import {
@@ -23,7 +25,7 @@ import { registerHooks } from "./registerHooks.js";
 import { registerPulumiExtensions } from "./registerPulumiExtensions.js";
 import { registerImplementations } from "./registerImplementations.js";
 import { registerDecorators } from "./registerDecorators.js";
-import { WcpSetEnvVars } from "~/extensions/Project/WcpSetEnvVars.js";
+import { WcpSetEnvVars } from "./WcpSetEnvVars.js";
 
 export class DefaultInitProjectSdkService implements InitProjectSdkService.Interface {
     constructor(
@@ -42,13 +44,17 @@ export class DefaultInitProjectSdkService implements InitProjectSdkService.Inter
 
         // Set WCP environment variables if project ID exists.
         const wcpSetEnvVars = new WcpSetEnvVars({
-            getProjectIdService: container.resolve(GetProjectIdService),
-            wcpService: container.resolve(WcpService),
-            loggerService: container.resolve(LoggerService),
-            projectSdkParamsService: container.resolve(ProjectSdkParamsService)
+            getWcpProjectEnvironmentService: container.resolve(GetWcpProjectEnvironmentService),
+            loggerService: container.resolve(LoggerService)
         });
         
         await wcpSetEnvVars.execute();
+
+        // Fetch WCP license if environment variables were set correctly.
+        if (process.env.WCP_PROJECT_ENVIRONMENT_API_KEY) {
+            const getWcpProjectLicenseService = container.resolve(GetWcpProjectLicenseService);
+            await getWcpProjectLicenseService.execute();
+        }
 
         // Register hooks from extensions.
         await registerHooks(container, projectExtensions, project);
