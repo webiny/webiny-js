@@ -34,6 +34,9 @@ export class GraphQLSchemaBuilder implements Abstraction.Interface {
         return this;
     }
 
+    /**
+     * @internal This method needs revisiting, to align with DI concepts.
+     */
     addResolverDecorator(path: string, decorator: ResolverDecorator): this {
         if (!this.resolverDecorators[path]) {
             this.resolverDecorators[path] = [];

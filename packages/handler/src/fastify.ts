@@ -363,6 +363,18 @@ export const createHandler = (params: CreateHandlerParams) => {
                 );
         }
 
+        if (error.code === "Tenancy/TenantDisabled") {
+            return reply
+                .status(503)
+                .headers({ "Cache-Control": "no-store" })
+                .send(
+                    JSON.stringify({
+                        message: error.message,
+                        code: error.code
+                    })
+                );
+        }
+
         return reply
             .status(500)
             .headers({

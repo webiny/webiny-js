@@ -1,5 +1,5 @@
 import { Tenant, TenantDto, TenantValues } from "~/shared/Tenant.js";
-import { TENANT_MODEL_ID } from "../../domain/TenantModel.js";
+import { TENANT_MODEL_ID } from "~/shared/constants.js";
 import { TenantNotFoundError, TenantPersistenceError } from "../../domain/errors.js";
 import {
     UpdateTenantRepository as RepositoryAbstraction,

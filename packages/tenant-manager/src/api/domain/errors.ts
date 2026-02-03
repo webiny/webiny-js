@@ -8,6 +8,14 @@ export class TenantNotFoundError extends BaseError {
     }
 }
 
+export class TenantModelNotFoundError extends BaseError {
+    override readonly code = "Tenant/ModelNotFound" as const;
+
+    constructor() {
+        super({ message: `Tenant model was not found!` });
+    }
+}
+
 export class TenantPersistenceError extends BaseError<{ error: Error }> {
     override readonly code = "Tenant/Persistence" as const;
 

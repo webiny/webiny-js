@@ -14,6 +14,9 @@ export interface ResolverConfig<TArgs = any, TParent = any> {
 export interface IGraphQLSchemaBuilder {
     addTypeDefs(typeDefs: TypeDefs): this;
     addResolver<TArgs = any, TParent = any>(config: ResolverConfig<TArgs, TParent>): this;
+    /**
+     * @internal This method needs revisiting, to align with DI concepts.
+     */
     addResolverDecorator(path: string, decorator: ResolverDecorator): this;
     build(): IGraphQLSchema;
 }

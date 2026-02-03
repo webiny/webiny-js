@@ -31,7 +31,8 @@ class RetryGraphQLClientImpl implements GraphQLClient.Interface {
                 // Only retry network/infrastructure errors
                 if (
                     this.isGraphQLError(error as Error) ||
-                    this.isAuthenticationError(error as BaseError)
+                    this.isAuthenticationError(error as BaseError) ||
+                    this.isMaintenanceError(error as BaseError)
                 ) {
                     throw error;
                 }
@@ -52,6 +53,10 @@ class RetryGraphQLClientImpl implements GraphQLClient.Interface {
 
     private isAuthenticationError(error: BaseError): boolean {
         return error.code?.includes("Authentication/");
+    }
+
+    private isMaintenanceError(error: BaseError): boolean {
+        return error.code?.includes("Tenancy/");
     }
 
     private calculateBackoff(attempt: number): number {
