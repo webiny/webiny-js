@@ -15,7 +15,7 @@
     "@webiny/pulumi-sdk": "0.0.0",
     "@webiny/telemetry": "0.0.0",
     "chalk": "^4.1.2",
-    "ci-info": "^4.3.1",
+    "ci-info": "^4.4.0",
     "execa": "^5.1.1",
     "find-up": "^5.0.0",
     "get-yarn-workspaces": "1.0.2",
@@ -28,14 +28,14 @@
     "pino": "^9.14.0",
     "pino-pretty": "^9.4.1",
     "semver": "^7.7.3",
-    "type-fest": "^5.3.1",
+    "type-fest": "^5.4.3",
     "write-json-file": "^4.3.0",
     "yargs": "^17.7.2",
     "zod": "^3.25.76"
   },
   "devDependencies": {
     "@types/listr": "^0.14.10",
-    "@types/lodash": "^4.17.21",
+    "@types/lodash": "^4.17.23",
     "@webiny/build-tools": "0.0.0",
     "rimraf": "^6.1.2",
     "typescript": "5.9.3"

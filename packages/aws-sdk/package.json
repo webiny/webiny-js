@@ -29,7 +29,7 @@
     "@aws-sdk/s3-presigned-post": "^3.981.0",
     "@aws-sdk/s3-request-presigner": "^3.981.0",
     "@aws-sdk/util-dynamodb": "^3.981.0",
-    "@types/aws-lambda": "8.10.159",
+    "@types/aws-lambda": "8.10.160",
     "@webiny/utils": "0.0.0"
   },
   "devDependencies": {

@@ -48,7 +48,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@types/babel__code-frame": "^7.0.6",
+    "@types/babel__code-frame": "^7.27.0",
     "@types/pluralize": "^0.0.33",
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/build-tools": "0.0.0",

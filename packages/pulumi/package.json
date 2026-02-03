@@ -21,7 +21,7 @@
     "lodash": "^4.17.23"
   },
   "devDependencies": {
-    "@types/lodash": "^4.17.21",
+    "@types/lodash": "^4.17.23",
     "@webiny/build-tools": "0.0.0",
     "rimraf": "^6.1.2",
     "typescript": "5.9.3"
