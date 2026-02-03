@@ -31,7 +31,9 @@ export interface ICreateTenantUseCase {
     execute(input: ICreateTenantInput): Promise<Result<Tenant, ICreateTenantUseCaseError>>;
 }
 
-export const CreateTenantUseCase = createAbstraction<ICreateTenantUseCase>("CreateTenantUseCase");
+export const CreateTenantUseCase = createAbstraction<ICreateTenantUseCase>(
+    "TenantManager/CreateTenantUseCase"
+);
 
 export namespace CreateTenantUseCase {
     export type Interface = ICreateTenantUseCase;
@@ -53,8 +55,9 @@ export interface ICreateTenantRepository {
     execute(tenant: Tenant): Promise<Result<Tenant, IRepositoryError>>;
 }
 
-export const CreateTenantRepository =
-    createAbstraction<ICreateTenantRepository>("CreateTenantRepository");
+export const CreateTenantRepository = createAbstraction<ICreateTenantRepository>(
+    "TenantManager/CreateTenantRepository"
+);
 
 export namespace CreateTenantRepository {
     export type Interface = ICreateTenantRepository;

@@ -20,7 +20,9 @@ export interface IEnableTenantUseCaseErrors {
 
 type UseCaseError = IEnableTenantUseCaseErrors[keyof IEnableTenantUseCaseErrors];
 
-export const EnableTenantUseCase = createAbstraction<IEnableTenantUseCase>("EnableTenantUseCase");
+export const EnableTenantUseCase = createAbstraction<IEnableTenantUseCase>(
+    "TenantManager/EnableTenantUseCase"
+);
 
 export namespace EnableTenantUseCase {
     export type Interface = IEnableTenantUseCase;

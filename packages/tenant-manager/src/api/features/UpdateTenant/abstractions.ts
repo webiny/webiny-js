@@ -24,7 +24,9 @@ export interface IUpdateTenantUseCaseErrors {
 
 type UseCaseError = IUpdateTenantUseCaseErrors[keyof IUpdateTenantUseCaseErrors];
 
-export const UpdateTenantUseCase = createAbstraction<IUpdateTenantUseCase>("UpdateTenantUseCase");
+export const UpdateTenantUseCase = createAbstraction<IUpdateTenantUseCase>(
+    "TenantManager/UpdateTenantUseCase"
+);
 
 export namespace UpdateTenantUseCase {
     export type Interface = IUpdateTenantUseCase;
@@ -45,8 +47,9 @@ export interface IUpdateTenantRepositoryErrors {
 
 type RepositoryError = IUpdateTenantRepositoryErrors[keyof IUpdateTenantRepositoryErrors];
 
-export const UpdateTenantRepository =
-    createAbstraction<IUpdateTenantRepository>("UpdateTenantRepository");
+export const UpdateTenantRepository = createAbstraction<IUpdateTenantRepository>(
+    "TenantManager/UpdateTenantRepository"
+);
 
 export namespace UpdateTenantRepository {
     export type Interface = IUpdateTenantRepository;

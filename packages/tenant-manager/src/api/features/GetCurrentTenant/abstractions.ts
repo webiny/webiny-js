@@ -23,8 +23,9 @@ export interface IGetCurrentTenantUseCaseErrors {
 
 type UseCaseError = IGetCurrentTenantUseCaseErrors[keyof IGetCurrentTenantUseCaseErrors];
 
-export const GetCurrentTenantUseCase =
-    createAbstraction<IGetCurrentTenantUseCase>("GetCurrentTenantUseCase");
+export const GetCurrentTenantUseCase = createAbstraction<IGetCurrentTenantUseCase>(
+    "TenantManager/GetCurrentTenantUseCase"
+);
 
 export namespace GetCurrentTenantUseCase {
     export type Interface = IGetCurrentTenantUseCase;

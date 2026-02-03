@@ -21,7 +21,7 @@ export class TenantBeforeEnableEvent extends DomainEvent<TenantBeforeEnablePaylo
 
 export const TenantBeforeEnableEventHandler = createAbstraction<
     IEventHandler<TenantBeforeEnableEvent>
->("TenantBeforeEnableEventHandler");
+>("TenantManager/TenantBeforeEnableEventHandler");
 
 export namespace TenantBeforeEnableEventHandler {
     export type Interface = IEventHandler<TenantBeforeEnableEvent>;
@@ -38,7 +38,7 @@ export class TenantAfterEnableEvent extends DomainEvent<TenantAfterEnablePayload
 
 export const TenantAfterEnableEventHandler = createAbstraction<
     IEventHandler<TenantAfterEnableEvent>
->("TenantAfterEnableEventHandler");
+>("TenantManager/TenantAfterEnableEventHandler");
 
 export namespace TenantAfterEnableEventHandler {
     export type Interface = IEventHandler<TenantAfterEnableEvent>;

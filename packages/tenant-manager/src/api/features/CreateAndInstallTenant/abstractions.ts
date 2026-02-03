@@ -30,7 +30,7 @@ type UseCaseError =
     ICreateAndInstallTenantUseCaseErrors[keyof ICreateAndInstallTenantUseCaseErrors];
 
 export const CreateAndInstallTenantUseCase = createAbstraction<ICreateAndInstallTenantUseCase>(
-    "CreateAndInstallTenantUseCase"
+    "TenantManager/CreateAndInstallTenantUseCase"
 );
 
 export namespace CreateAndInstallTenantUseCase {
