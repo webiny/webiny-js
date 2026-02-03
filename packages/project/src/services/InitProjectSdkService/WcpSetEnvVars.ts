@@ -1,4 +1,4 @@
-import { encrypt } from "@webiny/wcp";
+import { encrypt, decrypt } from "@webiny/wcp";
 import {
     GetWcpProjectEnvironmentService,
     LoggerService
@@ -36,6 +36,17 @@ export class WcpSetEnvVars {
          */
 
         const { getWcpProjectEnvironmentService, loggerService } = this.di;
+
+        // Case 1: For development purposes, we allow setting the WCP_PROJECT_ENVIRONMENT env var directly.
+        if (process.env.WCP_PROJECT_ENVIRONMENT) {
+            loggerService.info(
+                'The "WCP_PROJECT_ENVIRONMENT" env var is already set. Using that value and skipping the rest of the process.'
+            );
+            // If we have WCP_PROJECT_ENVIRONMENT env var, we set the WCP_PROJECT_ENVIRONMENT_API_KEY too.
+            const decryptedProjectEnvironment = decrypt(process.env.WCP_PROJECT_ENVIRONMENT);
+            process.env.WCP_PROJECT_ENVIRONMENT_API_KEY = decryptedProjectEnvironment.apiKey;
+            return;
+        }
 
         // Use the dedicated service to get the project environment
         const projectEnvironment = await getWcpProjectEnvironmentService.execute();
