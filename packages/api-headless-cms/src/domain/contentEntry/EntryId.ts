@@ -1,10 +1,15 @@
 import { createIdentifier, parseIdentifier } from "@webiny/utils";
+import { mdbid } from "@webiny/utils/mdbid.js";
 
 export class EntryId {
     private constructor(
         private _id: string,
         private _version: number
     ) {}
+
+    static create() {
+        return new EntryId(mdbid(), 1);
+    }
 
     static from(value: string) {
         const { id, version } = parseIdentifier(value);

@@ -13,6 +13,7 @@ export interface Tenant {
     status: TenantStatus;
     isInstalled: boolean;
     settings: TenantSettings;
+    tags: string[];
     parent: string | null;
     createdOn: string;
     savedOn: string;

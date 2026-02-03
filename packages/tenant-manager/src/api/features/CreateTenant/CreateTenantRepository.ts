@@ -23,6 +23,7 @@ class CreateTenantRepository implements RepositoryAbstraction.Interface {
             // Prepare tenant values with default isInstalled: false
             const tenantValues: TenantValues = {
                 name: tenant.values.name,
+                status: tenant.values.status,
                 description: tenant.values.description,
                 isInstalled: false,
                 extensions: tenant.values.extensions || {}
