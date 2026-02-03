@@ -14,7 +14,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@smithy/node-http-handler": "^2.5.0",
+    "@smithy/node-http-handler": "^4.4.9",
     "@webiny/api-file-manager": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",

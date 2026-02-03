@@ -17,7 +17,7 @@
     "accounting": "^0.4.1",
     "fecha": "^2.3.3",
     "glob": "^7.2.3",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "short-hash": "^1.0.0",
     "yargs": "^17.7.2"
   },
@@ -28,7 +28,7 @@
     "@babel/register": "^7.28.6",
     "@types/accounting": "^0.4.5",
     "@types/glob": "^7.2.0",
-    "@types/lodash": "^4.17.21",
+    "@types/lodash": "^4.17.23",
     "@webiny/build-tools": "0.0.0",
     "rimraf": "^6.1.2",
     "typescript": "5.9.3",

@@ -45,7 +45,7 @@
     "@webiny/migrations": "0.0.0",
     "@webiny/project-aws": "*",
     "@webiny/tenant-manager": "*",
-    "core-js": "3.47.0",
+    "core-js": "3.48.0",
     "cross-fetch": "^3.2.0",
     "react": "18.2.0",
     "regenerator-runtime": "^0.14.1"
