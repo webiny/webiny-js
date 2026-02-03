@@ -3,12 +3,9 @@ import {
     GetProjectService,
     GetProjectConfig,
     InitProjectSdkService,
-    GetProjectIdService,
-    WcpService,
-    LoggerService,
-    ProjectSdkParamsService,
     GetWcpProjectEnvironmentService,
-    GetWcpProjectLicenseService
+    GetWcpProjectLicenseService,
+    LoggerService
 } from "~/abstractions/index.js";
 import { corePulumi, apiPulumi, adminPulumi } from "~/features/index.js";
 import {
