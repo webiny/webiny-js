@@ -72,6 +72,21 @@ export const createFilesTypeDefs = (params: CreateFilesTypeDefsParams): string =
     });
 
     return /* GraphQL */ `
+        type FmLocation {
+            folderId: String!
+        }
+
+        input FmLocationInput {
+            folderId: String!
+        }
+
+        input FmLocationWhereInput {
+            folderId: ID
+            folderId_in: [ID!]
+            folderId_not: ID
+            folderId_not_in: [ID!]
+        }
+        
         ${fieldTypes.map(f => f.typeDefs).join("\n")}
 
         type FmFile {
@@ -82,6 +97,7 @@ export const createFilesTypeDefs = (params: CreateFilesTypeDefsParams): string =
             createdBy: FmCreatedBy!
             modifiedBy: FmCreatedBy
             savedBy: FmCreatedBy!
+            location: FmLocation!
             src: String
             ${fieldTypes.map(f => f.fields).join("\n")}
         }
@@ -102,6 +118,7 @@ export const createFilesTypeDefs = (params: CreateFilesTypeDefsParams): string =
             createdBy: FmCreatedByInput
             modifiedBy: FmCreatedByInput
             savedBy: FmCreatedByInput
+            location: FmLocationInput!
             ${inputCreateFields.map(f => f.fields).join("\n")}
         }
 
@@ -112,6 +129,7 @@ export const createFilesTypeDefs = (params: CreateFilesTypeDefsParams): string =
             createdBy: FmCreatedByInput
             modifiedBy: FmCreatedByInput
             savedBy: FmCreatedByInput
+            location: FmLocationInput
             ${inputUpdateFields.map(f => f.fields).join("\n")}
         }
 
@@ -121,6 +139,7 @@ export const createFilesTypeDefs = (params: CreateFilesTypeDefsParams): string =
         }
 
         input FmFileListWhereInput {
+            location: FmLocationWhereInput
             ${listFilterFieldsRender.allFiltersAsString()}
             AND: [FmFileListWhereInput!]
             OR: [FmFileListWhereInput!]
