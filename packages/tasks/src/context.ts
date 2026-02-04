@@ -11,8 +11,8 @@ import { createServiceCrud } from "~/crud/service.tasks.js";
 import { createTaskCrud } from "./crud/crud.tasks.js";
 import { createServicePlugins } from "~/service/index.js";
 import { TaskExecutionContextFeature } from "~/features/TaskExecutionContext/feature.js";
-import { GetTaskDefinitionFeature } from "~/features/GetTaskDefinitionUseCase/feature.js";
-import { ListTaskDefinitionsFeature } from "~/features/ListTaskDefinitionsUseCase/feature.js";
+import { GetTaskDefinitionFeature } from "~/features/GetTaskDefinition/feature.js";
+import { ListTaskDefinitionsFeature } from "~/features/ListTaskDefinitions/feature.js";
 import { TestingRunTaskDefinition } from "~/tasks/testingRunTask.js";
 
 const createTasksCrud = () => {

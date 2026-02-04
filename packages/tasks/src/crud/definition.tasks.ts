@@ -1,7 +1,7 @@
 import type { Context, ITasksContextDefinitionObject } from "~/types.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-import { GetTaskDefinitionUseCase } from "~/features/GetTaskDefinitionUseCase/index.js";
-import { ListTaskDefinitionsUseCase } from "~/features/ListTaskDefinitionsUseCase/index.js";
+import { GetTaskDefinitionUseCase } from "~/features/GetTaskDefinition/index.js";
+import { ListTaskDefinitionsUseCase } from "~/features/ListTaskDefinitions/index.js";
 
 export const createDefinitionCrud = (context: Context): ITasksContextDefinitionObject => {
     return {
