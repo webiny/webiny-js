@@ -3,6 +3,7 @@ import { ContentEntryListConfig } from "@webiny/app-headless-cms";
 import { TenantEntry } from "../types.js";
 import { InstallTenant } from "./InstallTenantButton/InstallTenant.js";
 import { ManageTenant } from "./ManageTenant.js";
+import { EnableTenant } from "~/admin/TenantEntryList/EnableTenant/EnableTenant.js";
 
 const { Browser } = ContentEntryListConfig;
 const { useTableRow, isFolderRow } = Browser.Table.Column;
@@ -16,9 +17,15 @@ export const TenantCell = () => {
         return <>{"-"}</>;
     }
 
-    if (!row.data.values.isInstalled) {
-        return <InstallTenant tenant={row.data} />;
+    const tenant = row.data;
+
+    if (!tenant.values.isInstalled) {
+        return <InstallTenant tenant={tenant} />;
     }
 
-    return <ManageTenant tenant={row.data} />;
+    if (tenant.values.status === "disabled") {
+        return <EnableTenant tenant={tenant} />;
+    }
+
+    return <ManageTenant tenant={tenant} />;
 };

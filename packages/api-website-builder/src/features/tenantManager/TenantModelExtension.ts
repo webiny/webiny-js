@@ -20,12 +20,13 @@ class TenantModelExtension implements ModelExtension.Interface {
                             .label("Primary Color")
                             .helpText("Enter a color code (e.g., #000000)")
                             .renderer("text-input")
-                            .defaultValue([]),
+                            .defaultValue(""),
                         additionalColors: fields
                             .text()
                             .list()
                             .label("Additional Colors")
                             .helpText("Enter a color code (e.g., #000000)")
+                            .defaultValue([])
                             .renderer("text-inputs", {
                                 multiValue: {
                                     addValueButtonLabel: "Add Color"

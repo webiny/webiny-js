@@ -1,7 +1,11 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import type { Tenant, TenantValues } from "../../../shared/Tenant.js";
-import type { TenantNotFoundError, TenantPersistenceError } from "../../domain/errors.js";
+import type { Tenant, TenantValues } from "~/shared/Tenant.js";
+import {
+    TenantModelNotFoundError,
+    type TenantNotFoundError,
+    type TenantPersistenceError
+} from "../../domain/errors.js";
 
 /**
  * UpdateTenant Use Case
@@ -15,11 +19,14 @@ export interface IUpdateTenantUseCase {
 export interface IUpdateTenantUseCaseErrors {
     notFound: TenantNotFoundError;
     persistence: TenantPersistenceError;
+    modelNotFoundError: TenantModelNotFoundError;
 }
 
 type UseCaseError = IUpdateTenantUseCaseErrors[keyof IUpdateTenantUseCaseErrors];
 
-export const UpdateTenantUseCase = createAbstraction<IUpdateTenantUseCase>("UpdateTenantUseCase");
+export const UpdateTenantUseCase = createAbstraction<IUpdateTenantUseCase>(
+    "TenantManager/UpdateTenantUseCase"
+);
 
 export namespace UpdateTenantUseCase {
     export type Interface = IUpdateTenantUseCase;
@@ -40,8 +47,9 @@ export interface IUpdateTenantRepositoryErrors {
 
 type RepositoryError = IUpdateTenantRepositoryErrors[keyof IUpdateTenantRepositoryErrors];
 
-export const UpdateTenantRepository =
-    createAbstraction<IUpdateTenantRepository>("UpdateTenantRepository");
+export const UpdateTenantRepository = createAbstraction<IUpdateTenantRepository>(
+    "TenantManager/UpdateTenantRepository"
+);
 
 export namespace UpdateTenantRepository {
     export type Interface = IUpdateTenantRepository;

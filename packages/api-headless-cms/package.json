@@ -19,7 +19,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@babel/code-frame": "^7.28.6",
+    "@babel/code-frame": "^7.29.0",
     "@graphql-tools/merge": "^9.1.7",
     "@graphql-tools/schema": "^10.0.31",
     "@webiny/api": "0.0.0",
@@ -40,7 +40,7 @@
     "graphql": "^16.12.0",
     "graphql-tag": "^2.12.6",
     "jsdom": "^25.0.1",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "p-map": "^7.0.4",
     "p-reduce": "^3.0.0",
     "pluralize": "^8.0.0",
@@ -48,7 +48,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@types/babel__code-frame": "^7.0.6",
+    "@types/babel__code-frame": "^7.27.0",
     "@types/pluralize": "^0.0.33",
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/build-tools": "0.0.0",

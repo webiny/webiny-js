@@ -66,6 +66,19 @@ const ModelIcon = ({ model }: IModelIconProps) => {
     );
 };
 
+const isAllowed = (model: Pick<CmsModel, "modelId" | "tags">) => {
+    // Exclude models that have the "$publishing:false" tag
+    if (model.tags.includes("$publishing:false")) {
+        return false;
+    }
+    // Exclude single entry models
+    else if (model.tags.includes("singleEntry")) {
+        return false;
+    }
+
+    return true;
+};
+
 export const CmsWorkflowsEditorView = () => {
     const { route } = useRoute(Routes.ContentModels.Workflows);
     const { models, loading } = useModels();
@@ -74,7 +87,12 @@ export const CmsWorkflowsEditorView = () => {
 
     const apps = useMemo<IWorkflowApplication[]>(() => {
         return models
-            .filter(model => canEdit(model, "cms.contentModel"))
+            .filter(model => {
+                if (isAllowed(model) === false) {
+                    return false;
+                }
+                return canEdit(model, "cms.contentModel");
+            })
             .map(model => {
                 return {
                     id: createAppName(model),

@@ -4,15 +4,16 @@ import { WcpContext } from "~/features/wcp/WcpContext/index.js";
 
 export type TenantSettings = Record<string, any>;
 
+export type TenantStatus = "enabled" | "disabled";
+
 export interface Tenant {
     id: string;
     name: string;
     description: string;
-    image?: string;
-    tags: string[];
-    status: string;
+    status: TenantStatus;
     isInstalled: boolean;
     settings: TenantSettings;
+    tags: string[];
     parent: string | null;
     createdOn: string;
     savedOn: string;
@@ -22,9 +23,7 @@ export interface CreateTenantInput {
     id?: string;
     name: string;
     description: string;
-    image?: string;
     tags: string[];
-    status?: string;
     settings?: TenantSettings;
     parent: string;
 }

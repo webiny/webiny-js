@@ -24,6 +24,10 @@ const PATHNAME_REGEX = new RegExp(
     `^\\/(?:[a-zA-Z0-9._~:@!$&'()*+,;=%/-])*(?:\\?[a-zA-Z0-9._~:@!$&'()*+,;=?/%#[\\]-]*)?(?:#[a-zA-Z0-9._~:@!$&'()*+,;=?/%#[\\]-]*)?$`
 );
 const validatePathname = (pathname: string) => {
+    if (!pathname) {
+        return;
+    }
+
     if (PATHNAME_REGEX.test(pathname)) {
         return;
     }

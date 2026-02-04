@@ -1,7 +1,11 @@
 import { Result } from "@webiny/feature/api";
 import { Tenant, TenantDto, TenantValues } from "~/shared/Tenant.js";
-import { TENANT_MODEL_ID } from "../../domain/TenantModel.js";
-import { TenantNotFoundError, TenantPersistenceError } from "../../domain/errors.js";
+import { TENANT_MODEL_ID } from "~/shared/constants.js";
+import {
+    TenantModelNotFoundError,
+    TenantNotFoundError,
+    TenantPersistenceError
+} from "../../domain/errors.js";
 import { GetTenantByIdRepository as RepositoryAbstraction } from "./abstractions.js";
 import { TenantContext } from "@webiny/api-core/exports/api/tenancy.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/abstractions.js";
@@ -22,11 +26,7 @@ class GetTenantByIdRepository implements RepositoryAbstraction.Interface {
             // Get the tenant model
             const modelResult = await this.getModelUseCase.execute(TENANT_MODEL_ID);
             if (modelResult.isFail()) {
-                return Result.fail(
-                    new TenantPersistenceError(
-                        new Error(`Model "${TENANT_MODEL_ID}" was not found!`)
-                    )
-                );
+                return Result.fail(new TenantModelNotFoundError());
             }
 
             // Get the tenant entry

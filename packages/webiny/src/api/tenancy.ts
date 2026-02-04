@@ -5,6 +5,13 @@ export {
     TenantBeforeCreateHandler,
     TenantAfterCreateHandler
 } from "@webiny/api-core/features/tenancy/CreateTenant/index.js";
+export { GetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/index.js";
+export {
+    UpdateTenantUseCase,
+    UpdateTenantRepository,
+    TenantAfterUpdateHandler,
+    TenantBeforeUpdateHandler
+} from "@webiny/api-core/features/tenancy/UpdateTenant/index.js";
 export {
     DeleteTenantUseCase,
     DeleteTenantRepository,
