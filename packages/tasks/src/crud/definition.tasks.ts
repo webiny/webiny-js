@@ -1,5 +1,7 @@
 import type { Context, ITasksContextDefinitionObject } from "~/types.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import { GetTaskDefinitionUseCase } from "~/features/GetTaskDefinitionUseCase/index.js";
+import { ListTaskDefinitionsUseCase } from "~/features/ListTaskDefinitionsUseCase/index.js";
 
 export const createDefinitionCrud = (context: Context): ITasksContextDefinitionObject => {
     return {
@@ -9,19 +11,18 @@ export const createDefinitionCrud = (context: Context): ITasksContextDefinitionO
         >(
             id: string
         ) => {
-            // Resolve all TaskDefinition implementations from DI container
-            const definitions = context.container.resolveAll(TaskDefinition);
+            const useCase = context.container.resolve(GetTaskDefinitionUseCase);
+            const result = useCase.execute<I, O>(id);
 
-            for (const definition of definitions) {
-                if (definition.id === id) {
-                    return definition as TaskDefinition.Runnable<I, O>;
-                }
+            if (result.isOk()) {
+                return result.value;
             }
+
             return null;
         },
         listDefinitions: () => {
-            // Resolve all TaskDefinition implementations from DI container
-            return context.container.resolveAll(TaskDefinition);
+            const useCase = context.container.resolve(ListTaskDefinitionsUseCase);
+            return useCase.execute();
         }
     };
 };

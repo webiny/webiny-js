@@ -11,6 +11,8 @@ import { createServiceCrud } from "~/crud/service.tasks.js";
 import { createTaskCrud } from "./crud/crud.tasks.js";
 import { createServicePlugins } from "~/service/index.js";
 import { TaskExecutionContextFeature } from "~/features/TaskExecutionContext/feature.js";
+import { GetTaskDefinitionFeature } from "~/features/GetTaskDefinitionUseCase/feature.js";
+import { ListTaskDefinitionsFeature } from "~/features/ListTaskDefinitionsUseCase/feature.js";
 import { TestingRunTaskDefinition } from "~/tasks/testingRunTask.js";
 
 const createTasksCrud = () => {
@@ -21,6 +23,10 @@ const createTasksCrud = () => {
 
         // Register the RunnableTaskDecorator to wrap all TaskDefinition instances
         context.container.registerDecorator(RunnableTaskDecorator);
+
+        // Register task definition use cases
+        GetTaskDefinitionFeature.register(context.container);
+        ListTaskDefinitionsFeature.register(context.container);
 
         context.tasks = {
             ...createDefinitionCrud(context),
