@@ -15,6 +15,7 @@ import { GetTaskDefinitionFeature } from "~/features/GetTaskDefinition/feature.j
 import { ListTaskDefinitionsFeature } from "~/features/ListTaskDefinitions/feature.js";
 import { TestingRunTaskDefinition } from "~/tasks/testingRunTask.js";
 import { TriggerTaskFeature } from "~/features/TriggerTask/index.js";
+import { AbortTaskFeature } from "~/features/AbortTask/index.js";
 
 const createTasksCrud = () => {
     const plugin = new ContextPlugin<Context>(async context => {
@@ -29,6 +30,7 @@ const createTasksCrud = () => {
         GetTaskDefinitionFeature.register(context.container);
         ListTaskDefinitionsFeature.register(context.container);
         TriggerTaskFeature.register(context.container, context);
+        AbortTaskFeature.register(context.container, context);
 
         context.tasks = {
             ...createDefinitionCrud(context),
