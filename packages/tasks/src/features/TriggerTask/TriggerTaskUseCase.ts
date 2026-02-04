@@ -7,7 +7,7 @@ import type { Context } from "~/types.js";
 export class TriggerTaskUseCaseImpl implements UseCaseAbstraction.Interface {
     public constructor(private context: Context) {}
 
-    async execute<
+    public async execute<
         I extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
         O extends TaskService.GenericOutput = TaskService.GenericOutput
     >(
