@@ -1,5 +1,5 @@
-export { LoggerService } from "~/abstractions/services/LoggerService.js";
-export { UiService } from "~/abstractions/services/UiService.js";
+export { LoggerService as Logger } from "~/abstractions/services/LoggerService.js";
+export { UiService as Ui } from "~/abstractions/services/UiService.js";
 export { AfterBuild } from "~/abstractions/features/hooks/AfterBuild.js";
 export { BeforeBuild } from "~/abstractions/features/hooks/BeforeBuild.js";
 export { AfterDeploy } from "~/abstractions/features/hooks/AfterDeploy.js";

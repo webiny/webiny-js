@@ -1,1 +1,1 @@
-export { UiService } from "~/abstractions/services/UiService.js";
+export { UiService as Ui } from "~/abstractions/services/UiService.js";
