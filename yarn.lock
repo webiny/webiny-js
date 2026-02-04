@@ -14548,6 +14548,7 @@ __metadata:
     graphql: "npm:^16.12.0"
     graphql-tag: "npm:^2.12.6"
     lodash: "npm:^4.17.23"
+    markdown-to-jsx: "npm:^9.7.1"
     prop-types: "npm:^15.8.1"
     react: "npm:18.2.0"
     rimraf: "npm:^6.1.2"
@@ -26712,6 +26713,26 @@ __metadata:
     vue:
       optional: true
   checksum: 10/67d16c9a2589a1f31c196a6f0cb4176726bc334a572754ea93db6b09d38a7d461a1477043dece8c811c937e22ee53ee67b801d3dc363208485bfb873b6317d11
+  languageName: node
+  linkType: hard
+
+"markdown-to-jsx@npm:^9.7.1":
+  version: 9.7.1
+  resolution: "markdown-to-jsx@npm:9.7.1"
+  peerDependencies:
+    react: ">= 16.0.0"
+    solid-js: ">=1.0.0"
+    vue: ">=3.0.0"
+  peerDependenciesMeta:
+    react:
+      optional: true
+    react-native:
+      optional: true
+    solid-js:
+      optional: true
+    vue:
+      optional: true
+  checksum: 10/a15123720837df899e38a17f88c089fced3050cb0315ec8ac125e709fbf18598bc37a2a3b01fa4f1dff31ee87dc986e45b5c855fc1b339763cadc454c6fc55ca
   languageName: node
   linkType: hard
 

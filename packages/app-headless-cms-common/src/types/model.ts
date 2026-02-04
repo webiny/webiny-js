@@ -30,7 +30,7 @@ export type CmsModelField<T = unknown> = T & {
     fieldId: CmsEditorFieldId;
     storageId?: string;
     label: string;
-    helpText?: string;
+    helpText?: string | React.ReactNode;
     placeholderText?: string;
     validation?: (CmsModelFieldValidator | Validator)[];
     listValidation?: CmsModelFieldValidator[];
