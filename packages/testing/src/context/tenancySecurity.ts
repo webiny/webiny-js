@@ -48,7 +48,6 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config): Plu
                 id: "root",
                 name: "Root",
                 parent: "",
-                status: "enabled",
                 description: "Root tenant",
                 tags: []
             });
@@ -57,7 +56,6 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config): Plu
                 id: "webiny",
                 name: "Webiny",
                 parent: "",
-                status: "enabled",
                 description: "Webiny tenant",
                 tags: []
             });
@@ -66,7 +64,6 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config): Plu
                 id: "dev",
                 name: "Dev",
                 parent: "",
-                status: "enabled",
                 description: "Dev tenant",
                 tags: []
             });
@@ -75,7 +72,6 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config): Plu
                 id: "sales",
                 name: "Sales",
                 parent: "",
-                status: "enabled",
                 description: "Sales tenant",
                 tags: []
             });
