@@ -5,5 +5,6 @@ export {
 
 export { GetTaskDefinitionUseCase } from "~/features/GetTaskDefinition/index.js";
 export { ListTaskDefinitionsUseCase } from "~/features/ListTaskDefinitions/index.js";
+export { ListTasksUseCase } from "~/features/ListTasks/index.js";
 export { TriggerTaskUseCase } from "~/features/TriggerTask/index.js";
 export { AbortTaskUseCase } from "~/features/AbortTask/index.js";
