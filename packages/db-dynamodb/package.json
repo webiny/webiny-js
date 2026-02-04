@@ -21,7 +21,7 @@
     "dot-prop": "^6.0.1",
     "dynamodb-toolbox": "^0.9.5",
     "fuse.js": "7.1.0",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.23"
   },
   "devDependencies": {
     "@types/is-number": "^7.0.5",

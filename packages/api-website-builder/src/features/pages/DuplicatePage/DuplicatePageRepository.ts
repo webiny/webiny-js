@@ -46,6 +46,7 @@ class DuplicatePageRepositoryImpl implements RepositoryAbstraction.Interface {
             ...dataToDuplicate,
             properties: {
                 ...dataToDuplicate.properties,
+                path: `${originalPage.properties.path}-copy`,
                 title: "Copy of " + originalPage.properties.title
             }
         };

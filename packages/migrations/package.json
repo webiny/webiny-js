@@ -12,7 +12,7 @@
     "@webiny/ioc": "0.0.0",
     "@webiny/logger": "0.0.0",
     "@webiny/utils": "0.0.0",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.23"
   },
   "publishConfig": {
     "access": "public",

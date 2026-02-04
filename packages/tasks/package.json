@@ -25,7 +25,7 @@
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",
     "deep-equal": "^2.2.3",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "object-merge-advanced": "^12.1.0",
     "object-sizeof": "^2.6.5",
     "zod": "^3.25.76"
@@ -34,7 +34,7 @@
     "@webiny/build-tools": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "rimraf": "^6.1.2",
-    "type-fest": "^5.3.1",
+    "type-fest": "^5.4.3",
     "typescript": "5.9.3",
     "vitest": "^3.2.4"
   },

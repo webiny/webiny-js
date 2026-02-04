@@ -1,7 +1,6 @@
 import { ModelFactory } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
 import { TenantModelExtension } from "./TenantModelExtension.js";
-
-export const TENANT_MODEL_ID = "wbyTenant";
+import { TENANT_MODEL_ID } from "~/shared/constants.js";
 
 class TenantModelFactory implements ModelFactory.Interface {
     constructor(private extensions: TenantModelExtension.Interface[]) {}
@@ -33,6 +32,20 @@ class TenantModelFactory implements ModelFactory.Interface {
                     .helpText("Enter a short tenant description")
                     .renderer("long-text-text-area")
                     .required(),
+                status: fields
+                    .text()
+                    .label("Status")
+                    .defaultValue("disabled")
+                    .predefinedValues([
+                        {
+                            value: "enabled",
+                            label: "Enabled"
+                        },
+                        {
+                            value: "disabled",
+                            label: "Disabled"
+                        }
+                    ]),
                 isInstalled: fields
                     .boolean()
                     .label("Is installed?")
@@ -40,7 +53,7 @@ class TenantModelFactory implements ModelFactory.Interface {
                     .defaultValue(false),
                 extensions: fields.object().renderer("passthrough")
             }))
-            .layout([["name"], ["description"], ["extensions"], ["isInstalled"]]);
+            .layout([["name"], ["description"], ["extensions"]]);
 
         for (const modifier of this.extensions) {
             model.fields(fields => {

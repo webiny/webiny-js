@@ -9,19 +9,19 @@ import {
 import { GetTenantByIdUseCase } from "../GetTenantById/abstractions.js";
 import { UpdateTenantUseCase } from "../UpdateTenant/abstractions.js";
 import { CreateAndInstallTenantUseCase as UseCaseAbstraction } from "./abstractions.js";
-import {
-    CreateTenantUseCase,
-    DeleteTenantUseCase,
-    InstallTenantUseCase
-} from "@webiny/api-core/exports/api/tenancy.js";
+import * as Tenancy from "@webiny/api-core/exports/api/tenancy.js";
 
 class CreateAndInstallTenantUseCase implements UseCaseAbstraction.Interface {
     constructor(
+        // Tenant manager deps
         private getTenantByIdUseCase: GetTenantByIdUseCase.Interface,
-        private createTenantUseCase: CreateTenantUseCase.Interface,
-        private deleteTenantUseCase: DeleteTenantUseCase.Interface,
-        private installTenantUseCase: InstallTenantUseCase.Interface,
-        private updateTenantUseCase: UpdateTenantUseCase.Interface
+        private updateTenantUseCase: UpdateTenantUseCase.Interface,
+        // Core tenancy deps
+        private coreGetTenantById: Tenancy.GetTenantByIdUseCase.Interface,
+        private coreCreateTenant: Tenancy.CreateTenantUseCase.Interface,
+        private coreUpdateTenant: Tenancy.UpdateTenantUseCase.Interface,
+        private coreDeleteTenant: Tenancy.DeleteTenantUseCase.Interface,
+        private coreInstallTenant: Tenancy.InstallTenantUseCase.Interface
     ) {}
 
     async execute(tenantId: string): Promise<Result<Tenant, UseCaseAbstraction.Error>> {
@@ -34,8 +34,23 @@ class CreateAndInstallTenantUseCase implements UseCaseAbstraction.Interface {
         }
         const tenant = tenantResult.value;
 
+        const existingTenantResult = await this.coreGetTenantById.execute(tenant.id);
+
+        // If core tenant already exists with this same ID, we mark the Tenant Manager tenant installed.
+        if (existingTenantResult.isOk()) {
+            // Update the core tenant, and set it to `active`
+            await this.coreUpdateTenant.execute(tenant.id, {
+                name: tenant.values.name,
+                description: tenant.values.description,
+                status: "enabled"
+            });
+
+            // Mark tenant installed, and exit early.
+            return this.markTenantInstalled(tenant);
+        }
+
         // Create tenant
-        const createTenantResult = await this.createTenantUseCase.execute({
+        const createTenantResult = await this.coreCreateTenant.execute({
             id: entryId.id,
             name: tenant.values.name,
             parent: "root",
@@ -49,20 +64,25 @@ class CreateAndInstallTenantUseCase implements UseCaseAbstraction.Interface {
         const createdTenant = createTenantResult.value;
 
         // Install tenant
-        const installResult = await this.installTenantUseCase.execute({
+        const installResult = await this.coreInstallTenant.execute({
             tenant: createdTenant,
             installationInput: []
         });
 
         if (installResult.isFail()) {
             // Delete tenant if installation failed.
-            await this.deleteTenantUseCase.execute(createdTenant.id);
+            await this.coreDeleteTenant.execute(createdTenant.id);
 
             return Result.fail(new TenantInstallationError(installResult.error));
         }
 
+        return this.markTenantInstalled(tenant);
+    }
+
+    private async markTenantInstalled(tenant: Tenant) {
         // Update tenant entry to mark as installed
-        const updateResult = await this.updateTenantUseCase.execute(entryId.id, {
+        const updateResult = await this.updateTenantUseCase.execute(tenant.id, {
+            status: "enabled",
             isInstalled: true
         });
 
@@ -79,9 +99,11 @@ export default UseCaseAbstraction.createImplementation({
     implementation: CreateAndInstallTenantUseCase,
     dependencies: [
         GetTenantByIdUseCase,
-        CreateTenantUseCase,
-        DeleteTenantUseCase,
-        InstallTenantUseCase,
-        UpdateTenantUseCase
+        UpdateTenantUseCase,
+        Tenancy.GetTenantByIdUseCase,
+        Tenancy.CreateTenantUseCase,
+        Tenancy.UpdateTenantUseCase,
+        Tenancy.DeleteTenantUseCase,
+        Tenancy.InstallTenantUseCase
     ]
 });

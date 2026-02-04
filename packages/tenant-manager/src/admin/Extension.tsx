@@ -6,37 +6,37 @@ import { ReactComponent as TenantIcon } from "@webiny/icons/business.svg";
 import { TenantEntryList } from "./TenantEntryList.js";
 import { CurrentTenantProvider } from "./CurrentTenantProvider.js";
 import { CurrentTenantFeature } from "./CurrentTenant/feature.js";
+import { DisableTenantFeature } from "./DisableTenant/index.js";
+import { EnableTenantFeature } from "./EnableTenant/index.js";
 import { TenantSelector } from "./TenantSelector.js";
 import { IsRootTenant } from "./IsRootTenant.js";
 import { LegacyPermissionRenderer } from "./Permissions/LegacyPermissionRenderer.js";
+import { TENANT_MODEL_ID } from "~/shared/constants.js";
 
 const { Menu } = AdminConfig;
 
 export const Extension = () => {
     const { getLink } = useRouter();
+
+    const link = getLink(Routes.ContentEntries.List, { modelId: TENANT_MODEL_ID });
+
+    const icon = <Menu.Link.Icon element={<TenantIcon />} label={"Tenant"} />;
+
     return (
         <>
             <RegisterFeature feature={CurrentTenantFeature} />
+            <RegisterFeature feature={DisableTenantFeature} />
+            <RegisterFeature feature={EnableTenantFeature} />
             <CurrentTenantProvider />
             <TenantSelector />
             <TenantEntryList />
             <LegacyPermissionRenderer />
             <AdminConfig>
                 <IsRootTenant>
-                    <HasPermission name={"tm.*"}>
+                    <HasPermission name={"tm.tenant"}>
                         <Menu
                             name="tenantManager"
-                            element={
-                                <Menu.Link
-                                    text="Tenant Manager"
-                                    icon={
-                                        <Menu.Link.Icon element={<TenantIcon />} label={"Tenant"} />
-                                    }
-                                    to={getLink(Routes.ContentEntries.List, {
-                                        modelId: "wbyTenant"
-                                    })}
-                                />
-                            }
+                            element={<Menu.Link text="Tenant Manager" icon={icon} to={link} />}
                         />
                     </HasPermission>
                 </IsRootTenant>

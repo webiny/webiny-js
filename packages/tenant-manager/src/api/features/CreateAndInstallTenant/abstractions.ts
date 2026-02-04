@@ -1,12 +1,13 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import type { Tenant } from "../../../shared/Tenant.js";
-import {
-    type TenantCreationError,
-    type TenantInstallationError,
-    type TenantUpdateError,
+import type { Tenant } from "~/shared/Tenant.js";
+import type {
+    TenantCreationError,
+    TenantInstallationError,
+    TenantUpdateError,
     TenantNotFoundError,
-    TenantPersistenceError
+    TenantPersistenceError,
+    TenantModelNotFoundError
 } from "../../domain/errors.js";
 
 /**
@@ -22,13 +23,14 @@ export interface ICreateAndInstallTenantUseCaseErrors {
     notFound: TenantNotFoundError;
     persistence: TenantPersistenceError;
     tenantUpdate: TenantUpdateError;
+    modelNotFoundError: TenantModelNotFoundError;
 }
 
 type UseCaseError =
     ICreateAndInstallTenantUseCaseErrors[keyof ICreateAndInstallTenantUseCaseErrors];
 
 export const CreateAndInstallTenantUseCase = createAbstraction<ICreateAndInstallTenantUseCase>(
-    "CreateAndInstallTenantUseCase"
+    "TenantManager/CreateAndInstallTenantUseCase"
 );
 
 export namespace CreateAndInstallTenantUseCase {

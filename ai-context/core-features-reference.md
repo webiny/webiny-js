@@ -9,7 +9,7 @@ This document provides the correct import paths and type definitions for commonl
 
 ---
 
-## Features
+## Core Features
 
 ### TenantContext
 - **Import:** `import { TenantContext } from "@webiny/api-core/features/TenantContext"`
@@ -128,6 +128,79 @@ This document provides the correct import paths and type definitions for commonl
 - **Import:** `import { PluginModelsProvider } from "@webiny/api-headless-cms/features/contentModel/shared"`
 - **Interface Type:** See `packages/api-headless-cms/src/features/contentModel/shared/abstractions.ts`
 - **Usage:** Access to plugin-defined models
+
+---
+
+## Tenancy Features (Api-Core)
+
+### GetTenantById
+- **Import:** `import { GetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById"`
+- **Interface Type:** See `packages/api-core/src/features/tenancy/GetTenantById/abstractions.ts`
+- **Usage:** Fetch a single tenant by ID from api-core tenant storage
+
+### UpdateTenant (Api-Core)
+- **Import:** `import { UpdateTenantUseCase } from "@webiny/api-core/features/tenancy/UpdateTenant"`
+- **Interface Type:** See `packages/api-core/src/features/tenancy/UpdateTenant/abstractions.ts`
+- **Usage:** Update api-core tenant fields (status, name, description, etc.)
+- **Note:** Accepts `Partial<Tenant>` with fields like `status: "enabled" | "disabled"`
+
+### CreateTenant (Api-Core)
+- **Import:** `import { CreateTenantUseCase } from "@webiny/api-core/features/tenancy/CreateTenant"`
+- **Interface Type:** See `packages/api-core/src/features/tenancy/CreateTenant/abstractions.ts`
+- **Usage:** Create a new api-core tenant
+
+### DeleteTenant (Api-Core)
+- **Import:** `import { DeleteTenantUseCase } from "@webiny/api-core/features/tenancy/DeleteTenant"`
+- **Interface Type:** See `packages/api-core/src/features/tenancy/DeleteTenant/abstractions.ts`
+- **Usage:** Delete an api-core tenant
+
+### InstallTenant (Api-Core)
+- **Import:** `import { InstallTenantUseCase } from "@webiny/api-core/features/tenancy/InstallTenant"`
+- **Interface Type:** See `packages/api-core/src/features/tenancy/InstallTenant/abstractions.ts`
+- **Usage:** Install a tenant (sets `isInstalled: true`)
+
+---
+
+## Tenant Manager Features
+
+### CreateTenantUseCase
+- **Import:** `import { CreateTenantUseCase } from "packages/tenant-manager/src/api/features/CreateTenant/abstractions.js"`
+- **Interface Type:** See `packages/tenant-manager/src/api/features/CreateTenant/abstractions.ts`
+- **Usage:** Create a new tenant CMS entry with optional `id` and `values: JSON`
+- **Note:** Creates tenant with `isInstalled: false`
+
+### DisableTenantUseCase
+- **Import:** `import { DisableTenantUseCase } from "packages/tenant-manager/src/api/features/DisableTenant/abstractions.js"`
+- **Interface Type:** See `packages/tenant-manager/src/api/features/DisableTenant/abstractions.ts`
+- **Usage:** Disable a tenant by setting status to "disabled" in both api-core and tenant-manager
+- **Note:** Updates api-core tenant first, then tenant-manager CMS entry
+
+### EnableTenantUseCase
+- **Import:** `import { EnableTenantUseCase } from "packages/tenant-manager/src/api/features/EnableTenant/abstractions.js"`
+- **Interface Type:** See `packages/tenant-manager/src/api/features/EnableTenant/abstractions.ts`
+- **Usage:** Enable a tenant by setting status to "enabled" in both api-core and tenant-manager
+- **Note:** Updates api-core tenant first, then tenant-manager CMS entry
+
+### UpdateTenantUseCase (Tenant Manager)
+- **Import:** `import { UpdateTenantUseCase } from "packages/tenant-manager/src/api/features/UpdateTenant/abstractions.js"`
+- **Interface Type:** See `packages/tenant-manager/src/api/features/UpdateTenant/abstractions.ts`
+- **Usage:** Update tenant-manager CMS entry with partial tenant values
+- **Note:** Accepts `Partial<TenantValues>` including `status: "enabled" | "disabled"`
+
+### GetTenantByIdUseCase (Tenant Manager)
+- **Import:** `import { GetTenantByIdUseCase } from "packages/tenant-manager/src/api/features/GetTenantById/abstractions.js"`
+- **Interface Type:** See `packages/tenant-manager/src/api/features/GetTenantById/abstractions.ts`
+- **Usage:** Fetch tenant from tenant-manager CMS storage
+
+### GetCurrentTenantUseCase
+- **Import:** `import { GetCurrentTenantUseCase } from "packages/tenant-manager/src/api/features/GetCurrentTenant/abstractions.js"`
+- **Interface Type:** See `packages/tenant-manager/src/api/features/GetCurrentTenant/abstractions.ts`
+- **Usage:** Get the current tenant from context
+
+### CreateAndInstallTenantUseCase
+- **Import:** `import { CreateAndInstallTenantUseCase } from "packages/tenant-manager/src/api/features/CreateAndInstallTenant/abstractions.js"`
+- **Interface Type:** See `packages/tenant-manager/src/api/features/CreateAndInstallTenant/abstractions.ts`
+- **Usage:** Create and install a tenant in one operation
 
 ---
 

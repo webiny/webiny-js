@@ -1,7 +1,11 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { Tenant } from "../../../shared/Tenant.js";
-import type { TenantNotFoundError, TenantPersistenceError } from "../../domain/errors.js";
+import {
+    TenantModelNotFoundError,
+    type TenantNotFoundError,
+    type TenantPersistenceError
+} from "../../domain/errors.js";
 
 /**
  * GetTenantById Use Case
@@ -13,6 +17,7 @@ export interface IGetTenantByIdUseCase {
 export interface IGetTenantByIdUseCaseErrors {
     notFound: TenantNotFoundError;
     persistence: TenantPersistenceError;
+    modelNotFoundError: TenantModelNotFoundError;
 }
 
 type UseCaseError = IGetTenantByIdUseCaseErrors[keyof IGetTenantByIdUseCaseErrors];
@@ -36,6 +41,7 @@ export interface IGetTenantByIdRepository {
 export interface IGetTenantByIdRepositoryErrors {
     notFound: TenantNotFoundError;
     persistence: TenantPersistenceError;
+    modelNotFoundError: TenantModelNotFoundError;
 }
 
 type RepositoryError = IGetTenantByIdRepositoryErrors[keyof IGetTenantByIdRepositoryErrors];

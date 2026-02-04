@@ -19,7 +19,7 @@
     "fast-json-patch": "^3.1.1",
     "fast-json-stable-stringify": "^2.1.0",
     "is-hotkey": "^0.2.0",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "matcher": "^5.0.0",
     "mobx": "^6.15.0",
     "nanoid": "^3.3.11",

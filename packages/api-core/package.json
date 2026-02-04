@@ -71,7 +71,7 @@
     "dataloader": "^2.2.3",
     "jose": "^5.10.0",
     "jsonwebtoken": "^9.0.3",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "minimatch": "^5.1.6",
     "pino": "^9.14.0",
     "pino-lambda": "^4.4.1",

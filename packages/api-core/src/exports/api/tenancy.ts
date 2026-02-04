@@ -5,6 +5,13 @@ export {
     TenantBeforeCreateHandler,
     TenantAfterCreateHandler
 } from "~/features/tenancy/CreateTenant/index.js";
+export { GetTenantByIdUseCase } from "~/features/tenancy/GetTenantById/index.js";
+export {
+    UpdateTenantUseCase,
+    UpdateTenantRepository,
+    TenantAfterUpdateHandler,
+    TenantBeforeUpdateHandler
+} from "~/features/tenancy/UpdateTenant/index.js";
 export {
     DeleteTenantUseCase,
     DeleteTenantRepository,

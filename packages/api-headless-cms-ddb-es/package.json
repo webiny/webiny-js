@@ -38,7 +38,7 @@
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",
     "dataloader": "^2.2.3",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.23"
   },
   "devDependencies": {
     "@elastic/elasticsearch": "7.12.0",

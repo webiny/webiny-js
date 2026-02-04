@@ -16,18 +16,18 @@
   },
   "dependencies": {
     "@pulumi/aws": "^7.16.0",
-    "@pulumi/pulumi": "^3.216.0",
+    "@pulumi/pulumi": "^3.218.0",
     "decompress": "^4.2.1",
     "execa": "^5.1.1",
     "find-up": "^5.0.0",
     "fs-extra": "^11.3.3",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "read-json-sync": "2.0.1",
     "semver": "^7.7.3",
-    "tar": "^7.5.6"
+    "tar": "^7.5.7"
   },
   "devDependencies": {
-    "@types/lodash": "^4.17.21",
+    "@types/lodash": "^4.17.23",
     "@webiny/build-tools": "0.0.0",
     "rimraf": "^6.1.2",
     "typescript": "5.9.3"

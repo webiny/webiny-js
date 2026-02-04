@@ -27,6 +27,7 @@ export const useInstallTenant = (tenant: TenantEntry) => {
             ...tenant,
             values: {
                 ...tenant.values,
+                status: "enabled",
                 isInstalled: true
             }
         });
