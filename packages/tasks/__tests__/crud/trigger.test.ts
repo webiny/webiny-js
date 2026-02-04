@@ -4,8 +4,7 @@ import { createMockTaskDefinitions, MOCK_TASK_DEFINITION_ID } from "~tests/mocks
 import { createMockIdentity } from "~tests/mocks/identity";
 import { TaskDataStatus } from "~/types";
 import { createTaskDefinition } from "~tests/helpers/createTaskDefinition.js";
-import { TriggerTaskUseCase } from "~/features/TriggerTask/abstractions.js";
-
+import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 
 describe("tasks - trigger crud", () => {
     const handler = useRawHandler({
@@ -14,10 +13,10 @@ describe("tasks - trigger crud", () => {
 
     it("should trigger a task", async () => {
         const context = await handler.handle();
-        
-        const useCase = context.container.resolve(TriggerTaskUseCase);
 
-        const result = await useCase.execute({
+        const service = context.container.resolve(TaskService);
+
+        const result = await service.trigger({
             definition: "myCustomTaskNumber1",
             name: "A test of triggering task",
             input: {
@@ -25,7 +24,7 @@ describe("tasks - trigger crud", () => {
                 myCustomValue: "myCustomValue"
             }
         });
-        
+
         expect(result.isOk()).toBeTrue();
 
         expect(result.value).toEqual({

@@ -14,7 +14,7 @@ export class TriggerTaskUseCaseImpl implements UseCaseAbstraction.Interface {
         params: UseCaseAbstraction.Params<I>
     ): Promise<Result<TaskService.Task<I, O>, UseCaseAbstraction.Error>> {
         const result = await this.context.tasks.trigger<I, O>(params);
-        
+
         return result as unknown as Promise<
             Result<TaskService.Task<I, O>, UseCaseAbstraction.Error>
         >;

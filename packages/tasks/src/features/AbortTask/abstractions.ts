@@ -1,11 +1,7 @@
 import { createAbstraction, Result } from "@webiny/feature/api";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-import {
-    TaskDefinitionNotFoundError,
-    TaskNotFoundError,
-    TaskAbortError
-} from "~/domain/errors.js";
+import { TaskDefinitionNotFoundError, TaskNotFoundError, TaskAbortError } from "~/domain/errors.js";
 
 export interface IAbortTaskUseCase {
     execute<
@@ -29,9 +25,7 @@ export interface IAbortTaskUseCaseErrors {
 
 type UseCaseError = IAbortTaskUseCaseErrors[keyof IAbortTaskUseCaseErrors];
 
-export const AbortTaskUseCase = createAbstraction<IAbortTaskUseCase>(
-    "Tasks/AbortTaskUseCase"
-);
+export const AbortTaskUseCase = createAbstraction<IAbortTaskUseCase>("Tasks/AbortTaskUseCase");
 
 export namespace AbortTaskUseCase {
     export type Interface = IAbortTaskUseCase;

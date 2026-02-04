@@ -60,6 +60,7 @@
     "./api/security/user": "./api/security/user.js",
     "./api/security": "./api/security.js",
     "./api/system": "./api/system.js",
+    "./api/tasks": "./api/tasks.js",
     "./api/tenancy": "./api/tenancy.js",
     "./api/cms/entry": "./api/cms/entry.js",
     "./api/cms/group": "./api/cms/group.js",
@@ -112,7 +113,6 @@
     "./infra/features/ApiStackOutputService": "./infra/features/ApiStackOutputService.js",
     "./infra/features/CoreStackOutputService": "./infra/features/CoreStackOutputService.js",
     "./infra/features/InvokeLambdaFunction": "./infra/features/InvokeLambdaFunction.js",
-    "./api/background-tasks": "./api/background-tasks.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   }
 }

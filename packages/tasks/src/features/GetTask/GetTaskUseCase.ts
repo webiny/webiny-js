@@ -9,9 +9,7 @@ export class GetTaskUseCaseImpl implements UseCaseAbstraction.Interface {
     async execute<
         I extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
         O extends TaskService.GenericOutput = TaskService.GenericOutput
-    >(
-        id: string
-    ): Promise<TaskService.Task<I, O> | null> {
+    >(id: string): Promise<TaskService.Task<I, O> | null> {
         return await this.context.tasks.getTask<I, O>(id);
     }
 }

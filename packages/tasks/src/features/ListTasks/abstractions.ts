@@ -14,9 +14,7 @@ export interface IListTasksUseCase {
 
 export type ListTasksParams = IListTaskParams;
 
-export const ListTasksUseCase = createAbstraction<IListTasksUseCase>(
-    "Tasks/ListTasksUseCase"
-);
+export const ListTasksUseCase = createAbstraction<IListTasksUseCase>("Tasks/ListTasksUseCase");
 
 export namespace ListTasksUseCase {
     export type Interface = IListTasksUseCase;

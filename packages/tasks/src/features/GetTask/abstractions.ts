@@ -11,9 +11,7 @@ export interface IGetTaskUseCase {
     ): Promise<TaskService.Task<I, O> | null>;
 }
 
-export const GetTaskUseCase = createAbstraction<IGetTaskUseCase>(
-    "Tasks/GetTaskUseCase"
-);
+export const GetTaskUseCase = createAbstraction<IGetTaskUseCase>("Tasks/GetTaskUseCase");
 
 export namespace GetTaskUseCase {
     export type Interface = IGetTaskUseCase;
