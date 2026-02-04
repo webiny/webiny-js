@@ -46,39 +46,3 @@ export namespace TriggerTaskUseCase {
         O extends TaskService.GenericOutput = TaskService.GenericOutput
     > = Promise<Result<TaskService.Task<I, O>, UseCaseError>>;
 }
-
-export interface ITriggerTaskRepository {
-    execute<
-        I extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
-        O extends TaskService.GenericOutput = TaskService.GenericOutput
-    >(
-        params: TriggerTaskRepositoryParams<I>
-    ): Promise<Result<TaskService.Task<I, O>, RepositoryError>>;
-}
-
-export interface TriggerTaskRepositoryParams<I = TaskDefinition.TaskInput> {
-    taskData: TaskDefinition.TaskCreateData<I>;
-    delay: number;
-}
-
-export interface ITriggerTaskRepositoryErrors {
-    taskNotFound: TaskNotFoundError;
-    serviceError: TaskServiceInfoError;
-}
-
-type RepositoryError = ITriggerTaskRepositoryErrors[keyof ITriggerTaskRepositoryErrors];
-
-export const TriggerTaskRepository = createAbstraction<ITriggerTaskRepository>(
-    "Tasks/TriggerTaskRepository"
-);
-
-export namespace TriggerTaskRepository {
-    export type Interface = ITriggerTaskRepository;
-    export type Params<I = TaskDefinition.TaskInput> = TriggerTaskRepositoryParams<I>;
-
-    export type Error = RepositoryError;
-    export type Return<
-        I extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
-        O extends TaskService.GenericOutput = TaskService.GenericOutput
-    > = Promise<Result<TaskService.Task<I, O>, RepositoryError>>;
-}
