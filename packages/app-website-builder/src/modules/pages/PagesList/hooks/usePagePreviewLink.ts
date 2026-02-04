@@ -20,7 +20,7 @@ export const usePagePreviewLink = (pageDto: PageDto) => {
             url.searchParams.set("wb.tenant", tenant!);
             url.searchParams.set("wb.path", pageDto.properties.path);
             return url.toString();
-        } catch (e) {
+        } catch {
             console.log(
                 `Could not create preview URL for "${previewDomain}${pageDto.properties.path}"`
             );
