@@ -3,7 +3,7 @@ import { ModelFactory } from "webiny/api/cms/model";
 export const PRODUCT_MODEL_ID = "product";
 
 class ProductModelImpl implements ModelFactory.Interface {
-    execute(builder: ModelFactory.Builder) {
+    async execute(builder: ModelFactory.Builder) {
         return [
             builder
                 .public()
