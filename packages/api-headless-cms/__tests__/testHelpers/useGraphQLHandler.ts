@@ -95,23 +95,23 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
         headers = {},
         ...rest
     }: InvokeParams): Promise<[IBaseGraphQLResponse<T>, any]> => {
-        const response = await handler(
-            {
-                /**
-                 * If no path defined, use /graphql as we want to make request to main api
-                 */
-                path: path ? `/cms/${path}` : "/graphql",
-                httpMethod,
-                headers: {
-                    ["x-tenant"]: "root",
-                    ["Content-Type"]: "application/json",
-                    ...headers
-                },
-                body: JSON.stringify(body),
-                ...rest
-            } as unknown as APIGatewayEvent,
-            {} as unknown as LambdaContext
-        );
+        const event = {
+            /**
+             * If no path defined, use /graphql as we want to make request to main api
+             */
+            path: path ? `/cms/${path}` : "/graphql",
+            httpMethod,
+            headers: {
+                ["x-tenant"]: "root",
+                ["content-type"]: "application/json",
+                ...headers
+            },
+            ...rest
+        } as unknown as APIGatewayEvent;
+        if (body) {
+            event.body = JSON.stringify(body);
+        }
+        const response = await handler(event, {} as unknown as LambdaContext);
         // The first element is the response body, and the second is the raw response.
         return [JSON.parse(response.body || "{}"), response];
     };
