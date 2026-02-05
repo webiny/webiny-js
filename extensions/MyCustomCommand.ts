@@ -1,5 +1,5 @@
+import { Ui } from "webiny/cli";
 import { CliCommandFactory } from "webiny/cli/command";
-import { Ui } from "webiny/cli/ui";
 
 export interface IMyCustomCommandParams {
     name: string;
@@ -29,9 +29,7 @@ class MyCustomCommandImpl implements CliCommandFactory.Interface<IMyCustomComman
     }
 }
 
-const MyCustomCommand = CliCommandFactory.createImplementation({
+export default CliCommandFactory.createImplementation({
     implementation: MyCustomCommandImpl,
     dependencies: [Ui]
 });
-
-export default MyCustomCommand;

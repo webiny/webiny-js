@@ -1,7 +1,7 @@
 import { Ui } from "webiny/infra";
-import { Pulumi } from "webiny/infra/core";
+import { CorePulumi } from "webiny/infra/core";
 
-class MyCorePulumiHandlerImpl implements Pulumi.Interface {
+class MyCorePulumiHandlerImpl implements CorePulumi.Interface {
     constructor(private ui: Ui.Interface) {}
 
     execute(app: any) {
@@ -9,9 +9,7 @@ class MyCorePulumiHandlerImpl implements Pulumi.Interface {
     }
 }
 
-const MyCorePulumiHandler = Pulumi.createImplementation({
+export default CorePulumi.createImplementation({
     implementation: MyCorePulumiHandlerImpl,
     dependencies: [Ui]
 });
-
-export default MyCorePulumiHandler;
