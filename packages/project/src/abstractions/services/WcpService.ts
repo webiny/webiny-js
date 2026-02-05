@@ -1,5 +1,6 @@
 import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { IUrlModel, IWcpUserModel, IWcpUserPatModel } from "~/abstractions/models/index.js";
+import type { EncryptedWcpProjectLicense } from "@webiny/wcp";
 
 export interface IGetProjectEnvironmentParams {
     orgId?: string;
@@ -7,6 +8,12 @@ export interface IGetProjectEnvironmentParams {
     userId?: string;
     environmentId?: string;
     apiKey?: string;
+}
+
+export interface IGetProjectLicenseParams {
+    apiKey: string;
+    orgId: string;
+    projectId: string;
 }
 
 export interface IWcpService {
@@ -29,6 +36,8 @@ export interface IWcpService {
     getWcpAppUrl(): IUrlModel;
 
     getProjectEnvironment(params: IGetProjectEnvironmentParams): Promise<any>;
+
+    getProjectLicense(params: IGetProjectLicenseParams): Promise<EncryptedWcpProjectLicense | null>;
 }
 
 export const WcpService = createAbstraction<IWcpService>("WcpService");

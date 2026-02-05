@@ -3,9 +3,10 @@ import {
     GetProjectService,
     GetProjectConfig,
     InitProjectSdkService,
-    GetWcpProjectEnvironmentService,
-    GetWcpProjectLicenseService,
-    LoggerService
+    GetProjectIdService,
+    LoggerService,
+    ProjectSdkParamsService,
+    WcpService
 } from "~/abstractions/index.js";
 import { corePulumi, apiPulumi, adminPulumi } from "~/features/index.js";
 import {
@@ -22,7 +23,7 @@ import { registerHooks } from "./registerHooks.js";
 import { registerPulumiExtensions } from "./registerPulumiExtensions.js";
 import { registerImplementations } from "./registerImplementations.js";
 import { registerDecorators } from "./registerDecorators.js";
-import { WcpSetEnvVars } from "./WcpSetEnvVars.js";
+import { ApplyWcpEnvVars } from "./applyWcpEnvVars.js";
 
 export class DefaultInitProjectSdkService implements InitProjectSdkService.Interface {
     constructor(
@@ -40,18 +41,14 @@ export class DefaultInitProjectSdkService implements InitProjectSdkService.Inter
         applyEnvVars(projectExtensions);
 
         // Set WCP environment variables if project ID exists.
-        const wcpSetEnvVars = new WcpSetEnvVars({
-            getWcpProjectEnvironmentService: container.resolve(GetWcpProjectEnvironmentService),
-            loggerService: container.resolve(LoggerService)
+        const applyWcpEnvVars = new ApplyWcpEnvVars({
+            getProjectIdService: container.resolve(GetProjectIdService),
+            wcpService: container.resolve(WcpService),
+            loggerService: container.resolve(LoggerService),
+            projectSdkParamsService: container.resolve(ProjectSdkParamsService)
         });
 
-        await wcpSetEnvVars.execute();
-
-        // Fetch WCP license if environment variables were set correctly.
-        if (process.env.WCP_PROJECT_ENVIRONMENT_API_KEY) {
-            const getWcpProjectLicenseService = container.resolve(GetWcpProjectLicenseService);
-            await getWcpProjectLicenseService.execute();
-        }
+        await applyWcpEnvVars.execute();
 
         // Register hooks from extensions.
         await registerHooks(container, projectExtensions, project);

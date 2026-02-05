@@ -8,8 +8,6 @@ export * from "./GetProjectIdService/index.js";
 export * from "./GetProjectService/index.js";
 export * from "./GetProjectVersionService/index.js";
 export * from "./GetWcpProjectEnvironmentApiKeyService/index.js";
-export * from "./GetWcpProjectEnvironmentService/index.js";
-export * from "./GetWcpProjectLicenseService/index.js";
 export * from "./GetPulumiService/index.js";
 export * from "./InitProjectSdkService/index.js";
 export * from "./InstallExtensionService/index.js";

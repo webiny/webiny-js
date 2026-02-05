@@ -85,9 +85,7 @@ import {
     uiService,
     validateProjectConfigService,
     wcpService,
-    getWcpProjectEnvironmentApiKeyService,
-    getWcpProjectEnvironmentService,
-    getWcpProjectLicenseService
+    getWcpProjectEnvironmentApiKeyService
 } from "./services/index.js";
 
 import {
@@ -147,8 +145,6 @@ export const createProjectSdkContainer = async (
     container.register(validateProjectConfigService).inSingletonScope();
     container.register(wcpService).inSingletonScope();
     container.register(getWcpProjectEnvironmentApiKeyService).inSingletonScope();
-    container.register(getWcpProjectEnvironmentService).inSingletonScope();
-    container.register(getWcpProjectLicenseService).inSingletonScope();
 
     // Features.
     container.register(buildApp).inSingletonScope();
