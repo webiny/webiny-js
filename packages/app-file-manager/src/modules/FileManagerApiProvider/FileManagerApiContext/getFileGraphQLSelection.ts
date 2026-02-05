@@ -22,6 +22,9 @@ export const getFileGraphQLSelection = (model: ReturnType<typeof useFileModel>) 
             displayName
         }
         src
+        location {
+            folderId
+        }
         ${fields}
     }`;
 };

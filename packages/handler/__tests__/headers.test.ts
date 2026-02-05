@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { ResponseHeaders } from "~/ResponseHeaders";
 import { createHandler } from "~/fastify";
 import { createRoute } from "~/plugins/RoutePlugin";
@@ -51,8 +51,7 @@ describe("ResponseHeaders class", () => {
         const result = await app.inject({
             path: "/webiny-test",
             method: "OPTIONS",
-            query: {},
-            payload: JSON.stringify({})
+            query: {}
         });
 
         expect(result).toMatchObject({

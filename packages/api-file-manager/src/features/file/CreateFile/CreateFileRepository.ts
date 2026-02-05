@@ -5,6 +5,7 @@ import { FileModel } from "~/domain/file/abstractions.js";
 import type { File, FileInput } from "~/domain/file/types.js";
 import { EntryToFileMapper } from "../shared/EntryToFileMapper.js";
 import { FileNotAuthorizedError, FilePersistenceError } from "~/domain/file/errors.js";
+import { FileInputToEntryInputMapper } from "~/features/file/shared/FileInputToEntryInputMapper.js";
 
 class CreateFileRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
@@ -13,10 +14,10 @@ class CreateFileRepositoryImpl implements RepositoryAbstraction.Interface {
     ) {}
 
     async execute(data: FileInput): Promise<Result<File, RepositoryAbstraction.Error>> {
-        const result = await this.createEntry.execute(this.fileModel, {
-            ...data,
-            values: data
-        });
+        const result = await this.createEntry.execute(
+            this.fileModel,
+            FileInputToEntryInputMapper.toEntry(data)
+        );
 
         if (result.isFail()) {
             if (result.error.code === "Cms/Entry/NotAuthorized") {

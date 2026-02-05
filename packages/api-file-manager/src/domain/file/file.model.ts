@@ -11,7 +11,6 @@ class FilePrivateModelImpl implements ModelFactory.Interface {
         const privateFiles = this.wcp.canUsePrivateFiles();
 
         model.fields(fields => ({
-            location: fields.location(),
             name: fields.text().label("Name").required("Value is required."),
             key: fields.text().label("Key").required("Value is required."),
             type: fields.text().label("Type").required("Value is required."),

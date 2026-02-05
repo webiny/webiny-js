@@ -1,4 +1,6 @@
 import React from "react";
+// @ts-expect-error unable to load types, needs investigation
+import { compiler } from "markdown-to-jsx/react";
 import { Grid, type ColumnProps } from "@webiny/admin-ui";
 import { FieldElement } from "./FieldElement.js";
 import { FieldElementError } from "./FieldElementError.js";
@@ -21,6 +23,10 @@ const getFieldById = (fields: CmsModelField[], id: string): CmsModelField | null
     return fields.find(field => field.id === id) || null;
 };
 
+const withMarkdown = (field: CmsModelField) => {
+    return { ...field, helpText: compiler(field.helpText) };
+};
+
 export const Fields = ({ Bind, fields, layout, contentModel, gridClassName }: FieldsProps) => {
     return (
         <Grid className={gridClassName}>
@@ -36,7 +42,7 @@ export const Fields = ({ Bind, fields, layout, contentModel, gridClassName }: Fi
                             >
                                 {field ? (
                                     <FieldElement
-                                        field={field}
+                                        field={withMarkdown(field)}
                                         Bind={Bind}
                                         contentModel={contentModel}
                                     />

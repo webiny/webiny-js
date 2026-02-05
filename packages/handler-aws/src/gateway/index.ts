@@ -49,9 +49,6 @@ const attachRequiredProperties = (event: APIGatewayEvent): void => {
      */
     if (!contentType) {
         event.headers["content-type"] = [defaultContentType, `charset=${defaultCharset}`].join(";");
-        event.body = "{}";
-    } else if (!event.body && contentType.startsWith(defaultContentType)) {
-        event.body = "{}";
     }
 };
 

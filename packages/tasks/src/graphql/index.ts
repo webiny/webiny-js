@@ -312,10 +312,10 @@ const createGraphQL = () => {
                         await checkPermissions(context, {
                             rwd: "w"
                         });
-                        return resolve(async () => {
+                        return resolve<ITask>(async () => {
                             const result = await context.tasks.abort(args);
                             if (result.isOk()) {
-                                return true;
+                                return result.value;
                             }
 
                             throw result.error;
@@ -328,10 +328,10 @@ const createGraphQL = () => {
                         await checkPermissions(context, {
                             rwd: "w"
                         });
-                        return resolve(async () => {
+                        return resolve<ITask>(async () => {
                             const result = await context.tasks.trigger(args);
                             if (result.isOk()) {
-                                return true;
+                                return result.value;
                             }
 
                             throw result.error;

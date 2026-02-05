@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { createHandler, RoutePlugin } from "~/index";
 import { DefinedContextRoutes } from "~/types";
 
@@ -52,19 +52,21 @@ describe("route plugins", () => {
             DELETE: ["/webiny-delete", "/webiny-all"],
             OPTIONS: ["/webiny-options", "/webiny-all"],
             HEAD: ["/webiny-get", "/webiny-head", "/webiny-all"],
-            UNLOCK: ["/webiny-all"],
             TRACE: ["/webiny-all"],
-            REPORT: ["/webiny-all"],
-            SEARCH: ["/webiny-all"],
-            LOCK: ["/webiny-all"],
-            MOVE: ["/webiny-all"],
-            PROPPATCH: ["/webiny-all"],
-            COPY: ["/webiny-all"],
-            PROPFIND: ["/webiny-all"],
-            MKCOL: ["/webiny-all"],
-            MKCALENDAR: ["/webiny-all"]
+            UNLOCK: [],
+            REPORT: [],
+            SEARCH: [],
+            LOCK: [],
+            MOVE: [],
+            PROPPATCH: [],
+            COPY: [],
+            PROPFIND: [],
+            MKCOL: [],
+            MKCALENDAR: []
         };
 
-        expect(app.webiny.routes.defined).toEqual(expected);
+        const defined = app.webiny.routes.defined;
+
+        expect(defined).toEqual(expected);
     });
 });

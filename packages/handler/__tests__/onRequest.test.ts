@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { createHandler } from "~/fastify";
 import { createRoute } from "~/plugins/RoutePlugin";
 import { createHandlerOnRequest } from "~/plugins/HandlerOnRequestPlugin";
@@ -28,7 +28,6 @@ describe("fastify onRequest event", { timeout: 5000 }, () => {
             path: "/webiny-test",
             method: "OPTIONS",
             query: {},
-            payload: JSON.stringify({}),
             headers: {
                 "content-type": "application/json"
             }
@@ -54,10 +53,10 @@ describe("fastify onRequest event", { timeout: 5000 }, () => {
             path: "/webiny-test",
             method: "POST",
             query: {},
-            payload: JSON.stringify({}),
             headers: {
                 "content-type": "application/json"
-            }
+            },
+            payload: JSON.stringify({})
         });
 
         expect(postResult).toMatchObject({
@@ -95,8 +94,7 @@ describe("fastify onRequest event", { timeout: 5000 }, () => {
         const result = await app.inject({
             path: "/webiny-test",
             method: "OPTIONS",
-            query: {},
-            payload: JSON.stringify({})
+            query: {}
         });
 
         expect(result).toMatchObject({
@@ -147,8 +145,7 @@ describe("fastify onRequest event", { timeout: 5000 }, () => {
         const result = await app.inject({
             path: "/webiny-test",
             method: "OPTIONS",
-            query: {},
-            payload: JSON.stringify({})
+            query: {}
         });
 
         expect(logged).toEqual(true);

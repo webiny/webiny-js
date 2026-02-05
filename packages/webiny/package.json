@@ -56,6 +56,7 @@
     "./api/keyValueStore": "./api/keyValueStore.js",
     "./api/logger": "./api/logger.js",
     "./api/security/apiKey": "./api/security/apiKey.js",
+    "./api/security/authentication": "./api/security/authentication.js",
     "./api/security/role": "./api/security/role.js",
     "./api/security/user": "./api/security/user.js",
     "./api/security": "./api/security.js",
