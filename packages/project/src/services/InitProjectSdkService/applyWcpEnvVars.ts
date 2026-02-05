@@ -163,8 +163,7 @@ export class ApplyWcpEnvVars {
             id: projectEnvironment.id,
             apiKey: projectEnvironment.apiKey,
             org: { id: projectEnvironment.org.id },
-            project: { id: projectEnvironment.project.id },
-            ...(license ? { license } : {})
+            project: { id: projectEnvironment.project.id }
         };
 
         process.env.WCP_PROJECT_ENVIRONMENT = encrypt(wcpProjectEnvironment);
