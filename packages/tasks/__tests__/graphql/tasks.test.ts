@@ -13,6 +13,93 @@ describe("graphql - tasks", () => {
         plugins: [...createMockTaskDefinitions()]
     });
 
+    it("should trigger a task, get it, list it and abort it", async () => {
+        const result = await handler.triggerTask({
+            definition: "testingRun",
+            name: "My Custom Running Task"
+        });
+
+        expect(result).toEqual({
+            data: {
+                backgroundTasks: {
+                    triggerTask: {
+                        data: {
+                            name: "My Custom Running Task",
+                            definitionId: "testingRun",
+                            input: {},
+                            id: expect.any(String),
+                            taskStatus: TaskDataStatus.PENDING,
+                            startedOn: null,
+                            finishedOn: null,
+                            createdBy: createMockIdentity(),
+                            createdOn: expect.any(String),
+                            savedOn: expect.any(String),
+                            eventResponse: {
+                                mockedSend: true
+                            },
+                            logs: []
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        const task = result.data.backgroundTasks.triggerTask.data!;
+
+        const getResult = await handler.getTask({ id: task.id });
+
+        expect(getResult).toEqual({
+            data: {
+                backgroundTasks: {
+                    getTask: {
+                        data: {
+                            ...task
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const listResult = await handler.listTasks();
+
+        expect(listResult).toEqual({
+            data: {
+                backgroundTasks: {
+                    listTasks: {
+                        data: [task],
+                        meta: {
+                            cursor: null,
+                            hasMoreItems: false,
+                            totalCount: 1
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const abortResult = await handler.abortTask({
+            id: task.id
+        });
+
+        expect(abortResult).toEqual({
+            data: {
+                backgroundTasks: {
+                    abortTask: {
+                        data: {
+                            ...task,
+                            logs: expect.any(Array),
+                            savedOn: expect.toBeDateString(),
+                            taskStatus: "aborted"
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+    });
+
     it("should list tasks", async () => {
         const context = await contextHandler.handle();
 
