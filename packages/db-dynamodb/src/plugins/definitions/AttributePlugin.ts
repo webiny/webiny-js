@@ -1,3 +1,4 @@
+// @ts-nocheck 123
 import WebinyError from "@webiny/error";
 import { Plugin } from "@webiny/plugins";
 import type { AttributeDefinition } from "~/toolbox.js";

@@ -1,4 +1,4 @@
-import type { Client } from "@elastic/elasticsearch";
+import type { Client } from "@elastic/elasticsearch/index.js";
 import type { SearchBody } from "elastic-ts";
 
 interface ListElasticsearchItemsParams {

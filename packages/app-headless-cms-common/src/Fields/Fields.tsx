@@ -1,5 +1,4 @@
 import React from "react";
-// @ts-expect-error unable to load types, needs investigation
 import { compiler } from "markdown-to-jsx/react";
 import { Grid, type ColumnProps } from "@webiny/admin-ui";
 import { FieldElement } from "./FieldElement.js";
@@ -24,6 +23,10 @@ const getFieldById = (fields: CmsModelField[], id: string): CmsModelField | null
 };
 
 const withMarkdown = (field: CmsModelField) => {
+    if (typeof field.helpText !== "string") {
+        return field;
+    }
+
     return { ...field, helpText: compiler(field.helpText) };
 };
 

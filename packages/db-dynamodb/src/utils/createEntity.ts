@@ -1,5 +1,4 @@
-import type { AttributeDefinitions, Table } from "~/toolbox.js";
-import { Entity } from "~/toolbox.js";
+import type { AttributeDefinitions } from "~/toolbox.js";
 import { createEntity, type EntityConstructor } from "~/utils/entity/index.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 
@@ -112,46 +111,6 @@ export const createStandardEntity = <T extends GenericRecord = GenericRecord>(
         attributes: {
             ...standardEntityAttributes,
             ...params.attributes
-        }
-    });
-};
-
-interface CreateLegacyEntityParams {
-    table: Table<string, string, string>;
-    name: string;
-    attributes?: AttributeDefinitions;
-}
-
-export const createLegacyEntity = (params: CreateLegacyEntityParams) => {
-    return new Entity({
-        table: params.table,
-        name: params.name,
-        attributes: {
-            PK: {
-                partitionKey: true
-            },
-            SK: {
-                sortKey: true
-            },
-            GSI_TENANT: {
-                type: "string"
-            },
-            GSI1_PK: {
-                type: "string"
-            },
-            GSI1_SK: {
-                type: "string"
-            },
-            GSI2_PK: {
-                type: "string"
-            },
-            GSI2_SK: {
-                type: "string"
-            },
-            TYPE: {
-                type: "string"
-            },
-            ...(params.attributes || {})
         }
     });
 };

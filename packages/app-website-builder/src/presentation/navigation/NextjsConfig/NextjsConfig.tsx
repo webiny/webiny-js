@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { observer } from "mobx-react-lite";
-// @ts-expect-error Unable to resolve types
 import { compiler } from "markdown-to-jsx/react";
 import { useFeature } from "@webiny/app";
 import { OverlayLoader } from "@webiny/admin-ui";

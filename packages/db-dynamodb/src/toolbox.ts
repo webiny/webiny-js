@@ -1,14 +1,36 @@
 export { Entity, Table } from "dynamodb-toolbox";
-export type {
-    DynamoDBTypes,
-    ScanOptions,
-    TableDef,
-    TableConstructor
-} from "dynamodb-toolbox/dist/cjs/classes/Table/index.js";
-export type {
-    Readonly,
-    EntityConstructor,
-    AttributeDefinition,
-    EntityQueryOptions,
-    AttributeDefinitions
-} from "dynamodb-toolbox/dist/cjs/classes/Entity/index.js";
+
+import { Entity, Table } from "dynamodb-toolbox";
+
+export type ScanOptions = NonNullable<Parameters<Entity["scan"]>[0]>;
+export type DynamoDBTypes =
+    | "string"
+    | "boolean"
+    | "number"
+    | "bigint"
+    | "list"
+    | "map"
+    | "binary"
+    | "set";
+
+type Key = string | number | symbol;
+
+export type TableDef = Table<string, Key, Key | null>;
+export type TableConstructor<
+    A extends string,
+    B extends Key,
+    C extends Key
+> = ConstructorParameters<typeof Table<A, B, C>>[0];
+
+export type EntityConstructor = ConstructorParameters<typeof Entity>[0];
+
+export type EntityQueryOptions = Record<string, any>;
+
+export type AttributeDefinitions = Record<string, Record<string, any>>;
+
+// export type {
+//     Readonly,
+//     AttributeDefinition,
+//     EntityQueryOptions,
+//     AttributeDefinitions
+// } from "dynamodb-toolbox/dist/cjs/classes/Entity/index.js";

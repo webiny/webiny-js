@@ -15677,7 +15677,6 @@ __metadata:
     "@webiny/error": "npm:0.0.0"
     "@webiny/handler-aws": "npm:0.0.0"
     "@webiny/ioc": "npm:0.0.0"
-    "@webiny/logger": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
@@ -15859,7 +15858,7 @@ __metadata:
     ci-info: "npm:^4.4.0"
     debounce: "npm:^1.2.1"
     deepmerge: "npm:^4.3.1"
-    dotenv: "npm:^8.6.0"
+    dotenv: "npm:^17.2.3"
     execa: "npm:^5.1.1"
     exit-hook: "npm:^4.0.0"
     fast-glob: "npm:^3.3.3"
@@ -20549,10 +20548,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:^8.6.0":
-  version: 8.6.0
-  resolution: "dotenv@npm:8.6.0"
-  checksum: 10/31d7b5c010cebb80046ba6853d703f9573369b00b15129536494f04b0af4ea0060ce8646e3af58b455af2f6f1237879dd261a5831656410ec92561ae1ea44508
+"dotenv@npm:^17.2.3":
+  version: 17.2.3
+  resolution: "dotenv@npm:17.2.3"
+  checksum: 10/f8b78626ebfff6e44420f634773375c9651808b3e1a33df6d4cc19120968eea53e100f59f04ec35f2a20b2beb334b6aba4f24040b2f8ad61773f158ac042a636
   languageName: node
   linkType: hard
 

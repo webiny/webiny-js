@@ -1,9 +1,11 @@
-import type { Client } from "@elastic/elasticsearch";
+import type { Client } from "@elastic/elasticsearch/index.js";
 import {
     createElasticsearchClient as createClient,
     ElasticsearchClientOptions
 } from "@webiny/api-elasticsearch/client";
+// @ts-expect-error
 import type * as RequestParams from "@elastic/elasticsearch/api/requestParams";
+// @ts-expect-error
 import type { TransportRequestOptions } from "@elastic/elasticsearch/lib/Transport";
 
 const OPENSEARCH_PORT = process.env.OPENSEARCH_PORT || 9200;

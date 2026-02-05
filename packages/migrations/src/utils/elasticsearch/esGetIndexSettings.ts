@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import type { Client } from "@elastic/elasticsearch";
+import type { Client } from "@elastic/elasticsearch/index.js";
 import pick from "lodash/pick.js";
 
 export interface GetIndexSettingsParams {

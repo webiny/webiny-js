@@ -1,4 +1,3 @@
-import type DynamoDbTable from "dynamodb-toolbox/dist/cjs/classes/Table/Table.js";
 import type {
     BatchWriteItem,
     BatchWriteResult,
@@ -8,6 +7,7 @@ import type {
 import type { BaseScanParams, ScanResponse } from "../scan.js";
 import type { Entity } from "~/toolbox.js";
 import type { GenericRecord } from "@webiny/api/types.js";
+import { Table } from "~/toolbox.js";
 
 export type ITableScanParams = BaseScanParams;
 
@@ -18,7 +18,7 @@ export interface ITable<
     PK extends string = string,
     SK extends string = string
 > {
-    table: DynamoDbTable<Name, PK, SK>;
+    table: Table<Name, PK, SK>;
     createWriter(): ITableWriteBatch;
     createReader(): ITableReadBatch;
     scan<T>(params: ITableScanParams): Promise<ITableScanResponse<T>>;
@@ -39,7 +39,7 @@ export interface ITableReadBatchKey {
 }
 
 export interface ITableReadBatchBuilderGetResponse {
-    Table: DynamoDbTable<string, string, string>;
+    Table: Table<string, string, string>;
     Key: ITableReadBatchKey;
 }
 
