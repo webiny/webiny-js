@@ -17,7 +17,7 @@ class CreateTenantUseCaseImpl implements UseCaseAbstraction.Interface {
         const tenant: Tenant = {
             ...data,
             id: data.id ?? mdbid(),
-            status: data.status,
+            status: "disabled",
             isInstalled: false,
             settings: {
                 ...(data.settings || {})

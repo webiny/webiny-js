@@ -60,6 +60,7 @@
     "./api/security/user": "./api/security/user.js",
     "./api/security": "./api/security.js",
     "./api/system": "./api/system.js",
+    "./api/tasks": "./api/tasks.js",
     "./api/tenancy": "./api/tenancy.js",
     "./api/cms/entry": "./api/cms/entry.js",
     "./api/cms/group": "./api/cms/group.js",

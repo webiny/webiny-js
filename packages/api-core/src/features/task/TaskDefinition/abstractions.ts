@@ -123,13 +123,10 @@ export interface ITaskDefinition<
     /**
      * Create a validation schema for the task input.
      * This will be used to validate the input before the task is triggered.
-     *
-     * By default, the input validation validates the input against the fields defined in the task definition.
-     * But it also passes through any fields which might not be defined in the task validation.
      */
-    createInputValidation?: (
+    createInputValidation?(
         params: ITaskCreateInputValidationParams
-    ) => GenericRecord<keyof I, zod.Schema> | zod.Schema;
+    ): GenericRecord<keyof I, zod.Schema> | zod.Schema;
 }
 
 export interface ITaskCreateInputValidationParams {
@@ -189,6 +186,7 @@ export namespace TaskDefinition {
     export type ResultAborted = ITaskResultAborted;
     export type CreateInputValidationParams = ITaskCreateInputValidationParams;
     export type TaskCreateData<I = ITaskInput> = ITaskCreateData<I>;
+    export type BeforeTriggerParams<I = ITaskInput> = ITaskBeforeTriggerParams<I>;
     export type LifecycleHookParams<
         I extends ITaskInput = ITaskInput,
         O extends ITaskOutput = ITaskOutput

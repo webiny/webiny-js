@@ -6,6 +6,7 @@ import type {
     CmsModelFieldRendererPlugin
 } from "~/types/index.js";
 import type { CmsIdentity } from "~/types/shared.js";
+import type React from "react";
 
 /**
  * @deprecated Use `CmsModelField` instead.
@@ -30,7 +31,7 @@ export type CmsModelField<T = unknown> = T & {
     fieldId: CmsEditorFieldId;
     storageId?: string;
     label: string;
-    helpText?: string;
+    helpText?: string | React.ReactNode;
     placeholderText?: string;
     validation?: (CmsModelFieldValidator | Validator)[];
     listValidation?: CmsModelFieldValidator[];

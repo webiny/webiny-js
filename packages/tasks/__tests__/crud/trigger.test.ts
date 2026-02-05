@@ -1,9 +1,10 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { useRawHandler } from "~tests/helpers/useRawHandler";
 import { createMockTaskDefinitions, MOCK_TASK_DEFINITION_ID } from "~tests/mocks/definition";
 import { createMockIdentity } from "~tests/mocks/identity";
 import { TaskDataStatus } from "~/types";
 import { createTaskDefinition } from "~tests/helpers/createTaskDefinition.js";
+import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 
 describe("tasks - trigger crud", () => {
     const handler = useRawHandler({
@@ -13,7 +14,9 @@ describe("tasks - trigger crud", () => {
     it("should trigger a task", async () => {
         const context = await handler.handle();
 
-        const result = await context.tasks.trigger({
+        const service = context.container.resolve(TaskService);
+
+        const result = await service.trigger({
             definition: "myCustomTaskNumber1",
             name: "A test of triggering task",
             input: {
@@ -21,6 +24,8 @@ describe("tasks - trigger crud", () => {
                 myCustomValue: "myCustomValue"
             }
         });
+
+        expect(result.isOk()).toBeTrue();
 
         expect(result.value).toEqual({
             id: expect.toBeString(),

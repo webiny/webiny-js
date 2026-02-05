@@ -2,14 +2,13 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import debounce from "lodash/debounce.js";
 import { useRoute, useRouter } from "@webiny/app-admin";
 import { makeDecoratable } from "@webiny/react-composition";
+import type { FolderDto, ListMeta } from "@webiny/app-aco";
 import { createSort, useAcoList, useNavigateFolder } from "@webiny/app-aco";
-import type { ListMeta } from "@webiny/app-aco";
 import { useContentEntries } from "./useContentEntries.js";
 import type { CmsContentEntry, TableItem } from "~/types.js";
 import type { OnSortingChange, Sorting } from "@webiny/ui/DataTable/index.js";
 import { ROOT_FOLDER } from "~/admin/constants.js";
 import { Routes } from "~/routes.js";
-import type { FolderDto } from "@webiny/app-aco";
 
 interface UpdateSearchCallableParams {
     search: string;
@@ -138,12 +137,29 @@ export const ContentEntriesListProvider = ({ children }: ContentEntriesListProvi
         if (!sorting?.length) {
             return;
         }
-        const sort = createSort(sorting);
+        const sort = createSort(
+            /**
+             * We need to map sorting IDs to match expected CMS values.
+             */
+            sorting.map(item => {
+                const isField = contentModel.fields.some(field => field.fieldId === item.id);
+                /**
+                 * We only prefix model fields with the "values_" string.
+                 */
+                if (item.id.includes("values_") || !isField) {
+                    return item;
+                }
+                return {
+                    ...item,
+                    id: `values_${item.id}`
+                };
+            })
+        );
         if (!sort) {
             return;
         }
         setListSort(sort);
-    }, [sorting]);
+    }, [sorting, contentModel]);
 
     const navigateTo = useCallback(
         (input?: string) => {
