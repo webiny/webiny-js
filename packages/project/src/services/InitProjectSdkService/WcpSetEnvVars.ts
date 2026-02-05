@@ -1,8 +1,5 @@
 import { encrypt, decrypt } from "@webiny/wcp";
-import {
-    GetWcpProjectEnvironmentService,
-    LoggerService
-} from "~/abstractions/index.js";
+import { GetWcpProjectEnvironmentService, LoggerService } from "~/abstractions/index.js";
 
 interface IWcpSetEnvVarsDi {
     getWcpProjectEnvironmentService: GetWcpProjectEnvironmentService.Interface;

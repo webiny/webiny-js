@@ -21,7 +21,7 @@ export class DefaultGetWcpProjectLicenseService implements GetWcpProjectLicenseS
         // If the project isn't linked with WCP, do nothing.
         if (!wcpProjectId) {
             this.loggerService.debug(
-                'Was not able to determine the WCP project ID. Cannot retrieve WCP project license.'
+                "Was not able to determine the WCP project ID. Cannot retrieve WCP project license."
             );
             return null;
         }
@@ -30,7 +30,7 @@ export class DefaultGetWcpProjectLicenseService implements GetWcpProjectLicenseS
         const apiKey = await this.getWcpProjectEnvironmentApiKeyService.execute();
         if (!apiKey) {
             this.loggerService.debug(
-                'WCP_PROJECT_ENVIRONMENT_API_KEY is not available. Cannot retrieve WCP project license.'
+                "WCP_PROJECT_ENVIRONMENT_API_KEY is not available. Cannot retrieve WCP project license."
             );
             return null;
         }
@@ -51,16 +51,14 @@ export class DefaultGetWcpProjectLicenseService implements GetWcpProjectLicenseS
             // Construct the license endpoint URL
             const licenseUrl = getWcpApiUrl(`/orgs/${orgId}/projects/${projectId}/license`);
 
-            this.loggerService.debug(
-                `Fetching WCP project license from: ${licenseUrl}`
-            );
+            this.loggerService.debug(`Fetching WCP project license from: ${licenseUrl}`);
 
             // Fetch the license using the REST endpoint
             const response = await fetch(licenseUrl, {
-                method: 'GET',
+                method: "GET",
                 headers: {
-                    'authorization': apiKey,
-                    'Content-Type': 'application/json'
+                    authorization: apiKey,
+                    "Content-Type": "application/json"
                 }
             });
 
@@ -74,16 +72,11 @@ export class DefaultGetWcpProjectLicenseService implements GetWcpProjectLicenseS
 
             const license = await response.json();
 
-            this.loggerService.debug(
-                `Successfully retrieved WCP project license.`
-            );
+            this.loggerService.debug(`Successfully retrieved WCP project license.`);
 
             return license;
         } catch (error) {
-            this.loggerService.error(
-                { error },
-                `Error fetching WCP project license.`
-            );
+            this.loggerService.error({ error }, `Error fetching WCP project license.`);
             return null;
         }
     }

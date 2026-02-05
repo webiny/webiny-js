@@ -44,7 +44,7 @@ export class DefaultInitProjectSdkService implements InitProjectSdkService.Inter
             getWcpProjectEnvironmentService: container.resolve(GetWcpProjectEnvironmentService),
             loggerService: container.resolve(LoggerService)
         });
-        
+
         await wcpSetEnvVars.execute();
 
         // Fetch WCP license if environment variables were set correctly.

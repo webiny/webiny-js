@@ -5,7 +5,9 @@ export interface IGetWcpProjectEnvironmentService {
     execute(): Promise<IWcpEnvironmentModel | null>;
 }
 
-export const GetWcpProjectEnvironmentService = createAbstraction<IGetWcpProjectEnvironmentService>("GetWcpProjectEnvironmentService");
+export const GetWcpProjectEnvironmentService = createAbstraction<IGetWcpProjectEnvironmentService>(
+    "GetWcpProjectEnvironmentService"
+);
 
 export namespace GetWcpProjectEnvironmentService {
     export type Interface = IGetWcpProjectEnvironmentService;

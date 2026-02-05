@@ -9,7 +9,9 @@ import {
 } from "~/abstractions/index.js";
 import { IWcpEnvironmentModel } from "~/abstractions/models/index.js";
 
-export class DefaultGetWcpProjectEnvironmentService implements GetWcpProjectEnvironmentService.Interface {
+export class DefaultGetWcpProjectEnvironmentService
+    implements GetWcpProjectEnvironmentService.Interface
+{
     constructor(
         private getProjectIdService: GetProjectIdService.Interface,
         private wcpService: WcpService.Interface,
@@ -24,7 +26,7 @@ export class DefaultGetWcpProjectEnvironmentService implements GetWcpProjectEnvi
         // If the project isn't linked with WCP, do nothing.
         if (!wcpProjectId) {
             this.loggerService.debug(
-                'Was not able to determine the WCP project ID. Cannot retrieve WCP project environment.'
+                "Was not able to determine the WCP project ID. Cannot retrieve WCP project environment."
             );
             return null;
         }
@@ -119,5 +121,11 @@ export class DefaultGetWcpProjectEnvironmentService implements GetWcpProjectEnvi
 export const getWcpProjectEnvironmentService = createImplementation({
     abstraction: GetWcpProjectEnvironmentService,
     implementation: DefaultGetWcpProjectEnvironmentService,
-    dependencies: [GetProjectIdService, WcpService, GetWcpProjectEnvironmentApiKeyService, LoggerService, ProjectSdkParamsService]
+    dependencies: [
+        GetProjectIdService,
+        WcpService,
+        GetWcpProjectEnvironmentApiKeyService,
+        LoggerService,
+        ProjectSdkParamsService
+    ]
 });

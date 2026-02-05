@@ -5,7 +5,9 @@ export interface IGetWcpProjectLicenseService {
     execute(): Promise<EncryptedWcpProjectLicense | null>;
 }
 
-export const GetWcpProjectLicenseService = createAbstraction<IGetWcpProjectLicenseService>("GetWcpProjectLicenseService");
+export const GetWcpProjectLicenseService = createAbstraction<IGetWcpProjectLicenseService>(
+    "GetWcpProjectLicenseService"
+);
 
 export namespace GetWcpProjectLicenseService {
     export type Interface = IGetWcpProjectLicenseService;

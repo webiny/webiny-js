@@ -6,7 +6,9 @@ import {
     LoggerService
 } from "~/abstractions/index.js";
 
-export class DefaultGetWcpProjectEnvironmentApiKeyService implements GetWcpProjectEnvironmentApiKeyService.Interface {
+export class DefaultGetWcpProjectEnvironmentApiKeyService
+    implements GetWcpProjectEnvironmentApiKeyService.Interface
+{
     constructor(
         private getProjectIdService: GetProjectIdService.Interface,
         private loggerService: LoggerService.Interface
@@ -18,7 +20,7 @@ export class DefaultGetWcpProjectEnvironmentApiKeyService implements GetWcpProje
         // If the project isn't linked with WCP, do nothing.
         if (!wcpProjectId) {
             this.loggerService.debug(
-                'Was not able to determine the WCP project ID. Cannot retrieve WCP project environment API key.'
+                "Was not able to determine the WCP project ID. Cannot retrieve WCP project environment API key."
             );
             return null;
         }
