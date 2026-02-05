@@ -1,1 +1,1 @@
-export { ApiStackOutputService as StackOutputService } from "~/abstractions/services/ApiStackOutputService.js";
+export { ApiStackOutputService } from "~/abstractions/services/ApiStackOutputService.js";
