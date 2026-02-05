@@ -4,4 +4,4 @@ export { AdminAfterDeploy as AdminAfterDeployHook } from "@webiny/project/abstra
 export { AdminBeforeDeploy as AdminBeforeDeployHook } from "@webiny/project/abstractions/features/hooks/AdminBeforeDeploy.js";
 export { AdminBeforeWatch as AdminBeforeWatchHook } from "@webiny/project/abstractions/features/hooks/AdminBeforeWatch.js";
 export { AdminPulumi } from "@webiny/project/abstractions/features/pulumi/AdminPulumi.js";
-export { AdminStackOutputService } from "@webiny/project-aws/abstractions/services/AdminStackOutputService.js";
+export { AdminStackOutputService as GetAdminStackOutput } from "@webiny/project-aws/abstractions/services/AdminStackOutputService.js";
