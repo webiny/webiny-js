@@ -1,4 +1,4 @@
-import type { Client } from "@elastic/elasticsearch/index.js";
+import type { Client } from "@elastic/elasticsearch";
 import type {
     ElasticsearchSearchResponse,
     PrimitiveValue,

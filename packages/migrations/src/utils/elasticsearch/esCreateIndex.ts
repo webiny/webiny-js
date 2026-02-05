@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import type { Client } from "@elastic/elasticsearch/index.js";
+import type { Client } from "@elastic/elasticsearch";
 import { esGetIndexName, esGetIndexExist } from "~/utils/index.js";
 import { elasticsearchIndexPlugins } from "~/utils/elasticsearch/plugins/index.js";
 

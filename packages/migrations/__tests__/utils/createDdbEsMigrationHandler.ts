@@ -1,4 +1,4 @@
-import type { Client } from "@elastic/elasticsearch/index.js";
+import type { Client } from "@elastic/elasticsearch";
 import type { Constructor } from "@webiny/ioc";
 import type { DataMigration } from "@webiny/data-migration";
 import { createDdbEsProjectMigration } from "@webiny/data-migration";

@@ -1,6 +1,6 @@
 import { esPutIndexSettings } from "~/utils/index.js";
 import type { Logger } from "@webiny/data-migration";
-import type { Client } from "@elastic/elasticsearch/index.js";
+import type { Client } from "@elastic/elasticsearch";
 
 interface DisableElasticsearchIndexingParams {
     index: string;

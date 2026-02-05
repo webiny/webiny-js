@@ -1,4 +1,5 @@
 import React from "react";
+// @ts-expect-error Remove this one moduleResolution is set to `bundler`
 import { compiler } from "markdown-to-jsx/react";
 import { Grid, type ColumnProps } from "@webiny/admin-ui";
 import { FieldElement } from "./FieldElement.js";

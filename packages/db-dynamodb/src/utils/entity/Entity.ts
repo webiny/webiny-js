@@ -1,4 +1,3 @@
-// @ts-nocheck 123
 import type {
     AttributeDefinitions,
     EntityConstructor as BaseEntityConstructor,

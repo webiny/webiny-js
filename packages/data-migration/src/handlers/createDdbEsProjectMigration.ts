@@ -1,4 +1,4 @@
-import type { Client as ElasticsearchClient } from "@elastic/elasticsearch/index.js";
+import type { Client as ElasticsearchClient } from "@elastic/elasticsearch";
 import type { Table } from "@webiny/db-dynamodb/toolbox.js";
 import { createRawEventHandler } from "@webiny/handler-aws";
 import type { Constructor } from "@webiny/ioc";

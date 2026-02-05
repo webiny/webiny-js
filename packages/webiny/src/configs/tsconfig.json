@@ -4,7 +4,7 @@
     "allowJs": true,
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "module": "esnext",
     "lib": ["esnext", "dom", "dom.iterable"],
     "esModuleInterop": true,

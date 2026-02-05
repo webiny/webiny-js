@@ -1,4 +1,4 @@
-import type { Client } from "@elastic/elasticsearch/index.js";
+import type { Client } from "@elastic/elasticsearch";
 import type { PluginsContainer } from "@webiny/plugins";
 import { getLastAddedIndexPlugin } from "~/indices.js";
 import type { ElasticsearchIndexPlugin } from "~/plugins/index.js";

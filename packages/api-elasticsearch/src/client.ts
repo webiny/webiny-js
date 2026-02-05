@@ -1,7 +1,7 @@
 import createAwsElasticsearchConnector from "aws-elasticsearch-connector";
 import crypto from "crypto";
 import WebinyError from "@webiny/error";
-import { Client, type ClientOptions } from "@elastic/elasticsearch/index.js";
+import { Client, type ClientOptions } from "@elastic/elasticsearch";
 
 export interface ElasticsearchClientOptions extends ClientOptions {
     endpoint?: string;

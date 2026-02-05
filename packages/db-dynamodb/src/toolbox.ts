@@ -22,15 +22,11 @@ export type TableConstructor<
     C extends Key
 > = ConstructorParameters<typeof Table<A, B, C>>[0];
 
-export type EntityConstructor = ConstructorParameters<typeof Entity>[0];
-
-export type EntityQueryOptions = Record<string, any>;
-
-export type AttributeDefinitions = Record<string, Record<string, any>>;
-
-// export type {
-//     Readonly,
-//     AttributeDefinition,
-//     EntityQueryOptions,
-//     AttributeDefinitions
-// } from "dynamodb-toolbox/dist/cjs/classes/Entity/index.js";
+// TODO: this needs to be replaced with either inferred types, or manual cherry picked types.
+export type {
+    EntityConstructor,
+    Readonly,
+    AttributeDefinition,
+    EntityQueryOptions,
+    AttributeDefinitions
+} from "dynamodb-toolbox/dist/cjs/classes/Entity/index.js";
