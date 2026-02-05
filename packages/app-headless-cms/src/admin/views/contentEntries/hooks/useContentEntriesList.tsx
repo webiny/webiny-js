@@ -143,10 +143,15 @@ export const ContentEntriesListProvider = ({ children }: ContentEntriesListProvi
              */
             sorting.map(item => {
                 const isField = contentModel.fields.some(field => field.fieldId === item.id);
-
+                /**
+                 * We only prefix model fields with the "values_" string.
+                 */
+                if (item.id.includes("values_") || !isField) {
+                    return item;
+                }
                 return {
                     ...item,
-                    id: !isField ? item.id : `values_${item.id}`
+                    id: `values_${item.id}`
                 };
             })
         );

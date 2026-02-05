@@ -6,6 +6,7 @@ import type {
     CmsModelFieldRendererPlugin
 } from "~/types/index.js";
 import type { CmsIdentity } from "~/types/shared.js";
+import type React from "react";
 
 /**
  * @deprecated Use `CmsModelField` instead.
