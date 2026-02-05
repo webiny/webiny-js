@@ -1,1 +1,1 @@
-export { AdminStackOutputService } from "~/abstractions/services/AdminStackOutputService.js";
+export { AdminStackOutputService as GetAdminStackOutput } from "~/abstractions/services/AdminStackOutputService.js";

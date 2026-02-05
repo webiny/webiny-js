@@ -1,1 +1,1 @@
-export { CoreStackOutputService } from "~/abstractions/services/CoreStackOutputService.js";
+export { CoreStackOutputService as GetCoreStackOutput } from "~/abstractions/services/CoreStackOutputService.js";
