@@ -42,7 +42,8 @@ export class DefaultGetWcpProjectEnvironmentApiKeyService implements GetWcpProje
         }
 
         // Return null if no API key is available in environment variables.
-        // The caller is responsible for fetching it if needed.
+        // This service only checks environment variables to avoid circular dependencies.
+        // Use GetWcpProjectEnvironmentService for full environment retrieval.
         return null;
     }
 }
