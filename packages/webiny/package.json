@@ -82,14 +82,13 @@
     "./admin/cms/fieldRenderers/object": "./admin/cms/fieldRenderers/object.js",
     "./admin/cms": "./admin/cms.js",
     "./cli/command": "./cli/command.js",
-    "./cli/ui": "./cli/ui.js",
+    "./cli/index": "./cli/index.js",
     "./api": "./api.js",
     "./extensions": "./extensions.js",
     "./infra/admin": "./infra/admin.js",
     "./infra/api": "./infra/api.js",
     "./infra/core": "./infra/core.js",
     "./infra/index": "./infra/index.js",
-    "./infra/lambda": "./infra/lambda.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   }
 }
