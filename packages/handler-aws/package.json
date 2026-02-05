@@ -13,13 +13,13 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@fastify/aws-lambda": "4.1.0",
+    "@fastify/aws-lambda": "6.4.0",
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/handler-client": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",
-    "fastify": "4.29.1",
+    "fastify": "5.7.4",
     "pino-lambda": "^4.4.1"
   },
   "devDependencies": {
