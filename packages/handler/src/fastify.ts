@@ -149,6 +149,7 @@ export const createHandler = (params: CreateHandlerParams) => {
     const app = fastify({
         bodyLimit: 536870912, // 512MB
         disableRequestLogging: true,
+        allowErrorHandlerOverride: true,
         ...(params.options || {})
     });
 
@@ -259,6 +260,28 @@ export const createHandler = (params: CreateHandlerParams) => {
      * We are attaching our custom context to webiny variable on the fastify app, so it is accessible everywhere.
      */
     app.decorate("webiny", context);
+
+    /**
+     * To prevent Unsupported Media Type errors on OPTIONS requests with a body,
+     * we need to have a custom parser
+     */
+    app.addContentTypeParser(
+        "application/json",
+        { parseAs: "string", bodyLimit: 1024 * 1024 },
+        (req, body, done) => {
+            if (req.method === "OPTIONS") {
+                done(null, undefined);
+                return;
+            }
+
+            try {
+                const json = typeof body === "string" ? body : body.toString("utf8");
+                done(null, JSON.parse(json));
+            } catch (err) {
+                done(err as Error);
+            }
+        }
+    );
 
     /**
      * With this we ensure that an undefined request body is not parsed on OPTIONS requests,

@@ -38,31 +38,34 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
             return payload.body;
         });
 
-        app.setErrorHandler<WebinyError>(async (error, _, reply) => {
-            app.__webiny_raw_result = {
-                error: {
-                    message: error.message,
-                    code: error.code,
-                    data: error.data
-                },
-                status: TaskResultStatus.ERROR
-            };
-            return reply.send();
+        await app.register(async taskApp => {
+            taskApp.setErrorHandler<WebinyError>(async (error, _, reply) => {
+                app.__webiny_raw_result = {
+                    error: {
+                        message: error.message,
+                        code: error.code,
+                        data: error.data
+                    },
+                    status: TaskResultStatus.ERROR
+                };
+                return reply.send();
+            });
+
+            taskApp.post(url, async (_, reply) => {
+                const handler = new TaskRunner(
+                    /**
+                     * We can safely cast because we know that the context is of type tasks/Context
+                     */
+                    app.webiny as Context,
+                    timerFactory(context),
+                    new TaskEventValidation()
+                );
+
+                app.__webiny_raw_result = await handler.run(event);
+                return reply.send({});
+            });
         });
 
-        app.post(url, async (_, reply) => {
-            const handler = new TaskRunner(
-                /**
-                 * We can safely cast because we know that the context is of type tasks/Context
-                 */
-                app.webiny as Context,
-                timerFactory(context),
-                new TaskEventValidation()
-            );
-
-            app.__webiny_raw_result = await handler.run(event);
-            return reply.send({});
-        });
         return execute({
             app,
             url,
