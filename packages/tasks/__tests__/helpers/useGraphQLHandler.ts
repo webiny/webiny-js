@@ -11,7 +11,18 @@ import { createBackgroundTaskContext, createBackgroundTaskGraphQL } from "~/inde
 import { createListDefinitionsQuery } from "./graphql/definitions";
 import type { ContextPlugin } from "@webiny/api";
 import type { Context } from "~tests/types";
-import { createListTasksQuery } from "~tests/helpers/graphql/tasks";
+import {
+    createAbortTaskMutation,
+    createGetTaskQuery,
+    createListTasksQuery,
+    createTriggerTaskMutation,
+    type IAbortTaskResponse,
+    IAbortTaskVariables,
+    type IGetTaskResponse,
+    type IGetTaskVariables,
+    type ITriggerTaskResponse,
+    type ITriggerTaskVariables
+} from "~tests/helpers/graphql/tasks";
 import { createListTaskLogsQuery } from "~tests/helpers/graphql/logs";
 import { createMockTaskServicePlugin } from "~tests/mocks/taskTriggerTransportPlugin";
 import type { ApiKey } from "@webiny/api-core/types/security.js";
@@ -131,6 +142,30 @@ export const useGraphQLHandler = (params?: UseHandlerParams) => {
         /**
          * Tasks
          */
+        triggerTask: async (variables: ITriggerTaskVariables) => {
+            return invoke<ITriggerTaskResponse>({
+                body: {
+                    query: createTriggerTaskMutation(),
+                    variables
+                }
+            });
+        },
+        abortTask: async (variables: IAbortTaskVariables) => {
+            return invoke<IAbortTaskResponse>({
+                body: {
+                    query: createAbortTaskMutation(),
+                    variables
+                }
+            });
+        },
+        getTask: async (variables: IGetTaskVariables) => {
+            return invoke<IGetTaskResponse>({
+                body: {
+                    query: createGetTaskQuery(),
+                    variables
+                }
+            });
+        },
         listTasks: async (variables: Record<string, any> = {}) => {
             return invoke({
                 body: {

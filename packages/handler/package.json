@@ -13,15 +13,15 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@fastify/compress": "7.0.3",
-    "@fastify/cookie": "9.4.0",
+    "@fastify/compress": "8.3.1",
+    "@fastify/cookie": "11.0.2",
     "@webiny/api": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/handler-client": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",
-    "fastify": "4.29.1"
+    "fastify": "5.7.4"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
