@@ -1,16 +1,8 @@
 import { createAbstraction } from "~/abstractions/createAbstraction.js";
-
-/**
- * WCP Project License interface.
- * The license structure is dynamic and may contain different fields depending on the license type.
- * This interface uses a catch-all signature to accommodate the variability in license data.
- */
-export interface IWcpProjectLicense {
-    [key: string]: any;
-}
+import type { EncryptedWcpProjectLicense } from "@webiny/wcp";
 
 export interface IGetWcpProjectLicenseService {
-    execute(): Promise<IWcpProjectLicense | null>;
+    execute(): Promise<EncryptedWcpProjectLicense | null>;
 }
 
 export const GetWcpProjectLicenseService = createAbstraction<IGetWcpProjectLicenseService>("GetWcpProjectLicenseService");

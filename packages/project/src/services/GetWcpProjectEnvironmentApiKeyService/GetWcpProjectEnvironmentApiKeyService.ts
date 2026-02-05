@@ -3,17 +3,13 @@ import { decrypt } from "@webiny/wcp";
 import {
     GetProjectIdService,
     GetWcpProjectEnvironmentApiKeyService,
-    LoggerService,
-    ProjectSdkParamsService,
-    WcpService
+    LoggerService
 } from "~/abstractions/index.js";
 
 export class DefaultGetWcpProjectEnvironmentApiKeyService implements GetWcpProjectEnvironmentApiKeyService.Interface {
     constructor(
         private getProjectIdService: GetProjectIdService.Interface,
-        private wcpService: WcpService.Interface,
-        private loggerService: LoggerService.Interface,
-        private projectSdkParamsService: ProjectSdkParamsService.Interface
+        private loggerService: LoggerService.Interface
     ) {}
 
     async execute(): Promise<string | null> {
@@ -45,58 +41,14 @@ export class DefaultGetWcpProjectEnvironmentApiKeyService implements GetWcpProje
             return apiKey;
         }
 
-        // Otherwise, we need to retrieve the project environment to get the API key.
-        const [orgId, projectId] = wcpProjectId.split("/");
-        const isValidId = orgId && projectId;
-        if (!isValidId) {
-            this.loggerService.error(
-                { orgId, projectId, wcpProjectId },
-                `The project ID, specified in "webiny.config.tsx" file, seems to be invalid.`
-            );
-            throw new Error(
-                `It seems the project ID, specified in "webiny.config.tsx" file, is invalid.`
-            );
-        }
-
-        // If there is no API key, that means we need to retrieve the currently logged-in user.
-        const user = await this.wcpService.getUser();
-        if (!user) {
-            throw new Error(
-                `It seems you are not logged into your WCP project. Please log in using the "yarn webiny login" command.`
-            );
-        }
-
-        const project = user.projects.find(item => item.id === projectId);
-        if (!project) {
-            this.loggerService.error(
-                { projects: user.projects },
-                `The "${projectId}" project doesn't exist or you don't belong to it.`
-            );
-            throw new Error(
-                `It seems you don't belong to the current project or the current project has been deleted.`
-            );
-        }
-
-        const sdkParams = this.projectSdkParamsService.get();
-        const env = sdkParams.env;
-
-        this.loggerService.debug(
-            `Retrieving the "${env}" project environment for the "${project.name}" project.`
-        );
-
-        const projectEnvironment = await this.wcpService.getProjectEnvironment({
-            orgId,
-            projectId,
-            userId: user.id,
-            environmentId: env
-        });
-
-        return projectEnvironment.apiKey;
+        // Return null if no API key is available in environment variables.
+        // The caller is responsible for fetching it if needed.
+        return null;
     }
 }
 
 export const getWcpProjectEnvironmentApiKeyService = createImplementation({
     abstraction: GetWcpProjectEnvironmentApiKeyService,
     implementation: DefaultGetWcpProjectEnvironmentApiKeyService,
-    dependencies: [GetProjectIdService, WcpService, LoggerService, ProjectSdkParamsService]
+    dependencies: [GetProjectIdService, LoggerService]
 });

@@ -1,19 +1,21 @@
 import { createImplementation } from "@webiny/di";
 import { getWcpApiUrl } from "@webiny/wcp";
+import type { EncryptedWcpProjectLicense } from "@webiny/wcp";
 import {
     GetProjectIdService,
     GetWcpProjectLicenseService,
-    IWcpProjectLicense,
+    GetWcpProjectEnvironmentApiKeyService,
     LoggerService
 } from "~/abstractions/index.js";
 
 export class DefaultGetWcpProjectLicenseService implements GetWcpProjectLicenseService.Interface {
     constructor(
         private getProjectIdService: GetProjectIdService.Interface,
+        private getWcpProjectEnvironmentApiKeyService: GetWcpProjectEnvironmentApiKeyService.Interface,
         private loggerService: LoggerService.Interface
     ) {}
 
-    async execute(): Promise<IWcpProjectLicense | null> {
+    async execute(): Promise<EncryptedWcpProjectLicense | null> {
         const wcpProjectId = await this.getProjectIdService.execute();
 
         // If the project isn't linked with WCP, do nothing.
@@ -24,11 +26,11 @@ export class DefaultGetWcpProjectLicenseService implements GetWcpProjectLicenseS
             return null;
         }
 
-        // Get the API key from environment variable
-        const apiKey = process.env.WCP_PROJECT_ENVIRONMENT_API_KEY;
+        // Get the API key using the dedicated service
+        const apiKey = await this.getWcpProjectEnvironmentApiKeyService.execute();
         if (!apiKey) {
             this.loggerService.debug(
-                'WCP_PROJECT_ENVIRONMENT_API_KEY env var is not set. Cannot retrieve WCP project license.'
+                'WCP_PROJECT_ENVIRONMENT_API_KEY is not available. Cannot retrieve WCP project license.'
             );
             return null;
         }
@@ -90,5 +92,5 @@ export class DefaultGetWcpProjectLicenseService implements GetWcpProjectLicenseS
 export const getWcpProjectLicenseService = createImplementation({
     abstraction: GetWcpProjectLicenseService,
     implementation: DefaultGetWcpProjectLicenseService,
-    dependencies: [GetProjectIdService, LoggerService]
+    dependencies: [GetProjectIdService, GetWcpProjectEnvironmentApiKeyService, LoggerService]
 });
