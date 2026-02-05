@@ -1,17 +1,17 @@
-import { CorePulumi } from "webiny/infra/features/CorePulumi";
-import { UiService } from "webiny/infra/features/UiService";
+import { Ui } from "webiny/infra";
+import { Pulumi } from "webiny/infra/core";
 
-class MyCorePulumiHandlerImpl implements CorePulumi.Interface {
-    constructor(private ui: UiService.Interface) {}
+class MyCorePulumiHandlerImpl implements Pulumi.Interface {
+    constructor(private ui: Ui.Interface) {}
 
     execute(app: any) {
         this.ui.info("🔮 Executing MyCorePulumiHandler with environment:", app.env);
     }
 }
 
-const MyCorePulumiHandler = CorePulumi.createImplementation({
+const MyCorePulumiHandler = Pulumi.createImplementation({
     implementation: MyCorePulumiHandlerImpl,
-    dependencies: [UiService]
+    dependencies: [Ui]
 });
 
 export default MyCorePulumiHandler;
