@@ -7,7 +7,8 @@ const plainValue = {
     content: "Rich text content with <strong>bold</strong> and <em>italic</em> formatting."
 };
 const convertedValue = {
-    "rich-text@contentId": "Rich text content with <strong>bold</strong> and <em>italic</em> formatting."
+    "rich-text@contentId":
+        "Rich text content with <strong>bold</strong> and <em>italic</em> formatting."
 };
 
 const model = createModel({
@@ -45,4 +46,3 @@ describe("rich-text storage converter", () => {
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

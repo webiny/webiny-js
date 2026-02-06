@@ -4,38 +4,30 @@ import { createModelField } from "./mocks/field.js";
 import { getConverters, type IConvertersResponse } from "./__helpers/converters.js";
 
 const plainValue = {
-    descriptions: [
-        "First long text paragraph with detailed content.",
-        "Second long text paragraph with more information.",
-        "Third long text paragraph with additional details."
-    ]
+    avatar: "https://example.com/files/avatar.jpg"
 };
 const convertedValue = {
-    "long-text@descriptionsId": [
-        "First long text paragraph with detailed content.",
-        "Second long text paragraph with more information.",
-        "Third long text paragraph with additional details."
-    ]
+    "file@avatarId": "https://example.com/files/avatar.jpg"
 };
 
 const model = createModel({
     fields: [
         createModelField({
-            fieldId: "descriptions",
-            type: "long-text",
-            multipleValues: true
+            fieldId: "avatar",
+            type: "file",
+            multipleValues: false
         })
     ]
 });
 
-describe("long-text storage converter", () => {
+describe("file storage converter", () => {
     let converters: IConvertersResponse;
 
     beforeEach(async () => {
         converters = await getConverters(model);
     });
 
-    it("should convert multiple long-text field value to and from storage", async () => {
+    it("should convert file field value to and from storage", async () => {
         const { convertFromStorage, convertToStorage } = converters;
 
         const storageResult = convertToStorage({

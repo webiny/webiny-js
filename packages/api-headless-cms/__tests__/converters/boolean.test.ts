@@ -45,4 +45,3 @@ describe("boolean storage converter", () => {
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

@@ -53,4 +53,3 @@ describe("rich-text storage converter", () => {
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

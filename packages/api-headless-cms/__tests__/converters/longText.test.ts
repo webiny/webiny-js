@@ -4,10 +4,12 @@ import { createModelField } from "./mocks/field.js";
 import { getConverters, type IConvertersResponse } from "./__helpers/converters.js";
 
 const plainValue = {
-    description: "This is a long text field that can contain multiple paragraphs and longer content."
+    description:
+        "This is a long text field that can contain multiple paragraphs and longer content."
 };
 const convertedValue = {
-    "long-text@descriptionId": "This is a long text field that can contain multiple paragraphs and longer content."
+    "long-text@descriptionId":
+        "This is a long text field that can contain multiple paragraphs and longer content."
 };
 
 const model = createModel({
@@ -45,4 +47,3 @@ describe("long-text storage converter", () => {
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-
