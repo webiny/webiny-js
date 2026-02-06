@@ -6,12 +6,11 @@ import type { CmsModelObjectField } from "~/types/index.js";
 import { getContext } from "./__helpers/context.js";
 
 describe("field id storage converter", () => {
-    
     let context: Awaited<ReturnType<typeof getContext>>;
     beforeEach(async () => {
         context = await getContext();
     });
-    
+
     it("should convert field value paths to storage ones", async () => {
         const { plugins } = context;
 
