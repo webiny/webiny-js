@@ -16,9 +16,7 @@ const plainValue = {
             },
             {
                 data: {
-                    searchableItems: [
-                        { name: "Item 3", tags: ["sale", "popular"] }
-                    ]
+                    searchableItems: [{ name: "Item 3", tags: ["sale", "popular"] }]
                 }
             },
             {
@@ -126,4 +124,3 @@ describe("object storage converter - single object with multiple objects with ne
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

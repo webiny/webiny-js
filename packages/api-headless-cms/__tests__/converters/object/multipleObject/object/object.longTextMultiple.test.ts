@@ -8,12 +8,19 @@ const plainValue = {
         content: [
             {
                 text: {
-                    paragraphs: ["First profile, first paragraph.", "First profile, second paragraph."]
+                    paragraphs: [
+                        "First profile, first paragraph.",
+                        "First profile, second paragraph."
+                    ]
                 }
             },
             {
                 text: {
-                    paragraphs: ["Second profile, first paragraph.", "Second profile, second paragraph.", "Second profile, third paragraph."]
+                    paragraphs: [
+                        "Second profile, first paragraph.",
+                        "Second profile, second paragraph.",
+                        "Second profile, third paragraph."
+                    ]
                 }
             },
             {
@@ -29,12 +36,19 @@ const convertedValue = {
         "object@contentId": [
             {
                 "object@textId": {
-                    "long-text@paragraphsId": ["First profile, first paragraph.", "First profile, second paragraph."]
+                    "long-text@paragraphsId": [
+                        "First profile, first paragraph.",
+                        "First profile, second paragraph."
+                    ]
                 }
             },
             {
                 "object@textId": {
-                    "long-text@paragraphsId": ["Second profile, first paragraph.", "Second profile, second paragraph.", "Second profile, third paragraph."]
+                    "long-text@paragraphsId": [
+                        "Second profile, first paragraph.",
+                        "Second profile, second paragraph.",
+                        "Second profile, third paragraph."
+                    ]
                 }
             },
             {
@@ -108,4 +122,3 @@ describe("object storage converter - single object with multiple objects with ne
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

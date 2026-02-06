@@ -6,26 +6,40 @@ import { getConverters, type IConvertersResponse } from "../__helpers/converters
 const plainValue = {
     profiles: [
         {
-            attachments: ["https://example.com/files/file1.pdf", "https://example.com/files/file2.pdf"]
+            attachments: [
+                "https://example.com/files/file1.pdf",
+                "https://example.com/files/file2.pdf"
+            ]
         },
         {
             attachments: ["https://example.com/files/file3.pdf"]
         },
         {
-            attachments: ["https://example.com/files/file4.pdf", "https://example.com/files/file5.pdf", "https://example.com/files/file6.pdf"]
+            attachments: [
+                "https://example.com/files/file4.pdf",
+                "https://example.com/files/file5.pdf",
+                "https://example.com/files/file6.pdf"
+            ]
         }
     ]
 };
 const convertedValue = {
     "object@profilesId": [
         {
-            "file@attachmentsId": ["https://example.com/files/file1.pdf", "https://example.com/files/file2.pdf"]
+            "file@attachmentsId": [
+                "https://example.com/files/file1.pdf",
+                "https://example.com/files/file2.pdf"
+            ]
         },
         {
             "file@attachmentsId": ["https://example.com/files/file3.pdf"]
         },
         {
-            "file@attachmentsId": ["https://example.com/files/file4.pdf", "https://example.com/files/file5.pdf", "https://example.com/files/file6.pdf"]
+            "file@attachmentsId": [
+                "https://example.com/files/file4.pdf",
+                "https://example.com/files/file5.pdf",
+                "https://example.com/files/file6.pdf"
+            ]
         }
     ]
 };
@@ -74,4 +88,3 @@ describe("object storage converter - multiple objects with multiple file child",
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

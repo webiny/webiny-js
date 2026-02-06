@@ -74,4 +74,3 @@ describe("object storage converter - multiple objects with multiple datetime chi
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

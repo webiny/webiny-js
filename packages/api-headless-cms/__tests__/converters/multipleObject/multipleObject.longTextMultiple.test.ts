@@ -9,7 +9,11 @@ const plainValue = {
             paragraphs: ["First profile, first paragraph.", "First profile, second paragraph."]
         },
         {
-            paragraphs: ["Second profile, first paragraph.", "Second profile, second paragraph.", "Second profile, third paragraph."]
+            paragraphs: [
+                "Second profile, first paragraph.",
+                "Second profile, second paragraph.",
+                "Second profile, third paragraph."
+            ]
         },
         {
             paragraphs: ["Third profile, first paragraph."]
@@ -19,10 +23,17 @@ const plainValue = {
 const convertedValue = {
     "object@profilesId": [
         {
-            "long-text@paragraphsId": ["First profile, first paragraph.", "First profile, second paragraph."]
+            "long-text@paragraphsId": [
+                "First profile, first paragraph.",
+                "First profile, second paragraph."
+            ]
         },
         {
-            "long-text@paragraphsId": ["Second profile, first paragraph.", "Second profile, second paragraph.", "Second profile, third paragraph."]
+            "long-text@paragraphsId": [
+                "Second profile, first paragraph.",
+                "Second profile, second paragraph.",
+                "Second profile, third paragraph."
+            ]
         },
         {
             "long-text@paragraphsId": ["Third profile, first paragraph."]
@@ -74,4 +85,3 @@ describe("object storage converter - multiple objects with multiple long-text ch
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

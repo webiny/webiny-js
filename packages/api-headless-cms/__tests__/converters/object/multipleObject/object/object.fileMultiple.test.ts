@@ -8,7 +8,10 @@ const plainValue = {
         media: [
             {
                 files: {
-                    attachments: ["https://example.com/files/file1.pdf", "https://example.com/files/file2.pdf"]
+                    attachments: [
+                        "https://example.com/files/file1.pdf",
+                        "https://example.com/files/file2.pdf"
+                    ]
                 }
             },
             {
@@ -18,7 +21,11 @@ const plainValue = {
             },
             {
                 files: {
-                    attachments: ["https://example.com/files/file4.pdf", "https://example.com/files/file5.pdf", "https://example.com/files/file6.pdf"]
+                    attachments: [
+                        "https://example.com/files/file4.pdf",
+                        "https://example.com/files/file5.pdf",
+                        "https://example.com/files/file6.pdf"
+                    ]
                 }
             }
         ]
@@ -29,7 +36,10 @@ const convertedValue = {
         "object@mediaId": [
             {
                 "object@filesId": {
-                    "file@attachmentsId": ["https://example.com/files/file1.pdf", "https://example.com/files/file2.pdf"]
+                    "file@attachmentsId": [
+                        "https://example.com/files/file1.pdf",
+                        "https://example.com/files/file2.pdf"
+                    ]
                 }
             },
             {
@@ -39,7 +49,11 @@ const convertedValue = {
             },
             {
                 "object@filesId": {
-                    "file@attachmentsId": ["https://example.com/files/file4.pdf", "https://example.com/files/file5.pdf", "https://example.com/files/file6.pdf"]
+                    "file@attachmentsId": [
+                        "https://example.com/files/file4.pdf",
+                        "https://example.com/files/file5.pdf",
+                        "https://example.com/files/file6.pdf"
+                    ]
                 }
             }
         ]
@@ -108,4 +122,3 @@ describe("object storage converter - single object with multiple objects with ne
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

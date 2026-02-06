@@ -9,7 +9,10 @@ const plainValue = {
             {
                 data: [
                     {
-                        presets: [{ name: "preset1", value: 100 }, { name: "preset2", value: 150 }]
+                        presets: [
+                            { name: "preset1", value: 100 },
+                            { name: "preset2", value: 150 }
+                        ]
                     },
                     {
                         presets: [{ name: "preset3", value: 200 }]
@@ -32,7 +35,10 @@ const convertedValue = {
             {
                 "object@dataId": [
                     {
-                        "json@presetsId": [{ name: "preset1", value: 100 }, { name: "preset2", value: 150 }]
+                        "json@presetsId": [
+                            { name: "preset1", value: 100 },
+                            { name: "preset2", value: 150 }
+                        ]
                     },
                     {
                         "json@presetsId": [{ name: "preset3", value: 200 }]
@@ -112,4 +118,3 @@ describe("object storage converter - single object with multiple objects with mu
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

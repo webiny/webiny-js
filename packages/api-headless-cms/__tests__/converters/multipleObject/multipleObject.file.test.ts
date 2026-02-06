@@ -74,4 +74,3 @@ describe("object storage converter - multiple objects with single file child", (
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

@@ -112,4 +112,3 @@ describe("object storage converter - single object with multiple objects with mu
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

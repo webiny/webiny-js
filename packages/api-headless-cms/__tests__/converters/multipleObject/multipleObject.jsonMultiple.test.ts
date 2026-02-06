@@ -6,26 +6,40 @@ import { getConverters, type IConvertersResponse } from "../__helpers/converters
 const plainValue = {
     profiles: [
         {
-            presets: [{ name: "preset1", value: 100 }, { name: "preset2", value: 150 }]
+            presets: [
+                { name: "preset1", value: 100 },
+                { name: "preset2", value: 150 }
+            ]
         },
         {
             presets: [{ name: "preset3", value: 200 }]
         },
         {
-            presets: [{ name: "preset4", value: 250 }, { name: "preset5", value: 300 }, { name: "preset6", value: 350 }]
+            presets: [
+                { name: "preset4", value: 250 },
+                { name: "preset5", value: 300 },
+                { name: "preset6", value: 350 }
+            ]
         }
     ]
 };
 const convertedValue = {
     "object@profilesId": [
         {
-            "json@presetsId": [{ name: "preset1", value: 100 }, { name: "preset2", value: 150 }]
+            "json@presetsId": [
+                { name: "preset1", value: 100 },
+                { name: "preset2", value: 150 }
+            ]
         },
         {
             "json@presetsId": [{ name: "preset3", value: 200 }]
         },
         {
-            "json@presetsId": [{ name: "preset4", value: 250 }, { name: "preset5", value: 300 }, { name: "preset6", value: 350 }]
+            "json@presetsId": [
+                { name: "preset4", value: 250 },
+                { name: "preset5", value: 300 },
+                { name: "preset6", value: 350 }
+            ]
         }
     ]
 };
@@ -74,4 +88,3 @@ describe("object storage converter - multiple objects with multiple json child",
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

@@ -74,4 +74,3 @@ describe("object storage converter - multiple objects with multiple number child
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

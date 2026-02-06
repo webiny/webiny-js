@@ -8,7 +8,10 @@ const plainValue = {
         configs: [
             {
                 data: {
-                    presets: [{ name: "preset1", value: 100 }, { name: "preset2", value: 150 }]
+                    presets: [
+                        { name: "preset1", value: 100 },
+                        { name: "preset2", value: 150 }
+                    ]
                 }
             },
             {
@@ -18,7 +21,11 @@ const plainValue = {
             },
             {
                 data: {
-                    presets: [{ name: "preset4", value: 250 }, { name: "preset5", value: 300 }, { name: "preset6", value: 350 }]
+                    presets: [
+                        { name: "preset4", value: 250 },
+                        { name: "preset5", value: 300 },
+                        { name: "preset6", value: 350 }
+                    ]
                 }
             }
         ]
@@ -29,7 +36,10 @@ const convertedValue = {
         "object@configsId": [
             {
                 "object@dataId": {
-                    "json@presetsId": [{ name: "preset1", value: 100 }, { name: "preset2", value: 150 }]
+                    "json@presetsId": [
+                        { name: "preset1", value: 100 },
+                        { name: "preset2", value: 150 }
+                    ]
                 }
             },
             {
@@ -39,7 +49,11 @@ const convertedValue = {
             },
             {
                 "object@dataId": {
-                    "json@presetsId": [{ name: "preset4", value: 250 }, { name: "preset5", value: 300 }, { name: "preset6", value: 350 }]
+                    "json@presetsId": [
+                        { name: "preset4", value: 250 },
+                        { name: "preset5", value: 300 },
+                        { name: "preset6", value: 350 }
+                    ]
                 }
             }
         ]
@@ -108,4 +122,3 @@ describe("object storage converter - single object with multiple objects with ne
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

@@ -6,26 +6,40 @@ import { getConverters, type IConvertersResponse } from "../__helpers/converters
 const plainValue = {
     profiles: [
         {
-            sections: ["First profile with <strong>bold</strong>.", "First profile with <em>italic</em>."]
+            sections: [
+                "First profile with <strong>bold</strong>.",
+                "First profile with <em>italic</em>."
+            ]
         },
         {
             sections: ["Second profile with <u>underline</u>."]
         },
         {
-            sections: ["Third profile section 1.", "Third profile section 2.", "Third profile section 3."]
+            sections: [
+                "Third profile section 1.",
+                "Third profile section 2.",
+                "Third profile section 3."
+            ]
         }
     ]
 };
 const convertedValue = {
     "object@profilesId": [
         {
-            "rich-text@sectionsId": ["First profile with <strong>bold</strong>.", "First profile with <em>italic</em>."]
+            "rich-text@sectionsId": [
+                "First profile with <strong>bold</strong>.",
+                "First profile with <em>italic</em>."
+            ]
         },
         {
             "rich-text@sectionsId": ["Second profile with <u>underline</u>."]
         },
         {
-            "rich-text@sectionsId": ["Third profile section 1.", "Third profile section 2.", "Third profile section 3."]
+            "rich-text@sectionsId": [
+                "Third profile section 1.",
+                "Third profile section 2.",
+                "Third profile section 3."
+            ]
         }
     ]
 };
@@ -74,4 +88,3 @@ describe("object storage converter - multiple objects with multiple rich-text ch
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

@@ -108,4 +108,3 @@ describe("object storage converter - single object with multiple objects with ne
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

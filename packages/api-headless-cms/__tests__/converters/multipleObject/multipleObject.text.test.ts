@@ -74,4 +74,3 @@ describe("object storage converter - multiple objects with single text child", (
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

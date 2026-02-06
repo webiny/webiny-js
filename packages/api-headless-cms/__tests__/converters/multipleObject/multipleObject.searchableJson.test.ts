@@ -92,4 +92,3 @@ describe("object storage converter - multiple objects with single searchable-jso
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

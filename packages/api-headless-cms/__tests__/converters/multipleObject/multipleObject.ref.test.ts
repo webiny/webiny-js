@@ -98,4 +98,3 @@ describe("object storage converter - multiple objects with single ref child", ()
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

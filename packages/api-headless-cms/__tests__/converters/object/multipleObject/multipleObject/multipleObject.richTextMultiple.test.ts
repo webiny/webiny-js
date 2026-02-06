@@ -32,7 +32,10 @@ const convertedValue = {
             {
                 "object@richId": [
                     {
-                        "rich-text@sectionsId": ["First <strong>bold</strong>.", "First <em>italic</em>."]
+                        "rich-text@sectionsId": [
+                            "First <strong>bold</strong>.",
+                            "First <em>italic</em>."
+                        ]
                     },
                     {
                         "rich-text@sectionsId": ["Second <u>underline</u>."]
@@ -112,4 +115,3 @@ describe("object storage converter - single object with multiple objects with mu
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

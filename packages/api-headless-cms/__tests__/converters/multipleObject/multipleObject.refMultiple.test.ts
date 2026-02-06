@@ -140,4 +140,3 @@ describe("object storage converter - multiple objects with multiple ref child", 
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

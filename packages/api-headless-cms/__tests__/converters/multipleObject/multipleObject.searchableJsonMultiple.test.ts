@@ -12,9 +12,7 @@ const plainValue = {
             ]
         },
         {
-            searchableItems: [
-                { name: "Item 3", tags: ["sale", "popular"] }
-            ]
+            searchableItems: [{ name: "Item 3", tags: ["sale", "popular"] }]
         },
         {
             searchableItems: [
@@ -34,9 +32,7 @@ const convertedValue = {
             ]
         },
         {
-            "searchable-json@searchableItemsId": [
-                { name: "Item 3", tags: ["sale", "popular"] }
-            ]
+            "searchable-json@searchableItemsId": [{ name: "Item 3", tags: ["sale", "popular"] }]
         },
         {
             "searchable-json@searchableItemsId": [
@@ -92,4 +88,3 @@ describe("object storage converter - multiple objects with multiple searchable-j
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-
