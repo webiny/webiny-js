@@ -74,4 +74,3 @@ describe("object storage converter - multiple object with single boolean child",
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

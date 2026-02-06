@@ -4,27 +4,43 @@ import { createModelField } from "../../mocks/field.js";
 import { getConverters, type IConvertersResponse } from "../../__helpers/converters.js";
 
 const plainValue = {
-    settings: {
-        isActive: true
-    }
+    documents: [
+        {
+            attachment: "https://example.com/files/document1.pdf"
+        },
+        {
+            attachment: "https://example.com/files/document2.pdf"
+        },
+        {
+            attachment: "https://example.com/files/document3.pdf"
+        }
+    ]
 };
 const convertedValue = {
-    "object@settingsId": {
-        "boolean@isActiveId": true
-    }
+    "object@documentsId": [
+        {
+            "file@attachmentId": "https://example.com/files/document1.pdf"
+        },
+        {
+            "file@attachmentId": "https://example.com/files/document2.pdf"
+        },
+        {
+            "file@attachmentId": "https://example.com/files/document3.pdf"
+        }
+    ]
 };
 
 const model = createModel({
     fields: [
         createModelField({
-            fieldId: "settings",
+            fieldId: "documents",
             type: "object",
-            multipleValues: false,
+            multipleValues: true,
             settings: {
                 fields: [
                     createModelField({
-                        fieldId: "isActive",
-                        type: "boolean",
+                        fieldId: "attachment",
+                        type: "file",
                         multipleValues: false
                     })
                 ]
@@ -33,14 +49,14 @@ const model = createModel({
     ]
 });
 
-describe("object storage converter - single object with single boolean child", () => {
+describe("object storage converter - multiple object with single file child", () => {
     let converters: IConvertersResponse;
 
     beforeEach(async () => {
         converters = await getConverters(model);
     });
 
-    it("should convert object field with single boolean child to and from storage", async () => {
+    it("should convert multiple object field with single file child to and from storage", async () => {
         const { convertFromStorage, convertToStorage } = converters;
 
         const storageResult = convertToStorage({

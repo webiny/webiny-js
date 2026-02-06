@@ -4,28 +4,36 @@ import { createModelField } from "../../mocks/field.js";
 import { getConverters, type IConvertersResponse } from "../../__helpers/converters.js";
 
 const plainValue = {
-    settings: {
-        isActive: true
+    document: {
+        attachments: [
+            "https://example.com/files/document1.pdf",
+            "https://example.com/files/document2.pdf",
+            "https://example.com/files/document3.pdf"
+        ]
     }
 };
 const convertedValue = {
-    "object@settingsId": {
-        "boolean@isActiveId": true
+    "object@documentId": {
+        "file@attachmentsId": [
+            "https://example.com/files/document1.pdf",
+            "https://example.com/files/document2.pdf",
+            "https://example.com/files/document3.pdf"
+        ]
     }
 };
 
 const model = createModel({
     fields: [
         createModelField({
-            fieldId: "settings",
+            fieldId: "document",
             type: "object",
             multipleValues: false,
             settings: {
                 fields: [
                     createModelField({
-                        fieldId: "isActive",
-                        type: "boolean",
-                        multipleValues: false
+                        fieldId: "attachments",
+                        type: "file",
+                        multipleValues: true
                     })
                 ]
             }
@@ -33,14 +41,14 @@ const model = createModel({
     ]
 });
 
-describe("object storage converter - single object with single boolean child", () => {
+describe("object storage converter - single object with multiple file child", () => {
     let converters: IConvertersResponse;
 
     beforeEach(async () => {
         converters = await getConverters(model);
     });
 
-    it("should convert object field with single boolean child to and from storage", async () => {
+    it("should convert object field with multiple file child to and from storage", async () => {
         const { convertFromStorage, convertToStorage } = converters;
 
         const storageResult = convertToStorage({
