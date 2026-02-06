@@ -53,4 +53,3 @@ describe("json storage converter", () => {
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

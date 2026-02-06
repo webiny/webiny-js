@@ -53,4 +53,3 @@ describe("ref storage converter", () => {
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-
