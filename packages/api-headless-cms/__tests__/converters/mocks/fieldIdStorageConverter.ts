@@ -14,6 +14,8 @@ const createModelField = (base: BaseCmsModelField): CmsModelField => {
         id,
         fieldId,
         type,
+        validation: [],
+        listValidation: [],
         label: lodashCamelCase(fieldId),
         storageId: `${type}@${id}`
     };
@@ -320,6 +322,39 @@ const createModelFields = (): CmsModelField[] => {
                                 })
                             ]
                         }
+                    }),
+                    createModelField({
+                        type: "dynamicZone",
+                        fieldId: "myObjectDz",
+                        multipleValues: false,
+                        settings: {
+                            templates: [
+                                {
+                                    layout: [["myObjectDzRichText"]],
+                                    name: "My Object DZ Template",
+                                    gqlTypeName: "MyObjectDzTemplate",
+                                    icon: {
+                                        name: "fas/flag",
+                                        type: "fas/flag"
+                                    },
+                                    id: "myObjectDzTemplate1",
+                                    description: "",
+                                    validation: [],
+                                    fields: [
+                                        createModelField({
+                                            type: "rich-text",
+                                            multipleValues: false,
+                                            fieldId: "myObjectDzRichText"
+                                        }),
+                                        createModelField({
+                                            type: "rich-text",
+                                            multipleValues: true,
+                                            fieldId: "myObjectDzRichTextMultiple"
+                                        })
+                                    ]
+                                }
+                            ]
+                        }
                     })
                 ]
             }
@@ -481,16 +516,39 @@ const createModelFields = (): CmsModelField[] => {
             settings: {
                 templates: [
                     {
-                        layout: [["dzText", "dzObject", "dzObjectArray"]],
+                        layout: [
+                            [
+                                "dzText",
+                                "dzObject",
+                                "dzObjectArray",
+                                "dzArrayRichText",
+                                "dzArrayRichTextMultiple"
+                            ]
+                        ],
                         name: "DZ Text",
                         gqlTypeName: "DzTextObjectArray",
-                        icon: "fas/flag",
+                        icon: {
+                            type: "fas/flag",
+                            name: "fas/flag",
+                            value: "fas/flag"
+                        },
+                        validation: [],
                         description: "",
                         id: "dzTemplateArray1",
                         fields: [
                             createModelField({
                                 fieldId: "dzText",
                                 type: "text"
+                            }),
+                            createModelField({
+                                type: "rich-text",
+                                multipleValues: false,
+                                fieldId: "dzArrayRichText"
+                            }),
+                            createModelField({
+                                type: "rich-text",
+                                multipleValues: true,
+                                fieldId: "dzArrayRichTextMultiple"
                             }),
                             createModelField({
                                 type: "object",
@@ -532,16 +590,39 @@ const createModelFields = (): CmsModelField[] => {
             settings: {
                 templates: [
                     {
-                        layout: [["dzText", "dzObject", "dzObjectArray"]],
+                        layout: [
+                            [
+                                "dzText",
+                                "dzObject",
+                                "dzObjectArray",
+                                "dzObjectRichText",
+                                "dzObjectRichTextMultiple"
+                            ]
+                        ],
                         name: "DZ Text",
                         gqlTypeName: "DzTextObject",
-                        icon: "fas/flag",
+                        icon: {
+                            type: "fas/flag",
+                            name: "fas/flag",
+                            value: "fas/flag"
+                        },
                         description: "",
                         id: "dzTemplateObject1",
+                        validation: [],
                         fields: [
                             createModelField({
                                 fieldId: "dzText",
                                 type: "text"
+                            }),
+                            createModelField({
+                                type: "rich-text",
+                                multipleValues: false,
+                                fieldId: "dzObjectRichText"
+                            }),
+                            createModelField({
+                                type: "rich-text",
+                                multipleValues: true,
+                                fieldId: "dzObjectRichTextMultiple"
                             }),
                             createModelField({
                                 type: "object",
@@ -586,12 +667,14 @@ export const createModel = (base?: Partial<Omit<CmsModel, "fields" | "layout">>)
         singularApiName: "TestModel",
         pluralApiName: "TestModels",
         titleFieldId: fields[0].fieldId,
-        group: {
-            id: "group-id",
-            name: "Group name"
-        },
+        group: "group-slug",
         description: "",
         modelId: "test",
+        icon: {
+            type: "fas/flag",
+            name: "fas/flag",
+            value: "fas/flag"
+        },
         layout: fields.map(field => {
             return [field.id];
         }),
@@ -696,7 +779,12 @@ const createRawValues = () => {
                         }
                     ]
                 }
-            ]
+            ],
+            myObjectDz: {
+                _templateId: "myObjectDzTemplate1",
+                myObjectDzRichText: "My Rich Text in My Object DZ",
+                myObjectDzRichTextMultiple: ["My Rich Text Multiple 1", "My Rich Text Multiple 2"]
+            }
         },
         myObjectList: [
             {
@@ -715,6 +803,8 @@ const createRawValues = () => {
         dynamicZoneArray: [
             {
                 dzText: "Dynamic zone array title",
+                dzArrayRichText: "My Rich Text in DZ",
+                dzArrayRichTextMultiple: ["My Rich Text Multiple 1", "My Rich Text Multiple 2"],
                 dzObjectArray: [
                     {
                         titleInDzObjectArray: "Dynamic zone object array title"
@@ -728,6 +818,8 @@ const createRawValues = () => {
         ],
         dynamicZoneObject: {
             dzText: "Dynamic zone object title",
+            dzObjectRichText: "My Rich Text in DZ",
+            dzObjectRichTextMultiple: ["My Rich Text Multiple 1", "My Rich Text Multiple 2"],
             dzObjectArray: [
                 {
                     titleInDzObjectArray: "Dynamic zone object array title"
@@ -840,7 +932,15 @@ const createStoredValues = () => {
                         }
                     ]
                 }
-            ]
+            ],
+            "dynamicZone@myObjectDzId": {
+                _templateId: "myObjectDzTemplate1",
+                "rich-text@myObjectDzRichTextId": "My Rich Text in My Object DZ",
+                "rich-text@myObjectDzRichTextMultipleId": [
+                    "My Rich Text Multiple 1",
+                    "My Rich Text Multiple 2"
+                ]
+            }
         },
         "object@myObjectListId": [
             {
@@ -861,6 +961,11 @@ const createStoredValues = () => {
         "dynamicZone@dynamicZoneArrayId": [
             {
                 "text@dzTextId": "Dynamic zone array title",
+                "rich-text@dzArrayRichTextId": "My Rich Text in DZ",
+                "rich-text@dzArrayRichTextMultipleId": [
+                    "My Rich Text Multiple 1",
+                    "My Rich Text Multiple 2"
+                ],
                 "object@dzObjectArrayId": [
                     {
                         "text@titleInDzObjectArrayId": "Dynamic zone object array title"
@@ -874,6 +979,11 @@ const createStoredValues = () => {
         ],
         "dynamicZone@dynamicZoneObjectId": {
             "text@dzTextId": "Dynamic zone object title",
+            "rich-text@dzObjectRichTextId": "My Rich Text in DZ",
+            "rich-text@dzObjectRichTextMultipleId": [
+                "My Rich Text Multiple 1",
+                "My Rich Text Multiple 2"
+            ],
             "object@dzObjectArrayId": [
                 {
                     "text@titleInDzObjectArrayId": "Dynamic zone object array title"
@@ -896,6 +1006,11 @@ export const createRawEntry = (): CmsEntry => {
 };
 
 const createBaseEntry = (values: Record<string, any>): CmsEntry => {
+    const identity = {
+        id: "id",
+        type: "admin",
+        displayName: "Admin User"
+    };
     return {
         id: "someEntryId#0001",
         entryId: "someEntryId",
@@ -903,16 +1018,30 @@ const createBaseEntry = (values: Record<string, any>): CmsEntry => {
         savedOn: "2022-09-01T12:00:00Z",
         firstPublishedOn: null,
         lastPublishedOn: null,
-        revisionCreatedBy: {
-            id: "id",
-            type: "admin",
-            displayName: "Admin User"
-        },
-        createdBy: {
-            id: "id",
-            type: "admin",
-            displayName: "Admin User"
-        },
+        firstPublishedBy: null,
+        revisionCreatedOn: "2022-09-01T12:00:00Z",
+        deletedBy: null,
+        deletedOn: null,
+        lastPublishedBy: null,
+        modifiedOn: null,
+        restoredBy: null,
+        restoredOn: null,
+        revisionDeletedBy: null,
+        revisionSavedBy: identity,
+        revisionSavedOn: "2022-09-01T12:00:00Z",
+        revisionCreatedBy: identity,
+        revisionModifiedBy: null,
+        revisionModifiedOn: null,
+        revisionDeletedOn: null,
+        revisionFirstPublishedBy: null,
+        revisionFirstPublishedOn: null,
+        revisionLastPublishedBy: null,
+        revisionLastPublishedOn: null,
+        savedBy: identity,
+        modifiedBy: identity,
+        revisionRestoredBy: null,
+        revisionRestoredOn: null,
+        createdBy: identity,
         modelId: "test",
         tenant: "root",
         meta: {},
