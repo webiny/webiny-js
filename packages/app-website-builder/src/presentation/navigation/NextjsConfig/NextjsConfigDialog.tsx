@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { observer } from "mobx-react-lite";
-// @ts-expect-error Unable to resolve types
+// @ts-expect-error Remove this one moduleResolution is set to `bundler`
 import { compiler } from "markdown-to-jsx/react";
 import { Dialog, OverlayLoader } from "@webiny/admin-ui";
 import { useFeature } from "@webiny/app";

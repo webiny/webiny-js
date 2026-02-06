@@ -1,17 +1,17 @@
+/**
+ * TODO: this schema is not currently used in tests.
+ * Once we enable file extensions, this will become relevant again.
+ */
 export default /* GraphQL */ `
     type FmFile_Location {
-        folderId: String
+        folderId: ID!
     }
 
     input FmFile_LocationWhereInput {
-        folderId: String
-        folderId_not: String
-        folderId_in: [String]
-        folderId_not_in: [String]
-        folderId_contains: String
-        folderId_not_contains: String
-        folderId_startsWith: String
-        folderId_not_startsWith: String
+        folderId: ID
+        folderId_not: ID
+        folderId_in: [ID!]
+        folderId_not_in: [ID!]
     }
 
     type FmFile_Meta {

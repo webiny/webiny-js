@@ -1,42 +1,11 @@
 import type { AttributeDefinitions, Table } from "@webiny/db-dynamodb/toolbox.js";
 import { Entity } from "@webiny/db-dynamodb/toolbox.js";
 
-export const createLegacyEntity = (
-    table: Table<string, string, string>,
-    entityName: string,
-    attributes: AttributeDefinitions
-) => {
-    return new Entity({
-        table,
-        name: entityName,
-        attributes: {
-            PK: {
-                partitionKey: true
-            },
-            SK: {
-                sortKey: true
-            },
-            GSI1_PK: {
-                type: "string"
-            },
-            GSI1_SK: {
-                type: "string"
-            },
-            TYPE: {
-                type: "string"
-            },
-            ...(attributes || {})
-        },
-        autoExecute: true,
-        autoParse: true
-    });
-};
-
 export const createStandardEntity = (
     table: Table<string, string, string>,
     entityName: string,
     attributes: AttributeDefinitions = {}
-) => {
+): Entity => {
     return new Entity({
         table,
         name: entityName,

@@ -10,7 +10,6 @@ import type {
     CmsModelFieldType,
     HeadlessCmsStorageOperations as BaseHeadlessCmsStorageOperations
 } from "@webiny/api-headless-cms/types/index.js";
-import type { AttributeDefinition } from "@webiny/db-dynamodb/toolbox.js";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import type { Client } from "@elastic/elasticsearch";
 import type { PluginsContainer } from "@webiny/plugins";
@@ -140,8 +139,6 @@ export interface CmsModelFieldToElasticsearchPlugin extends Plugin {
      */
     fromIndex?: (params: CmsModelFieldToElasticsearchFromParams) => any;
 }
-
-export type Attributes = Record<string, AttributeDefinition>;
 
 export enum ENTITIES {
     GROUPS = "CmsGroups",
