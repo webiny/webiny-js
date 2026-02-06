@@ -1,25 +1,6 @@
-import type { CmsEntry, CmsModel, CmsModelDynamicZoneField, CmsModelField } from "~/types";
-import lodashCamelCase from "lodash/camelCase";
-
-type BaseCmsModelField =
-    | (Partial<CmsModelDynamicZoneField> & Pick<CmsModelDynamicZoneField, "fieldId" | "type">)
-    | (Partial<CmsModelField> & Pick<CmsModelField, "fieldId" | "type">);
-
-const createModelField = (base: BaseCmsModelField): CmsModelField => {
-    const { fieldId, type } = base;
-    const id = base.id || `${fieldId}Id`;
-    return {
-        settings: {},
-        ...base,
-        id,
-        fieldId,
-        type,
-        validation: [],
-        listValidation: [],
-        label: lodashCamelCase(fieldId),
-        storageId: `${type}@${id}`
-    };
-};
+import type { CmsEntry, CmsModel, CmsModelField } from "~/types";
+import { createModelField } from "./field";
+import { createModel as createBaseModel } from "./model";
 
 const createModelFields = (): CmsModelField[] => {
     return [
@@ -662,26 +643,10 @@ const createModelFields = (): CmsModelField[] => {
 
 export const createModel = (base?: Partial<Omit<CmsModel, "fields" | "layout">>): CmsModel => {
     const fields = createModelFields();
-    return {
-        name: "Test model",
-        singularApiName: "TestModel",
-        pluralApiName: "TestModels",
-        titleFieldId: fields[0].fieldId,
-        group: "group-slug",
-        description: "",
-        modelId: "test",
-        icon: {
-            type: "fas/flag",
-            name: "fas/flag",
-            value: "fas/flag"
-        },
-        layout: fields.map(field => {
-            return [field.id];
-        }),
-        tenant: "root",
-        ...(base || {}),
+    return createBaseModel({
+        ...base,
         fields
-    };
+    });
 };
 
 const createRawValues = () => {

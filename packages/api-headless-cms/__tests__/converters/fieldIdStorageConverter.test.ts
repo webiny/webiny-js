@@ -1,29 +1,19 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { createModel, createRawEntry, createStoredEntry } from "./mocks/fieldIdStorageConverter.js";
 import { createValueKeyFromStorageConverter } from "~/utils/converters/valueKeyFromStorageConverter.js";
 import { createValueKeyToStorageConverter } from "~/utils/converters/valueKeyToStorageConverter.js";
-import { useHandler } from "~tests/testHelpers/useHandler.js";
 import type { CmsModelObjectField } from "~/types/index.js";
-
-// const plugins = new PluginsContainer([...createFieldConverters(), ...createGraphQLFields()]);
+import { getContext } from "./__helpers/context.js";
 
 describe("field id storage converter", () => {
-    const contextHandler = useHandler({
-        path: "manage"
+    
+    let context: Awaited<ReturnType<typeof getContext>>;
+    beforeEach(async () => {
+        context = await getContext();
     });
-
-    const getContext = async () => {
-        const context = await contextHandler.handler({
-            path: "manage",
-            headers: {
-                "x-tenant": "root"
-            }
-        });
-        return context;
-    };
-
+    
     it("should convert field value paths to storage ones", async () => {
-        const { plugins } = await getContext();
+        const { plugins } = context;
 
         const model = createModel();
 
@@ -106,7 +96,7 @@ describe("field id storage converter", () => {
     });
 
     it("should convert field value paths from storage ones", async () => {
-        const { plugins } = await getContext();
+        const { plugins } = context;
 
         const model = createModel();
 
