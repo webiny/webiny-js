@@ -103,4 +103,3 @@ describe("dynamicZone storage converter - single dynamic zone with multiple ref 
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

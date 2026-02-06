@@ -71,4 +71,3 @@ describe("dynamicZone storage converter - single dynamic zone with text template
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

@@ -12,7 +12,8 @@ const plainValue = {
 const convertedValue = {
     "dynamicZone@contentId": {
         _templateId: "richTextTemplate",
-        "rich-text@bodyId": "This is <strong>bold</strong> and <em>italic</em> text with <u>underline</u>."
+        "rich-text@bodyId":
+            "This is <strong>bold</strong> and <em>italic</em> text with <u>underline</u>."
     }
 };
 
@@ -71,4 +72,3 @@ describe("dynamicZone storage converter - single dynamic zone with rich-text tem
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

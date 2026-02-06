@@ -77,4 +77,3 @@ describe("dynamicZone storage converter - single dynamic zone with searchable-js
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

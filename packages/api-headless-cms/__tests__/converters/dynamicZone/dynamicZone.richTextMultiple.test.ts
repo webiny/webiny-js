@@ -6,13 +6,21 @@ import { getConverters, type IConvertersResponse } from "../__helpers/converters
 const plainValue = {
     content: {
         _templateId: "richTextTemplate",
-        sections: ["First section with <strong>bold</strong> text.", "Second section with <em>italic</em> text.", "Third section with <u>underline</u> text."]
+        sections: [
+            "First section with <strong>bold</strong> text.",
+            "Second section with <em>italic</em> text.",
+            "Third section with <u>underline</u> text."
+        ]
     }
 };
 const convertedValue = {
     "dynamicZone@contentId": {
         _templateId: "richTextTemplate",
-        "rich-text@sectionsId": ["First section with <strong>bold</strong> text.", "Second section with <em>italic</em> text.", "Third section with <u>underline</u> text."]
+        "rich-text@sectionsId": [
+            "First section with <strong>bold</strong> text.",
+            "Second section with <em>italic</em> text.",
+            "Third section with <u>underline</u> text."
+        ]
     }
 };
 
@@ -71,4 +79,3 @@ describe("dynamicZone storage converter - single dynamic zone with multiple rich
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

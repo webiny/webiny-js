@@ -71,4 +71,3 @@ describe("dynamicZone storage converter - single dynamic zone with boolean templ
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

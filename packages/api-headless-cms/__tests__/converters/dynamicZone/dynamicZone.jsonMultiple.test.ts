@@ -79,4 +79,3 @@ describe("dynamicZone storage converter - single dynamic zone with multiple json
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

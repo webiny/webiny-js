@@ -71,4 +71,3 @@ describe("dynamicZone storage converter - single dynamic zone with datetime temp
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

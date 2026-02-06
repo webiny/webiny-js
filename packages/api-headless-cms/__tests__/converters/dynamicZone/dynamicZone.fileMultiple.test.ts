@@ -6,13 +6,21 @@ import { getConverters, type IConvertersResponse } from "../__helpers/converters
 const plainValue = {
     content: {
         _templateId: "fileTemplate",
-        attachments: ["https://example.com/files/file1.pdf", "https://example.com/files/file2.pdf", "https://example.com/files/file3.pdf"]
+        attachments: [
+            "https://example.com/files/file1.pdf",
+            "https://example.com/files/file2.pdf",
+            "https://example.com/files/file3.pdf"
+        ]
     }
 };
 const convertedValue = {
     "dynamicZone@contentId": {
         _templateId: "fileTemplate",
-        "file@attachmentsId": ["https://example.com/files/file1.pdf", "https://example.com/files/file2.pdf", "https://example.com/files/file3.pdf"]
+        "file@attachmentsId": [
+            "https://example.com/files/file1.pdf",
+            "https://example.com/files/file2.pdf",
+            "https://example.com/files/file3.pdf"
+        ]
     }
 };
 
@@ -71,4 +79,3 @@ describe("dynamicZone storage converter - single dynamic zone with multiple file
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

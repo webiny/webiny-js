@@ -6,13 +6,21 @@ import { getConverters, type IConvertersResponse } from "../__helpers/converters
 const plainValue = {
     content: {
         _templateId: "longTextTemplate",
-        paragraphs: ["First paragraph with detailed content.", "Second paragraph with more information.", "Third paragraph concluding the text."]
+        paragraphs: [
+            "First paragraph with detailed content.",
+            "Second paragraph with more information.",
+            "Third paragraph concluding the text."
+        ]
     }
 };
 const convertedValue = {
     "dynamicZone@contentId": {
         _templateId: "longTextTemplate",
-        "long-text@paragraphsId": ["First paragraph with detailed content.", "Second paragraph with more information.", "Third paragraph concluding the text."]
+        "long-text@paragraphsId": [
+            "First paragraph with detailed content.",
+            "Second paragraph with more information.",
+            "Third paragraph concluding the text."
+        ]
     }
 };
 
@@ -71,4 +79,3 @@ describe("dynamicZone storage converter - single dynamic zone with multiple long
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

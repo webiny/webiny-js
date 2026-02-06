@@ -71,4 +71,3 @@ describe("dynamicZone storage converter - single dynamic zone with number templa
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

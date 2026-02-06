@@ -71,4 +71,3 @@ describe("dynamicZone storage converter - single dynamic zone with multiple numb
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-

@@ -12,7 +12,11 @@ const plainValue = {
 const convertedValue = {
     "dynamicZone@contentId": {
         _templateId: "datetimeTemplate",
-        "datetime@milestonesId": ["2026-02-06T10:30:00Z", "2026-02-06T14:00:00Z", "2026-02-06T18:00:00Z"]
+        "datetime@milestonesId": [
+            "2026-02-06T10:30:00Z",
+            "2026-02-06T14:00:00Z",
+            "2026-02-06T18:00:00Z"
+        ]
     }
 };
 
@@ -71,4 +75,3 @@ describe("dynamicZone storage converter - single dynamic zone with multiple date
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-
