@@ -4,62 +4,75 @@ import { createModelField } from "../../../mocks/field.js";
 import { getConverters, type IConvertersResponse } from "../../../__helpers/converters.js";
 
 const plainValue = {
-    profiles: [
-        {
-            config: {
-                metadata: { theme: "dark", layout: "grid" }
+    profile: {
+        configs: [
+            {
+                data: {
+                    metadata: { theme: "dark", layout: "grid" }
+                }
+            },
+            {
+                data: {
+                    metadata: { theme: "light", layout: "list" }
+                }
+            },
+            {
+                data: {
+                    metadata: { theme: "auto", layout: "table" }
+                }
             }
-        },
-        {
-            config: {
-                metadata: { theme: "light", layout: "list" }
-            }
-        },
-        {
-            config: {
-                metadata: { theme: "auto", layout: "table" }
-            }
-        }
-    ]
+        ]
+    }
 };
 const convertedValue = {
-    "object@profilesId": [
-        {
-            "object@configId": {
-                "json@metadataId": { theme: "dark", layout: "grid" }
+    "object@profileId": {
+        "object@configsId": [
+            {
+                "object@dataId": {
+                    "json@metadataId": { theme: "dark", layout: "grid" }
+                }
+            },
+            {
+                "object@dataId": {
+                    "json@metadataId": { theme: "light", layout: "list" }
+                }
+            },
+            {
+                "object@dataId": {
+                    "json@metadataId": { theme: "auto", layout: "table" }
+                }
             }
-        },
-        {
-            "object@configId": {
-                "json@metadataId": { theme: "light", layout: "list" }
-            }
-        },
-        {
-            "object@configId": {
-                "json@metadataId": { theme: "auto", layout: "table" }
-            }
-        }
-    ]
+        ]
+    }
 };
 
 const model = createModel({
     fields: [
         createModelField({
-            fieldId: "profiles",
+            fieldId: "profile",
             type: "object",
-            multipleValues: true,
+            multipleValues: false,
             settings: {
                 fields: [
                     createModelField({
-                        fieldId: "config",
+                        fieldId: "configs",
                         type: "object",
-                        multipleValues: false,
+                        multipleValues: true,
                         settings: {
                             fields: [
                                 createModelField({
-                                    fieldId: "metadata",
-                                    type: "json",
-                                    multipleValues: false
+                                    fieldId: "data",
+                                    type: "object",
+                                    multipleValues: false,
+                                    settings: {
+                                        fields: [
+                                            createModelField({
+                                                fieldId: "metadata",
+                                                type: "json",
+                                                multipleValues: false
+                                            })
+                                        ]
+                                    }
                                 })
                             ]
                         }
@@ -70,14 +83,14 @@ const model = createModel({
     ]
 });
 
-describe("object storage converter - multiple objects with single nested object with json child", () => {
+describe("object storage converter - single object with multiple objects with nested object with json child", () => {
     let converters: IConvertersResponse;
 
     beforeEach(async () => {
         converters = await getConverters(model);
     });
 
-    it("should convert multiple objects with single nested object with json child to and from storage", async () => {
+    it("should convert single object with multiple objects with nested object with json child to and from storage", async () => {
         const { convertFromStorage, convertToStorage } = converters;
 
         const storageResult = convertToStorage({

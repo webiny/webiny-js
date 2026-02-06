@@ -4,62 +4,75 @@ import { createModelField } from "../../../mocks/field.js";
 import { getConverters, type IConvertersResponse } from "../../../__helpers/converters.js";
 
 const plainValue = {
-    profiles: [
-        {
-            contact: {
-                tags: ["developer", "writer"]
+    profile: {
+        contacts: [
+            {
+                info: {
+                    tags: ["developer", "writer"]
+                }
+            },
+            {
+                info: {
+                    tags: ["designer", "artist"]
+                }
+            },
+            {
+                info: {
+                    tags: ["manager", "leader", "speaker"]
+                }
             }
-        },
-        {
-            contact: {
-                tags: ["designer", "artist"]
-            }
-        },
-        {
-            contact: {
-                tags: ["manager", "leader", "speaker"]
-            }
-        }
-    ]
+        ]
+    }
 };
 const convertedValue = {
-    "object@profilesId": [
-        {
-            "object@contactId": {
-                "text@tagsId": ["developer", "writer"]
+    "object@profileId": {
+        "object@contactsId": [
+            {
+                "object@infoId": {
+                    "text@tagsId": ["developer", "writer"]
+                }
+            },
+            {
+                "object@infoId": {
+                    "text@tagsId": ["designer", "artist"]
+                }
+            },
+            {
+                "object@infoId": {
+                    "text@tagsId": ["manager", "leader", "speaker"]
+                }
             }
-        },
-        {
-            "object@contactId": {
-                "text@tagsId": ["designer", "artist"]
-            }
-        },
-        {
-            "object@contactId": {
-                "text@tagsId": ["manager", "leader", "speaker"]
-            }
-        }
-    ]
+        ]
+    }
 };
 
 const model = createModel({
     fields: [
         createModelField({
-            fieldId: "profiles",
+            fieldId: "profile",
             type: "object",
-            multipleValues: true,
+            multipleValues: false,
             settings: {
                 fields: [
                     createModelField({
-                        fieldId: "contact",
+                        fieldId: "contacts",
                         type: "object",
-                        multipleValues: false,
+                        multipleValues: true,
                         settings: {
                             fields: [
                                 createModelField({
-                                    fieldId: "tags",
-                                    type: "text",
-                                    multipleValues: true
+                                    fieldId: "info",
+                                    type: "object",
+                                    multipleValues: false,
+                                    settings: {
+                                        fields: [
+                                            createModelField({
+                                                fieldId: "tags",
+                                                type: "text",
+                                                multipleValues: true
+                                            })
+                                        ]
+                                    }
                                 })
                             ]
                         }
@@ -70,14 +83,14 @@ const model = createModel({
     ]
 });
 
-describe("object storage converter - multiple objects with single nested object with multiple text child", () => {
+describe("object storage converter - single object with multiple objects with nested object with multiple text child", () => {
     let converters: IConvertersResponse;
 
     beforeEach(async () => {
         converters = await getConverters(model);
     });
 
-    it("should convert multiple objects with single nested object with multiple text child to and from storage", async () => {
+    it("should convert single object with multiple objects with nested object with multiple text child to and from storage", async () => {
         const { convertFromStorage, convertToStorage } = converters;
 
         const storageResult = convertToStorage({

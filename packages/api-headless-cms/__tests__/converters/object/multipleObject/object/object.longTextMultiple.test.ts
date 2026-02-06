@@ -4,62 +4,75 @@ import { createModelField } from "../../../mocks/field.js";
 import { getConverters, type IConvertersResponse } from "../../../__helpers/converters.js";
 
 const plainValue = {
-    profiles: [
-        {
-            content: {
-                paragraphs: ["First profile, first paragraph.", "First profile, second paragraph."]
+    profile: {
+        content: [
+            {
+                text: {
+                    paragraphs: ["First profile, first paragraph.", "First profile, second paragraph."]
+                }
+            },
+            {
+                text: {
+                    paragraphs: ["Second profile, first paragraph.", "Second profile, second paragraph.", "Second profile, third paragraph."]
+                }
+            },
+            {
+                text: {
+                    paragraphs: ["Third profile, first paragraph."]
+                }
             }
-        },
-        {
-            content: {
-                paragraphs: ["Second profile, first paragraph.", "Second profile, second paragraph.", "Second profile, third paragraph."]
-            }
-        },
-        {
-            content: {
-                paragraphs: ["Third profile, first paragraph."]
-            }
-        }
-    ]
+        ]
+    }
 };
 const convertedValue = {
-    "object@profilesId": [
-        {
-            "object@contentId": {
-                "long-text@paragraphsId": ["First profile, first paragraph.", "First profile, second paragraph."]
+    "object@profileId": {
+        "object@contentId": [
+            {
+                "object@textId": {
+                    "long-text@paragraphsId": ["First profile, first paragraph.", "First profile, second paragraph."]
+                }
+            },
+            {
+                "object@textId": {
+                    "long-text@paragraphsId": ["Second profile, first paragraph.", "Second profile, second paragraph.", "Second profile, third paragraph."]
+                }
+            },
+            {
+                "object@textId": {
+                    "long-text@paragraphsId": ["Third profile, first paragraph."]
+                }
             }
-        },
-        {
-            "object@contentId": {
-                "long-text@paragraphsId": ["Second profile, first paragraph.", "Second profile, second paragraph.", "Second profile, third paragraph."]
-            }
-        },
-        {
-            "object@contentId": {
-                "long-text@paragraphsId": ["Third profile, first paragraph."]
-            }
-        }
-    ]
+        ]
+    }
 };
 
 const model = createModel({
     fields: [
         createModelField({
-            fieldId: "profiles",
+            fieldId: "profile",
             type: "object",
-            multipleValues: true,
+            multipleValues: false,
             settings: {
                 fields: [
                     createModelField({
                         fieldId: "content",
                         type: "object",
-                        multipleValues: false,
+                        multipleValues: true,
                         settings: {
                             fields: [
                                 createModelField({
-                                    fieldId: "paragraphs",
-                                    type: "long-text",
-                                    multipleValues: true
+                                    fieldId: "text",
+                                    type: "object",
+                                    multipleValues: false,
+                                    settings: {
+                                        fields: [
+                                            createModelField({
+                                                fieldId: "paragraphs",
+                                                type: "long-text",
+                                                multipleValues: true
+                                            })
+                                        ]
+                                    }
                                 })
                             ]
                         }
@@ -70,14 +83,14 @@ const model = createModel({
     ]
 });
 
-describe("object storage converter - multiple objects with single nested object with multiple long-text child", () => {
+describe("object storage converter - single object with multiple objects with nested object with multiple long-text child", () => {
     let converters: IConvertersResponse;
 
     beforeEach(async () => {
         converters = await getConverters(model);
     });
 
-    it("should convert multiple objects with single nested object with multiple long-text child to and from storage", async () => {
+    it("should convert single object with multiple objects with nested object with multiple long-text child to and from storage", async () => {
         const { convertFromStorage, convertToStorage } = converters;
 
         const storageResult = convertToStorage({

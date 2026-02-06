@@ -4,62 +4,75 @@ import { createModelField } from "../../../mocks/field.js";
 import { getConverters, type IConvertersResponse } from "../../../__helpers/converters.js";
 
 const plainValue = {
-    profiles: [
-        {
-            config: {
-                presets: [{ name: "preset1", value: 100 }, { name: "preset2", value: 150 }]
+    profile: {
+        configs: [
+            {
+                data: {
+                    presets: [{ name: "preset1", value: 100 }, { name: "preset2", value: 150 }]
+                }
+            },
+            {
+                data: {
+                    presets: [{ name: "preset3", value: 200 }]
+                }
+            },
+            {
+                data: {
+                    presets: [{ name: "preset4", value: 250 }, { name: "preset5", value: 300 }, { name: "preset6", value: 350 }]
+                }
             }
-        },
-        {
-            config: {
-                presets: [{ name: "preset3", value: 200 }]
-            }
-        },
-        {
-            config: {
-                presets: [{ name: "preset4", value: 250 }, { name: "preset5", value: 300 }, { name: "preset6", value: 350 }]
-            }
-        }
-    ]
+        ]
+    }
 };
 const convertedValue = {
-    "object@profilesId": [
-        {
-            "object@configId": {
-                "json@presetsId": [{ name: "preset1", value: 100 }, { name: "preset2", value: 150 }]
+    "object@profileId": {
+        "object@configsId": [
+            {
+                "object@dataId": {
+                    "json@presetsId": [{ name: "preset1", value: 100 }, { name: "preset2", value: 150 }]
+                }
+            },
+            {
+                "object@dataId": {
+                    "json@presetsId": [{ name: "preset3", value: 200 }]
+                }
+            },
+            {
+                "object@dataId": {
+                    "json@presetsId": [{ name: "preset4", value: 250 }, { name: "preset5", value: 300 }, { name: "preset6", value: 350 }]
+                }
             }
-        },
-        {
-            "object@configId": {
-                "json@presetsId": [{ name: "preset3", value: 200 }]
-            }
-        },
-        {
-            "object@configId": {
-                "json@presetsId": [{ name: "preset4", value: 250 }, { name: "preset5", value: 300 }, { name: "preset6", value: 350 }]
-            }
-        }
-    ]
+        ]
+    }
 };
 
 const model = createModel({
     fields: [
         createModelField({
-            fieldId: "profiles",
+            fieldId: "profile",
             type: "object",
-            multipleValues: true,
+            multipleValues: false,
             settings: {
                 fields: [
                     createModelField({
-                        fieldId: "config",
+                        fieldId: "configs",
                         type: "object",
-                        multipleValues: false,
+                        multipleValues: true,
                         settings: {
                             fields: [
                                 createModelField({
-                                    fieldId: "presets",
-                                    type: "json",
-                                    multipleValues: true
+                                    fieldId: "data",
+                                    type: "object",
+                                    multipleValues: false,
+                                    settings: {
+                                        fields: [
+                                            createModelField({
+                                                fieldId: "presets",
+                                                type: "json",
+                                                multipleValues: true
+                                            })
+                                        ]
+                                    }
                                 })
                             ]
                         }
@@ -70,14 +83,14 @@ const model = createModel({
     ]
 });
 
-describe("object storage converter - multiple objects with single nested object with multiple json child", () => {
+describe("object storage converter - single object with multiple objects with nested object with multiple json child", () => {
     let converters: IConvertersResponse;
 
     beforeEach(async () => {
         converters = await getConverters(model);
     });
 
-    it("should convert multiple objects with single nested object with multiple json child to and from storage", async () => {
+    it("should convert single object with multiple objects with nested object with multiple json child to and from storage", async () => {
         const { convertFromStorage, convertToStorage } = converters;
 
         const storageResult = convertToStorage({

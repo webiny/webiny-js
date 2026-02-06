@@ -4,80 +4,93 @@ import { createModelField } from "../../../mocks/field.js";
 import { getConverters, type IConvertersResponse } from "../../../__helpers/converters.js";
 
 const plainValue = {
-    profiles: [
-        {
-            search: {
-                searchableData: {
-                    title: "Profile 1 Title",
-                    description: "Searchable profile 1 description"
+    profile: {
+        searches: [
+            {
+                data: {
+                    searchableData: {
+                        title: "Profile 1 Title",
+                        description: "Searchable profile 1 description"
+                    }
+                }
+            },
+            {
+                data: {
+                    searchableData: {
+                        title: "Profile 2 Title",
+                        description: "Searchable profile 2 description"
+                    }
+                }
+            },
+            {
+                data: {
+                    searchableData: {
+                        title: "Profile 3 Title",
+                        description: "Searchable profile 3 description"
+                    }
                 }
             }
-        },
-        {
-            search: {
-                searchableData: {
-                    title: "Profile 2 Title",
-                    description: "Searchable profile 2 description"
-                }
-            }
-        },
-        {
-            search: {
-                searchableData: {
-                    title: "Profile 3 Title",
-                    description: "Searchable profile 3 description"
-                }
-            }
-        }
-    ]
+        ]
+    }
 };
 const convertedValue = {
-    "object@profilesId": [
-        {
-            "object@searchId": {
-                "searchable-json@searchableDataId": {
-                    title: "Profile 1 Title",
-                    description: "Searchable profile 1 description"
+    "object@profileId": {
+        "object@searchesId": [
+            {
+                "object@dataId": {
+                    "searchable-json@searchableDataId": {
+                        title: "Profile 1 Title",
+                        description: "Searchable profile 1 description"
+                    }
+                }
+            },
+            {
+                "object@dataId": {
+                    "searchable-json@searchableDataId": {
+                        title: "Profile 2 Title",
+                        description: "Searchable profile 2 description"
+                    }
+                }
+            },
+            {
+                "object@dataId": {
+                    "searchable-json@searchableDataId": {
+                        title: "Profile 3 Title",
+                        description: "Searchable profile 3 description"
+                    }
                 }
             }
-        },
-        {
-            "object@searchId": {
-                "searchable-json@searchableDataId": {
-                    title: "Profile 2 Title",
-                    description: "Searchable profile 2 description"
-                }
-            }
-        },
-        {
-            "object@searchId": {
-                "searchable-json@searchableDataId": {
-                    title: "Profile 3 Title",
-                    description: "Searchable profile 3 description"
-                }
-            }
-        }
-    ]
+        ]
+    }
 };
 
 const model = createModel({
     fields: [
         createModelField({
-            fieldId: "profiles",
+            fieldId: "profile",
             type: "object",
-            multipleValues: true,
+            multipleValues: false,
             settings: {
                 fields: [
                     createModelField({
-                        fieldId: "search",
+                        fieldId: "searches",
                         type: "object",
-                        multipleValues: false,
+                        multipleValues: true,
                         settings: {
                             fields: [
                                 createModelField({
-                                    fieldId: "searchableData",
-                                    type: "searchable-json",
-                                    multipleValues: false
+                                    fieldId: "data",
+                                    type: "object",
+                                    multipleValues: false,
+                                    settings: {
+                                        fields: [
+                                            createModelField({
+                                                fieldId: "searchableData",
+                                                type: "searchable-json",
+                                                multipleValues: false
+                                            })
+                                        ]
+                                    }
                                 })
                             ]
                         }
@@ -88,14 +101,14 @@ const model = createModel({
     ]
 });
 
-describe("object storage converter - multiple objects with single nested object with searchable-json child", () => {
+describe("object storage converter - single object with multiple objects with nested object with searchable-json child", () => {
     let converters: IConvertersResponse;
 
     beforeEach(async () => {
         converters = await getConverters(model);
     });
 
-    it("should convert multiple objects with single nested object with searchable-json child to and from storage", async () => {
+    it("should convert single object with multiple objects with nested object with searchable-json child to and from storage", async () => {
         const { convertFromStorage, convertToStorage } = converters;
 
         const storageResult = convertToStorage({

@@ -4,62 +4,75 @@ import { createModelField } from "../../../mocks/field.js";
 import { getConverters, type IConvertersResponse } from "../../../__helpers/converters.js";
 
 const plainValue = {
-    profiles: [
-        {
-            content: {
-                description: "First profile with a long text description."
+    profile: {
+        content: [
+            {
+                text: {
+                    description: "First profile with a long text description."
+                }
+            },
+            {
+                text: {
+                    description: "Second profile with detailed information."
+                }
+            },
+            {
+                text: {
+                    description: "Third profile with comprehensive content."
+                }
             }
-        },
-        {
-            content: {
-                description: "Second profile with detailed information."
-            }
-        },
-        {
-            content: {
-                description: "Third profile with comprehensive content."
-            }
-        }
-    ]
+        ]
+    }
 };
 const convertedValue = {
-    "object@profilesId": [
-        {
-            "object@contentId": {
-                "long-text@descriptionId": "First profile with a long text description."
+    "object@profileId": {
+        "object@contentId": [
+            {
+                "object@textId": {
+                    "long-text@descriptionId": "First profile with a long text description."
+                }
+            },
+            {
+                "object@textId": {
+                    "long-text@descriptionId": "Second profile with detailed information."
+                }
+            },
+            {
+                "object@textId": {
+                    "long-text@descriptionId": "Third profile with comprehensive content."
+                }
             }
-        },
-        {
-            "object@contentId": {
-                "long-text@descriptionId": "Second profile with detailed information."
-            }
-        },
-        {
-            "object@contentId": {
-                "long-text@descriptionId": "Third profile with comprehensive content."
-            }
-        }
-    ]
+        ]
+    }
 };
 
 const model = createModel({
     fields: [
         createModelField({
-            fieldId: "profiles",
+            fieldId: "profile",
             type: "object",
-            multipleValues: true,
+            multipleValues: false,
             settings: {
                 fields: [
                     createModelField({
                         fieldId: "content",
                         type: "object",
-                        multipleValues: false,
+                        multipleValues: true,
                         settings: {
                             fields: [
                                 createModelField({
-                                    fieldId: "description",
-                                    type: "long-text",
-                                    multipleValues: false
+                                    fieldId: "text",
+                                    type: "object",
+                                    multipleValues: false,
+                                    settings: {
+                                        fields: [
+                                            createModelField({
+                                                fieldId: "description",
+                                                type: "long-text",
+                                                multipleValues: false
+                                            })
+                                        ]
+                                    }
                                 })
                             ]
                         }
@@ -70,14 +83,14 @@ const model = createModel({
     ]
 });
 
-describe("object storage converter - multiple objects with single nested object with long-text child", () => {
+describe("object storage converter - single object with multiple objects with nested object with long-text child", () => {
     let converters: IConvertersResponse;
 
     beforeEach(async () => {
         converters = await getConverters(model);
     });
 
-    it("should convert multiple objects with single nested object with long-text child to and from storage", async () => {
+    it("should convert single object with multiple objects with nested object with long-text child to and from storage", async () => {
         const { convertFromStorage, convertToStorage } = converters;
 
         const storageResult = convertToStorage({

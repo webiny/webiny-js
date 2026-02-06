@@ -4,62 +4,75 @@ import { createModelField } from "../../../mocks/field.js";
 import { getConverters, type IConvertersResponse } from "../../../__helpers/converters.js";
 
 const plainValue = {
-    profiles: [
-        {
-            content: {
-                sections: ["First profile with <strong>bold</strong>.", "First profile with <em>italic</em>."]
+    profile: {
+        content: [
+            {
+                rich: {
+                    sections: ["First profile with <strong>bold</strong>.", "First profile with <em>italic</em>."]
+                }
+            },
+            {
+                rich: {
+                    sections: ["Second profile with <u>underline</u>."]
+                }
+            },
+            {
+                rich: {
+                    sections: ["Third profile section 1.", "Third profile section 2.", "Third profile section 3."]
+                }
             }
-        },
-        {
-            content: {
-                sections: ["Second profile with <u>underline</u>."]
-            }
-        },
-        {
-            content: {
-                sections: ["Third profile section 1.", "Third profile section 2.", "Third profile section 3."]
-            }
-        }
-    ]
+        ]
+    }
 };
 const convertedValue = {
-    "object@profilesId": [
-        {
-            "object@contentId": {
-                "rich-text@sectionsId": ["First profile with <strong>bold</strong>.", "First profile with <em>italic</em>."]
+    "object@profileId": {
+        "object@contentId": [
+            {
+                "object@richId": {
+                    "rich-text@sectionsId": ["First profile with <strong>bold</strong>.", "First profile with <em>italic</em>."]
+                }
+            },
+            {
+                "object@richId": {
+                    "rich-text@sectionsId": ["Second profile with <u>underline</u>."]
+                }
+            },
+            {
+                "object@richId": {
+                    "rich-text@sectionsId": ["Third profile section 1.", "Third profile section 2.", "Third profile section 3."]
+                }
             }
-        },
-        {
-            "object@contentId": {
-                "rich-text@sectionsId": ["Second profile with <u>underline</u>."]
-            }
-        },
-        {
-            "object@contentId": {
-                "rich-text@sectionsId": ["Third profile section 1.", "Third profile section 2.", "Third profile section 3."]
-            }
-        }
-    ]
+        ]
+    }
 };
 
 const model = createModel({
     fields: [
         createModelField({
-            fieldId: "profiles",
+            fieldId: "profile",
             type: "object",
-            multipleValues: true,
+            multipleValues: false,
             settings: {
                 fields: [
                     createModelField({
                         fieldId: "content",
                         type: "object",
-                        multipleValues: false,
+                        multipleValues: true,
                         settings: {
                             fields: [
                                 createModelField({
-                                    fieldId: "sections",
-                                    type: "rich-text",
-                                    multipleValues: true
+                                    fieldId: "rich",
+                                    type: "object",
+                                    multipleValues: false,
+                                    settings: {
+                                        fields: [
+                                            createModelField({
+                                                fieldId: "sections",
+                                                type: "rich-text",
+                                                multipleValues: true
+                                            })
+                                        ]
+                                    }
                                 })
                             ]
                         }
@@ -70,14 +83,14 @@ const model = createModel({
     ]
 });
 
-describe("object storage converter - multiple objects with single nested object with multiple rich-text child", () => {
+describe("object storage converter - single object with multiple objects with nested object with multiple rich-text child", () => {
     let converters: IConvertersResponse;
 
     beforeEach(async () => {
         converters = await getConverters(model);
     });
 
-    it("should convert multiple objects with single nested object with multiple rich-text child to and from storage", async () => {
+    it("should convert single object with multiple objects with nested object with multiple rich-text child to and from storage", async () => {
         const { convertFromStorage, convertToStorage } = converters;
 
         const storageResult = convertToStorage({

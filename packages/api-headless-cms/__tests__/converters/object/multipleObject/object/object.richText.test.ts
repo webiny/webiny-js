@@ -4,62 +4,75 @@ import { createModelField } from "../../../mocks/field.js";
 import { getConverters, type IConvertersResponse } from "../../../__helpers/converters.js";
 
 const plainValue = {
-    profiles: [
-        {
-            content: {
-                body: "First profile with <strong>bold</strong> text."
+    profile: {
+        content: [
+            {
+                rich: {
+                    body: "First profile with <strong>bold</strong> text."
+                }
+            },
+            {
+                rich: {
+                    body: "Second profile with <em>italic</em> text."
+                }
+            },
+            {
+                rich: {
+                    body: "Third profile with <u>underline</u> text."
+                }
             }
-        },
-        {
-            content: {
-                body: "Second profile with <em>italic</em> text."
-            }
-        },
-        {
-            content: {
-                body: "Third profile with <u>underline</u> text."
-            }
-        }
-    ]
+        ]
+    }
 };
 const convertedValue = {
-    "object@profilesId": [
-        {
-            "object@contentId": {
-                "rich-text@bodyId": "First profile with <strong>bold</strong> text."
+    "object@profileId": {
+        "object@contentId": [
+            {
+                "object@richId": {
+                    "rich-text@bodyId": "First profile with <strong>bold</strong> text."
+                }
+            },
+            {
+                "object@richId": {
+                    "rich-text@bodyId": "Second profile with <em>italic</em> text."
+                }
+            },
+            {
+                "object@richId": {
+                    "rich-text@bodyId": "Third profile with <u>underline</u> text."
+                }
             }
-        },
-        {
-            "object@contentId": {
-                "rich-text@bodyId": "Second profile with <em>italic</em> text."
-            }
-        },
-        {
-            "object@contentId": {
-                "rich-text@bodyId": "Third profile with <u>underline</u> text."
-            }
-        }
-    ]
+        ]
+    }
 };
 
 const model = createModel({
     fields: [
         createModelField({
-            fieldId: "profiles",
+            fieldId: "profile",
             type: "object",
-            multipleValues: true,
+            multipleValues: false,
             settings: {
                 fields: [
                     createModelField({
                         fieldId: "content",
                         type: "object",
-                        multipleValues: false,
+                        multipleValues: true,
                         settings: {
                             fields: [
                                 createModelField({
-                                    fieldId: "body",
-                                    type: "rich-text",
-                                    multipleValues: false
+                                    fieldId: "rich",
+                                    type: "object",
+                                    multipleValues: false,
+                                    settings: {
+                                        fields: [
+                                            createModelField({
+                                                fieldId: "body",
+                                                type: "rich-text",
+                                                multipleValues: false
+                                            })
+                                        ]
+                                    }
                                 })
                             ]
                         }
@@ -70,14 +83,14 @@ const model = createModel({
     ]
 });
 
-describe("object storage converter - multiple objects with single nested object with rich-text child", () => {
+describe("object storage converter - single object with multiple objects with nested object with rich-text child", () => {
     let converters: IConvertersResponse;
 
     beforeEach(async () => {
         converters = await getConverters(model);
     });
 
-    it("should convert multiple objects with single nested object with rich-text child to and from storage", async () => {
+    it("should convert single object with multiple objects with nested object with rich-text child to and from storage", async () => {
         const { convertFromStorage, convertToStorage } = converters;
 
         const storageResult = convertToStorage({

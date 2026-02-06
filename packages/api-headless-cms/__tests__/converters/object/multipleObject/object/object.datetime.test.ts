@@ -4,62 +4,75 @@ import { createModelField } from "../../../mocks/field.js";
 import { getConverters, type IConvertersResponse } from "../../../__helpers/converters.js";
 
 const plainValue = {
-    profiles: [
-        {
-            timeline: {
-                createdAt: "2026-02-06T10:30:00Z"
+    profile: {
+        timelines: [
+            {
+                dates: {
+                    createdAt: "2026-02-06T10:30:00Z"
+                }
+            },
+            {
+                dates: {
+                    createdAt: "2026-02-07T14:45:00Z"
+                }
+            },
+            {
+                dates: {
+                    createdAt: "2026-02-08T09:15:00Z"
+                }
             }
-        },
-        {
-            timeline: {
-                createdAt: "2026-02-07T14:45:00Z"
-            }
-        },
-        {
-            timeline: {
-                createdAt: "2026-02-08T09:15:00Z"
-            }
-        }
-    ]
+        ]
+    }
 };
 const convertedValue = {
-    "object@profilesId": [
-        {
-            "object@timelineId": {
-                "datetime@createdAtId": "2026-02-06T10:30:00Z"
+    "object@profileId": {
+        "object@timelinesId": [
+            {
+                "object@datesId": {
+                    "datetime@createdAtId": "2026-02-06T10:30:00Z"
+                }
+            },
+            {
+                "object@datesId": {
+                    "datetime@createdAtId": "2026-02-07T14:45:00Z"
+                }
+            },
+            {
+                "object@datesId": {
+                    "datetime@createdAtId": "2026-02-08T09:15:00Z"
+                }
             }
-        },
-        {
-            "object@timelineId": {
-                "datetime@createdAtId": "2026-02-07T14:45:00Z"
-            }
-        },
-        {
-            "object@timelineId": {
-                "datetime@createdAtId": "2026-02-08T09:15:00Z"
-            }
-        }
-    ]
+        ]
+    }
 };
 
 const model = createModel({
     fields: [
         createModelField({
-            fieldId: "profiles",
+            fieldId: "profile",
             type: "object",
-            multipleValues: true,
+            multipleValues: false,
             settings: {
                 fields: [
                     createModelField({
-                        fieldId: "timeline",
+                        fieldId: "timelines",
                         type: "object",
-                        multipleValues: false,
+                        multipleValues: true,
                         settings: {
                             fields: [
                                 createModelField({
-                                    fieldId: "createdAt",
-                                    type: "datetime",
-                                    multipleValues: false
+                                    fieldId: "dates",
+                                    type: "object",
+                                    multipleValues: false,
+                                    settings: {
+                                        fields: [
+                                            createModelField({
+                                                fieldId: "createdAt",
+                                                type: "datetime",
+                                                multipleValues: false
+                                            })
+                                        ]
+                                    }
                                 })
                             ]
                         }
@@ -70,14 +83,14 @@ const model = createModel({
     ]
 });
 
-describe("object storage converter - multiple objects with single nested object with datetime child", () => {
+describe("object storage converter - single object with multiple objects with nested object with datetime child", () => {
     let converters: IConvertersResponse;
 
     beforeEach(async () => {
         converters = await getConverters(model);
     });
 
-    it("should convert multiple objects with single nested object with datetime child to and from storage", async () => {
+    it("should convert single object with multiple objects with nested object with datetime child to and from storage", async () => {
         const { convertFromStorage, convertToStorage } = converters;
 
         const storageResult = convertToStorage({

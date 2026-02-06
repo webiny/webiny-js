@@ -4,80 +4,93 @@ import { createModelField } from "../../../mocks/field.js";
 import { getConverters, type IConvertersResponse } from "../../../__helpers/converters.js";
 
 const plainValue = {
-    profiles: [
-        {
-            search: {
-                searchableItems: [
-                    { name: "Item 1", tags: ["featured"] },
-                    { name: "Item 2", tags: ["new"] }
-                ]
+    profile: {
+        searches: [
+            {
+                data: {
+                    searchableItems: [
+                        { name: "Item 1", tags: ["featured"] },
+                        { name: "Item 2", tags: ["new"] }
+                    ]
+                }
+            },
+            {
+                data: {
+                    searchableItems: [
+                        { name: "Item 3", tags: ["sale", "popular"] }
+                    ]
+                }
+            },
+            {
+                data: {
+                    searchableItems: [
+                        { name: "Item 4", tags: ["trending"] },
+                        { name: "Item 5", tags: ["featured", "sale"] },
+                        { name: "Item 6", tags: ["new", "popular"] }
+                    ]
+                }
             }
-        },
-        {
-            search: {
-                searchableItems: [
-                    { name: "Item 3", tags: ["sale", "popular"] }
-                ]
-            }
-        },
-        {
-            search: {
-                searchableItems: [
-                    { name: "Item 4", tags: ["trending"] },
-                    { name: "Item 5", tags: ["featured", "sale"] },
-                    { name: "Item 6", tags: ["new", "popular"] }
-                ]
-            }
-        }
-    ]
+        ]
+    }
 };
 const convertedValue = {
-    "object@profilesId": [
-        {
-            "object@searchId": {
-                "searchable-json@searchableItemsId": [
-                    { name: "Item 1", tags: ["featured"] },
-                    { name: "Item 2", tags: ["new"] }
-                ]
+    "object@profileId": {
+        "object@searchesId": [
+            {
+                "object@dataId": {
+                    "searchable-json@searchableItemsId": [
+                        { name: "Item 1", tags: ["featured"] },
+                        { name: "Item 2", tags: ["new"] }
+                    ]
+                }
+            },
+            {
+                "object@dataId": {
+                    "searchable-json@searchableItemsId": [
+                        { name: "Item 3", tags: ["sale", "popular"] }
+                    ]
+                }
+            },
+            {
+                "object@dataId": {
+                    "searchable-json@searchableItemsId": [
+                        { name: "Item 4", tags: ["trending"] },
+                        { name: "Item 5", tags: ["featured", "sale"] },
+                        { name: "Item 6", tags: ["new", "popular"] }
+                    ]
+                }
             }
-        },
-        {
-            "object@searchId": {
-                "searchable-json@searchableItemsId": [
-                    { name: "Item 3", tags: ["sale", "popular"] }
-                ]
-            }
-        },
-        {
-            "object@searchId": {
-                "searchable-json@searchableItemsId": [
-                    { name: "Item 4", tags: ["trending"] },
-                    { name: "Item 5", tags: ["featured", "sale"] },
-                    { name: "Item 6", tags: ["new", "popular"] }
-                ]
-            }
-        }
-    ]
+        ]
+    }
 };
 
 const model = createModel({
     fields: [
         createModelField({
-            fieldId: "profiles",
+            fieldId: "profile",
             type: "object",
-            multipleValues: true,
+            multipleValues: false,
             settings: {
                 fields: [
                     createModelField({
-                        fieldId: "search",
+                        fieldId: "searches",
                         type: "object",
-                        multipleValues: false,
+                        multipleValues: true,
                         settings: {
                             fields: [
                                 createModelField({
-                                    fieldId: "searchableItems",
-                                    type: "searchable-json",
-                                    multipleValues: true
+                                    fieldId: "data",
+                                    type: "object",
+                                    multipleValues: false,
+                                    settings: {
+                                        fields: [
+                                            createModelField({
+                                                fieldId: "searchableItems",
+                                                type: "searchable-json",
+                                                multipleValues: true
+                                            })
+                                        ]
+                                    }
                                 })
                             ]
                         }
@@ -88,14 +101,14 @@ const model = createModel({
     ]
 });
 
-describe("object storage converter - multiple objects with single nested object with multiple searchable-json child", () => {
+describe("object storage converter - single object with multiple objects with nested object with multiple searchable-json child", () => {
     let converters: IConvertersResponse;
 
     beforeEach(async () => {
         converters = await getConverters(model);
     });
 
-    it("should convert multiple objects with single nested object with multiple searchable-json child to and from storage", async () => {
+    it("should convert single object with multiple objects with nested object with multiple searchable-json child to and from storage", async () => {
         const { convertFromStorage, convertToStorage } = converters;
 
         const storageResult = convertToStorage({

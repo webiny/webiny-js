@@ -4,128 +4,141 @@ import { createModelField } from "../../../mocks/field.js";
 import { getConverters, type IConvertersResponse } from "../../../__helpers/converters.js";
 
 const plainValue = {
-    profiles: [
-        {
-            relations: {
-                relatedPosts: [
-                    {
-                        id: "post1#0001",
-                        entryId: "post1",
-                        modelId: "post"
-                    },
-                    {
-                        id: "post2#0001",
-                        entryId: "post2",
-                        modelId: "post"
-                    }
-                ]
+    profile: {
+        relations: [
+            {
+                refs: {
+                    relatedPosts: [
+                        {
+                            id: "post1#0001",
+                            entryId: "post1",
+                            modelId: "post"
+                        },
+                        {
+                            id: "post2#0001",
+                            entryId: "post2",
+                            modelId: "post"
+                        }
+                    ]
+                }
+            },
+            {
+                refs: {
+                    relatedPosts: [
+                        {
+                            id: "post3#0001",
+                            entryId: "post3",
+                            modelId: "post"
+                        }
+                    ]
+                }
+            },
+            {
+                refs: {
+                    relatedPosts: [
+                        {
+                            id: "post4#0001",
+                            entryId: "post4",
+                            modelId: "post"
+                        },
+                        {
+                            id: "post5#0001",
+                            entryId: "post5",
+                            modelId: "post"
+                        },
+                        {
+                            id: "post6#0001",
+                            entryId: "post6",
+                            modelId: "post"
+                        }
+                    ]
+                }
             }
-        },
-        {
-            relations: {
-                relatedPosts: [
-                    {
-                        id: "post3#0001",
-                        entryId: "post3",
-                        modelId: "post"
-                    }
-                ]
-            }
-        },
-        {
-            relations: {
-                relatedPosts: [
-                    {
-                        id: "post4#0001",
-                        entryId: "post4",
-                        modelId: "post"
-                    },
-                    {
-                        id: "post5#0001",
-                        entryId: "post5",
-                        modelId: "post"
-                    },
-                    {
-                        id: "post6#0001",
-                        entryId: "post6",
-                        modelId: "post"
-                    }
-                ]
-            }
-        }
-    ]
+        ]
+    }
 };
 const convertedValue = {
-    "object@profilesId": [
-        {
-            "object@relationsId": {
-                "ref@relatedPostsId": [
-                    {
-                        id: "post1#0001",
-                        entryId: "post1",
-                        modelId: "post"
-                    },
-                    {
-                        id: "post2#0001",
-                        entryId: "post2",
-                        modelId: "post"
-                    }
-                ]
+    "object@profileId": {
+        "object@relationsId": [
+            {
+                "object@refsId": {
+                    "ref@relatedPostsId": [
+                        {
+                            id: "post1#0001",
+                            entryId: "post1",
+                            modelId: "post"
+                        },
+                        {
+                            id: "post2#0001",
+                            entryId: "post2",
+                            modelId: "post"
+                        }
+                    ]
+                }
+            },
+            {
+                "object@refsId": {
+                    "ref@relatedPostsId": [
+                        {
+                            id: "post3#0001",
+                            entryId: "post3",
+                            modelId: "post"
+                        }
+                    ]
+                }
+            },
+            {
+                "object@refsId": {
+                    "ref@relatedPostsId": [
+                        {
+                            id: "post4#0001",
+                            entryId: "post4",
+                            modelId: "post"
+                        },
+                        {
+                            id: "post5#0001",
+                            entryId: "post5",
+                            modelId: "post"
+                        },
+                        {
+                            id: "post6#0001",
+                            entryId: "post6",
+                            modelId: "post"
+                        }
+                    ]
+                }
             }
-        },
-        {
-            "object@relationsId": {
-                "ref@relatedPostsId": [
-                    {
-                        id: "post3#0001",
-                        entryId: "post3",
-                        modelId: "post"
-                    }
-                ]
-            }
-        },
-        {
-            "object@relationsId": {
-                "ref@relatedPostsId": [
-                    {
-                        id: "post4#0001",
-                        entryId: "post4",
-                        modelId: "post"
-                    },
-                    {
-                        id: "post5#0001",
-                        entryId: "post5",
-                        modelId: "post"
-                    },
-                    {
-                        id: "post6#0001",
-                        entryId: "post6",
-                        modelId: "post"
-                    }
-                ]
-            }
-        }
-    ]
+        ]
+    }
 };
 
 const model = createModel({
     fields: [
         createModelField({
-            fieldId: "profiles",
+            fieldId: "profile",
             type: "object",
-            multipleValues: true,
+            multipleValues: false,
             settings: {
                 fields: [
                     createModelField({
                         fieldId: "relations",
                         type: "object",
-                        multipleValues: false,
+                        multipleValues: true,
                         settings: {
                             fields: [
                                 createModelField({
-                                    fieldId: "relatedPosts",
-                                    type: "ref",
-                                    multipleValues: true
+                                    fieldId: "refs",
+                                    type: "object",
+                                    multipleValues: false,
+                                    settings: {
+                                        fields: [
+                                            createModelField({
+                                                fieldId: "relatedPosts",
+                                                type: "ref",
+                                                multipleValues: true
+                                            })
+                                        ]
+                                    }
                                 })
                             ]
                         }
@@ -136,14 +149,14 @@ const model = createModel({
     ]
 });
 
-describe("object storage converter - multiple objects with single nested object with multiple ref child", () => {
+describe("object storage converter - single object with multiple objects with nested object with multiple ref child", () => {
     let converters: IConvertersResponse;
 
     beforeEach(async () => {
         converters = await getConverters(model);
     });
 
-    it("should convert multiple objects with single nested object with multiple ref child to and from storage", async () => {
+    it("should convert single object with multiple objects with nested object with multiple ref child to and from storage", async () => {
         const { convertFromStorage, convertToStorage } = converters;
 
         const storageResult = convertToStorage({

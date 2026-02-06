@@ -4,62 +4,75 @@ import { createModelField } from "../../../mocks/field.js";
 import { getConverters, type IConvertersResponse } from "../../../__helpers/converters.js";
 
 const plainValue = {
-    profiles: [
-        {
-            settings: {
-                isActive: true
+    profile: {
+        settings: [
+            {
+                config: {
+                    isActive: true
+                }
+            },
+            {
+                config: {
+                    isActive: false
+                }
+            },
+            {
+                config: {
+                    isActive: true
+                }
             }
-        },
-        {
-            settings: {
-                isActive: false
-            }
-        },
-        {
-            settings: {
-                isActive: true
-            }
-        }
-    ]
+        ]
+    }
 };
 const convertedValue = {
-    "object@profilesId": [
-        {
-            "object@settingsId": {
-                "boolean@isActiveId": true
+    "object@profileId": {
+        "object@settingsId": [
+            {
+                "object@configId": {
+                    "boolean@isActiveId": true
+                }
+            },
+            {
+                "object@configId": {
+                    "boolean@isActiveId": false
+                }
+            },
+            {
+                "object@configId": {
+                    "boolean@isActiveId": true
+                }
             }
-        },
-        {
-            "object@settingsId": {
-                "boolean@isActiveId": false
-            }
-        },
-        {
-            "object@settingsId": {
-                "boolean@isActiveId": true
-            }
-        }
-    ]
+        ]
+    }
 };
 
 const model = createModel({
     fields: [
         createModelField({
-            fieldId: "profiles",
+            fieldId: "profile",
             type: "object",
-            multipleValues: true,
+            multipleValues: false,
             settings: {
                 fields: [
                     createModelField({
                         fieldId: "settings",
                         type: "object",
-                        multipleValues: false,
+                        multipleValues: true,
                         settings: {
                             fields: [
                                 createModelField({
-                                    fieldId: "isActive",
-                                    type: "boolean",
-                                    multipleValues: false
+                                    fieldId: "config",
+                                    type: "object",
+                                    multipleValues: false,
+                                    settings: {
+                                        fields: [
+                                            createModelField({
+                                                fieldId: "isActive",
+                                                type: "boolean",
+                                                multipleValues: false
+                                            })
+                                        ]
+                                    }
                                 })
                             ]
                         }
@@ -70,14 +83,14 @@ const model = createModel({
     ]
 });
 
-describe("object storage converter - multiple objects with single nested object with boolean child", () => {
+describe("object storage converter - single object with multiple objects with nested object with boolean child", () => {
     let converters: IConvertersResponse;
 
     beforeEach(async () => {
         converters = await getConverters(model);
     });
 
-    it("should convert multiple objects with single nested object with boolean child to and from storage", async () => {
+    it("should convert single object with multiple objects with nested object with boolean child to and from storage", async () => {
         const { convertFromStorage, convertToStorage } = converters;
 
         const storageResult = convertToStorage({
