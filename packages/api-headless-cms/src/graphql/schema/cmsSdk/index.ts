@@ -14,13 +14,8 @@ export const createCmsSdkSchema = () => {
     const plugin = new ContextPlugin<CmsContext>(async context => {
         const cmsSdkPlugin = createCmsGraphQLSchemaPlugin({
             typeDefs: /* GraphQL */ `
-                type CmsSdkEntry {
-                    id: ID!
-                    entryId: String!
-                }
-
                 type CmsSdkEntryResponse {
-                    data: CmsSdkEntry
+                    data: JSON
                     error: CmsError
                 }
 
@@ -31,7 +26,7 @@ export const createCmsSdkSchema = () => {
                 }
 
                 type CmsSdkListResponse {
-                    data: [CmsSdkEntry!]
+                    data: [JSON!]
                     meta: CmsSdkListMeta
                     error: CmsError
                 }
@@ -48,6 +43,30 @@ export const createCmsSdkSchema = () => {
                         where: JSON
                         sort: JSON
                         limit: Int
+                        after: String
+                        include: [String!]
+                        exclude: [String!]
+                        excludeType: [String!]
+                        fields: [String!]
+                    ): CmsSdkListResponse!
+                }
+
+                type CmsSdkMutation {
+                    createEntry(modelId: String!, values: JSON!): CmsSdkEntryResponse!
+                    updateEntry(modelId: String!, id: ID!, values: JSON!): CmsSdkEntryResponse!
+                    deleteEntry(modelId: String!, id: ID!, permanent: Boolean): CmsSdkDeleteResponse!
+                    publishEntry(modelId: String!, id: ID!): CmsSdkEntryResponse!
+                    unpublishEntry(modelId: String!, id: ID!): CmsSdkEntryResponse!
+                }
+
+                extend type Query {
+                    cms: CmsSdkQuery!
+                }
+
+                extend type Mutation {
+                    cms: CmsSdkMutation!
+                }
+            `,
                         after: String
                         include: [String!]
                         exclude: [String!]

@@ -53,10 +53,7 @@ export class CmsSdk {
             query GetEntry($modelId: String!, $where: JSON!, $fields: [String!]) {
                 cms {
                     getEntry(modelId: $modelId, where: $where, fields: $fields) {
-                        data {
-                            id
-                            entryId
-                        }
+                        data
                         error {
                             message
                             code
@@ -112,10 +109,7 @@ export class CmsSdk {
                         excludeType: $excludeType
                         fields: $fields
                     ) {
-                        data {
-                            id
-                            entryId
-                        }
+                        data
                         meta {
                             cursor
                             hasMoreItems
