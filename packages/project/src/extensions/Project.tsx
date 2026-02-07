@@ -7,9 +7,7 @@ import {
     ApiAfterBuild,
     ApiBeforeDeploy,
     ApiBeforeWatch,
-    BeforeBuild,
     BeforeDeploy,
-    BeforeWatch,
     CoreBeforeDeploy
 } from "~/extensions/index.js";
 
