@@ -7,13 +7,13 @@ export interface CmsSdkConfig {
 
 export interface GetEntryParams {
     modelId: string;
-    where: Record<string, any>;
+    where: Record<string, unknown>;
     fields?: string[];
 }
 
 export interface ListEntriesParams {
     modelId: string;
-    where?: Record<string, any>;
+    where?: Record<string, unknown>;
     sort?: Record<string, "asc" | "desc">;
     limit?: number;
     after?: string;
@@ -24,13 +24,13 @@ export interface ListEntriesParams {
 
 export interface CreateEntryParams {
     modelId: string;
-    values: Record<string, any>;
+    values: Record<string, unknown>;
 }
 
 export interface UpdateEntryParams {
     modelId: string;
     id: string;
-    values: Record<string, any>;
+    values: Record<string, unknown>;
 }
 
 export interface DeleteEntryParams {
@@ -52,7 +52,7 @@ export interface UnpublishEntryParams {
 export interface CmsEntry {
     id: string;
     entryId: string;
-    [key: string]: any;
+    [key: string]: unknown;
 }
 
 export interface ListEntriesResult {
