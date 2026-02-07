@@ -7,7 +7,7 @@ import { createDeleteEntryResolver } from "./deleteEntryResolver.js";
 import { createPublishEntryResolver } from "./publishEntryResolver.js";
 import { createUnpublishEntryResolver } from "./unpublishEntryResolver.js";
 
-class CmsSdkSchema implements CoreGraphQLSchemaFactory.Interface {
+class CmsSchema implements CoreGraphQLSchemaFactory.Interface {
     async execute(
         builder: CoreGraphQLSchemaFactory.SchemaBuilder
     ): CoreGraphQLSchemaFactory.Return {
@@ -134,9 +134,9 @@ class CmsSdkSchema implements CoreGraphQLSchemaFactory.Interface {
     }
 }
 
-export const createCmsSdkSchema = () => {
+export const createCmsSchema = () => {
     return CoreGraphQLSchemaFactory.createImplementation({
-        implementation: CmsSdkSchema,
+        implementation: CmsSchema,
         dependencies: []
     });
 };
