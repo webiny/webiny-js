@@ -369,6 +369,7 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
             tags,
             onProgress: options.onProgress
         });
+
         if (newFile) {
             newFile.tags = removeScopePrefix(newFile.tags);
             setFiles(files => [newFile, ...files]);

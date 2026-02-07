@@ -39,10 +39,16 @@ export interface FileItem {
     location: {
         folderId: string;
     };
-    meta?: {
-        private?: boolean;
-        width?: number;
-        height?: number;
+    metadata?: {
+        image?: {
+            width: number;
+            height: number;
+            format: string;
+            orientation: number;
+        };
+        exif?: Record<string, any>;
+        iptc?: Record<string, any>;
+        [key: string]: any;
     };
     accessControl?: {
         type: "public" | "private-authenticated";

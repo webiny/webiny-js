@@ -1,10 +1,9 @@
+import type { ExifTags } from "exifreader";
 import { S3 } from "@webiny/aws-sdk/client-s3/index.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { UpdateFileUseCase } from "@webiny/api-file-manager/features/file/UpdateFile/index.js";
 import { MetadataReader } from "../WriteFileMetadata/MetadataReader.js";
-import sharp from "sharp";
-import ExifReader from "exifreader";
 
 export interface ExtractMetadataInput {
     fileId: string;
@@ -63,6 +62,14 @@ class ExtractMetadataTask implements TaskDefinition.Interface<ExtractMetadataInp
                 });
             }
 
+            const sharp = await import(/* webpackChunkName: "sharp" */ "sharp").then(
+                m => m.default
+            );
+
+            const ExifReader = await import(/* webpackChunkName: "exifreader" */ "exifreader").then(
+                m => m.default
+            );
+
             // Convert S3 body to buffer
             const buffer = Buffer.from(await s3Object.Body.transformToByteArray());
 
@@ -79,26 +86,24 @@ class ExtractMetadataTask implements TaskDefinition.Interface<ExtractMetadataInp
                     width: sharpMetadata.width,
                     height: sharpMetadata.height,
                     format: sharpMetadata.format,
-                    orientation: sharpMetadata.orientation
+                    orientation: sharpMetadata.orientation ?? 1
                 }
             };
 
             // Extract EXIF data if available
             if (tags.exif) {
-                metadata.exif = tags.exif;
+                metadata.exif = this.cleanValues(tags.exif);
             }
 
             // Extract IPTC data if available
             if (tags.iptc) {
-                metadata.iptc = tags.iptc;
+                metadata.iptc = this.cleanValues(tags.iptc);
             }
 
             // Update the file with extracted metadata
             const updateResult = await this.updateFileUseCase.execute({
                 id: input.fileId,
-                meta: {
-                    metadata
-                }
+                metadata
             });
 
             if (updateResult.isFail()) {
@@ -115,6 +120,27 @@ class ExtractMetadataTask implements TaskDefinition.Interface<ExtractMetadataInp
                 }`
             });
         }
+    }
+
+    private cleanValues(tags: ExifTags) {
+        const cleaned: Record<string, any> = {};
+
+        for (const [key, tag] of Object.entries(tags)) {
+            if (!tag || typeof tag !== "object") {
+                continue;
+            }
+
+            // Use description if available, otherwise value
+            if (tag.description !== undefined && tag.description !== null) {
+                cleaned[key] = tag.description;
+            } else if (Array.isArray(tag.value) && tag.value.length > 20) {
+                // Skip large byte arrays
+            } else if (tag.value !== undefined) {
+                cleaned[key] = tag.value;
+            }
+        }
+
+        return cleaned;
     }
 }
 

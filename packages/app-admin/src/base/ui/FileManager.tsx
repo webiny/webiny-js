@@ -10,17 +10,17 @@ export interface FileManagerOnChange<T> {
  * Represents a file object managed by the File Manager.
  */
 export interface FileManagerFileItem {
+    // Required - every DAM must provide these
     id: string;
     src: string;
-    meta?: Array<FileManagerFileItemMetaItem>;
-}
-
-/**
- * With this we allow developers to add any value to file's meta via component composition, thus the `value: any`.
- */
-export interface FileManagerFileItemMetaItem {
-    key: string;
-    value: any;
+    name: string;
+    type: string; // MIME type
+    size: number; // bytes
+    // Required for images (apps depend on these for Next.js Image, etc.)
+    width?: number;
+    height?: number;
+    // DAM-specific metadata
+    [key: string]: any;
 }
 
 export type FileManagerRenderPropParams<TValue> = {

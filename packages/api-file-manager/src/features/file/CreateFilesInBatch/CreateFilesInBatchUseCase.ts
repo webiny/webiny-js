@@ -44,7 +44,7 @@ class CreateFilesInBatchUseCaseImpl implements UseCaseAbstraction.Interface {
                 name: file.name,
                 size: file.size,
                 type: file.type,
-                meta: file.meta || {},
+                metadata: file.metadata || {},
                 location: file.location || { folderId: "root" },
                 tags: file.tags || [],
                 extensions: input.meta || {}

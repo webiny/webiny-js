@@ -159,7 +159,7 @@ export interface FileInput {
     size: number;
     type: string;
     tags: string[];
-    meta?: Record<string, any>;
+    metadata?: Record<string, any>;
 }
 
 export interface CreateFileMutationVariables {
