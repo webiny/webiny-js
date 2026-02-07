@@ -1,6 +1,6 @@
 import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { IUrlModel, IWcpUserModel, IWcpUserPatModel } from "~/abstractions/models/index.js";
-import type { EncryptedWcpProjectLicense } from "@webiny/wcp";
+import type { EncryptedWcpProjectLicense } from "@webiny/wcp/types";
 
 export interface IGetProjectEnvironmentParams {
     orgId?: string;

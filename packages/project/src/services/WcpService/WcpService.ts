@@ -1,5 +1,5 @@
 import { createImplementation } from "@webiny/di";
-import type { EncryptedWcpProjectLicense } from "@webiny/wcp";
+import type { EncryptedWcpProjectLicense } from "@webiny/wcp/types";
 import { LocalStorageService, LoggerService, WcpService } from "~/abstractions/index.js";
 import { GetUser } from "./GetUser.js";
 import { GenerateUserPat } from "./GenerateUserPat.js";

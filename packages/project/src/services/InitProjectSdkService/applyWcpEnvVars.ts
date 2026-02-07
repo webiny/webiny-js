@@ -1,5 +1,5 @@
 import { encrypt, decrypt } from "@webiny/wcp";
-import type { EncryptedWcpProjectLicense } from "@webiny/wcp";
+import type { EncryptedWcpProjectLicense } from "@webiny/wcp/types";
 import { Container } from "@webiny/di";
 import {
     GetProjectIdService,
@@ -58,7 +58,7 @@ export const applyWcpEnvVars = async (container: Container) => {
     const [orgId, projectId] = wcpProjectId.split("/");
 
     // Check if API key is already set
-    let apiKey = process.env.WCP_PROJECT_ENVIRONMENT_API_KEY;
+    const apiKey = process.env.WCP_PROJECT_ENVIRONMENT_API_KEY;
 
     const sdkParams = projectSdkParamsService.get();
     const env = sdkParams.env;

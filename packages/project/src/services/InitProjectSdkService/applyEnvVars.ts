@@ -1,6 +1,4 @@
-import { type IProjectModel } from "~/abstractions/models/index.js";
 import { type IProjectConfigModel } from "~/abstractions/models/index.js";
-import { Container } from "@webiny/di";
 import { EnvVar as EnvVarExt } from "~/extensions/EnvVar.js";
 
 export const applyEnvVars = (projectExtensions: IProjectConfigModel) => {

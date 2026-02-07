@@ -1,5 +1,5 @@
 import { getWcpApiUrl } from "@webiny/wcp";
-import type { EncryptedWcpProjectLicense } from "@webiny/wcp";
+import type { EncryptedWcpProjectLicense } from "@webiny/wcp/types";
 import { LoggerService } from "~/abstractions/index.js";
 import { IGetProjectLicenseParams } from "~/abstractions/services/WcpService.js";
 
