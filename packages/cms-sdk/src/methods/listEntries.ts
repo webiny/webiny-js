@@ -14,8 +14,8 @@ export interface ListEntriesParams {
     preview?: boolean;
 }
 
-export interface ListEntriesResult {
-    items: CmsEntry[];
+export interface ListEntriesResult<TValues = Record<string, unknown>> {
+    items: CmsEntry<TValues>[];
     meta: {
         cursor: string | null;
         hasMoreItems: boolean;
@@ -26,6 +26,7 @@ export interface ListEntriesResult {
 /**
  * Lists entries from the CMS with filtering, sorting, and pagination support.
  * 
+ * @template TValues - Type of the entry values object
  * @param config - SDK configuration
  * @param fetchFn - Fetch function to use for HTTP requests
  * @param params - Parameters for listing entries
@@ -41,11 +42,11 @@ export interface ListEntriesResult {
  * @param params.preview - When true, uses preview API to access unpublished/draft content. When false (default), uses read API for published content only.
  * @returns List of entries with pagination metadata
  */
-export async function listEntries(
+export async function listEntries<TValues = Record<string, unknown>>(
     config: CmsSdkConfig,
     fetchFn: typeof fetch,
     params: ListEntriesParams
-): Promise<ListEntriesResult> {
+): Promise<ListEntriesResult<TValues>> {
     const {
         modelId,
         where,

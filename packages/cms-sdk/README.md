@@ -58,47 +58,79 @@ const sdk = new CmsSdk({
 ### Get Entry
 
 ```typescript
-const entry = await sdk.getEntry({
+// With TypeScript type safety
+interface ArticleValues {
+    title: string;
+    description: string;
+    author: {
+        name: string;
+        email: string;
+    };
+}
+
+const entry = await sdk.getEntry<ArticleValues>({
     modelId: "article",
     where: { id: "123456" },
-    fields: ["title", "image", "author.id", "author.name", "author.company.name"]
+    fields: ["title", "description", "author.name", "author.email"]
 });
+
+// Now entry.values is typed as ArticleValues
+console.log(entry?.values?.title); // TypeScript knows this is a string
 ```
 
 ### List Entries
 
 ```typescript
-const result = await sdk.listEntries({
-    modelId: "article",
-    where: { category: "news" },
+interface ProductValues {
+    name: string;
+    sku: string;
+    price: number;
+}
+
+const result = await sdk.listEntries<ProductValues>({
+    modelId: "product",
+    where: { category: "electronics" },
     sort: { savedOn: "asc" },
     limit: 10,
-    include: ["image"]
+    fields: ["name", "sku", "price"]
 });
 
-console.log(result.items); // Array of entries
+// result.items is typed as CmsEntry<ProductValues>[]
+result.items.forEach(item => {
+    console.log(item.values?.name); // TypeScript knows this is a string
+});
+
 console.log(result.meta); // Pagination metadata
 ```
 
 ### Create Entry
 
 ```typescript
-const newEntry = await sdk.createEntry({
+interface ArticleValues {
+    title: string;
+    content: string;
+}
+
+const newEntry = await sdk.createEntry<ArticleValues>({
     modelId: "article",
     values: {
-        title: "My article"
+        title: "My article",
+        content: "Article content..."
     }
 });
+
+// newEntry is typed as CmsEntry<ArticleValues>
 ```
 
 ### Update Entry
 
 ```typescript
-const updatedEntry = await sdk.updateEntry({
+const updatedEntry = await sdk.updateEntry<ArticleValues>({
     modelId: "article",
     id: "123456#0002",
     values: {
-        title: "My updated article"
+        title: "My updated article",
+        content: "Updated content..."
     }
 });
 ```
@@ -116,7 +148,7 @@ const deleted = await sdk.deleteEntry({
 ### Publish Entry
 
 ```typescript
-const publishedEntry = await sdk.publishEntry({
+const publishedEntry = await sdk.publishEntry<ArticleValues>({
     modelId: "article",
     id: "123456#0002"
 });
@@ -125,9 +157,27 @@ const publishedEntry = await sdk.publishEntry({
 ### Unpublish Entry
 
 ```typescript
-const unpublishedEntry = await sdk.unpublishEntry({
+const unpublishedEntry = await sdk.unpublishEntry<ArticleValues>({
     modelId: "article",
     id: "123456#0002"
+});
+```
+
+### Preview Unpublished Content
+
+```typescript
+// Preview draft content before publishing
+const draftEntry = await sdk.getEntry<ArticleValues>({
+    modelId: "article",
+    where: { id: "123456" },
+    fields: ["title", "content"],
+    preview: true  // Uses preview API for unpublished content
+});
+
+const draftEntries = await sdk.listEntries<ArticleValues>({
+    modelId: "article",
+    where: { status: "draft" },
+    preview: true  // Access unpublished entries
 });
 ```
 
@@ -152,35 +202,56 @@ new CmsSdk(config: CmsSdkConfig)
 
 #### Methods
 
-All methods return a Promise and may throw errors if the operation fails.
+All methods return a Promise and may throw errors if the operation fails. All methods (except `deleteEntry`) support generic type parameters for type-safe values.
 
-##### `getEntry(params: GetEntryParams): Promise<CmsEntry | null>`
+##### `getEntry<TValues>(params: GetEntryParams): Promise<CmsEntry<TValues> | null>`
 
-Retrieve a single entry.
+Retrieve a single entry with typed values.
 
-##### `listEntries(params: ListEntriesParams): Promise<ListEntriesResult>`
+##### `listEntries<TValues>(params: ListEntriesParams): Promise<ListEntriesResult<TValues>>`
 
-List entries with optional filtering, sorting, and pagination.
+List entries with optional filtering, sorting, and pagination. Returns typed entries.
 
-##### `createEntry(params: CreateEntryParams): Promise<CmsEntry>`
+##### `createEntry<TValues>(params: CreateEntryParams<TValues>): Promise<CmsEntry<TValues>>`
 
-Create a new entry.
+Create a new entry with typed values.
 
-##### `updateEntry(params: UpdateEntryParams): Promise<CmsEntry>`
+##### `updateEntry<TValues>(params: UpdateEntryParams<TValues>): Promise<CmsEntry<TValues>>`
 
-Update an existing entry.
+Update an existing entry with typed values.
 
 ##### `deleteEntry(params: DeleteEntryParams): Promise<boolean>`
 
 Delete an entry (soft delete by default, or permanent delete if specified).
 
-##### `publishEntry(params: PublishEntryParams): Promise<CmsEntry>`
+##### `publishEntry<TValues>(params: PublishEntryParams): Promise<CmsEntry<TValues>>`
 
-Publish an entry.
+Publish an entry and return it with typed values.
 
-##### `unpublishEntry(params: UnpublishEntryParams): Promise<CmsEntry>`
+##### `unpublishEntry<TValues>(params: UnpublishEntryParams): Promise<CmsEntry<TValues>>`
 
-Unpublish an entry.
+Unpublish an entry and return it with typed values.
+
+## TypeScript Support
+
+The SDK is written in TypeScript and provides full type safety. You can specify the shape of your entry values using generic type parameters:
+
+```typescript
+interface MyContentModel {
+    title: string;
+    description: string;
+    publishDate: string;
+    author: {
+        name: string;
+        email: string;
+    };
+}
+
+// Type-safe operations
+const entry = await sdk.getEntry<MyContentModel>({ ... });
+const entries = await sdk.listEntries<MyContentModel>({ ... });
+await sdk.createEntry<MyContentModel>({ values: { ... } });
+```
 
 ## License
 

@@ -23,31 +23,43 @@ export class CmsSdk {
         this.fetchFn = config.fetch || fetch;
     }
 
-    async getEntry(params: GetEntryParams): Promise<CmsEntry | null> {
-        return getEntryFn(this.config, this.fetchFn, params);
+    async getEntry<TValues = Record<string, unknown>>(
+        params: GetEntryParams
+    ): Promise<CmsEntry<TValues> | null> {
+        return getEntryFn<TValues>(this.config, this.fetchFn, params);
     }
 
-    async listEntries(params: ListEntriesParams): Promise<ListEntriesResult> {
-        return listEntriesFn(this.config, this.fetchFn, params);
+    async listEntries<TValues = Record<string, unknown>>(
+        params: ListEntriesParams
+    ): Promise<ListEntriesResult<TValues>> {
+        return listEntriesFn<TValues>(this.config, this.fetchFn, params);
     }
 
-    async createEntry(params: CreateEntryParams): Promise<CmsEntry> {
-        return createEntryFn(this.config, this.fetchFn, params);
+    async createEntry<TValues = Record<string, unknown>>(
+        params: CreateEntryParams<TValues>
+    ): Promise<CmsEntry<TValues>> {
+        return createEntryFn<TValues>(this.config, this.fetchFn, params);
     }
 
-    async updateEntry(params: UpdateEntryParams): Promise<CmsEntry> {
-        return updateEntryFn(this.config, this.fetchFn, params);
+    async updateEntry<TValues = Record<string, unknown>>(
+        params: UpdateEntryParams<TValues>
+    ): Promise<CmsEntry<TValues>> {
+        return updateEntryFn<TValues>(this.config, this.fetchFn, params);
     }
 
     async deleteEntry(params: DeleteEntryParams): Promise<boolean> {
         return deleteEntryFn(this.config, this.fetchFn, params);
     }
 
-    async publishEntry(params: PublishEntryParams): Promise<CmsEntry> {
-        return publishEntryFn(this.config, this.fetchFn, params);
+    async publishEntry<TValues = Record<string, unknown>>(
+        params: PublishEntryParams
+    ): Promise<CmsEntry<TValues>> {
+        return publishEntryFn<TValues>(this.config, this.fetchFn, params);
     }
 
-    async unpublishEntry(params: UnpublishEntryParams): Promise<CmsEntry> {
-        return unpublishEntryFn(this.config, this.fetchFn, params);
+    async unpublishEntry<TValues = Record<string, unknown>>(
+        params: UnpublishEntryParams
+    ): Promise<CmsEntry<TValues>> {
+        return unpublishEntryFn<TValues>(this.config, this.fetchFn, params);
     }
 }

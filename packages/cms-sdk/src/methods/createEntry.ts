@@ -1,16 +1,25 @@
 import type { CmsSdkConfig } from "../types.js";
 import type { CmsEntry } from "./getEntry.js";
 
-export interface CreateEntryParams {
+export interface CreateEntryParams<TValues = Record<string, unknown>> {
     modelId: string;
-    values: Record<string, unknown>;
+    values: TValues;
 }
 
-export async function createEntry(
+/**
+ * Creates a new entry in the CMS.
+ * 
+ * @template TValues - Type of the entry values object
+ * @param config - SDK configuration
+ * @param fetchFn - Fetch function to use for HTTP requests
+ * @param params - Parameters for creating the entry
+ * @returns The created entry data
+ */
+export async function createEntry<TValues = Record<string, unknown>>(
     config: CmsSdkConfig,
     fetchFn: typeof fetch,
-    params: CreateEntryParams
-): Promise<CmsEntry> {
+    params: CreateEntryParams<TValues>
+): Promise<CmsEntry<TValues>> {
     const { modelId, values } = params;
 
     const { executeGraphQL } = await import("./executeGraphQL.js");
