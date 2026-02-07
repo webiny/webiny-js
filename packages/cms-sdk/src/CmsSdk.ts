@@ -20,7 +20,7 @@ export class CmsSdk {
         this.fetchFn = config.fetch || fetch;
     }
 
-    private async executeGraphQL(query: string, variables: Record<string, any> = {}) {
+    private async executeGraphQL(query: string, variables: Record<string, unknown> = {}) {
         const url = `${this.config.apiHost}/graphql`;
 
         const response = await this.fetchFn(url, {

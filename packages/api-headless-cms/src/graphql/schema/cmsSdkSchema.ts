@@ -5,9 +5,61 @@ import type { ApiEndpoint } from "~/types/index.js";
 import type { GraphQLFieldResolver } from "graphql";
 import type { CmsModel } from "~/types/index.js";
 
-interface CmsSdkResolverArgs {
-    context: CmsContext;
+interface GetEntryArgs {
+    modelId: string;
+    where: Record<string, unknown>;
 }
+
+interface ListEntriesArgs {
+    modelId: string;
+    where?: Record<string, unknown>;
+    sort?: Record<string, unknown>;
+    limit?: number;
+    after?: string;
+    include?: string[];
+    exclude?: string[];
+    excludeType?: string[];
+}
+
+interface CreateEntryArgs {
+    modelId: string;
+    values: Record<string, unknown>;
+}
+
+interface UpdateEntryArgs {
+    modelId: string;
+    id: string;
+    values: Record<string, unknown>;
+}
+
+interface DeleteEntryArgs {
+    modelId: string;
+    id: string;
+    permanent?: boolean;
+}
+
+interface PublishEntryArgs {
+    modelId: string;
+    id: string;
+}
+
+interface UnpublishEntryArgs {
+    modelId: string;
+    id: string;
+}
+
+/**
+ * Helper to get error message from unknown error.
+ */
+const getErrorMessage = (error: unknown, fallback: string): string => {
+    if (error instanceof Error) {
+        return error.message;
+    }
+    if (typeof error === "string") {
+        return error;
+    }
+    return fallback;
+};
 
 /**
  * Helper to get model by modelId.
@@ -20,7 +72,7 @@ const getModel = async (context: CmsContext, modelId: string): Promise<CmsModel>
     return model;
 };
 
-const createGetEntryResolver = (): GraphQLFieldResolver<any, CmsContext, any> => {
+const createGetEntryResolver = (): GraphQLFieldResolver<any, CmsContext, GetEntryArgs> => {
     return async (_, args, context) => {
         const { modelId, where } = args;
 
@@ -54,7 +106,7 @@ const createGetEntryResolver = (): GraphQLFieldResolver<any, CmsContext, any> =>
             return {
                 data: null,
                 error: {
-                    message: error.message || "Failed to get entry",
+                    message: getErrorMessage(error, "Failed to get entry"),
                     code: "GET_ENTRY_ERROR"
                 }
             };
@@ -62,7 +114,7 @@ const createGetEntryResolver = (): GraphQLFieldResolver<any, CmsContext, any> =>
     };
 };
 
-const createListEntriesResolver = (): GraphQLFieldResolver<any, CmsContext, any> => {
+const createListEntriesResolver = (): GraphQLFieldResolver<any, CmsContext, ListEntriesArgs> => {
     return async (_, args, context) => {
         const { modelId, where, sort, limit, after } = args;
 
@@ -120,7 +172,7 @@ const createListEntriesResolver = (): GraphQLFieldResolver<any, CmsContext, any>
                 data: [],
                 meta: { cursor: null, hasMoreItems: false, totalCount: 0 },
                 error: {
-                    message: error.message || "Failed to list entries",
+                    message: getErrorMessage(error, "Failed to list entries"),
                     code: "LIST_ENTRIES_ERROR"
                 }
             };
@@ -128,7 +180,7 @@ const createListEntriesResolver = (): GraphQLFieldResolver<any, CmsContext, any>
     };
 };
 
-const createCreateEntryResolver = (): GraphQLFieldResolver<any, CmsContext, any> => {
+const createCreateEntryResolver = (): GraphQLFieldResolver<any, CmsContext, CreateEntryArgs> => {
     return async (_, args, context) => {
         const { modelId, values } = args;
 
@@ -161,7 +213,7 @@ const createCreateEntryResolver = (): GraphQLFieldResolver<any, CmsContext, any>
             return {
                 data: null,
                 error: {
-                    message: error.message || "Failed to create entry",
+                    message: getErrorMessage(error, "Failed to create entry"),
                     code: "CREATE_ENTRY_ERROR"
                 }
             };
@@ -169,7 +221,7 @@ const createCreateEntryResolver = (): GraphQLFieldResolver<any, CmsContext, any>
     };
 };
 
-const createUpdateEntryResolver = (): GraphQLFieldResolver<any, CmsContext, any> => {
+const createUpdateEntryResolver = (): GraphQLFieldResolver<any, CmsContext, UpdateEntryArgs> => {
     return async (_, args, context) => {
         const { modelId, id, values } = args;
 
@@ -205,7 +257,7 @@ const createUpdateEntryResolver = (): GraphQLFieldResolver<any, CmsContext, any>
             return {
                 data: null,
                 error: {
-                    message: error.message || "Failed to update entry",
+                    message: getErrorMessage(error, "Failed to update entry"),
                     code: "UPDATE_ENTRY_ERROR"
                 }
             };
@@ -213,7 +265,7 @@ const createUpdateEntryResolver = (): GraphQLFieldResolver<any, CmsContext, any>
     };
 };
 
-const createDeleteEntryResolver = (): GraphQLFieldResolver<any, CmsContext, any> => {
+const createDeleteEntryResolver = (): GraphQLFieldResolver<any, CmsContext, DeleteEntryArgs> => {
     return async (_, args, context) => {
         const { modelId, id, permanent = false } = args;
 
@@ -249,7 +301,7 @@ const createDeleteEntryResolver = (): GraphQLFieldResolver<any, CmsContext, any>
             return {
                 data: false,
                 error: {
-                    message: error.message || "Failed to delete entry",
+                    message: getErrorMessage(error, "Failed to delete entry"),
                     code: "DELETE_ENTRY_ERROR"
                 }
             };
@@ -257,7 +309,7 @@ const createDeleteEntryResolver = (): GraphQLFieldResolver<any, CmsContext, any>
     };
 };
 
-const createPublishEntryResolver = (): GraphQLFieldResolver<any, CmsContext, any> => {
+const createPublishEntryResolver = (): GraphQLFieldResolver<any, CmsContext, PublishEntryArgs> => {
     return async (_, args, context) => {
         const { modelId, id } = args;
 
@@ -290,7 +342,7 @@ const createPublishEntryResolver = (): GraphQLFieldResolver<any, CmsContext, any
             return {
                 data: null,
                 error: {
-                    message: error.message || "Failed to publish entry",
+                    message: getErrorMessage(error, "Failed to publish entry"),
                     code: "PUBLISH_ENTRY_ERROR"
                 }
             };
@@ -298,7 +350,11 @@ const createPublishEntryResolver = (): GraphQLFieldResolver<any, CmsContext, any
     };
 };
 
-const createUnpublishEntryResolver = (): GraphQLFieldResolver<any, CmsContext, any> => {
+const createUnpublishEntryResolver = (): GraphQLFieldResolver<
+    any,
+    CmsContext,
+    UnpublishEntryArgs
+> => {
     return async (_, args, context) => {
         const { modelId, id } = args;
 
@@ -331,7 +387,7 @@ const createUnpublishEntryResolver = (): GraphQLFieldResolver<any, CmsContext, a
             return {
                 data: null,
                 error: {
-                    message: error.message || "Failed to unpublish entry",
+                    message: getErrorMessage(error, "Failed to unpublish entry"),
                     code: "UNPUBLISH_ENTRY_ERROR"
                 }
             };
