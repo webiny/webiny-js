@@ -34,7 +34,7 @@ export const createListEntriesResolver = (): GraphQLFieldResolver<
 
             const fieldsSelection = buildFieldsSelection(fields);
 
-            const query = `
+            const query = /* GraphQL */ `
                 query List${model.pluralApiName}(
                     $where: ${model.singularApiName}ListWhereInput
                     $sort: [${model.singularApiName}ListSorter!]
@@ -58,6 +58,7 @@ export const createListEntriesResolver = (): GraphQLFieldResolver<
                         error {
                             message
                             code
+                            data
                         }
                     }
                 }

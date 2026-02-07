@@ -24,13 +24,12 @@ export const createUpdateEntryResolver = (): GraphQLFieldResolver<
             const apiType: ApiEndpoint = "manage";
             const executeSchema = await context.cms.getExecutableSchema(apiType);
 
-            const query = `
+            const query = /* GraphQL */ `
                 mutation Update${model.singularApiName}($revision: ID!, $data: ${model.singularApiName}Input!) {
                     update${model.singularApiName}(revision: $revision, data: $data) {
                         data {
                             id
                             entryId
-                            values
                         }
                         error {
                             message

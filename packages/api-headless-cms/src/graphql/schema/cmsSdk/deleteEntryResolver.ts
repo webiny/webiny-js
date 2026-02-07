@@ -24,7 +24,7 @@ export const createDeleteEntryResolver = (): GraphQLFieldResolver<
             const apiType: ApiEndpoint = "manage";
             const executeSchema = await context.cms.getExecutableSchema(apiType);
 
-            const query = `
+            const query = /* GraphQL */ `
                 mutation Delete${model.singularApiName}($revision: ID!, $options: CmsDeleteEntryOptions) {
                     delete${model.singularApiName}(revision: $revision, options: $options) {
                         data

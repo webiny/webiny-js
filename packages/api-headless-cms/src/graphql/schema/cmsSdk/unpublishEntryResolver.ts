@@ -23,13 +23,12 @@ export const createUnpublishEntryResolver = (): GraphQLFieldResolver<
             const apiType: ApiEndpoint = "manage";
             const executeSchema = await context.cms.getExecutableSchema(apiType);
 
-            const query = `
+            const query = /* GraphQL */ `
                 mutation Unpublish${model.singularApiName}($revision: ID!) {
                     unpublish${model.singularApiName}(revision: $revision) {
                         data {
                             id
                             entryId
-                            values
                         }
                         error {
                             message

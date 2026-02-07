@@ -23,13 +23,12 @@ export const createCreateEntryResolver = (): GraphQLFieldResolver<
             const apiType: ApiEndpoint = "manage";
             const executeSchema = await context.cms.getExecutableSchema(apiType);
 
-            const query = `
+            const query = /* GraphQL */ `
                 mutation Create${model.singularApiName}($data: ${model.singularApiName}Input!) {
                     create${model.singularApiName}(data: $data) {
                         data {
                             id
                             entryId
-                            values
                         }
                         error {
                             message

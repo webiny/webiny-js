@@ -35,9 +35,9 @@ class CmsSdkSchema implements CoreGraphQLSchemaFactory.Interface {
             }
 
             type CmsQuery {
-                getEntry(modelId: String!, where: JSON!, fields: [String!], preview: Boolean): CmsEntryResponse!
+                getEntry(modelId: ID!, where: JSON!, fields: [String!], preview: Boolean): CmsEntryResponse!
                 listEntries(
-                    modelId: String!
+                    modelId: ID!
                     where: JSON
                     sort: JSON
                     limit: Int
@@ -51,11 +51,11 @@ class CmsSdkSchema implements CoreGraphQLSchemaFactory.Interface {
             }
 
             type CmsMutation {
-                createEntry(modelId: String!, values: JSON!): CmsEntryResponse!
-                updateEntry(modelId: String!, id: ID!, values: JSON!): CmsEntryResponse!
-                deleteEntry(modelId: String!, id: ID!, permanent: Boolean): CmsDeleteResponse!
-                publishEntry(modelId: String!, id: ID!): CmsEntryResponse!
-                unpublishEntry(modelId: String!, id: ID!): CmsEntryResponse!
+                createEntry(modelId: ID!, values: JSON!): CmsEntryResponse!
+                updateEntry(modelId: ID!, id: ID!, values: JSON!): CmsEntryResponse!
+                deleteEntry(modelId: ID!, id: ID!, permanent: Boolean): CmsDeleteResponse!
+                publishEntry(modelId: ID!, id: ID!): CmsEntryResponse!
+                unpublishEntry(modelId: ID!, id: ID!): CmsEntryResponse!
             }
 
             extend type Query {

@@ -24,7 +24,7 @@ export const createGetEntryResolver = (): GraphQLFieldResolver<any, CmsContext, 
 
             const fieldsSelection = buildFieldsSelection(fields);
 
-            const query = `
+            const query = /* GraphQL */ `
                 query Get${model.singularApiName}($where: ${model.singularApiName}GetWhereInput!) {
                     get${model.singularApiName}(where: $where) {
                         data {
