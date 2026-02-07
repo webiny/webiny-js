@@ -2,11 +2,7 @@ import { createImplementation, Container } from "@webiny/di";
 import {
     GetProjectService,
     GetProjectConfig,
-    InitProjectSdkService,
-    GetProjectIdService,
-    LoggerService,
-    ProjectSdkParamsService,
-    WcpService
+    InitProjectSdkService
 } from "~/abstractions/index.js";
 import { corePulumi, apiPulumi, adminPulumi } from "~/features/index.js";
 import {
@@ -19,11 +15,11 @@ import {
     getPulumiServiceWithDownloadInfo
 } from "~/decorators/index.js";
 import { applyEnvVars } from "./applyEnvVars.js";
+import { applyWcpEnvVars } from "./applyWcpEnvVars.js";
 import { registerHooks } from "./registerHooks.js";
 import { registerPulumiExtensions } from "./registerPulumiExtensions.js";
 import { registerImplementations } from "./registerImplementations.js";
 import { registerDecorators } from "./registerDecorators.js";
-import { ApplyWcpEnvVars } from "./applyWcpEnvVars.js";
 
 export class DefaultInitProjectSdkService implements InitProjectSdkService.Interface {
     constructor(
@@ -41,14 +37,7 @@ export class DefaultInitProjectSdkService implements InitProjectSdkService.Inter
         applyEnvVars(projectExtensions);
 
         // Set WCP environment variables if project ID exists.
-        const applyWcpEnvVars = new ApplyWcpEnvVars({
-            getProjectIdService: container.resolve(GetProjectIdService),
-            wcpService: container.resolve(WcpService),
-            loggerService: container.resolve(LoggerService),
-            projectSdkParamsService: container.resolve(ProjectSdkParamsService)
-        });
-
-        await applyWcpEnvVars.execute();
+        await applyWcpEnvVars(container);
 
         // Register hooks from extensions.
         await registerHooks(container, projectExtensions, project);

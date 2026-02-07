@@ -8,7 +8,6 @@ export { GetProjectConfigService } from "./GetProjectConfigService.js";
 export { GetProjectIdService } from "./GetProjectIdService.js";
 export { GetProjectService } from "./GetProjectService.js";
 export { GetProjectVersionService } from "./GetProjectVersionService.js";
-export { GetWcpProjectEnvironmentApiKeyService } from "./GetWcpProjectEnvironmentApiKeyService.js";
 export { GetPulumiService } from "./GetPulumiService.js";
 export { InitProjectSdkService } from "./InitProjectSdkService.js";
 export { InstallExtensionService } from "./InstallExtensionService.js";
