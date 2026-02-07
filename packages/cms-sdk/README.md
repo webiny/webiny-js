@@ -148,19 +148,21 @@ const deleted = await sdk.deleteEntry({
 ### Publish Entry
 
 ```typescript
-const publishedEntry = await sdk.publishEntry<ArticleValues>({
+const publishedEntry = await sdk.publishEntry({
     modelId: "article",
     id: "123456#0002"
 });
+// Returns { id, entryId, ... } without values field
 ```
 
 ### Unpublish Entry
 
 ```typescript
-const unpublishedEntry = await sdk.unpublishEntry<ArticleValues>({
+const unpublishedEntry = await sdk.unpublishEntry({
     modelId: "article",
     id: "123456#0002"
 });
+// Returns { id, entryId, ... } without values field
 ```
 
 ### Preview Unpublished Content
@@ -224,13 +226,13 @@ Update an existing entry with typed values.
 
 Delete an entry (soft delete by default, or permanent delete if specified).
 
-##### `publishEntry<TValues>(params: PublishEntryParams): Promise<CmsEntry<TValues>>`
+##### `publishEntry(params: PublishEntryParams): Promise<CmsEntry>`
 
-Publish an entry and return it with typed values.
+Publish an entry. Returns the entry with id and entryId (values field not included).
 
-##### `unpublishEntry<TValues>(params: UnpublishEntryParams): Promise<CmsEntry<TValues>>`
+##### `unpublishEntry(params: UnpublishEntryParams): Promise<CmsEntry>`
 
-Unpublish an entry and return it with typed values.
+Unpublish an entry. Returns the entry with id and entryId (values field not included).
 
 ## TypeScript Support
 

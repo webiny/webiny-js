@@ -9,17 +9,16 @@ export interface PublishEntryParams {
 /**
  * Publishes an entry in the CMS.
  * 
- * @template TValues - Type of the entry values object
  * @param config - SDK configuration
  * @param fetchFn - Fetch function to use for HTTP requests
  * @param params - Parameters for publishing the entry
- * @returns The published entry data
+ * @returns The published entry data (id and entryId only)
  */
-export async function publishEntry<TValues = Record<string, unknown>>(
+export async function publishEntry(
     config: CmsSdkConfig,
     fetchFn: typeof fetch,
     params: PublishEntryParams
-): Promise<CmsEntry<TValues>> {
+): Promise<CmsEntry> {
     const { modelId, id } = params;
 
     const { executeGraphQL } = await import("./executeGraphQL.js");
