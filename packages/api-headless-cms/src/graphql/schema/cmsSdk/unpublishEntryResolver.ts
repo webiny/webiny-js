@@ -29,10 +29,12 @@ export const createUnpublishEntryResolver = (): GraphQLFieldResolver<
                         data {
                             id
                             entryId
+                            values
                         }
                         error {
                             message
                             code
+                            data
                         }
                     }
                 }
@@ -40,7 +42,8 @@ export const createUnpublishEntryResolver = (): GraphQLFieldResolver<
 
             const result = await executeSchema({ query, variables: { revision: id } });
 
-            return result.data?.[`unpublish${model.singularApiName}`] || { data: null, error: null };
+            const operationName = `unpublish${model.singularApiName}`;
+            return result.data?.[operationName] || { data: null, error: null };
         } catch (error) {
             return {
                 data: null,

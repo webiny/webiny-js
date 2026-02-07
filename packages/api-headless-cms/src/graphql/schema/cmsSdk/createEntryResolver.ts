@@ -29,10 +29,12 @@ export const createCreateEntryResolver = (): GraphQLFieldResolver<
                         data {
                             id
                             entryId
+                            values
                         }
                         error {
                             message
                             code
+                            data
                         }
                     }
                 }
@@ -40,7 +42,8 @@ export const createCreateEntryResolver = (): GraphQLFieldResolver<
 
             const result = await executeSchema({ query, variables: { data: values } });
 
-            return result.data?.[`create${model.singularApiName}`] || { data: null, error: null };
+            const operationName = `create${model.singularApiName}`;
+            return result.data?.[operationName] || { data: null, error: null };
         } catch (error) {
             return {
                 data: null,

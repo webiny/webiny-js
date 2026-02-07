@@ -30,10 +30,12 @@ export const createUpdateEntryResolver = (): GraphQLFieldResolver<
                         data {
                             id
                             entryId
+                            values
                         }
                         error {
                             message
                             code
+                            data
                         }
                     }
                 }
@@ -44,7 +46,8 @@ export const createUpdateEntryResolver = (): GraphQLFieldResolver<
                 variables: { revision: id, data: values }
             });
 
-            return result.data?.[`update${model.singularApiName}`] || { data: null, error: null };
+            const operationName = `update${model.singularApiName}`;
+            return result.data?.[operationName] || { data: null, error: null };
         } catch (error) {
             return {
                 data: null,

@@ -12,30 +12,30 @@ class CmsSdkSchema implements CoreGraphQLSchemaFactory.Interface {
         builder: CoreGraphQLSchemaFactory.SchemaBuilder
     ): CoreGraphQLSchemaFactory.Return {
         builder.addTypeDefs(/* GraphQL */ `
-            type CmsSdkEntryResponse {
+            type CmsEntryResponse {
                 data: JSON
                 error: CmsError
             }
 
-            type CmsSdkListMeta {
+            type CmsListMeta {
                 cursor: String
                 hasMoreItems: Boolean
                 totalCount: Int
             }
 
-            type CmsSdkListResponse {
+            type CmsListResponse {
                 data: [JSON!]
-                meta: CmsSdkListMeta
+                meta: CmsListMeta
                 error: CmsError
             }
 
-            type CmsSdkDeleteResponse {
+            type CmsDeleteResponse {
                 data: Boolean
                 error: CmsError
             }
 
-            type CmsSdkQuery {
-                getEntry(modelId: String!, where: JSON!, fields: [String!], preview: Boolean): CmsSdkEntryResponse!
+            type CmsQuery {
+                getEntry(modelId: String!, where: JSON!, fields: [String!], preview: Boolean): CmsEntryResponse!
                 listEntries(
                     modelId: String!
                     where: JSON
@@ -47,23 +47,23 @@ class CmsSdkSchema implements CoreGraphQLSchemaFactory.Interface {
                     excludeType: [String!]
                     fields: [String!]
                     preview: Boolean
-                ): CmsSdkListResponse!
+                ): CmsListResponse!
             }
 
-            type CmsSdkMutation {
-                createEntry(modelId: String!, values: JSON!): CmsSdkEntryResponse!
-                updateEntry(modelId: String!, id: ID!, values: JSON!): CmsSdkEntryResponse!
-                deleteEntry(modelId: String!, id: ID!, permanent: Boolean): CmsSdkDeleteResponse!
-                publishEntry(modelId: String!, id: ID!): CmsSdkEntryResponse!
-                unpublishEntry(modelId: String!, id: ID!): CmsSdkEntryResponse!
+            type CmsMutation {
+                createEntry(modelId: String!, values: JSON!): CmsEntryResponse!
+                updateEntry(modelId: String!, id: ID!, values: JSON!): CmsEntryResponse!
+                deleteEntry(modelId: String!, id: ID!, permanent: Boolean): CmsDeleteResponse!
+                publishEntry(modelId: String!, id: ID!): CmsEntryResponse!
+                unpublishEntry(modelId: String!, id: ID!): CmsEntryResponse!
             }
 
             extend type Query {
-                cms: CmsSdkQuery!
+                cms: CmsQuery!
             }
 
             extend type Mutation {
-                cms: CmsSdkMutation!
+                cms: CmsMutation!
             }
         `);
 
@@ -82,49 +82,49 @@ class CmsSdkSchema implements CoreGraphQLSchemaFactory.Interface {
         });
 
         builder.addResolver({
-            path: "CmsSdkQuery.getEntry",
+            path: "CmsQuery.getEntry",
             resolver() {
                 return createGetEntryResolver();
             }
         });
 
         builder.addResolver({
-            path: "CmsSdkQuery.listEntries",
+            path: "CmsQuery.listEntries",
             resolver() {
                 return createListEntriesResolver();
             }
         });
 
         builder.addResolver({
-            path: "CmsSdkMutation.createEntry",
+            path: "CmsMutation.createEntry",
             resolver() {
                 return createCreateEntryResolver();
             }
         });
 
         builder.addResolver({
-            path: "CmsSdkMutation.updateEntry",
+            path: "CmsMutation.updateEntry",
             resolver() {
                 return createUpdateEntryResolver();
             }
         });
 
         builder.addResolver({
-            path: "CmsSdkMutation.deleteEntry",
+            path: "CmsMutation.deleteEntry",
             resolver() {
                 return createDeleteEntryResolver();
             }
         });
 
         builder.addResolver({
-            path: "CmsSdkMutation.publishEntry",
+            path: "CmsMutation.publishEntry",
             resolver() {
                 return createPublishEntryResolver();
             }
         });
 
         builder.addResolver({
-            path: "CmsSdkMutation.unpublishEntry",
+            path: "CmsMutation.unpublishEntry",
             resolver() {
                 return createUnpublishEntryResolver();
             }

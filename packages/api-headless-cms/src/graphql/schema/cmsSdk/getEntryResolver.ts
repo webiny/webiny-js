@@ -33,6 +33,7 @@ export const createGetEntryResolver = (): GraphQLFieldResolver<any, CmsContext, 
                         error {
                             message
                             code
+                            data
                         }
                     }
                 }
@@ -40,7 +41,8 @@ export const createGetEntryResolver = (): GraphQLFieldResolver<any, CmsContext, 
 
             const result = await executeSchema({ query, variables: { where } });
 
-            return result.data?.[`get${model.singularApiName}`] || { data: null, error: null };
+            const operationName = `get${model.singularApiName}`;
+            return result.data?.[operationName] || { data: null, error: null };
         } catch (error) {
             return {
                 data: null,

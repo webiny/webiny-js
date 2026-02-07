@@ -68,8 +68,9 @@ export const createListEntriesResolver = (): GraphQLFieldResolver<
                 variables: { where, sort, limit, after }
             });
 
+            const operationName = `list${model.pluralApiName}`;
             return (
-                result.data?.[`list${model.pluralApiName}`] || {
+                result.data?.[operationName] || {
                     data: [],
                     meta: { cursor: null, hasMoreItems: false, totalCount: 0 },
                     error: null
