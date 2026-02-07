@@ -47,16 +47,15 @@ export class CmsSdk {
     }
 
     async getEntry(params: GetEntryParams): Promise<CmsEntry | null> {
-        const { modelId, where, fields = [] } = params;
-
-        const fieldsSelection = fields.length > 0 ? fields.join("\n") : "id\nentryId";
+        const { modelId, where, fields } = params;
 
         const query = `
-            query GetEntry($modelId: String!, $where: JSON!) {
+            query GetEntry($modelId: String!, $where: JSON!, $fields: [String!]) {
                 cms {
-                    getEntry(modelId: $modelId, where: $where) {
+                    getEntry(modelId: $modelId, where: $where, fields: $fields) {
                         data {
-                            ${fieldsSelection}
+                            id
+                            entryId
                         }
                         error {
                             message
@@ -67,7 +66,7 @@ export class CmsSdk {
             }
         `;
 
-        const data = await this.executeGraphQL(query, { modelId, where });
+        const data = await this.executeGraphQL(query, { modelId, where, fields });
 
         if (data.cms.getEntry.error) {
             throw new Error(data.cms.getEntry.error.message);
@@ -85,7 +84,8 @@ export class CmsSdk {
             after,
             include,
             exclude,
-            excludeType
+            excludeType,
+            fields
         } = params;
 
         const query = `
@@ -98,6 +98,7 @@ export class CmsSdk {
                 $include: [String!]
                 $exclude: [String!]
                 $excludeType: [String!]
+                $fields: [String!]
             ) {
                 cms {
                     listEntries(
@@ -109,6 +110,7 @@ export class CmsSdk {
                         include: $include
                         exclude: $exclude
                         excludeType: $excludeType
+                        fields: $fields
                     ) {
                         data {
                             id
@@ -136,7 +138,8 @@ export class CmsSdk {
             after,
             include,
             exclude,
-            excludeType
+            excludeType,
+            fields
         });
 
         if (data.cms.listEntries.error) {

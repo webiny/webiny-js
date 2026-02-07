@@ -20,6 +20,7 @@ export interface ListEntriesParams {
     include?: string[];
     exclude?: string[];
     excludeType?: string[];
+    fields?: string[];
 }
 
 export interface CreateEntryParams {
