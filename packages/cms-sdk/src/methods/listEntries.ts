@@ -1,6 +1,24 @@
 import type { CmsSdkConfig, ListEntriesParams, ListEntriesResult } from "../types.js";
 import { executeGraphQL } from "./executeGraphQL.js";
 
+/**
+ * Lists entries from the CMS with filtering, sorting, and pagination support.
+ * 
+ * @param config - SDK configuration
+ * @param fetchFn - Fetch function to use for HTTP requests
+ * @param params - Parameters for listing entries
+ * @param params.modelId - The model ID of entries to list
+ * @param params.where - Optional where conditions to filter entries
+ * @param params.sort - Optional sort configuration
+ * @param params.limit - Maximum number of entries to return (default: 10)
+ * @param params.after - Cursor for pagination
+ * @param params.include - Fields to include
+ * @param params.exclude - Fields to exclude
+ * @param params.excludeType - Field types to exclude
+ * @param params.fields - Optional specific fields to return (dot notation supported)
+ * @param params.preview - When true, uses preview API to access unpublished/draft content. When false (default), uses read API for published content only.
+ * @returns List of entries with pagination metadata
+ */
 export async function listEntries(
     config: CmsSdkConfig,
     fetchFn: typeof fetch,
