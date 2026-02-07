@@ -3,27 +3,38 @@ import { createCmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import { ContextPlugin } from "@webiny/api";
 import type { ApiEndpoint } from "~/types/index.js";
 import type { GraphQLFieldResolver } from "graphql";
+import type { CmsModel } from "~/types/index.js";
 
 interface CmsSdkResolverArgs {
     context: CmsContext;
 }
+
+/**
+ * Helper to get model by modelId.
+ */
+const getModel = async (context: CmsContext, modelId: string): Promise<CmsModel> => {
+    const model = await context.cms.getModel(modelId);
+    if (!model) {
+        throw new Error(`Model "${modelId}" not found`);
+    }
+    return model;
+};
 
 const createGetEntryResolver = (): GraphQLFieldResolver<any, CmsContext, any> => {
     return async (_, args, context) => {
         const { modelId, where } = args;
 
         try {
-            // Determine which API to use based on the query
-            // For now, we'll use the read API for published content
+            const model = await getModel(context, modelId);
+
+            // Determine which API to use based on the query.
+            // For now, we'll use the read API for published content.
             const apiType: ApiEndpoint = "read";
             const executeSchema = await context.cms.getExecutableSchema(apiType);
 
-            // Build the dynamic query based on the model
-            const modelCamelCase = modelId.charAt(0).toLowerCase() + modelId.slice(1);
-
             const query = `
-                query Get${modelId}($where: ${modelId}GetWhereInput!) {
-                    get${modelId}(where: $where) {
+                query Get${model.singularApiName}($where: ${model.singularApiName}GetWhereInput!) {
+                    get${model.singularApiName}(where: $where) {
                         data {
                             id
                             entryId
@@ -38,7 +49,7 @@ const createGetEntryResolver = (): GraphQLFieldResolver<any, CmsContext, any> =>
 
             const result = await executeSchema({ query, variables: { where } });
 
-            return result.data?.[`get${modelId}`] || { data: null, error: null };
+            return result.data?.[`get${model.singularApiName}`] || { data: null, error: null };
         } catch (error) {
             return {
                 data: null,
@@ -56,21 +67,20 @@ const createListEntriesResolver = (): GraphQLFieldResolver<any, CmsContext, any>
         const { modelId, where, sort, limit, after } = args;
 
         try {
-            // Use read API for listing published content
+            const model = await getModel(context, modelId);
+
+            // Use read API for listing published content.
             const apiType: ApiEndpoint = "read";
             const executeSchema = await context.cms.getExecutableSchema(apiType);
 
-            const modelCamelCase = modelId.charAt(0).toLowerCase() + modelId.slice(1);
-            const modelPluralCase = `${modelCamelCase}s`; // Simple pluralization
-
             const query = `
-                query List${modelId}s(
-                    $where: ${modelId}ListWhereInput
-                    $sort: [${modelId}ListSorter!]
+                query List${model.pluralApiName}(
+                    $where: ${model.singularApiName}ListWhereInput
+                    $sort: [${model.singularApiName}ListSorter!]
                     $limit: Int
                     $after: String
                 ) {
-                    list${modelId}s(
+                    list${model.pluralApiName}(
                         where: $where
                         sort: $sort
                         limit: $limit
@@ -99,7 +109,7 @@ const createListEntriesResolver = (): GraphQLFieldResolver<any, CmsContext, any>
             });
 
             return (
-                result.data?.[`list${modelId}s`] || {
+                result.data?.[`list${model.pluralApiName}`] || {
                     data: [],
                     meta: { cursor: null, hasMoreItems: false, totalCount: 0 },
                     error: null
@@ -123,13 +133,15 @@ const createCreateEntryResolver = (): GraphQLFieldResolver<any, CmsContext, any>
         const { modelId, values } = args;
 
         try {
-            // Use manage API for creating entries
+            const model = await getModel(context, modelId);
+
+            // Use manage API for creating entries.
             const apiType: ApiEndpoint = "manage";
             const executeSchema = await context.cms.getExecutableSchema(apiType);
 
             const query = `
-                mutation Create${modelId}($data: ${modelId}Input!) {
-                    create${modelId}(data: $data) {
+                mutation Create${model.singularApiName}($data: ${model.singularApiName}Input!) {
+                    create${model.singularApiName}(data: $data) {
                         data {
                             id
                             entryId
@@ -144,7 +156,7 @@ const createCreateEntryResolver = (): GraphQLFieldResolver<any, CmsContext, any>
 
             const result = await executeSchema({ query, variables: { data: values } });
 
-            return result.data?.[`create${modelId}`] || { data: null, error: null };
+            return result.data?.[`create${model.singularApiName}`] || { data: null, error: null };
         } catch (error) {
             return {
                 data: null,
@@ -162,13 +174,15 @@ const createUpdateEntryResolver = (): GraphQLFieldResolver<any, CmsContext, any>
         const { modelId, id, values } = args;
 
         try {
-            // Use manage API for updating entries
+            const model = await getModel(context, modelId);
+
+            // Use manage API for updating entries.
             const apiType: ApiEndpoint = "manage";
             const executeSchema = await context.cms.getExecutableSchema(apiType);
 
             const query = `
-                mutation Update${modelId}($revision: ID!, $data: ${modelId}Input!) {
-                    update${modelId}(revision: $revision, data: $data) {
+                mutation Update${model.singularApiName}($revision: ID!, $data: ${model.singularApiName}Input!) {
+                    update${model.singularApiName}(revision: $revision, data: $data) {
                         data {
                             id
                             entryId
@@ -186,7 +200,7 @@ const createUpdateEntryResolver = (): GraphQLFieldResolver<any, CmsContext, any>
                 variables: { revision: id, data: values }
             });
 
-            return result.data?.[`update${modelId}`] || { data: null, error: null };
+            return result.data?.[`update${model.singularApiName}`] || { data: null, error: null };
         } catch (error) {
             return {
                 data: null,
@@ -204,13 +218,15 @@ const createDeleteEntryResolver = (): GraphQLFieldResolver<any, CmsContext, any>
         const { modelId, id, permanent = false } = args;
 
         try {
-            // Use manage API for deleting entries
+            const model = await getModel(context, modelId);
+
+            // Use manage API for deleting entries.
             const apiType: ApiEndpoint = "manage";
             const executeSchema = await context.cms.getExecutableSchema(apiType);
 
             const query = `
-                mutation Delete${modelId}($revision: ID!, $options: CmsDeleteEntryOptions) {
-                    delete${modelId}(revision: $revision, options: $options) {
+                mutation Delete${model.singularApiName}($revision: ID!, $options: CmsDeleteEntryOptions) {
+                    delete${model.singularApiName}(revision: $revision, options: $options) {
                         data
                         error {
                             message
@@ -228,7 +244,7 @@ const createDeleteEntryResolver = (): GraphQLFieldResolver<any, CmsContext, any>
                 }
             });
 
-            return result.data?.[`delete${modelId}`] || { data: false, error: null };
+            return result.data?.[`delete${model.singularApiName}`] || { data: false, error: null };
         } catch (error) {
             return {
                 data: false,
@@ -246,13 +262,15 @@ const createPublishEntryResolver = (): GraphQLFieldResolver<any, CmsContext, any
         const { modelId, id } = args;
 
         try {
-            // Use manage API for publishing entries
+            const model = await getModel(context, modelId);
+
+            // Use manage API for publishing entries.
             const apiType: ApiEndpoint = "manage";
             const executeSchema = await context.cms.getExecutableSchema(apiType);
 
             const query = `
-                mutation Publish${modelId}($revision: ID!) {
-                    publish${modelId}(revision: $revision) {
+                mutation Publish${model.singularApiName}($revision: ID!) {
+                    publish${model.singularApiName}(revision: $revision) {
                         data {
                             id
                             entryId
@@ -267,7 +285,7 @@ const createPublishEntryResolver = (): GraphQLFieldResolver<any, CmsContext, any
 
             const result = await executeSchema({ query, variables: { revision: id } });
 
-            return result.data?.[`publish${modelId}`] || { data: null, error: null };
+            return result.data?.[`publish${model.singularApiName}`] || { data: null, error: null };
         } catch (error) {
             return {
                 data: null,
@@ -285,13 +303,15 @@ const createUnpublishEntryResolver = (): GraphQLFieldResolver<any, CmsContext, a
         const { modelId, id } = args;
 
         try {
-            // Use manage API for unpublishing entries
+            const model = await getModel(context, modelId);
+
+            // Use manage API for unpublishing entries.
             const apiType: ApiEndpoint = "manage";
             const executeSchema = await context.cms.getExecutableSchema(apiType);
 
             const query = `
-                mutation Unpublish${modelId}($revision: ID!) {
-                    unpublish${modelId}(revision: $revision) {
+                mutation Unpublish${model.singularApiName}($revision: ID!) {
+                    unpublish${model.singularApiName}(revision: $revision) {
                         data {
                             id
                             entryId
@@ -306,7 +326,7 @@ const createUnpublishEntryResolver = (): GraphQLFieldResolver<any, CmsContext, a
 
             const result = await executeSchema({ query, variables: { revision: id } });
 
-            return result.data?.[`unpublish${modelId}`] || { data: null, error: null };
+            return result.data?.[`unpublish${model.singularApiName}`] || { data: null, error: null };
         } catch (error) {
             return {
                 data: null,
