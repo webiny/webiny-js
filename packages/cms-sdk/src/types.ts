@@ -9,6 +9,7 @@ export interface GetEntryParams {
     modelId: string;
     where: Record<string, unknown>;
     fields?: string[];
+    preview?: boolean;
 }
 
 export interface ListEntriesParams {
@@ -21,6 +22,7 @@ export interface ListEntriesParams {
     exclude?: string[];
     excludeType?: string[];
     fields?: string[];
+    preview?: boolean;
 }
 
 export interface CreateEntryParams {

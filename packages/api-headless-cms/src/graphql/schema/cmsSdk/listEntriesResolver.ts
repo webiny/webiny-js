@@ -10,13 +10,14 @@ export const createListEntriesResolver = (): GraphQLFieldResolver<
     ListEntriesArgs
 > => {
     return async (_, args, context) => {
-        const { modelId, where, sort, limit, after, fields } = args;
+        const { modelId, where, sort, limit, after, fields, preview = false } = args;
 
         try {
             const model = await getModel(context, modelId);
 
-            // Use read API for listing published content.
-            const apiType: ApiEndpoint = "read";
+            // Determine which API to use based on the preview flag.
+            // preview=true -> preview API, preview=false -> read API
+            const apiType: ApiEndpoint = preview ? "preview" : "read";
             const executeSchema = await context.cms.getExecutableSchema(apiType);
 
             const fieldsSelection = buildFieldsSelection(fields);

@@ -2,6 +2,7 @@ export interface GetEntryArgs {
     modelId: string;
     where: Record<string, unknown>;
     fields?: string[];
+    preview?: boolean;
 }
 
 export interface ListEntriesArgs {
@@ -14,6 +15,7 @@ export interface ListEntriesArgs {
     exclude?: string[];
     excludeType?: string[];
     fields?: string[];
+    preview?: boolean;
 }
 
 export interface CreateEntryArgs {

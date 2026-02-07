@@ -1,6 +1,12 @@
 # @webiny/cms-sdk
 
-A standalone SDK for interacting with the Webiny Headless CMS API. This SDK provides a simple and intuitive interface for managing CMS content in any JavaScript or TypeScript environment, including Node.js and the browser.
+A standalone SDK for interacting with the Webiny Headless CMS API. This SDK provides a simple and intuitive interface for reading published content and managing CMS entries in any JavaScript or TypeScript environment, including Node.js and the browser.
+
+Perfect for:
+- **Public websites**: Read and display published content in Next.js, React, or any web application
+- **Content management**: Create, update, publish, and manage CMS entries programmatically
+- **Server-side rendering**: Fetch content during SSR/SSG for optimal performance
+- **Headless applications**: Build custom frontends powered by Webiny CMS
 
 ## Installation
 

@@ -3,12 +3,11 @@ import { createCmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import { ContextPlugin } from "@webiny/api";
 import { createGetEntryResolver } from "./getEntryResolver.js";
 import { createListEntriesResolver } from "./listEntriesResolver.js";
-import { createCreateEntryResolver, createUpdateEntryResolver } from "./mutationResolvers.js";
-import {
-    createDeleteEntryResolver,
-    createPublishEntryResolver,
-    createUnpublishEntryResolver
-} from "./lifecycleResolvers.js";
+import { createCreateEntryResolver } from "./createEntryResolver.js";
+import { createUpdateEntryResolver } from "./updateEntryResolver.js";
+import { createDeleteEntryResolver } from "./deleteEntryResolver.js";
+import { createPublishEntryResolver } from "./publishEntryResolver.js";
+import { createUnpublishEntryResolver } from "./unpublishEntryResolver.js";
 
 export const createCmsSdkSchema = () => {
     const plugin = new ContextPlugin<CmsContext>(async context => {
@@ -37,7 +36,7 @@ export const createCmsSdkSchema = () => {
                 }
 
                 type CmsSdkQuery {
-                    getEntry(modelId: String!, where: JSON!, fields: [String!]): CmsSdkEntryResponse!
+                    getEntry(modelId: String!, where: JSON!, fields: [String!], preview: Boolean): CmsSdkEntryResponse!
                     listEntries(
                         modelId: String!
                         where: JSON
@@ -48,6 +47,7 @@ export const createCmsSdkSchema = () => {
                         exclude: [String!]
                         excludeType: [String!]
                         fields: [String!]
+                        preview: Boolean
                     ): CmsSdkListResponse!
                 }
 

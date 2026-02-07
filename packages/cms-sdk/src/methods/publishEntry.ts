@@ -1,0 +1,35 @@
+import type { CmsSdkConfig, PublishEntryParams, CmsEntry } from "../types.js";
+import { executeGraphQL } from "./executeGraphQL.js";
+
+export async function publishEntry(
+    config: CmsSdkConfig,
+    fetchFn: typeof fetch,
+    params: PublishEntryParams
+): Promise<CmsEntry> {
+    const { modelId, id } = params;
+
+    const query = `
+        mutation PublishEntry($modelId: String!, $id: ID!) {
+            cms {
+                publishEntry(modelId: $modelId, id: $id) {
+                    data {
+                        id
+                        entryId
+                    }
+                    error {
+                        message
+                        code
+                    }
+                }
+            }
+        }
+    `;
+
+    const data = await executeGraphQL(config, fetchFn, query, { modelId, id });
+
+    if (data.cms.publishEntry.error) {
+        throw new Error(data.cms.publishEntry.error.message);
+    }
+
+    return data.cms.publishEntry.data;
+}

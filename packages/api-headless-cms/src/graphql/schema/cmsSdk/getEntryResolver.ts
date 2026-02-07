@@ -6,14 +6,14 @@ import { getModel, getErrorMessage, buildFieldsSelection } from "./helpers.js";
 
 export const createGetEntryResolver = (): GraphQLFieldResolver<any, CmsContext, GetEntryArgs> => {
     return async (_, args, context) => {
-        const { modelId, where, fields } = args;
+        const { modelId, where, fields, preview = false } = args;
 
         try {
             const model = await getModel(context, modelId);
 
-            // Determine which API to use based on the query.
-            // For now, we'll use the read API for published content.
-            const apiType: ApiEndpoint = "read";
+            // Determine which API to use based on the preview flag.
+            // preview=true -> preview API, preview=false -> read API
+            const apiType: ApiEndpoint = preview ? "preview" : "read";
             const executeSchema = await context.cms.getExecutableSchema(apiType);
 
             const fieldsSelection = buildFieldsSelection(fields);
