@@ -2,7 +2,7 @@ import type { Plugin } from "@webiny/plugins/types.js";
 import type { GraphQLHandlerFactoryParams } from "./graphQLHandlerFactory.js";
 import { graphQLHandlerFactory } from "./graphQLHandlerFactory.js";
 import { createBaseSchema } from "~/graphql/schema/baseSchema.js";
-import { createCmsSchema } from "~/graphql/schema/cmsSdk/index.js";
+import { createCmsSchema } from "~/graphql/schema/cms/index.js";
 
 export type CreateGraphQLParams = GraphQLHandlerFactoryParams;
 export const createGraphQL = (params: CreateGraphQLParams): Plugin[] => {
