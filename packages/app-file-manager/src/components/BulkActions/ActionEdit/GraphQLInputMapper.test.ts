@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { GraphQLInputMapper } from "./GraphQLInputMapper.js";
 import type { BatchDTO } from "~/components/BulkActions/ActionEdit/domain/index.js";
 import { OperatorType } from "~/components/BulkActions/ActionEdit/domain/index.js";
-import type { FileItem } from "@webiny/app-admin/types.js";
+import type { FileItem } from "~/types.js";
 
 const fileMock: FileItem = {
     id: "12345678",

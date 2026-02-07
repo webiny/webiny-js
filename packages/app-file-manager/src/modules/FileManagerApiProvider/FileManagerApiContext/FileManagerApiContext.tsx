@@ -28,9 +28,9 @@ import {
     LIST_TAGS,
     UPDATE_FILE
 } from "../graphql.js";
-import type { FileItem, FileManagerSecurityPermission } from "@webiny/app-admin/types.js";
+import type { FileManagerSecurityPermission } from "@webiny/app-admin/types.js";
 import { getFileUploader } from "./getFileUploader.js";
-import type { Settings } from "~/types.js";
+import type { FileItem, Settings } from "~/types.js";
 import { useFileModel } from "~/hooks/useFileModel.js";
 import { getFileGraphQLSelection } from "./getFileGraphQLSelection.js";
 

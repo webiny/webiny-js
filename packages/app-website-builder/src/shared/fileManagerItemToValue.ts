@@ -5,7 +5,7 @@ export const fileManagerItemToValue = (file: FileManagerFileItem) => {
         id: file.id,
         name: file.name,
         size: file.size,
-        type: file.type,
+        mimeType: file.type,
         src: file.src || "",
         width: file.width,
         height: file.height

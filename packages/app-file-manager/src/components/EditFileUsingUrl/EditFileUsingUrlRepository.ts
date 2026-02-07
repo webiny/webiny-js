@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import type { FileItem } from "@webiny/app-admin/types.js";
+import type { FileItem } from "~/types.js";
 import { Loading, LOADING_STATE } from "./Loading.js";
 
 export interface IGetFileByUrl {

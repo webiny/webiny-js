@@ -3,7 +3,7 @@ import { cn, OverlayLoader } from "@webiny/admin-ui";
 import { FolderActionConfig, FolderGridItem, FolderProvider } from "@webiny/app-aco";
 import { i18n } from "@webiny/app/i18n/index.js";
 import type { FolderDto } from "@webiny/app-aco";
-import type { FileItem } from "@webiny/app-admin/types.js";
+import type { FileItem } from "~/types.js";
 import { FileProvider } from "~/contexts/FileProvider.js";
 import { Thumbnail } from "../Thumbnail/index.js";
 import { File } from "./File.js";

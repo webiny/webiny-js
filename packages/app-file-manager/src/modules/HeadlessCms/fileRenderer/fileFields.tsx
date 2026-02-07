@@ -9,7 +9,7 @@ import { i18n } from "@webiny/app/i18n/index.js";
 import { FileManager } from "@webiny/app-admin";
 import { getSupportedExtensionsLabelHint } from "./utils.js";
 import { EditFileUsingUrl } from "~/components/EditFileUsingUrl/index.js";
-import type { FileItem } from "@webiny/app-admin/types.js";
+import type { FileItem } from "~/types.js";
 import { MultiFilePicker } from "@webiny/admin-ui";
 
 const t = i18n.ns("app-headless-cms/admin/fields/file");

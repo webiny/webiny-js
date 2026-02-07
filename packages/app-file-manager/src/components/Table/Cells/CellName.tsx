@@ -6,7 +6,7 @@ import { FileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManager
 import { cn, Text } from "@webiny/admin-ui";
 import { CellThumbnail } from "./CellThumbnail.js";
 import { FileProvider } from "~/contexts/FileProvider.js";
-import type { FileItem } from "@webiny/app-admin/types.js";
+import type { FileItem } from "~/types.js";
 import type { FolderDto } from "@webiny/app-aco";
 
 interface DefaultProps {

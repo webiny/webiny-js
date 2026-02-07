@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import { createDecorator } from "@webiny/react-composition";
 import type { FileManagerFileItem, FileManagerOnChange } from "@webiny/app-admin";
 import { DialogsProvider, FileManagerRenderer as BaseFileManagerRenderer } from "@webiny/app-admin";
-import type { FileItem } from "@webiny/app-admin/types.js";
+import type { FileItem } from "~/types.js";
 import { FoldersProvider } from "@webiny/app-aco/contexts/folders.js";
 import { NavigateFolderProvider } from "@webiny/app-aco";
 import FileManagerView from "./FileManagerView.js";
