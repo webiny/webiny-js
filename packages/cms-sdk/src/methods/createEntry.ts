@@ -1,5 +1,10 @@
-import type { CmsSdkConfig, CreateEntryParams, CmsEntry } from "../types.js";
-import { executeGraphQL } from "./executeGraphQL.js";
+import type { CmsSdkConfig } from "../types.js";
+import type { CmsEntry } from "./getEntry.js";
+
+export interface CreateEntryParams {
+    modelId: string;
+    values: Record<string, unknown>;
+}
 
 export async function createEntry(
     config: CmsSdkConfig,
@@ -7,6 +12,8 @@ export async function createEntry(
     params: CreateEntryParams
 ): Promise<CmsEntry> {
     const { modelId, values } = params;
+
+    const { executeGraphQL } = await import("./executeGraphQL.js");
 
     const query = `
         mutation CreateEntry($modelId: String!, $values: JSON!) {

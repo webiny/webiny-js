@@ -1,8 +1,13 @@
 import type { CmsContext } from "~/types/index.js";
 import type { ApiEndpoint } from "~/types/index.js";
 import type { GraphQLFieldResolver } from "graphql";
-import type { DeleteEntryArgs } from "./types.js";
 import { getModel, getErrorMessage } from "./helpers.js";
+
+export interface DeleteEntryArgs {
+    modelId: string;
+    id: string;
+    permanent?: boolean;
+}
 
 export const createDeleteEntryResolver = (): GraphQLFieldResolver<
     any,

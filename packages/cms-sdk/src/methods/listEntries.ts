@@ -1,5 +1,27 @@
-import type { CmsSdkConfig, ListEntriesParams, ListEntriesResult } from "../types.js";
-import { executeGraphQL } from "./executeGraphQL.js";
+import type { CmsSdkConfig } from "../types.js";
+import type { CmsEntry } from "./getEntry.js";
+
+export interface ListEntriesParams {
+    modelId: string;
+    where?: Record<string, unknown>;
+    sort?: Record<string, "asc" | "desc">;
+    limit?: number;
+    after?: string;
+    include?: string[];
+    exclude?: string[];
+    excludeType?: string[];
+    fields?: string[];
+    preview?: boolean;
+}
+
+export interface ListEntriesResult {
+    items: CmsEntry[];
+    meta: {
+        cursor: string | null;
+        hasMoreItems: boolean;
+        totalCount: number;
+    };
+}
 
 /**
  * Lists entries from the CMS with filtering, sorting, and pagination support.
@@ -36,6 +58,8 @@ export async function listEntries(
         fields,
         preview
     } = params;
+
+    const { executeGraphQL } = await import("./executeGraphQL.js");
 
     const query = `
         query ListEntries(

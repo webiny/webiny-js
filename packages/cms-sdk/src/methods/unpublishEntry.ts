@@ -1,5 +1,10 @@
-import type { CmsSdkConfig, UnpublishEntryParams, CmsEntry } from "../types.js";
-import { executeGraphQL } from "./executeGraphQL.js";
+import type { CmsSdkConfig } from "../types.js";
+import type { CmsEntry } from "./getEntry.js";
+
+export interface UnpublishEntryParams {
+    modelId: string;
+    id: string;
+}
 
 export async function unpublishEntry(
     config: CmsSdkConfig,
@@ -7,6 +12,8 @@ export async function unpublishEntry(
     params: UnpublishEntryParams
 ): Promise<CmsEntry> {
     const { modelId, id } = params;
+
+    const { executeGraphQL } = await import("./executeGraphQL.js");
 
     const query = `
         mutation UnpublishEntry($modelId: String!, $id: ID!) {

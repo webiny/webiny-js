@@ -1,8 +1,13 @@
 import type { CmsContext } from "~/types/index.js";
 import type { ApiEndpoint } from "~/types/index.js";
 import type { GraphQLFieldResolver } from "graphql";
-import type { UpdateEntryArgs } from "./types.js";
 import { getModel, getErrorMessage } from "./helpers.js";
+
+export interface UpdateEntryArgs {
+    modelId: string;
+    id: string;
+    values: Record<string, unknown>;
+}
 
 export const createUpdateEntryResolver = (): GraphQLFieldResolver<
     any,

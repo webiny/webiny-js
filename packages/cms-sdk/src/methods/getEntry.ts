@@ -1,5 +1,17 @@
-import type { CmsSdkConfig, GetEntryParams, CmsEntry } from "../types.js";
-import { executeGraphQL } from "./executeGraphQL.js";
+import type { CmsSdkConfig } from "../types.js";
+
+export interface GetEntryParams {
+    modelId: string;
+    where: Record<string, unknown>;
+    fields?: string[];
+    preview?: boolean;
+}
+
+export interface CmsEntry {
+    id: string;
+    entryId: string;
+    [key: string]: unknown;
+}
 
 /**
  * Retrieves a single entry from the CMS.
@@ -19,6 +31,8 @@ export async function getEntry(
     params: GetEntryParams
 ): Promise<CmsEntry | null> {
     const { modelId, where, fields, preview } = params;
+
+    const { executeGraphQL } = await import("./executeGraphQL.js");
 
     const query = `
         query GetEntry($modelId: String!, $where: JSON!, $fields: [String!], $preview: Boolean) {

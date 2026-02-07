@@ -1,8 +1,20 @@
 import type { CmsContext } from "~/types/index.js";
 import type { ApiEndpoint } from "~/types/index.js";
 import type { GraphQLFieldResolver } from "graphql";
-import type { ListEntriesArgs } from "./types.js";
 import { getModel, getErrorMessage, buildFieldsSelection } from "./helpers.js";
+
+export interface ListEntriesArgs {
+    modelId: string;
+    where?: Record<string, unknown>;
+    sort?: Record<string, unknown>;
+    limit?: number;
+    after?: string;
+    include?: string[];
+    exclude?: string[];
+    excludeType?: string[];
+    fields?: string[];
+    preview?: boolean;
+}
 
 export const createListEntriesResolver = (): GraphQLFieldResolver<
     any,

@@ -1,5 +1,10 @@
-import type { CmsSdkConfig, DeleteEntryParams } from "../types.js";
-import { executeGraphQL } from "./executeGraphQL.js";
+import type { CmsSdkConfig } from "../types.js";
+
+export interface DeleteEntryParams {
+    modelId: string;
+    id: string;
+    permanent?: boolean;
+}
 
 export async function deleteEntry(
     config: CmsSdkConfig,
@@ -7,6 +12,8 @@ export async function deleteEntry(
     params: DeleteEntryParams
 ): Promise<boolean> {
     const { modelId, id, permanent = false } = params;
+
+    const { executeGraphQL } = await import("./executeGraphQL.js");
 
     const query = `
         mutation DeleteEntry($modelId: String!, $id: ID!, $permanent: Boolean) {
