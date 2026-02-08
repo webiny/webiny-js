@@ -15,6 +15,7 @@ class ExtractMetadataTask implements TaskDefinition.Interface<ExtractMetadataInp
     description = "A task to extract metadata from uploaded image files";
     maxIterations = 1;
     isPrivate = true;
+    disableDatabaseLogs = true;
 
     constructor(
         private keyValueStore: GlobalKeyValueStore.Interface,
