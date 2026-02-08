@@ -22,14 +22,14 @@ export const createRichTextResolver = (
             if (field.multipleValues) {
                 return (rawValue as unknown as RichTextContents[]).map(value => value.state);
             }
-            return rawValue.state;
+            return rawValue?.state ?? null;
         }
 
         // Otherwise return HTML
         if (field.multipleValues) {
-            return (rawValue as unknown as RichTextContents[]).map(value => value.html);
+            return (rawValue as unknown as RichTextContents[]).map(value => value?.html ?? null);
         }
 
-        return rawValue.html;
+        return rawValue?.html ?? null;
     };
 };
