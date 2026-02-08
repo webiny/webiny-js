@@ -13713,6 +13713,7 @@ __metadata:
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
+    exifreader: "npm:^4.23.7"
     mime: "npm:^3.0.0"
     object-hash: "npm:^3.0.0"
     p-map: "npm:^7.0.4"
@@ -16255,6 +16256,13 @@ __metadata:
   version: 0.8.11
   resolution: "@xmldom/xmldom@npm:0.8.11"
   checksum: 10/f6d6ffdf71cf19d9b3c10e978fad40d2f85453bf5b2aa05be8aa0c5ad13f84690c3153316729213cc652d06ec12c605ddb0aa03886f1d73d51b974b4105d31e3
+  languageName: node
+  linkType: hard
+
+"@xmldom/xmldom@npm:^0.9.4":
+  version: 0.9.8
+  resolution: "@xmldom/xmldom@npm:0.9.8"
+  checksum: 10/5f88d27a50bb624b0b46b8359853e1a3501217e743b132c5cbe76115646bb4b7a2128c1f0c32f045c7b452689f5206e9bba7d7292c6c13a81eed5e43c2e5ec7c
   languageName: node
   linkType: hard
 
@@ -21936,6 +21944,18 @@ __metadata:
   dependencies:
     pify: "npm:^2.2.0"
   checksum: 10/f01927ce59bccec804e171bf859a26e362c1f50aa9ebc69f7cafdcce3859d29d4b6267fd47237c18b0a1830614bd3f0ee14b7380d9bad18a4e7af9b5f0b6984f
+  languageName: node
+  linkType: hard
+
+"exifreader@npm:^4.23.7":
+  version: 4.36.1
+  resolution: "exifreader@npm:4.36.1"
+  dependencies:
+    "@xmldom/xmldom": "npm:^0.9.4"
+  dependenciesMeta:
+    "@xmldom/xmldom":
+      optional: true
+  checksum: 10/dd01cba47973be139469690fc4d50667912d224bb7f306847a0aadafe6de6db5d02a0c829c30da5696a4039da1bd6d14a848f8de3a0da59476b7a33bb1291819
   languageName: node
   linkType: hard
 

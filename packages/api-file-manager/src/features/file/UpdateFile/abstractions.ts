@@ -10,7 +10,7 @@ import {
 export interface UpdateFileInput {
     id: string;
     name?: string;
-    meta?: Record<string, any>;
+    metadata?: Record<string, any>;
     tags?: string[];
     location?: { folderId: string };
     createdOn?: string;

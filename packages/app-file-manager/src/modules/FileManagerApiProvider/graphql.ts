@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import type { FileItem } from "@webiny/app-admin/types.js";
+import type { FileItem } from "~/types.js";
 import type { Settings } from "~/types.js";
 import type { ListTagsResponseItem } from "~/modules/FileManagerApiProvider/FileManagerApiContext/FileManagerApiContext.js";
 
@@ -159,7 +159,7 @@ export interface FileInput {
     size: number;
     type: string;
     tags: string[];
-    meta?: Record<string, any>;
+    metadata?: Record<string, any>;
 }
 
 export interface CreateFileMutationVariables {

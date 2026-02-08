@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import omit from "lodash/omit.js";
-import type { FileItem } from "@webiny/app-admin/types.js";
+import type { FileItem } from "~/types.js";
 import { prepareFormData } from "@webiny/app-headless-cms-common";
 import type { CmsModelField } from "@webiny/app-headless-cms-common/types/index.js";
 import type { BatchDTO } from "~/components/BulkActions/ActionEdit/domain/index.js";

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { observer } from "mobx-react-lite";
-import { FileManager } from "@webiny/app-admin";
+import { FileManager, type FileManagerFileItem } from "@webiny/app-admin";
 import { FilePicker } from "@webiny/admin-ui";
 import { useStyles } from "~/BaseEditor/defaultConfig/Sidebar/StyleSettings/useStyles.js";
 import { BackgroundImageParser } from "./BackgroundImageParser.js";
@@ -11,7 +11,7 @@ type FileInfo = {
     id: string;
     name: string;
     size: number;
-    mimeType: string;
+    type: string;
     url: string;
 };
 
@@ -49,21 +49,7 @@ export const BackgroundImage = observer(({ elementId }: { elementId: string }) =
         }
     }, [styles.backgroundImage]);
 
-    const onFileChange = (file: any) => {
-        const metaItems = file.meta || [];
-        const getName = () => {
-            const nameItem = metaItems.find((item: { key: string }) => item.key === "name");
-            return nameItem ? nameItem.value : "";
-        };
-        const getSize = () => {
-            const sizeItem = metaItems.find((item: { key: string }) => item.key === "size");
-            return sizeItem ? sizeItem.value : 0;
-        };
-        const getType = () => {
-            const typeItem = metaItems.find((item: { key: string }) => item.key === "type");
-            return typeItem ? typeItem.value : "";
-        };
-
+    const onFileChange = (file: FileManagerFileItem) => {
         onChange(({ styles, metadata }) => {
             styles.set("backgroundPosition", DEFAULT_POSITION);
             styles.set("backgroundSize", DEFAULT_SCALING.backgroundSize);
@@ -72,9 +58,9 @@ export const BackgroundImage = observer(({ elementId }: { elementId: string }) =
 
             metadata.set("backgroundImage", {
                 id: file.id,
-                name: getName(),
-                size: getSize(),
-                mimeType: getType(),
+                name: file.name,
+                size: file.size,
+                type: file.type,
                 url: file.src || ""
             });
         });

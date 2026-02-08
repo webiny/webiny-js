@@ -1,5 +1,5 @@
 import React, { createContext } from "react";
-import type { FileItem } from "@webiny/app-admin/types.js";
+import type { FileItem } from "~/types.js";
 
 export interface FileContext {
     file: FileItem;

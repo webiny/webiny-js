@@ -22,7 +22,7 @@ const createResolvedAsset = (file: File): IResolvedAsset => {
         size: file.size,
         type: file.type,
         name: file.name,
-        meta: file.meta,
+        metadata: file.metadata,
         location: file.location,
         tags: file.tags,
         extensions: file.extensions
