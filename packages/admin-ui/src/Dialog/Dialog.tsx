@@ -116,15 +116,17 @@ const DialogBase = (props: DialogProps) => {
         <DialogRoot {...rootProps}>
             {triggerProps.children && <DialogTrigger {...triggerProps} asChild />}
             <DialogPortal>
-                <DialogOverlay />
-                <DialogContent {...contentProps}>
-                    <DialogHeader {...headerProps} />
-                    <DialogBody {...bodyProps} />
-                    <DialogFooter {...footerProps} />
-                    {closeButtonProps.show && (
-                        <CloseDialogIconButton size={closeButtonProps.size} />
-                    )}
-                </DialogContent>
+                <div data-role="dialog" className={"z-overlay absolute"}>
+                    <DialogOverlay />
+                    <DialogContent {...contentProps}>
+                        <DialogHeader {...headerProps} />
+                        <DialogBody {...bodyProps} />
+                        <DialogFooter {...footerProps} />
+                        {closeButtonProps.show && (
+                            <CloseDialogIconButton size={closeButtonProps.size} />
+                        )}
+                    </DialogContent>
+                </div>
             </DialogPortal>
         </DialogRoot>
     );
