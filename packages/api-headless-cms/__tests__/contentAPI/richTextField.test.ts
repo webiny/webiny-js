@@ -4,31 +4,7 @@ import { useProductManageHandler } from "../testHelpers/useProductManageHandler"
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 import { useProductReadHandler } from "../testHelpers/useProductReadHandler";
 import { setupGroupAndModels } from "~tests/testHelpers/setup.js";
-
-const richTextMock = [
-    {
-        tag: "h1",
-        content: "Testing H1 tags"
-    },
-    {
-        tag: "p",
-        content: "Some small piece of text to test P tags"
-    },
-    {
-        tag: "div",
-        content: [
-            {
-                tag: "p",
-                text: "Text inside the div > p"
-            },
-            {
-                tag: "a",
-                href: "https://www.webiny.com",
-                text: "Webiny"
-            }
-        ]
-    }
-];
+import { richTextMock } from "./mocks/richTextValue.js";
 
 describe("richTextField", () => {
     const manageOpts = { path: "manage" };
@@ -198,7 +174,7 @@ describe("richTextField", () => {
                                     title: "Vegetables"
                                 }
                             },
-                            richText: richTextMock,
+                            richText: richTextMock.html,
                             inStock: null,
                             itemsInStock: null,
                             variant: null

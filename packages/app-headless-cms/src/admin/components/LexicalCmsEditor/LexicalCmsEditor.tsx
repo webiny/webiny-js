@@ -35,7 +35,7 @@ export const LexicalCmsEditor = (props: Omit<RichTextEditorProps, "theme">) => {
         <LexicalEditor
             {...props}
             focus={true}
-            value={props.value ? JSON.stringify(props.value) : props.value}
+            value={props.value}
             onChange={onChange}
             staticToolbar={toolbar}
             tag={"p"}
