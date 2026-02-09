@@ -1,5 +1,5 @@
-import { encrypt, decrypt } from "@webiny/wcp";
-import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
+import { encrypt, decrypt, License } from "@webiny/wcp";
+import type { ILicense } from "@webiny/wcp/types";
 import { Container } from "@webiny/di";
 import {
     GetProjectIdService,
@@ -138,7 +138,7 @@ export const applyWcpEnvVars = async (container: Container) => {
     }
 
     // Fetch license
-    let license: DecryptedWcpProjectLicense | null = null;
+    let license: ILicense | null = null;
     if (projectEnvironment.apiKey) {
         license = await wcpService.getProjectLicense({
             apiKey: projectEnvironment.apiKey,
@@ -158,7 +158,10 @@ export const applyWcpEnvVars = async (container: Container) => {
     process.env.WCP_PROJECT_ENVIRONMENT = encrypt(wcpProjectEnvironment);
     process.env.WCP_PROJECT_ENVIRONMENT_API_KEY = projectEnvironment.apiKey;
     if (license) {
-        process.env.WCP_PROJECT_LICENSE = JSON.stringify(license);
+        const licenseDto = License.toDto(license);
+        if (licenseDto) {
+            process.env.WCP_PROJECT_LICENSE = JSON.stringify(licenseDto);
+        }
     }
 
     loggerService.debug(

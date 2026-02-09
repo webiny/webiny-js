@@ -1,5 +1,5 @@
-import { getWcpApiUrl, decrypt } from "@webiny/wcp";
-import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
+import { License, NullLicense, fetchWcpProjectLicense } from "@webiny/wcp";
+import type { ILicense } from "@webiny/wcp/types";
 import { LoggerService } from "~/abstractions/index.js";
 import { IGetProjectLicenseParams } from "~/abstractions/services/WcpService.js";
 
@@ -14,42 +14,39 @@ export class GetProjectLicense {
         this.di = di;
     }
 
-    async execute(params: IGetProjectLicenseParams): Promise<DecryptedWcpProjectLicense | null> {
+    async execute(params: IGetProjectLicenseParams): Promise<ILicense> {
         const { apiKey, orgId, projectId } = params;
         const { loggerService } = this.di;
 
         try {
-            // Construct the license endpoint URL
-            const licenseUrl = getWcpApiUrl(`/orgs/${orgId}/projects/${projectId}/license`);
+            loggerService.debug(`Fetching WCP project license for ${orgId}/${projectId}`);
 
-            loggerService.debug(`Fetching WCP project license from: ${licenseUrl}`);
-
-            // Fetch the license using the REST endpoint
-            const response = await fetch(licenseUrl, {
-                method: "GET",
-                headers: {
-                    authorization: apiKey,
-                    "Content-Type": "application/json"
-                }
+            const startTime = Date.now();
+            const fetchedLicense = await fetchWcpProjectLicense({
+                orgId,
+                projectId,
+                projectEnvironmentApiKey: apiKey
             });
+            const fetchLatency = Date.now() - startTime;
 
-            if (!response.ok) {
-                loggerService.error(
-                    { status: response.status, statusText: response.statusText },
-                    `Failed to fetch WCP project license.`
-                );
-                return null;
+            loggerService.debug(
+                `WCP project license fetch completed in ${fetchLatency}ms for ${orgId}/${projectId}`
+            );
+
+            if (!fetchedLicense) {
+                loggerService.debug(`No license found for ${orgId}/${projectId}`);
+                return new NullLicense();
             }
 
-            const data = await response.json();
-
-            loggerService.debug(`Successfully retrieved WCP project license.`);
-
             // Decrypt the license from the response
-            return decrypt(data.license);
+            const license = License.fromLicenseDto(fetchedLicense.license);
+
+            loggerService.debug(`Successfully retrieved and decrypted WCP project license.`);
+
+            return license;
         } catch (error) {
             loggerService.error({ error }, `Error fetching WCP project license.`);
-            return null;
+            return new NullLicense();
         }
     }
 }

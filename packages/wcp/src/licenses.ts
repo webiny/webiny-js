@@ -8,7 +8,7 @@ interface GetWcpProjectLicenseParams {
     projectEnvironmentApiKey: string;
 }
 
-const fetchWcpProjectLicense = async ({
+export const fetchWcpProjectLicense = async ({
     orgId,
     projectId,
     projectEnvironmentApiKey

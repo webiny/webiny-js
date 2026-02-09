@@ -1,7 +1,15 @@
 import type { WCP_FEATURE_LABEL } from "./index.js";
-import type { ILicense, WcpProject } from "./types.js";
+import type { DecryptedWcpProjectLicense, ILicense, WcpProject } from "./types.js";
 
 export class NullLicense implements ILicense {
+    static from() {
+        return new NullLicense();
+    }
+
+    static toDto(): null {
+        return null;
+    }
+
     getRawLicense() {
         return null;
     }
