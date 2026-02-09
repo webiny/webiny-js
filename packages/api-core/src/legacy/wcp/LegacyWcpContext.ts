@@ -87,4 +87,8 @@ export class LegacyWcpContext implements WcpContextObject {
     async decrementTenants(): Promise<void> {
         await this.getWcpContext().decrementTenants();
     }
+
+    toDto(): DecryptedWcpProjectLicense | null {
+        return this.getWcpContext().toDto();
+    }
 }
