@@ -1,7 +1,7 @@
-import { getContext } from "~tests/converters/__helpers/context.js";
 import { createValueKeyToStorageConverter } from "~/utils/converters/valueKeyToStorageConverter.js";
 import { createValueKeyFromStorageConverter } from "~/utils/converters/valueKeyFromStorageConverter.js";
 import type { CmsModel } from "~/types/index.js";
+import { usePlugins } from "~tests/testHelpers/usePlugins.js";
 
 export interface IConvertersResponse {
     convertToStorage: ReturnType<typeof createValueKeyToStorageConverter>;
@@ -11,15 +11,15 @@ export interface IConvertersResponse {
 export const getConverters = async (
     model: Pick<CmsModel, "fields">
 ): Promise<IConvertersResponse> => {
-    const context = await getContext();
+    const plugins = usePlugins();
     const convertToStorage = createValueKeyToStorageConverter({
         model,
-        plugins: context.plugins
+        plugins
     });
 
     const convertFromStorage = createValueKeyFromStorageConverter({
         model,
-        plugins: context.plugins
+        plugins
     });
     return {
         convertToStorage,
