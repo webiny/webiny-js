@@ -16,6 +16,20 @@ export interface ListEntriesArgs {
     preview?: boolean;
 }
 
+interface CmsListResponse {
+    data: Record<string, unknown>[] | null;
+    meta: {
+        cursor: string | null;
+        hasMoreItems: boolean;
+        totalCount: number;
+    } | null;
+    error: {
+        message: string;
+        code: string;
+        data?: Record<string, unknown>;
+    } | null;
+}
+
 export const createListEntriesResolver = (): GraphQLFieldResolver<
     any,
     CmsContext,
@@ -70,8 +84,9 @@ export const createListEntriesResolver = (): GraphQLFieldResolver<
             });
 
             const operationName = `list${model.pluralApiName}`;
+            const response = result.data?.[operationName] as CmsListResponse | undefined;
             return (
-                (result.data as any)?.[operationName] || {
+                response || {
                     data: [],
                     meta: { cursor: null, hasMoreItems: false, totalCount: 0 },
                     error: null

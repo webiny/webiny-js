@@ -10,6 +10,15 @@ export interface GetEntryArgs {
     preview?: boolean;
 }
 
+interface CmsEntryResponse {
+    data: Record<string, unknown> | null;
+    error: {
+        message: string;
+        code: string;
+        data?: Record<string, unknown>;
+    } | null;
+}
+
 export const createGetEntryResolver = (): GraphQLFieldResolver<any, CmsContext, GetEntryArgs> => {
     return async (_, args, context) => {
         const { modelId, where, fields, preview = false } = args;
@@ -42,7 +51,8 @@ export const createGetEntryResolver = (): GraphQLFieldResolver<any, CmsContext, 
             const result = await executeSchema({ query, variables: { where } });
 
             const operationName = `get${model.singularApiName}`;
-            return (result.data as any)?.[operationName] || { data: null, error: null };
+            const response = result.data?.[operationName] as CmsEntryResponse | undefined;
+            return response || { data: null, error: null };
         } catch (error) {
             return {
                 data: null,

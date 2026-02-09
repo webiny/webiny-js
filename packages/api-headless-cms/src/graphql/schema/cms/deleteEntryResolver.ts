@@ -9,6 +9,15 @@ export interface DeleteEntryArgs {
     permanent?: boolean;
 }
 
+interface CmsDeleteResponse {
+    data: boolean | null;
+    error: {
+        message: string;
+        code: string;
+        data?: Record<string, unknown>;
+    } | null;
+}
+
 export const createDeleteEntryResolver = (): GraphQLFieldResolver<
     any,
     CmsContext,
@@ -46,7 +55,8 @@ export const createDeleteEntryResolver = (): GraphQLFieldResolver<
             });
 
             const operationName = `delete${model.singularApiName}`;
-            return (result.data as any)?.[operationName] || { data: false, error: null };
+            const response = result.data?.[operationName] as CmsDeleteResponse | undefined;
+            return response || { data: false, error: null };
         } catch (error) {
             return {
                 data: false,

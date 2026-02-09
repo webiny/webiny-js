@@ -8,6 +8,18 @@ export interface UnpublishEntryArgs {
     id: string;
 }
 
+interface CmsEntryResponse {
+    data: {
+        id: string;
+        entryId: string;
+    } | null;
+    error: {
+        message: string;
+        code: string;
+        data?: Record<string, unknown>;
+    } | null;
+}
+
 export const createUnpublishEntryResolver = (): GraphQLFieldResolver<
     any,
     CmsContext,
@@ -42,7 +54,8 @@ export const createUnpublishEntryResolver = (): GraphQLFieldResolver<
             const result = await executeSchema({ query, variables: { revision: id } });
 
             const operationName = `unpublish${model.singularApiName}`;
-            return (result.data as any)?.[operationName] || { data: null, error: null };
+            const response = result.data?.[operationName] as CmsEntryResponse | undefined;
+            return response || { data: null, error: null };
         } catch (error) {
             return {
                 data: null,

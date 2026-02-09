@@ -9,6 +9,18 @@ export interface UpdateEntryArgs {
     values: Record<string, unknown>;
 }
 
+interface CmsEntryResponse {
+    data: {
+        id: string;
+        entryId: string;
+    } | null;
+    error: {
+        message: string;
+        code: string;
+        data?: Record<string, unknown>;
+    } | null;
+}
+
 export const createUpdateEntryResolver = (): GraphQLFieldResolver<
     any,
     CmsContext,
@@ -46,7 +58,8 @@ export const createUpdateEntryResolver = (): GraphQLFieldResolver<
             });
 
             const operationName = `update${model.singularApiName}`;
-            return (result.data as any)?.[operationName] || { data: null, error: null };
+            const response = result.data?.[operationName] as CmsEntryResponse | undefined;
+            return response || { data: null, error: null };
         } catch (error) {
             return {
                 data: null,
