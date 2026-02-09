@@ -1,4 +1,5 @@
 import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.core.js";
+import { ContextPlugin } from "@webiny/api";
 import { createGetEntryResolver } from "./getEntryResolver.js";
 import { createListEntriesResolver } from "./listEntriesResolver.js";
 import { createCreateEntryResolver } from "./createEntryResolver.js";
@@ -134,9 +135,17 @@ class CmsSchema implements CoreGraphQLSchemaFactory.Interface {
     }
 }
 
+const CmsSchemaImpl = CoreGraphQLSchemaFactory.createImplementation({
+    implementation: CmsSchema,
+    dependencies: []
+});
+
 export const createCmsSchema = () => {
-    return CoreGraphQLSchemaFactory.createImplementation({
-        implementation: CmsSchema,
-        dependencies: []
+    const plugin = new ContextPlugin(async context => {
+        context.container.register(CmsSchemaImpl);
     });
+
+    plugin.name = "headless-cms.graphql.createCmsSchema";
+
+    return plugin;
 };
