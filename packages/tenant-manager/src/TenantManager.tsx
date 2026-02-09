@@ -6,10 +6,10 @@ export const TenantManager = () => {
     return (
         <Wcp.CanUseMultiTenancy>
             {/* Api extensions */}
-            <Api.Wcp.Extension src={import.meta.dirname + "/api/Extension.js"} />
+            <Api.Extension src={import.meta.dirname + "/api/Extension.js"} />
 
             {/* Admin extensions */}
-            <Admin.Wcp.Extension src={import.meta.dirname + "/admin/Extension.js"} />
+            <Admin.Extension src={import.meta.dirname + "/admin/Extension.js"} />
         </Wcp.CanUseMultiTenancy>
     );
 };
