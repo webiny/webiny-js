@@ -26,7 +26,10 @@ export const WcpProjectLicenseProvider: React.FC<{ children: React.ReactNode }> 
             const licenseDto = JSON.parse(licenseEnv) as DecryptedWcpProjectLicense;
             return License.fromLicenseDto(licenseDto);
         } catch (e) {
-            console.warn("Failed to parse WCP_PROJECT_LICENSE:", e);
+            console.warn(
+                "Failed to parse WCP_PROJECT_LICENSE environment variable. Expected valid JSON with DecryptedWcpProjectLicense format:",
+                e
+            );
             return null;
         }
     }, []);
