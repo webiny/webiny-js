@@ -28,7 +28,7 @@ export interface CreateHandlerCoreParams {
     bottomPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     path?: `manage/${string}-${string}` | `read/${string}-${string}` | string;
 }
-export const createHandlerCore = (params: CreateHandlerCoreParams) => {
+export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
     const tenant = {
         id: "root",
         name: "Root",
