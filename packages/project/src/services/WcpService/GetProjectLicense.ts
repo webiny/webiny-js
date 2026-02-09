@@ -46,9 +46,7 @@ export class GetProjectLicense {
             loggerService.debug(`Successfully retrieved WCP project license.`);
 
             // Decrypt the license from the response
-            const decryptedLicense = decrypt(data.license);
-
-            return decryptedLicense;
+            return decrypt(data.license);
         } catch (error) {
             loggerService.error({ error }, `Error fetching WCP project license.`);
             return null;

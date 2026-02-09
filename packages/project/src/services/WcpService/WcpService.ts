@@ -96,12 +96,9 @@ export class DefaultWcpService implements WcpService.Interface {
 
         const decryptedLicense = await getProjectLicense.execute(params);
 
-        // Cache the license if successfully retrieved
-        if (decryptedLicense) {
-            this.cachedLicense = decryptedLicense;
-        }
-
-        return decryptedLicense;
+        // Cache and return the license (may be null if fetch failed)
+        this.cachedLicense = decryptedLicense;
+        return this.cachedLicense;
     }
 }
 
