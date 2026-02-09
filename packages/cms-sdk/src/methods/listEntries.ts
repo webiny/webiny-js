@@ -38,7 +38,7 @@ export interface ListEntriesResult<TValues = Record<string, unknown>> {
  * @param params.include - Fields to include
  * @param params.exclude - Fields to exclude
  * @param params.excludeType - Field types to exclude
- * @param params.fields - Optional specific fields to return (dot notation supported)
+ * @param params.fields - Optional specific fields to return. Use "values." prefix for entry values (e.g., "values.author.name") or specify top-level fields like "createdOn"
  * @param params.preview - When true, uses preview API to access unpublished/draft content. When false (default), uses read API for published content only.
  * @returns List of entries with pagination metadata
  */

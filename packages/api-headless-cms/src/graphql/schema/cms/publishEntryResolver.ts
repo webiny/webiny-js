@@ -1,16 +1,17 @@
 import type { CmsContext } from "~/types/index.js";
 import type { ApiEndpoint } from "~/types/index.js";
 import type { ExecutionResult } from "graphql";
-import { getModel, getErrorMessage } from "./helpers.js";
+import { getModel, getErrorMessage, buildFieldsSelection } from "./helpers.js";
 
 export interface PublishEntryArgs {
     modelId: string;
     id: string;
+    fields?: string[];
 }
 
 export const createPublishEntryResolver = () => {
     return async ({ args, context }: { args: PublishEntryArgs; context: CmsContext }) => {
-        const { modelId, id } = args;
+        const { modelId, id, fields } = args;
 
         try {
             const model = await getModel(context, modelId);
@@ -19,12 +20,13 @@ export const createPublishEntryResolver = () => {
             const apiType: ApiEndpoint = "manage";
             const executeSchema = await context.cms.getExecutableSchema(apiType);
 
+            const fieldsSelection = buildFieldsSelection(fields);
+
             const query = /* GraphQL */ `
                 mutation Publish${model.singularApiName}($revision: ID!) {
                     publish${model.singularApiName}(revision: $revision) {
                         data {
-                            id
-                            entryId
+                            ${fieldsSelection}
                         }
                         error {
                             message

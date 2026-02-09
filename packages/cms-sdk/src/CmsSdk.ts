@@ -51,11 +51,11 @@ export class CmsSdk {
         return deleteEntryFn(this.config, this.fetchFn, params);
     }
 
-    async publishEntry(params: PublishEntryParams): Promise<CmsEntry> {
-        return publishEntryFn(this.config, this.fetchFn, params);
+    async publishEntry<TValues = Record<string, unknown>>(params: PublishEntryParams): Promise<CmsEntry<TValues>> {
+        return publishEntryFn<TValues>(this.config, this.fetchFn, params);
     }
 
-    async unpublishEntry(params: UnpublishEntryParams): Promise<CmsEntry> {
-        return unpublishEntryFn(this.config, this.fetchFn, params);
+    async unpublishEntry<TValues = Record<string, unknown>>(params: UnpublishEntryParams): Promise<CmsEntry<TValues>> {
+        return unpublishEntryFn<TValues>(this.config, this.fetchFn, params);
     }
 }

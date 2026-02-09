@@ -23,7 +23,7 @@ export interface CmsEntry<TValues = Record<string, unknown>> {
  * @param params - Parameters for retrieving the entry
  * @param params.modelId - The model ID of the entry to retrieve
  * @param params.where - Where conditions to filter the entry
- * @param params.fields - Optional fields to include in the response (dot notation supported)
+ * @param params.fields - Optional fields to include in the response. Use "values." prefix for entry values (e.g., "values.author.name") or specify top-level fields like "createdOn"
  * @param params.preview - When true, uses preview API to access unpublished/draft content. When false (default), uses read API for published content only.
  * @returns The entry data or null if not found
  */

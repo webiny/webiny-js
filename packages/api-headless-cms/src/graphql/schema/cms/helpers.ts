@@ -27,17 +27,18 @@ export const getModel = async (context: CmsContext, modelId: string): Promise<Cm
 
 /**
  * Helper to build GraphQL fields selection from fields array.
- * Fields are always nested under 'values' in CMS entries.
+ * Supports both top-level fields (e.g., "createdOn", "id") and values fields (e.g., "values.author.name").
  * Properly merges nested fields that share common parent paths.
  * 
- * @param fields - Optional array of field paths in dot notation (e.g., ["name", "author.name", "author.email"])
- * @returns GraphQL selection string with fields properly nested under 'values' block
+ * @param fields - Optional array of field paths in dot notation
+ * @returns GraphQL selection string with proper field nesting
  * 
  * @example
- * buildFieldsSelection(["name", "author.name", "author.email"])
+ * buildFieldsSelection(["createdOn", "values.name", "values.author.name", "values.author.email"])
  * // Returns:
  * // id
  * // entryId
+ * // createdOn
  * // values {
  * //   name
  * //   author {
@@ -55,15 +56,29 @@ export const buildFieldsSelection = (fields?: string[]): string => {
         `;
     }
 
-    // Build a tree structure for nested fields to avoid duplicate parent paths.
+    // Separate top-level fields from values fields
+    const topLevelFields: Set<string> = new Set(["id", "entryId"]); // Always include id and entryId
+    const valuesFields: string[] = [];
+
+    fields.forEach(field => {
+        if (field.startsWith("values.")) {
+            // Extract the field path after "values."
+            valuesFields.push(field.substring(7)); // Remove "values." prefix
+        } else {
+            // Top-level field
+            topLevelFields.add(field);
+        }
+    });
+
+    // Build a tree structure for nested values fields to avoid duplicate parent paths.
     interface FieldNode {
         [key: string]: FieldNode | null;
     }
 
     const fieldTree: FieldNode = {};
 
-    // Parse all fields into the tree structure.
-    fields.forEach(field => {
+    // Parse all values fields into the tree structure.
+    valuesFields.forEach(field => {
         const parts = field.split(".");
         let current = fieldTree;
 
@@ -111,13 +126,22 @@ export const buildFieldsSelection = (fields?: string[]): string => {
         return lines.join("\n");
     };
 
-    const fieldsSelection = buildSelection(fieldTree);
+    // Build the top-level fields selection
+    const topLevelSelection = Array.from(topLevelFields).sort().map(f => `        ${f}`).join("\n");
 
-    return `
-        id
-        entryId
+    // If we have values fields, build the values block
+    if (Object.keys(fieldTree).length > 0) {
+        const valuesSelection = buildSelection(fieldTree);
+        return `
+${topLevelSelection}
         values {
-${fieldsSelection}
+${valuesSelection}
         }
+    `;
+    }
+
+    // If no values fields, just return top-level fields
+    return `
+${topLevelSelection}
     `;
 };
