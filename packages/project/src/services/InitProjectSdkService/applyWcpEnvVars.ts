@@ -1,4 +1,4 @@
-import { encrypt, decrypt, License } from "@webiny/wcp";
+import { encrypt, decrypt } from "@webiny/wcp";
 import type { ILicense } from "@webiny/wcp/types";
 import { Container } from "@webiny/di";
 import {
