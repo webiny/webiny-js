@@ -82,9 +82,7 @@ export class DefaultWcpService implements WcpService.Interface {
         return getProjectEnvironment.execute(params);
     }
 
-    async getProjectLicense(
-        params: IGetProjectLicenseParams
-    ): Promise<ILicense> {
+    async getProjectLicense(params: IGetProjectLicenseParams): Promise<ILicense> {
         // Return cached license if available
         if (this.cachedLicense) {
             return this.cachedLicense;
