@@ -5,10 +5,7 @@ import type { CmsEntryValues, CmsModel } from "~/types/index.js";
 import type { ConverterCollectionConvertParams } from "./types.js";
 
 interface Params {
-    /**
-     * We need a model to determine if the conversion feature is enabled.
-     */
-    model: CmsModel;
+    model: Pick<CmsModel, "fields">;
     plugins: PluginsContainer;
 }
 
