@@ -15,10 +15,6 @@ export class License implements ILicense {
         return new License(license);
     }
 
-    static toDto(license: ILicense): DecryptedWcpProjectLicense | null {
-        return license.getRawLicense();
-    }
-
     static async fromEnvironment() {
         const wcpProjectEnvironment = getWcpProjectEnvironment();
 
@@ -40,6 +36,10 @@ export class License implements ILicense {
     }
 
     getRawLicense(): DecryptedWcpProjectLicense {
+        return this.license;
+    }
+
+    toDto(): DecryptedWcpProjectLicense {
         return this.license;
     }
 

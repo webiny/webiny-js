@@ -158,7 +158,7 @@ export const applyWcpEnvVars = async (container: Container) => {
     process.env.WCP_PROJECT_ENVIRONMENT = encrypt(wcpProjectEnvironment);
     process.env.WCP_PROJECT_ENVIRONMENT_API_KEY = projectEnvironment.apiKey;
     if (license) {
-        const licenseDto = License.toDto(license);
+        const licenseDto = license.toDto();
         if (licenseDto) {
             process.env.WCP_PROJECT_LICENSE = JSON.stringify(licenseDto);
         }

@@ -6,11 +6,11 @@ export class NullLicense implements ILicense {
         return new NullLicense();
     }
 
-    static toDto(): null {
+    getRawLicense() {
         return null;
     }
 
-    getRawLicense() {
+    toDto(): null {
         return null;
     }
 
