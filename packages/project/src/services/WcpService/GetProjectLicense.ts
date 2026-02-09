@@ -1,5 +1,5 @@
-import { License, NullLicense, fetchWcpProjectLicense } from "@webiny/wcp";
-import type { ILicense } from "@webiny/wcp/types";
+import { License, NullLicense, fetchWcpProjectLicense, decrypt } from "@webiny/wcp";
+import type { ILicense, DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 import { LoggerService } from "~/abstractions/index.js";
 import { IGetProjectLicenseParams } from "~/abstractions/services/WcpService.js";
 
@@ -39,7 +39,8 @@ export class GetProjectLicense {
             }
 
             // Decrypt the license from the response
-            const license = License.fromLicenseDto(fetchedLicense.license);
+            const decryptedLicense = decrypt<DecryptedWcpProjectLicense>(fetchedLicense.license);
+            const license = License.fromLicenseDto(decryptedLicense);
 
             loggerService.debug(`Successfully retrieved and decrypted WCP project license.`);
 
