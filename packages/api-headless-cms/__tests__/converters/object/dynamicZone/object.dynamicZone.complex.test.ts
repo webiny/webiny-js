@@ -214,7 +214,8 @@ const model = createModel({
                                                                 {
                                                                     id: "textContentTemplate",
                                                                     name: "Text Content Template",
-                                                                    gqlTypeName: "TextContentTemplate",
+                                                                    gqlTypeName:
+                                                                        "TextContentTemplate",
                                                                     icon: undefined,
                                                                     description: "",
                                                                     fields: [
@@ -235,7 +236,8 @@ const model = createModel({
                                                                 {
                                                                     id: "richContentTemplate",
                                                                     name: "Rich Content Template",
-                                                                    gqlTypeName: "RichContentTemplate",
+                                                                    gqlTypeName:
+                                                                        "RichContentTemplate",
                                                                     icon: undefined,
                                                                     description: "",
                                                                     fields: [
@@ -299,7 +301,8 @@ const model = createModel({
                                                                 {
                                                                     id: "videoDetailsTemplate",
                                                                     name: "Video Details Template",
-                                                                    gqlTypeName: "VideoDetailsTemplate",
+                                                                    gqlTypeName:
+                                                                        "VideoDetailsTemplate",
                                                                     icon: undefined,
                                                                     description: "",
                                                                     fields: [
@@ -343,7 +346,8 @@ const model = createModel({
                                                                 {
                                                                     id: "chapterMetaTemplate",
                                                                     name: "Chapter Meta Template",
-                                                                    gqlTypeName: "ChapterMetaTemplate",
+                                                                    gqlTypeName:
+                                                                        "ChapterMetaTemplate",
                                                                     icon: undefined,
                                                                     description: "",
                                                                     fields: [
@@ -405,4 +409,3 @@ describe("object storage converter - complex nested dynamic zone with all possib
         expect(fromStorageResult).toEqual(plainValue);
     });
 });
-
