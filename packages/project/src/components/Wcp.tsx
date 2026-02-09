@@ -6,11 +6,39 @@ interface ChildrenProps {
 }
 
 function CanUseMultiTenancy({ children }: ChildrenProps) {
-    const { hasLicense } = useWcpProjectLicense();
+    const wcp = useWcpProjectLicense();
 
-    return hasLicense ? <>{children}</> : null;
+    return wcp.canUseMultiTenancy() ? <>{children}</> : null;
+}
+
+function CanUseTeams({ children }: ChildrenProps) {
+    const wcp = useWcpProjectLicense();
+
+    return wcp.canUseTeams() ? <>{children}</> : null;
+}
+
+function CanUsePrivateFiles({ children }: ChildrenProps) {
+    const wcp = useWcpProjectLicense();
+
+    return wcp.canUsePrivateFiles() ? <>{children}</> : null;
+}
+
+function CanUseFileManagerThreatDetection({ children }: ChildrenProps) {
+    const wcp = useWcpProjectLicense();
+
+    return wcp.canUseFileManagerThreatDetection() ? <>{children}</> : null;
+}
+
+function CanUseWorkflows({ children }: ChildrenProps) {
+    const wcp = useWcpProjectLicense();
+
+    return wcp.canUseWorkflows() ? <>{children}</> : null;
 }
 
 export const Wcp = {
-    CanUseMultiTenancy
+    CanUseMultiTenancy,
+    CanUseTeams,
+    CanUsePrivateFiles,
+    CanUseFileManagerThreatDetection,
+    CanUseWorkflows
 };
