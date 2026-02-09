@@ -33,14 +33,14 @@ export class GetProjectLicense {
                 `WCP project license fetch completed in ${fetchLatency}ms for ${orgId}/${projectId}`
             );
 
-            if (!decryptedLicense) {
-                loggerService.debug(`No license found for ${orgId}/${projectId}`);
-                return new NullLicense();
-            }
-
+            // License.fromLicenseDto handles the null case internally, returning NullLicense if needed.
             const license = License.fromLicenseDto(decryptedLicense);
 
-            loggerService.debug(`Successfully retrieved and decrypted WCP project license.`);
+            if (!decryptedLicense) {
+                loggerService.debug(`No license found for ${orgId}/${projectId}`);
+            } else {
+                loggerService.debug(`Successfully retrieved and decrypted WCP project license.`);
+            }
 
             return license;
         } catch (error) {
