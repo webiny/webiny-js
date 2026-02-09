@@ -15899,6 +15899,7 @@ __metadata:
     "@webiny/react-properties": "npm:0.0.0"
     emotion: "npm:10.0.27"
     lexical: "npm:0.23.1"
+    lodash: "npm:^4.17.21"
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
   languageName: unknown
