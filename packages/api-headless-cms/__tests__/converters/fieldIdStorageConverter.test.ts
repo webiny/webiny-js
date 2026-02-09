@@ -1,18 +1,13 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { createModel, createRawEntry, createStoredEntry } from "./mocks/fieldIdStorageConverter.js";
 import { createValueKeyFromStorageConverter } from "~/utils/converters/valueKeyFromStorageConverter.js";
 import { createValueKeyToStorageConverter } from "~/utils/converters/valueKeyToStorageConverter.js";
 import type { CmsModelObjectField } from "~/types/index.js";
-import { getContext } from "./__helpers/context.js";
+import { usePlugins } from "~tests/testHelpers/usePlugins.js";
 
 describe("field id storage converter", () => {
-    let context: Awaited<ReturnType<typeof getContext>>;
-    beforeEach(async () => {
-        context = await getContext();
-    });
-
     it("should convert field value paths to storage ones", async () => {
-        const { plugins } = context;
+        const plugins = usePlugins();
 
         const model = createModel();
 
@@ -95,7 +90,7 @@ describe("field id storage converter", () => {
     });
 
     it("should convert field value paths from storage ones", async () => {
-        const { plugins } = context;
+        const plugins = usePlugins();
 
         const model = createModel();
 
@@ -129,7 +124,7 @@ describe("field id storage converter", () => {
     });
 
     it("should convert object + dynamic zone + rich text", async () => {
-        const { plugins } = await getContext();
+        const plugins = usePlugins();
 
         const baseModel = createModel();
 
