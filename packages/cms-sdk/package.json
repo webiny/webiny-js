@@ -12,7 +12,6 @@
   },
   "author": "Webiny",
   "license": "MIT",
-  "dependencies": {},
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
     "typescript": "5.9.3",

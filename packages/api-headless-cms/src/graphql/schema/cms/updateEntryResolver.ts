@@ -1,6 +1,6 @@
 import type { CmsContext } from "~/types/index.js";
 import type { ApiEndpoint } from "~/types/index.js";
-import type { GraphQLFieldResolver, ExecutionResult } from "graphql";
+import type { ExecutionResult } from "graphql";
 import { getModel, getErrorMessage } from "./helpers.js";
 
 export interface UpdateEntryArgs {
@@ -9,12 +9,8 @@ export interface UpdateEntryArgs {
     values: Record<string, unknown>;
 }
 
-export const createUpdateEntryResolver = (): GraphQLFieldResolver<
-    any,
-    CmsContext,
-    UpdateEntryArgs
-> => {
-    return async (_, args, context) => {
+export const createUpdateEntryResolver = () => {
+    return async ({ args, context }: { args: UpdateEntryArgs; context: CmsContext }) => {
         const { modelId, id, values } = args;
 
         try {

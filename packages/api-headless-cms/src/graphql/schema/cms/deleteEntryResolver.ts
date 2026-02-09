@@ -1,6 +1,6 @@
 import type { CmsContext } from "~/types/index.js";
 import type { ApiEndpoint } from "~/types/index.js";
-import type { GraphQLFieldResolver, ExecutionResult } from "graphql";
+import type { ExecutionResult } from "graphql";
 import { getModel, getErrorMessage } from "./helpers.js";
 
 export interface DeleteEntryArgs {
@@ -9,12 +9,8 @@ export interface DeleteEntryArgs {
     permanent?: boolean;
 }
 
-export const createDeleteEntryResolver = (): GraphQLFieldResolver<
-    any,
-    CmsContext,
-    DeleteEntryArgs
-> => {
-    return async (_, args, context) => {
+export const createDeleteEntryResolver = () => {
+    return async ({ args, context }: { args: DeleteEntryArgs; context: CmsContext }) => {
         const { modelId, id, permanent = false } = args;
 
         try {

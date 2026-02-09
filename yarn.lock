@@ -15227,6 +15227,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/cms-sdk@workspace:packages/cms-sdk":
+  version: 0.0.0-use.local
+  resolution: "@webiny/cms-sdk@workspace:packages/cms-sdk"
+  dependencies:
+    "@webiny/build-tools": "npm:0.0.0"
+    typescript: "npm:5.9.3"
+    vitest: "npm:^3.2.4"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/cognito@workspace:packages/cognito":
   version: 0.0.0-use.local
   resolution: "@webiny/cognito@workspace:packages/cognito"

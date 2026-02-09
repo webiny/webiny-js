@@ -1,6 +1,6 @@
 import type { CmsContext } from "~/types/index.js";
 import type { ApiEndpoint } from "~/types/index.js";
-import type { GraphQLFieldResolver, ExecutionResult } from "graphql";
+import type { ExecutionResult } from "graphql";
 import { getModel, getErrorMessage, buildFieldsSelection } from "./helpers.js";
 
 export interface ListEntriesArgs {
@@ -16,12 +16,8 @@ export interface ListEntriesArgs {
     preview?: boolean;
 }
 
-export const createListEntriesResolver = (): GraphQLFieldResolver<
-    any,
-    CmsContext,
-    ListEntriesArgs
-> => {
-    return async (_, args, context) => {
+export const createListEntriesResolver = () => {
+    return async ({ args, context }: { args: ListEntriesArgs; context: CmsContext }) => {
         const { modelId, where, sort, limit, after, fields, preview = false } = args;
 
         try {

@@ -36,7 +36,12 @@ class CmsSchema implements CoreGraphQLSchemaFactory.Interface {
             }
 
             type CmsQuery {
-                getEntry(modelId: ID!, where: JSON!, fields: [String!], preview: Boolean): CmsEntryResponse!
+                getEntry(
+                    modelId: ID!
+                    where: JSON!
+                    fields: [String!]
+                    preview: Boolean
+                ): CmsEntryResponse!
                 listEntries(
                     modelId: ID!
                     where: JSON
@@ -84,51 +89,37 @@ class CmsSchema implements CoreGraphQLSchemaFactory.Interface {
 
         builder.addResolver({
             path: "CmsQuery.getEntry",
-            resolver() {
-                return createGetEntryResolver();
-            }
+            resolver: createGetEntryResolver
         });
 
         builder.addResolver({
             path: "CmsQuery.listEntries",
-            resolver() {
-                return createListEntriesResolver();
-            }
+            resolver: createListEntriesResolver
         });
 
         builder.addResolver({
             path: "CmsMutation.createEntry",
-            resolver() {
-                return createCreateEntryResolver();
-            }
+            resolver: createCreateEntryResolver
         });
 
         builder.addResolver({
             path: "CmsMutation.updateEntry",
-            resolver() {
-                return createUpdateEntryResolver();
-            }
+            resolver: createUpdateEntryResolver
         });
 
         builder.addResolver({
             path: "CmsMutation.deleteEntry",
-            resolver() {
-                return createDeleteEntryResolver();
-            }
+            resolver: createDeleteEntryResolver
         });
 
         builder.addResolver({
             path: "CmsMutation.publishEntry",
-            resolver() {
-                return createPublishEntryResolver();
-            }
+            resolver: createPublishEntryResolver
         });
 
         builder.addResolver({
             path: "CmsMutation.unpublishEntry",
-            resolver() {
-                return createUnpublishEntryResolver();
-            }
+            resolver: createUnpublishEntryResolver
         });
 
         return builder;
