@@ -18,11 +18,11 @@ export const Project = () => {
         <>
             <AdminBeforeBuild src={p("SetAdminAppEnvVarsBeforeBuild.js")} />
             <AdminBeforeWatch src={p("SetAdminAppEnvVarsBeforeWatch.js")} />
-            <AdminBeforeWatch src={p("ShowConfigChangeInfoBeforeWatch.js")} name="Admin" />
+            <AdminBeforeWatch src={p("ShowConfigChangeInfoBeforeAdminWatch.js")} />
             <ApiAfterBuild src={p("WcpInjectTelemetryClientAfterBuild.js")} />
             <ApiBeforeDeploy src={p("EnsureCoreDeployedBeforeApiDeploy.js")} />
             <ApiBeforeWatch src={p("EnsureApiDeployedBeforeWatch.js")} />
-            <ApiBeforeWatch src={p("ShowConfigChangeInfoBeforeWatch.js")} name="Api" />
+            <ApiBeforeWatch src={p("ShowConfigChangeInfoBeforeApiWatch.js")} />
             <AdminBeforeBuild src={p("EnsureApiDeployedBeforeAdminBuild.js")} />
             <AdminBeforeWatch src={p("EnsureApiDeployedBeforeAdminWatch.js")} />
             <AdminAfterDeploy src={p("TelemetryNoLongerNewUser.js")} />
