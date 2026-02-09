@@ -1,4 +1,4 @@
-import type { FileItem } from "@webiny/app-admin/types.js";
+import type { FileItem } from "~/types.js";
 import type { ListFilesSort } from "~/modules/FileManagerApiProvider/graphql.js";
 import type { Settings } from "~/types.js";
 

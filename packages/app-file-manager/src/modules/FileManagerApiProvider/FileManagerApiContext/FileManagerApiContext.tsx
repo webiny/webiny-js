@@ -28,9 +28,9 @@ import {
     LIST_TAGS,
     UPDATE_FILE
 } from "../graphql.js";
-import type { FileItem, FileManagerSecurityPermission } from "@webiny/app-admin/types.js";
+import type { FileManagerSecurityPermission } from "@webiny/app-admin/types.js";
 import { getFileUploader } from "./getFileUploader.js";
-import type { Settings } from "~/types.js";
+import type { FileItem, Settings } from "~/types.js";
 import { useFileModel } from "~/hooks/useFileModel.js";
 import { getFileGraphQLSelection } from "./getFileGraphQLSelection.js";
 
@@ -81,6 +81,25 @@ interface ListTagsOptions {
 }
 
 const FM_FULL_ACCESS_PERMISSION_NAME = "fm.*";
+
+const getImageMetadata = async (
+    file: File
+): Promise<{ image: { width: number; height: number } } | undefined> => {
+    try {
+        const bitmap = await createImageBitmap(file);
+        const metadata = {
+            image: {
+                width: bitmap.width,
+                height: bitmap.height
+            }
+        };
+        bitmap.close();
+        return metadata;
+    } catch (e) {
+        console.warn("Failed to extract dimensions:", e);
+        return undefined;
+    }
+};
 
 const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
     const { identity } = useIdentity();
@@ -260,7 +279,7 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
      */
     const uploadFile = async (
         file: File,
-        meta: Partial<FileInput>,
+        fileData: Partial<FileInput>,
         options: UploadFileOptions = {}
     ) => {
         const response = await getFileUploader().upload(file, {
@@ -270,7 +289,13 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
 
         const tags = options?.tags || [];
 
-        return await createFile({ ...response, tags, ...meta });
+        const createFileInput = { ...response, tags, ...fileData };
+
+        if (file.type.startsWith("image/")) {
+            createFileInput.metadata = await getImageMetadata(file);
+        }
+
+        return await createFile(createFileInput);
     };
 
     const getSettings = async () => {

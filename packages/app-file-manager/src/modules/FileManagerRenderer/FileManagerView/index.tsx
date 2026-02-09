@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import { createDecorator } from "@webiny/react-composition";
 import type { FileManagerFileItem, FileManagerOnChange } from "@webiny/app-admin";
 import { DialogsProvider, FileManagerRenderer as BaseFileManagerRenderer } from "@webiny/app-admin";
-import type { FileItem } from "@webiny/app-admin/types.js";
+import type { FileItem } from "~/types.js";
 import { FoldersProvider } from "@webiny/app-aco/contexts/folders.js";
 import { NavigateFolderProvider } from "@webiny/app-aco";
 import FileManagerView from "./FileManagerView.js";
@@ -10,19 +10,7 @@ import type { FileManagerViewProviderProps } from "~/modules/FileManagerRenderer
 import { FileManagerViewProvider } from "~/modules/FileManagerRenderer/FileManagerViewProvider/index.js";
 import { FM_ACO_APP, ROOT_FOLDER, LOCAL_STORAGE_LATEST_VISITED_FOLDER } from "~/constants.js";
 import { FileManagerViewWithConfig } from "./FileManagerViewConfig.js";
-
-/**
- * Convert a FileItem object to a FileManagerFileItem, which is then passed to `onChange` callback.
- */
-const formatFileItem = ({ id, src, ...rest }: FileItem): FileManagerFileItem => {
-    const props: { [key: string]: any } = rest;
-
-    return {
-        id,
-        src,
-        meta: Object.keys(rest).map(key => ({ key, value: props[key] }))
-    };
-};
+import { formatFileItem } from "./formatFileItem.js";
 
 /**
  * If `accept` prop is not passed, and `images` prop is set, use these default mime types.

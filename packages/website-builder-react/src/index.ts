@@ -23,6 +23,7 @@ export {
     setHeadersProvider,
     getHeadersProvider,
     registerComponentGroup,
+    type CssProperties,
     type Document,
     type DocumentElement,
     type Breakpoint,

@@ -1,31 +1,35 @@
 import type { GraphQLFieldResolver } from "@webiny/handler-graphql/types.js";
-import type { CmsContext, CmsModelField } from "~/types/index.js";
-import type { RichTextContents } from "~/plugins/index.js";
-import { RichTextRenderer } from "~/utils/RichTextRenderer.js";
+import type { CmsModelField } from "~/types/index.js";
 
 interface ResolverArgs {
     format?: string;
 }
 
+interface RichTextContents {
+    state: string;
+    html: string;
+}
+
 export const createRichTextResolver = (
     field: CmsModelField
 ): GraphQLFieldResolver<any, ResolverArgs> => {
-    return async (entry, args, context) => {
+    return async (entry, args) => {
         const rawValue = entry[field.fieldId] as RichTextContents;
         const outputFormat = args.format;
 
-        if (!outputFormat) {
-            return rawValue;
+        // If `lexical` state is requested explicitly
+        if (outputFormat === "lexical") {
+            if (field.multipleValues) {
+                return (rawValue as unknown as RichTextContents[]).map(value => value.state);
+            }
+            return rawValue?.state ?? null;
         }
 
-        const renderer = RichTextRenderer.create(context as CmsContext);
-
+        // Otherwise return HTML
         if (field.multipleValues) {
-            return (rawValue as RichTextContents[]).map(value =>
-                renderer.render(outputFormat, value)
-            );
+            return (rawValue as unknown as RichTextContents[]).map(value => value?.html ?? null);
         }
 
-        return renderer.render(outputFormat, rawValue);
+        return rawValue?.html ?? null;
     };
 };

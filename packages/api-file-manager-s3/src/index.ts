@@ -5,17 +5,21 @@ import { DeleteFileFromBucketFeature } from "~/features/DeleteFileFromBucket/fea
 import { WriteFileMetadataFeature } from "~/features/WriteFileMetadata/feature.js";
 import { ApplyThreatScanningFeature } from "~/enterprise/ApplyThreatScanning/feature.js";
 import { FlushCacheFeature } from "~/features/FlushCache/feature.js";
+import { ExtractMetadataFeature } from "~/features/ExtractMetadata/feature.js";
 export { createFileUploadModifier } from "./utils/FileUploadModifier.js";
 export { createAssetDelivery } from "./assetDelivery/createAssetDelivery.js";
 
 const contextPlugin = new ContextPlugin(context => {
-    FlushCacheFeature.register(context.container);
-    DeleteFileFromBucketFeature.register(context.container);
-    WriteFileMetadataFeature.register(context.container);
+    const container = context.container;
 
-    const wcp = context.container.resolve(WcpContext);
+    FlushCacheFeature.register(container);
+    DeleteFileFromBucketFeature.register(container);
+    ExtractMetadataFeature.register(container);
+    WriteFileMetadataFeature.register(container);
+
+    const wcp = container.resolve(WcpContext);
     if (wcp.canUseFileManagerThreatDetection()) {
-        ApplyThreatScanningFeature.register(context.container);
+        ApplyThreatScanningFeature.register(container);
     }
 });
 

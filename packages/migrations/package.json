@@ -10,7 +10,6 @@
     "@webiny/db-dynamodb": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/ioc": "0.0.0",
-    "@webiny/logger": "0.0.0",
     "@webiny/utils": "0.0.0",
     "lodash": "^4.17.23"
   },

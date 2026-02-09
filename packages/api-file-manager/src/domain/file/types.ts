@@ -20,7 +20,7 @@ export interface File {
     size: number;
     type: string;
     name: string;
-    meta: Record<string, any>;
+    metadata: Record<string, any>;
     accessControl?: FileAccess;
     location: {
         folderId: string;
@@ -50,7 +50,7 @@ export interface FileInput {
     name: string;
     size: number;
     type: string;
-    meta: Record<string, any>;
+    metadata: Record<string, any>;
     location?: {
         folderId: string;
     };

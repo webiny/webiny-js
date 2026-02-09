@@ -15,14 +15,24 @@ class FilePrivateModelImpl implements ModelFactory.Interface {
             key: fields.text().label("Key").required("Value is required."),
             type: fields.text().label("Type").required("Value is required."),
             size: fields.number().label("Size").required("Value is required."),
-            meta: fields
+            metadata: fields
                 .object()
-                .label("Meta")
+                .label("Metadata")
+                .renderer("hidden")
                 .fields(fields => ({
-                    private: fields.boolean().label("Private"),
-                    width: fields.number().label("Width"),
-                    height: fields.number().label("Height"),
-                    originalKey: fields.text().label("Original Key")
+                    image: fields
+                        .object()
+                        .label("Image")
+                        .fields(fields => ({
+                            width: fields.number().label("Width"),
+                            height: fields.number().label("Height"),
+                            format: fields.text().label("Format"),
+                            orientation: fields.number().label("Orientation")
+                        })),
+                    // Store complete raw EXIF as JSON
+                    exif: fields.searchableJson().label("EXIF Data"),
+                    // Store complete raw IPTC as JSON
+                    iptc: fields.searchableJson().label("IPTC Data")
                 })),
             tags: fields
                 .text()

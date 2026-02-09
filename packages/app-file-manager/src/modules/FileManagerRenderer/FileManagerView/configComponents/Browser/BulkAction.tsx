@@ -3,7 +3,7 @@ import type { CallbackParams } from "@webiny/app-admin";
 import { useButtons, useDialogWithReport, Worker } from "@webiny/app-admin";
 import { Property, useIdGenerator } from "@webiny/react-properties";
 import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider/index.js";
-import type { FileItem } from "@webiny/app-admin/types.js";
+import type { FileItem } from "~/types.js";
 
 export interface BulkActionConfig {
     name: string;

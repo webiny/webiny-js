@@ -52,7 +52,7 @@ export type EntityConstructor<
 >;
 
 export class Entity<T extends GenericRecord = GenericRecord> implements IEntity<T> {
-    public readonly entity;
+    public readonly entity: BaseEntity;
 
     public get name(): string {
         return this.entity.name;

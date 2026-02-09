@@ -46,7 +46,7 @@ class CreateFileUseCaseImpl implements UseCaseAbstraction.Interface {
             name: input.name,
             size: input.size,
             type: input.type,
-            meta: input.meta || {},
+            metadata: input.metadata || {},
             location: input.location || { folderId: "root" },
             tags: input.tags || [],
             extensions: meta || {},

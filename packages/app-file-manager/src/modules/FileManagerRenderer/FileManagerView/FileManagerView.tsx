@@ -20,7 +20,7 @@ import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerVie
 import { outputFileSelectionError } from "./outputFileSelectionError.js";
 import { LeftSidebar } from "./LeftSidebar.js";
 import { useFileManagerViewConfig } from "~/index.js";
-import type { FileItem } from "@webiny/app-admin/types.js";
+import type { FileItem } from "~/types.js";
 import { BatchFileUploader } from "~/BatchFileUploader.js";
 import type { ListFilesSort, ListFilesSortItem } from "~/modules/FileManagerApiProvider/graphql.js";
 import type { TableItem } from "~/types.js";

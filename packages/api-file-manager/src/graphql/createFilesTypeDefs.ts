@@ -72,15 +72,15 @@ export const createFilesTypeDefs = (params: CreateFilesTypeDefsParams): string =
     });
 
     return /* GraphQL */ `
-        type FmLocation {
-            folderId: String!
+        type FmFile_Location {
+            folderId: ID!
         }
 
-        input FmLocationInput {
-            folderId: String!
+        input FmFile_LocationInput {
+            folderId: ID!
         }
 
-        input FmLocationWhereInput {
+        input FmFile_LocationWhereInput {
             folderId: ID
             folderId_in: [ID!]
             folderId_not: ID
@@ -97,7 +97,7 @@ export const createFilesTypeDefs = (params: CreateFilesTypeDefsParams): string =
             createdBy: FmCreatedBy!
             modifiedBy: FmCreatedBy
             savedBy: FmCreatedBy!
-            location: FmLocation!
+            location: FmFile_Location!
             src: String
             ${fieldTypes.map(f => f.fields).join("\n")}
         }
@@ -118,7 +118,7 @@ export const createFilesTypeDefs = (params: CreateFilesTypeDefsParams): string =
             createdBy: FmCreatedByInput
             modifiedBy: FmCreatedByInput
             savedBy: FmCreatedByInput
-            location: FmLocationInput!
+            location: FmFile_LocationInput
             ${inputCreateFields.map(f => f.fields).join("\n")}
         }
 
@@ -129,7 +129,7 @@ export const createFilesTypeDefs = (params: CreateFilesTypeDefsParams): string =
             createdBy: FmCreatedByInput
             modifiedBy: FmCreatedByInput
             savedBy: FmCreatedByInput
-            location: FmLocationInput
+            location: FmFile_LocationInput
             ${inputUpdateFields.map(f => f.fields).join("\n")}
         }
 
@@ -139,8 +139,8 @@ export const createFilesTypeDefs = (params: CreateFilesTypeDefsParams): string =
         }
 
         input FmFileListWhereInput {
-            location: FmLocationWhereInput
             ${listFilterFieldsRender.allFiltersAsString()}
+            location: FmFile_LocationWhereInput
             AND: [FmFileListWhereInput!]
             OR: [FmFileListWhereInput!]
         }
