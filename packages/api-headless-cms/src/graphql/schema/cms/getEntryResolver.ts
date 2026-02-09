@@ -1,6 +1,6 @@
 import type { CmsContext } from "~/types/index.js";
 import type { ApiEndpoint } from "~/types/index.js";
-import type { GraphQLFieldResolver } from "graphql";
+import type { GraphQLFieldResolver, ExecutionResult } from "graphql";
 import { getModel, getErrorMessage, buildFieldsSelection } from "./helpers.js";
 
 export interface GetEntryArgs {
@@ -8,15 +8,6 @@ export interface GetEntryArgs {
     where: Record<string, unknown>;
     fields?: string[];
     preview?: boolean;
-}
-
-interface CmsEntryResponse {
-    data: Record<string, unknown> | null;
-    error: {
-        message: string;
-        code: string;
-        data?: Record<string, unknown>;
-    } | null;
 }
 
 export const createGetEntryResolver = (): GraphQLFieldResolver<any, CmsContext, GetEntryArgs> => {
@@ -48,11 +39,13 @@ export const createGetEntryResolver = (): GraphQLFieldResolver<any, CmsContext, 
                 }
             `;
 
-            const result = await executeSchema({ query, variables: { where } });
+            const result = (await executeSchema({
+                query,
+                variables: { where }
+            })) as ExecutionResult;
 
             const operationName = `get${model.singularApiName}`;
-            const response = result.data?.[operationName] as CmsEntryResponse | undefined;
-            return response || { data: null, error: null };
+            return result.data?.[operationName] || { data: null, error: null };
         } catch (error) {
             return {
                 data: null,

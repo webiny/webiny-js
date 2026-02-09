@@ -1,6 +1,6 @@
 import type { CmsContext } from "~/types/index.js";
 import type { ApiEndpoint } from "~/types/index.js";
-import type { GraphQLFieldResolver } from "graphql";
+import type { GraphQLFieldResolver, ExecutionResult } from "graphql";
 import { getModel, getErrorMessage, buildFieldsSelection } from "./helpers.js";
 
 export interface ListEntriesArgs {
@@ -14,20 +14,6 @@ export interface ListEntriesArgs {
     excludeType?: string[];
     fields?: string[];
     preview?: boolean;
-}
-
-interface CmsListResponse {
-    data: Record<string, unknown>[] | null;
-    meta: {
-        cursor: string | null;
-        hasMoreItems: boolean;
-        totalCount: number;
-    } | null;
-    error: {
-        message: string;
-        code: string;
-        data?: Record<string, unknown>;
-    } | null;
 }
 
 export const createListEntriesResolver = (): GraphQLFieldResolver<
@@ -78,15 +64,14 @@ export const createListEntriesResolver = (): GraphQLFieldResolver<
                 }
             `;
 
-            const result = await executeSchema({
+            const result = (await executeSchema({
                 query,
                 variables: { where, sort, limit, after }
-            });
+            })) as ExecutionResult;
 
             const operationName = `list${model.pluralApiName}`;
-            const response = result.data?.[operationName] as CmsListResponse | undefined;
             return (
-                response || {
+                result.data?.[operationName] || {
                     data: [],
                     meta: { cursor: null, hasMoreItems: false, totalCount: 0 },
                     error: null

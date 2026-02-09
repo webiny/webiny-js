@@ -1,21 +1,12 @@
 import type { CmsContext } from "~/types/index.js";
 import type { ApiEndpoint } from "~/types/index.js";
-import type { GraphQLFieldResolver } from "graphql";
+import type { GraphQLFieldResolver, ExecutionResult } from "graphql";
 import { getModel, getErrorMessage } from "./helpers.js";
 
 export interface DeleteEntryArgs {
     modelId: string;
     id: string;
     permanent?: boolean;
-}
-
-interface CmsDeleteResponse {
-    data: boolean | null;
-    error: {
-        message: string;
-        code: string;
-        data?: Record<string, unknown>;
-    } | null;
 }
 
 export const createDeleteEntryResolver = (): GraphQLFieldResolver<
@@ -46,17 +37,16 @@ export const createDeleteEntryResolver = (): GraphQLFieldResolver<
                 }
             `;
 
-            const result = await executeSchema({
+            const result = (await executeSchema({
                 query,
                 variables: {
                     revision: id,
                     options: { permanently: permanent }
                 }
-            });
+            })) as ExecutionResult;
 
             const operationName = `delete${model.singularApiName}`;
-            const response = result.data?.[operationName] as CmsDeleteResponse | undefined;
-            return response || { data: false, error: null };
+            return result.data?.[operationName] || { data: false, error: null };
         } catch (error) {
             return {
                 data: false,

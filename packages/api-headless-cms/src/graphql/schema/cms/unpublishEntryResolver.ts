@@ -1,23 +1,11 @@
 import type { CmsContext } from "~/types/index.js";
 import type { ApiEndpoint } from "~/types/index.js";
-import type { GraphQLFieldResolver } from "graphql";
+import type { GraphQLFieldResolver, ExecutionResult } from "graphql";
 import { getModel, getErrorMessage } from "./helpers.js";
 
 export interface UnpublishEntryArgs {
     modelId: string;
     id: string;
-}
-
-interface CmsEntryResponse {
-    data: {
-        id: string;
-        entryId: string;
-    } | null;
-    error: {
-        message: string;
-        code: string;
-        data?: Record<string, unknown>;
-    } | null;
 }
 
 export const createUnpublishEntryResolver = (): GraphQLFieldResolver<
@@ -51,11 +39,13 @@ export const createUnpublishEntryResolver = (): GraphQLFieldResolver<
                 }
             `;
 
-            const result = await executeSchema({ query, variables: { revision: id } });
+            const result = (await executeSchema({
+                query,
+                variables: { revision: id }
+            })) as ExecutionResult;
 
             const operationName = `unpublish${model.singularApiName}`;
-            const response = result.data?.[operationName] as CmsEntryResponse | undefined;
-            return response || { data: null, error: null };
+            return result.data?.[operationName] || { data: null, error: null };
         } catch (error) {
             return {
                 data: null,
