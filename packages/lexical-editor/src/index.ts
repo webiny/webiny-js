@@ -28,11 +28,11 @@ export { RichTextEditor } from "~/components/Editor/RichTextEditor";
 export { HeadingEditor } from "~/components/Editor/HeadingEditor";
 export { ParagraphEditor } from "~/components/Editor/ParagraphEditor";
 // plugins
+export { StateHandlingPlugin } from "~/plugins/StateHandlingPlugin";
 export { LinkPlugin } from "~/plugins/LinkPlugin/LinkPlugin";
 export { FloatingLinkEditorPlugin } from "~/plugins/FloatingLinkEditorPlugin/FloatingLinkEditorPlugin";
 export { CodeHighlightPlugin } from "~/plugins/CodeHighlightPlugin/CodeHighlightPlugin";
 export { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
-export { UpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin/UpdateStatePlugin";
 export { FontColorPlugin } from "~/plugins/FontColorPlugin/FontColorPlugin";
 export { TypographyPlugin } from "~/plugins/TypographyPlugin/TypographyPlugin";
 export { QuotePlugin } from "~/plugins/QuoteNodePlugin/QuoteNodePlugin";

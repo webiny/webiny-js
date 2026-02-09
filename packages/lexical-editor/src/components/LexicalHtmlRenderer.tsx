@@ -16,8 +16,8 @@ import {
 import { isValidLexicalData } from "~/utils/isValidLexicalData";
 import { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
 import { LexicalValue } from "~/types";
-import { UpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
 import { RichTextEditorProvider } from "~/context/RichTextEditorContext";
+import { StateHandlingPlugin } from "~/plugins/StateHandlingPlugin";
 
 interface LexicalHtmlRendererProps {
     nodes?: Klass<LexicalNode>[];
@@ -59,7 +59,7 @@ export const LexicalHtmlRenderer = ({ nodes, value, ...props }: LexicalHtmlRende
                     ErrorBoundary={LexicalErrorBoundary}
                     placeholder={null}
                 />
-                <UpdateStatePlugin value={editorValue} />
+                <StateHandlingPlugin value={editorValue} />
             </RichTextEditorProvider>
         </LexicalComposer>
     );
