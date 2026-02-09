@@ -6,6 +6,10 @@ export class NullLicense implements ILicense {
         return null;
     }
 
+    toDto(): null {
+        return null;
+    }
+
     getProject(): WcpProject | null {
         return null;
     }

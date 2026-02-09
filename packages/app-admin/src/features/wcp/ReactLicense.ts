@@ -51,4 +51,8 @@ export class ReactLicense implements ILicense {
     public canUseWorkflows(): boolean {
         return this.license.canUseWorkflows();
     }
+
+    toDto(): DecryptedWcpProjectLicense | null {
+        return this.license.toDto();
+    }
 }

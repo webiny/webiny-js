@@ -39,6 +39,10 @@ export class License implements ILicense {
         return this.license;
     }
 
+    toDto(): DecryptedWcpProjectLicense {
+        return this.license;
+    }
+
     getProject(): WcpProject | null {
         return {
             orgId: this.license.orgId,
