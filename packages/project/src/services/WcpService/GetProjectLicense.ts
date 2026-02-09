@@ -1,5 +1,5 @@
-import { getWcpApiUrl } from "@webiny/wcp";
-import type { EncryptedWcpProjectLicense } from "@webiny/wcp/types";
+import { getWcpApiUrl, decrypt } from "@webiny/wcp";
+import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 import { LoggerService } from "~/abstractions/index.js";
 import { IGetProjectLicenseParams } from "~/abstractions/services/WcpService.js";
 
@@ -14,7 +14,7 @@ export class GetProjectLicense {
         this.di = di;
     }
 
-    async execute(params: IGetProjectLicenseParams): Promise<EncryptedWcpProjectLicense | null> {
+    async execute(params: IGetProjectLicenseParams): Promise<DecryptedWcpProjectLicense | null> {
         const { apiKey, orgId, projectId } = params;
         const { loggerService } = this.di;
 
@@ -41,11 +41,14 @@ export class GetProjectLicense {
                 return null;
             }
 
-            const license = await response.json();
+            const data = await response.json();
 
             loggerService.debug(`Successfully retrieved WCP project license.`);
 
-            return license;
+            // Decrypt the license from the response
+            const decryptedLicense = decrypt(data.license);
+
+            return decryptedLicense;
         } catch (error) {
             loggerService.error({ error }, `Error fetching WCP project license.`);
             return null;

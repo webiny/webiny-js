@@ -1,5 +1,4 @@
 import { createImplementation } from "@webiny/di";
-import { decrypt } from "@webiny/wcp";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 import { LocalStorageService, LoggerService, WcpService } from "~/abstractions/index.js";
 import { GetUser } from "./GetUser.js";
@@ -95,16 +94,14 @@ export class DefaultWcpService implements WcpService.Interface {
             loggerService: this.loggerService
         });
 
-        const encryptedLicense = await getProjectLicense.execute(params);
+        const decryptedLicense = await getProjectLicense.execute(params);
 
-        // Decrypt and cache the license if successfully retrieved
-        if (encryptedLicense) {
-            const decryptedLicense = decrypt(encryptedLicense);
+        // Cache the license if successfully retrieved
+        if (decryptedLicense) {
             this.cachedLicense = decryptedLicense;
-            return decryptedLicense;
         }
 
-        return null;
+        return decryptedLicense;
     }
 }
 
