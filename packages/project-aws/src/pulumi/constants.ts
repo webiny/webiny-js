@@ -1,3 +1,3 @@
-//import { lambda } from "@pulumi/aws";
+import { lambda } from "@pulumi/aws";
 
-export const LAMBDA_RUNTIME = "nodejs24.x"; //lambda.Runtime.NodeJS20dX;
+export const LAMBDA_RUNTIME = lambda.Runtime.NodeJS24dX;
