@@ -46,7 +46,7 @@ export const createUpdateEntryResolver = (): GraphQLFieldResolver<
             });
 
             const operationName = `update${model.singularApiName}`;
-            return result.data?.[operationName] || { data: null, error: null };
+            return (result.data as any)?.[operationName] || { data: null, error: null };
         } catch (error) {
             return {
                 data: null,

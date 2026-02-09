@@ -42,7 +42,7 @@ export const createGetEntryResolver = (): GraphQLFieldResolver<any, CmsContext, 
             const result = await executeSchema({ query, variables: { where } });
 
             const operationName = `get${model.singularApiName}`;
-            return result.data?.[operationName] || { data: null, error: null };
+            return (result.data as any)?.[operationName] || { data: null, error: null };
         } catch (error) {
             return {
                 data: null,

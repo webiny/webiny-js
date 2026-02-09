@@ -46,7 +46,7 @@ export const createDeleteEntryResolver = (): GraphQLFieldResolver<
             });
 
             const operationName = `delete${model.singularApiName}`;
-            return result.data?.[operationName] || { data: false, error: null };
+            return (result.data as any)?.[operationName] || { data: false, error: null };
         } catch (error) {
             return {
                 data: false,

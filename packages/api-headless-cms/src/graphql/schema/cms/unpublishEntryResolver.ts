@@ -42,7 +42,7 @@ export const createUnpublishEntryResolver = (): GraphQLFieldResolver<
             const result = await executeSchema({ query, variables: { revision: id } });
 
             const operationName = `unpublish${model.singularApiName}`;
-            return result.data?.[operationName] || { data: null, error: null };
+            return (result.data as any)?.[operationName] || { data: null, error: null };
         } catch (error) {
             return {
                 data: null,

@@ -71,7 +71,7 @@ export const createListEntriesResolver = (): GraphQLFieldResolver<
 
             const operationName = `list${model.pluralApiName}`;
             return (
-                result.data?.[operationName] || {
+                (result.data as any)?.[operationName] || {
                     data: [],
                     meta: { cursor: null, hasMoreItems: false, totalCount: 0 },
                     error: null
