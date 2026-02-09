@@ -21,6 +21,7 @@
     "@webiny/react-properties": "0.0.0",
     "emotion": "10.0.27",
     "lexical": "0.23.1",
+    "lodash": "^4.17.21",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },

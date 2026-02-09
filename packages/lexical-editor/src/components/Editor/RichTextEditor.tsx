@@ -1,11 +1,8 @@
 import React, { Fragment, useRef, useState } from "react";
 import { css } from "emotion";
 import { CSSObject } from "@emotion/react";
-import { Klass, LexicalEditor, LexicalNode } from "lexical";
-import { EditorState } from "lexical/LexicalEditorState";
+import { Klass, LexicalNode } from "lexical";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
-import { $isRootTextContentEmpty } from "@lexical/text";
-import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { ClearEditorPlugin } from "@lexical/react/LexicalClearEditorPlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
@@ -22,7 +19,6 @@ import {
 import { allNodes } from "@webiny/lexical-nodes";
 import { RichTextEditorProvider } from "~/context/RichTextEditorContext";
 import { isValidLexicalData } from "~/utils/isValidLexicalData";
-import { UpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
 import { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
 import { LexicalValue, ToolbarActionPlugin } from "~/types";
 import { Placeholder } from "~/ui/Placeholder";
@@ -33,6 +29,7 @@ import {
     useLexicalEditorConfig
 } from "~/components/LexicalEditorConfig/LexicalEditorConfig";
 import { normalizeInputValue } from "./normalizeInputValue";
+import { StateHandlingPlugin } from "~/plugins/StateHandlingPlugin";
 
 export interface RichTextEditorProps {
     children?: React.ReactNode | React.ReactNode[];
@@ -119,26 +116,6 @@ const BaseRichTextEditor = ({
         theme: { ...editorTheme.current, emotionMap: themeEmotionMap }
     };
 
-    function handleOnChange(editorState: EditorState, editor: LexicalEditor) {
-        editorState.read(() => {
-            if (typeof onChange === "function") {
-                const editorState = editor.getEditorState();
-                const isEditorEmpty = $isRootTextContentEmpty(editor.isComposing(), true);
-
-                const newValue = JSON.stringify(editorState.toJSON());
-
-                // We don't want to call "onChange" if editor text is empty, and original `value` is empty.
-                if (!value && isEditorEmpty) {
-                    return;
-                }
-
-                if (value !== newValue) {
-                    onChange(newValue);
-                }
-            }
-        });
-    }
-
     return (
         /**
          * Once the LexicalComposer is mounted, it caches the `initialConfig` internally, and all future
@@ -162,8 +139,7 @@ const BaseRichTextEditor = ({
                         style={{ ...styles, ...sizeStyle, overflow: "auto", position: "relative" }}
                     >
                         {/* State plugins. */}
-                        <OnChangePlugin onChange={handleOnChange} />
-                        <UpdateStatePlugin value={editorValue} />
+                        <StateHandlingPlugin value={editorValue} onChange={onChange} />
                         <ClearEditorPlugin />
                         <HistoryPlugin externalHistoryState={historyState} />
                         {/* Event plugins. */}
