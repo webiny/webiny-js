@@ -12,6 +12,11 @@ class CmsQueryTypeDefs implements CoreGraphQLSchemaFactory.Interface {
                     fields: [String!]
                     preview: Boolean
                 ): CmsEntryResponse!
+                getEntryById(
+                    modelId: ID!
+                    id: ID!
+                    fields: [String!]
+                ): CmsEntryResponse!
                 listEntries(
                     modelId: ID!
                     where: JSON
