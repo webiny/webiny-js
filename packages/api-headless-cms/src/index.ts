@@ -17,7 +17,6 @@ import {
 import { createFieldConverters } from "~/fieldConverters/index.js";
 import { createExportGraphQL } from "~/export/index.js";
 import { createStorageTransform } from "~/storage/index.js";
-import { createLexicalHTMLRenderer } from "./htmlRenderer/createLexicalHTMLRenderer.js";
 import { createRevisionIdScalarPlugin } from "~/graphql/scalars/RevisionIdScalarPlugin.js";
 import type { Plugin } from "@webiny/plugins/types.js";
 
@@ -39,8 +38,7 @@ export const createHeadlessCmsGraphQL = (params: CreateHeadlessCmsGraphQLParams 
          * At this point we can create, or not create, CMS GraphQL Schema.
          */
         ...baseCreateGraphQL(params),
-        createExportGraphQL(),
-        createLexicalHTMLRenderer()
+        createExportGraphQL()
     ];
 };
 
@@ -60,7 +58,6 @@ export const createHeadlessCmsContext = (params: ContentContextParams) => {
 export * from "~/graphqlFields/index.js";
 export * from "~/plugins/index.js";
 export * from "~/utils/incrementEntryIdVersion.js";
-export * from "~/utils/RichTextRenderer.js";
 export * from "./graphql/handleRequest.js";
 export * from "./utils/contentEntryTraverser/ContentEntryTraverser.js";
 export * from "./utils/contentModelAst/index.js";

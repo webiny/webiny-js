@@ -3,6 +3,7 @@ export * from "./createPathResolver.js";
 export * from "./getRandomColorForString.js";
 export * from "./getStackName.js";
 export * from "./getTemplatesFolderPath.js";
+export * from "./ImplPathResolver.js";
 export * from "./isValidRegionName.js";
 export * from "./isValidVariantName.js";
 export * from "./measureDuration.js";

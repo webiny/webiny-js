@@ -1,4 +1,5 @@
 export * from "@webiny/website-builder-react";
+export { DocumentRenderer } from "./DocumentRenderer.js";
 
 import { setHeadersProvider } from "@webiny/website-builder-react";
 

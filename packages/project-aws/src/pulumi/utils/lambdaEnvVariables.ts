@@ -11,7 +11,16 @@ if (process.env.DEBUG === "true") {
 
 export let sealEnvVariables: () => void;
 
-const magicPrefixes = ["WEBINY_", "WEBINY_API_", "WCP_", "OKTA_", "AUTH0_"];
+const magicPrefixes = [
+    "WEBINY_",
+    "WEBINY_API_",
+    // Added WCP vars separately. We don't need any other `WCP_PROJECT_` variables, apart from these two.
+    // This will be later removed because we'll be using `Api.BuildParam` extension.
+    "WCP_PROJECT_ENVIRONMENT",
+    "WCP_PROJECT_ENVIRONMENT_API_KEY",
+    "OKTA_",
+    "AUTH0_"
+];
 
 const variablesPromise = new Promise<EnvVariables>(resolve => {
     sealEnvVariables = () => {

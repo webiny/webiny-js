@@ -6,6 +6,7 @@ import { TenantCell } from "./TenantEntryList/TenantCell.js";
 import { TENANT_MODEL_ID } from "~/shared/constants.js";
 import type { TenantEntry } from "~/admin/types.js";
 import { useDisableTenantDialog } from "~/admin/TenantEntryList/DisableTenant/useDisableTenantDialog.js";
+import { TenantNameCell } from "~/admin/TenantEntryList/TenantNameCell.js";
 
 const { Browser } = ContentEntryListConfig;
 const EntryAction = Browser.Entry.Action;
@@ -61,6 +62,12 @@ export const TenantEntryList = () => {
         <>
             <DeleteActionDecorator />
             <ContentEntryListConfig>
+                <Browser.Table.Column
+                    name={"name"}
+                    header={"Name"}
+                    modelIds={[TENANT_MODEL_ID]}
+                    cell={<TenantNameCell />}
+                />
                 <Browser.Table.Column
                     name={"tenant"}
                     header={"Tenant"}

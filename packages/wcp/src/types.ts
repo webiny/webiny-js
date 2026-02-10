@@ -12,6 +12,7 @@ export interface ILicense {
     // TODO: identify all places where raw license data is being used and refactor.
     getRawLicense: () => DecryptedWcpProjectLicense | null;
     getProject(): WcpProject | null;
+    toDto(): DecryptedWcpProjectLicense | null;
     canUseFeature: (featureId: keyof typeof WCP_FEATURE_LABEL) => boolean;
     canUseAacl: () => boolean;
     canUseTeams: () => boolean;

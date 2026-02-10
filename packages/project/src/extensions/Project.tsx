@@ -7,9 +7,7 @@ import {
     ApiAfterBuild,
     ApiBeforeDeploy,
     ApiBeforeWatch,
-    BeforeBuild,
     BeforeDeploy,
-    BeforeWatch,
     CoreBeforeDeploy
 } from "~/extensions/index.js";
 
@@ -20,14 +18,14 @@ export const Project = () => {
         <>
             <AdminBeforeBuild src={p("SetAdminAppEnvVarsBeforeBuild.js")} />
             <AdminBeforeWatch src={p("SetAdminAppEnvVarsBeforeWatch.js")} />
+            <AdminBeforeWatch src={p("ShowConfigChangeInfoBeforeAdminWatch.js")} />
             <ApiAfterBuild src={p("WcpInjectTelemetryClientAfterBuild.js")} />
             <ApiBeforeDeploy src={p("EnsureCoreDeployedBeforeApiDeploy.js")} />
             <ApiBeforeWatch src={p("EnsureApiDeployedBeforeWatch.js")} />
+            <ApiBeforeWatch src={p("ShowConfigChangeInfoBeforeApiWatch.js")} />
             <AdminBeforeBuild src={p("EnsureApiDeployedBeforeAdminBuild.js")} />
             <AdminBeforeWatch src={p("EnsureApiDeployedBeforeAdminWatch.js")} />
             <AdminAfterDeploy src={p("TelemetryNoLongerNewUser.js")} />
-            <BeforeBuild src={p("WcpSetEnvVarsBeforeBuild.js")} />
-            <BeforeWatch src={p("WcpSetEnvVarsBeforeWatch.js")} />
             <BeforeDeploy src={p("EnsureTelemetryEnabledForOss.js")} />
             <CoreBeforeDeploy src={p("ValidateProductionPulumiState.js")} />
         </>

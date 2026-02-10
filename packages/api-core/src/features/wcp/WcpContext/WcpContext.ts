@@ -158,4 +158,8 @@ export class WcpContextImpl implements WcpContext.Interface {
     async decrementTenants(): Promise<void> {
         await this.updateTenants("decrement");
     }
+
+    toDto() {
+        return this.getRawLicense();
+    }
 }

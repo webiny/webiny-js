@@ -15,6 +15,7 @@ import {
     EntryAfterUpdateEventHandler,
     EntryBeforeUpdateEventHandler
 } from "~/features/contentEntry/UpdateEntry/events.js";
+import { richTextMock } from "~tests/contentAPI/mocks/richTextValue.js";
 
 const singularPageApiName = pageModel.singularApiName;
 
@@ -25,52 +26,67 @@ const withTemplateId = (data: Record<string, any>) => {
     };
 };
 
-const contentEntryQueryData = {
-    content: [
-        {
-            text: "Simple Text #1",
-            __typename: `${singularPageApiName}_Content_SimpleText`
-        },
-        {
-            title: "Hero Title #1",
-            date: "2021-01-01",
-            time: "12:00:00",
-            dateTimeWithTimezone: "2021-01-01T12:00:00+01:00",
-            dateTimeWithoutTimezone: "2021-01-01T12:00:00.000Z",
-            __typename: `${singularPageApiName}_Content_Hero`
-        },
-        {
-            title: "Hero Title #2",
-            date: "2021-02-05",
-            time: "14:00:00",
-            dateTimeWithTimezone: "2021-02-05T12:00:00+01:00",
-            dateTimeWithoutTimezone: "2021-02-05T12:00:00.000Z",
-            __typename: `${singularPageApiName}_Content_Hero`
-        },
-        {
-            __typename: `${singularPageApiName}_Content_Objecting`,
-            nestedObject: {
-                __typename: `${singularPageApiName}_Content_Objecting_NestedObject`,
-                objectNestedObject: [
-                    {
-                        nestedObjectNestedTitle: "Content Objecting nested title #1",
-                        date: "2021-01-01",
-                        time: "12:00:00",
-                        dateTimeWithTimezone: "2021-01-01T12:00:00+01:00",
-                        dateTimeWithoutTimezone: "2021-01-01T12:00:00.000Z"
-                    },
-                    {
-                        nestedObjectNestedTitle: "Content Objecting nested title #2",
-                        date: "2021-02-05",
-                        time: "14:00:00",
-                        dateTimeWithTimezone: "2021-02-05T12:00:00+01:00",
-                        dateTimeWithoutTimezone: "2021-02-05T12:00:00.000Z"
-                    }
-                ],
-                objectTitle: "Objective title #1"
+const contentEntryQueryData = (type: "manage" | "read" | "preview") => {
+    return {
+        content: [
+            {
+                text: "Simple Text #1",
+                __typename: `${singularPageApiName}_Content_SimpleText`
             },
-            dynamicZone: {
-                __typename: `${singularPageApiName}_Content_Objecting_DynamicZone_SuperNestedObject`,
+            {
+                title: "Hero Title #1",
+                date: "2021-01-01",
+                time: "12:00:00",
+                dateTimeWithTimezone: "2021-01-01T12:00:00+01:00",
+                dateTimeWithoutTimezone: "2021-01-01T12:00:00.000Z",
+                __typename: `${singularPageApiName}_Content_Hero`
+            },
+            {
+                title: "Hero Title #2",
+                date: "2021-02-05",
+                time: "14:00:00",
+                dateTimeWithTimezone: "2021-02-05T12:00:00+01:00",
+                dateTimeWithoutTimezone: "2021-02-05T12:00:00.000Z",
+                __typename: `${singularPageApiName}_Content_Hero`
+            },
+            {
+                __typename: `${singularPageApiName}_Content_Objecting`,
+                nestedObject: {
+                    __typename: `${singularPageApiName}_Content_Objecting_NestedObject`,
+                    objectNestedObject: [
+                        {
+                            nestedObjectNestedTitle: "Content Objecting nested title #1",
+                            date: "2021-01-01",
+                            time: "12:00:00",
+                            dateTimeWithTimezone: "2021-01-01T12:00:00+01:00",
+                            dateTimeWithoutTimezone: "2021-01-01T12:00:00.000Z"
+                        },
+                        {
+                            nestedObjectNestedTitle: "Content Objecting nested title #2",
+                            date: "2021-02-05",
+                            time: "14:00:00",
+                            dateTimeWithTimezone: "2021-02-05T12:00:00+01:00",
+                            dateTimeWithoutTimezone: "2021-02-05T12:00:00.000Z"
+                        }
+                    ],
+                    objectTitle: "Objective title #1"
+                },
+                dynamicZone: {
+                    __typename: `${singularPageApiName}_Content_Objecting_DynamicZone_SuperNestedObject`,
+                    authors: [
+                        {
+                            modelId: "author",
+                            id: "john-doe#0001"
+                        }
+                    ]
+                }
+            },
+            {
+                __typename: `${singularPageApiName}_Content_Author`,
+                author: {
+                    modelId: "author",
+                    id: "john-doe#0001"
+                },
                 authors: [
                     {
                         modelId: "author",
@@ -78,91 +94,64 @@ const contentEntryQueryData = {
                     }
                 ]
             }
+        ],
+        header: {
+            title: "Header #1",
+            image: "https://d3bwcib4j08r73.cloudfront.net/files/webiny-serverless-cms.png",
+            __typename: `${singularPageApiName}_Header_ImageHeader`
         },
-        {
-            __typename: `${singularPageApiName}_Content_Author`,
-            author: {
-                modelId: "author",
-                id: "john-doe#0001"
+        objective: {
+            nestedObject: {
+                objectNestedObject: [
+                    {
+                        nestedObjectNestedTitle: "Objective nested title #1",
+                        date: "2021-01-01",
+                        time: "12:00:00",
+                        dateTimeWithTimezone: "2021-01-01T12:00:00+01:00",
+                        dateTimeWithoutTimezone: "2021-01-01T12:00:00.000Z"
+                    },
+                    {
+                        nestedObjectNestedTitle: "Objective nested title #2",
+                        date: "2021-02-05",
+                        time: "14:00:00",
+                        dateTimeWithTimezone: "2021-02-05T12:00:00+01:00",
+                        dateTimeWithoutTimezone: "2021-02-05T12:00:00.000Z"
+                    }
+                ],
+                objectTitle: "Objective title #1",
+                objectBody: type === "manage" ? richTextMock : richTextMock.html
             },
+            __typename: `${singularPageApiName}_Objective_Objecting`
+        },
+        reference: {
+            author: {
+                id: "john-doe#0001",
+                modelId: "author",
+                __typename: "RefField"
+            },
+            __typename: `${singularPageApiName}_Reference_Author`
+        },
+        references1: {
             authors: [
                 {
+                    id: "john-doe#0001",
                     modelId: "author",
-                    id: "john-doe#0001"
-                }
-            ]
-        }
-    ],
-    header: {
-        title: "Header #1",
-        image: "https://d3bwcib4j08r73.cloudfront.net/files/webiny-serverless-cms.png",
-        __typename: `${singularPageApiName}_Header_ImageHeader`
-    },
-    objective: {
-        nestedObject: {
-            objectNestedObject: [
-                {
-                    nestedObjectNestedTitle: "Objective nested title #1",
-                    date: "2021-01-01",
-                    time: "12:00:00",
-                    dateTimeWithTimezone: "2021-01-01T12:00:00+01:00",
-                    dateTimeWithoutTimezone: "2021-01-01T12:00:00.000Z"
-                },
-                {
-                    nestedObjectNestedTitle: "Objective nested title #2",
-                    date: "2021-02-05",
-                    time: "14:00:00",
-                    dateTimeWithTimezone: "2021-02-05T12:00:00+01:00",
-                    dateTimeWithoutTimezone: "2021-02-05T12:00:00.000Z"
+                    __typename: "RefField"
                 }
             ],
-            objectTitle: "Objective title #1",
-            objectBody: [
-                {
-                    tag: "h1",
-                    content: "Rich Text"
-                },
-                {
-                    tag: "div",
-                    children: [
-                        {
-                            tag: "p",
-                            content: "Testing the rich text storage"
-                        }
-                    ]
-                }
-            ]
+            __typename: `${singularPageApiName}_References1_Authors`
         },
-        __typename: `${singularPageApiName}_Objective_Objecting`
-    },
-    reference: {
-        author: {
-            id: "john-doe#0001",
-            modelId: "author",
-            __typename: "RefField"
-        },
-        __typename: `${singularPageApiName}_Reference_Author`
-    },
-    references1: {
-        authors: [
+        references2: [
             {
-                id: "john-doe#0001",
-                modelId: "author",
-                __typename: "RefField"
+                author: {
+                    id: "john-doe#0001",
+                    modelId: "author",
+                    __typename: "RefField"
+                },
+                __typename: `${singularPageApiName}_References2_Author`
             }
-        ],
-        __typename: `${singularPageApiName}_References1_Authors`
-    },
-    references2: [
-        {
-            author: {
-                id: "john-doe#0001",
-                modelId: "author",
-                __typename: "RefField"
-            },
-            __typename: `${singularPageApiName}_References2_Author`
-        }
-    ]
+        ]
+    };
 };
 
 const contentEntryMutationData = {
@@ -246,21 +235,7 @@ const contentEntryMutationData = {
         Objecting: {
             nestedObject: {
                 objectTitle: "Objective title #1",
-                objectBody: [
-                    {
-                        tag: "h1",
-                        content: "Rich Text"
-                    },
-                    {
-                        tag: "div",
-                        children: [
-                            {
-                                tag: "p",
-                                content: "Testing the rich text storage"
-                            }
-                        ]
-                    }
-                ],
+                objectBody: richTextMock,
                 objectNestedObject: [
                     {
                         nestedObjectNestedTitle: "Objective nested title #1",
@@ -406,6 +381,9 @@ describe("dynamicZone field", () => {
     });
 
     it("should create a page with dynamic zone fields", async () => {
+        const assertManageContent = contentEntryQueryData("manage");
+        const assertReadContent = contentEntryQueryData("read");
+
         const [createPageResponse] = await manage.createPage({
             data: {
                 values: contentEntryMutationData
@@ -418,7 +396,7 @@ describe("dynamicZone field", () => {
                     data: {
                         id: expect.any(String),
                         values: {
-                            ...withTemplateId(contentEntryQueryData)
+                            ...withTemplateId(assertManageContent)
                         }
                     },
                     error: null
@@ -439,7 +417,7 @@ describe("dynamicZone field", () => {
                     data: {
                         id: expect.any(String),
                         values: {
-                            ...withTemplateId(contentEntryQueryData)
+                            ...withTemplateId(assertManageContent)
                         }
                     },
                     error: null
@@ -458,7 +436,7 @@ describe("dynamicZone field", () => {
                         {
                             id: page.id,
                             values: {
-                                ...withTemplateId(contentEntryQueryData)
+                                ...withTemplateId(assertManageContent)
                             }
                         }
                     ],
@@ -483,7 +461,7 @@ describe("dynamicZone field", () => {
                     data: {
                         id: page.id,
                         values: {
-                            ...withTemplateId(contentEntryQueryData)
+                            ...withTemplateId(assertManageContent)
                         }
                     },
                     error: null
@@ -508,11 +486,11 @@ describe("dynamicZone field", () => {
                     data: {
                         id: page.id,
                         values: {
-                            ...contentEntryQueryData,
+                            ...assertReadContent,
                             content: [
-                                ...contentEntryQueryData.content.slice(0, 3),
+                                ...assertReadContent.content.slice(0, 3),
                                 {
-                                    ...contentEntryQueryData.content[3],
+                                    ...assertReadContent.content[3],
                                     dynamicZone: {
                                         authors: [
                                             {
@@ -527,7 +505,7 @@ describe("dynamicZone field", () => {
                                     }
                                 },
                                 {
-                                    __typename: contentEntryQueryData.content[4].__typename,
+                                    __typename: assertReadContent.content[4].__typename,
                                     author: {
                                         entryId: "john-doe",
                                         id: "john-doe#0001",

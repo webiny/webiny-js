@@ -1,4 +1,5 @@
 import { createImplementation } from "@webiny/di";
+import type { ILicense } from "@webiny/wcp/types";
 import { LocalStorageService, LoggerService, WcpService } from "~/abstractions/index.js";
 import { GetUser } from "./GetUser.js";
 import { GenerateUserPat } from "./GenerateUserPat.js";
@@ -9,9 +10,15 @@ import { getWcpApiUrl, getWcpGqlApiUrl, getWcpAppUrl } from "@webiny/wcp";
 import { StorePatToLocalStorage } from "~/services/WcpService/StorePatToLocalStorage.js";
 import { UnsetPatFromLocalStorage } from "./UnsetPatFromLocalStorage.js";
 import { GetProjectEnvironment } from "./GetProjectEnvironment.js";
-import { IGetProjectEnvironmentParams } from "~/abstractions/services/WcpService.js";
+import { GetProjectLicense } from "./GetProjectLicense.js";
+import {
+    IGetProjectEnvironmentParams,
+    IGetProjectLicenseParams
+} from "~/abstractions/services/WcpService.js";
 
 export class DefaultWcpService implements WcpService.Interface {
+    private cachedLicense: ILicense | null = null;
+
     constructor(
         private loggerService: LoggerService.Interface,
         private localStorageService: LocalStorageService.Interface
@@ -73,6 +80,23 @@ export class DefaultWcpService implements WcpService.Interface {
             localStorageService: this.localStorageService
         });
         return getProjectEnvironment.execute(params);
+    }
+
+    async getProjectLicense(params: IGetProjectLicenseParams): Promise<ILicense> {
+        // Return cached license if available
+        if (this.cachedLicense) {
+            return this.cachedLicense;
+        }
+
+        const getProjectLicense = new GetProjectLicense({
+            loggerService: this.loggerService
+        });
+
+        const license = await getProjectLicense.execute(params);
+
+        // Cache and return the license
+        this.cachedLicense = license;
+        return this.cachedLicense;
     }
 }
 

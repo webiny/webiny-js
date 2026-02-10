@@ -18,7 +18,7 @@ export class FileToEntryMapper {
                 key: file.key,
                 size: file.size,
                 type: file.type,
-                meta: file.meta || {},
+                metadata: file.metadata || {},
                 accessControl: file.accessControl,
                 tags: file.tags || [],
                 extensions: file.extensions

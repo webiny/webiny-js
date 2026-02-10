@@ -113,12 +113,14 @@ const DrawerBase = (props: DrawerProps) => {
         <DrawerRoot {...rootProps}>
             {triggerProps.children && <DrawerTrigger {...triggerProps} asChild />}
             <DrawerPortal>
-                {rootProps.modal && <DrawerOverlay />}
-                <DrawerContent {...contentProps} modal={rootProps.modal}>
-                    <DrawerHeader {...headerProps} />
-                    <DrawerBody {...bodyProps} />
-                    <DrawerFooter {...footerProps} />
-                </DrawerContent>
+                <div data-role="drawer" className={"absolute z-overlay"}>
+                    {rootProps.modal && <DrawerOverlay />}
+                    <DrawerContent {...contentProps} modal={rootProps.modal}>
+                        <DrawerHeader {...headerProps} />
+                        <DrawerBody {...bodyProps} />
+                        <DrawerFooter {...footerProps} />
+                    </DrawerContent>
+                </div>
             </DrawerPortal>
         </DrawerRoot>
     );

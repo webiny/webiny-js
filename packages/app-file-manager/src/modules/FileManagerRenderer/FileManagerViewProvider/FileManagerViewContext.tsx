@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo } from "react";
 import omit from "lodash/omit.js";
 import { useShiftKey, useStateIfMounted } from "@webiny/app-admin";
-import type { FileItem } from "@webiny/app-admin/types.js";
+import type { FileItem } from "~/types.js";
 import type { FileTag } from "~/types.js";
 import { useFileManagerApi } from "~/index.js";
 import type { State } from "./state.js";
@@ -369,6 +369,7 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
             tags,
             onProgress: options.onProgress
         });
+
         if (newFile) {
             newFile.tags = removeScopePrefix(newFile.tags);
             setFiles(files => [newFile, ...files]);
