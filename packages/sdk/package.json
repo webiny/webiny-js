@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/cms-sdk",
+  "name": "@webiny/sdk",
   "version": "0.0.0",
   "type": "module",
   "main": "index.js",
