@@ -20,7 +20,7 @@ const NodeConfig = (props: React.ComponentProps<typeof BaseConfig.Node>) => {
 export const LexicalEditorConfig = ({ children }: { children: React.ReactNode }) => {
     return (
         <CompositionScope name={"cms"}>
-            <BaseConfig>{children}</BaseConfig>
+            <BaseConfig priority={"secondary"}>{children}</BaseConfig>
         </CompositionScope>
     );
 };

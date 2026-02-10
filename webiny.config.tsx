@@ -1,5 +1,5 @@
 import React from "react";
-import { Api, Cli, Infra, Project, Security } from "webiny/extensions";
+import { Admin, Api, Cli, Infra, Project, Security } from "webiny/extensions";
 import { Cognito } from "@webiny/cognito";
 // import { CustomIdp } from "./extensions/customIdp/CustomIdp.js";
 // import { MyIdpExtension } from "./extensions/idp/okta/MyIdpExtension.js";
@@ -7,6 +7,7 @@ import { Cognito } from "@webiny/cognito";
 export const Extensions = () => {
     return (
         <>
+            {/*<Admin.Extension src={"/extensions/LexicalPlugin.tsx"} />*/}
             {/* Admin 👇 */}
             {/*<Admin.Extension src={"/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />*/}
             {/*<Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />*/}
