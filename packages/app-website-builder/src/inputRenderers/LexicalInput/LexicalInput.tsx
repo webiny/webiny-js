@@ -111,7 +111,7 @@ const ExpandableLexicalInputRenderer = ({
         <>
             <FormComponentLabel text={label} />
             <CompositionScope name={"compact"}>
-                <DelayedOnChange value={value.state} onChange={onChange}>
+                <DelayedOnChange value={value} onChange={onChange}>
                     {({ value, onChange }) => (
                         <LexicalEditor value={value} onChange={onChange} key={input.name} />
                     )}

@@ -53,7 +53,7 @@ export const DefaultLexicalConfig = () => {
     return (
         <>
             <CompositionScope name={"compact"}>
-                <LexicalEditorConfig>
+                <LexicalEditorConfig priority={"primary"}>
                     {sharedPlugins}
                     <ToolbarElement name="textAlignment" element={<TextAlignmentAction />} />
                     <ToolbarElement name="boldAction" element={<BoldAction />} />
@@ -63,8 +63,8 @@ export const DefaultLexicalConfig = () => {
                 </LexicalEditorConfig>
             </CompositionScope>
             <CompositionScope name={"expanded"}>
-                <TypographyAction.TypographyDropDown element={<TypographyDropDown />} />
-                <LexicalEditorConfig>
+                <LexicalEditorConfig priority={"primary"}>
+                    <TypographyAction.TypographyDropDown element={<TypographyDropDown />} />
                     {sharedPlugins}
                     <ToolbarElement name="fontColor" element={<FontColorAction />} />
                     <ToolbarElement name="typography" element={<TypographyAction />} />

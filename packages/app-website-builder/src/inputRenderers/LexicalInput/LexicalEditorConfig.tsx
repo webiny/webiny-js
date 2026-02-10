@@ -17,7 +17,7 @@ const NodeConfig = (props: React.ComponentProps<typeof BaseConfig.Node>) => {
 export const CompactEditorConfig = ({ children }: { children: React.ReactNode }) => {
     return (
         <CompositionScope name={"compact"}>
-            <BaseConfig>{children}</BaseConfig>
+            <BaseConfig priority={"secondary"}>{children}</BaseConfig>
         </CompositionScope>
     );
 };
@@ -29,7 +29,7 @@ CompactEditorConfig.Node = NodeConfig;
 export const ExpandedEditorConfig = ({ children }: { children: React.ReactNode }) => {
     return (
         <CompositionScope name={"expanded"}>
-            <BaseConfig>{children}</BaseConfig>
+            <BaseConfig priority={"secondary"}>{children}</BaseConfig>
         </CompositionScope>
     );
 };
