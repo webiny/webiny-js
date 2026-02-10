@@ -109,6 +109,7 @@ export const PageBeforeUpdateHandler =
 export namespace PageBeforeUpdateHandler {
     export type Interface = IEventHandler<DomainEvent<PageBeforeUpdatePayload>>;
     export type Event = DomainEvent<PageBeforeUpdatePayload>;
+    export type Page = WbPage;
 }
 
 export const PageAfterUpdateHandler =
@@ -117,4 +118,5 @@ export const PageAfterUpdateHandler =
 export namespace PageAfterUpdateHandler {
     export type Interface = IEventHandler<DomainEvent<PageAfterUpdatePayload>>;
     export type Event = DomainEvent<PageAfterUpdatePayload>;
+    export type Page = WbPage;
 }

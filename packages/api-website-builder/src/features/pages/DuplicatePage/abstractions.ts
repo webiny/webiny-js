@@ -93,6 +93,7 @@ export const PageBeforeDuplicateHandler = createAbstraction<
 export namespace PageBeforeDuplicateHandler {
     export type Interface = IEventHandler<DomainEvent<PageBeforeDuplicatePayload>>;
     export type Event = DomainEvent<PageBeforeDuplicatePayload>;
+    export type Page = WbPage;
 }
 
 export const PageAfterDuplicateHandler = createAbstraction<
@@ -102,4 +103,5 @@ export const PageAfterDuplicateHandler = createAbstraction<
 export namespace PageAfterDuplicateHandler {
     export type Interface = IEventHandler<DomainEvent<PageAfterDuplicatePayload>>;
     export type Event = DomainEvent<PageAfterDuplicatePayload>;
+    export type Page = WbPage;
 }

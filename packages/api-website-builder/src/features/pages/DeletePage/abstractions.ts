@@ -85,6 +85,7 @@ export const PageBeforeDeleteHandler =
 export namespace PageBeforeDeleteHandler {
     export type Interface = IEventHandler<DomainEvent<PageBeforeDeletePayload>>;
     export type Event = DomainEvent<PageBeforeDeletePayload>;
+    export type Page = WbPage;
 }
 
 export const PageAfterDeleteHandler =
@@ -93,4 +94,5 @@ export const PageAfterDeleteHandler =
 export namespace PageAfterDeleteHandler {
     export type Interface = IEventHandler<DomainEvent<PageAfterDeletePayload>>;
     export type Event = DomainEvent<PageAfterDeletePayload>;
+    export type Page = WbPage;
 }

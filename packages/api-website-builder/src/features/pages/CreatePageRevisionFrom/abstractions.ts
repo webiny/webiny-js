@@ -95,6 +95,7 @@ export const PageBeforeCreateRevisionFromHandler = createAbstraction<
 export namespace PageBeforeCreateRevisionFromHandler {
     export type Interface = IEventHandler<DomainEvent<PageBeforeCreateRevisionFromPayload>>;
     export type Event = DomainEvent<PageBeforeCreateRevisionFromPayload>;
+    export type Page = WbPage;
 }
 
 export const PageAfterCreateRevisionFromHandler = createAbstraction<
@@ -104,4 +105,5 @@ export const PageAfterCreateRevisionFromHandler = createAbstraction<
 export namespace PageAfterCreateRevisionFromHandler {
     export type Interface = IEventHandler<DomainEvent<PageAfterCreateRevisionFromPayload>>;
     export type Event = DomainEvent<PageAfterCreateRevisionFromPayload>;
+    export type Page = WbPage;
 }

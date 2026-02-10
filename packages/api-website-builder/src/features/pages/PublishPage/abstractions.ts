@@ -85,6 +85,7 @@ export const PageBeforePublishHandler = createAbstraction<
 export namespace PageBeforePublishHandler {
     export type Interface = IEventHandler<DomainEvent<PageBeforePublishPayload>>;
     export type Event = DomainEvent<PageBeforePublishPayload>;
+    export type Page = WbPage;
 }
 
 export const PageAfterPublishHandler =
@@ -95,4 +96,5 @@ export const PageAfterPublishHandler =
 export namespace PageAfterPublishHandler {
     export type Interface = IEventHandler<DomainEvent<PageAfterPublishPayload>>;
     export type Event = DomainEvent<PageAfterPublishPayload>;
+    export type Page = WbPage;
 }

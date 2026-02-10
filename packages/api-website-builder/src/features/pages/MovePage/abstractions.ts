@@ -87,6 +87,7 @@ export const PageBeforeMoveHandler =
 export namespace PageBeforeMoveHandler {
     export type Interface = IEventHandler<DomainEvent<PageBeforeMovePayload>>;
     export type Event = DomainEvent<PageBeforeMovePayload>;
+    export type Page = WbPage;
 }
 
 export const PageAfterMoveHandler =
@@ -95,4 +96,5 @@ export const PageAfterMoveHandler =
 export namespace PageAfterMoveHandler {
     export type Interface = IEventHandler<DomainEvent<PageAfterMovePayload>>;
     export type Event = DomainEvent<PageAfterMovePayload>;
+    export type Page = WbPage;
 }
