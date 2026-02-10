@@ -65,8 +65,9 @@ export interface IUpdateRedirectUseCaseErrors {
 
 type UseCaseError = IUpdateRedirectUseCaseErrors[keyof IUpdateRedirectUseCaseErrors];
 
-export const UpdateRedirectUseCase =
-    createAbstraction<IUpdateRedirectUseCase>("Wb/UpdateRedirectUseCase");
+export const UpdateRedirectUseCase = createAbstraction<IUpdateRedirectUseCase>(
+    "Wb/UpdateRedirectUseCase"
+);
 
 export namespace UpdateRedirectUseCase {
     export type Interface = IUpdateRedirectUseCase;

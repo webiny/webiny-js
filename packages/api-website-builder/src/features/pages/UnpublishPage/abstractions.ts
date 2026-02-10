@@ -27,8 +27,9 @@ export interface IUnpublishPageRepositoryErrors {
 
 type RepositoryError = IUnpublishPageRepositoryErrors[keyof IUnpublishPageRepositoryErrors];
 
-export const UnpublishPageRepository =
-    createAbstraction<IUnpublishPageRepository>("Wb/UnpublishPageRepository");
+export const UnpublishPageRepository = createAbstraction<IUnpublishPageRepository>(
+    "Wb/UnpublishPageRepository"
+);
 
 export namespace UnpublishPageRepository {
     export type Interface = IUnpublishPageRepository;

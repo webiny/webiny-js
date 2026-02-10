@@ -55,8 +55,9 @@ export interface ICreateRedirectUseCaseErrors {
 
 type UseCaseError = ICreateRedirectUseCaseErrors[keyof ICreateRedirectUseCaseErrors];
 
-export const CreateRedirectUseCase =
-    createAbstraction<ICreateRedirectUseCase>("Wb/CreateRedirectUseCase");
+export const CreateRedirectUseCase = createAbstraction<ICreateRedirectUseCase>(
+    "Wb/CreateRedirectUseCase"
+);
 
 export namespace CreateRedirectUseCase {
     export type Interface = ICreateRedirectUseCase;

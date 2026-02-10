@@ -39,8 +39,9 @@ export interface IGetPageRevisionsUseCaseErrors {
 
 type UseCaseError = IGetPageRevisionsUseCaseErrors[keyof IGetPageRevisionsUseCaseErrors];
 
-export const GetPageRevisionsUseCase =
-    createAbstraction<IGetPageRevisionsUseCase>("Wb/GetPageRevisionsUseCase");
+export const GetPageRevisionsUseCase = createAbstraction<IGetPageRevisionsUseCase>(
+    "Wb/GetPageRevisionsUseCase"
+);
 
 export namespace GetPageRevisionsUseCase {
     export type Interface = IGetPageRevisionsUseCase;

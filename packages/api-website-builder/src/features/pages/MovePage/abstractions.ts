@@ -81,8 +81,9 @@ export interface PageAfterMovePayload {
 // Event Handler Abstractions
 // ============================================================================
 
-export const PageBeforeMoveHandler =
-    createAbstraction<IEventHandler<DomainEvent<PageBeforeMovePayload>>>("Wb/PageBeforeMoveHandler");
+export const PageBeforeMoveHandler = createAbstraction<
+    IEventHandler<DomainEvent<PageBeforeMovePayload>>
+>("Wb/PageBeforeMoveHandler");
 
 export namespace PageBeforeMoveHandler {
     export type Interface = IEventHandler<DomainEvent<PageBeforeMovePayload>>;

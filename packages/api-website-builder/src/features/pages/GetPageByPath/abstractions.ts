@@ -17,8 +17,9 @@ export interface IGetPageByPathRepositoryErrors {
 
 type RepositoryError = IGetPageByPathRepositoryErrors[keyof IGetPageByPathRepositoryErrors];
 
-export const GetPageByPathRepository =
-    createAbstraction<IGetPageByPathRepository>("Wb/GetPageByPathRepository");
+export const GetPageByPathRepository = createAbstraction<IGetPageByPathRepository>(
+    "Wb/GetPageByPathRepository"
+);
 
 export namespace GetPageByPathRepository {
     export type Interface = IGetPageByPathRepository;

@@ -27,8 +27,9 @@ export interface IPublishPageRepositoryErrors {
 
 type RepositoryError = IPublishPageRepositoryErrors[keyof IPublishPageRepositoryErrors];
 
-export const PublishPageRepository =
-    createAbstraction<IPublishPageRepository>("Wb/PublishPageRepository");
+export const PublishPageRepository = createAbstraction<IPublishPageRepository>(
+    "Wb/PublishPageRepository"
+);
 
 export namespace PublishPageRepository {
     export type Interface = IPublishPageRepository;
@@ -88,10 +89,9 @@ export namespace PageBeforePublishHandler {
     export type Page = WbPage;
 }
 
-export const PageAfterPublishHandler =
-    createAbstraction<IEventHandler<DomainEvent<PageAfterPublishPayload>>>(
-        "Wb/PageAfterPublishHandler"
-    );
+export const PageAfterPublishHandler = createAbstraction<
+    IEventHandler<DomainEvent<PageAfterPublishPayload>>
+>("Wb/PageAfterPublishHandler");
 
 export namespace PageAfterPublishHandler {
     export type Interface = IEventHandler<DomainEvent<PageAfterPublishPayload>>;

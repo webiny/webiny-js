@@ -42,8 +42,9 @@ export interface IGetRedirectByIdUseCaseErrors {
 
 type UseCaseError = IGetRedirectByIdUseCaseErrors[keyof IGetRedirectByIdUseCaseErrors];
 
-export const GetRedirectByIdUseCase =
-    createAbstraction<IGetRedirectByIdUseCase>("Wb/GetRedirectByIdUseCase");
+export const GetRedirectByIdUseCase = createAbstraction<IGetRedirectByIdUseCase>(
+    "Wb/GetRedirectByIdUseCase"
+);
 
 export namespace GetRedirectByIdUseCase {
     export type Interface = IGetRedirectByIdUseCase;

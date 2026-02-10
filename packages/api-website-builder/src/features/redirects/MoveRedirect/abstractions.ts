@@ -28,8 +28,9 @@ export interface IMoveRedirectRepositoryErrors {
 
 type RepositoryError = IMoveRedirectRepositoryErrors[keyof IMoveRedirectRepositoryErrors];
 
-export const MoveRedirectRepository =
-    createAbstraction<IMoveRedirectRepository>("Wb/MoveRedirectRepository");
+export const MoveRedirectRepository = createAbstraction<IMoveRedirectRepository>(
+    "Wb/MoveRedirectRepository"
+);
 
 export namespace MoveRedirectRepository {
     export type Interface = IMoveRedirectRepository;
@@ -54,7 +55,8 @@ export interface IMoveRedirectUseCaseErrors {
 
 type UseCaseError = IMoveRedirectUseCaseErrors[keyof IMoveRedirectUseCaseErrors];
 
-export const MoveRedirectUseCase = createAbstraction<IMoveRedirectUseCase>("Wb/MoveRedirectUseCase");
+export const MoveRedirectUseCase =
+    createAbstraction<IMoveRedirectUseCase>("Wb/MoveRedirectUseCase");
 
 export namespace MoveRedirectUseCase {
     export type Interface = IMoveRedirectUseCase;

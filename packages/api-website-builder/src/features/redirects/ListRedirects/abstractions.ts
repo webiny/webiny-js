@@ -58,8 +58,9 @@ export interface IListRedirectsRepositoryErrors {
 
 type RepositoryError = IListRedirectsRepositoryErrors[keyof IListRedirectsRepositoryErrors];
 
-export const ListRedirectsRepository =
-    createAbstraction<IListRedirectsRepository>("Wb/ListRedirectsRepository");
+export const ListRedirectsRepository = createAbstraction<IListRedirectsRepository>(
+    "Wb/ListRedirectsRepository"
+);
 
 export namespace ListRedirectsRepository {
     export type Interface = IListRedirectsRepository;

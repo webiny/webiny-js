@@ -33,7 +33,8 @@ export interface IListPagesRepositoryErrors {
 
 type RepositoryError = IListPagesRepositoryErrors[keyof IListPagesRepositoryErrors];
 
-export const ListPagesRepository = createAbstraction<IListPagesRepository>("Wb/ListPagesRepository");
+export const ListPagesRepository =
+    createAbstraction<IListPagesRepository>("Wb/ListPagesRepository");
 
 export namespace ListPagesRepository {
     export type Interface = IListPagesRepository;

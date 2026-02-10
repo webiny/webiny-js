@@ -32,8 +32,9 @@ export interface IDuplicatePageRepositoryErrors {
 
 type RepositoryError = IDuplicatePageRepositoryErrors[keyof IDuplicatePageRepositoryErrors];
 
-export const DuplicatePageRepository =
-    createAbstraction<IDuplicatePageRepository>("Wb/DuplicatePageRepository");
+export const DuplicatePageRepository = createAbstraction<IDuplicatePageRepository>(
+    "Wb/DuplicatePageRepository"
+);
 
 export namespace DuplicatePageRepository {
     export type Interface = IDuplicatePageRepository;

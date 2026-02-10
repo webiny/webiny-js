@@ -53,8 +53,9 @@ export interface IDeleteRedirectUseCaseErrors {
 
 type UseCaseError = IDeleteRedirectUseCaseErrors[keyof IDeleteRedirectUseCaseErrors];
 
-export const DeleteRedirectUseCase =
-    createAbstraction<IDeleteRedirectUseCase>("Wb/DeleteRedirectUseCase");
+export const DeleteRedirectUseCase = createAbstraction<IDeleteRedirectUseCase>(
+    "Wb/DeleteRedirectUseCase"
+);
 
 export namespace DeleteRedirectUseCase {
     export type Interface = IDeleteRedirectUseCase;
