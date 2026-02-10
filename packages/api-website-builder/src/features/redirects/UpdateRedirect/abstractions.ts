@@ -46,6 +46,7 @@ export namespace UpdateRedirectRepository {
     export type UpdateData = IUpdateWbRedirectData;
     export type Return = Promise<Result<WbRedirect, RepositoryError>>;
     export type Error = RepositoryError;
+    export type Redirect = WbRedirect;
 }
 
 // ============================================================================
@@ -72,6 +73,7 @@ export namespace UpdateRedirectUseCase {
     export type UpdateData = IUpdateWbRedirectData;
     export type Return = Promise<Result<WbRedirect, UseCaseError>>;
     export type Error = UseCaseError;
+    export type Redirect = WbRedirect;
 }
 
 // ============================================================================
@@ -106,6 +108,7 @@ export const RedirectBeforeUpdateHandler = createAbstraction<
 export namespace RedirectBeforeUpdateHandler {
     export type Interface = IEventHandler<DomainEvent<RedirectBeforeUpdatePayload>>;
     export type Event = DomainEvent<RedirectBeforeUpdatePayload>;
+    export type Redirect = WbRedirect;
 }
 
 export const RedirectAfterUpdateHandler = createAbstraction<
@@ -115,4 +118,5 @@ export const RedirectAfterUpdateHandler = createAbstraction<
 export namespace RedirectAfterUpdateHandler {
     export type Interface = IEventHandler<DomainEvent<RedirectAfterUpdatePayload>>;
     export type Event = DomainEvent<RedirectAfterUpdatePayload>;
+    export type Redirect = WbRedirect;
 }

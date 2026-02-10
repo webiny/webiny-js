@@ -66,6 +66,7 @@ export namespace ListRedirectsRepository {
     export type Params = ListWbRedirectsParams;
     export type Return = Promise<Result<ListRedirectsResult, RepositoryError>>;
     export type Error = RepositoryError;
+    export type Redirect = WbRedirect;
 }
 
 // ============================================================================
@@ -90,4 +91,5 @@ export namespace ListRedirectsUseCase {
     export type Params = ListWbRedirectsParams;
     export type Return = Promise<Result<ListRedirectsResult, UseCaseError>>;
     export type Error = UseCaseError;
+    export type Redirect = WbRedirect;
 }

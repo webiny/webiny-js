@@ -86,6 +86,7 @@ export const RedirectBeforeDeleteHandler = createAbstraction<
 export namespace RedirectBeforeDeleteHandler {
     export type Interface = IEventHandler<DomainEvent<RedirectBeforeDeletePayload>>;
     export type Event = DomainEvent<RedirectBeforeDeletePayload>;
+    export type Redirect = WbRedirect;
 }
 
 export const RedirectAfterDeleteHandler = createAbstraction<
@@ -95,4 +96,5 @@ export const RedirectAfterDeleteHandler = createAbstraction<
 export namespace RedirectAfterDeleteHandler {
     export type Interface = IEventHandler<DomainEvent<RedirectAfterDeletePayload>>;
     export type Event = DomainEvent<RedirectAfterDeletePayload>;
+    export type Redirect = WbRedirect;
 }

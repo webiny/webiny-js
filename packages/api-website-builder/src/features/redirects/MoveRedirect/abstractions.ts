@@ -36,6 +36,7 @@ export namespace MoveRedirectRepository {
     export type Params = IMoveWbRedirectParams;
     export type Return = Promise<Result<WbRedirect, RepositoryError>>;
     export type Error = RepositoryError;
+    export type Redirect = WbRedirect;
 }
 
 // ============================================================================
@@ -60,6 +61,7 @@ export namespace MoveRedirectUseCase {
     export type Params = IMoveWbRedirectParams;
     export type Return = Promise<Result<WbRedirect, UseCaseError>>;
     export type Error = UseCaseError;
+    export type Redirect = WbRedirect;
 }
 
 // ============================================================================
@@ -88,6 +90,7 @@ export const RedirectBeforeMoveHandler = createAbstraction<
 export namespace RedirectBeforeMoveHandler {
     export type Interface = IEventHandler<DomainEvent<RedirectBeforeMovePayload>>;
     export type Event = DomainEvent<RedirectBeforeMovePayload>;
+    export type Redirect = WbRedirect;
 }
 
 export const RedirectAfterMoveHandler = createAbstraction<
@@ -97,4 +100,5 @@ export const RedirectAfterMoveHandler = createAbstraction<
 export namespace RedirectAfterMoveHandler {
     export type Interface = IEventHandler<DomainEvent<RedirectAfterMovePayload>>;
     export type Event = DomainEvent<RedirectAfterMovePayload>;
+    export type Redirect = WbRedirect;
 }

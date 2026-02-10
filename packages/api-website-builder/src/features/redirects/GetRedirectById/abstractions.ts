@@ -25,6 +25,7 @@ export namespace GetRedirectByIdRepository {
     export type Interface = IGetRedirectByIdRepository;
     export type Error = RepositoryError;
     export type Return = Promise<Result<WbRedirect, RepositoryError>>;
+    export type Redirect = WbRedirect;
 }
 
 /**
@@ -48,4 +49,5 @@ export namespace GetRedirectByIdUseCase {
     export type Interface = IGetRedirectByIdUseCase;
     export type Return = Promise<Result<WbRedirect, UseCaseError>>;
     export type Error = UseCaseError;
+    export type Redirect = WbRedirect;
 }
