@@ -1,7 +1,6 @@
-import React, { useCallback } from "react";
-import { RichTextEditor, StaticToolbar } from "@webiny/lexical-editor";
-import type { RichTextEditorProps } from "@webiny/lexical-editor/types.js";
-import { FileManager } from "@webiny/app-admin";
+import React from "react";
+import { LexicalEditor as BaseLexicalEditor } from "@webiny/app-admin";
+import { StaticToolbar } from "@webiny/lexical-editor";
 import type { EditorTheme } from "@webiny/lexical-theme";
 import { createLexicalTokens } from "@webiny/lexical-theme/createLexicalEditorTokens.js";
 import { useWebsiteBuilderTheme } from "~/BaseEditor/components/index.js";
@@ -24,21 +23,12 @@ const styles: React.CSSProperties = {
     fontFamily: "var(--wb-theme-font-family)"
 };
 
-const toolbar = <StaticToolbar className={"wb-static-toolbar"} />;
-
 const lexicalTokens = createLexicalTokens("wb-lx-");
 
-export const LexicalEditor = (props: Omit<RichTextEditorProps, "theme">) => {
-    const { theme } = useWebsiteBuilderTheme();
+export type LexicalEditorProps = Omit<React.ComponentProps<typeof BaseLexicalEditor>, "theme">;
 
-    const onChange = useCallback(
-        (jsonString: string) => {
-            if (props?.onChange) {
-                props?.onChange(jsonString);
-            }
-        },
-        [props?.onChange]
-    );
+export const LexicalEditor = (props: LexicalEditorProps) => {
+    const { theme } = useWebsiteBuilderTheme();
 
     const editorTheme: EditorTheme = {
         colors: theme?.colors ?? [],
@@ -46,29 +36,16 @@ export const LexicalEditor = (props: Omit<RichTextEditorProps, "theme">) => {
         tokens: lexicalTokens
     };
 
-    /**
-     * To use Website Builder theme, we can't use the LexicalEditor component from @webiny/app-admin.
-     */
     return (
-        <FileManager
-            accept={["image/*"]}
-            render={({ showFileManager }) => (
-                <RichTextEditor
-                    {...props}
-                    onChange={onChange}
-                    staticToolbar={toolbar}
-                    tag={"p"}
-                    placeholder={props?.placeholder || "Enter your text here..."}
-                    placeholderStyles={placeholderStyles}
-                    contentEditableStyles={contentEditableStyles}
-                    styles={styles}
-                    theme={editorTheme}
-                    toolbarActionPlugins={[
-                        ...(props.toolbarActionPlugins || []),
-                        { targetAction: "image-action", plugin: showFileManager }
-                    ]}
-                />
-            )}
+        <BaseLexicalEditor
+            {...props}
+            staticToolbar={<StaticToolbar className={"wb-static-toolbar"} />}
+            tag={"p"}
+            placeholder={props?.placeholder || "Enter your text here..."}
+            placeholderStyles={placeholderStyles}
+            contentEditableStyles={contentEditableStyles}
+            styles={styles}
+            theme={editorTheme}
         />
     );
 };

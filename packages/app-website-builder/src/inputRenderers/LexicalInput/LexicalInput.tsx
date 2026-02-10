@@ -1,8 +1,7 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { DelayedOnChange, FormComponentLabel } from "@webiny/admin-ui";
-import { createLexicalStateTransformer } from "@webiny/lexical-converter";
+import React, { useCallback, useEffect, useState } from "react";
+import { Dialog, DelayedOnChange, FormComponentLabel } from "@webiny/admin-ui";
 import { CompositionScope } from "@webiny/app-admin";
-import { Dialog } from "@webiny/admin-ui";
+import type { RichTextValueWithHtml } from "@webiny/app-admin/components/LexicalEditor/index.js";
 import { FloatingLinkEditorPlugin, LexicalEditorConfig } from "@webiny/lexical-editor";
 import { LexicalEditor } from "./LexicalEditor.js";
 import type { ElementInputRendererProps } from "~/BaseEditor/index.js";
@@ -15,22 +14,13 @@ import { LinkEditForm } from "~/inputRenderers/LexicalInput/LinkEditForm.js";
 const { Plugin } = LexicalEditorConfig;
 
 type LexicalInputRendererProps = Omit<ElementInputRendererProps, "onChange" | "metadata"> & {
-    onChange: (value: string) => void;
+    onChange: (value: RichTextValueWithHtml) => void;
 };
 
 export const LexicalInputRenderer = (props: ElementInputRendererProps) => {
-    const transformer = useMemo(() => {
-        return createLexicalStateTransformer();
-    }, []);
-
-    const onChange = (lexicalValue: string) => {
+    const onChange = (lexicalValue: RichTextValueWithHtml) => {
         props.onChange(({ value }) => {
-            const html = transformer.toHtml(lexicalValue);
-
-            value.set({
-                state: lexicalValue,
-                html
-            });
+            value.set(lexicalValue);
         });
     };
 

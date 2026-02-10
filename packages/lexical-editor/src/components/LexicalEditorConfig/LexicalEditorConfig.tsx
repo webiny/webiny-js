@@ -9,6 +9,7 @@ import type { PluginConfig } from "./components/Plugin.js";
 import { Plugin } from "./components/Plugin.js";
 import type { NodeConfig } from "./components/Node.js";
 import { Node } from "./components/Node.js";
+import { DebounceRenderer } from "../Editor/DebounceRender.js";
 
 const LexicalEditorConfigApply = makeDecoratable("LexicalEditorConfigApply", ({ children }) => {
     return <>{children}</>;
@@ -43,17 +44,16 @@ const ViewContext = React.createContext<ViewContext>({ properties: [] });
 
 export const LexicalEditorWithConfig = ({ children }: { children: React.ReactNode }) => {
     const [properties, setProperties] = useState<Property[]>([]);
-    const context = { properties };
 
     const stateUpdater = (properties: Property[]) => {
         setProperties(properties);
     };
 
     return (
-        <ViewContext.Provider value={context}>
+        <ViewContext.Provider value={{ properties }}>
             <Properties onChange={stateUpdater}>
                 <LexicalEditorConfigApply />
-                {children}
+                <DebounceRenderer>{children}</DebounceRenderer>
             </Properties>
         </ViewContext.Provider>
     );

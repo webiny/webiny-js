@@ -44,7 +44,7 @@ const sharedPlugins = (
                 />
             }
         />
-        <Plugin name={"images"} element={<ImagesPlugin />} />
+        <Plugin name={"image"} element={<ImagesPlugin />} />
         <Plugin name={"quote"} element={<QuotePlugin />} />
     </>
 );
