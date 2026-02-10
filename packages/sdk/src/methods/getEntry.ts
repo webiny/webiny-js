@@ -7,17 +7,10 @@ export interface GetEntryParams {
     preview?: boolean;
 }
 
-export interface CmsEntry<TValues = Record<string, unknown>> {
-    id: string;
-    entryId: string;
-    values?: TValues;
-    [key: string]: unknown;
-}
-
 /**
  * Retrieves a single entry from the CMS.
  * 
- * @template TValues - Type of the entry values object
+ * @template TValues - Type of the entry data object. Users should specify this to include all fields they're requesting (id, entryId, values, createdOn, etc.)
  * @param config - SDK configuration
  * @param fetchFn - Fetch function to use for HTTP requests
  * @param params - Parameters for retrieving the entry
@@ -31,7 +24,7 @@ export async function getEntry<TValues = Record<string, unknown>>(
     config: CmsSdkConfig,
     fetchFn: typeof fetch,
     params: GetEntryParams
-): Promise<CmsEntry<TValues> | null> {
+): Promise<TValues | null> {
     const { modelId, where, fields, preview } = params;
 
     const { executeGraphQL } = await import("./executeGraphQL.js");

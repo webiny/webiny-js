@@ -1,5 +1,4 @@
 import type { CmsSdkConfig } from "../types.js";
-import type { CmsEntry } from "./getEntry.js";
 
 export interface UnpublishEntryParams {
     modelId: string;
@@ -10,7 +9,7 @@ export interface UnpublishEntryParams {
 /**
  * Unpublishes an entry in the CMS.
  * 
- * @template TValues - Type of the entry values object
+ * @template TValues - Type of the entry data object returned. Specify fields to include via the fields parameter.
  * @param config - SDK configuration
  * @param fetchFn - Fetch function to use for HTTP requests
  * @param params - Parameters for unpublishing the entry
@@ -23,7 +22,7 @@ export async function unpublishEntry<TValues = Record<string, unknown>>(
     config: CmsSdkConfig,
     fetchFn: typeof fetch,
     params: UnpublishEntryParams
-): Promise<CmsEntry<TValues>> {
+): Promise<TValues> {
     const { modelId, id, fields } = params;
 
     const { executeGraphQL } = await import("./executeGraphQL.js");

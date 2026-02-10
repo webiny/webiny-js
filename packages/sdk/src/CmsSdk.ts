@@ -1,5 +1,5 @@
 import type { CmsSdkConfig } from "./types.js";
-import type { GetEntryParams, CmsEntry } from "./methods/getEntry.js";
+import type { GetEntryParams } from "./methods/getEntry.js";
 import type { ListEntriesParams, ListEntriesResult } from "./methods/listEntries.js";
 import type { CreateEntryParams } from "./methods/createEntry.js";
 import type { UpdateEntryParams } from "./methods/updateEntry.js";
@@ -25,7 +25,7 @@ export class CmsSdk {
 
     async getEntry<TValues = Record<string, unknown>>(
         params: GetEntryParams
-    ): Promise<CmsEntry<TValues> | null> {
+    ): Promise<TValues | null> {
         return getEntryFn<TValues>(this.config, this.fetchFn, params);
     }
 
@@ -37,13 +37,13 @@ export class CmsSdk {
 
     async createEntry<TValues = Record<string, unknown>>(
         params: CreateEntryParams<TValues>
-    ): Promise<CmsEntry<TValues>> {
+    ): Promise<TValues> {
         return createEntryFn<TValues>(this.config, this.fetchFn, params);
     }
 
     async updateEntry<TValues = Record<string, unknown>>(
         params: UpdateEntryParams<TValues>
-    ): Promise<CmsEntry<TValues>> {
+    ): Promise<TValues> {
         return updateEntryFn<TValues>(this.config, this.fetchFn, params);
     }
 
@@ -51,11 +51,11 @@ export class CmsSdk {
         return deleteEntryFn(this.config, this.fetchFn, params);
     }
 
-    async publishEntry<TValues = Record<string, unknown>>(params: PublishEntryParams): Promise<CmsEntry<TValues>> {
+    async publishEntry<TValues = Record<string, unknown>>(params: PublishEntryParams): Promise<TValues> {
         return publishEntryFn<TValues>(this.config, this.fetchFn, params);
     }
 
-    async unpublishEntry<TValues = Record<string, unknown>>(params: UnpublishEntryParams): Promise<CmsEntry<TValues>> {
+    async unpublishEntry<TValues = Record<string, unknown>>(params: UnpublishEntryParams): Promise<TValues> {
         return unpublishEntryFn<TValues>(this.config, this.fetchFn, params);
     }
 }

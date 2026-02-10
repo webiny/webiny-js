@@ -1,5 +1,4 @@
 import type { CmsSdkConfig } from "../types.js";
-import type { CmsEntry } from "./getEntry.js";
 
 export interface ListEntriesParams {
     modelId: string;
@@ -15,7 +14,7 @@ export interface ListEntriesParams {
 }
 
 export interface ListEntriesResult<TValues = Record<string, unknown>> {
-    data: CmsEntry<TValues>[];
+    data: TValues[];
     meta: {
         cursor: string | null;
         hasMoreItems: boolean;
@@ -26,7 +25,7 @@ export interface ListEntriesResult<TValues = Record<string, unknown>> {
 /**
  * Lists entries from the CMS with filtering, sorting, and pagination support.
  * 
- * @template TValues - Type of the entry values object
+ * @template TValues - Type of the entry data objects. Users should specify this to include all fields they're requesting (id, entryId, values, createdOn, etc.)
  * @param config - SDK configuration
  * @param fetchFn - Fetch function to use for HTTP requests
  * @param params - Parameters for listing entries
