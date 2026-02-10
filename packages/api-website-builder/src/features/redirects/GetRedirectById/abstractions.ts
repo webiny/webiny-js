@@ -18,7 +18,7 @@ export interface IGetRedirectByIdRepositoryErrors {
 type RepositoryError = IGetRedirectByIdRepositoryErrors[keyof IGetRedirectByIdRepositoryErrors];
 
 export const GetRedirectByIdRepository = createAbstraction<IGetRedirectByIdRepository>(
-    "GetRedirectByIdRepository"
+    "Wb/GetRedirectByIdRepository"
 );
 
 export namespace GetRedirectByIdRepository {
@@ -43,7 +43,7 @@ export interface IGetRedirectByIdUseCaseErrors {
 type UseCaseError = IGetRedirectByIdUseCaseErrors[keyof IGetRedirectByIdUseCaseErrors];
 
 export const GetRedirectByIdUseCase =
-    createAbstraction<IGetRedirectByIdUseCase>("GetRedirectByIdUseCase");
+    createAbstraction<IGetRedirectByIdUseCase>("Wb/GetRedirectByIdUseCase");
 
 export namespace GetRedirectByIdUseCase {
     export type Interface = IGetRedirectByIdUseCase;

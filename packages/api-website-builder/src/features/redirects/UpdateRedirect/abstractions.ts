@@ -38,7 +38,7 @@ export interface IUpdateRedirectRepositoryErrors {
 type RepositoryError = IUpdateRedirectRepositoryErrors[keyof IUpdateRedirectRepositoryErrors];
 
 export const UpdateRedirectRepository = createAbstraction<IUpdateRedirectRepository>(
-    "UpdateRedirectRepository"
+    "Wb/UpdateRedirectRepository"
 );
 
 export namespace UpdateRedirectRepository {
@@ -66,7 +66,7 @@ export interface IUpdateRedirectUseCaseErrors {
 type UseCaseError = IUpdateRedirectUseCaseErrors[keyof IUpdateRedirectUseCaseErrors];
 
 export const UpdateRedirectUseCase =
-    createAbstraction<IUpdateRedirectUseCase>("UpdateRedirectUseCase");
+    createAbstraction<IUpdateRedirectUseCase>("Wb/UpdateRedirectUseCase");
 
 export namespace UpdateRedirectUseCase {
     export type Interface = IUpdateRedirectUseCase;
@@ -103,7 +103,7 @@ export interface RedirectAfterUpdatePayload {
 
 export const RedirectBeforeUpdateHandler = createAbstraction<
     IEventHandler<DomainEvent<RedirectBeforeUpdatePayload>>
->("RedirectBeforeUpdateHandler");
+>("Wb/RedirectBeforeUpdateHandler");
 
 export namespace RedirectBeforeUpdateHandler {
     export type Interface = IEventHandler<DomainEvent<RedirectBeforeUpdatePayload>>;
@@ -113,7 +113,7 @@ export namespace RedirectBeforeUpdateHandler {
 
 export const RedirectAfterUpdateHandler = createAbstraction<
     IEventHandler<DomainEvent<RedirectAfterUpdatePayload>>
->("RedirectAfterUpdateHandler");
+>("Wb/RedirectAfterUpdateHandler");
 
 export namespace RedirectAfterUpdateHandler {
     export type Interface = IEventHandler<DomainEvent<RedirectAfterUpdatePayload>>;

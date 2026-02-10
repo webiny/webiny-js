@@ -41,7 +41,7 @@ export interface IUpdatePageRepositoryErrors {
 type RepositoryError = IUpdatePageRepositoryErrors[keyof IUpdatePageRepositoryErrors];
 
 export const UpdatePageRepository =
-    createAbstraction<IUpdatePageRepository>("UpdatePageRepository");
+    createAbstraction<IUpdatePageRepository>("Wb/UpdatePageRepository");
 
 export namespace UpdatePageRepository {
     export type Interface = IUpdatePageRepository;
@@ -66,7 +66,7 @@ export interface IUpdatePageUseCaseErrors {
 
 type UseCaseError = IUpdatePageUseCaseErrors[keyof IUpdatePageUseCaseErrors];
 
-export const UpdatePageUseCase = createAbstraction<IUpdatePageUseCase>("UpdatePageUseCase");
+export const UpdatePageUseCase = createAbstraction<IUpdatePageUseCase>("Wb/UpdatePageUseCase");
 
 export namespace UpdatePageUseCase {
     export type Interface = IUpdatePageUseCase;
@@ -103,7 +103,7 @@ export interface PageAfterUpdatePayload {
 
 export const PageBeforeUpdateHandler =
     createAbstraction<IEventHandler<DomainEvent<PageBeforeUpdatePayload>>>(
-        "PageBeforeUpdateHandler"
+        "Wb/PageBeforeUpdateHandler"
     );
 
 export namespace PageBeforeUpdateHandler {
@@ -113,7 +113,7 @@ export namespace PageBeforeUpdateHandler {
 }
 
 export const PageAfterUpdateHandler =
-    createAbstraction<IEventHandler<DomainEvent<PageAfterUpdatePayload>>>("PageAfterUpdateHandler");
+    createAbstraction<IEventHandler<DomainEvent<PageAfterUpdatePayload>>>("Wb/PageAfterUpdateHandler");
 
 export namespace PageAfterUpdateHandler {
     export type Interface = IEventHandler<DomainEvent<PageAfterUpdatePayload>>;

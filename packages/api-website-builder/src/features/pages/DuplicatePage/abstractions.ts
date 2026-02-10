@@ -33,7 +33,7 @@ export interface IDuplicatePageRepositoryErrors {
 type RepositoryError = IDuplicatePageRepositoryErrors[keyof IDuplicatePageRepositoryErrors];
 
 export const DuplicatePageRepository =
-    createAbstraction<IDuplicatePageRepository>("DuplicatePageRepository");
+    createAbstraction<IDuplicatePageRepository>("Wb/DuplicatePageRepository");
 
 export namespace DuplicatePageRepository {
     export type Interface = IDuplicatePageRepository;
@@ -59,7 +59,7 @@ export interface IDuplicatePageUseCaseErrors {
 type UseCaseError = IDuplicatePageUseCaseErrors[keyof IDuplicatePageUseCaseErrors];
 
 export const DuplicatePageUseCase =
-    createAbstraction<IDuplicatePageUseCase>("DuplicatePageUseCase");
+    createAbstraction<IDuplicatePageUseCase>("Wb/DuplicatePageUseCase");
 
 export namespace DuplicatePageUseCase {
     export type Interface = IDuplicatePageUseCase;
@@ -88,7 +88,7 @@ export interface PageAfterDuplicatePayload {
 
 export const PageBeforeDuplicateHandler = createAbstraction<
     IEventHandler<DomainEvent<PageBeforeDuplicatePayload>>
->("PageBeforeDuplicateHandler");
+>("Wb/PageBeforeDuplicateHandler");
 
 export namespace PageBeforeDuplicateHandler {
     export type Interface = IEventHandler<DomainEvent<PageBeforeDuplicatePayload>>;
@@ -98,7 +98,7 @@ export namespace PageBeforeDuplicateHandler {
 
 export const PageAfterDuplicateHandler = createAbstraction<
     IEventHandler<DomainEvent<PageAfterDuplicatePayload>>
->("PageAfterDuplicateHandler");
+>("Wb/PageAfterDuplicateHandler");
 
 export namespace PageAfterDuplicateHandler {
     export type Interface = IEventHandler<DomainEvent<PageAfterDuplicatePayload>>;

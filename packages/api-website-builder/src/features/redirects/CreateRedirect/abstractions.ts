@@ -29,7 +29,7 @@ export interface ICreateRedirectRepositoryErrors {
 type RepositoryError = ICreateRedirectRepositoryErrors[keyof ICreateRedirectRepositoryErrors];
 
 export const CreateRedirectRepository = createAbstraction<ICreateRedirectRepository>(
-    "CreateRedirectRepository"
+    "Wb/CreateRedirectRepository"
 );
 
 export namespace CreateRedirectRepository {
@@ -56,7 +56,7 @@ export interface ICreateRedirectUseCaseErrors {
 type UseCaseError = ICreateRedirectUseCaseErrors[keyof ICreateRedirectUseCaseErrors];
 
 export const CreateRedirectUseCase =
-    createAbstraction<ICreateRedirectUseCase>("CreateRedirectUseCase");
+    createAbstraction<ICreateRedirectUseCase>("Wb/CreateRedirectUseCase");
 
 export namespace CreateRedirectUseCase {
     export type Interface = ICreateRedirectUseCase;
@@ -84,7 +84,7 @@ export interface RedirectAfterCreatePayload {
 
 export const RedirectBeforeCreateHandler = createAbstraction<
     IEventHandler<DomainEvent<RedirectBeforeCreatePayload>>
->("RedirectBeforeCreateHandler");
+>("Wb/RedirectBeforeCreateHandler");
 
 export namespace RedirectBeforeCreateHandler {
     export type Interface = IEventHandler<DomainEvent<RedirectBeforeCreatePayload>>;
@@ -94,7 +94,7 @@ export namespace RedirectBeforeCreateHandler {
 
 export const RedirectAfterCreateHandler = createAbstraction<
     IEventHandler<DomainEvent<RedirectAfterCreatePayload>>
->("RedirectAfterCreateHandler");
+>("Wb/RedirectAfterCreateHandler");
 
 export namespace RedirectAfterCreateHandler {
     export type Interface = IEventHandler<DomainEvent<RedirectAfterCreatePayload>>;

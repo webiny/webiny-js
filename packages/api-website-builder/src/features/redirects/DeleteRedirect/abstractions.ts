@@ -28,7 +28,7 @@ export interface IDeleteRedirectRepositoryErrors {
 type RepositoryError = IDeleteRedirectRepositoryErrors[keyof IDeleteRedirectRepositoryErrors];
 
 export const DeleteRedirectRepository = createAbstraction<IDeleteRedirectRepository>(
-    "DeleteRedirectRepository"
+    "Wb/DeleteRedirectRepository"
 );
 
 export namespace DeleteRedirectRepository {
@@ -54,7 +54,7 @@ export interface IDeleteRedirectUseCaseErrors {
 type UseCaseError = IDeleteRedirectUseCaseErrors[keyof IDeleteRedirectUseCaseErrors];
 
 export const DeleteRedirectUseCase =
-    createAbstraction<IDeleteRedirectUseCase>("DeleteRedirectUseCase");
+    createAbstraction<IDeleteRedirectUseCase>("Wb/DeleteRedirectUseCase");
 
 export namespace DeleteRedirectUseCase {
     export type Interface = IDeleteRedirectUseCase;
@@ -81,7 +81,7 @@ export interface RedirectAfterDeletePayload {
 
 export const RedirectBeforeDeleteHandler = createAbstraction<
     IEventHandler<DomainEvent<RedirectBeforeDeletePayload>>
->("RedirectBeforeDeleteHandler");
+>("Wb/RedirectBeforeDeleteHandler");
 
 export namespace RedirectBeforeDeleteHandler {
     export type Interface = IEventHandler<DomainEvent<RedirectBeforeDeletePayload>>;
@@ -91,7 +91,7 @@ export namespace RedirectBeforeDeleteHandler {
 
 export const RedirectAfterDeleteHandler = createAbstraction<
     IEventHandler<DomainEvent<RedirectAfterDeletePayload>>
->("RedirectAfterDeleteHandler");
+>("Wb/RedirectAfterDeleteHandler");
 
 export namespace RedirectAfterDeleteHandler {
     export type Interface = IEventHandler<DomainEvent<RedirectAfterDeletePayload>>;

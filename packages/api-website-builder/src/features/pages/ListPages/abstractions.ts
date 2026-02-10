@@ -33,7 +33,7 @@ export interface IListPagesRepositoryErrors {
 
 type RepositoryError = IListPagesRepositoryErrors[keyof IListPagesRepositoryErrors];
 
-export const ListPagesRepository = createAbstraction<IListPagesRepository>("ListPagesRepository");
+export const ListPagesRepository = createAbstraction<IListPagesRepository>("Wb/ListPagesRepository");
 
 export namespace ListPagesRepository {
     export type Interface = IListPagesRepository;
@@ -55,7 +55,7 @@ export interface IListPagesUseCaseErrors {
 
 type UseCaseError = IListPagesUseCaseErrors[keyof IListPagesUseCaseErrors];
 
-export const ListPagesUseCase = createAbstraction<IListPagesUseCase>("ListPagesUseCase");
+export const ListPagesUseCase = createAbstraction<IListPagesUseCase>("Wb/ListPagesUseCase");
 
 export namespace ListPagesUseCase {
     export type Interface = IListPagesUseCase;

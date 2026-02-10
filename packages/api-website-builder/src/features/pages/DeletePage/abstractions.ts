@@ -28,7 +28,7 @@ export interface IDeletePageRepositoryErrors {
 type RepositoryError = IDeletePageRepositoryErrors[keyof IDeletePageRepositoryErrors];
 
 export const DeletePageRepository =
-    createAbstraction<IDeletePageRepository>("DeletePageRepository");
+    createAbstraction<IDeletePageRepository>("Wb/DeletePageRepository");
 
 export namespace DeletePageRepository {
     export type Interface = IDeletePageRepository;
@@ -52,7 +52,7 @@ export interface IDeletePageUseCaseErrors {
 
 type UseCaseError = IDeletePageUseCaseErrors[keyof IDeletePageUseCaseErrors];
 
-export const DeletePageUseCase = createAbstraction<IDeletePageUseCase>("DeletePageUseCase");
+export const DeletePageUseCase = createAbstraction<IDeletePageUseCase>("Wb/DeletePageUseCase");
 
 export namespace DeletePageUseCase {
     export type Interface = IDeletePageUseCase;
@@ -79,7 +79,7 @@ export interface PageAfterDeletePayload {
 
 export const PageBeforeDeleteHandler =
     createAbstraction<IEventHandler<DomainEvent<PageBeforeDeletePayload>>>(
-        "PageBeforeDeleteHandler"
+        "Wb/PageBeforeDeleteHandler"
     );
 
 export namespace PageBeforeDeleteHandler {
@@ -89,7 +89,7 @@ export namespace PageBeforeDeleteHandler {
 }
 
 export const PageAfterDeleteHandler =
-    createAbstraction<IEventHandler<DomainEvent<PageAfterDeletePayload>>>("PageAfterDeleteHandler");
+    createAbstraction<IEventHandler<DomainEvent<PageAfterDeletePayload>>>("Wb/PageAfterDeleteHandler");
 
 export namespace PageAfterDeleteHandler {
     export type Interface = IEventHandler<DomainEvent<PageAfterDeletePayload>>;

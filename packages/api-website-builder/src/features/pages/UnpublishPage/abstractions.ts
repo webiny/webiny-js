@@ -28,7 +28,7 @@ export interface IUnpublishPageRepositoryErrors {
 type RepositoryError = IUnpublishPageRepositoryErrors[keyof IUnpublishPageRepositoryErrors];
 
 export const UnpublishPageRepository =
-    createAbstraction<IUnpublishPageRepository>("UnpublishPageRepository");
+    createAbstraction<IUnpublishPageRepository>("Wb/UnpublishPageRepository");
 
 export namespace UnpublishPageRepository {
     export type Interface = IUnpublishPageRepository;
@@ -53,7 +53,7 @@ export interface IUnpublishPageUseCaseErrors {
 type UseCaseError = IUnpublishPageUseCaseErrors[keyof IUnpublishPageUseCaseErrors];
 
 export const UnpublishPageUseCase =
-    createAbstraction<IUnpublishPageUseCase>("UnpublishPageUseCase");
+    createAbstraction<IUnpublishPageUseCase>("Wb/UnpublishPageUseCase");
 
 export namespace UnpublishPageUseCase {
     export type Interface = IUnpublishPageUseCase;
@@ -81,7 +81,7 @@ export interface PageAfterUnpublishPayload {
 
 export const PageBeforeUnpublishHandler = createAbstraction<
     IEventHandler<DomainEvent<PageBeforeUnpublishPayload>>
->("PageBeforeUnpublishHandler");
+>("Wb/PageBeforeUnpublishHandler");
 
 export namespace PageBeforeUnpublishHandler {
     export type Interface = IEventHandler<DomainEvent<PageBeforeUnpublishPayload>>;
@@ -91,7 +91,7 @@ export namespace PageBeforeUnpublishHandler {
 
 export const PageAfterUnpublishHandler = createAbstraction<
     IEventHandler<DomainEvent<PageAfterUnpublishPayload>>
->("PageAfterUnpublishHandler");
+>("Wb/PageAfterUnpublishHandler");
 
 export namespace PageAfterUnpublishHandler {
     export type Interface = IEventHandler<DomainEvent<PageAfterUnpublishPayload>>;

@@ -28,7 +28,7 @@ export interface IMovePageRepositoryErrors {
 
 type RepositoryError = IMovePageRepositoryErrors[keyof IMovePageRepositoryErrors];
 
-export const MovePageRepository = createAbstraction<IMovePageRepository>("MovePageRepository");
+export const MovePageRepository = createAbstraction<IMovePageRepository>("Wb/MovePageRepository");
 
 export namespace MovePageRepository {
     export type Interface = IMovePageRepository;
@@ -52,7 +52,7 @@ export interface IMovePageUseCaseErrors {
 
 type UseCaseError = IMovePageUseCaseErrors[keyof IMovePageUseCaseErrors];
 
-export const MovePageUseCase = createAbstraction<IMovePageUseCase>("MovePageUseCase");
+export const MovePageUseCase = createAbstraction<IMovePageUseCase>("Wb/MovePageUseCase");
 
 export namespace MovePageUseCase {
     export type Interface = IMovePageUseCase;
@@ -82,7 +82,7 @@ export interface PageAfterMovePayload {
 // ============================================================================
 
 export const PageBeforeMoveHandler =
-    createAbstraction<IEventHandler<DomainEvent<PageBeforeMovePayload>>>("PageBeforeMoveHandler");
+    createAbstraction<IEventHandler<DomainEvent<PageBeforeMovePayload>>>("Wb/PageBeforeMoveHandler");
 
 export namespace PageBeforeMoveHandler {
     export type Interface = IEventHandler<DomainEvent<PageBeforeMovePayload>>;
@@ -91,7 +91,7 @@ export namespace PageBeforeMoveHandler {
 }
 
 export const PageAfterMoveHandler =
-    createAbstraction<IEventHandler<DomainEvent<PageAfterMovePayload>>>("PageAfterMoveHandler");
+    createAbstraction<IEventHandler<DomainEvent<PageAfterMovePayload>>>("Wb/PageAfterMoveHandler");
 
 export namespace PageAfterMoveHandler {
     export type Interface = IEventHandler<DomainEvent<PageAfterMovePayload>>;

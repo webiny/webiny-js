@@ -18,7 +18,7 @@ type RepositoryError =
     IGetActiveRedirectsRepositoryErrors[keyof IGetActiveRedirectsRepositoryErrors];
 
 export const GetActiveRedirectsRepository = createAbstraction<IGetActiveRedirectsRepository>(
-    "GetActiveRedirectsRepository"
+    "Wb/GetActiveRedirectsRepository"
 );
 
 export namespace GetActiveRedirectsRepository {
@@ -42,7 +42,7 @@ export interface IGetActiveRedirectsUseCaseErrors {
 type UseCaseError = IGetActiveRedirectsUseCaseErrors[keyof IGetActiveRedirectsUseCaseErrors];
 
 export const GetActiveRedirectsUseCase = createAbstraction<IGetActiveRedirectsUseCase>(
-    "GetActiveRedirectsUseCase"
+    "Wb/GetActiveRedirectsUseCase"
 );
 
 export namespace GetActiveRedirectsUseCase {

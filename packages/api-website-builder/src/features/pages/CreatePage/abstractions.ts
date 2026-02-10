@@ -28,7 +28,7 @@ export interface ICreatePageRepositoryErrors {
 type RepositoryError = ICreatePageRepositoryErrors[keyof ICreatePageRepositoryErrors];
 
 export const CreatePageRepository =
-    createAbstraction<ICreatePageRepository>("CreatePageRepository");
+    createAbstraction<ICreatePageRepository>("Wb/CreatePageRepository");
 
 export namespace CreatePageRepository {
     export type Interface = ICreatePageRepository;
@@ -52,7 +52,7 @@ export interface ICreatePageUseCaseErrors {
 
 type UseCaseError = ICreatePageUseCaseErrors[keyof ICreatePageUseCaseErrors];
 
-export const CreatePageUseCase = createAbstraction<ICreatePageUseCase>("CreatePageUseCase");
+export const CreatePageUseCase = createAbstraction<ICreatePageUseCase>("Wb/CreatePageUseCase");
 
 export namespace CreatePageUseCase {
     export type Interface = ICreatePageUseCase;
@@ -80,7 +80,7 @@ export interface PageAfterCreatePayload {
 
 export const PageBeforeCreateHandler =
     createAbstraction<IEventHandler<DomainEvent<PageBeforeCreatePayload>>>(
-        "PageBeforeCreateHandler"
+        "Wb/PageBeforeCreateHandler"
     );
 
 export namespace PageBeforeCreateHandler {
@@ -90,7 +90,7 @@ export namespace PageBeforeCreateHandler {
 }
 
 export const PageAfterCreateHandler =
-    createAbstraction<IEventHandler<DomainEvent<PageAfterCreatePayload>>>("PageAfterCreateHandler");
+    createAbstraction<IEventHandler<DomainEvent<PageAfterCreatePayload>>>("Wb/PageAfterCreateHandler");
 
 export namespace PageAfterCreateHandler {
     export type Interface = IEventHandler<DomainEvent<PageAfterCreatePayload>>;

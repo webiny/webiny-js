@@ -59,7 +59,7 @@ export interface IListRedirectsRepositoryErrors {
 type RepositoryError = IListRedirectsRepositoryErrors[keyof IListRedirectsRepositoryErrors];
 
 export const ListRedirectsRepository =
-    createAbstraction<IListRedirectsRepository>("ListRedirectsRepository");
+    createAbstraction<IListRedirectsRepository>("Wb/ListRedirectsRepository");
 
 export namespace ListRedirectsRepository {
     export type Interface = IListRedirectsRepository;
@@ -84,7 +84,7 @@ export interface IListRedirectsUseCaseErrors {
 type UseCaseError = IListRedirectsUseCaseErrors[keyof IListRedirectsUseCaseErrors];
 
 export const ListRedirectsUseCase =
-    createAbstraction<IListRedirectsUseCase>("ListRedirectsUseCase");
+    createAbstraction<IListRedirectsUseCase>("Wb/ListRedirectsUseCase");
 
 export namespace ListRedirectsUseCase {
     export type Interface = IListRedirectsUseCase;

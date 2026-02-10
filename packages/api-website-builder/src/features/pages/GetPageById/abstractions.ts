@@ -18,7 +18,7 @@ export interface IGetPageByIdRepositoryErrors {
 type RepositoryError = IGetPageByIdRepositoryErrors[keyof IGetPageByIdRepositoryErrors];
 
 export const GetPageByIdRepository =
-    createAbstraction<IGetPageByIdRepository>("GetPageByIdRepository");
+    createAbstraction<IGetPageByIdRepository>("Wb/GetPageByIdRepository");
 
 export namespace GetPageByIdRepository {
     export type Interface = IGetPageByIdRepository;
@@ -40,7 +40,7 @@ export interface IGetPageByIdUseCaseErrors {
 
 type UseCaseError = IGetPageByIdUseCaseErrors[keyof IGetPageByIdUseCaseErrors];
 
-export const GetPageByIdUseCase = createAbstraction<IGetPageByIdUseCase>("GetPageByIdUseCase");
+export const GetPageByIdUseCase = createAbstraction<IGetPageByIdUseCase>("Wb/GetPageByIdUseCase");
 
 export namespace GetPageByIdUseCase {
     export type Interface = IGetPageByIdUseCase;
