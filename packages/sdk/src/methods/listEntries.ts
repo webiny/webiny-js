@@ -15,7 +15,7 @@ export interface ListEntriesParams {
 }
 
 export interface ListEntriesResult<TValues = Record<string, unknown>> {
-    items: CmsEntry<TValues>[];
+    data: CmsEntry<TValues>[];
     meta: {
         cursor: string | null;
         hasMoreItems: boolean;
@@ -121,7 +121,7 @@ export async function listEntries<TValues = Record<string, unknown>>(
     }
 
     return {
-        items: data.cms.listEntries.data,
+        data: data.cms.listEntries.data,
         meta: data.cms.listEntries.meta
     };
 }

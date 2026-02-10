@@ -125,7 +125,7 @@ describe("CmsSdk", () => {
                 limit: 10
             });
 
-            expect(result.items).toHaveLength(2);
+            expect(result.data).toHaveLength(2);
             expect(result.meta.totalCount).toBe(10);
             expect(result.meta.hasMoreItems).toBe(true);
         });
