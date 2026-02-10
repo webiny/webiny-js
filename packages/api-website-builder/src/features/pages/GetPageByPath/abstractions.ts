@@ -47,4 +47,5 @@ export namespace GetPageByPathUseCase {
     export type Interface = IGetPageByPathUseCase;
     export type Error = UseCaseError;
     export type Return = Promise<Result<WbPage, UseCaseError>>;
+    export type Page = WbPage;
 }

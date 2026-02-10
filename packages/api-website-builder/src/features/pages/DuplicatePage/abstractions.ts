@@ -66,6 +66,7 @@ export namespace DuplicatePageUseCase {
     export type Params = IDuplicateWbPageParams;
     export type Return = Promise<Result<WbPage, UseCaseError>>;
     export type Error = UseCaseError;
+    export type Page = WbPage;
 }
 
 // ============================================================================

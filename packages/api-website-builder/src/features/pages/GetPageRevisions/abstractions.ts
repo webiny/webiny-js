@@ -46,4 +46,5 @@ export namespace GetPageRevisionsUseCase {
     export type Interface = IGetPageRevisionsUseCase;
     export type Error = UseCaseError;
     export type Return = Promise<Result<WbPage[], UseCaseError>>;
+    export type Page = WbPage;
 }

@@ -1,6 +1,5 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
-import type { IEventHandler } from "@webiny/api-core/features/EventPublisher";
-import type { DomainEvent } from "@webiny/api-core/features/EventPublisher";
+import type { DomainEvent, IEventHandler } from "@webiny/api-core/features/EventPublisher";
 import type { WbPage } from "~/domain/page/abstractions.js";
 import { PagePersistenceError, PageValidationError } from "~/domain/page/errors.js";
 
@@ -60,6 +59,7 @@ export namespace CreatePageUseCase {
     export type Params = ICreateWbPageParams;
     export type Return = Promise<Result<WbPage, UseCaseError>>;
     export type Error = UseCaseError;
+    export type Page = WbPage;
 }
 
 // ============================================================================

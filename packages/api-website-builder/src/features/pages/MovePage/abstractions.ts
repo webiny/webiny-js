@@ -59,6 +59,7 @@ export namespace MovePageUseCase {
     export type Params = IMoveWbPageParams;
     export type Return = Promise<Result<WbPage, UseCaseError>>;
     export type Error = UseCaseError;
+    export type Page = WbPage;
 }
 
 // ============================================================================

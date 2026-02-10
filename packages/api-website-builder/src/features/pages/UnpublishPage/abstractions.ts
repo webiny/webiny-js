@@ -60,6 +60,7 @@ export namespace UnpublishPageUseCase {
     export type Params = IUnpublishWbPageParams;
     export type Return = Promise<Result<WbPage, UseCaseError>>;
     export type Error = UseCaseError;
+    export type Page = WbPage;
 }
 
 // ============================================================================
