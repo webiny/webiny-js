@@ -30,7 +30,7 @@
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/wcp": "0.0.0",
-    "cache-control-parser": "^2.0.6",
+    "cache-control-parser": "^2.2.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {

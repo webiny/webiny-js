@@ -1,17 +1,17 @@
 {
   "type": "module",
   "devDependencies": {
-    "@eslint/js": "^9.35.0",
-    "@types/node": "^24.10.4",
+    "@eslint/js": "^9.39.2",
+    "@types/node": "^24.10.13",
     "@types/react": "18.2.79",
     "@types/react-dom": "18.2.25",
     "@webiny/cli": "latest",
     "@webiny/cognito": "latest",
-    "eslint": "^9.35.0",
+    "eslint": "^9.39.2",
     "eslint-plugin-react": "^7.37.5",
     "globals": "^16.3.0",
     "prettier": "^3.6.2",
-    "typescript": "5.9.2",
+    "typescript": "5.9.3",
     "typescript-eslint": "^8.43.0",
     "webiny": "latest"
   },
@@ -23,6 +23,6 @@
     "format:fix": "yarn format --write"
   },
   "engines": {
-    "node": "^22.0.0"
+    "node": "^24.0.0"
   }
 }

@@ -30,7 +30,7 @@
     "@webiny/wcp": "0.0.0",
     "graphql": "^16.12.0",
     "rimraf": "^6.1.2",
-    "type-fest": "^5.4.3",
+    "type-fest": "^5.4.4",
     "typescript": "5.9.3",
     "vitest": "^3.2.4"
   },
