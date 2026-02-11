@@ -3,7 +3,7 @@ import camelCase from "lodash/camelCase.js";
 import pluralize from "pluralize";
 import { createModelPlugin } from "~/plugins/CmsModelPlugin.js";
 import { BaseModelBuilder } from "./BaseModelBuilder.js";
-import type { CmsIcon } from "~/types/index.js";
+import type { CmsIcon, CmsModelField } from "~/types/index.js";
 import { LayoutBuilder } from "../LayoutBuilder.js";
 
 const createApiName = (name: string) => {
@@ -124,7 +124,8 @@ export class PublicModelBuilder extends BaseModelBuilder {
                 group: this.publicConfig.group,
                 icon: this.publicConfig.icon ?? null,
                 description: this.publicConfig.description || null,
-                titleFieldId: this.publicConfig.titleFieldId ?? "",
+                titleFieldId:
+                    this.publicConfig.titleFieldId ?? this.findFirstFieldId(fields, "text"),
                 descriptionFieldId: this.publicConfig.descriptionFieldId,
                 imageFieldId: this.publicConfig.imageFieldId,
                 layout: this.layoutBuilder.build(),
@@ -133,5 +134,14 @@ export class PublicModelBuilder extends BaseModelBuilder {
             },
             { validateLayout: false }
         );
+    }
+
+    private findFirstFieldId(fields: CmsModelField[], type: string): string {
+        for (const field of fields) {
+            if (field.type === type) {
+                return field.fieldId;
+            }
+        }
+        return fields.find(field => field.type === "text")?.fieldId || "";
     }
 }
