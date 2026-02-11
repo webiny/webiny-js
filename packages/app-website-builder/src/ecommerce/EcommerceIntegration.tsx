@@ -1,6 +1,10 @@
 import React, { useEffect } from "react";
 import { Editor } from "~/index.js";
-import type { IEcommerceApiFactory, SettingsInput } from "./types.js";
+import type {
+    IEcommerceApi,
+    IEcommerceApiFactory,
+    SettingsInput as ISettingsInput
+} from "./types.js";
 import { CreateInputRenderers } from "./CreateInputRenderers.js";
 import type { ResourcePageProps } from "./components/ResourcePage.js";
 import { ResourcePage } from "./components/ResourcePage.js";
@@ -12,16 +16,16 @@ export interface CustomResourcePickerProps<T = any> {
     onChange(val: T | undefined): void;
 }
 
-export type EcommercePluginProps = {
+export type EcommerceIntegrationProps = {
     name: string;
     init: IEcommerceApiFactory;
-    settings: SettingsInput[];
+    settings: ISettingsInput[];
     children?: React.ReactNode;
 };
 
-const Context = createGenericContext<{ pluginName: string }>("EcommercePluginContext");
+const Context = createGenericContext<{ pluginName: string }>("EcommerceIntegrationContext");
 
-const EcommercePluginBase = (props: EcommercePluginProps) => {
+const EcommerceIntegrationBase = (props: EcommerceIntegrationProps) => {
     const provider = useEcommerceApiProvider();
 
     useEffect(() => {
@@ -55,4 +59,11 @@ const PageType = (props: PageTypeProps) => {
     return null;
 };
 
-export const EcommercePlugin = Object.assign(EcommercePluginBase, { PageType });
+export const EcommerceIntegration = Object.assign(EcommerceIntegrationBase, { PageType });
+
+export namespace EcommerceIntegration {
+    export type Props = EcommerceIntegrationProps;
+    export type EcommerceApi = IEcommerceApi;
+    export type EcommerceApiFactory = IEcommerceApiFactory;
+    export type SettingsInput = ISettingsInput;
+}

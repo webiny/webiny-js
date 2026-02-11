@@ -14,17 +14,26 @@ const NodeConfig = (props: React.ComponentProps<typeof BaseConfig.Node>) => {
     return <BaseConfig.Node {...props} />;
 };
 
-/*
- * Lexical editor public Config API
- */
-export const LexicalEditorConfig = ({ children }: { children: React.ReactNode }) => {
+export const CompactEditorConfig = ({ children }: { children: React.ReactNode }) => {
     return (
-        <CompositionScope name={"websiteBuilder"}>
-            <BaseConfig>{children}</BaseConfig>
+        <CompositionScope name={"compact"}>
+            <BaseConfig priority={"secondary"}>{children}</BaseConfig>
         </CompositionScope>
     );
 };
 
-LexicalEditorConfig.ToolbarAction = ToolbarAction;
-LexicalEditorConfig.Plugin = PluginConfig;
-LexicalEditorConfig.Node = NodeConfig;
+CompactEditorConfig.ToolbarAction = ToolbarAction;
+CompactEditorConfig.Plugin = PluginConfig;
+CompactEditorConfig.Node = NodeConfig;
+
+export const ExpandedEditorConfig = ({ children }: { children: React.ReactNode }) => {
+    return (
+        <CompositionScope name={"expanded"}>
+            <BaseConfig priority={"secondary"}>{children}</BaseConfig>
+        </CompositionScope>
+    );
+};
+
+ExpandedEditorConfig.ToolbarAction = ToolbarAction;
+ExpandedEditorConfig.Plugin = PluginConfig;
+ExpandedEditorConfig.Node = NodeConfig;

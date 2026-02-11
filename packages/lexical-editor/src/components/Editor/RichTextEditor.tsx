@@ -1,4 +1,4 @@
-import React, { Fragment, useRef, useState } from "react";
+import React, { Fragment, useId, useRef, useState } from "react";
 import type { Klass, LexicalNode } from "lexical";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
@@ -21,6 +21,10 @@ import {
 } from "~/components/LexicalEditorConfig/LexicalEditorConfig.js";
 import { StateHandlingPlugin } from "~/plugins/StateHandlingPlugin.js";
 
+export type InitialEditorConfig = React.ComponentProps<typeof LexicalComposer>["initialConfig"] & {
+    editorId: string;
+};
+
 export interface RichTextEditorProps {
     children?: React.ReactNode | React.ReactNode[];
     classes?: string;
@@ -29,7 +33,7 @@ export interface RichTextEditorProps {
     height?: number | string;
     nodes?: Klass<LexicalNode>[];
     onBlur?: (editorState: LexicalValue) => void;
-    onChange?: (json: LexicalValue) => void;
+    onChange?: (value: LexicalValue) => void;
     placeholder?: string;
     placeholderStyles?: React.CSSProperties;
     staticToolbar?: React.ReactNode;
@@ -39,13 +43,14 @@ export interface RichTextEditorProps {
     toolbarActionPlugins?: ToolbarActionPlugin[];
     toolbar?: React.ReactNode;
     value: LexicalValue | null | undefined;
+    configRef?: React.MutableRefObject<InitialEditorConfig | undefined>;
     width?: number | string;
 }
 
 const BaseRichTextEditor = ({
+    onChange,
     toolbar,
     staticToolbar,
-    onChange,
     nodes,
     placeholder,
     children,
@@ -65,6 +70,7 @@ const BaseRichTextEditor = ({
         <Placeholder styles={placeholderStyles}>{placeholder || "Enter text..."}</Placeholder>
     );
     const scrollRef = useRef(null);
+
     const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLElement | undefined>(
         undefined
     );
@@ -85,7 +91,7 @@ const BaseRichTextEditor = ({
     ));
 
     const initialConfig = {
-        editorState: null,
+        editorId: useId(),
         namespace: "webiny",
         onError: () => {
             // Ignore errors. We don't want to break the app because of errors caused by config/value updates.
@@ -101,6 +107,10 @@ const BaseRichTextEditor = ({
             $cacheKey: JSON.stringify(editorTheme.current)
         }
     };
+
+    if (props.configRef) {
+        props.configRef.current = initialConfig;
+    }
 
     return (
         /**
@@ -170,3 +180,7 @@ export const RichTextEditor = makeDecoratable("RichTextEditor", (props: RichText
         </LexicalEditorWithConfig>
     );
 });
+
+export namespace RichTextEditor {
+    export type InitialConfig = InitialEditorConfig;
+}

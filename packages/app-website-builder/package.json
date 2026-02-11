@@ -90,7 +90,8 @@
   "adio": {
     "ignore": {
       "dependencies": [
-        "pino-pretty"
+        "pino-pretty",
+        "@webiny/lexical-converter"
       ]
     }
   }

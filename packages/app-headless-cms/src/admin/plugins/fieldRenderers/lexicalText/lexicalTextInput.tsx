@@ -1,12 +1,10 @@
-import React, { useMemo } from "react";
+import React from "react";
 import get from "lodash/get.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import type { CmsModelFieldRendererPlugin, CmsModelField } from "~/types.js";
-import { createLexicalStateTransformer } from "@webiny/lexical-converter";
 import { useForm } from "@webiny/form";
 import { LexicalCmsEditor } from "~/admin/components/LexicalCmsEditor/LexicalCmsEditor.js";
-import { FormComponentDescription, DelayedOnChange } from "@webiny/admin-ui";
-import { type RichTextValue, withHtml } from "./withHtml.js";
+import { FormComponentDescription } from "@webiny/admin-ui";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
@@ -32,11 +30,8 @@ const plugin: CmsModelFieldRendererPlugin = {
         render({ field, getBind, Label }) {
             const form = useForm();
 
-            const transformer = useMemo(() => {
-                return createLexicalStateTransformer();
-            }, []);
+            const Bind = getBind();
 
-            const Bind = getBind<RichTextValue>();
             return (
                 <Bind>
                     {bind => {
@@ -44,20 +39,13 @@ const plugin: CmsModelFieldRendererPlugin = {
                             <Bind.ValidationContainer>
                                 <Label>{field.label}</Label>
                                 <FormComponentDescription text={field.helpText} />
-                                <DelayedOnChange
-                                    value={bind.value?.state}
-                                    onChange={withHtml(transformer, bind.onChange)}
-                                >
-                                    {({ value, onChange }) => (
-                                        <LexicalCmsEditor
-                                            value={value}
-                                            onChange={onChange}
-                                            key={getKey(form.data.id, field)}
-                                            placeholder={field.placeholderText}
-                                            data-testid={`fr.input.lexical.${field.label}`}
-                                        />
-                                    )}
-                                </DelayedOnChange>
+                                <LexicalCmsEditor
+                                    value={bind.value}
+                                    onChange={bind.onChange}
+                                    key={getKey(form.data.id, field)}
+                                    placeholder={field.placeholderText}
+                                    data-testid={`fr.input.lexical.${field.label}`}
+                                />
                             </Bind.ValidationContainer>
                         );
                     }}

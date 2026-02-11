@@ -31,7 +31,7 @@ const { ToolbarElement, Plugin } = LexicalEditorConfig;
 export const LexicalEditorCmsPlugin: FC = () => {
     return (
         <CompositionScope name={"cms"} inherit={true}>
-            <LexicalEditorConfig>
+            <LexicalEditorConfig priority={"primary"}>
                 <ToolbarElement name="fontColor" element={<FontColorAction />} />
                 <ToolbarElement name="typography" element={<TypographyAction />} />
                 <ToolbarElement name="textAlignment" element={<TextAlignmentAction />} />
