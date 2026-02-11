@@ -7,12 +7,22 @@ export default [
     js.configs.recommended,
     ...ts.configs.recommended,
     {
+        rules: {
+            "@typescript-eslint/no-namespace": "off"
+        }
+    },
+    {
         ignores: [
             "**/node_modules/",
             "**/dist/",
             "**/build/",
             "**/.out/",
             "**/*.d.ts",
+            ".idea/**",
+            ".webiny/*",
+            ".pulumi/*",
+            ".yarn/*",
+            "public/*",
             "idea.js",
             "scripts"
         ]
