@@ -2,18 +2,45 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
-    { "path": "../admin-ui/tsconfig.build.json" },
-    { "path": "../api-core/tsconfig.build.json" },
-    { "path": "../api-headless-cms/tsconfig.build.json" },
-    { "path": "../app/tsconfig.build.json" },
-    { "path": "../app-aco/tsconfig.build.json" },
-    { "path": "../app-admin/tsconfig.build.json" },
-    { "path": "../app-headless-cms/tsconfig.build.json" },
-    { "path": "../feature/tsconfig.build.json" },
-    { "path": "../form/tsconfig.build.json" },
-    { "path": "../handler-graphql/tsconfig.build.json" },
-    { "path": "../plugins/tsconfig.build.json" },
-    { "path": "../project-aws/tsconfig.build.json" }
+    {
+      "path": "../admin-ui/tsconfig.build.json"
+    },
+    {
+      "path": "../api-core/tsconfig.build.json"
+    },
+    {
+      "path": "../api-headless-cms/tsconfig.build.json"
+    },
+    {
+      "path": "../app/tsconfig.build.json"
+    },
+    {
+      "path": "../app-aco/tsconfig.build.json"
+    },
+    {
+      "path": "../app-admin/tsconfig.build.json"
+    },
+    {
+      "path": "../app-headless-cms/tsconfig.build.json"
+    },
+    {
+      "path": "../feature/tsconfig.build.json"
+    },
+    {
+      "path": "../form/tsconfig.build.json"
+    },
+    {
+      "path": "../handler-graphql/tsconfig.build.json"
+    },
+    {
+      "path": "../plugins/tsconfig.build.json"
+    },
+    {
+      "path": "../project-aws/tsconfig.build.json"
+    },
+    {
+      "path": "../project/tsconfig.build.json"
+    }
   ],
   "compilerOptions": {
     "rootDir": "./src",

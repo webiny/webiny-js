@@ -25,6 +25,7 @@
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/icons": "0.0.0",
     "@webiny/plugins": "0.0.0",
+    "@webiny/project": "0.0.0",
     "@webiny/project-aws": "0.0.0",
     "graphql-tag": "^2.12.6",
     "mobx": "^6.15.0",
