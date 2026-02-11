@@ -8,13 +8,14 @@ export const createDependencyTree = (project: IProjectModel): IDependencyTree =>
     const projectRoot = project.paths.rootFolder;
     const basePath = projectRoot.toString();
     const packagesFolderPath = projectRoot.join("packages").toString();
+    const cypressFolderPath = projectRoot.join("cypress").toString();
     const packageJsonFilePath = projectRoot.join("package.json").toString();
 
     const listAllPackages = new ListAllPackages();
     const listAllPackageJsonFiles = new ListAllPackageJsonFiles();
     const buildDependencyTree = new BuildDependencyTree();
 
-    const allPackages = listAllPackages.list(packagesFolderPath);
+    const allPackages = listAllPackages.list([packagesFolderPath, cypressFolderPath]);
 
     const allPackageJsonFiles = listAllPackageJsonFiles.list({
         targets: allPackages

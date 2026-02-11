@@ -18,13 +18,14 @@ export interface IGetRedirectByIdRepositoryErrors {
 type RepositoryError = IGetRedirectByIdRepositoryErrors[keyof IGetRedirectByIdRepositoryErrors];
 
 export const GetRedirectByIdRepository = createAbstraction<IGetRedirectByIdRepository>(
-    "GetRedirectByIdRepository"
+    "Wb/GetRedirectByIdRepository"
 );
 
 export namespace GetRedirectByIdRepository {
     export type Interface = IGetRedirectByIdRepository;
     export type Error = RepositoryError;
     export type Return = Promise<Result<WbRedirect, RepositoryError>>;
+    export type Redirect = WbRedirect;
 }
 
 /**
@@ -41,11 +42,13 @@ export interface IGetRedirectByIdUseCaseErrors {
 
 type UseCaseError = IGetRedirectByIdUseCaseErrors[keyof IGetRedirectByIdUseCaseErrors];
 
-export const GetRedirectByIdUseCase =
-    createAbstraction<IGetRedirectByIdUseCase>("GetRedirectByIdUseCase");
+export const GetRedirectByIdUseCase = createAbstraction<IGetRedirectByIdUseCase>(
+    "Wb/GetRedirectByIdUseCase"
+);
 
 export namespace GetRedirectByIdUseCase {
     export type Interface = IGetRedirectByIdUseCase;
     export type Return = Promise<Result<WbRedirect, UseCaseError>>;
     export type Error = UseCaseError;
+    export type Redirect = WbRedirect;
 }

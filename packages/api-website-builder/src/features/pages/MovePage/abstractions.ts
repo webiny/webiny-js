@@ -28,7 +28,7 @@ export interface IMovePageRepositoryErrors {
 
 type RepositoryError = IMovePageRepositoryErrors[keyof IMovePageRepositoryErrors];
 
-export const MovePageRepository = createAbstraction<IMovePageRepository>("MovePageRepository");
+export const MovePageRepository = createAbstraction<IMovePageRepository>("Wb/MovePageRepository");
 
 export namespace MovePageRepository {
     export type Interface = IMovePageRepository;
@@ -52,13 +52,14 @@ export interface IMovePageUseCaseErrors {
 
 type UseCaseError = IMovePageUseCaseErrors[keyof IMovePageUseCaseErrors];
 
-export const MovePageUseCase = createAbstraction<IMovePageUseCase>("MovePageUseCase");
+export const MovePageUseCase = createAbstraction<IMovePageUseCase>("Wb/MovePageUseCase");
 
 export namespace MovePageUseCase {
     export type Interface = IMovePageUseCase;
     export type Params = IMoveWbPageParams;
     export type Return = Promise<Result<WbPage, UseCaseError>>;
     export type Error = UseCaseError;
+    export type Page = WbPage;
 }
 
 // ============================================================================
@@ -80,18 +81,21 @@ export interface PageAfterMovePayload {
 // Event Handler Abstractions
 // ============================================================================
 
-export const PageBeforeMoveHandler =
-    createAbstraction<IEventHandler<DomainEvent<PageBeforeMovePayload>>>("PageBeforeMoveHandler");
+export const PageBeforeMoveHandler = createAbstraction<
+    IEventHandler<DomainEvent<PageBeforeMovePayload>>
+>("Wb/PageBeforeMoveHandler");
 
 export namespace PageBeforeMoveHandler {
     export type Interface = IEventHandler<DomainEvent<PageBeforeMovePayload>>;
     export type Event = DomainEvent<PageBeforeMovePayload>;
+    export type Page = WbPage;
 }
 
 export const PageAfterMoveHandler =
-    createAbstraction<IEventHandler<DomainEvent<PageAfterMovePayload>>>("PageAfterMoveHandler");
+    createAbstraction<IEventHandler<DomainEvent<PageAfterMovePayload>>>("Wb/PageAfterMoveHandler");
 
 export namespace PageAfterMoveHandler {
     export type Interface = IEventHandler<DomainEvent<PageAfterMovePayload>>;
     export type Event = DomainEvent<PageAfterMovePayload>;
+    export type Page = WbPage;
 }

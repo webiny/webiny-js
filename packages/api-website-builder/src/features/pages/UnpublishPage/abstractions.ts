@@ -27,8 +27,9 @@ export interface IUnpublishPageRepositoryErrors {
 
 type RepositoryError = IUnpublishPageRepositoryErrors[keyof IUnpublishPageRepositoryErrors];
 
-export const UnpublishPageRepository =
-    createAbstraction<IUnpublishPageRepository>("UnpublishPageRepository");
+export const UnpublishPageRepository = createAbstraction<IUnpublishPageRepository>(
+    "Wb/UnpublishPageRepository"
+);
 
 export namespace UnpublishPageRepository {
     export type Interface = IUnpublishPageRepository;
@@ -53,13 +54,14 @@ export interface IUnpublishPageUseCaseErrors {
 type UseCaseError = IUnpublishPageUseCaseErrors[keyof IUnpublishPageUseCaseErrors];
 
 export const UnpublishPageUseCase =
-    createAbstraction<IUnpublishPageUseCase>("UnpublishPageUseCase");
+    createAbstraction<IUnpublishPageUseCase>("Wb/UnpublishPageUseCase");
 
 export namespace UnpublishPageUseCase {
     export type Interface = IUnpublishPageUseCase;
     export type Params = IUnpublishWbPageParams;
     export type Return = Promise<Result<WbPage, UseCaseError>>;
     export type Error = UseCaseError;
+    export type Page = WbPage;
 }
 
 // ============================================================================
@@ -80,18 +82,20 @@ export interface PageAfterUnpublishPayload {
 
 export const PageBeforeUnpublishHandler = createAbstraction<
     IEventHandler<DomainEvent<PageBeforeUnpublishPayload>>
->("PageBeforeUnpublishHandler");
+>("Wb/PageBeforeUnpublishHandler");
 
 export namespace PageBeforeUnpublishHandler {
     export type Interface = IEventHandler<DomainEvent<PageBeforeUnpublishPayload>>;
     export type Event = DomainEvent<PageBeforeUnpublishPayload>;
+    export type Page = WbPage;
 }
 
 export const PageAfterUnpublishHandler = createAbstraction<
     IEventHandler<DomainEvent<PageAfterUnpublishPayload>>
->("PageAfterUnpublishHandler");
+>("Wb/PageAfterUnpublishHandler");
 
 export namespace PageAfterUnpublishHandler {
     export type Interface = IEventHandler<DomainEvent<PageAfterUnpublishPayload>>;
     export type Event = DomainEvent<PageAfterUnpublishPayload>;
+    export type Page = WbPage;
 }

@@ -34,7 +34,7 @@ type RepositoryError =
     ICreatePageRevisionFromRepositoryErrors[keyof ICreatePageRevisionFromRepositoryErrors];
 
 export const CreatePageRevisionFromRepository =
-    createAbstraction<ICreatePageRevisionFromRepository>("CreatePageRevisionFromRepository");
+    createAbstraction<ICreatePageRevisionFromRepository>("Wb/CreatePageRevisionFromRepository");
 
 export namespace CreatePageRevisionFromRepository {
     export type Interface = ICreatePageRevisionFromRepository;
@@ -61,7 +61,7 @@ type UseCaseError =
     ICreatePageRevisionFromUseCaseErrors[keyof ICreatePageRevisionFromUseCaseErrors];
 
 export const CreatePageRevisionFromUseCase = createAbstraction<ICreatePageRevisionFromUseCase>(
-    "CreatePageRevisionFromUseCase"
+    "Wb/CreatePageRevisionFromUseCase"
 );
 
 export namespace CreatePageRevisionFromUseCase {
@@ -69,6 +69,7 @@ export namespace CreatePageRevisionFromUseCase {
     export type Params = ICreateWbPageRevisionFromParams;
     export type Return = Promise<Result<WbPage, UseCaseError>>;
     export type Error = UseCaseError;
+    export type Page = WbPage;
 }
 
 // ============================================================================
@@ -89,18 +90,20 @@ export interface PageAfterCreateRevisionFromPayload {
 
 export const PageBeforeCreateRevisionFromHandler = createAbstraction<
     IEventHandler<DomainEvent<PageBeforeCreateRevisionFromPayload>>
->("PageBeforeCreateRevisionFromHandler");
+>("Wb/PageBeforeCreateRevisionFromHandler");
 
 export namespace PageBeforeCreateRevisionFromHandler {
     export type Interface = IEventHandler<DomainEvent<PageBeforeCreateRevisionFromPayload>>;
     export type Event = DomainEvent<PageBeforeCreateRevisionFromPayload>;
+    export type Page = WbPage;
 }
 
 export const PageAfterCreateRevisionFromHandler = createAbstraction<
     IEventHandler<DomainEvent<PageAfterCreateRevisionFromPayload>>
->("PageAfterCreateRevisionFromHandler");
+>("Wb/PageAfterCreateRevisionFromHandler");
 
 export namespace PageAfterCreateRevisionFromHandler {
     export type Interface = IEventHandler<DomainEvent<PageAfterCreateRevisionFromPayload>>;
     export type Event = DomainEvent<PageAfterCreateRevisionFromPayload>;
+    export type Page = WbPage;
 }

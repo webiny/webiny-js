@@ -18,13 +18,14 @@ type RepositoryError =
     IGetActiveRedirectsRepositoryErrors[keyof IGetActiveRedirectsRepositoryErrors];
 
 export const GetActiveRedirectsRepository = createAbstraction<IGetActiveRedirectsRepository>(
-    "GetActiveRedirectsRepository"
+    "Wb/GetActiveRedirectsRepository"
 );
 
 export namespace GetActiveRedirectsRepository {
     export type Interface = IGetActiveRedirectsRepository;
     export type Error = RepositoryError;
     export type Return = Promise<Result<WbRedirect[], RepositoryError>>;
+    export type Redirect = WbRedirect;
 }
 
 /**
@@ -41,11 +42,12 @@ export interface IGetActiveRedirectsUseCaseErrors {
 type UseCaseError = IGetActiveRedirectsUseCaseErrors[keyof IGetActiveRedirectsUseCaseErrors];
 
 export const GetActiveRedirectsUseCase = createAbstraction<IGetActiveRedirectsUseCase>(
-    "GetActiveRedirectsUseCase"
+    "Wb/GetActiveRedirectsUseCase"
 );
 
 export namespace GetActiveRedirectsUseCase {
     export type Interface = IGetActiveRedirectsUseCase;
     export type Return = Promise<Result<WbRedirect[], UseCaseError>>;
     export type Error = UseCaseError;
+    export type Redirect = WbRedirect;
 }

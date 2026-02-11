@@ -15,17 +15,13 @@ export class ListAllPackageJsonFiles {
         const results: string[] = [];
 
         for (const target of targets) {
-            const files = glob.sync(`${target}/**/**/package.json`, {
-                ignore
-            });
+            const files = glob.sync(
+                `${target}/**/**/{package.json,*.package.json,dependencies.json}`,
+                {
+                    ignore
+                }
+            );
             results.push(...files);
-            /**
-             * Some of our packages have files named `dependencies.json` which contain a list of dependencies.
-             */
-            const dependencies = glob.sync(`${target}/**/**/dependencies.json`, {
-                ignore
-            });
-            results.push(...dependencies);
         }
 
         return results;
