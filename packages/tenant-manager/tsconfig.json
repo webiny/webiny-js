@@ -2,18 +2,45 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
   "references": [
-    { "path": "../admin-ui" },
-    { "path": "../api-core" },
-    { "path": "../api-headless-cms" },
-    { "path": "../app" },
-    { "path": "../app-aco" },
-    { "path": "../app-admin" },
-    { "path": "../app-headless-cms" },
-    { "path": "../feature" },
-    { "path": "../form" },
-    { "path": "../handler-graphql" },
-    { "path": "../plugins" },
-    { "path": "../project-aws" }
+    {
+      "path": "../admin-ui"
+    },
+    {
+      "path": "../api-core"
+    },
+    {
+      "path": "../api-headless-cms"
+    },
+    {
+      "path": "../app"
+    },
+    {
+      "path": "../app-aco"
+    },
+    {
+      "path": "../app-admin"
+    },
+    {
+      "path": "../app-headless-cms"
+    },
+    {
+      "path": "../feature"
+    },
+    {
+      "path": "../form"
+    },
+    {
+      "path": "../handler-graphql"
+    },
+    {
+      "path": "../plugins"
+    },
+    {
+      "path": "../project-aws"
+    },
+    {
+      "path": "../project"
+    }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -165,7 +192,9 @@
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/project-aws/*": ["../project-aws/src/*"],
-      "@webiny/project-aws": ["../project-aws/src"]
+      "@webiny/project-aws": ["../project-aws/src"],
+      "@webiny/project/*": ["../project/src/*"],
+      "@webiny/project": ["../project/src"]
     },
     "baseUrl": "."
   }
