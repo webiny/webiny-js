@@ -12,6 +12,10 @@ Read these documentation files when implementing API features (paths: `packages/
 - ai-context/backend/backend-developer-guide.md
 - ai-context/backend/core-features-reference.md
 
+## Persist Learnings
+
+When new features are discovered, update `ai-context/backend/core-features-reference.md` with the new feature reference. DO NOT update this file with React features.
+
 ## Code
 
 1. When writing comments, use `//` for single-line comments and `/* ... */` for multi-line comments. Always end comments with a period
