@@ -41,7 +41,8 @@ export const WcpProjectLicenseProvider: React.FC<{ children: React.ReactNode }> 
         canUseMultiTenancy: () => hasLicense,
         canUseTeams: () => license?.canUseTeams() ?? false,
         canUsePrivateFiles: () => license?.canUsePrivateFiles() ?? false,
-        canUseFileManagerThreatDetection: () => license?.canUseFileManagerThreatDetection() ?? false,
+        canUseFileManagerThreatDetection: () =>
+            license?.canUseFileManagerThreatDetection() ?? false,
         canUseWorkflows: () => license?.canUseWorkflows() ?? false
     };
 
