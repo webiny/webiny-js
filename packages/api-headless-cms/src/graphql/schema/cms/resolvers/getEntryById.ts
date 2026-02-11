@@ -7,7 +7,7 @@ class GetEntryByIdResolver implements CoreGraphQLSchemaFactory.Interface {
     ): CoreGraphQLSchemaFactory.Return {
         builder.addResolver({
             path: "CmsQuery.getEntryById",
-            resolver: createGetEntryByIdResolver()
+            resolver: createGetEntryByIdResolver
         });
 
         return builder;

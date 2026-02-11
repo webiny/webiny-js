@@ -15486,16 +15486,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/cms-sdk@workspace:packages/cms-sdk":
-  version: 0.0.0-use.local
-  resolution: "@webiny/cms-sdk@workspace:packages/cms-sdk"
-  dependencies:
-    "@webiny/build-tools": "npm:0.0.0"
-    typescript: "npm:5.9.3"
-    vitest: "npm:^3.2.4"
-  languageName: unknown
-  linkType: soft
-
 "@webiny/cognito@workspace:packages/cognito":
   version: 0.0.0-use.local
   resolution: "@webiny/cognito@workspace:packages/cognito"
@@ -16237,6 +16227,16 @@ __metadata:
     identity-obj-proxy: "npm:^3.0.0"
     prettier: "npm:3.6.2"
     react: "npm:18.2.0"
+    vitest: "npm:^3.2.4"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/sdk@workspace:packages/sdk":
+  version: 0.0.0-use.local
+  resolution: "@webiny/sdk@workspace:packages/sdk"
+  dependencies:
+    "@webiny/build-tools": "npm:0.0.0"
+    typescript: "npm:5.9.3"
     vitest: "npm:^3.2.4"
   languageName: unknown
   linkType: soft
