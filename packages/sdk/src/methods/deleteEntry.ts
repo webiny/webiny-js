@@ -2,7 +2,7 @@ import type { CmsSdkConfig } from "../types.js";
 
 export interface DeleteEntryParams {
     modelId: string;
-    id: string;
+    revision: string;
     permanent?: boolean;
 }
 
@@ -11,14 +11,14 @@ export async function deleteEntry(
     fetchFn: typeof fetch,
     params: DeleteEntryParams
 ): Promise<boolean> {
-    const { modelId, id, permanent = false } = params;
+    const { modelId, revision, permanent = false } = params;
 
     const { executeGraphQL } = await import("./executeGraphQL.js");
 
     const query = `
-        mutation DeleteEntry($modelId: String!, $id: ID!, $permanent: Boolean) {
+        mutation DeleteEntryRevision($modelId: String!, $revision: ID!, $permanent: Boolean) {
             cms {
-                deleteEntry(modelId: $modelId, id: $id, permanent: $permanent) {
+                deleteEntry(modelId: $modelId, revision: $revision, permanent: $permanent) {
                     data
                     error {
                         message
@@ -29,7 +29,7 @@ export async function deleteEntry(
         }
     `;
 
-    const data = await executeGraphQL(config, fetchFn, query, { modelId, id, permanent });
+    const data = await executeGraphQL(config, fetchFn, query, { modelId, revision, permanent });
 
     if (data.cms.deleteEntry.error) {
         throw new Error(data.cms.deleteEntry.error.message);

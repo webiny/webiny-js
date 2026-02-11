@@ -7,8 +7,8 @@ class CmsMutationTypeDefs implements CoreGraphQLSchemaFactory.Interface {
         builder.addTypeDefs(/* GraphQL */ `
             type CmsMutation {
                 createEntry(modelId: ID!, data: JSON!, fields: [String!]!): CmsEntryResponse!
-                updateEntry(modelId: ID!, id: ID!, data: JSON!, fields: [String!]!): CmsEntryResponse!
-                deleteEntry(modelId: ID!, id: ID!, permanent: Boolean): CmsDeleteResponse!
+                updateEntry(modelId: ID!, revision: ID!, data: JSON!, fields: [String!]!): CmsEntryResponse!
+                deleteEntry(modelId: ID!, revision: ID!, permanent: Boolean): CmsDeleteResponse!
                 publishEntry(modelId: ID!, id: ID!, fields: [String!]!): CmsEntryResponse!
                 unpublishEntry(modelId: ID!, id: ID!, fields: [String!]!): CmsEntryResponse!
             }

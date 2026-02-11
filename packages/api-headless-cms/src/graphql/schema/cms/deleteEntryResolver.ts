@@ -5,13 +5,13 @@ import { getModel, getErrorMessage } from "./helpers.js";
 
 export interface DeleteEntryArgs {
     modelId: string;
-    id: string;
+    revision: string;
     permanent?: boolean;
 }
 
 export const createDeleteEntryResolver = () => {
     return async ({ args, context }: { args: DeleteEntryArgs; context: CmsContext }) => {
-        const { modelId, id, permanent = false } = args;
+        const { modelId, revision, permanent = false } = args;
 
         try {
             const model = await getModel(context, modelId);
@@ -36,7 +36,7 @@ export const createDeleteEntryResolver = () => {
             const result = (await executeSchema({
                 query,
                 variables: {
-                    revision: id,
+                    revision,
                     options: { permanently: permanent }
                 }
             })) as ExecutionResult;
