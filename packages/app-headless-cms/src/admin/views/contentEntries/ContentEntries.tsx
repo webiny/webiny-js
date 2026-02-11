@@ -7,7 +7,6 @@ import {
     ContentEntryListWithConfig
 } from "~/admin/config/contentEntries/index.js";
 import { ContentEntriesProvider } from "~/admin/views/contentEntries/ContentEntriesContext.js";
-import { ContentEntriesDebounceRenderer } from "~/admin/views/contentEntries/ContentEntriesDebounceRender.js";
 import { ModelIsBeingDeletedError } from "~/admin/components/ContentModelEditor/ModelIsBeingDeletedError/index.js";
 
 export const ContentEntries = makeDecoratable("ContentEntries", () => {
@@ -22,9 +21,7 @@ export const ContentEntries = makeDecoratable("ContentEntries", () => {
             <ContentEntryListWithConfig>
                 <ContentEntryEditorWithConfig>
                     <DialogsProvider>
-                        <ContentEntriesDebounceRenderer>
-                            <CmsAcoTable />
-                        </ContentEntriesDebounceRenderer>
+                        <CmsAcoTable />
                     </DialogsProvider>
                 </ContentEntryEditorWithConfig>
             </ContentEntryListWithConfig>

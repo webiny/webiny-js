@@ -63,6 +63,7 @@ export const TenantEntryList = () => {
             <DeleteActionDecorator />
             <ContentEntryListConfig>
                 <Browser.Table.Column
+                    hideable={false}
                     name={"name"}
                     header={"Name"}
                     modelIds={[TENANT_MODEL_ID]}

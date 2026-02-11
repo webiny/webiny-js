@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import get from "lodash/get.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import type { CmsModelField, CmsModelFieldRendererPlugin } from "~/types.js";
@@ -7,9 +7,7 @@ import DynamicSection from "../DynamicSection.js";
 import { LexicalCmsEditor } from "~/admin/components/LexicalCmsEditor/LexicalCmsEditor.js";
 import { useForm } from "@webiny/form";
 import { MultiValueRendererSettings } from "~/admin/plugins/fieldRenderers/MultiValueRendererSettings.js";
-import { FormComponentNote, DelayedOnChange, IconButton } from "@webiny/admin-ui";
-import { withHtml } from "~/admin/plugins/fieldRenderers/lexicalText/withHtml.js";
-import { createLexicalStateTransformer } from "@webiny/lexical-converter";
+import { FormComponentNote, IconButton } from "@webiny/admin-ui";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
@@ -36,27 +34,16 @@ const plugin: CmsModelFieldRendererPlugin = {
             const { field } = props;
             const form = useForm();
 
-            const transformer = useMemo(() => {
-                return createLexicalStateTransformer();
-            }, []);
-
             return (
                 <DynamicSection {...props}>
                     {({ bind, index }) => (
                         <div className={"relative"}>
-                            <DelayedOnChange
-                                value={bind.index.value.state}
-                                onChange={withHtml(transformer, bind.index.onChange)}
-                            >
-                                {({ value, onChange }) => (
-                                    <LexicalCmsEditor
-                                        value={value}
-                                        onChange={onChange}
-                                        key={getKey(form.data.id, field, index)}
-                                        placeholder={field.placeholderText}
-                                    />
-                                )}
-                            </DelayedOnChange>
+                            <LexicalCmsEditor
+                                value={bind.index.value}
+                                onChange={bind.index.onChange}
+                                key={getKey(form.data.id, field, index)}
+                                placeholder={field.placeholderText}
+                            />
                             {field.multipleValues ? null : (
                                 <FormComponentNote text={field.helpText} />
                             )}

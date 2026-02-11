@@ -77,3 +77,4 @@ export { cn, cva, generateId } from "@webiny/admin-ui/utils.js";
 export { useDisclosure } from "@webiny/admin-ui/hooks/index.js";
 export { Logo } from "@webiny/app-admin/base/ui/Logo.js";
 export { TenantSelector } from "@webiny/app-admin/base/ui/TenantSelector.js";
+export { LexicalEditor } from "@webiny/app-admin/components/LexicalEditor/LexicalEditor.js";
