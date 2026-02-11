@@ -29,3 +29,9 @@ export { PackageJson } from "@webiny/build-tools/utils/PackageJson.js";
 export { createPathResolver } from "./utils/createPathResolver.js";
 
 export { GracefulError } from "./GracefulError.js";
+
+export { Wcp } from "./components/Wcp.js";
+export {
+    WcpProjectLicenseProvider,
+    useWcpProjectLicense
+} from "./services/GetProjectConfigService/WcpProjectLicenseContext.js";

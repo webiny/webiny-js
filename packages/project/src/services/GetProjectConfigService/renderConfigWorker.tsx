@@ -7,6 +7,7 @@ import { serializeError } from "serialize-error";
 import type { RenderConfigWorkerMessageDto, RenderConfigParamsDto } from "./renderConfig.js";
 import { ProjectModel } from "~/models/ProjectModel.js";
 import { EnvProvider } from "./EnvContext.js";
+import { WcpProjectLicenseProvider } from "./WcpProjectLicenseContext.js";
 
 const sendError = (err: Error) => {
     const message: RenderConfigWorkerMessageDto = {
@@ -58,9 +59,11 @@ const onChange = debounce((value: any) => {
 });
 
 Renderer.create(
-    <EnvProvider>
-        <Properties onChange={onChange}>
-            <Extensions />
-        </Properties>
-    </EnvProvider>
+    <WcpProjectLicenseProvider>
+        <EnvProvider>
+            <Properties onChange={onChange}>
+                <Extensions />
+            </Properties>
+        </EnvProvider>
+    </WcpProjectLicenseProvider>
 );

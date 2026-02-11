@@ -16437,6 +16437,7 @@ __metadata:
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
+    "@webiny/project": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
     graphql-tag: "npm:^2.12.6"
     mobx: "npm:^6.15.0"
