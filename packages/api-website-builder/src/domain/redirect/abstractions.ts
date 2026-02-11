@@ -6,7 +6,7 @@ import type { WbIdentity, WbLocation } from "~/domain/shared/abstractions.js";
  * RedirectModel abstraction - represents the Website Builder redirect CMS model.
  * This will be registered via container.registerInstance in the composite feature.
  */
-export const RedirectModel = createAbstraction<CmsModel>("RedirectModel");
+export const RedirectModel = createAbstraction<CmsModel>("Wb/RedirectModel");
 
 export namespace RedirectModel {
     export type Interface = CmsModel;

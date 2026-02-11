@@ -58,14 +58,16 @@ export interface IListRedirectsRepositoryErrors {
 
 type RepositoryError = IListRedirectsRepositoryErrors[keyof IListRedirectsRepositoryErrors];
 
-export const ListRedirectsRepository =
-    createAbstraction<IListRedirectsRepository>("ListRedirectsRepository");
+export const ListRedirectsRepository = createAbstraction<IListRedirectsRepository>(
+    "Wb/ListRedirectsRepository"
+);
 
 export namespace ListRedirectsRepository {
     export type Interface = IListRedirectsRepository;
     export type Params = ListWbRedirectsParams;
     export type Return = Promise<Result<ListRedirectsResult, RepositoryError>>;
     export type Error = RepositoryError;
+    export type Redirect = WbRedirect;
 }
 
 // ============================================================================
@@ -83,11 +85,12 @@ export interface IListRedirectsUseCaseErrors {
 type UseCaseError = IListRedirectsUseCaseErrors[keyof IListRedirectsUseCaseErrors];
 
 export const ListRedirectsUseCase =
-    createAbstraction<IListRedirectsUseCase>("ListRedirectsUseCase");
+    createAbstraction<IListRedirectsUseCase>("Wb/ListRedirectsUseCase");
 
 export namespace ListRedirectsUseCase {
     export type Interface = IListRedirectsUseCase;
     export type Params = ListWbRedirectsParams;
     export type Return = Promise<Result<ListRedirectsResult, UseCaseError>>;
     export type Error = UseCaseError;
+    export type Redirect = WbRedirect;
 }

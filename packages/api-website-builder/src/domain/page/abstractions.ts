@@ -31,7 +31,7 @@ export interface WbPage extends CmsEntryWbPage {
  * PageModel abstraction - represents the Website Builder page CMS model.
  * This will be registered via container.registerInstance in the composite feature.
  */
-export const PageModel = createAbstraction<CmsModel>("PageModel");
+export const PageModel = createAbstraction<CmsModel>("Wb/PageModel");
 
 export namespace PageModel {
     export type Interface = CmsModel;

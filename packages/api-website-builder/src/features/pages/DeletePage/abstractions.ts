@@ -28,7 +28,7 @@ export interface IDeletePageRepositoryErrors {
 type RepositoryError = IDeletePageRepositoryErrors[keyof IDeletePageRepositoryErrors];
 
 export const DeletePageRepository =
-    createAbstraction<IDeletePageRepository>("DeletePageRepository");
+    createAbstraction<IDeletePageRepository>("Wb/DeletePageRepository");
 
 export namespace DeletePageRepository {
     export type Interface = IDeletePageRepository;
@@ -52,7 +52,7 @@ export interface IDeletePageUseCaseErrors {
 
 type UseCaseError = IDeletePageUseCaseErrors[keyof IDeletePageUseCaseErrors];
 
-export const DeletePageUseCase = createAbstraction<IDeletePageUseCase>("DeletePageUseCase");
+export const DeletePageUseCase = createAbstraction<IDeletePageUseCase>("Wb/DeletePageUseCase");
 
 export namespace DeletePageUseCase {
     export type Interface = IDeletePageUseCase;
@@ -77,20 +77,22 @@ export interface PageAfterDeletePayload {
 // Event Handler Abstractions
 // ============================================================================
 
-export const PageBeforeDeleteHandler =
-    createAbstraction<IEventHandler<DomainEvent<PageBeforeDeletePayload>>>(
-        "PageBeforeDeleteHandler"
-    );
+export const PageBeforeDeleteHandler = createAbstraction<
+    IEventHandler<DomainEvent<PageBeforeDeletePayload>>
+>("Wb/PageBeforeDeleteHandler");
 
 export namespace PageBeforeDeleteHandler {
     export type Interface = IEventHandler<DomainEvent<PageBeforeDeletePayload>>;
     export type Event = DomainEvent<PageBeforeDeletePayload>;
+    export type Page = WbPage;
 }
 
-export const PageAfterDeleteHandler =
-    createAbstraction<IEventHandler<DomainEvent<PageAfterDeletePayload>>>("PageAfterDeleteHandler");
+export const PageAfterDeleteHandler = createAbstraction<
+    IEventHandler<DomainEvent<PageAfterDeletePayload>>
+>("Wb/PageAfterDeleteHandler");
 
 export namespace PageAfterDeleteHandler {
     export type Interface = IEventHandler<DomainEvent<PageAfterDeletePayload>>;
     export type Event = DomainEvent<PageAfterDeletePayload>;
+    export type Page = WbPage;
 }

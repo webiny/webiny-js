@@ -1,6 +1,5 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
-import type { IEventHandler } from "@webiny/api-core/features/EventPublisher";
-import type { DomainEvent } from "@webiny/api-core/features/EventPublisher";
+import type { DomainEvent, IEventHandler } from "@webiny/api-core/features/EventPublisher";
 import type { WbPage } from "~/domain/page/abstractions.js";
 import { PagePersistenceError, PageValidationError } from "~/domain/page/errors.js";
 
@@ -29,7 +28,7 @@ export interface ICreatePageRepositoryErrors {
 type RepositoryError = ICreatePageRepositoryErrors[keyof ICreatePageRepositoryErrors];
 
 export const CreatePageRepository =
-    createAbstraction<ICreatePageRepository>("CreatePageRepository");
+    createAbstraction<ICreatePageRepository>("Wb/CreatePageRepository");
 
 export namespace CreatePageRepository {
     export type Interface = ICreatePageRepository;
@@ -53,13 +52,14 @@ export interface ICreatePageUseCaseErrors {
 
 type UseCaseError = ICreatePageUseCaseErrors[keyof ICreatePageUseCaseErrors];
 
-export const CreatePageUseCase = createAbstraction<ICreatePageUseCase>("CreatePageUseCase");
+export const CreatePageUseCase = createAbstraction<ICreatePageUseCase>("Wb/CreatePageUseCase");
 
 export namespace CreatePageUseCase {
     export type Interface = ICreatePageUseCase;
     export type Params = ICreateWbPageParams;
     export type Return = Promise<Result<WbPage, UseCaseError>>;
     export type Error = UseCaseError;
+    export type Page = WbPage;
 }
 
 // ============================================================================
@@ -78,20 +78,22 @@ export interface PageAfterCreatePayload {
 // Event Handler Abstractions
 // ============================================================================
 
-export const PageBeforeCreateHandler =
-    createAbstraction<IEventHandler<DomainEvent<PageBeforeCreatePayload>>>(
-        "PageBeforeCreateHandler"
-    );
+export const PageBeforeCreateHandler = createAbstraction<
+    IEventHandler<DomainEvent<PageBeforeCreatePayload>>
+>("Wb/PageBeforeCreateHandler");
 
 export namespace PageBeforeCreateHandler {
     export type Interface = IEventHandler<DomainEvent<PageBeforeCreatePayload>>;
     export type Event = DomainEvent<PageBeforeCreatePayload>;
+    export type Page = WbPage;
 }
 
-export const PageAfterCreateHandler =
-    createAbstraction<IEventHandler<DomainEvent<PageAfterCreatePayload>>>("PageAfterCreateHandler");
+export const PageAfterCreateHandler = createAbstraction<
+    IEventHandler<DomainEvent<PageAfterCreatePayload>>
+>("Wb/PageAfterCreateHandler");
 
 export namespace PageAfterCreateHandler {
     export type Interface = IEventHandler<DomainEvent<PageAfterCreatePayload>>;
     export type Event = DomainEvent<PageAfterCreatePayload>;
+    export type Page = WbPage;
 }

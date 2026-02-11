@@ -28,14 +28,16 @@ export interface IMoveRedirectRepositoryErrors {
 
 type RepositoryError = IMoveRedirectRepositoryErrors[keyof IMoveRedirectRepositoryErrors];
 
-export const MoveRedirectRepository =
-    createAbstraction<IMoveRedirectRepository>("MoveRedirectRepository");
+export const MoveRedirectRepository = createAbstraction<IMoveRedirectRepository>(
+    "Wb/MoveRedirectRepository"
+);
 
 export namespace MoveRedirectRepository {
     export type Interface = IMoveRedirectRepository;
     export type Params = IMoveWbRedirectParams;
     export type Return = Promise<Result<WbRedirect, RepositoryError>>;
     export type Error = RepositoryError;
+    export type Redirect = WbRedirect;
 }
 
 // ============================================================================
@@ -53,13 +55,15 @@ export interface IMoveRedirectUseCaseErrors {
 
 type UseCaseError = IMoveRedirectUseCaseErrors[keyof IMoveRedirectUseCaseErrors];
 
-export const MoveRedirectUseCase = createAbstraction<IMoveRedirectUseCase>("MoveRedirectUseCase");
+export const MoveRedirectUseCase =
+    createAbstraction<IMoveRedirectUseCase>("Wb/MoveRedirectUseCase");
 
 export namespace MoveRedirectUseCase {
     export type Interface = IMoveRedirectUseCase;
     export type Params = IMoveWbRedirectParams;
     export type Return = Promise<Result<WbRedirect, UseCaseError>>;
     export type Error = UseCaseError;
+    export type Redirect = WbRedirect;
 }
 
 // ============================================================================
@@ -83,18 +87,20 @@ export interface RedirectAfterMovePayload {
 
 export const RedirectBeforeMoveHandler = createAbstraction<
     IEventHandler<DomainEvent<RedirectBeforeMovePayload>>
->("RedirectBeforeMoveHandler");
+>("Wb/RedirectBeforeMoveHandler");
 
 export namespace RedirectBeforeMoveHandler {
     export type Interface = IEventHandler<DomainEvent<RedirectBeforeMovePayload>>;
     export type Event = DomainEvent<RedirectBeforeMovePayload>;
+    export type Redirect = WbRedirect;
 }
 
 export const RedirectAfterMoveHandler = createAbstraction<
     IEventHandler<DomainEvent<RedirectAfterMovePayload>>
->("RedirectAfterMoveHandler");
+>("Wb/RedirectAfterMoveHandler");
 
 export namespace RedirectAfterMoveHandler {
     export type Interface = IEventHandler<DomainEvent<RedirectAfterMovePayload>>;
     export type Event = DomainEvent<RedirectAfterMovePayload>;
+    export type Redirect = WbRedirect;
 }
