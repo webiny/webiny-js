@@ -41,7 +41,7 @@ export interface IUpdatePageRepositoryErrors {
 type RepositoryError = IUpdatePageRepositoryErrors[keyof IUpdatePageRepositoryErrors];
 
 export const UpdatePageRepository =
-    createAbstraction<IUpdatePageRepository>("UpdatePageRepository");
+    createAbstraction<IUpdatePageRepository>("Wb/UpdatePageRepository");
 
 export namespace UpdatePageRepository {
     export type Interface = IUpdatePageRepository;
@@ -66,13 +66,14 @@ export interface IUpdatePageUseCaseErrors {
 
 type UseCaseError = IUpdatePageUseCaseErrors[keyof IUpdatePageUseCaseErrors];
 
-export const UpdatePageUseCase = createAbstraction<IUpdatePageUseCase>("UpdatePageUseCase");
+export const UpdatePageUseCase = createAbstraction<IUpdatePageUseCase>("Wb/UpdatePageUseCase");
 
 export namespace UpdatePageUseCase {
     export type Interface = IUpdatePageUseCase;
     export type UpdateData = IUpdateWbPageData;
     export type Return = Promise<Result<WbPage, UseCaseError>>;
     export type Error = UseCaseError;
+    export type Page = WbPage;
 }
 
 // ============================================================================
@@ -100,20 +101,22 @@ export interface PageAfterUpdatePayload {
 // Event Handler Abstractions
 // ============================================================================
 
-export const PageBeforeUpdateHandler =
-    createAbstraction<IEventHandler<DomainEvent<PageBeforeUpdatePayload>>>(
-        "PageBeforeUpdateHandler"
-    );
+export const PageBeforeUpdateHandler = createAbstraction<
+    IEventHandler<DomainEvent<PageBeforeUpdatePayload>>
+>("Wb/PageBeforeUpdateHandler");
 
 export namespace PageBeforeUpdateHandler {
     export type Interface = IEventHandler<DomainEvent<PageBeforeUpdatePayload>>;
     export type Event = DomainEvent<PageBeforeUpdatePayload>;
+    export type Page = WbPage;
 }
 
-export const PageAfterUpdateHandler =
-    createAbstraction<IEventHandler<DomainEvent<PageAfterUpdatePayload>>>("PageAfterUpdateHandler");
+export const PageAfterUpdateHandler = createAbstraction<
+    IEventHandler<DomainEvent<PageAfterUpdatePayload>>
+>("Wb/PageAfterUpdateHandler");
 
 export namespace PageAfterUpdateHandler {
     export type Interface = IEventHandler<DomainEvent<PageAfterUpdatePayload>>;
     export type Event = DomainEvent<PageAfterUpdatePayload>;
+    export type Page = WbPage;
 }

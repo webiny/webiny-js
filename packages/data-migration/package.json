@@ -23,7 +23,7 @@
     "chalk": "^4.1.2",
     "minimatch": "^5.1.6",
     "pino-pretty": "^9.4.1",
-    "semver": "^7.7.3"
+    "semver": "^7.7.4"
   },
   "devDependencies": {
     "@types/center-align": "^1.0.2",
