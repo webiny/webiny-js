@@ -28,9 +28,9 @@ export async function createEntry<TValues = Record<string, unknown>>(
     const { executeGraphQL } = await import("./executeGraphQL.js");
 
     const query = `
-        mutation CreateEntry($modelId: ID!, $values: JSON!, $fields: [String!]) {
+        mutation CreateEntry($modelId: ID!, $data: JSON!, $fields: [String!]) {
             cms {
-                createEntry(modelId: $modelId, values: $values, fields: $fields) {
+                createEntry(modelId: $modelId, data: $data, fields: $fields) {
                     data
                     error {
                         message
@@ -41,7 +41,7 @@ export async function createEntry<TValues = Record<string, unknown>>(
         }
     `;
 
-    const data = await executeGraphQL(config, fetchFn, query, { modelId, values, fields });
+    const data = await executeGraphQL(config, fetchFn, query, { modelId, data: values, fields });
 
     if (data.cms.createEntry.error) {
         throw new Error(data.cms.createEntry.error.message);

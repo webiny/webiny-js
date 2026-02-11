@@ -5,13 +5,13 @@ import { getModel, getErrorMessage, buildFieldsSelection } from "./helpers.js";
 
 export interface CreateEntryArgs {
     modelId: string;
-    values: Record<string, unknown>;
+    data: Record<string, unknown>;
     fields?: string[];
 }
 
 export const createCreateEntryResolver = () => {
     return async ({ args, context }: { args: CreateEntryArgs; context: CmsContext }) => {
-        const { modelId, values, fields } = args;
+        const { modelId, data, fields } = args;
 
         try {
             const model = await getModel(context, modelId);
@@ -39,7 +39,7 @@ export const createCreateEntryResolver = () => {
 
             const result = (await executeSchema({
                 query,
-                variables: { data: values }
+                variables: { data }
             })) as ExecutionResult;
 
             const operationName = `create${model.singularApiName}`;

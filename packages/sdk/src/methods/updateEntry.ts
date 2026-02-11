@@ -30,9 +30,9 @@ export async function updateEntry<TValues = Record<string, unknown>>(
     const { executeGraphQL } = await import("./executeGraphQL.js");
 
     const query = `
-        mutation UpdateEntry($modelId: ID!, $id: ID!, $values: JSON!, $fields: [String!]) {
+        mutation UpdateEntry($modelId: ID!, $id: ID!, $data: JSON!, $fields: [String!]) {
             cms {
-                updateEntry(modelId: $modelId, id: $id, values: $values, fields: $fields) {
+                updateEntry(modelId: $modelId, id: $id, data: $data, fields: $fields) {
                     data
                     error {
                         message
@@ -43,7 +43,7 @@ export async function updateEntry<TValues = Record<string, unknown>>(
         }
     `;
 
-    const data = await executeGraphQL(config, fetchFn, query, { modelId, id, values, fields });
+    const data = await executeGraphQL(config, fetchFn, query, { modelId, id, data: values, fields });
 
     if (data.cms.updateEntry.error) {
         throw new Error(data.cms.updateEntry.error.message);

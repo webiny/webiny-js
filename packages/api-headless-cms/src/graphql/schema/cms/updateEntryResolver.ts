@@ -6,13 +6,13 @@ import { getModel, getErrorMessage, buildFieldsSelection } from "./helpers.js";
 export interface UpdateEntryArgs {
     modelId: string;
     id: string;
-    values: Record<string, unknown>;
+    data: Record<string, unknown>;
     fields?: string[];
 }
 
 export const createUpdateEntryResolver = () => {
     return async ({ args, context }: { args: UpdateEntryArgs; context: CmsContext }) => {
-        const { modelId, id, values, fields } = args;
+        const { modelId, id, data, fields } = args;
 
         try {
             const model = await getModel(context, modelId);
@@ -40,7 +40,7 @@ export const createUpdateEntryResolver = () => {
 
             const result = (await executeSchema({
                 query,
-                variables: { revision: id, data: values }
+                variables: { revision: id, data }
             })) as ExecutionResult;
 
             const operationName = `update${model.singularApiName}`;
