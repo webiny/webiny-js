@@ -1,4 +1,6 @@
 import type { CmsContext } from "~/types/index.js";
+import type { ApiEndpoint } from "~/types/index.js";
+import type { ExecutionResult } from "graphql";
 import { getModel, getErrorMessage, buildFieldsSelection } from "./helpers.js";
 
 export interface GetEntryByIdArgs {
@@ -14,49 +16,34 @@ export const createGetEntryByIdResolver = () => {
         try {
             const model = await getModel(context, modelId);
 
+            // Use manage API for getEntryById as it retrieves specific revisions.
+            const apiType: ApiEndpoint = "manage";
+            const executeSchema = await context.cms.getExecutableSchema(apiType);
+
             const fieldsSelection = buildFieldsSelection(fields);
 
-            // Use the getEntryById method from contentEntry.crud.ts
-            const entry = await context.cms.getEntryById(model, id);
-
-            if (!entry) {
-                return { data: null, error: null };
-            }
-
-            // If fields are specified, filter the entry data to include only those fields
-            if (fields && fields.length > 0) {
-                const filteredData: Record<string, unknown> = {};
-                
-                for (const field of fields) {
-                    if (field.startsWith("values.")) {
-                        const valuePath = field.substring(7); // Remove "values." prefix
-                        if (!filteredData.values) {
-                            filteredData.values = {};
+            const query = /* GraphQL */ `
+                query Get${model.singularApiName}ById($id: ID!) {
+                    get${model.singularApiName}(where: { id: $id }) {
+                        data {
+                            ${fieldsSelection}
                         }
-                        const pathParts = valuePath.split(".");
-                        let source = entry.values || {};
-                        let target = filteredData.values as Record<string, unknown>;
-                        
-                        for (let i = 0; i < pathParts.length - 1; i++) {
-                            const part = pathParts[i];
-                            source = (source as Record<string, unknown>)[part] as Record<string, unknown>;
-                            if (!target[part]) {
-                                target[part] = {};
-                            }
-                            target = target[part] as Record<string, unknown>;
+                        error {
+                            message
+                            code
+                            data
                         }
-                        const lastPart = pathParts[pathParts.length - 1];
-                        target[lastPart] = (source as Record<string, unknown>)[lastPart];
-                    } else {
-                        // Top-level field
-                        filteredData[field] = (entry as Record<string, unknown>)[field];
                     }
                 }
-                
-                return { data: filteredData, error: null };
-            }
+            `;
 
-            return { data: entry, error: null };
+            const result = (await executeSchema({
+                query,
+                variables: { id }
+            })) as ExecutionResult;
+
+            const operationName = `get${model.singularApiName}`;
+            return result.data?.[operationName] || { data: null, error: null };
         } catch (error) {
             return {
                 data: null,
