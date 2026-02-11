@@ -4,7 +4,7 @@ export interface UpdateEntryParams<TValues = Record<string, unknown>> {
     modelId: string;
     id: string;
     values: TValues;
-    fields?: string[];
+    fields: string[];
 }
 
 /**
@@ -17,7 +17,7 @@ export interface UpdateEntryParams<TValues = Record<string, unknown>> {
  * @param params.modelId - The model ID for the entry
  * @param params.id - The revision ID of the entry to update
  * @param params.values - The updated entry values
- * @param params.fields - Optional fields to include in the response. Use "values." prefix for entry values (e.g., "values.author.name") or specify top-level fields like "createdOn"
+ * @param params.fields - Fields to include in the response. Use "values." prefix for entry values (e.g., "values.author.name") or specify top-level fields like "createdOn"
  * @returns The updated entry data
  */
 export async function updateEntry<TValues = Record<string, unknown>>(
@@ -30,7 +30,7 @@ export async function updateEntry<TValues = Record<string, unknown>>(
     const { executeGraphQL } = await import("./executeGraphQL.js");
 
     const query = `
-        mutation UpdateEntry($modelId: ID!, $id: ID!, $data: JSON!, $fields: [String!]) {
+        mutation UpdateEntry($modelId: ID!, $id: ID!, $data: JSON!, $fields: [String!]!) {
             cms {
                 updateEntry(modelId: $modelId, id: $id, data: $data, fields: $fields) {
                     data

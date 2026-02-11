@@ -3,7 +3,7 @@ import type { CmsSdkConfig } from "../types.js";
 export interface PublishEntryParams {
     modelId: string;
     id: string;
-    fields?: string[];
+    fields: string[];
 }
 
 /**
@@ -15,7 +15,7 @@ export interface PublishEntryParams {
  * @param params - Parameters for publishing the entry
  * @param params.modelId - The model ID of the entry to publish
  * @param params.id - The ID of the entry to publish
- * @param params.fields - Optional fields to include in response. Use "values." prefix for entry values (e.g., "values.author.name")
+ * @param params.fields - Fields to include in response. Use "values." prefix for entry values (e.g., "values.author.name")
  * @returns The published entry data
  */
 export async function publishEntry<TValues = Record<string, unknown>>(
@@ -28,7 +28,7 @@ export async function publishEntry<TValues = Record<string, unknown>>(
     const { executeGraphQL } = await import("./executeGraphQL.js");
 
     const query = `
-        mutation PublishEntry($modelId: String!, $id: ID!, $fields: [String!]) {
+        mutation PublishEntry($modelId: String!, $id: ID!, $fields: [String!]!) {
             cms {
                 publishEntry(modelId: $modelId, id: $id, fields: $fields) {
                     data

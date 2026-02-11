@@ -6,7 +6,7 @@ import { getModel, getErrorMessage, buildFieldsSelection } from "./helpers.js";
 export interface GetEntryArgs {
     modelId: string;
     where: Record<string, unknown>;
-    fields?: string[];
+    fields: string[];
     preview?: boolean;
 }
 

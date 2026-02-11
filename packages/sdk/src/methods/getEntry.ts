@@ -3,7 +3,7 @@ import type { CmsSdkConfig } from "../types.js";
 export interface GetEntryParams {
     modelId: string;
     where: Record<string, unknown>;
-    fields?: string[];
+    fields: string[];
     preview?: boolean;
 }
 
@@ -16,7 +16,7 @@ export interface GetEntryParams {
  * @param params - Parameters for retrieving the entry
  * @param params.modelId - The model ID of the entry to retrieve
  * @param params.where - Where conditions to filter the entry
- * @param params.fields - Optional fields to include in the response. Use "values." prefix for entry values (e.g., "values.author.name") or specify top-level fields like "createdOn"
+ * @param params.fields - Fields to include in the response. Use "values." prefix for entry values (e.g., "values.author.name") or specify top-level fields like "createdOn"
  * @param params.preview - When true, uses preview API to access unpublished/draft content. When false (default), uses read API for published content only.
  * @returns The entry data or null if not found
  */
@@ -30,7 +30,7 @@ export async function getEntry<TValues = Record<string, unknown>>(
     const { executeGraphQL } = await import("./executeGraphQL.js");
 
     const query = `
-        query GetEntry($modelId: String!, $where: JSON!, $fields: [String!], $preview: Boolean) {
+        query GetEntry($modelId: String!, $where: JSON!, $fields: [String!]!, $preview: Boolean) {
             cms {
                 getEntry(modelId: $modelId, where: $where, fields: $fields, preview: $preview) {
                     data

@@ -6,10 +6,7 @@ export interface ListEntriesParams {
     sort?: Record<string, "asc" | "desc">;
     limit?: number;
     after?: string;
-    include?: string[];
-    exclude?: string[];
-    excludeType?: string[];
-    fields?: string[];
+    fields: string[];
     preview?: boolean;
 }
 
@@ -34,10 +31,7 @@ export interface ListEntriesResult<TValues = Record<string, unknown>> {
  * @param params.sort - Optional sort configuration
  * @param params.limit - Maximum number of entries to return (default: 10)
  * @param params.after - Cursor for pagination
- * @param params.include - Fields to include
- * @param params.exclude - Fields to exclude
- * @param params.excludeType - Field types to exclude
- * @param params.fields - Optional specific fields to return. Use "values." prefix for entry values (e.g., "values.author.name") or specify top-level fields like "createdOn"
+ * @param params.fields - Specific fields to return. Use "values." prefix for entry values (e.g., "values.author.name") or specify top-level fields like "createdOn"
  * @param params.preview - When true, uses preview API to access unpublished/draft content. When false (default), uses read API for published content only.
  * @returns List of entries with pagination metadata
  */
@@ -52,9 +46,6 @@ export async function listEntries<TValues = Record<string, unknown>>(
         sort,
         limit = 10,
         after,
-        include,
-        exclude,
-        excludeType,
         fields,
         preview
     } = params;
@@ -68,10 +59,7 @@ export async function listEntries<TValues = Record<string, unknown>>(
             $sort: JSON
             $limit: Int
             $after: String
-            $include: [String!]
-            $exclude: [String!]
-            $excludeType: [String!]
-            $fields: [String!]
+            $fields: [String!]!
             $preview: Boolean
         ) {
             cms {
@@ -81,9 +69,6 @@ export async function listEntries<TValues = Record<string, unknown>>(
                     sort: $sort
                     limit: $limit
                     after: $after
-                    include: $include
-                    exclude: $exclude
-                    excludeType: $excludeType
                     fields: $fields
                     preview: $preview
                 ) {
@@ -108,9 +93,6 @@ export async function listEntries<TValues = Record<string, unknown>>(
         sort,
         limit,
         after,
-        include,
-        exclude,
-        excludeType,
         fields,
         preview
     });

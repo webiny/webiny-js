@@ -9,10 +9,7 @@ export interface ListEntriesArgs {
     sort?: Record<string, unknown>;
     limit?: number;
     after?: string;
-    include?: string[];
-    exclude?: string[];
-    excludeType?: string[];
-    fields?: string[];
+    fields: string[];
     preview?: boolean;
 }
 

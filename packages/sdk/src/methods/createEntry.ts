@@ -3,7 +3,7 @@ import type { CmsSdkConfig } from "../types.js";
 export interface CreateEntryParams<TValues = Record<string, unknown>> {
     modelId: string;
     values: TValues;
-    fields?: string[];
+    fields: string[];
 }
 
 /**
@@ -15,7 +15,7 @@ export interface CreateEntryParams<TValues = Record<string, unknown>> {
  * @param params - Parameters for creating the entry
  * @param params.modelId - The model ID for the entry
  * @param params.values - The entry values to create
- * @param params.fields - Optional fields to include in the response. Use "values." prefix for entry values (e.g., "values.author.name") or specify top-level fields like "createdOn"
+ * @param params.fields - Fields to include in the response. Use "values." prefix for entry values (e.g., "values.author.name") or specify top-level fields like "createdOn"
  * @returns The created entry data
  */
 export async function createEntry<TValues = Record<string, unknown>>(
@@ -28,7 +28,7 @@ export async function createEntry<TValues = Record<string, unknown>>(
     const { executeGraphQL } = await import("./executeGraphQL.js");
 
     const query = `
-        mutation CreateEntry($modelId: ID!, $data: JSON!, $fields: [String!]) {
+        mutation CreateEntry($modelId: ID!, $data: JSON!, $fields: [String!]!) {
             cms {
                 createEntry(modelId: $modelId, data: $data, fields: $fields) {
                     data

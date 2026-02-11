@@ -7,7 +7,7 @@ export interface UpdateEntryArgs {
     modelId: string;
     id: string;
     data: Record<string, unknown>;
-    fields?: string[];
+    fields: string[];
 }
 
 export const createUpdateEntryResolver = () => {

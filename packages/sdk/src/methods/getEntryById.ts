@@ -3,7 +3,7 @@ import type { CmsSdkConfig } from "../types.js";
 export interface GetEntryByIdParams {
     modelId: string;
     id: string;
-    fields?: string[];
+    fields: string[];
 }
 
 /**
@@ -15,7 +15,7 @@ export interface GetEntryByIdParams {
  * @param params - Parameters for retrieving the entry
  * @param params.modelId - The model ID of the entry to retrieve
  * @param params.id - The revision ID of the entry (e.g., "123#0001")
- * @param params.fields - Optional fields to include in the response. Use "values." prefix for entry values (e.g., "values.author.name") or specify top-level fields like "createdOn"
+ * @param params.fields - Fields to include in the response. Use "values." prefix for entry values (e.g., "values.author.name") or specify top-level fields like "createdOn"
  * @returns The entry data or null if not found
  */
 export async function getEntryById<TValues = Record<string, unknown>>(
@@ -28,7 +28,7 @@ export async function getEntryById<TValues = Record<string, unknown>>(
     const { executeGraphQL } = await import("./executeGraphQL.js");
 
     const query = `
-        query GetEntryById($modelId: ID!, $id: ID!, $fields: [String!]) {
+        query GetEntryById($modelId: ID!, $id: ID!, $fields: [String!]!) {
             cms {
                 getEntryById(modelId: $modelId, id: $id, fields: $fields) {
                     data

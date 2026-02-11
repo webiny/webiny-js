@@ -9,13 +9,13 @@ class CmsQueryTypeDefs implements CoreGraphQLSchemaFactory.Interface {
                 getEntry(
                     modelId: ID!
                     where: JSON!
-                    fields: [String!]
+                    fields: [String!]!
                     preview: Boolean
                 ): CmsEntryResponse!
                 getEntryById(
                     modelId: ID!
                     id: ID!
-                    fields: [String!]
+                    fields: [String!]!
                 ): CmsEntryResponse!
                 listEntries(
                     modelId: ID!
@@ -23,10 +23,7 @@ class CmsQueryTypeDefs implements CoreGraphQLSchemaFactory.Interface {
                     sort: JSON
                     limit: Int
                     after: String
-                    include: [String!]
-                    exclude: [String!]
-                    excludeType: [String!]
-                    fields: [String!]
+                    fields: [String!]!
                     preview: Boolean
                 ): CmsListResponse!
             }

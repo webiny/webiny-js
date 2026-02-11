@@ -6,7 +6,7 @@ import { getModel, getErrorMessage, buildFieldsSelection } from "./helpers.js";
 export interface UnpublishEntryArgs {
     modelId: string;
     id: string;
-    fields?: string[];
+    fields: string[];
 }
 
 export const createUnpublishEntryResolver = () => {

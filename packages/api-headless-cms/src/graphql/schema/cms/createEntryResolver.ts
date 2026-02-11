@@ -6,7 +6,7 @@ import { getModel, getErrorMessage, buildFieldsSelection } from "./helpers.js";
 export interface CreateEntryArgs {
     modelId: string;
     data: Record<string, unknown>;
-    fields?: string[];
+    fields: string[];
 }
 
 export const createCreateEntryResolver = () => {
