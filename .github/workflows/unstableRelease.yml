@@ -2,7 +2,7 @@
 # DO NOT MODIFY IT BY HAND. Instead, modify the source *.wac.ts file(s)
 # and run "github-actions-wac build" (or "ghawac build") to regenerate this file.
 # For more information, run "github-actions-wac --help".
-name: Unstable Release
+name: 📦 Unstable Release
 'on':
   workflow_dispatch:
     inputs:
@@ -25,8 +25,9 @@ jobs:
       - name: Create global cache key
         id: global-cache-key
         run: >-
-          echo "global-cache-key=next-${{ runner.os }}-$(/bin/date -u
-          "+%m%d")-${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT
+          echo "global-cache-key=${{ github.event.inputs.branch }}-${{ runner.os
+          }}-$(/bin/date -u "+%m%d")-${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >>
+          $GITHUB_OUTPUT
       - name: Create workflow run cache key
         id: run-cache-key
         run: >-
@@ -46,30 +47,30 @@ jobs:
           node-version: 24
       - uses: actions/checkout@v4
         with:
-          path: next
+          path: ${{ github.event.inputs.branch }}
           ref: ${{ github.event.inputs.branch }}
       - uses: actions/cache@v4
         with:
-          path: next/.yarn/cache
+          path: ${{ github.event.inputs.branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: next/.webiny/cached-packages
+          path: ${{ github.event.inputs.branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.global-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
-        working-directory: next
+        working-directory: ${{ github.event.inputs.branch }}
       - name: Build packages
         run: yarn build
-        working-directory: next
+        working-directory: ${{ github.event.inputs.branch }}
       - uses: actions/cache@v4
         with:
-          path: next/.webiny/cached-packages
+          path: ${{ github.event.inputs.branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-  npmUnstableRelease:
+  npmReleaseUnstable:
     needs:
       - constants
       - build
@@ -79,37 +80,40 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      UNSTABLE_VERSION: ${{ vars.UNSTABLE_VERSION }}
     steps:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          path: ${{ github.event.inputs.branch }}
           ref: ${{ github.event.inputs.branch }}
+          fetch-depth: 0
       - uses: actions/cache@v4
         with:
-          path: next/.yarn/cache
+          path: ${{ github.event.inputs.branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: next/.webiny/cached-packages
+          path: ${{ github.event.inputs.branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
-        working-directory: next
+        working-directory: ${{ github.event.inputs.branch }}
       - name: Build packages
         run: yarn build
-        working-directory: next
+        working-directory: ${{ github.event.inputs.branch }}
       - name: Create ".npmrc" file in the project root
         run: echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
-        working-directory: next
-      - name: Set git info
-        run: |
-          git config --global user.email "webiny-bot@webiny.com"
-          git config --global user.name "webiny-bot"
-        working-directory: next
-      - name: Version and publish to NPM
+        working-directory: ${{ github.event.inputs.branch }}
+      - name: Set git email
+        run: git config --global user.email "webiny-bot@webiny.com"
+        working-directory: ${{ github.event.inputs.branch }}
+      - name: Set git username
+        run: git config --global user.name "webiny-bot"
+        working-directory: ${{ github.event.inputs.branch }}
+      - name: Version and publish "unstable" tag to NPM
+        working-directory: ${{ github.event.inputs.branch }}
         run: yarn release --type=unstable
-        working-directory: next
     runs-on: ubuntu-latest
