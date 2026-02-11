@@ -65,7 +65,6 @@ export const unstableRelease = createWorkflow({
         npmUnstableRelease: createJob({
             needs: ["constants", "build"],
             name: 'NPM release ("unstable" tag)',
-            environment: "release",
             env: {
                 GH_TOKEN: "${{ secrets.GH_TOKEN }}",
                 NPM_TOKEN: "${{ secrets.NPM_TOKEN }}"
