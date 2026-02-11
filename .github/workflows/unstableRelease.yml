@@ -74,7 +74,6 @@ jobs:
       - constants
       - build
     name: NPM release ("unstable" tag)
-    environment: release
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
