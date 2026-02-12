@@ -75,7 +75,7 @@ const useLayoutId = (applicationId: string) => {
         return null;
     }
 
-    return `T#${tenant}#A#${applicationId}`;
+    return `${tenant}/${applicationId}`;
 };
 
 const FileManagerView = () => {
@@ -325,7 +325,7 @@ const FileManagerView = () => {
                             <RightPanel span={10}>
                                 <div
                                     className={"flex flex-col relative"}
-                                    style={{ height: "calc(100vh - 69px" }}
+                                    style={{ height: "calc(100vh - 45px" }}
                                 >
                                     <Header browseFiles={browseFiles} />
                                     <div

@@ -29,7 +29,7 @@ export interface SupportedFileTypesProps {
     currentCount: number;
 }
 
-const SupportedFileTypes = ({
+export const SupportedFileTypes = ({
     accept,
     loading,
     totalCount,
@@ -67,4 +67,3 @@ const SupportedFileTypes = ({
     );
 };
 
-export default SupportedFileTypes;
