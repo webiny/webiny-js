@@ -26,9 +26,10 @@ class WorkflowStateModelImpl implements ModelFactory.Interface {
     public async execute(builder: ModelFactory.Builder) {
         return [
             builder
-                .private()
-                .modelId(WORKFLOW_STATE_MODEL_ID)
-                .name("RecordWorkflow State")
+                .private({
+                    modelId: WORKFLOW_STATE_MODEL_ID,
+                    name: "Workflow State"
+                })
                 .fields(fields => ({
                     workflowId: fields.text().label("Workflow ID"),
                     app: fields.text().label("App").required("App is required."),

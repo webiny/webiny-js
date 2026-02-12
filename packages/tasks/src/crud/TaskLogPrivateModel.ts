@@ -7,9 +7,10 @@ class TaskLogPrivateModelImpl implements ModelFactory.Interface {
     public async execute(builder: ModelFactory.Builder) {
         return [
             builder
-                .private()
-                .modelId(WEBINY_TASK_LOG_MODEL_ID)
-                .name("Webiny Task Log")
+                .private({
+                    modelId: WEBINY_TASK_LOG_MODEL_ID,
+                    name: "Webiny Task Log"
+                })
                 .fields(fields => ({
                     executionName: fields.text().label("Execution Name"),
                     task: fields.text().label("Task").required("Task is required."),

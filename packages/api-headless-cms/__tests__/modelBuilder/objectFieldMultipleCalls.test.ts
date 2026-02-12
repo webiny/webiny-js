@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { Container } from "@webiny/di";
 import { ModelBuilderFeature } from "~/features/modelBuilder/feature.js";
 import { ModelFactory, ModelsProvider } from "~/features/modelBuilder/index.js";
@@ -16,9 +16,10 @@ describe("Object Field Multiple .fields() Calls", () => {
             public async execute(builder: ModelFactory.Builder) {
                 return [
                     builder
-                        .private()
-                        .modelId("testObjectMultipleFields")
-                        .name("Test Object Multiple Fields")
+                        .private({
+                            modelId: "testObjectMultipleFields",
+                            name: "Test Object Multiple Fields"
+                        })
                         .fields(fields => ({
                             metadata: fields
                                 .object()
@@ -92,9 +93,10 @@ describe("Object Field Multiple .fields() Calls", () => {
 
                 return [
                     builder
-                        .private()
-                        .modelId("conditionalObjectModel")
-                        .name("Conditional Object Model")
+                        .private({
+                            modelId: "conditionalObjectModel",
+                            name: "Conditional Object Model"
+                        })
                         .fields(fields => ({
                             metadata: metadataBuilder(fields)
                         }))
@@ -140,9 +142,10 @@ describe("Object Field Multiple .fields() Calls", () => {
             public async execute(builder: ModelFactory.Builder) {
                 return [
                     builder
-                        .private()
-                        .modelId("nestedObjectModel")
-                        .name("Nested Object Model")
+                        .private({
+                            modelId: "nestedObjectModel",
+                            name: "Nested Object Model"
+                        })
                         .fields(fields => ({
                             section: fields
                                 .object()

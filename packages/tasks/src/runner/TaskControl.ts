@@ -70,7 +70,10 @@ export class TaskControl implements ITaskControl {
                 }
             });
         }
-        const disableDatabaseLogs = !!definition.disableDatabaseLogs;
+        /**
+         * Only enable logs if definition explicitly allows them.
+         */
+        const disableDatabaseLogs = definition.disableDatabaseLogs === false ? false : true;
 
         /**
          * As this as a run of the task, we need to create a new log entry.

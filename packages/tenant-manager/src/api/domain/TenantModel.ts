@@ -7,12 +7,13 @@ class TenantModelFactory implements ModelFactory.Interface {
 
     async execute(builder: ModelFactory.Builder) {
         const model = builder
-            .public()
-            .modelId(TENANT_MODEL_ID)
-            .name("Tenant")
+            .public({
+                modelId: TENANT_MODEL_ID,
+                name: "Tenant",
+                group: "hidden"
+            })
             .description("Manage system tenants.")
             .titleFieldId("name")
-            .group("hidden")
             .icon("fas/building")
             .singularApiName("Tenant")
             .pluralApiName("Tenants")

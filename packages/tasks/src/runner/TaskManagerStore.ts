@@ -47,7 +47,7 @@ export interface ITaskManagerStoreParams {
     context: TaskManagerStoreContext;
     task: ITask;
     log: ITaskLog;
-    disableDatabaseLogs?: boolean;
+    disableDatabaseLogs: boolean;
 }
 
 export class TaskManagerStore<

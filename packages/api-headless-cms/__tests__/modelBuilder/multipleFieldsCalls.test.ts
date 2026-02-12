@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { Container } from "@webiny/di";
 import { ModelBuilderFeature } from "~/features/modelBuilder/feature.js";
 import { ModelFactory, ModelsProvider } from "~/features/modelBuilder/index.js";
@@ -16,9 +16,10 @@ describe("Private Models", () => {
             public async execute(builder: ModelFactory.Builder) {
                 // First call - add base fields
                 const model = builder
-                    .private()
-                    .modelId("testModel")
-                    .name("Test Model")
+                    .private({
+                        modelId: "testModel",
+                        name: "Test Model"
+                    })
                     .fields(fields => ({
                         name: fields.text().label("Name").required(),
                         email: fields.text().label("Email").email()
@@ -63,9 +64,10 @@ describe("Private Models", () => {
             public async execute(builder: ModelFactory.Builder) {
                 // Always add base fields
                 const model = builder
-                    .private()
-                    .modelId("conditionalModel")
-                    .name("Conditional Model")
+                    .private({
+                        modelId: "conditionalModel",
+                        name: "Conditional Model"
+                    })
                     .fields(fields => ({
                         title: fields.text().label("Title").required()
                     }));
@@ -123,10 +125,11 @@ describe("Public Models", () => {
             public async execute(builder: ModelFactory.Builder) {
                 // First call - add base fields
                 const model = builder
-                    .public()
-                    .modelId("publicTestModel")
-                    .name("Public Test Model")
-                    .group("test")
+                    .public({
+                        modelId: "publicTestModel",
+                        name: "Public Test Model",
+                        group: "test"
+                    })
                     .fields(fields => ({
                         title: fields.text().label("Title").required("Title is required."),
                         description: fields.longText().label("Description")
@@ -174,10 +177,11 @@ describe("Public Models", () => {
             public async execute(builder: ModelFactory.Builder) {
                 // Always add base fields
                 const model = builder
-                    .public()
-                    .modelId("conditionalPublicModel")
-                    .name("Conditional Public Model")
-                    .group("test")
+                    .public({
+                        modelId: "conditionalPublicModel",
+                        name: "Conditional Public Model",
+                        group: "test"
+                    })
                     .fields(fields => ({
                         title: fields.text().label("Title").required("Title is required.")
                     }));
