@@ -52,7 +52,9 @@ export const createRsbuildConfig = ({ cwd }) => {
                     async: mode === "development"
                 }
             }),
-            pluginReact(),
+            pluginReact({
+                splitChunks: false
+            }),
             pluginSass(),
             pluginSvgr({
                 mixedImport: true,
