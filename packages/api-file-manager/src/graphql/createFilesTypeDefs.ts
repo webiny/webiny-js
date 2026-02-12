@@ -6,7 +6,6 @@ import type {
 import { renderFields } from "@webiny/api-headless-cms/utils/renderFields.js";
 import { renderInputFields } from "@webiny/api-headless-cms/utils/renderInputFields.js";
 import { renderListFilterFields } from "@webiny/api-headless-cms/utils/renderListFilterFields.js";
-import { renderSortEnum } from "@webiny/api-headless-cms/utils/renderSortEnum.js";
 
 export interface CreateFilesTypeDefsParams {
     model: CmsModel;
@@ -60,15 +59,6 @@ export const createFilesTypeDefs = (params: CreateFilesTypeDefsParams): string =
         type: "manage",
         fieldTypePlugins,
         excludeFields: ["entryId", "status"]
-    });
-
-    const excludeFromSorterts = ["tags"];
-
-    const sortEnumRender = renderSortEnum({
-        model,
-        fields: model.fields.filter(field => !excludeFromSorterts.includes(field.fieldId)),
-        fieldTypePlugins,
-        sorterPlugins: []
     });
 
     return /* GraphQL */ `
@@ -152,7 +142,18 @@ export const createFilesTypeDefs = (params: CreateFilesTypeDefsParams): string =
         }
 
         enum FmFileListSorter {
-            ${sortEnumRender}
+            savedOn_ASC
+            savedOn_DESC
+            createdOn_ASC
+            createdOn_DESC
+            name_ASC
+            name_DESC
+            key_ASC
+            key_DESC
+            type_ASC
+            type_DESC
+            size_ASC
+            size_DESC
         }
 
         input FmTagsListWhereInput {
