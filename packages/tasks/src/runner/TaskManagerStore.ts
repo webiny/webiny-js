@@ -47,7 +47,7 @@ export interface ITaskManagerStoreParams {
     context: TaskManagerStoreContext;
     task: ITask;
     log: ITaskLog;
-    disableDatabaseLogs: boolean;
+    enableDatabaseLogs: boolean;
 }
 
 export class TaskManagerStore<
@@ -58,7 +58,7 @@ export class TaskManagerStore<
     private readonly context: TaskManagerStoreContext;
     private task: ITask<T, O>;
     private taskLog: ITaskLog;
-    private readonly disableDatabaseLogs: boolean;
+    private readonly enableDatabaseLogs: boolean;
 
     private readonly taskUpdater = new ObjectUpdater<ITask<T, O>>();
     private readonly taskLogUpdater = new ObjectUpdater<ITaskLog>();
@@ -67,7 +67,7 @@ export class TaskManagerStore<
         this.context = params.context;
         this.task = params.task as ITask<T, O>;
         this.taskLog = params.log;
-        this.disableDatabaseLogs = !!params.disableDatabaseLogs;
+        this.enableDatabaseLogs = params.enableDatabaseLogs === true;
     }
 
     public getStatus(): TaskDataStatus {
@@ -166,7 +166,7 @@ export class TaskManagerStore<
         log: ITaskManagerStoreInfoLog,
         options?: ITaskManagerStoreAddLogOptions
     ): Promise<void> {
-        if (this.disableDatabaseLogs) {
+        if (!this.enableDatabaseLogs) {
             return;
         }
         this.taskLogUpdater.update({
@@ -193,7 +193,7 @@ export class TaskManagerStore<
         log: ITaskManagerStoreErrorLog,
         options?: ITaskManagerStoreAddLogOptions
     ): Promise<void> {
-        if (this.disableDatabaseLogs) {
+        if (!this.enableDatabaseLogs) {
             return;
         }
         /**
@@ -229,7 +229,7 @@ export class TaskManagerStore<
                 this.taskUpdater.fetch()
             );
         }
-        if (this.disableDatabaseLogs) {
+        if (!this.enableDatabaseLogs) {
             return;
         }
         if (this.taskLogUpdater.isDirty()) {

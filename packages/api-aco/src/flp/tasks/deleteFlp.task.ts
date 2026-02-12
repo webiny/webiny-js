@@ -8,7 +8,7 @@ class DeleteFlpTaskImpl implements TaskDefinition.Interface<IDeleteFlpTaskInput>
     title = "ACO - Delete FLP record";
     description =
         "Synchronizes the FLP catalog by deleting the FLP record based on the provided folder.";
-    disableDatabaseLogs = true;
+    enableDatabaseLogs = false;
 
     constructor(private deleteFlp: DeleteFlpUseCase.Interface) {}
 

@@ -8,6 +8,7 @@ class TestingRunTask implements TaskDefinition.Interface {
     id = TASK_ID;
     title = "Task Runner Task";
     maxIterations = 2;
+    enableDatabaseLogs = true;
     constructor(private controller: TaskController.Interface) {}
 
     async run({ input }: TaskDefinition.RunParams) {
