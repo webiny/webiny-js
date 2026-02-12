@@ -6,9 +6,10 @@ class FolderPrivateModelImpl implements ModelFactory.Interface {
     public async execute(builder: ModelFactory.Builder) {
         return [
             builder
-                .private()
-                .modelId(FOLDER_MODEL_ID)
-                .name("ACO - Folder")
+                .private({
+                    modelId: FOLDER_MODEL_ID,
+                    name: "ACO - Folder"
+                })
                 .fields(fields => ({
                     title: fields.text().label("Title").required("Value is required."),
                     slug: fields

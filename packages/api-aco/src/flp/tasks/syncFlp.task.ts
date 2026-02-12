@@ -10,7 +10,7 @@ class SyncFlpTaskImpl implements TaskDefinition.Interface<ISyncFlpTaskInput> {
     id = SYNC_FLP_TASK_ID;
     title = "ACO - Sync FLP record";
     description = "Synchronizes the FLP catalog by updating the FLP record and its descendants.";
-    disableDatabaseLogs = true;
+    databaseLogs = false;
 
     constructor(
         private getFolder: GetFolderUseCase.Interface,

@@ -7,9 +7,10 @@ class WorkflowModelImpl implements ModelFactory.Interface {
     public async execute(builder: ModelFactory.Builder) {
         return [
             builder
-                .private()
-                .modelId(WORKFLOW_MODEL_ID)
-                .name("Workflow")
+                .private({
+                    modelId: WORKFLOW_MODEL_ID,
+                    name: "Workflow"
+                })
                 .fields(fields => ({
                     name: fields.text().label("Name").required("Workflow name is required."),
                     app: fields.text().label("App").required("App is required."),

@@ -1,4 +1,4 @@
-export * from "./abstractions.js";
+export { ModelFactory } from "./abstractions.js";
 export * from "./models/BaseModelBuilder.js";
 export * from "./models/ModelBuilder.js";
 export * from "./models/PrivateModelBuilder.js";
@@ -20,6 +20,6 @@ import "./fields/DateTimeFieldType.js";
 import "./fields/ObjectFieldType.js";
 import "./fields/RefFieldType.js";
 import "./fields/DynamicZoneFieldType.js";
-import "./fields/LocationFieldType.js";
+// import "./fields/LocationFieldType.js";
 import "./fields/JsonFieldType.js";
 import "./fields/SearchableJsonFieldType.js";

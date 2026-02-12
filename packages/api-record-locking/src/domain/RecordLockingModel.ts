@@ -6,9 +6,10 @@ class RecordLockingPrivateModelImpl implements ModelFactory.Interface {
     public async execute(builder: ModelFactory.Builder) {
         return [
             builder
-                .private()
-                .modelId(RECORD_LOCKING_MODEL_ID)
-                .name("Record Lock Tracking")
+                .private({
+                    modelId: RECORD_LOCKING_MODEL_ID,
+                    name: "Record Lock Tracking"
+                })
                 .fields(fields => ({
                     targetId: fields.text().label("Target ID").required("Target ID is required."),
                     type: fields.text().label("Record Type").required("Record type is required."),

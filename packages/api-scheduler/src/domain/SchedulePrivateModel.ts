@@ -5,9 +5,10 @@ class SchedulePrivateModelImpl implements ModelFactory.Interface {
     public async execute(builder: ModelFactory.Builder) {
         return [
             builder
-                .private()
-                .modelId(SCHEDULE_MODEL_ID)
-                .name("Webiny CMS Schedule")
+                .private({
+                    modelId: SCHEDULE_MODEL_ID,
+                    name: "Webiny CMS Schedule"
+                })
                 .fields(fields => ({
                     namespace: fields.text().label("Namespace"),
                     actionType: fields.text().label("Action Type"),

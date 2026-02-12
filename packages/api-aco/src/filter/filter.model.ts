@@ -6,9 +6,10 @@ class FilterPrivateModelImpl implements ModelFactory.Interface {
     public async execute(builder: ModelFactory.Builder) {
         return [
             builder
-                .private()
-                .modelId(FILTER_MODEL_ID)
-                .name("ACO - Filter")
+                .private({
+                    modelId: FILTER_MODEL_ID,
+                    name: "ACO - Filter"
+                })
                 .fields(fields => ({
                     name: fields.text().label("Name").required(),
                     description: fields.text().label("Description"),

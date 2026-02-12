@@ -12,13 +12,10 @@ import { FileFieldType } from "./fields/FileFieldType.js";
 import { DateTimeFieldType } from "./fields/DateTimeFieldType.js";
 import { JsonFieldType } from "./fields/JsonFieldType.js";
 import { SearchableJsonFieldType } from "./fields/SearchableJsonFieldType.js";
-import { LocationFieldType } from "~/features/modelBuilder/fields/LocationFieldType.js";
-import {
-    ModelFactory,
-    FieldBuilderRegistry as FieldsRegistryAbstraction
-} from "~/features/modelBuilder/abstractions.js";
+// import { LocationFieldType } from "./fields/LocationFieldType.js";
+import { FieldBuilderRegistry as FieldsRegistryAbstraction, ModelFactory } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
-import { ModelsProvider as ModelsProviderAbstraction } from "~/features/modelBuilder/models/abstractions.js";
+import { ModelsProvider as ModelsProviderAbstraction } from "./models/abstractions.js";
 import { ModelsProvider } from "./models/ModelsProvider.js";
 
 export const ModelBuilderFeature = createFeature({
@@ -37,7 +34,7 @@ export const ModelBuilderFeature = createFeature({
         container.register(DateTimeFieldType);
         container.register(JsonFieldType);
         container.register(SearchableJsonFieldType);
-        container.register(LocationFieldType);
+        // container.register(LocationFieldType);
 
         // Register field builder registry (will automatically get all FieldType implementations)
         container.register(FieldBuilderRegistry).inSingletonScope();

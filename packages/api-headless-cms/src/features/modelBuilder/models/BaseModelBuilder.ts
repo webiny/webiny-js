@@ -1,5 +1,6 @@
-import { FieldBuilder, FieldBuilderRegistry } from "~/features/modelBuilder/index.js";
+import { FieldBuilder } from "~/features/modelBuilder/index.js";
 import { CmsModelPlugin } from "~/plugins/index.js";
+import { FieldBuilderRegistry } from "../abstractions.js";
 
 /**
  * Base class for all model builders, containing shared logic.

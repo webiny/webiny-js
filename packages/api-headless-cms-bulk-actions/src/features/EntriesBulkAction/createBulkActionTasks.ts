@@ -42,7 +42,7 @@ export const createBulkActionTasks = (
         public readonly id = listTaskId;
         public readonly title = `Headless CMS: list "${bulkActionName}" entries by model`;
         public readonly maxIterations = 500;
-        public readonly disableDatabaseLogs = true;
+        public readonly databaseLogs = false;
         public readonly isPrivate = true;
         public readonly context: BulkActionContext.Interface;
         public readonly getModel: GetModelUseCase.Interface;
@@ -130,7 +130,7 @@ export const createBulkActionTasks = (
         public readonly id = processTaskId;
         public readonly title = `Headless CMS: process "${bulkActionName}" entries`;
         public readonly maxIterations = 2;
-        public readonly disableDatabaseLogs = true;
+        public readonly databaseLogs = false;
         public readonly isPrivate = true;
         public readonly getModel: GetModelUseCase.Interface;
 

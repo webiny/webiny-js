@@ -16,11 +16,11 @@ describe("All Field Types Model", () => {
             public async execute(builder: ModelFactory.Builder) {
                 return [
                     builder
-                        .private()
-                        .modelId("allFieldsModel")
-                        .name("All Fields Model")
+                        .private({
+                            modelId: "allFieldsModel",
+                            name: "All Fields Model"
+                        })
                         .fields(fields => ({
-                            location: fields.location(),
                             // Text field - basic
                             title: fields.text().label("Title").required("Title is required."),
 
@@ -209,8 +209,8 @@ describe("All Field Types Model", () => {
         expect(fieldTypes).toContain("dynamicZone");
 
         // Verify specific fields
-        const locationField = model!.fields.find(f => f.fieldId === "location");
-        expect(locationField?.type).toBe("object");
+        // const locationField = model!.fields.find(f => f.fieldId === "location");
+        // expect(locationField?.type).toBe("object");
 
         const titleField = model!.fields.find(f => f.fieldId === "title");
         expect(titleField?.type).toBe("text");
@@ -286,12 +286,13 @@ describe("All Field Types Model", () => {
             public async execute(builder: ModelFactory.Builder) {
                 return [
                     builder
-                        .public()
-                        .modelId("fullPublicModel")
-                        .name("Full Public Model")
-                        .singularApiName("FullPublicModel")
-                        .pluralApiName("FullPublicModels")
-                        .group("test")
+                        .public({
+                            modelId: "fullPublicModel",
+                            name: "Full Public Model",
+                            singularApiName: "FullPublicModel",
+                            pluralApiName: "FullPublicModels",
+                            group: "test"
+                        })
                         .icon("fas/database")
                         .description("A complete public model with all fields")
                         .titleFieldId("title")
@@ -362,10 +363,11 @@ describe("All Field Types Model", () => {
             public async execute(builder: ModelFactory.Builder) {
                 return [
                     builder
-                        .public()
-                        .modelId("duplicateTagsPublic")
-                        .name("Duplicate Tags Public")
-                        .group("test")
+                        .public({
+                            name: "Duplicate Tags Public",
+                            modelId: "duplicateTagsPublic",
+                            group: "test"
+                        })
                         .tags(["type:model", "custom:tag", "type:model", "custom:tag"])
                         .fields(fields => ({
                             title: fields.text().label("Title")
@@ -389,9 +391,10 @@ describe("All Field Types Model", () => {
             public async execute(builder: ModelFactory.Builder) {
                 return [
                     builder
-                        .private()
-                        .modelId("duplicateTagsPrivate")
-                        .name("Duplicate Tags Private")
+                        .private({
+                            modelId: "duplicateTagsPrivate",
+                            name: "Duplicate Tags Private"
+                        })
                         .tags(["type:model", "custom:tag", "type:model", "custom:tag"])
                         .fields(fields => ({
                             title: fields.text().label("Title")
@@ -416,10 +419,11 @@ describe("All Field Types Model", () => {
             public async execute(builder: ModelFactory.Builder) {
                 return [
                     builder
-                        .public()
-                        .modelId("noTagsModel")
-                        .name("No Tags Model")
-                        .group("test")
+                        .public({
+                            modelId: "noTagsModel",
+                            name: "No Tags Model",
+                            group: "test"
+                        })
                         .fields(fields => ({
                             title: fields.text().label("Title")
                         }))

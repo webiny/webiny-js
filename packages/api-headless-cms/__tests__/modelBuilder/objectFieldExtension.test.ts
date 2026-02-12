@@ -15,7 +15,11 @@ describe("Object Field Extension", () => {
     const createModel = () => {
         const registry = container.resolve(FieldBuilderRegistry);
         const builder = new ModelBuilder(registry);
-        return builder.public();
+        return builder.public({
+            modelId: "testModel",
+            name: "Test Model",
+            group: "test"
+        });
     };
 
     describe("extend() method", () => {
@@ -23,20 +27,16 @@ describe("Object Field Extension", () => {
             const model = createModel();
 
             // Initial model with theme object
-            model
-                .modelId("testModel")
-                .name("Test Model")
-                .group("test")
-                .fields(fields => ({
-                    theme: fields
-                        .object()
-                        .label("Theme")
-                        .fields(fields => ({
-                            primaryColor: fields.text().label("Primary Color"),
-                            font: fields.text().label("Font")
-                        }))
-                        .layout([["primaryColor"], ["font"]])
-                }));
+            model.fields(fields => ({
+                theme: fields
+                    .object()
+                    .label("Theme")
+                    .fields(fields => ({
+                        primaryColor: fields.text().label("Primary Color"),
+                        font: fields.text().label("Font")
+                    }))
+                    .layout([["primaryColor"], ["font"]])
+            }));
 
             // Extend the theme object
             model.fields(fields => ({
@@ -65,19 +65,15 @@ describe("Object Field Extension", () => {
         it("should replace field when redefining without .extend() flag", () => {
             const model = createModel();
 
-            model
-                .modelId("testModel")
-                .name("Test Model")
-                .group("test")
-                .fields(fields => ({
-                    theme: fields
-                        .object()
-                        .label("Theme")
-                        .fields(fields => ({
-                            primaryColor: fields.text().label("Primary Color")
-                        }))
-                        .layout([["primaryColor"]])
-                }));
+            model.fields(fields => ({
+                theme: fields
+                    .object()
+                    .label("Theme")
+                    .fields(fields => ({
+                        primaryColor: fields.text().label("Primary Color")
+                    }))
+                    .layout([["primaryColor"]])
+            }));
 
             // Redefine theme without .extend() - should replace entirely
             model.fields(fields => ({
@@ -103,13 +99,9 @@ describe("Object Field Extension", () => {
         it("should throw error when redefining with wrong field type", () => {
             const model = createModel();
 
-            model
-                .modelId("testModel")
-                .name("Test Model")
-                .group("test")
-                .fields(fields => ({
-                    name: fields.text().label("Name")
-                }));
+            model.fields(fields => ({
+                name: fields.text().label("Name")
+            }));
 
             expect(() => {
                 model.fields(fields => ({
@@ -126,19 +118,15 @@ describe("Object Field Extension", () => {
         it("should support multiple extensions of the same object field", () => {
             const model = createModel();
 
-            model
-                .modelId("testModel")
-                .name("Test Model")
-                .group("test")
-                .fields(fields => ({
-                    theme: fields
-                        .object()
-                        .label("Theme")
-                        .fields(fields => ({
-                            primaryColor: fields.text().label("Primary Color")
-                        }))
-                        .layout([["primaryColor"]])
-                }));
+            model.fields(fields => ({
+                theme: fields
+                    .object()
+                    .label("Theme")
+                    .fields(fields => ({
+                        primaryColor: fields.text().label("Primary Color")
+                    }))
+                    .layout([["primaryColor"]])
+            }));
 
             // First extension
             model.fields(fields => ({
@@ -180,26 +168,22 @@ describe("Object Field Extension", () => {
         it("should correctly extend second object field when multiple exist", () => {
             const model = createModel();
 
-            model
-                .modelId("testModel")
-                .name("Test Model")
-                .group("test")
-                .fields(fields => ({
-                    theme: fields
-                        .object()
-                        .label("Theme")
-                        .fields(fields => ({
-                            primaryColor: fields.text().label("Primary Color")
-                        }))
-                        .layout([["primaryColor"]]),
-                    settings: fields
-                        .object()
-                        .label("Settings")
-                        .fields(fields => ({
-                            enableNotifications: fields.text().label("Enable Notifications")
-                        }))
-                        .layout([["enableNotifications"]])
-                }));
+            model.fields(fields => ({
+                theme: fields
+                    .object()
+                    .label("Theme")
+                    .fields(fields => ({
+                        primaryColor: fields.text().label("Primary Color")
+                    }))
+                    .layout([["primaryColor"]]),
+                settings: fields
+                    .object()
+                    .label("Settings")
+                    .fields(fields => ({
+                        enableNotifications: fields.text().label("Enable Notifications")
+                    }))
+                    .layout([["enableNotifications"]])
+            }));
 
             // Extend the SECOND object field (settings, not theme)
             model.fields(fields => ({
@@ -236,20 +220,16 @@ describe("Object Field Extension", () => {
         it("should allow extending object field layout without adding new fields", () => {
             const model = createModel();
 
-            model
-                .modelId("testModel")
-                .name("Test Model")
-                .group("test")
-                .fields(fields => ({
-                    theme: fields
-                        .object()
-                        .label("Theme")
-                        .fields(fields => ({
-                            primaryColor: fields.text().label("Primary Color"),
-                            secondaryColor: fields.text().label("Secondary Color")
-                        }))
-                        .layout([["primaryColor"], ["secondaryColor"]])
-                }));
+            model.fields(fields => ({
+                theme: fields
+                    .object()
+                    .label("Theme")
+                    .fields(fields => ({
+                        primaryColor: fields.text().label("Primary Color"),
+                        secondaryColor: fields.text().label("Secondary Color")
+                    }))
+                    .layout([["primaryColor"], ["secondaryColor"]])
+            }));
 
             // Just modify layout
             model.fields(fields => ({
@@ -270,20 +250,16 @@ describe("Object Field Extension", () => {
         it("should support array layout replacement", () => {
             const model = createModel();
 
-            model
-                .modelId("testModel")
-                .name("Test Model")
-                .group("test")
-                .fields(fields => ({
-                    theme: fields
-                        .object()
-                        .label("Theme")
-                        .fields(fields => ({
-                            primaryColor: fields.text().label("Primary Color"),
-                            font: fields.text().label("Font")
-                        }))
-                        .layout([["primaryColor"], ["font"]])
-                }));
+            model.fields(fields => ({
+                theme: fields
+                    .object()
+                    .label("Theme")
+                    .fields(fields => ({
+                        primaryColor: fields.text().label("Primary Color"),
+                        font: fields.text().label("Font")
+                    }))
+                    .layout([["primaryColor"], ["font"]])
+            }));
 
             // Replace entire layout
             model.fields(fields => ({
@@ -305,20 +281,16 @@ describe("Object Field Extension", () => {
         it("should support builder callback for incremental layout changes", () => {
             const model = createModel();
 
-            model
-                .modelId("testModel")
-                .name("Test Model")
-                .group("test")
-                .fields(fields => ({
-                    theme: fields
-                        .object()
-                        .label("Theme")
-                        .fields(fields => ({
-                            primaryColor: fields.text().label("Primary Color"),
-                            font: fields.text().label("Font")
-                        }))
-                        .layout([["primaryColor"], ["font"]])
-                }));
+            model.fields(fields => ({
+                theme: fields
+                    .object()
+                    .label("Theme")
+                    .fields(fields => ({
+                        primaryColor: fields.text().label("Primary Color"),
+                        font: fields.text().label("Font")
+                    }))
+                    .layout([["primaryColor"], ["font"]])
+            }));
 
             // Use builder for incremental changes
             model.fields(fields => ({

@@ -29,10 +29,10 @@ export interface IListWbRedirectsWhere {
 }
 
 export interface ListWbRedirectsParams {
-    where: IListWbRedirectsWhere;
-    sort: CmsEntryListSort;
-    limit: number;
-    after: string | null;
+    where?: IListWbRedirectsWhere;
+    sort?: CmsEntryListSort;
+    limit?: number;
+    after?: string | null;
     search?: string;
 }
 
