@@ -1,6 +1,7 @@
 import { ModelsProvider as ProviderAbstraction } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
-import { ModelFactory, FieldBuilderRegistry } from "~/features/modelBuilder/index.js";
+import { ModelFactory } from "../abstractions.js";
+import { FieldBuilderRegistry } from "../abstractions.js";
 import type { CmsModel } from "~/types/index.js";
 import { filterAsync } from "~/utils/filterAsync.js";
 import { ModelBuilder } from "./ModelBuilder.js";

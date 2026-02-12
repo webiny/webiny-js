@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { Container } from "@webiny/di";
 import { ModelBuilderFeature } from "~/features/modelBuilder/feature";
-import { FieldBuilderRegistry } from "~/features/modelBuilder/fieldBuilder/abstractions";
+import { FieldBuilderRegistry } from "~/features/modelBuilder/abstractions";
 import { ModelBuilder } from "~/features/modelBuilder/models/ModelBuilder";
 
 describe("Object Field Extension", () => {

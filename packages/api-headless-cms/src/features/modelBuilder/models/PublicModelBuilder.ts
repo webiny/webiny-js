@@ -79,7 +79,10 @@ export class PublicModelBuilder extends BaseModelBuilder {
         this.publicConfig.imageFieldId = fieldId;
         return this;
     }
-
+    /**
+     * It just creates problems if we import the FieldBuilderRegistry.
+     * TODO: figure out
+     */
     constructor(registry: any) {
         super(registry);
         this.layoutBuilder = new LayoutBuilder();

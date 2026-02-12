@@ -1,4 +1,4 @@
-export * from "./abstractions.js";
+export { ModelFactory } from "./abstractions.js";
 export * from "./models/BaseModelBuilder.js";
 export * from "./models/ModelBuilder.js";
 export * from "./models/PrivateModelBuilder.js";

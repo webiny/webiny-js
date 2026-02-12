@@ -1,6 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { PrivateModelBuilder } from "./models/PrivateModelBuilder.js";
 import type { PublicModelBuilder } from "./models/PublicModelBuilder.js";
+import type { IModelBuilderPrivateInput, IModelBuilderPublicInput } from "./models/ModelBuilder.js";
 
 /**
  * Field Builder Registry
@@ -31,15 +32,15 @@ export namespace FieldBuilderRegistry {
  */
 
 export interface IModelBuilder {
-    private(): PrivateModelBuilder;
-    public(): PublicModelBuilder;
+    private(input: IModelBuilderPrivateInput): PrivateModelBuilder;
+    public(input: IModelBuilderPublicInput): PublicModelBuilder;
 }
 
 export interface IModelFactory {
     execute(builder: IModelBuilder): Promise<PrivateModelBuilder[] | PublicModelBuilder[]>;
 }
 
-export const ModelFactory = createAbstraction<IModelFactory>("ModelFactory");
+export const ModelFactory = createAbstraction<IModelFactory>("Cms/ModelFactory");
 export namespace ModelFactory {
     export type Interface = IModelFactory;
     export type Return = Promise<PrivateModelBuilder[] | PublicModelBuilder[]>;
