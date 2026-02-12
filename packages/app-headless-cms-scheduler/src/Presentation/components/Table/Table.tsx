@@ -26,7 +26,7 @@ export const Table = () => {
             onSortingChange={sort => sortItems(sort)}
             selected={selected}
             nameColumnId={vm.nameColumnId}
-            namespace={"scheduler"}
+            namespace={"scheduler/list"}
         />
     );
 };

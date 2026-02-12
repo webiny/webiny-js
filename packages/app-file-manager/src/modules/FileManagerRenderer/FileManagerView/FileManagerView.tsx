@@ -8,14 +8,7 @@ import { useHotkeys } from "react-hotkeyz";
 import { observer } from "mobx-react-lite";
 import { type DataTableSorting, Scrollbar } from "@webiny/admin-ui";
 import { i18n } from "@webiny/app/i18n/index.js";
-import {
-    LeftPanel,
-    OverlayLayout,
-    RightPanel,
-    SplitView,
-    useSnackbar,
-    useTenantContext
-} from "@webiny/app-admin";
+import { LeftPanel, OverlayLayout, RightPanel, SplitView, useSnackbar } from "@webiny/app-admin";
 import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider/index.js";
 import { outputFileSelectionError } from "./outputFileSelectionError.js";
 import { LeftSidebar } from "./LeftSidebar.js";
@@ -60,24 +53,6 @@ const createSort = (sorting?: DataTableSorting): ListFilesSort | undefined => {
     }, []);
 };
 
-/**
- * Generates a `layoutId` to be used with the `<SplitView />` component.
- * The `layoutId` is essential for saving user preferences into localStorage.
- * The generation of the `layoutId` takes into account the current `tenantId` and the provided `applicationId`.
- *
- *  TODO: export the useLayoutId from a generic use package, such as app-admin. At the moment is not possible because of circular dependency issues.
- */
-const useLayoutId = (applicationId: string) => {
-    const { tenant } = useTenantContext();
-
-    if (!tenant) {
-        console.warn("Missing tenant while creating layoutId");
-        return null;
-    }
-
-    return `${tenant}/${applicationId}`;
-};
-
 const FileManagerView = () => {
     const view = useFileManagerView();
     const { browser } = useFileManagerViewConfig();
@@ -91,7 +66,6 @@ const FileManagerView = () => {
 
     const [tableSorting, setTableSorting] = useState<DataTableSorting>([]);
     const [currentFile, setCurrentFile] = useState<FileItem>();
-    const layoutId = useLayoutId("fm:file");
 
     useEffect(() => {
         const fetchFileDetails = async () => {
@@ -306,7 +280,7 @@ const FileManagerView = () => {
                             onClose={view.hideFileDetails}
                             onSave={updateFile}
                         />
-                        <SplitView layoutId={layoutId}>
+                        <SplitView namespace={"fm/file/list"}>
                             <LeftPanel span={2}>
                                 <LeftSidebar
                                     currentFolder={view.folderId}

@@ -28,7 +28,7 @@ export const Table = () => {
             }}
             selected={selected}
             nameColumnId={"redirectFrom"}
-            namespace={"wbRedirect"}
+            namespace={"wb/redirect/list"}
         />
     );
 };

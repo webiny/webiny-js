@@ -16,7 +16,7 @@ export const fileToImagePayload = (file: FileManagerFileItem): ImagePayload | nu
     imagePayload["id"] = file.id;
     imagePayload["src"] = file.src;
     imagePayload["altText"] = file.name;
-    imagePayload["width"] = file.width
+    imagePayload["width"] = file.width;
     imagePayload["height"] = file.height;
 
     return imagePayload;
