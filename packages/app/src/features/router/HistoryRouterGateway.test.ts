@@ -1,7 +1,7 @@
 import { describe, it, beforeEach, expect, vi } from "vitest";
 import { createMemoryHistory } from "history";
 import { HistoryRouterGateway } from "./HistoryRouterGateway.js";
-import { generateUrl } from "./generateUrl.js";
+import { RouteUrl } from "./RouteUrl.js";
 
 const wait = () => new Promise(resolve => setTimeout(resolve, 10));
 
@@ -89,11 +89,11 @@ describe("Router Gateway", () => {
 
     it("should generate route URLs", async () => {
         const urls = [
-            generateUrl("/"),
-            generateUrl("/login", {}),
-            generateUrl("/login", { redirect: "/", reason: "login" }),
-            generateUrl("/dynamic-route/:name", { name: "cars" }),
-            generateUrl("/dynamic-route", { folderId: "696556831e485d00027a1a0b#0001" })
+            RouteUrl.fromPattern("/"),
+            RouteUrl.fromPattern("/login", {}),
+            RouteUrl.fromPattern("/login", { redirect: "/", reason: "login" }),
+            RouteUrl.fromPattern("/dynamic-route/:name", { name: "cars" }),
+            RouteUrl.fromPattern("/dynamic-route", { folderId: "696556831e485d00027a1a0b#0001" })
         ];
         expect(urls).toEqual([
             "/",
@@ -102,5 +102,99 @@ describe("Router Gateway", () => {
             "/dynamic-route/cars",
             "/dynamic-route?folderId=696556831e485d00027a1a0b%230001"
         ]);
+    });
+
+    it("should handle baseUrl for route matching and URL generation", async () => {
+        const spyFileManager = vi.fn();
+        const spyHome = vi.fn();
+
+        // Create history with a tenant prefix
+        const history = createMemoryHistory();
+        history.replace("/tenant123/__unknown__");
+
+        const gateway = new HistoryRouterGateway(history, "/tenant123");
+        gateway.setRoutes([
+            { name: "home", path: "/", onMatch: spyHome },
+            { name: "fileManager", path: "/file-manager", onMatch: spyFileManager }
+        ]);
+
+        // Navigate to /tenant123/file-manager
+        history.push("/tenant123/file-manager");
+        await wait();
+
+        // Should match the /file-manager route
+        expect(spyFileManager).toHaveBeenCalledTimes(1);
+        expect(spyFileManager).toHaveBeenCalledWith({
+            name: "fileManager",
+            path: "/file-manager",
+            pathname: "/tenant123/file-manager",
+            params: {}
+        });
+
+        // Test URL generation with baseUrl
+        const urlWithBase = RouteUrl.fromPattern("/file-manager", {}, "/tenant123");
+        expect(urlWithBase).toBe("/tenant123/file-manager");
+
+        const urlWithBaseAndParams = RouteUrl.fromPattern(
+            "/file-manager",
+            { folder: "abc" },
+            "/tenant123"
+        );
+        expect(urlWithBaseAndParams).toBe("/tenant123/file-manager?folder=abc");
+    });
+
+    it("should properly sort routes with wildcards always at the bottom", async () => {
+        const spyWildcard = vi.fn();
+        const spySpecific = vi.fn();
+        const spyHome = vi.fn();
+
+        const history = createMemoryHistory();
+        // Start at a non-matching path to avoid initial route resolution
+        history.replace("/initial");
+
+        const gateway = new HistoryRouterGateway(history, "");
+
+        // Add wildcard first, then home route
+        // Note: setRoutes will trigger route resolution for current path (/initial)
+        gateway.setRoutes([
+            { name: "wildcard", path: "*", onMatch: spyWildcard },
+            { name: "home", path: "/", onMatch: spyHome }
+        ]);
+
+        // Wildcard should have matched /initial
+        expect(spyWildcard).toHaveBeenCalledTimes(1);
+        vi.clearAllMocks();
+
+        // Now add a specific route after the wildcard - this should re-sort and keep wildcard at bottom
+        // Note: setRoutes will trigger route resolution again for /initial, matching wildcard again
+        gateway.setRoutes([{ name: "specific", path: "/specific-route", onMatch: spySpecific }]);
+
+        // Wildcard should match /initial again after re-sorting
+        expect(spyWildcard).toHaveBeenCalledTimes(1);
+        vi.clearAllMocks();
+
+        // Navigate to the specific route
+        history.push("/specific-route");
+        await wait();
+
+        // Should match the specific route, not the wildcard
+        expect(spySpecific).toHaveBeenCalledTimes(1);
+        expect(spyWildcard).toHaveBeenCalledTimes(0);
+        expect(spyHome).toHaveBeenCalledTimes(0);
+
+        // Navigate to home
+        history.push("/");
+        await wait();
+
+        // Should match home route
+        expect(spyHome).toHaveBeenCalledTimes(1);
+        expect(spyWildcard).toHaveBeenCalledTimes(0);
+
+        // Navigate to unknown route
+        history.push("/unknown");
+        await wait();
+
+        // Should match wildcard
+        expect(spyWildcard).toHaveBeenCalledTimes(1);
     });
 });

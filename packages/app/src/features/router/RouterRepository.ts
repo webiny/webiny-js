@@ -3,7 +3,7 @@ import type { MatchedRoute, RouteDefinition, OnRouteExit } from "./abstractions.
 import * as Abstractions from "./abstractions.js";
 import { Route, RouteParamsDefinition, RouteParamsInfer } from "./Route.js";
 import { createImplementation } from "@webiny/di";
-import { generateUrl } from "./generateUrl.js";
+import { RouteUrl } from "./RouteUrl.js";
 
 const INIT_ROUTE = { name: "__init__", path: "", pathname: "", params: {} };
 
@@ -37,7 +37,7 @@ class RouterRepositoryImpl implements Abstractions.RouterRepository.Interface {
         route: Route<TParams>,
         params?: TParams extends RouteParamsDefinition ? RouteParamsInfer<TParams> : undefined
     ): string {
-        return generateUrl(route.path, params);
+        return RouteUrl.fromPattern(route.path, params);
     }
 
     goToRoute<TParams extends RouteParamsDefinition | undefined>(

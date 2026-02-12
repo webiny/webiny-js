@@ -12880,15 +12880,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/universal-router@npm:^8.0.0":
-  version: 8.0.0
-  resolution: "@types/universal-router@npm:8.0.0"
-  dependencies:
-    universal-router: "npm:*"
-  checksum: 10/9307ab27b1a8d5fd096b0c6e3ce58cec289a5a71fbcbcb040582b66e963ecccb7fe7bf8546dc7e721725e9643567a78ea8479fa5d5010222b5061d08a971c527
-  languageName: node
-  linkType: hard
-
 "@types/unzipper@npm:^0.10.11":
   version: 0.10.11
   resolution: "@types/unzipper@npm:0.10.11"
@@ -15386,7 +15377,6 @@ __metadata:
     "@emotion/styled": "npm:11.10.6"
     "@types/lodash": "npm:^4.17.23"
     "@types/react": "npm:18.2.79"
-    "@types/universal-router": "npm:^8.0.0"
     "@types/warning": "npm:^3.0.3"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^0.2.3"
@@ -15413,14 +15403,12 @@ __metadata:
     minimatch: "npm:^5.1.6"
     mobx: "npm:^6.15.0"
     nanoid: "npm:^3.3.11"
-    path-to-regexp: "npm:^8.3.0"
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.2"
     ts-invariant: "npm:^0.10.3"
     type-fest: "npm:^5.4.4"
     typescript: "npm:5.9.3"
-    universal-router: "npm:^9.2.1"
     vitest: "npm:^3.2.4"
     warning: "npm:^4.0.3"
     zod: "npm:^3.25.76"
@@ -29488,14 +29476,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"path-to-regexp@npm:^6.2.0":
-  version: 6.3.0
-  resolution: "path-to-regexp@npm:6.3.0"
-  checksum: 10/6822f686f01556d99538b350722ef761541ec0ce95ca40ce4c29e20a5b492fe8361961f57993c71b2418de12e604478dcf7c430de34b2c31a688363a7a944d9c
-  languageName: node
-  linkType: hard
-
-"path-to-regexp@npm:^8.1.0, path-to-regexp@npm:^8.3.0":
+"path-to-regexp@npm:^8.1.0":
   version: 8.3.0
   resolution: "path-to-regexp@npm:8.3.0"
   checksum: 10/568f148fc64f5fd1ecebf44d531383b28df924214eabf5f2570dce9587a228e36c37882805ff02d71c6209b080ea3ee6a4d2b712b5df09741b67f1f3cf91e55a
@@ -34844,22 +34825,6 @@ __metadata:
     "@types/cookie": "npm:^0.6.0"
     cookie: "npm:^0.7.2"
   checksum: 10/0ff895dc031d925b2bd479010e750822cf2cfc966e704d822022b5075d1a4222ef839d05a3237b568c01c641051da31283dadbc138f712347ffbec002e2bc193
-  languageName: node
-  linkType: hard
-
-"universal-router@npm:*":
-  version: 10.0.1
-  resolution: "universal-router@npm:10.0.1"
-  checksum: 10/9dcc4296292e716374b70e041e825b949b7381dfc477d9b8ec141f0452a9549571c2ebbbfb96864ddb67000742bb2120e2b0c7dfd3287b2f488ef82e45376633
-  languageName: node
-  linkType: hard
-
-"universal-router@npm:^9.2.1":
-  version: 9.2.1
-  resolution: "universal-router@npm:9.2.1"
-  dependencies:
-    path-to-regexp: "npm:^6.2.0"
-  checksum: 10/ce1c8de5225b6c175880d7b45a08b4b95acbe39fa7561fd433559dbaabbe97b8b47a57e022578dfdb2dc168c2adab6364a8a42a308a68ef72507f14267400714
   languageName: node
   linkType: hard
 
