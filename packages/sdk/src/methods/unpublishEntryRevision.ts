@@ -28,7 +28,7 @@ export async function unpublishEntryRevision<TValues = Record<string, unknown>>(
     const { executeGraphQL } = await import("./executeGraphQL.js");
 
     const query = `
-        mutation UnpublishEntryRevision($modelId: String!, $revisionId: ID!, $fields: [String!]!) {
+        mutation UnpublishEntryRevision($modelId: ID!, $revisionId: ID!, $fields: [String!]!) {
             cms {
                 unpublishEntryRevision(modelId: $modelId, revisionId: $revisionId, fields: $fields) {
                     data

@@ -54,7 +54,7 @@ export async function listEntries<TValues = Record<string, unknown>>(
 
     const query = `
         query ListEntries(
-            $modelId: String!
+            $modelId: ID!
             $where: JSON
             $sort: JSON
             $limit: Int

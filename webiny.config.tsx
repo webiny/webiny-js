@@ -27,8 +27,9 @@ export const Extensions = () => {
             <Infra.Aws.Tags tags={{ OWNER2: "me2", PROJECT2: "my-project-2" }} />
             <Infra.Aws.DefaultRegion name={"eu-central-1"} />
 
-            {/*<Api.Extension src={"/extensions/ProductCategoryModel.ts"} />*/}
-            {/*<Api.Extension src={"/extensions/ProductModel.ts"} />*/}
+            <Api.Extension src={"/extensions/models/ProductCategoryModel.ts"} />
+            <Api.Extension src={"/extensions/models/ProductModel.ts"} />
+            <Api.Extension src={"/extensions/models/ContactSubmissionModel.ts"} />
 
             {/*<Api.BuildParam paramName="MY_CUSTOM_BUILD_PARAM" value="customValue" />*/}
             {/*<Api.BuildParam*/}

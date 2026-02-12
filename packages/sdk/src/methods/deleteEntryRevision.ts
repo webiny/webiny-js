@@ -16,7 +16,7 @@ export async function deleteEntryRevision(
     const { executeGraphQL } = await import("./executeGraphQL.js");
 
     const query = `
-        mutation DeleteEntryRevision($modelId: String!, $revisionId: ID!, $permanent: Boolean) {
+        mutation DeleteEntryRevision($modelId: ID!, $revisionId: ID!, $permanent: Boolean) {
             cms {
                 deleteEntryRevision(modelId: $modelId, revisionId: $revisionId, permanent: $permanent) {
                     data

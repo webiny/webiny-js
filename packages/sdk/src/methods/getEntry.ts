@@ -30,7 +30,7 @@ export async function getEntry<TValues = Record<string, unknown>>(
     const { executeGraphQL } = await import("./executeGraphQL.js");
 
     const query = `
-        query GetEntry($modelId: String!, $where: JSON!, $fields: [String!]!, $preview: Boolean) {
+        query GetEntry($modelId: ID!, $where: JSON!, $fields: [String!]!, $preview: Boolean) {
             cms {
                 getEntry(modelId: $modelId, where: $where, fields: $fields, preview: $preview) {
                     data
