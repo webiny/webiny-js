@@ -1,18 +1,30 @@
-// @ts-nocheck Temporary fix.
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react-webpack5";
-import { BrowserRouter } from "react-router";
 import { Link } from "./Link.js";
 import { Text } from "~/Text/index.js";
+import { AdminUiProvider } from "~/AdminUiProvider/index.js";
+import { LinkComponentProps } from "~/Link/LinkComponent.js";
+
+const NoopLinkComponent = ({ to, ...props }: LinkComponentProps) => {
+    return (
+        <a
+            href={to}
+            {...props}
+            onClick={e => {
+                e.preventDefault();
+            }}
+        />
+    );
+};
 
 const meta: Meta<typeof Link> = {
     title: "Components/Link",
     component: Link,
     decorators: [
         (Story: React.ComponentType) => (
-            <BrowserRouter>
+            <AdminUiProvider linkComponent={NoopLinkComponent}>
                 <Story />
-            </BrowserRouter>
+            </AdminUiProvider>
         )
     ],
     argTypes: {
