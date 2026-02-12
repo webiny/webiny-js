@@ -7,7 +7,7 @@ const DEFAULT_MAX_ITERATIONS = 50;
 
 /**
  * RunnableTaskDecorator adds runtime behavior to TaskDefinition:
- * - Applies default values (maxIterations, isPrivate, enableDatabaseLogs, fields)
+ * - Applies default values (maxIterations, isPrivate, databaseLogs, fields)
  * - Validates task ID (must be camelCase)
  * - Provides field management methods
  */
@@ -34,8 +34,8 @@ class RunnableTaskDecoratorImpl implements TaskDefinition.Interface {
         return this.decoratee.isPrivate ?? false;
     }
 
-    get enableDatabaseLogs() {
-        return this.decoratee.enableDatabaseLogs ?? false;
+    get databaseLogs() {
+        return this.decoratee.databaseLogs ?? false;
     }
 
     get maxIterations() {

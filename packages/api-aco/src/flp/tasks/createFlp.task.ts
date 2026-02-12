@@ -8,7 +8,7 @@ class CreateFlpTaskImpl implements TaskDefinition.Interface<ICreateFlpTaskInput>
     title = "ACO - Create FLP record";
     description =
         "Synchronizes the FLP catalog by creating the FLP record based on the provided folder.";
-    enableDatabaseLogs = false;
+    databaseLogs = false;
 
     constructor(private createFlp: CreateFlpUseCase.Interface) {}
 

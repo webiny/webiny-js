@@ -16,7 +16,7 @@ import {
 
 interface IGetTaskLogParams {
     task: ITask;
-    enableDatabaseLogs: boolean;
+    databaseLogs: boolean;
 }
 
 export class TaskControl implements ITaskControl {
@@ -78,7 +78,7 @@ export class TaskControl implements ITaskControl {
         /**
          * Only enable logs if definition explicitly allows them.
          */
-        const enableDatabaseLogs = definition.enableDatabaseLogs === true;
+        const databaseLogs = definition.databaseLogs === true;
 
         /**
          * As this as a run of the task, we need to create a new log entry.
@@ -87,7 +87,7 @@ export class TaskControl implements ITaskControl {
         try {
             taskLog = await this.getTaskLog({
                 task,
-                enableDatabaseLogs
+                databaseLogs
             });
         } catch (error) {
             return this.response.error({
@@ -128,7 +128,7 @@ export class TaskControl implements ITaskControl {
             context: this.context,
             task,
             log: taskLog,
-            enableDatabaseLogs
+            databaseLogs
         });
 
         // Populate TaskExecutionContext BEFORE executing task
@@ -225,11 +225,11 @@ export class TaskControl implements ITaskControl {
     }
 
     private async getTaskLog(params: IGetTaskLogParams): Promise<ITaskLog> {
-        const { task, enableDatabaseLogs } = params;
+        const { task, databaseLogs } = params;
         /**
          * If logs are disabled, let's return a mocked one.
          */
-        if (!enableDatabaseLogs) {
+        if (!databaseLogs) {
             return {
                 id: `${task.id}-log`,
                 createdOn: task.createdOn,

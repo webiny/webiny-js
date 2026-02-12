@@ -16,7 +16,7 @@ export class DataSynchronizationTask
     description = "Synchronize data between Elasticsearch and DynamoDB";
     isPrivate = false;
     maxIterations = 100;
-    enableDatabaseLogs = false;
+    databaseLogs = false;
 
     constructor(
         private elasticsearchClient: IElasticsearchTaskConfig["elasticsearchClient"],

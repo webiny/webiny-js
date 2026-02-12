@@ -13,7 +13,7 @@ class DeleteModelTaskDefinition
     title = "Delete model and all of the entries";
     maxIterations = 50;
     isPrivate = true;
-    enableDatabaseLogs = false;
+    databaseLogs = false;
     description = "Delete a content model and all associated entries.";
 
     constructor(private context: CmsContext.Interface) {}
