@@ -1,24 +1,24 @@
 import type { CmsSdkConfig } from "../types.js";
 
-export interface DeleteEntryParams {
+export interface DeleteEntryRevisionParams {
     modelId: string;
-    revision: string;
+    revisionId: string;
     permanent?: boolean;
 }
 
-export async function deleteEntry(
+export async function deleteEntryRevision(
     config: CmsSdkConfig,
     fetchFn: typeof fetch,
-    params: DeleteEntryParams
+    params: DeleteEntryRevisionParams
 ): Promise<boolean> {
-    const { modelId, revision, permanent = false } = params;
+    const { modelId, revisionId, permanent = false } = params;
 
     const { executeGraphQL } = await import("./executeGraphQL.js");
 
     const query = `
-        mutation DeleteEntryRevision($modelId: String!, $revision: ID!, $permanent: Boolean) {
+        mutation DeleteEntryRevision($modelId: String!, $revisionId: ID!, $permanent: Boolean) {
             cms {
-                deleteEntry(modelId: $modelId, revision: $revision, permanent: $permanent) {
+                deleteEntryRevision(modelId: $modelId, revisionId: $revisionId, permanent: $permanent) {
                     data
                     error {
                         message
@@ -29,11 +29,11 @@ export async function deleteEntry(
         }
     `;
 
-    const data = await executeGraphQL(config, fetchFn, query, { modelId, revision, permanent });
+    const data = await executeGraphQL(config, fetchFn, query, { modelId, revisionId, permanent });
 
-    if (data.cms.deleteEntry.error) {
-        throw new Error(data.cms.deleteEntry.error.message);
+    if (data.cms.deleteEntryRevision.error) {
+        throw new Error(data.cms.deleteEntryRevision.error.message);
     }
 
-    return data.cms.deleteEntry.data;
+    return data.cms.deleteEntryRevision.data;
 }
