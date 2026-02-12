@@ -59,7 +59,7 @@
     "react-dom": "18.2.0",
     "react-draggable": "^4.5.0",
     "react-resizable": "^3.0.5",
-    "react-resizable-panels": "^2.1.9",
+    "react-resizable-panels": "^4.6.2",
     "react-transition-group": "^4.4.5",
     "react-virtualized": "^9.22.6",
     "reset-css": "^5.0.2",

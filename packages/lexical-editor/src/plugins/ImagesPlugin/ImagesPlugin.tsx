@@ -108,11 +108,9 @@ function onDragStart(event: DragEvent): boolean {
             data: {
                 id: node.__id,
                 altText: node.__altText,
-                caption: node.__caption,
                 height: node.__height,
                 key: node.getKey(),
                 maxWidth: node.__maxWidth,
-                showCaption: node.__showCaption,
                 src: node.__src,
                 width: node.__width
             },

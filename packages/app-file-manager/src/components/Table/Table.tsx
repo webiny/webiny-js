@@ -38,7 +38,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                 sorting={props.sorting}
                 onSortingChange={props.onSortingChange}
                 selected={selected}
-                namespace={"fm.file"}
+                namespace={"fm/file/list"}
             />
         </div>
     );

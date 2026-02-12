@@ -119,7 +119,7 @@ const ExpandableLexicalInputRenderer = ({
             </CompositionScope>
             <EditorDialog
                 open={isExpanded}
-                value={value.state}
+                value={value}
                 onChange={applyChanges}
                 onClose={() => setExpanded(false)}
                 input={input}

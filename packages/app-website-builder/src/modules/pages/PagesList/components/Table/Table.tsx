@@ -30,7 +30,7 @@ export const Table = () => {
             onSelectRow={documents => selectPages(documents)}
             selected={selected}
             nameColumnId={"name"}
-            namespace={"wbPage"}
+            namespace={"wb/page/list"}
         />
     );
 };
