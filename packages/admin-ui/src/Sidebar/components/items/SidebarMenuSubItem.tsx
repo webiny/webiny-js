@@ -47,7 +47,7 @@ const SidebarMenuSubItem = ({
         return buttonProps.icon || parentIcon;
     }, [buttonProps.pinnedIcon, buttonProps.icon, parentIcon]);
 
-    // Register on mount if already pinned, unregister on unmount
+    // Register when pinned, unregister when unpinned
     // Re-register when active state changes to keep pinned items in sync
     React.useEffect(() => {
         if (pinnable && isPinned) {
@@ -59,13 +59,10 @@ const SidebarMenuSubItem = ({
                 onClick: buttonProps.onClick,
                 active: buttonProps.active
             });
+        } else if (pinnable && !isPinned) {
+            // Only unregister if this item is explicitly unpinned
+            sidebar.unregisterPinnedItem(menuItemId);
         }
-
-        return () => {
-            if (pinnable) {
-                sidebar.unregisterPinnedItem(menuItemId);
-            }
-        };
     }, [pinnable, isPinned, pinnedItemIcon, menuItemId, buttonProps.active]);
 
     const pinAction = useMemo(() => {

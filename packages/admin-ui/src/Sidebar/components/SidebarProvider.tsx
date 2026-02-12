@@ -1,7 +1,6 @@
 import React from "react";
 import { cn } from "~/utils.js";
 import { SIDEBAR_TRANSITION_DURATION } from "./constants.js";
-import { SidebarCache } from "./SidebarCache.js";
 
 type PinnedItemData = {
     id: string;
@@ -42,9 +41,15 @@ function useSidebar() {
     return context;
 }
 
+type SidebarCachedState = {
+    pinned: boolean;
+    expandedSections: string[];
+    pinnedItems: string[];
+};
+
 type SidebarProviderProps = React.HTMLAttributes<HTMLDivElement> & {
-    pinnedItems?: string[];
-    onChangePinnedItems?: (pinnedItems: string[]) => void;
+    state?: SidebarCachedState;
+    onChangeState?: (state: SidebarCachedState) => void;
 };
 
 interface SidebarState {
@@ -52,14 +57,18 @@ interface SidebarState {
     transition: null | "expanding" | "collapsing";
     pinned: boolean;
     expandedSections: string[];
+    pinnedItems: string[];
 }
 
-const createInitialSidebarState = (): SidebarState => {
-    const { pinned, expandedSections } = SidebarCache.get();
+const createInitialSidebarState = (state?: SidebarCachedState): SidebarState => {
+    const pinned = state?.pinned ?? false;
+    const expandedSections = state?.expandedSections ?? [];
+    const pinnedItems = state?.pinnedItems ?? [];
     return {
         expanded: pinned, // If pinned, we want the sidebar to be open by default.
         pinned,
         expandedSections,
+        pinnedItems,
         transition: null
     };
 };
@@ -67,19 +76,39 @@ const createInitialSidebarState = (): SidebarState => {
 const SidebarProvider = ({
     className,
     children,
-    pinnedItems = [],
-    onChangePinnedItems,
+    state: cachedState,
+    onChangeState,
     ...props
 }: SidebarProviderProps) => {
-    const [sidebarState, setSidebarState] = React.useState<SidebarState>(createInitialSidebarState);
+    const [sidebarState, setSidebarState] = React.useState<SidebarState>(() =>
+        createInitialSidebarState(cachedState)
+    );
     const [pinnedItemsData, setPinnedItemsData] = React.useState<Map<string, PinnedItemData>>(
         new Map()
     );
 
     // With this timeout, we prevent the sidebar glitching (quickly opening/closing) during mouse enter/leave events.
     const timeoutRef = React.useRef<number | null>(null);
+    const isInitialMount = React.useRef(true);
 
-    const { expanded, transition, pinned, expandedSections } = sidebarState;
+    const { expanded, transition, pinned, expandedSections, pinnedItems } = sidebarState;
+
+    // Sync state changes to parent via useEffect
+    React.useEffect(() => {
+        // Skip the initial mount to avoid unnecessary state sync
+        if (isInitialMount.current) {
+            isInitialMount.current = false;
+            return;
+        }
+
+        if (onChangeState) {
+            onChangeState({
+                pinned,
+                expandedSections,
+                pinnedItems
+            });
+        }
+    }, [pinned, expandedSections, pinnedItems, onChangeState]);
 
     const setExpanded = React.useCallback(
         (value: boolean | ((value: boolean) => boolean)) => {
@@ -112,8 +141,6 @@ const SidebarProvider = ({
                 ...state,
                 pinned: newValue
             }));
-
-            SidebarCache.set({ pinned: newValue, expandedSections });
         },
         [pinned]
     );
@@ -133,8 +160,6 @@ const SidebarProvider = ({
                     ? state.expandedSections.filter(id => id !== sectionId)
                     : [...state.expandedSections, sectionId];
 
-                SidebarCache.set({ pinned: state.pinned, expandedSections });
-
                 return {
                     ...state,
                     expandedSections
@@ -153,17 +178,18 @@ const SidebarProvider = ({
 
     const toggleItemPinned = React.useCallback(
         (itemId: string) => {
-            if (!onChangePinnedItems) {
-                return;
-            }
+            setSidebarState(state => {
+                const newPinnedItems = state.pinnedItems.includes(itemId)
+                    ? state.pinnedItems.filter(id => id !== itemId)
+                    : [...state.pinnedItems, itemId];
 
-            const newPinnedItems = pinnedItems.includes(itemId)
-                ? pinnedItems.filter(id => id !== itemId)
-                : [...pinnedItems, itemId];
-
-            onChangePinnedItems(newPinnedItems);
+                return {
+                    ...state,
+                    pinnedItems: newPinnedItems
+                };
+            });
         },
-        [pinnedItems, onChangePinnedItems]
+        [setSidebarState]
     );
 
     const isItemPinned = React.useCallback(

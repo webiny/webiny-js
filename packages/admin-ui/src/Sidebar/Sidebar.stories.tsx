@@ -61,10 +61,18 @@ export const MainMenu: Story = {
 const SidebarComponent = () => {
     const { hash } = useLocation();
 
-    const [pinnedItems, setPinnedItems] = React.useState<string[]>([]);
+    const [sidebarState, setSidebarState] = React.useState<{
+        pinned: boolean;
+        expandedSections: string[];
+        pinnedItems: string[];
+    }>({
+        pinned: false,
+        expandedSections: [],
+        pinnedItems: []
+    });
 
     return (
-        <SidebarProvider pinnedItems={pinnedItems} onChangePinnedItems={setPinnedItems}>
+        <SidebarProvider state={sidebarState} onChangeState={setSidebarState}>
             <Sidebar
                 title={"Webiny"}
                 icon={
