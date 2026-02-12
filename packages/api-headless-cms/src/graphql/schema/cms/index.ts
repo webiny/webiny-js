@@ -8,13 +8,13 @@ import {
     QueryCmsResolverImpl,
     MutationCmsResolverImpl,
     GetEntryResolverImpl,
-    GetEntryByIdResolverImpl,
+    GetEntryRevisionByIdResolverImpl,
     ListEntriesResolverImpl,
     CreateEntryResolverImpl,
-    UpdateEntryResolverImpl,
-    DeleteEntryResolverImpl,
-    PublishEntryResolverImpl,
-    UnpublishEntryResolverImpl
+    UpdateEntryRevisionResolverImpl,
+    DeleteEntryRevisionResolverImpl,
+    PublishEntryRevisionResolverImpl,
+    UnpublishEntryRevisionResolverImpl
 } from "./resolvers/index.js";
 
 export const createCmsSchema = () => {
@@ -28,13 +28,13 @@ export const createCmsSchema = () => {
         context.container.register(QueryCmsResolverImpl);
         context.container.register(MutationCmsResolverImpl);
         context.container.register(GetEntryResolverImpl);
-        context.container.register(GetEntryByIdResolverImpl);
+        context.container.register(GetEntryRevisionByIdResolverImpl);
         context.container.register(ListEntriesResolverImpl);
         context.container.register(CreateEntryResolverImpl);
-        context.container.register(UpdateEntryResolverImpl);
-        context.container.register(DeleteEntryResolverImpl);
-        context.container.register(PublishEntryResolverImpl);
-        context.container.register(UnpublishEntryResolverImpl);
+        context.container.register(UpdateEntryRevisionResolverImpl);
+        context.container.register(DeleteEntryRevisionResolverImpl);
+        context.container.register(PublishEntryRevisionResolverImpl);
+        context.container.register(UnpublishEntryRevisionResolverImpl);
     });
 
     plugin.name = "headless-cms.graphql.createCmsSchema";

@@ -1,20 +1,20 @@
 import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.core.js";
-import { createDeleteEntryResolver } from "../deleteEntryResolver.js";
+import { createDeleteEntryRevisionResolver } from "../deleteEntryResolver.js";
 
-class DeleteEntryResolver implements CoreGraphQLSchemaFactory.Interface {
+class DeleteEntryRevisionResolver implements CoreGraphQLSchemaFactory.Interface {
     async execute(
         builder: CoreGraphQLSchemaFactory.SchemaBuilder
     ): CoreGraphQLSchemaFactory.Return {
         builder.addResolver({
-            path: "CmsMutation.deleteEntry",
-            resolver: createDeleteEntryResolver
+            path: "CmsMutation.deleteEntryRevision",
+            resolver: createDeleteEntryRevisionResolver
         });
 
         return builder;
     }
 }
 
-export const DeleteEntryResolverImpl = CoreGraphQLSchemaFactory.createImplementation({
-    implementation: DeleteEntryResolver,
+export const DeleteEntryRevisionResolverImpl = CoreGraphQLSchemaFactory.createImplementation({
+    implementation: DeleteEntryRevisionResolver,
     dependencies: []
 });

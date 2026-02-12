@@ -3,15 +3,15 @@ import type { ApiEndpoint } from "~/types/index.js";
 import type { ExecutionResult } from "graphql";
 import { getModel, getErrorMessage, buildFieldsSelection } from "./helpers.js";
 
-export interface PublishEntryArgs {
+export interface PublishEntryRevisionArgs {
     modelId: string;
-    id: string;
+    revisionId: string;
     fields: string[];
 }
 
-export const createPublishEntryResolver = () => {
-    return async ({ args, context }: { args: PublishEntryArgs; context: CmsContext }) => {
-        const { modelId, id, fields } = args;
+export const createPublishEntryRevisionResolver = () => {
+    return async ({ args, context }: { args: PublishEntryRevisionArgs; context: CmsContext }) => {
+        const { modelId, revisionId, fields } = args;
 
         try {
             const model = await getModel(context, modelId);
@@ -23,8 +23,8 @@ export const createPublishEntryResolver = () => {
             const fieldsSelection = buildFieldsSelection(fields);
 
             const query = /* GraphQL */ `
-                mutation Publish${model.singularApiName}($revision: ID!) {
-                    publish${model.singularApiName}(revision: $revision) {
+                mutation Publish${model.singularApiName}($revisionId: ID!) {
+                    publish${model.singularApiName}(revision: $revisionId) {
                         data {
                             ${fieldsSelection}
                         }
@@ -39,7 +39,7 @@ export const createPublishEntryResolver = () => {
 
             const result = (await executeSchema({
                 query,
-                variables: { revision: id }
+                variables: { revisionId }
             })) as ExecutionResult;
 
             const operationName = `publish${model.singularApiName}`;

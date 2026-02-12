@@ -1,20 +1,20 @@
 import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.core.js";
-import { createUpdateEntryResolver } from "../updateEntryResolver.js";
+import { createUpdateEntryRevisionResolver } from "../updateEntryResolver.js";
 
-class UpdateEntryResolver implements CoreGraphQLSchemaFactory.Interface {
+class UpdateEntryRevisionResolver implements CoreGraphQLSchemaFactory.Interface {
     async execute(
         builder: CoreGraphQLSchemaFactory.SchemaBuilder
     ): CoreGraphQLSchemaFactory.Return {
         builder.addResolver({
-            path: "CmsMutation.updateEntry",
-            resolver: createUpdateEntryResolver
+            path: "CmsMutation.updateEntryRevision",
+            resolver: createUpdateEntryRevisionResolver
         });
 
         return builder;
     }
 }
 
-export const UpdateEntryResolverImpl = CoreGraphQLSchemaFactory.createImplementation({
-    implementation: UpdateEntryResolver,
+export const UpdateEntryRevisionResolverImpl = CoreGraphQLSchemaFactory.createImplementation({
+    implementation: UpdateEntryRevisionResolver,
     dependencies: []
 });

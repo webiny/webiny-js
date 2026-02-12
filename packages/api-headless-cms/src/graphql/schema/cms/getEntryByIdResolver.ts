@@ -3,28 +3,28 @@ import type { ApiEndpoint } from "~/types/index.js";
 import type { ExecutionResult } from "graphql";
 import { getModel, getErrorMessage, buildFieldsSelection } from "./helpers.js";
 
-export interface GetEntryByIdArgs {
+export interface GetEntryRevisionByIdArgs {
     modelId: string;
-    id: string;
+    revisionId: string;
     fields: string[];
 }
 
-export const createGetEntryByIdResolver = () => {
-    return async ({ args, context }: { args: GetEntryByIdArgs; context: CmsContext }) => {
-        const { modelId, id, fields } = args;
+export const createGetEntryRevisionByIdResolver = () => {
+    return async ({ args, context }: { args: GetEntryRevisionByIdArgs; context: CmsContext }) => {
+        const { modelId, revisionId, fields } = args;
 
         try {
             const model = await getModel(context, modelId);
 
-            // Use manage API for getEntryById as it retrieves specific revisions.
+            // Use manage API for getEntryRevisionById as it retrieves specific revisions.
             const apiType: ApiEndpoint = "manage";
             const executeSchema = await context.cms.getExecutableSchema(apiType);
 
             const fieldsSelection = buildFieldsSelection(fields);
 
             const query = /* GraphQL */ `
-                query Get${model.singularApiName}ById($id: ID!) {
-                    get${model.singularApiName}(where: { id: $id }) {
+                query Get${model.singularApiName}ById($revisionId: ID!) {
+                    get${model.singularApiName}(where: { id: $revisionId }) {
                         data {
                             ${fieldsSelection}
                         }
@@ -39,7 +39,7 @@ export const createGetEntryByIdResolver = () => {
 
             const result = (await executeSchema({
                 query,
-                variables: { id }
+                variables: { revisionId }
             })) as ExecutionResult;
 
             const operationName = `get${model.singularApiName}`;

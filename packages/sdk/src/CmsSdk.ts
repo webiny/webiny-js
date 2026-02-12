@@ -1,20 +1,20 @@
 import type { CmsSdkConfig } from "./types.js";
 import type { GetEntryParams } from "./methods/getEntry.js";
-import type { GetEntryByIdParams } from "./methods/getEntryById.js";
+import type { GetEntryRevisionByIdParams } from "./methods/getEntryRevisionById.js";
 import type { ListEntriesParams, ListEntriesResult } from "./methods/listEntries.js";
 import type { CreateEntryParams } from "./methods/createEntry.js";
-import type { UpdateEntryParams } from "./methods/updateEntry.js";
-import type { DeleteEntryParams } from "./methods/deleteEntry.js";
-import type { PublishEntryParams } from "./methods/publishEntry.js";
-import type { UnpublishEntryParams } from "./methods/unpublishEntry.js";
+import type { UpdateEntryRevisionParams } from "./methods/updateEntryRevision.js";
+import type { DeleteEntryRevisionParams } from "./methods/deleteEntryRevision.js";
+import type { PublishEntryRevisionParams } from "./methods/publishEntryRevision.js";
+import type { UnpublishEntryRevisionParams } from "./methods/unpublishEntryRevision.js";
 import { getEntry as getEntryFn } from "./methods/getEntry.js";
-import { getEntryById as getEntryByIdFn } from "./methods/getEntryById.js";
+import { getEntryRevisionById as getEntryRevisionByIdFn } from "./methods/getEntryRevisionById.js";
 import { listEntries as listEntriesFn } from "./methods/listEntries.js";
 import { createEntry as createEntryFn } from "./methods/createEntry.js";
-import { updateEntry as updateEntryFn } from "./methods/updateEntry.js";
-import { deleteEntry as deleteEntryFn } from "./methods/deleteEntry.js";
-import { publishEntry as publishEntryFn } from "./methods/publishEntry.js";
-import { unpublishEntry as unpublishEntryFn } from "./methods/unpublishEntry.js";
+import { updateEntryRevision as updateEntryRevisionFn } from "./methods/updateEntryRevision.js";
+import { deleteEntryRevision as deleteEntryRevisionFn } from "./methods/deleteEntryRevision.js";
+import { publishEntryRevision as publishEntryRevisionFn } from "./methods/publishEntryRevision.js";
+import { unpublishEntryRevision as unpublishEntryRevisionFn } from "./methods/unpublishEntryRevision.js";
 
 export class CmsSdk {
     private config: CmsSdkConfig;
@@ -31,10 +31,10 @@ export class CmsSdk {
         return getEntryFn<TValues>(this.config, this.fetchFn, params);
     }
 
-    async getEntryById<TValues = Record<string, unknown>>(
-        params: GetEntryByIdParams
+    async getEntryRevisionById<TValues = Record<string, unknown>>(
+        params: GetEntryRevisionByIdParams
     ): Promise<TValues | null> {
-        return getEntryByIdFn<TValues>(this.config, this.fetchFn, params);
+        return getEntryRevisionByIdFn<TValues>(this.config, this.fetchFn, params);
     }
 
     async listEntries<TValues = Record<string, unknown>>(
@@ -49,21 +49,21 @@ export class CmsSdk {
         return createEntryFn<TValues>(this.config, this.fetchFn, params);
     }
 
-    async updateEntry<TValues = Record<string, unknown>>(
-        params: UpdateEntryParams<TValues>
+    async updateEntryRevision<TValues = Record<string, unknown>>(
+        params: UpdateEntryRevisionParams<TValues>
     ): Promise<TValues> {
-        return updateEntryFn<TValues>(this.config, this.fetchFn, params);
+        return updateEntryRevisionFn<TValues>(this.config, this.fetchFn, params);
     }
 
-    async deleteEntry(params: DeleteEntryParams): Promise<boolean> {
-        return deleteEntryFn(this.config, this.fetchFn, params);
+    async deleteEntryRevision(params: DeleteEntryRevisionParams): Promise<boolean> {
+        return deleteEntryRevisionFn(this.config, this.fetchFn, params);
     }
 
-    async publishEntry<TValues = Record<string, unknown>>(params: PublishEntryParams): Promise<TValues> {
-        return publishEntryFn<TValues>(this.config, this.fetchFn, params);
+    async publishEntryRevision<TValues = Record<string, unknown>>(params: PublishEntryRevisionParams): Promise<TValues> {
+        return publishEntryRevisionFn<TValues>(this.config, this.fetchFn, params);
     }
 
-    async unpublishEntry<TValues = Record<string, unknown>>(params: UnpublishEntryParams): Promise<TValues> {
-        return unpublishEntryFn<TValues>(this.config, this.fetchFn, params);
+    async unpublishEntryRevision<TValues = Record<string, unknown>>(params: UnpublishEntryRevisionParams): Promise<TValues> {
+        return unpublishEntryRevisionFn<TValues>(this.config, this.fetchFn, params);
     }
 }

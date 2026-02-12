@@ -1,20 +1,20 @@
 import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.core.js";
-import { createGetEntryByIdResolver } from "../getEntryByIdResolver.js";
+import { createGetEntryRevisionByIdResolver } from "../getEntryByIdResolver.js";
 
-class GetEntryByIdResolver implements CoreGraphQLSchemaFactory.Interface {
+class GetEntryRevisionByIdResolver implements CoreGraphQLSchemaFactory.Interface {
     async execute(
         builder: CoreGraphQLSchemaFactory.SchemaBuilder
     ): CoreGraphQLSchemaFactory.Return {
         builder.addResolver({
-            path: "CmsQuery.getEntryById",
-            resolver: createGetEntryByIdResolver
+            path: "CmsQuery.getEntryRevisionById",
+            resolver: createGetEntryRevisionByIdResolver
         });
 
         return builder;
     }
 }
 
-export const GetEntryByIdResolverImpl = CoreGraphQLSchemaFactory.createImplementation({
-    implementation: GetEntryByIdResolver,
+export const GetEntryRevisionByIdResolverImpl = CoreGraphQLSchemaFactory.createImplementation({
+    implementation: GetEntryRevisionByIdResolver,
     dependencies: []
 });

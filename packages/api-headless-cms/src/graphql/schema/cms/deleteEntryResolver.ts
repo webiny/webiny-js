@@ -3,15 +3,15 @@ import type { ApiEndpoint } from "~/types/index.js";
 import type { ExecutionResult } from "graphql";
 import { getModel, getErrorMessage } from "./helpers.js";
 
-export interface DeleteEntryArgs {
+export interface DeleteEntryRevisionArgs {
     modelId: string;
-    revision: string;
+    revisionId: string;
     permanent?: boolean;
 }
 
-export const createDeleteEntryResolver = () => {
-    return async ({ args, context }: { args: DeleteEntryArgs; context: CmsContext }) => {
-        const { modelId, revision, permanent = false } = args;
+export const createDeleteEntryRevisionResolver = () => {
+    return async ({ args, context }: { args: DeleteEntryRevisionArgs; context: CmsContext }) => {
+        const { modelId, revisionId, permanent = false } = args;
 
         try {
             const model = await getModel(context, modelId);
@@ -21,8 +21,8 @@ export const createDeleteEntryResolver = () => {
             const executeSchema = await context.cms.getExecutableSchema(apiType);
 
             const query = /* GraphQL */ `
-                mutation Delete${model.singularApiName}($revision: ID!, $options: CmsDeleteEntryOptions) {
-                    delete${model.singularApiName}(revision: $revision, options: $options) {
+                mutation Delete${model.singularApiName}($revisionId: ID!, $options: CmsDeleteEntryOptions) {
+                    delete${model.singularApiName}(revision: $revisionId, options: $options) {
                         data
                         error {
                             message
@@ -36,7 +36,7 @@ export const createDeleteEntryResolver = () => {
             const result = (await executeSchema({
                 query,
                 variables: {
-                    revision,
+                    revisionId,
                     options: { permanently: permanent }
                 }
             })) as ExecutionResult;

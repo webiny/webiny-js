@@ -12,9 +12,9 @@ class CmsQueryTypeDefs implements CoreGraphQLSchemaFactory.Interface {
                     fields: [String!]!
                     preview: Boolean
                 ): CmsEntryResponse!
-                getEntryById(
+                getEntryRevisionById(
                     modelId: ID!
-                    id: ID!
+                    revisionId: ID!
                     fields: [String!]!
                 ): CmsEntryResponse!
                 listEntries(

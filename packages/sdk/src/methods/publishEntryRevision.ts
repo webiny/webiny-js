@@ -1,36 +1,36 @@
 import type { CmsSdkConfig } from "../types.js";
 
-export interface PublishEntryParams {
+export interface PublishEntryRevisionParams {
     modelId: string;
-    id: string;
+    revisionId: string;
     fields: string[];
 }
 
 /**
- * Publishes an entry in the CMS.
+ * Publishes an entry revision in the CMS.
  * 
  * @template TValues - Type of the entry data object returned. Specify fields to include via the fields parameter.
  * @param config - SDK configuration
  * @param fetchFn - Fetch function to use for HTTP requests
- * @param params - Parameters for publishing the entry
+ * @param params - Parameters for publishing the entry revision
  * @param params.modelId - The model ID of the entry to publish
- * @param params.id - The ID of the entry to publish
+ * @param params.revisionId - The revision ID of the entry to publish (e.g., "123#0001")
  * @param params.fields - Fields to include in response. Use "values." prefix for entry values (e.g., "values.author.name")
  * @returns The published entry data
  */
-export async function publishEntry<TValues = Record<string, unknown>>(
+export async function publishEntryRevision<TValues = Record<string, unknown>>(
     config: CmsSdkConfig,
     fetchFn: typeof fetch,
-    params: PublishEntryParams
+    params: PublishEntryRevisionParams
 ): Promise<TValues> {
-    const { modelId, id, fields } = params;
+    const { modelId, revisionId, fields } = params;
 
     const { executeGraphQL } = await import("./executeGraphQL.js");
 
     const query = `
-        mutation PublishEntry($modelId: String!, $id: ID!, $fields: [String!]!) {
+        mutation PublishEntryRevision($modelId: String!, $revisionId: ID!, $fields: [String!]!) {
             cms {
-                publishEntry(modelId: $modelId, id: $id, fields: $fields) {
+                publishEntryRevision(modelId: $modelId, revisionId: $revisionId, fields: $fields) {
                     data
                     error {
                         message
@@ -41,11 +41,11 @@ export async function publishEntry<TValues = Record<string, unknown>>(
         }
     `;
 
-    const data = await executeGraphQL(config, fetchFn, query, { modelId, id, fields });
+    const data = await executeGraphQL(config, fetchFn, query, { modelId, revisionId, fields });
 
-    if (data.cms.publishEntry.error) {
-        throw new Error(data.cms.publishEntry.error.message);
+    if (data.cms.publishEntryRevision.error) {
+        throw new Error(data.cms.publishEntryRevision.error.message);
     }
 
-    return data.cms.publishEntry.data;
+    return data.cms.publishEntryRevision.data;
 }

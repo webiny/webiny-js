@@ -3,16 +3,16 @@ import type { ApiEndpoint } from "~/types/index.js";
 import type { ExecutionResult } from "graphql";
 import { getModel, getErrorMessage, buildFieldsSelection } from "./helpers.js";
 
-export interface UpdateEntryArgs {
+export interface UpdateEntryRevisionArgs {
     modelId: string;
-    revision: string;
+    revisionId: string;
     data: Record<string, unknown>;
     fields: string[];
 }
 
-export const createUpdateEntryResolver = () => {
-    return async ({ args, context }: { args: UpdateEntryArgs; context: CmsContext }) => {
-        const { modelId, revision, data, fields } = args;
+export const createUpdateEntryRevisionResolver = () => {
+    return async ({ args, context }: { args: UpdateEntryRevisionArgs; context: CmsContext }) => {
+        const { modelId, revisionId, data, fields } = args;
 
         try {
             const model = await getModel(context, modelId);
@@ -24,8 +24,8 @@ export const createUpdateEntryResolver = () => {
             const fieldsSelection = buildFieldsSelection(fields);
 
             const query = /* GraphQL */ `
-                mutation Update${model.singularApiName}($revision: ID!, $data: ${model.singularApiName}Input!) {
-                    update${model.singularApiName}(revision: $revision, data: $data) {
+                mutation Update${model.singularApiName}($revisionId: ID!, $data: ${model.singularApiName}Input!) {
+                    update${model.singularApiName}(revision: $revisionId, data: $data) {
                         data {
                             ${fieldsSelection}
                         }
@@ -40,7 +40,7 @@ export const createUpdateEntryResolver = () => {
 
             const result = (await executeSchema({
                 query,
-                variables: { revision, data }
+                variables: { revisionId, data }
             })) as ExecutionResult;
 
             const operationName = `update${model.singularApiName}`;
