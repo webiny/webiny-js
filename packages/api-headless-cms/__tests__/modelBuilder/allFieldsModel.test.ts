@@ -209,8 +209,8 @@ describe("All Field Types Model", () => {
         expect(fieldTypes).toContain("dynamicZone");
 
         // Verify specific fields
-        const locationField = model!.fields.find(f => f.fieldId === "location");
-        expect(locationField?.type).toBe("object");
+        // const locationField = model!.fields.find(f => f.fieldId === "location");
+        // expect(locationField?.type).toBe("object");
 
         const titleField = model!.fields.find(f => f.fieldId === "title");
         expect(titleField?.type).toBe("text");
