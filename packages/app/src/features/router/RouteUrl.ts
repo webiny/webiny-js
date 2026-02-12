@@ -82,7 +82,7 @@ export class RouteUrl {
         const pathKeys = this.extractPathKeys();
 
         // Replace :param with actual values
-        let url = this.replacePathParams(pathKeys);
+        let url = this.replacePathParams();
 
         // Handle empty url
         if (!url || url === "") {
@@ -158,7 +158,7 @@ export class RouteUrl {
     /**
      * Replace :param placeholders with actual values from params.
      */
-    private replacePathParams(pathKeys: Set<string>): string {
+    private replacePathParams(): string {
         return this.pattern.replace(/:([a-zA-Z_][a-zA-Z0-9_]*)/g, (_, key) => {
             const value = this.params![key];
             if (value === undefined || value === null) {
