@@ -17,11 +17,10 @@ describe("All Field Types Model", () => {
                 return [
                     builder
                         .private({
-                            modelId: "allFieldsModel"
+                            modelId: "allFieldsModel",
+                            name: "All Fields Model"
                         })
-                        .name("All Fields Model")
                         .fields(fields => ({
-                            location: fields.location(),
                             // Text field - basic
                             title: fields.text().label("Title").required("Title is required."),
 
@@ -393,9 +392,9 @@ describe("All Field Types Model", () => {
                 return [
                     builder
                         .private({
-                            modelId: "duplicateTagsPrivate"
+                            modelId: "duplicateTagsPrivate",
+                            name: "Duplicate Tags Private"
                         })
-                        .name("Duplicate Tags Private")
                         .tags(["type:model", "custom:tag", "type:model", "custom:tag"])
                         .fields(fields => ({
                             title: fields.text().label("Title")
