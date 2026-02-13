@@ -1,4 +1,6 @@
 import type { CmsSdkConfig } from "../types.js";
+import { Result } from "../Result.js";
+import type { HttpError, GraphQLError, NetworkError } from "../errors.js";
 
 /**
  * Entry values type.
@@ -97,13 +99,13 @@ export interface GetEntryRevisionByIdParams {
  * @param params.modelId - The model ID of the entry to retrieve
  * @param params.revisionId - The revision ID of the entry (e.g., "123#0001")
  * @param params.fields - Fields to include in the response. Use "values." prefix for entry values (e.g., "values.author.name") or specify top-level fields like "createdOn"
- * @returns The entry revision data or null if not found
+ * @returns Result containing the entry revision data (or null if not found) or an error
  */
 export async function getEntryRevisionById<TValues extends CmsEntryValues = CmsEntryValues>(
     config: CmsSdkConfig,
     fetchFn: typeof fetch,
     params: GetEntryRevisionByIdParams
-): Promise<CmsEntryData<TValues> | null> {
+): Promise<Result<CmsEntryData<TValues> | null, HttpError | GraphQLError | NetworkError>> {
     const { modelId, revisionId, fields } = params;
 
     const { executeGraphQL } = await import("./executeGraphQL.js");
@@ -122,11 +124,23 @@ export async function getEntryRevisionById<TValues extends CmsEntryValues = CmsE
         }
     `;
 
-    const data = await executeGraphQL(config, fetchFn, query, { modelId, revisionId, fields });
+    const result = await executeGraphQL(config, fetchFn, query, { modelId, revisionId, fields });
 
-    if (data.cms.getEntryRevisionById.error) {
-        throw new Error(data.cms.getEntryRevisionById.error.message);
+    if (result.isFail()) {
+        return Result.fail(result.error);
     }
 
-    return data.cms.getEntryRevisionById.data;
+    const responseData = result.value;
+
+    if (responseData.cms.getEntryRevisionById.error) {
+        const { GraphQLError } = await import("../errors.js");
+        return Result.fail(
+            new GraphQLError(
+                responseData.cms.getEntryRevisionById.error.message,
+                responseData.cms.getEntryRevisionById.error.code
+            )
+        );
+    }
+
+    return Result.ok(responseData.cms.getEntryRevisionById.data);
 }

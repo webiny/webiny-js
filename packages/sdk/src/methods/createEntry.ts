@@ -1,4 +1,6 @@
 import type { CmsSdkConfig } from "../types.js";
+import { Result } from "../Result.js";
+import type { HttpError, GraphQLError, NetworkError } from "../errors.js";
 
 /**
  * Entry values type.
@@ -106,13 +108,13 @@ export interface CreateEntryParams<TValues extends CmsEntryValues = CmsEntryValu
  * @param params.modelId - The model ID for the entry
  * @param params.data - The entry data to create
  * @param params.fields - Fields to include in the response. Use "values." prefix for entry values (e.g., "values.author.name") or specify top-level fields like "createdOn"
- * @returns The created entry data
+ * @returns Result containing the created entry data or an error
  */
 export async function createEntry<TValues extends CmsEntryValues = CmsEntryValues>(
     config: CmsSdkConfig,
     fetchFn: typeof fetch,
     params: CreateEntryParams<TValues>
-): Promise<CreateCmsEntryData<TValues>> {
+): Promise<Result<CreateCmsEntryData<TValues>, HttpError | GraphQLError | NetworkError>> {
     const { modelId, data, fields } = params;
 
     const { executeGraphQL } = await import("./executeGraphQL.js");
@@ -133,9 +135,21 @@ export async function createEntry<TValues extends CmsEntryValues = CmsEntryValue
 
     const result = await executeGraphQL(config, fetchFn, query, { modelId, data, fields });
 
-    if (result.cms.createEntry.error) {
-        throw new Error(result.cms.createEntry.error.message);
+    if (result.isFail()) {
+        return Result.fail(result.error);
     }
 
-    return result.cms.createEntry.data;
+    const responseData = result.value;
+
+    if (responseData.cms.createEntry.error) {
+        const { GraphQLError } = await import("../errors.js");
+        return Result.fail(
+            new GraphQLError(
+                responseData.cms.createEntry.error.message,
+                responseData.cms.createEntry.error.code
+            )
+        );
+    }
+
+    return Result.ok(responseData.cms.createEntry.data);
 }

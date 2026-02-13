@@ -1,4 +1,6 @@
 import type { CmsSdkConfig } from "../types.js";
+import { Result } from "../Result.js";
+import type { HttpError, GraphQLError, NetworkError } from "../errors.js";
 
 /**
  * Entry values type.
@@ -97,13 +99,13 @@ export interface PublishEntryRevisionParams {
  * @param params.modelId - The model ID of the entry to publish
  * @param params.revisionId - The revision ID of the entry to publish (e.g., "123#0001")
  * @param params.fields - Fields to include in response. Use "values." prefix for entry values (e.g., "values.author.name")
- * @returns The published entry data
+ * @returns Result containing the published entry data or an error
  */
 export async function publishEntryRevision<TValues extends CmsEntryValues = CmsEntryValues>(
     config: CmsSdkConfig,
     fetchFn: typeof fetch,
     params: PublishEntryRevisionParams
-): Promise<CmsEntryData<TValues>> {
+): Promise<Result<CmsEntryData<TValues>, HttpError | GraphQLError | NetworkError>> {
     const { modelId, revisionId, fields } = params;
 
     const { executeGraphQL } = await import("./executeGraphQL.js");
@@ -122,11 +124,23 @@ export async function publishEntryRevision<TValues extends CmsEntryValues = CmsE
         }
     `;
 
-    const data = await executeGraphQL(config, fetchFn, query, { modelId, revisionId, fields });
+    const result = await executeGraphQL(config, fetchFn, query, { modelId, revisionId, fields });
 
-    if (data.cms.publishEntryRevision.error) {
-        throw new Error(data.cms.publishEntryRevision.error.message);
+    if (result.isFail()) {
+        return Result.fail(result.error);
     }
 
-    return data.cms.publishEntryRevision.data;
+    const responseData = result.value;
+
+    if (responseData.cms.publishEntryRevision.error) {
+        const { GraphQLError } = await import("../errors.js");
+        return Result.fail(
+            new GraphQLError(
+                responseData.cms.publishEntryRevision.error.message,
+                responseData.cms.publishEntryRevision.error.code
+            )
+        );
+    }
+
+    return Result.ok(responseData.cms.publishEntryRevision.data);
 }

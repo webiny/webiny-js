@@ -1,4 +1,6 @@
 import type { CmsSdkConfig } from "../types.js";
+import { Result } from "../Result.js";
+import type { HttpError, GraphQLError, NetworkError } from "../errors.js";
 
 /**
  * Entry values type.
@@ -114,13 +116,13 @@ export interface ListEntriesResult<TValues extends CmsEntryValues = CmsEntryValu
  * @param params.after - Cursor for pagination
  * @param params.fields - Specific fields to return. Use "values." prefix for entry values (e.g., "values.author.name") or specify top-level fields like "createdOn"
  * @param params.preview - When true, uses preview API to access unpublished/draft content. When false (default), uses read API for published content only.
- * @returns List of entries with pagination metadata
+ * @returns Result containing list of entries with pagination metadata or an error
  */
 export async function listEntries<TValues extends CmsEntryValues = CmsEntryValues>(
     config: CmsSdkConfig,
     fetchFn: typeof fetch,
     params: ListEntriesParams
-): Promise<ListEntriesResult<TValues>> {
+): Promise<Result<ListEntriesResult<TValues>, HttpError | GraphQLError | NetworkError>> {
     const { modelId, where, sort, limit = 10, after, fields, preview } = params;
 
     const { executeGraphQL } = await import("./executeGraphQL.js");
@@ -160,7 +162,7 @@ export async function listEntries<TValues extends CmsEntryValues = CmsEntryValue
         }
     `;
 
-    const data = await executeGraphQL(config, fetchFn, query, {
+    const result = await executeGraphQL(config, fetchFn, query, {
         modelId,
         where,
         sort,
@@ -170,12 +172,24 @@ export async function listEntries<TValues extends CmsEntryValues = CmsEntryValue
         preview
     });
 
-    if (data.cms.listEntries.error) {
-        throw new Error(data.cms.listEntries.error.message);
+    if (result.isFail()) {
+        return Result.fail(result.error);
     }
 
-    return {
-        data: data.cms.listEntries.data,
-        meta: data.cms.listEntries.meta
-    };
+    const responseData = result.value;
+
+    if (responseData.cms.listEntries.error) {
+        const { GraphQLError } = await import("../errors.js");
+        return Result.fail(
+            new GraphQLError(
+                responseData.cms.listEntries.error.message,
+                responseData.cms.listEntries.error.code
+            )
+        );
+    }
+
+    return Result.ok({
+        data: responseData.cms.listEntries.data,
+        meta: responseData.cms.listEntries.meta
+    });
 }

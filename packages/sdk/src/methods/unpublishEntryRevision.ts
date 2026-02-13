@@ -1,4 +1,6 @@
 import type { CmsSdkConfig } from "../types.js";
+import { Result } from "../Result.js";
+import type { HttpError, GraphQLError, NetworkError } from "../errors.js";
 
 /**
  * Entry values type.
@@ -97,13 +99,13 @@ export interface UnpublishEntryRevisionParams {
  * @param params.modelId - The model ID of the entry to unpublish
  * @param params.revisionId - The revision ID of the entry to unpublish (e.g., "123#0001")
  * @param params.fields - Fields to include in response. Use "values." prefix for entry values (e.g., "values.author.name")
- * @returns The unpublished entry data
+ * @returns Result containing the unpublished entry data or an error
  */
 export async function unpublishEntryRevision<TValues extends CmsEntryValues = CmsEntryValues>(
     config: CmsSdkConfig,
     fetchFn: typeof fetch,
     params: UnpublishEntryRevisionParams
-): Promise<CmsEntryData<TValues>> {
+): Promise<Result<CmsEntryData<TValues>, HttpError | GraphQLError | NetworkError>> {
     const { modelId, revisionId, fields } = params;
 
     const { executeGraphQL } = await import("./executeGraphQL.js");
@@ -122,11 +124,23 @@ export async function unpublishEntryRevision<TValues extends CmsEntryValues = Cm
         }
     `;
 
-    const data = await executeGraphQL(config, fetchFn, query, { modelId, revisionId, fields });
+    const result = await executeGraphQL(config, fetchFn, query, { modelId, revisionId, fields });
 
-    if (data.cms.unpublishEntryRevision.error) {
-        throw new Error(data.cms.unpublishEntryRevision.error.message);
+    if (result.isFail()) {
+        return result;
     }
 
-    return data.cms.unpublishEntryRevision.data;
+    const data = result.value;
+
+    if (data.cms.unpublishEntryRevision.error) {
+        const { GraphQLError } = await import("../errors.js");
+        return Result.fail(
+            new GraphQLError(
+                data.cms.unpublishEntryRevision.error.message,
+                data.cms.unpublishEntryRevision.error.code
+            )
+        );
+    }
+
+    return Result.ok(data.cms.unpublishEntryRevision.data);
 }

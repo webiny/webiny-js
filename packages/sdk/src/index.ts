@@ -1,6 +1,8 @@
 export * from "./Sdk.js";
 export * from "./CmsSdk.js";
 export * from "./types.js";
+export { Result } from "./Result.js";
+export { HttpError, GraphQLError, NetworkError } from "./errors.js";
 
 // Export types from methods.
 export type {

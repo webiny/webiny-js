@@ -1,4 +1,6 @@
 import type { CmsSdkConfig } from "../types.js";
+import { Result } from "../Result.js";
+import type { HttpError, GraphQLError, NetworkError } from "../errors.js";
 
 /**
  * Entry values type.
@@ -99,13 +101,13 @@ export interface GetEntryParams {
  * @param params.where - Where conditions to filter the entry
  * @param params.fields - Fields to include in the response. Use "values." prefix for entry values (e.g., "values.author.name") or specify top-level fields like "createdOn"
  * @param params.preview - When true, uses preview API to access unpublished/draft content. When false (default), uses read API for published content only.
- * @returns The entry data or null if not found
+ * @returns Result containing the entry data (or null if not found) or an error
  */
 export async function getEntry<TValues extends CmsEntryValues = CmsEntryValues>(
     config: CmsSdkConfig,
     fetchFn: typeof fetch,
     params: GetEntryParams
-): Promise<CmsEntryData<TValues> | null> {
+): Promise<Result<CmsEntryData<TValues> | null, HttpError | GraphQLError | NetworkError>> {
     const { modelId, where, fields, preview } = params;
 
     const { executeGraphQL } = await import("./executeGraphQL.js");
@@ -124,11 +126,28 @@ export async function getEntry<TValues extends CmsEntryValues = CmsEntryValues>(
         }
     `;
 
-    const data = await executeGraphQL(config, fetchFn, query, { modelId, where, fields, preview });
+    const result = await executeGraphQL(config, fetchFn, query, {
+        modelId,
+        where,
+        fields,
+        preview
+    });
 
-    if (data.cms.getEntry.error) {
-        throw new Error(data.cms.getEntry.error.message);
+    if (result.isFail()) {
+        return Result.fail(result.error);
     }
 
-    return data.cms.getEntry.data;
+    const responseData = result.value;
+
+    if (responseData.cms.getEntry.error) {
+        const { GraphQLError } = await import("../errors.js");
+        return Result.fail(
+            new GraphQLError(
+                responseData.cms.getEntry.error.message,
+                responseData.cms.getEntry.error.code
+            )
+        );
+    }
+
+    return Result.ok(responseData.cms.getEntry.data);
 }

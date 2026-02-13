@@ -1,4 +1,6 @@
 import type { CmsSdkConfig } from "../types.js";
+import { Result } from "../Result.js";
+import type { HttpError, GraphQLError, NetworkError } from "../errors.js";
 
 /**
  * Entry values type.
@@ -100,13 +102,13 @@ export interface UpdateEntryRevisionParams<TValues extends CmsEntryValues = CmsE
  * @param params.revisionId - The revision ID of the entry to update (e.g., "123#0001")
  * @param params.data - The updated entry data
  * @param params.fields - Fields to include in the response. Use "values." prefix for entry values (e.g., "values.author.name") or specify top-level fields like "createdOn"
- * @returns The updated entry data
+ * @returns Result containing the updated entry data or an error
  */
 export async function updateEntryRevision<TValues extends CmsEntryValues = CmsEntryValues>(
     config: CmsSdkConfig,
     fetchFn: typeof fetch,
     params: UpdateEntryRevisionParams<TValues>
-): Promise<UpdateCmsEntryData<TValues>> {
+): Promise<Result<UpdateCmsEntryData<TValues>, HttpError | GraphQLError | NetworkError>> {
     const { modelId, revisionId, data, fields } = params;
 
     const { executeGraphQL } = await import("./executeGraphQL.js");
@@ -132,9 +134,21 @@ export async function updateEntryRevision<TValues extends CmsEntryValues = CmsEn
         fields
     });
 
-    if (result.cms.updateEntryRevision.error) {
-        throw new Error(result.cms.updateEntryRevision.error.message);
+    if (result.isFail()) {
+        return Result.fail(result.error);
     }
 
-    return result.cms.updateEntryRevision.data;
+    const responseData = result.value;
+
+    if (responseData.cms.updateEntryRevision.error) {
+        const { GraphQLError } = await import("../errors.js");
+        return Result.fail(
+            new GraphQLError(
+                responseData.cms.updateEntryRevision.error.message,
+                responseData.cms.updateEntryRevision.error.code
+            )
+        );
+    }
+
+    return Result.ok(responseData.cms.updateEntryRevision.data);
 }

@@ -14,6 +14,8 @@ import type {
 import type { DeleteEntryRevisionParams } from "./methods/deleteEntryRevision.js";
 import type { PublishEntryRevisionParams } from "./methods/publishEntryRevision.js";
 import type { UnpublishEntryRevisionParams } from "./methods/unpublishEntryRevision.js";
+import type { HttpError, GraphQLError, NetworkError } from "./errors.js";
+import type { Result } from "./Result.js";
 import { getEntry as getEntryFn } from "./methods/getEntry.js";
 import { getEntryRevisionById as getEntryRevisionByIdFn } from "./methods/getEntryRevisionById.js";
 import { listEntries as listEntriesFn } from "./methods/listEntries.js";
@@ -34,47 +36,49 @@ export class CmsSdk {
 
     async getEntry<TValues extends CmsEntryValues = CmsEntryValues>(
         params: GetEntryParams
-    ): Promise<CmsEntryData<TValues> | null> {
+    ): Promise<Result<CmsEntryData<TValues> | null, HttpError | GraphQLError | NetworkError>> {
         return getEntryFn<TValues>(this.config, this.fetchFn, params);
     }
 
     async getEntryRevisionById<TValues extends CmsEntryValues = CmsEntryValues>(
         params: GetEntryRevisionByIdParams
-    ): Promise<CmsEntryData<TValues> | null> {
+    ): Promise<Result<CmsEntryData<TValues> | null, HttpError | GraphQLError | NetworkError>> {
         return getEntryRevisionByIdFn<TValues>(this.config, this.fetchFn, params);
     }
 
     async listEntries<TValues extends CmsEntryValues = CmsEntryValues>(
         params: ListEntriesParams
-    ): Promise<ListEntriesResult<TValues>> {
+    ): Promise<Result<ListEntriesResult<TValues>, HttpError | GraphQLError | NetworkError>> {
         return listEntriesFn<TValues>(this.config, this.fetchFn, params);
     }
 
     async createEntry<TValues extends CmsEntryValues = CmsEntryValues>(
         params: CreateEntryParams<TValues>
-    ): Promise<CreateCmsEntryData<TValues>> {
+    ): Promise<Result<CreateCmsEntryData<TValues>, HttpError | GraphQLError | NetworkError>> {
         return createEntryFn<TValues>(this.config, this.fetchFn, params);
     }
 
     async updateEntryRevision<TValues extends CmsEntryValues = CmsEntryValues>(
         params: UpdateEntryRevisionParams<TValues>
-    ): Promise<UpdateCmsEntryData<TValues>> {
+    ): Promise<Result<UpdateCmsEntryData<TValues>, HttpError | GraphQLError | NetworkError>> {
         return updateEntryRevisionFn<TValues>(this.config, this.fetchFn, params);
     }
 
-    async deleteEntryRevision(params: DeleteEntryRevisionParams): Promise<boolean> {
+    async deleteEntryRevision(
+        params: DeleteEntryRevisionParams
+    ): Promise<Result<boolean, HttpError | GraphQLError | NetworkError>> {
         return deleteEntryRevisionFn(this.config, this.fetchFn, params);
     }
 
     async publishEntryRevision<TValues extends CmsEntryValues = CmsEntryValues>(
         params: PublishEntryRevisionParams
-    ): Promise<CmsEntryData<TValues>> {
+    ): Promise<Result<CmsEntryData<TValues>, HttpError | GraphQLError | NetworkError>> {
         return publishEntryRevisionFn<TValues>(this.config, this.fetchFn, params);
     }
 
     async unpublishEntryRevision<TValues extends CmsEntryValues = CmsEntryValues>(
         params: UnpublishEntryRevisionParams
-    ): Promise<CmsEntryData<TValues>> {
+    ): Promise<Result<CmsEntryData<TValues>, HttpError | GraphQLError | NetworkError>> {
         return unpublishEntryRevisionFn<TValues>(this.config, this.fetchFn, params);
     }
 }
