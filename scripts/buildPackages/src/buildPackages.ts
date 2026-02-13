@@ -12,6 +12,7 @@ import execa from "execa";
 
 import { hideBin } from "yargs/helpers";
 import { PackageBuildError } from "./PackageBuildError";
+import { queueMetaWrite } from "./writeMetaQueue";
 
 const argv = yargs(hideBin(process.argv)).parse();
 
@@ -103,9 +104,13 @@ export const buildPackages = async () => {
 
                                         // Store package hash
                                         const sourceHash = await getPackageSourceHash(pkg);
-                                        metaJson.packages[pkg.packageJson.name] = { sourceHash };
-
-                                        await writeJson(META_FILE_PATH, metaJson);
+                                        await queueMetaWrite(async () => {
+                                            const currentMeta = getBuildMeta();
+                                            currentMeta.packages[pkg.packageJson.name] = {
+                                                sourceHash
+                                            };
+                                            await writeJson(META_FILE_PATH, currentMeta);
+                                        });
                                     } catch (err) {
                                         ctx.skip = true;
                                         throw new PackageBuildError(pkg, err);
