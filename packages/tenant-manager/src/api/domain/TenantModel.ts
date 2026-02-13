@@ -37,6 +37,7 @@ class TenantModelFactory implements ModelFactory.Interface {
                     .text()
                     .label("Status")
                     .defaultValue("disabled")
+                    .renderer("hidden")
                     .predefinedValues([
                         {
                             value: "enabled",
