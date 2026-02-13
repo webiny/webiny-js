@@ -24,7 +24,7 @@ const BaseTable: ForwardRefRenderFunction<HTMLDivElement> = (_, ref) => {
                 columns={browser.table.columns}
                 data={data}
                 nameColumnId={model.titleFieldId || "id"}
-                namespace={`cms.${model.modelId}`}
+                namespace={`cms/entry/${model.modelId}/list`}
                 loading={list.isListLoading}
                 onSortingChange={list.setSorting}
                 sorting={list.sorting}

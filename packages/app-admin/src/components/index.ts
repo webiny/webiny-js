@@ -8,7 +8,6 @@ export { DialogsProvider } from "~/components/Dialogs/DialogsContext.js";
 export * from "~/components/OptionsMenu/index.js";
 export * from "~/components/Filters/index.js";
 export * from "~/components/BulkActions/index.js";
-export * from "~/components/ResizablePanels/index.js";
 export { OverlayLayout, type OverlayLayoutProps } from "~/components/OverlayLayout/index.js";
 export { type EmptyViewProps, EmptyView } from "~/components/EmptyView.js";
 export {

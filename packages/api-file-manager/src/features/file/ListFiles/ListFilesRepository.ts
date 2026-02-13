@@ -9,13 +9,15 @@ import { FileModel } from "~/domain/file/abstractions.js";
 import { FilePersistenceError } from "~/domain/file/errors.js";
 import { EntryToFileMapper } from "../shared/EntryToFileMapper.js";
 import { CmsWhereMapper } from "@webiny/api-headless-cms";
+import { CmsSortMapper } from "@webiny/api-headless-cms";
 import { GenericRecord } from "@webiny/api/types.js";
 
 class ListFilesRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
         private listLatestEntries: ListLatestEntriesUseCase.Interface,
         private fileModel: FileModel.Interface,
-        private cmsWhereMapper: CmsWhereMapper.Interface
+        private cmsWhereMapper: CmsWhereMapper.Interface,
+        private cmsSortMapper: CmsSortMapper.Interface
     ) {}
 
     async execute(
@@ -26,11 +28,16 @@ class ListFilesRepositoryImpl implements RepositoryAbstraction.Interface {
             fields: this.fileModel.fields
         });
 
+        const sort = this.cmsSortMapper.map({
+            input: input.sort,
+            fields: this.fileModel.fields
+        });
+
         const result = await this.listLatestEntries.execute(this.fileModel, {
             where,
             limit: input.limit || 40,
             after: input.after || undefined,
-            sort: input.sort || ["id_DESC"],
+            sort: sort || ["id_DESC"],
             search: input.search
         });
 
@@ -51,5 +58,5 @@ class ListFilesRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const ListFilesRepository = RepositoryAbstraction.createImplementation({
     implementation: ListFilesRepositoryImpl,
-    dependencies: [ListLatestEntriesUseCase, FileModel, CmsWhereMapper]
+    dependencies: [ListLatestEntriesUseCase, FileModel, CmsWhereMapper, CmsSortMapper]
 });

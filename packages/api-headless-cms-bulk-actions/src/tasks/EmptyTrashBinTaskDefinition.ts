@@ -32,7 +32,7 @@ class EmptyTrashBinTask
     public readonly description =
         "Delete all entries in the trash bin for each model in the system.";
     public readonly maxIterations = 120;
-    public readonly disableDatabaseLogs = true;
+    public readonly databaseLogs = false;
 
     constructor(
         private tenantContext: TenantContext.Interface,

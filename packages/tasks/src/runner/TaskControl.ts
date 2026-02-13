@@ -14,6 +14,11 @@ import {
     TaskResultStatus
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
+interface IGetTaskLogParams {
+    task: ITask;
+    databaseLogs: boolean;
+}
+
 export class TaskControl implements ITaskControl {
     public readonly runner: ITaskRunner;
     public readonly response: IResponse;
@@ -70,14 +75,20 @@ export class TaskControl implements ITaskControl {
                 }
             });
         }
-        const disableDatabaseLogs = !!definition.disableDatabaseLogs;
+        /**
+         * Only enable logs if definition explicitly allows them.
+         */
+        const databaseLogs = definition.databaseLogs === true;
 
         /**
          * As this as a run of the task, we need to create a new log entry.
          */
         let taskLog: ITaskLog;
         try {
-            taskLog = await this.getTaskLog(task, disableDatabaseLogs);
+            taskLog = await this.getTaskLog({
+                task,
+                databaseLogs
+            });
         } catch (error) {
             return this.response.error({
                 error
@@ -117,7 +128,7 @@ export class TaskControl implements ITaskControl {
             context: this.context,
             task,
             log: taskLog,
-            disableDatabaseLogs
+            databaseLogs
         });
 
         // Populate TaskExecutionContext BEFORE executing task
@@ -213,11 +224,12 @@ export class TaskControl implements ITaskControl {
         });
     }
 
-    private async getTaskLog(task: ITask, disableDatabaseLogs: boolean): Promise<ITaskLog> {
+    private async getTaskLog(params: IGetTaskLogParams): Promise<ITaskLog> {
+        const { task, databaseLogs } = params;
         /**
          * If logs are disabled, let's return a mocked one.
          */
-        if (disableDatabaseLogs) {
+        if (!databaseLogs) {
             return {
                 id: `${task.id}-log`,
                 createdOn: task.createdOn,

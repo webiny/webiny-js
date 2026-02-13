@@ -60,8 +60,6 @@
     "file-loader": "6.2.0",
     "postcss-loader": "^8.2.0",
     "prettier": "3.6.2",
-    "react-router": "^7.9.1",
-    "react-router-dom": "^7.9.1",
     "rimraf": "^6.1.2",
     "sass": "^1.97.3",
     "storybook": "^9.1.17",

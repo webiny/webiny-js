@@ -1,8 +1,8 @@
 export {
+    Group as PanelGroup,
+    type GroupProps as PanelGroupProps,
     Panel,
     type PanelProps,
-    PanelGroup,
-    type PanelGroupProps,
-    PanelResizeHandle,
-    type PanelResizeHandleProps
+    Separator as PanelResizeHandle,
+    type Layout
 } from "react-resizable-panels";

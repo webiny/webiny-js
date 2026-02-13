@@ -103,7 +103,7 @@ export interface ITaskDefinition<
     title: string;
     description?: string;
     maxIterations?: number;
-    disableDatabaseLogs?: boolean;
+    databaseLogs?: boolean;
     isPrivate?: boolean;
 
     /**
@@ -146,7 +146,7 @@ export interface IRunnableTaskDefinition<
 > extends ITaskDefinition<I, O> {
     // Override optional properties to be required with guaranteed values
     isPrivate: boolean;
-    disableDatabaseLogs: boolean;
+    databaseLogs: boolean;
     maxIterations: number;
 }
 

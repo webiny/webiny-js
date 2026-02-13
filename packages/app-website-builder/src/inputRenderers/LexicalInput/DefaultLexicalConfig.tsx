@@ -9,10 +9,8 @@ import {
     CodeHighlightAction,
     NumberedListAction,
     BulletListAction,
-    ImageAction,
     LinkAction,
     QuoteAction,
-    ImagesPlugin,
     QuotePlugin,
     FloatingLinkEditorPlugin,
     LinkPlugin,
@@ -44,7 +42,6 @@ const sharedPlugins = (
                 />
             }
         />
-        <Plugin name={"image"} element={<ImagesPlugin />} />
         <Plugin name={"quote"} element={<QuotePlugin />} />
     </>
 );
@@ -77,9 +74,7 @@ export const DefaultLexicalConfig = () => {
                     <ToolbarElement name="divider2" element={<Divider />} />
                     <ToolbarElement name="numberedList" element={<NumberedListAction />} />
                     <ToolbarElement name="bulletList" element={<BulletListAction />} />
-                    <ToolbarElement name="divider" element={<Divider />} />
-                    <ToolbarElement name="image" element={<ImageAction />} />
-                    <ToolbarElement name="divider3" element={<Divider />} />
+                    <ToolbarElement name="divider2" element={<Divider />} />
                     <ToolbarElement name="link" element={<LinkAction />} />
                     <ToolbarElement name="quote" element={<QuoteAction />} />
                 </LexicalEditorConfig>

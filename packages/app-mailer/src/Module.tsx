@@ -10,7 +10,7 @@ const { Menu, Route } = AdminConfig;
 const Settings = lazy(
     () =>
         import(
-            /* webpackChunkName: "MailerModuleSettings" */
+            /* webpackChunkName: "mailer-settings" */
             "~/views/settings/index.js"
         )
 );

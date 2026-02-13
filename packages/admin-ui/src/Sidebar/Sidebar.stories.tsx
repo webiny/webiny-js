@@ -1,6 +1,5 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react-webpack5";
-import { BrowserRouter, Route, Routes, useLocation } from "react-router";
 import { ReactComponent as AuditLogsIcon } from "@webiny/icons/assignment.svg";
 import { ReactComponent as FormBuilderIcon } from "@webiny/icons/check_box.svg";
 import { ReactComponent as CmsIcon } from "@webiny/icons/web.svg";
@@ -20,6 +19,9 @@ import { SidebarProvider } from "~/Sidebar/components/SidebarProvider.js";
 import { DropdownMenu } from "~/DropdownMenu/index.js";
 import { Tag } from "~/Tag/index.js";
 import { Tooltip } from "~/Tooltip/index.js";
+import { AdminUiProvider } from "~/AdminUiProvider/index.js";
+import { HashLink } from "~/Sidebar/stories/HashLink.js";
+import { useHash } from "~/Sidebar/stories/useHash.js";
 
 const meta: Meta<typeof Sidebar> = {
     title: "Components/Sidebar",
@@ -50,21 +52,27 @@ type Story = StoryObj<typeof Sidebar>;
 
 export const MainMenu: Story = {
     render: () => (
-        <BrowserRouter>
-            <Routes>
-                <Route path={"*"} element={<SidebarComponent />} />
-            </Routes>
-        </BrowserRouter>
+        <AdminUiProvider linkComponent={HashLink}>
+            <SidebarComponent />
+        </AdminUiProvider>
     )
 };
 
 const SidebarComponent = () => {
-    const { hash } = useLocation();
+    const hash = useHash();
 
-    const [pinnedItems, setPinnedItems] = React.useState<string[]>([]);
+    const [sidebarState, setSidebarState] = React.useState<{
+        pinned: boolean;
+        expandedSections: string[];
+        pinnedItems: string[];
+    }>({
+        pinned: false,
+        expandedSections: [],
+        pinnedItems: []
+    });
 
     return (
-        <SidebarProvider pinnedItems={pinnedItems} onChangePinnedItems={setPinnedItems}>
+        <SidebarProvider state={sidebarState} onChangeState={setSidebarState}>
             <Sidebar
                 title={"Webiny"}
                 icon={

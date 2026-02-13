@@ -12880,15 +12880,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/universal-router@npm:^8.0.0":
-  version: 8.0.0
-  resolution: "@types/universal-router@npm:8.0.0"
-  dependencies:
-    universal-router: "npm:*"
-  checksum: 10/9307ab27b1a8d5fd096b0c6e3ce58cec289a5a71fbcbcb040582b66e963ecccb7fe7bf8546dc7e721725e9643567a78ea8479fa5d5010222b5061d08a971c527
-  languageName: node
-  linkType: hard
-
 "@types/unzipper@npm:^0.10.11":
   version: 0.10.11
   resolution: "@types/unzipper@npm:0.10.11"
@@ -13814,8 +13805,6 @@ __metadata:
     react-color: "npm:^2.19.3"
     react-custom-scrollbars: "npm:^4.2.1"
     react-dnd: "npm:^16.0.1"
-    react-router: "npm:^7.9.1"
-    react-router-dom: "npm:^7.9.1"
     react-virtualized: "npm:^9.22.6"
     rimraf: "npm:^6.1.2"
     sass: "npm:^1.97.3"
@@ -14683,7 +14672,6 @@ __metadata:
     react-hotkeyz: "npm:^1.0.4"
     rimraf: "npm:^6.1.2"
     slugify: "npm:^1.6.6"
-    store: "npm:^2.0.12"
     typescript: "npm:5.9.3"
     vite-tsconfig-paths: "npm:^5.1.4"
     vitest: "npm:^3.2.4"
@@ -14774,7 +14762,7 @@ __metadata:
     react-dom: "npm:18.2.0"
     react-draggable: "npm:^4.5.0"
     react-resizable: "npm:^3.0.5"
-    react-resizable-panels: "npm:^2.1.9"
+    react-resizable-panels: "npm:^4.6.2"
     react-transition-group: "npm:^4.4.5"
     react-virtualized: "npm:^9.22.6"
     reset-css: "npm:^5.0.2"
@@ -14881,7 +14869,7 @@ __metadata:
     react-custom-scrollbars: "npm:^4.2.1"
     react-dom: "npm:18.2.0"
     react-hotkeyz: "npm:^1.0.4"
-    react-lazy-load: "npm:^3.1.14"
+    react-lazy-load: "npm:^4.0.1"
     rimraf: "npm:^6.1.2"
     typescript: "npm:5.9.3"
     vitest: "npm:^3.2.4"
@@ -15387,7 +15375,6 @@ __metadata:
     "@emotion/styled": "npm:11.10.6"
     "@types/lodash": "npm:^4.17.23"
     "@types/react": "npm:18.2.79"
-    "@types/universal-router": "npm:^8.0.0"
     "@types/warning": "npm:^3.0.3"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^0.2.3"
@@ -15414,14 +15401,12 @@ __metadata:
     minimatch: "npm:^5.1.6"
     mobx: "npm:^6.15.0"
     nanoid: "npm:^3.3.11"
-    path-to-regexp: "npm:^8.3.0"
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.2"
     ts-invariant: "npm:^0.10.3"
     type-fest: "npm:^5.4.4"
     typescript: "npm:5.9.3"
-    universal-router: "npm:^9.2.1"
     vitest: "npm:^3.2.4"
     warning: "npm:^4.0.3"
     zod: "npm:^3.25.76"
@@ -22244,13 +22229,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eventlistener@npm:0.0.1":
-  version: 0.0.1
-  resolution: "eventlistener@npm:0.0.1"
-  checksum: 10/cbbc71fb065c4822f958b164e8a6f6cd46976aeb3f4f2c41b915cc90601ca562ecb68bb86a00813b8e3a07f139557da6bd5781e9612ac4fe8e9d5eb5f148a185
-  languageName: node
-  linkType: hard
-
 "events@npm:3.3.0, events@npm:^3.2.0, events@npm:^3.3.0":
   version: 3.3.0
   resolution: "events@npm:3.3.0"
@@ -26648,7 +26626,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.debounce@npm:^4.0.0, lodash.debounce@npm:^4.0.8":
+"lodash.debounce@npm:^4.0.8":
   version: 4.0.8
   resolution: "lodash.debounce@npm:4.0.8"
   checksum: 10/cd0b2819786e6e80cb9f5cda26b1a8fc073daaf04e48d4cb462fa4663ec9adb3a5387aa22d7129e48eed1afa05b482e2a6b79bfc99b86886364449500cbb00fd
@@ -26736,13 +26714,6 @@ __metadata:
   version: 4.7.0
   resolution: "lodash.sortby@npm:4.7.0"
   checksum: 10/38df19ae28608af2c50ac342fc1f414508309d53e1d58ed9adfb2c3cd17c3af290058c0a0478028d932c5404df3d53349d19fa364ef6bed6145a6bc21320399e
-  languageName: node
-  linkType: hard
-
-"lodash.throttle@npm:^4.0.0":
-  version: 4.1.1
-  resolution: "lodash.throttle@npm:4.1.1"
-  checksum: 10/9be9fb2ffd686c20543167883305542f4564062a5f712a40e8c6f2f0d9fd8254a6e9d801c2470b1b24e0cdf2ae83c1277b55aa0fb4799a2db6daf545f53820e1
   languageName: node
   linkType: hard
 
@@ -29513,14 +29484,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"path-to-regexp@npm:^6.2.0":
-  version: 6.3.0
-  resolution: "path-to-regexp@npm:6.3.0"
-  checksum: 10/6822f686f01556d99538b350722ef761541ec0ce95ca40ce4c29e20a5b492fe8361961f57993c71b2418de12e604478dcf7c430de34b2c31a688363a7a944d9c
-  languageName: node
-  linkType: hard
-
-"path-to-regexp@npm:^8.1.0, path-to-regexp@npm:^8.3.0":
+"path-to-regexp@npm:^8.1.0":
   version: 8.3.0
   resolution: "path-to-regexp@npm:8.3.0"
   checksum: 10/568f148fc64f5fd1ecebf44d531383b28df924214eabf5f2570dce9587a228e36c37882805ff02d71c6209b080ea3ee6a4d2b712b5df09741b67f1f3cf91e55a
@@ -30203,7 +30167,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:15.x, prop-types@npm:^15.5.10, prop-types@npm:^15.5.8, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
+"prop-types@npm:15.x, prop-types@npm:^15.5.10, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -30753,18 +30717,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-lazy-load@npm:^3.1.14":
-  version: 3.1.14
-  resolution: "react-lazy-load@npm:3.1.14"
-  dependencies:
-    eventlistener: "npm:0.0.1"
-    lodash.debounce: "npm:^4.0.0"
-    lodash.throttle: "npm:^4.0.0"
-    prop-types: "npm:^15.5.8"
+"react-lazy-load@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "react-lazy-load@npm:4.0.1"
   peerDependencies:
-    react: ^0.14.0 || ^15.0.0-0 || ^16.0.0 || ^17.0.0
-    react-dom: ^0.14.0 || ^15.0.0-0 || ^16.0.0 || ^17.0.0
-  checksum: 10/70f5c750cf84c8f4f98e05bc00bf5d1827a07b00fa17ffef1d47a5abe46acfb34c0161071d0cfe9f4d513bf5e66e30895850c14fee9e39d47f2136a1e2dd7096
+    react: ^17.0.0 || ^18.0.0
+    react-dom: ^17.0.0 || ^18.0.0
+  checksum: 10/4d6129d31e50a2ec29761baf7e61ad195eec15de2928d8c0f8cb4b62d7f95ffb6a4b2d2cbe8bcd8ae1aa95ccfcfb438f014fab61478fea2e1c3b90aa1cd79f02
   languageName: node
   linkType: hard
 
@@ -30846,13 +30805,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-resizable-panels@npm:^2.1.9":
-  version: 2.1.9
-  resolution: "react-resizable-panels@npm:2.1.9"
+"react-resizable-panels@npm:^4.6.2":
+  version: 4.6.2
+  resolution: "react-resizable-panels@npm:4.6.2"
   peerDependencies:
-    react: ^16.14.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
-    react-dom: ^16.14.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
-  checksum: 10/b8fe51ef5a077851009b3c76d5f9437ddc5bdf58cab4f7b22e5c365490554aee4ebfed41c2e37cd07f7052f4b58f09a8205d8f852cbefab880ecb219a9708ea2
+    react: ^18.0.0 || ^19.0.0
+    react-dom: ^18.0.0 || ^19.0.0
+  checksum: 10/b927dfb09e447a3518e43d90ab1cc45cfb54ae63a907fd0b61ca83bed452e104de013a0eb05e42464f32f009ec7753dfedae6202ea3f9135c623eba715575964
   languageName: node
   linkType: hard
 
@@ -30865,34 +30824,6 @@ __metadata:
   peerDependencies:
     react: ">= 16.3"
   checksum: 10/745fad6ac827857b3a80d1d648b8d6723aa72fc17d5410a01707073f3d37b4adf6e0354dfe3cc33dee34d6e546a3fbd5603ef73e385dfc5218a425a39bf96275
-  languageName: node
-  linkType: hard
-
-"react-router-dom@npm:^7.9.1":
-  version: 7.12.0
-  resolution: "react-router-dom@npm:7.12.0"
-  dependencies:
-    react-router: "npm:7.12.0"
-  peerDependencies:
-    react: ">=18"
-    react-dom: ">=18"
-  checksum: 10/d2733cbb00f00617a227a454b3fb76645433ce8564b02a0ff05064a2da782ce192a8d87a2f2ab0c92f899689c0b562096ec8217b6af483b97c17e540257ed5e9
-  languageName: node
-  linkType: hard
-
-"react-router@npm:7.12.0, react-router@npm:^7.9.1":
-  version: 7.12.0
-  resolution: "react-router@npm:7.12.0"
-  dependencies:
-    cookie: "npm:^1.0.1"
-    set-cookie-parser: "npm:^2.6.0"
-  peerDependencies:
-    react: ">=18"
-    react-dom: ">=18"
-  peerDependenciesMeta:
-    react-dom:
-      optional: true
-  checksum: 10/578324f792721200bd57a220c7931af692613943051c9bb0c6303613849ec9a2c2365a3a6afe1b3976c13edc8f71616bb9cfdb13c0ac501f239ad11a6884e3f8
   languageName: node
   linkType: hard
 
@@ -33227,13 +33158,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"store@npm:^2.0.12":
-  version: 2.0.12
-  resolution: "store@npm:2.0.12"
-  checksum: 10/2245bf29943fe59c2420fbe8ce19c8b86717353edcd6ec30a745cf2faee380b604777aa7f16344a15a8ff33ce689ce61dc95b4e6dc7c737101c00036c311ee7f
-  languageName: node
-  linkType: hard
-
 "storybook@npm:^9.1.17":
   version: 9.1.17
   resolution: "storybook@npm:9.1.17"
@@ -34881,22 +34805,6 @@ __metadata:
     "@types/cookie": "npm:^0.6.0"
     cookie: "npm:^0.7.2"
   checksum: 10/0ff895dc031d925b2bd479010e750822cf2cfc966e704d822022b5075d1a4222ef839d05a3237b568c01c641051da31283dadbc138f712347ffbec002e2bc193
-  languageName: node
-  linkType: hard
-
-"universal-router@npm:*":
-  version: 10.0.1
-  resolution: "universal-router@npm:10.0.1"
-  checksum: 10/9dcc4296292e716374b70e041e825b949b7381dfc477d9b8ec141f0452a9549571c2ebbbfb96864ddb67000742bb2120e2b0c7dfd3287b2f488ef82e45376633
-  languageName: node
-  linkType: hard
-
-"universal-router@npm:^9.2.1":
-  version: 9.2.1
-  resolution: "universal-router@npm:9.2.1"
-  dependencies:
-    path-to-regexp: "npm:^6.2.0"
-  checksum: 10/ce1c8de5225b6c175880d7b45a08b4b95acbe39fa7561fd433559dbaabbe97b8b47a57e022578dfdb2dc168c2adab6364a8a42a308a68ef72507f14267400714
   languageName: node
   linkType: hard
 

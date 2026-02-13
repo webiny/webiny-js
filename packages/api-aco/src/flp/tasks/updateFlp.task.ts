@@ -8,7 +8,7 @@ class UpdateFlpTaskImpl implements TaskDefinition.Interface<IUpdateFlpTaskInput>
     title = "ACO - Update FLP record";
     description =
         "Synchronizes the FLP catalog by updating the FLP record and its descendants based on the provided folder.";
-    disableDatabaseLogs = true;
+    databaseLogs = false;
 
     constructor(private updateFlp: UpdateFlpUseCase.Interface) {}
 

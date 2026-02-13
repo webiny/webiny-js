@@ -74,9 +74,10 @@ describe("Model Builder Comparison - Old vs New API", () => {
                 public async execute(builder: ModelFactory.Builder) {
                     return [
                         builder
-                            .private()
-                            .modelId("testModel")
-                            .name("TestModel")
+                            .private({
+                                modelId: "testModel",
+                                name: "TestModel"
+                            })
                             .fields(fields => ({
                                 name: fields.text().label("Name").required("Value is required."),
                                 description: fields.text().label("Description"),
@@ -167,9 +168,10 @@ describe("Model Builder Comparison - Old vs New API", () => {
                 public async execute(builder: ModelFactory.Builder) {
                     return [
                         builder
-                            .private()
-                            .modelId("article")
-                            .name("Article")
+                            .private({
+                                modelId: "article",
+                                name: "Article"
+                            })
                             .fields(fields => ({
                                 title: fields.text().storageId("text@title").label("Title"),
                                 body: fields.richText().storageId("rich-text@body").label("Body"),

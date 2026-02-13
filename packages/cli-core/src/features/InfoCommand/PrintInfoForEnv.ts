@@ -26,6 +26,9 @@ export class PrintInfoForEnv {
 
         const { env, variant } = params;
 
+        const projectId = await projectSdk.getProjectId();
+        const resourcePrefix = await projectSdk.getPulumiResourceNamePrefix();
+
         const api = await projectSdk.getAppStackOutput("api");
 
         const admin = await projectSdk.getAppStackOutput("admin");
@@ -47,6 +50,12 @@ export class PrintInfoForEnv {
         }
 
         const output = [];
+
+        // Project info.
+        output.push(
+            `‣ Project ID: ${projectId ? chalk.blue(projectId) : "-"}`,
+            `‣ Resource prefix: ${chalk.blue(resourcePrefix)}`
+        );
 
         // API.
         if (api) {
@@ -74,7 +83,7 @@ export class PrintInfoForEnv {
         }
 
         // Admin.
-        if (admin) {
+        if (admin && admin.appUrl) {
             output.push(`‣ Admin app: ${admin.appUrl}`);
         } else {
             output.push(`‣ Admin app: -`);

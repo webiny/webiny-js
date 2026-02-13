@@ -7,7 +7,10 @@ class FilePrivateModelImpl implements ModelFactory.Interface {
     public constructor(private wcp: WcpContext.Interface) {}
 
     public async execute(builder: ModelFactory.Builder) {
-        const model = builder.private().modelId(FILE_MODEL_ID).name("FmFile");
+        const model = builder.private({
+            modelId: FILE_MODEL_ID,
+            name: "FmFile"
+        });
         const privateFiles = this.wcp.canUsePrivateFiles();
 
         model.fields(fields => ({

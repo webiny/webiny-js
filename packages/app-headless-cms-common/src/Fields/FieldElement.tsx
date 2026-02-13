@@ -36,12 +36,19 @@ const RenderField = (props: RenderFieldProps) => {
         return <>{field.renderer({ field, getBind, Label, contentModel })}</>;
     }
 
+    const fieldRendererName = get(field, "renderer.name");
+    if (!fieldRendererName) {
+        return t`Cannot render "{fieldName}" field - field renderer not defined.`({
+            fieldName: <strong>{field.fieldId}</strong>
+        });
+    }
+
     const renderPlugin = renderPlugins.find(
-        plugin => plugin.renderer.rendererName === get(field, "renderer.name")
+        plugin => plugin.renderer.rendererName === fieldRendererName
     );
 
     if (!renderPlugin) {
-        return t`Cannot render "{fieldName}" field - field renderer missing.`({
+        return t`Cannot render "{fieldName}" field - field renderer missing in Admin UI plugins.`({
             fieldName: <strong>{field.fieldId}</strong>
         });
     }
