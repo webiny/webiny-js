@@ -1,7 +1,6 @@
 import React from "react";
 import { Admin, Api, Cli, Infra, Project, Security } from "webiny/extensions";
 import { Cognito } from "@webiny/cognito";
-// import { CustomIdp } from "./extensions/customIdp/CustomIdp.js";
 // import { MyIdpExtension } from "./extensions/idp/okta/MyIdpExtension.js";
 
 export const Extensions = () => {
@@ -104,7 +103,6 @@ export const Extensions = () => {
             {/* API */}
             {/*<MyIdpExtension />*/}
             <Cognito />
-            {/*<CustomIdp secretKey={"my-secret-key"} />*/}
 
             {/* Security 👇 */}
             <Api.Extension src={"/extensions/MyApiKey.ts"} />
