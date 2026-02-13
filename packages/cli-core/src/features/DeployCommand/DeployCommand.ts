@@ -12,8 +12,6 @@ import { createBaseAppOptions } from "~/features/common/index.js";
 import { setTimeout } from "node:timers/promises";
 import ora from "ora";
 import open from "open";
-import { GetProjectIdService } from "@webiny/project/abstractions/services/GetProjectIdService.js";
-import { GetPulumiResourceNamePrefix } from "@webiny/project/abstractions/features/GetPulumiResourceNamePrefix.js";
 
 // TODO: convert to a real service.
 import { PrintInfoForEnv } from "~/features/InfoCommand/PrintInfoForEnv.js";
@@ -45,9 +43,7 @@ export class DeployCommand implements CliCommandFactory.Interface<IDeployCommand
     constructor(
         private getProjectSdkService: GetProjectSdkService.Interface,
         private uiService: UiService.Interface,
-        private stdioService: StdioService.Interface,
-        private getProjectIdService: GetProjectIdService.Interface,
-        private getPulumiResourceNamePrefix: GetPulumiResourceNamePrefix.Interface
+        private stdioService: StdioService.Interface
     ) {}
 
     async execute(): Promise<CliCommandFactory.CommandDefinition<IDeployCommandParams>> {
@@ -150,9 +146,7 @@ export class DeployCommand implements CliCommandFactory.Interface<IDeployCommand
 
                     const printInfoForEnv = new PrintInfoForEnv({
                         getProjectSdkService: this.getProjectSdkService,
-                        uiService: this.uiService,
-                        getProjectIdService: this.getProjectIdService,
-                        getPulumiResourceNamePrefix: this.getPulumiResourceNamePrefix
+                        uiService: this.uiService
                     });
 
                     ui.emptyLine();
@@ -237,11 +231,5 @@ export class DeployCommand implements CliCommandFactory.Interface<IDeployCommand
 export const deployCommand = createImplementation({
     abstraction: CliCommandFactory,
     implementation: DeployCommand,
-    dependencies: [
-        GetProjectSdkService,
-        UiService,
-        StdioService,
-        GetProjectIdService,
-        GetPulumiResourceNamePrefix
-    ]
+    dependencies: [GetProjectSdkService, UiService, StdioService]
 });
