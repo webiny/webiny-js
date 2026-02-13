@@ -1,4 +1,4 @@
-import { BaseError } from "@webiny/feature/api";
+import { BaseError } from "./BaseError.js";
 
 type HttpErrorData = {
     status: number;
