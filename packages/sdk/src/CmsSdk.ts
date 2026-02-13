@@ -1,9 +1,16 @@
 import type { CmsSdkConfig } from "./types.js";
-import type { GetEntryParams } from "./methods/getEntry.js";
+import type { GetEntryParams, CmsEntryData } from "./methods/getEntry.js";
 import type { GetEntryRevisionByIdParams } from "./methods/getEntryRevisionById.js";
 import type { ListEntriesParams, ListEntriesResult } from "./methods/listEntries.js";
-import type { CreateEntryParams } from "./methods/createEntry.js";
-import type { UpdateEntryRevisionParams } from "./methods/updateEntryRevision.js";
+import type {
+    CreateEntryParams,
+    CreateCmsEntryData,
+    CmsEntryValues
+} from "./methods/createEntry.js";
+import type {
+    UpdateEntryRevisionParams,
+    UpdateCmsEntryData
+} from "./methods/updateEntryRevision.js";
 import type { DeleteEntryRevisionParams } from "./methods/deleteEntryRevision.js";
 import type { PublishEntryRevisionParams } from "./methods/publishEntryRevision.js";
 import type { UnpublishEntryRevisionParams } from "./methods/unpublishEntryRevision.js";
@@ -25,33 +32,33 @@ export class CmsSdk {
         this.fetchFn = config.fetch || fetch;
     }
 
-    async getEntry<TValues = Record<string, unknown>>(
+    async getEntry<TValues extends CmsEntryValues = CmsEntryValues>(
         params: GetEntryParams
-    ): Promise<TValues | null> {
+    ): Promise<CmsEntryData<TValues> | null> {
         return getEntryFn<TValues>(this.config, this.fetchFn, params);
     }
 
-    async getEntryRevisionById<TValues = Record<string, unknown>>(
+    async getEntryRevisionById<TValues extends CmsEntryValues = CmsEntryValues>(
         params: GetEntryRevisionByIdParams
-    ): Promise<TValues | null> {
+    ): Promise<CmsEntryData<TValues> | null> {
         return getEntryRevisionByIdFn<TValues>(this.config, this.fetchFn, params);
     }
 
-    async listEntries<TValues = Record<string, unknown>>(
+    async listEntries<TValues extends CmsEntryValues = CmsEntryValues>(
         params: ListEntriesParams
     ): Promise<ListEntriesResult<TValues>> {
         return listEntriesFn<TValues>(this.config, this.fetchFn, params);
     }
 
-    async createEntry<TValues = Record<string, unknown>>(
+    async createEntry<TValues extends CmsEntryValues = CmsEntryValues>(
         params: CreateEntryParams<TValues>
-    ): Promise<TValues> {
+    ): Promise<CreateCmsEntryData<TValues>> {
         return createEntryFn<TValues>(this.config, this.fetchFn, params);
     }
 
-    async updateEntryRevision<TValues = Record<string, unknown>>(
+    async updateEntryRevision<TValues extends CmsEntryValues = CmsEntryValues>(
         params: UpdateEntryRevisionParams<TValues>
-    ): Promise<TValues> {
+    ): Promise<UpdateCmsEntryData<TValues>> {
         return updateEntryRevisionFn<TValues>(this.config, this.fetchFn, params);
     }
 
@@ -59,11 +66,15 @@ export class CmsSdk {
         return deleteEntryRevisionFn(this.config, this.fetchFn, params);
     }
 
-    async publishEntryRevision<TValues = Record<string, unknown>>(params: PublishEntryRevisionParams): Promise<TValues> {
+    async publishEntryRevision<TValues extends CmsEntryValues = CmsEntryValues>(
+        params: PublishEntryRevisionParams
+    ): Promise<CmsEntryData<TValues>> {
         return publishEntryRevisionFn<TValues>(this.config, this.fetchFn, params);
     }
 
-    async unpublishEntryRevision<TValues = Record<string, unknown>>(params: UnpublishEntryRevisionParams): Promise<TValues> {
+    async unpublishEntryRevision<TValues extends CmsEntryValues = CmsEntryValues>(
+        params: UnpublishEntryRevisionParams
+    ): Promise<CmsEntryData<TValues>> {
         return unpublishEntryRevisionFn<TValues>(this.config, this.fetchFn, params);
     }
 }

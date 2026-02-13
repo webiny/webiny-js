@@ -1,9 +1,91 @@
 import type { CmsSdkConfig } from "../types.js";
 
-export interface UpdateEntryRevisionParams<TValues = Record<string, unknown>> {
+/**
+ * Entry values type.
+ */
+export interface CmsEntryValues {
+    [key: string]: any;
+}
+
+/**
+ * CMS identity.
+ */
+export interface CmsIdentity {
+    /**
+     * ID of the user.
+     */
+    id: string;
+    /**
+     * Full name of the user.
+     */
+    displayName: string;
+    /**
+     * Type of the user (admin, user).
+     */
+    type: string;
+}
+
+/**
+ * Entry state.
+ */
+export interface IEntryState {
+    state: string;
+    workflowId: string;
+    stepId: string;
+    stepName: string;
+}
+
+/**
+ * Update entry revision data.
+ */
+export interface UpdateCmsEntryData<TValues extends CmsEntryValues = CmsEntryValues> {
+    /**
+     * Revision-level meta fields.
+     */
+    revisionCreatedOn?: Date | string | null;
+    revisionModifiedOn?: Date | string | null;
+    revisionSavedOn?: Date | string | null;
+    revisionDeletedOn?: Date | string | null;
+    revisionRestoredOn?: Date | string | null;
+    revisionFirstPublishedOn?: Date | string | null;
+    revisionLastPublishedOn?: Date | string | null;
+    revisionModifiedBy?: CmsIdentity | null;
+    revisionCreatedBy?: CmsIdentity | null;
+    revisionSavedBy?: CmsIdentity | null;
+    revisionDeletedBy?: CmsIdentity | null;
+    revisionRestoredBy?: CmsIdentity | null;
+    revisionFirstPublishedBy?: CmsIdentity | null;
+    revisionLastPublishedBy?: CmsIdentity | null;
+
+    /**
+     * Entry-level meta fields.
+     */
+    createdOn?: Date | string | null;
+    modifiedOn?: Date | string | null;
+    savedOn?: Date | string | null;
+    deletedOn?: Date | string | null;
+    restoredOn?: Date | string | null;
+    firstPublishedOn?: Date | string | null;
+    lastPublishedOn?: Date | string | null;
+    createdBy?: CmsIdentity | null;
+    modifiedBy?: CmsIdentity | null;
+    savedBy?: CmsIdentity | null;
+    deletedBy?: CmsIdentity | null;
+    restoredBy?: CmsIdentity | null;
+    firstPublishedBy?: CmsIdentity | null;
+    lastPublishedBy?: CmsIdentity | null;
+
+    location?: {
+        folderId?: string | null;
+    };
+
+    values?: Partial<TValues>;
+}
+
+export interface UpdateEntryRevisionParams<TValues extends CmsEntryValues = CmsEntryValues> {
     modelId: string;
     revisionId: string;
-    data: TValues;
+    data: UpdateCmsEntryData<TValues>;
     fields: string[];
 }
 
@@ -20,11 +102,11 @@ export interface UpdateEntryRevisionParams<TValues = Record<string, unknown>> {
  * @param params.fields - Fields to include in the response. Use "values." prefix for entry values (e.g., "values.author.name") or specify top-level fields like "createdOn"
  * @returns The updated entry data
  */
-export async function updateEntryRevision<TValues = Record<string, unknown>>(
+export async function updateEntryRevision<TValues extends CmsEntryValues = CmsEntryValues>(
     config: CmsSdkConfig,
     fetchFn: typeof fetch,
     params: UpdateEntryRevisionParams<TValues>
-): Promise<TValues> {
+): Promise<UpdateCmsEntryData<TValues>> {
     const { modelId, revisionId, data, fields } = params;
 
     const { executeGraphQL } = await import("./executeGraphQL.js");

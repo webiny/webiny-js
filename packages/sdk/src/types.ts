@@ -1,6 +1,6 @@
 export interface CmsSdkConfig {
-    apiToken: string;
-    apiHost: string;
-    apiTenant: string;
+    token: string;
+    endpoint: string;
+    tenant: string;
     fetch?: typeof fetch;
 }

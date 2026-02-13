@@ -6,14 +6,15 @@ export async function executeGraphQL(
     query: string,
     variables: Record<string, unknown> = {}
 ) {
-    const url = `${config.apiHost}/graphql`;
+    const url = `${config.endpoint}/graphql`;
 
     const response = await fetchFn(url, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${config.apiToken}`,
-            "x-tenant": config.apiTenant
+            Authorization: `Bearer ${config.token}`,
+            "x-tenant": config.tenant,
+            "x-webiny-sdk": "v6"
         },
         body: JSON.stringify({ query, variables })
     });
