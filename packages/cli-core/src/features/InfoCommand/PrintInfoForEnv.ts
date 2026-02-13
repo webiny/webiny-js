@@ -83,7 +83,7 @@ export class PrintInfoForEnv {
         }
 
         // Admin.
-        if (admin) {
+        if (admin && admin.appUrl) {
             output.push(`‣ Admin app: ${admin.appUrl}`);
         } else {
             output.push(`‣ Admin app: -`);
