@@ -1,4 +1,6 @@
 import { GetProjectSdkService, UiService } from "~/abstractions/index.js";
+import { GetProjectIdService } from "@webiny/project/abstractions/services/GetProjectIdService.js";
+import { GetPulumiResourceNamePrefix } from "@webiny/project/abstractions/features/GetPulumiResourceNamePrefix.js";
 import chalk from "chalk";
 
 export interface IPrintInfoForEnvParams {
@@ -9,6 +11,8 @@ export interface IPrintInfoForEnvParams {
 export interface IPrintInfoForEnvDi {
     getProjectSdkService: GetProjectSdkService.Interface;
     uiService: UiService.Interface;
+    getProjectIdService: GetProjectIdService.Interface;
+    getPulumiResourceNamePrefix: GetPulumiResourceNamePrefix.Interface;
 }
 
 export class PrintInfoForEnv {
@@ -19,12 +23,20 @@ export class PrintInfoForEnv {
             throw new Error("Please provide an object with `env` and `variant` properties.");
         }
 
-        const { getProjectSdkService, uiService } = this.di;
+        const {
+            getProjectSdkService,
+            uiService,
+            getProjectIdService,
+            getPulumiResourceNamePrefix
+        } = this.di;
 
         const projectSdk = await getProjectSdkService.execute();
         const ui = uiService;
 
         const { env, variant } = params;
+
+        const projectId = await getProjectIdService.execute();
+        const resourcePrefix = await getPulumiResourceNamePrefix.execute();
 
         const api = await projectSdk.getAppStackOutput("api");
 
@@ -47,6 +59,12 @@ export class PrintInfoForEnv {
         }
 
         const output = [];
+
+        // Project info.
+        output.push(
+            `‣ Project ID: ${projectId ? chalk.blue(projectId) : "-"}`,
+            `‣ Resource prefix: ${chalk.blue(resourcePrefix)}`
+        );
 
         // API.
         if (api) {

@@ -3,13 +3,17 @@ import { CliCommandFactory, GetProjectSdkService, UiService } from "~/abstractio
 import { IBaseAppParams } from "~/abstractions/features/types.js";
 import { PrintInfoForEnv } from "./PrintInfoForEnv.js";
 import { createBaseAppOptions } from "~/features/common/index.js";
+import { GetProjectIdService } from "@webiny/project/abstractions/services/GetProjectIdService.js";
+import { GetPulumiResourceNamePrefix } from "@webiny/project/abstractions/features/GetPulumiResourceNamePrefix.js";
 
 export type IInfoCommandParams = Omit<IBaseAppParams, "app">;
 
 export class InfoCommand implements CliCommandFactory.Interface<IInfoCommandParams> {
     constructor(
         private getProjectSdkService: GetProjectSdkService.Interface,
-        private uiService: UiService.Interface
+        private uiService: UiService.Interface,
+        private getProjectIdService: GetProjectIdService.Interface,
+        private getPulumiResourceNamePrefix: GetPulumiResourceNamePrefix.Interface
     ) {}
 
     async execute(): Promise<CliCommandFactory.CommandDefinition<IInfoCommandParams>> {
@@ -24,7 +28,9 @@ export class InfoCommand implements CliCommandFactory.Interface<IInfoCommandPara
 
                 const printInfoForEnv = new PrintInfoForEnv({
                     getProjectSdkService: this.getProjectSdkService,
-                    uiService: this.uiService
+                    uiService: this.uiService,
+                    getProjectIdService: this.getProjectIdService,
+                    getPulumiResourceNamePrefix: this.getPulumiResourceNamePrefix
                 });
 
                 if (params.env) {
@@ -70,5 +76,10 @@ export class InfoCommand implements CliCommandFactory.Interface<IInfoCommandPara
 export const infoCommand = createImplementation({
     abstraction: CliCommandFactory,
     implementation: InfoCommand,
-    dependencies: [GetProjectSdkService, UiService]
+    dependencies: [
+        GetProjectSdkService,
+        UiService,
+        GetProjectIdService,
+        GetPulumiResourceNamePrefix
+    ]
 });
