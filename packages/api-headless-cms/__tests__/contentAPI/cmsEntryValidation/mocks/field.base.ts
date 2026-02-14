@@ -2,11 +2,10 @@ import type { CmsModelField } from "~/types";
 import ucFirst from "lodash/upperFirst";
 import { createMinLengthValidation, createRequiredValidation } from "./validations";
 
-export interface CreateFieldInput
-    extends Pick<
-        CmsModelField,
-        "id" | "fieldId" | "type" | "label" | "listValidation" | "validation" | "multipleValues"
-    > {
+export interface CreateFieldInput extends Pick<
+    CmsModelField,
+    "id" | "fieldId" | "type" | "label" | "listValidation" | "validation" | "multipleValues"
+> {
     parentId?: string;
 }
 
@@ -70,8 +69,8 @@ export const createField: CreateFieldCb = input => {
         ],
         id,
         fieldId,
-        helpText: `Helper text for ${input.label}`,
-        placeholderText: `A ${input.label} value`
+        help: `Helper text for ${input.label}`,
+        placeholder: `A ${input.label} value`
     };
     return result as CmsModelField;
 };

@@ -13,12 +13,12 @@ const pageModelPlugin = new CmsModelPlugin({
     fields: [
         {
             fieldId: "title",
-            helpText: null,
+            help: null,
             id: "jf7h0jsc",
             label: "Title",
             listValidation: [],
             multipleValues: false,
-            placeholderText: null,
+            placeholder: null,
             predefinedValues: {
                 enabled: false,
                 values: []
@@ -32,12 +32,12 @@ const pageModelPlugin = new CmsModelPlugin({
         },
         {
             fieldId: "contentBlocks",
-            helpText: null,
+            help: null,
             id: "0kbfq0j6",
             label: "Content Blocks",
             listValidation: [],
             multipleValues: false,
-            placeholderText: null,
+            placeholder: null,
             predefinedValues: {
                 enabled: false,
                 values: []
@@ -90,12 +90,12 @@ const faqModelPlugin = new CmsModelPlugin({
     fields: [
         {
             fieldId: "question",
-            helpText: null,
+            help: null,
             id: "c8pphxf2",
             label: "Question",
             listValidation: [],
             multipleValues: false,
-            placeholderText: null,
+            placeholder: null,
             predefinedValues: {
                 enabled: false,
                 values: []
@@ -109,12 +109,12 @@ const faqModelPlugin = new CmsModelPlugin({
         },
         {
             fieldId: "answer",
-            helpText: null,
+            help: null,
             id: "477qeutg",
             label: "Answer",
             listValidation: [],
             multipleValues: false,
-            placeholderText: null,
+            placeholder: null,
             predefinedValues: {
                 enabled: false,
                 values: []
@@ -128,12 +128,12 @@ const faqModelPlugin = new CmsModelPlugin({
         },
         {
             fieldId: "image",
-            helpText: null,
+            help: null,
             id: "7jubpw3w",
             label: "Image",
             listValidation: [],
             multipleValues: false,
-            placeholderText: null,
+            placeholder: null,
             predefinedValues: {
                 enabled: false,
                 values: []
@@ -163,12 +163,12 @@ const faqGroupBannerModelPlugin = new CmsModelPlugin({
     fields: [
         {
             fieldId: "eyebrowText",
-            helpText: null,
+            help: null,
             id: "iqe2aw2g",
             label: "Eyebrow Text",
             listValidation: [],
             multipleValues: false,
-            placeholderText: null,
+            placeholder: null,
             predefinedValues: {
                 enabled: false,
                 values: []
@@ -182,12 +182,12 @@ const faqGroupBannerModelPlugin = new CmsModelPlugin({
         },
         {
             fieldId: "heading",
-            helpText: null,
+            help: null,
             id: "25kvqahf",
             label: "Heading",
             listValidation: [],
             multipleValues: false,
-            placeholderText: null,
+            placeholder: null,
             predefinedValues: {
                 enabled: false,
                 values: []
@@ -201,12 +201,12 @@ const faqGroupBannerModelPlugin = new CmsModelPlugin({
         },
         {
             fieldId: "subHeading",
-            helpText: null,
+            help: null,
             id: "an0tmg81",
             label: "Sub Heading",
             listValidation: [],
             multipleValues: false,
-            placeholderText: null,
+            placeholder: null,
             predefinedValues: {
                 enabled: false,
                 values: []
@@ -220,12 +220,12 @@ const faqGroupBannerModelPlugin = new CmsModelPlugin({
         },
         {
             fieldId: "alternateBackgroundColor",
-            helpText: null,
+            help: null,
             id: "g4ei6uhp",
             label: "Alternate Background Color",
             listValidation: [],
             multipleValues: false,
-            placeholderText: null,
+            placeholder: null,
             predefinedValues: {
                 enabled: false,
                 values: []
@@ -241,12 +241,12 @@ const faqGroupBannerModelPlugin = new CmsModelPlugin({
         },
         {
             fieldId: "isFaqItemCollapsable",
-            helpText: null,
+            help: null,
             id: "g98nz2mr",
             label: "Is FAQ Item Collapsable",
             listValidation: [],
             multipleValues: false,
-            placeholderText: null,
+            placeholder: null,
             predefinedValues: {
                 enabled: false,
                 values: []
@@ -262,12 +262,12 @@ const faqGroupBannerModelPlugin = new CmsModelPlugin({
         },
         {
             fieldId: "customId",
-            helpText: null,
+            help: null,
             id: "t03jq8ke",
             label: "Custom ID",
             listValidation: [],
             multipleValues: false,
-            placeholderText: null,
+            placeholder: null,
             predefinedValues: {
                 enabled: false,
                 values: []
@@ -281,12 +281,12 @@ const faqGroupBannerModelPlugin = new CmsModelPlugin({
         },
         {
             fieldId: "faqGroup",
-            helpText: null,
+            help: null,
             id: "5f0dbgvi",
             label: "FAQ Group",
             listValidation: [],
             multipleValues: false,
-            placeholderText: null,
+            placeholder: null,
             predefinedValues: {
                 enabled: false,
                 values: []

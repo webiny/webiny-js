@@ -157,13 +157,13 @@ describe("content model test no field plugin", () => {
                     {
                         id: "1234",
                         multipleValues: false,
-                        helpText: "",
+                        description: "",
                         label: "Title",
                         type: "text",
                         storageId: "title",
                         validation: [],
                         listValidation: [],
-                        placeholderText: "placeholder text",
+                        placeholder: "placeholder text",
                         renderer: {
                             name: "renderer"
                         }
@@ -171,13 +171,13 @@ describe("content model test no field plugin", () => {
                     {
                         id: "2345",
                         multipleValues: false,
-                        helpText: "",
+                        description: "",
                         label: "Slug",
                         type: "text",
                         storageId: "slug",
                         validation: [],
                         listValidation: [],
-                        placeholderText: "placeholder text",
+                        placeholder: "placeholder text",
                         renderer: {
                             name: "renderer"
                         }
@@ -185,7 +185,7 @@ describe("content model test no field plugin", () => {
                     {
                         id: "9999",
                         multipleValues: false,
-                        helpText: "",
+                        description: "",
                         label: "Test",
                         type: "custom-test-field",
                         storageId: "test",

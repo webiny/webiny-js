@@ -1,8 +1,10 @@
 import camelCase from "lodash/camelCase.js";
 import type { CmsModelField, CmsModelFieldValidation } from "~/types/index.js";
 
-export interface CreateModelFieldParams
-    extends Omit<CmsModelField, "id" | "storageId" | "fieldId" | "validation" | "listValidation"> {
+export interface CreateModelFieldParams extends Omit<
+    CmsModelField,
+    "id" | "storageId" | "fieldId" | "validation" | "listValidation"
+> {
     id?: string;
     fieldId?: string;
     storageId?: string;
@@ -28,8 +30,8 @@ export const createModelField = (params: CreateModelFieldParams): CmsModelField 
             values: [],
             enabled: false
         },
-        helpText = null,
-        placeholderText = null,
+        help = null,
+        placeholder = null,
         renderer = null
     } = params;
 
@@ -49,8 +51,8 @@ export const createModelField = (params: CreateModelFieldParams): CmsModelField 
         validation,
         multipleValues,
         predefinedValues,
-        helpText,
-        placeholderText,
+        help,
+        placeholder,
         renderer
     };
 };

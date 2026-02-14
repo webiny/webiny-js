@@ -28,8 +28,8 @@ const mockField: CmsModelField = {
         enabled: false,
         values: []
     },
-    placeholderText: "text",
-    helpText: "text"
+    placeholder: "text",
+    help: "text"
 };
 
 const getFieldTypePlugin = (): CmsModelFieldToGraphQLPlugin => {

@@ -9,6 +9,8 @@ export interface FieldBuilderConfig
     extends Omit<CmsModelField, "id" | "fieldId" | "storageId" | "type"> {
     _storageId?: string;
     _fieldId?: string;
+    description?: string | null;
+    note?: string | null;
 }
 
 /**
@@ -29,8 +31,10 @@ export class FieldBuilder<TType extends string = string> {
                 enabled: false,
                 values: []
             },
-            helpText: null,
-            placeholderText: null,
+            help: null,
+            placeholder: null,
+            description: null,
+            note: null,
             renderer: null,
             settings: {},
             tags: []
@@ -42,18 +46,29 @@ export class FieldBuilder<TType extends string = string> {
         return this;
     }
 
-    helpText(text: string): this {
-        this.config.helpText = text;
+    help(text: string): this {
+        this.config.help = text;
+        return this;
+    }
+
+    description(text: string): this {
+        this.config.description = text;
+        return this;
+    }
+
+    note(text: string): this {
+        this.config.note = text;
         return this;
     }
 
     placeholder(text: string): this {
-        this.config.placeholderText = text;
+        this.config.placeholder = text;
         return this;
     }
 
     storageId(id: string): this {
-        this.config._storageId = id;
+        // We do not allow developers to specify the field type!
+        this.config._storageId = id.split("@").pop();
         return this;
     }
 
@@ -145,7 +160,7 @@ export class FieldBuilder<TType extends string = string> {
      */
     build(): CmsModelField {
         const fieldId = this.config._fieldId || camelCase(this.config.label);
-        const storageId = this.config._storageId || `${this.type}@${fieldId}`;
+        const storageId = `${this.type}@${this.config._storageId ?? fieldId}`;
 
         return {
             id: fieldId,
@@ -160,8 +175,10 @@ export class FieldBuilder<TType extends string = string> {
                 enabled: false,
                 values: []
             },
-            helpText: this.config.helpText || null,
-            placeholderText: this.config.placeholderText || null,
+            help: this.config.help || null,
+            placeholder: this.config.placeholder || null,
+            description: this.config.description || null,
+            note: this.config.note || null,
             renderer: this.config.renderer || null,
             settings: this.config.settings || {},
             tags: this.config.tags || []

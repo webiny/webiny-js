@@ -28,14 +28,14 @@ const models: CmsModel[] = [
             {
                 id: ids.field11,
                 multipleValues: false,
-                helpText: "",
+                help: "",
                 label: "Title",
                 type: "text",
                 storageId: `text@${ids.field11}`,
                 fieldId: "title",
                 validation: [],
                 listValidation: [],
-                placeholderText: "placeholder text",
+                placeholder: "placeholder text",
                 predefinedValues: {
                     enabled: false,
                     values: []
@@ -47,14 +47,14 @@ const models: CmsModel[] = [
             {
                 id: ids.field12,
                 multipleValues: false,
-                helpText: "",
+                help: "",
                 label: "Slug",
                 type: "text",
                 storageId: `text@${ids.field12}`,
                 fieldId: "slug",
                 validation: [],
                 listValidation: [],
-                placeholderText: "placeholder text",
+                placeholder: "placeholder text",
                 predefinedValues: {
                     enabled: false,
                     values: []

@@ -27,11 +27,7 @@ const groups: Omit<CmsGroup, "id">[] = [
 
 const fixFields = (fields: CmsModelField[]): CmsModelField[] => {
     return fields.map(field => {
-        const result = {
-            ...field,
-            helpText: field.helpText || null,
-            placeholderText: field.placeholderText || null
-        };
+        const result = { ...field };
         if (result.settings?.fields) {
             result.settings.fields = fixFields(result.settings.fields);
         }
@@ -131,7 +127,7 @@ describe("export cms structure", () => {
                 titleFieldId: model.titleFieldId,
                 icon: model.icon,
                 group: group.slug,
-                fields: fixFields(model.fields),
+                fields: model.fields,
                 layout: model.layout
             });
             expect(jsonModel.imageFieldId).toEqual(model.imageFieldId ?? null);

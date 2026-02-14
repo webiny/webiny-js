@@ -7,25 +7,25 @@ class TenantModelExtension implements ModelExtension.Interface {
                 websiteTheme: fields
                     .object()
                     .label("Website Theme")
-                    .helpText("Configure a Website Builder theme for this tenant.")
+                    .description("Configure a Website Builder theme for this tenant.")
                     .renderer("object-accordion", { open: false })
                     .fields(fields => ({
                         websiteTitle: fields
                             .text()
                             .label("Website Title")
-                            .helpText("Enter a website title")
+                            .description("Enter a website title")
                             .renderer("text-input"),
                         primaryColor: fields
                             .text()
                             .label("Primary Color")
-                            .helpText("Enter a color code (e.g., #000000)")
+                            .description("Enter a color code (e.g., #000000)")
                             .renderer("text-input")
                             .defaultValue(""),
                         additionalColors: fields
                             .text()
                             .list()
                             .label("Additional Colors")
-                            .helpText("Enter a color code (e.g., #000000)")
+                            .description("Enter a color code (e.g., #000000)")
                             .defaultValue([])
                             .renderer("text-inputs", {
                                 multiValue: {
@@ -35,7 +35,7 @@ class TenantModelExtension implements ModelExtension.Interface {
                         font: fields
                             .text()
                             .label("Font")
-                            .helpText("Select a font")
+                            .description("Select a font")
                             .renderer("radio-buttons")
                             .predefinedValues([
                                 {

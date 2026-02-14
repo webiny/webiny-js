@@ -46,8 +46,8 @@ export const pageModel: CmsModel = {
             type: "dynamicZone",
             label: "Content",
             tags: [],
-            placeholderText: null,
-            helpText: "Various content fragments that make up the content of the article.",
+            placeholder: null,
+            help: "Various content fragments that make up the content of the article.",
             predefinedValues: {
                 enabled: false,
                 values: []
@@ -385,7 +385,7 @@ export const pageModel: CmsModel = {
                             {
                                 id: "jms49ui",
                                 multipleValues: false,
-                                helpText: "",
+                                help: "",
                                 label: "Author",
                                 fieldId: "author",
                                 type: "ref",
@@ -399,7 +399,7 @@ export const pageModel: CmsModel = {
                                 settings: {
                                     models: [{ modelId: "author" }]
                                 },
-                                placeholderText: "placeholder text",
+                                placeholder: "placeholder text",
                                 predefinedValues: {
                                     enabled: false,
                                     values: []
@@ -411,7 +411,7 @@ export const pageModel: CmsModel = {
                             {
                                 id: "xcv50da",
                                 multipleValues: true,
-                                helpText: "",
+                                help: "",
                                 label: "Authors",
                                 fieldId: "authors",
                                 type: "ref",
@@ -425,7 +425,7 @@ export const pageModel: CmsModel = {
                                 settings: {
                                     models: [{ modelId: "author" }]
                                 },
-                                placeholderText: "placeholder text",
+                                placeholder: "placeholder text",
                                 predefinedValues: {
                                     enabled: false,
                                     values: []
@@ -445,8 +445,8 @@ export const pageModel: CmsModel = {
             type: "dynamicZone",
             label: "Header",
             tags: [],
-            placeholderText: null,
-            helpText: "Select a page header that will be show at the top of your page.",
+            placeholder: null,
+            help: "Select a page header that will be show at the top of your page.",
             predefinedValues: {
                 enabled: false,
                 values: []
@@ -650,7 +650,7 @@ export const pageModel: CmsModel = {
         {
             id: "ahterwfesi2",
             fieldId: "reference",
-            helpText: "Single-value DZ with 2 templates",
+            help: "Single-value DZ with 2 templates",
             type: "dynamicZone",
             label: "Reference",
             listValidation: [],
@@ -686,7 +686,7 @@ export const pageModel: CmsModel = {
         {
             id: "rethawfesi2",
             fieldId: "references1",
-            helpText: "Single value DZ with multi-value ref field.",
+            help: "Single value DZ with multi-value ref field.",
             type: "dynamicZone",
             multipleValues: false,
             label: "Reference",
@@ -724,7 +724,7 @@ export const pageModel: CmsModel = {
         {
             id: "ahterwfesi3",
             fieldId: "references2",
-            helpText: "Multi-value DZ with a single-value ref field.",
+            help: "Multi-value DZ with a single-value ref field.",
             type: "dynamicZone",
             multipleValues: true,
             label: "Reference",

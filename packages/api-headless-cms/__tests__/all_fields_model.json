@@ -26,7 +26,7 @@
             "name": "text-input",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -34,7 +34,7 @@
           "label": "Title",
           "type": "text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "qx2jdkz3",
           "validation": [
             {
@@ -54,7 +54,7 @@
             "name": "long-text-text-area",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -62,7 +62,7 @@
           "label": "Description",
           "type": "long-text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "m2h9zcyv",
           "validation": [],
           "storageId": "long-text@m2h9zcyv",
@@ -78,7 +78,7 @@
             "name": "file-input",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -86,7 +86,7 @@
           "label": "Image",
           "type": "file",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "n7m5mftv",
           "validation": [],
           "storageId": "file@n7m5mftv",
@@ -100,7 +100,7 @@
             "name": "text-inputs",
             "settings": {}
           },
-          "helpText": "help text one",
+          "description": "help text one",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -108,7 +108,7 @@
           "label": "Text List of text",
           "type": "text",
           "tags": [],
-          "placeholderText": "placeholder text one",
+          "placeholder": "placeholder text one",
           "id": "ku8hnq2l",
           "validation": [],
           "storageId": "text@ku8hnq2l",
@@ -122,7 +122,7 @@
             "name": "radio-buttons",
             "settings": {}
           },
-          "helpText": "random text 1",
+          "description": "random text 1",
           "predefinedValues": {
             "enabled": true,
             "values": [
@@ -156,7 +156,7 @@
           "label": "Text predefined values",
           "type": "text",
           "tags": [],
-          "placeholderText": "random text 2",
+          "placeholder": "random text 2",
           "id": "7xelqzme",
           "validation": [],
           "storageId": "text@7xelqzme",
@@ -170,7 +170,7 @@
             "name": "checkboxes",
             "settings": {}
           },
-          "helpText": "random text 1",
+          "description": "random text 1",
           "predefinedValues": {
             "enabled": true,
             "values": [
@@ -199,7 +199,7 @@
           "label": "Text list and predefined",
           "type": "text",
           "tags": [],
-          "placeholderText": "random text 2",
+          "placeholder": "random text 2",
           "id": "t9xhqoe5",
           "validation": [],
           "storageId": "text@t9xhqoe5",
@@ -213,7 +213,7 @@
             "name": "radio-buttons",
             "settings": {}
           },
-          "helpText": "random text 1",
+          "description": "random text 1",
           "predefinedValues": {
             "enabled": true,
             "values": [
@@ -242,7 +242,7 @@
           "label": "Text predefined with default",
           "type": "text",
           "tags": [],
-          "placeholderText": "random text 2",
+          "placeholder": "random text 2",
           "id": "7et1aukk",
           "validation": [],
           "storageId": "text@7et1aukk",
@@ -256,7 +256,7 @@
             "name": "text-input",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -264,7 +264,7 @@
           "label": "Text Length validator",
           "type": "text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "2o2qliqr",
           "validation": [
             {
@@ -298,7 +298,7 @@
             "name": "text-input",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -306,7 +306,7 @@
           "label": "Text - email",
           "type": "text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "wcebxpxk",
           "validation": [
             {
@@ -330,7 +330,7 @@
             "name": "text-input",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -338,7 +338,7 @@
           "label": "Text URL",
           "type": "text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "vkwsaunk",
           "validation": [
             {
@@ -362,7 +362,7 @@
             "name": "text-input",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -370,7 +370,7 @@
           "label": "Text lower case",
           "type": "text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "bnxdv1j5",
           "validation": [
             {
@@ -394,7 +394,7 @@
             "name": "text-input",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -402,7 +402,7 @@
           "label": "Text upper case",
           "type": "text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "tkaitbf4",
           "validation": [
             {
@@ -426,7 +426,7 @@
             "name": "text-input",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -434,7 +434,7 @@
           "label": "Text lower case with space",
           "type": "text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "5ywysrdy",
           "validation": [
             {
@@ -458,7 +458,7 @@
             "name": "text-input",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -466,7 +466,7 @@
           "label": "Text upper case with space",
           "type": "text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "2mhzs9d8",
           "validation": [
             {
@@ -490,7 +490,7 @@
             "name": "text-input",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -498,7 +498,7 @@
           "label": "Text unique plus",
           "type": "text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "7of8meqf",
           "validation": [
             {
@@ -528,7 +528,7 @@
             "name": "long-text-text-area",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -536,7 +536,7 @@
           "label": "Long Text",
           "type": "long-text",
           "tags": [],
-          "placeholderText": "Random Text 2",
+          "placeholder": "Random Text 2",
           "id": "h1u5lgk6",
           "validation": [],
           "storageId": "long-text@h1u5lgk6",
@@ -550,7 +550,7 @@
             "name": "text-inputs",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -558,7 +558,7 @@
           "label": "Long Text List",
           "type": "text",
           "tags": [],
-          "placeholderText": "Random Text 2",
+          "placeholder": "Random Text 2",
           "id": "qsx442w7",
           "validation": [],
           "storageId": "text@qsx442w7",
@@ -572,7 +572,7 @@
             "name": "long-text-text-area",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -580,7 +580,7 @@
           "label": "Long Text validation min length  10",
           "type": "long-text",
           "tags": [],
-          "placeholderText": "Random Text 2",
+          "placeholder": "Random Text 2",
           "id": "ix94nkuc",
           "validation": [
             {
@@ -607,7 +607,7 @@
             "name": "long-text-text-area",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -615,7 +615,7 @@
           "label": "Long Text Validation Max length 12",
           "type": "long-text",
           "tags": [],
-          "placeholderText": "Random Text 2",
+          "placeholder": "Random Text 2",
           "id": "x7klu8to",
           "validation": [
             {
@@ -637,7 +637,7 @@
             "name": "long-text-text-area",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -645,7 +645,7 @@
           "label": "Long Text Email",
           "type": "long-text",
           "tags": [],
-          "placeholderText": "Random Text 2",
+          "placeholder": "Random Text 2",
           "id": "8sqcjw45",
           "validation": [
             {
@@ -669,7 +669,7 @@
             "name": "long-text-text-area",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -677,7 +677,7 @@
           "label": "Long Text URL",
           "type": "long-text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "lf2ay7xn",
           "validation": [
             {
@@ -701,7 +701,7 @@
             "name": "long-text-text-area",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -709,7 +709,7 @@
           "label": "Long Text lower case",
           "type": "long-text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "cv5nnm9o",
           "validation": [
             {
@@ -733,7 +733,7 @@
             "name": "long-text-text-area",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -741,7 +741,7 @@
           "label": "Long Text Upper case",
           "type": "long-text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "awhn41u2",
           "validation": [
             {
@@ -765,7 +765,7 @@
             "name": "long-text-text-area",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -773,7 +773,7 @@
           "label": "Long Text lower case with space",
           "type": "long-text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "66le69tv",
           "validation": [
             {
@@ -797,7 +797,7 @@
             "name": "long-text-text-area",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -805,7 +805,7 @@
           "label": "Long Text  upper case with space",
           "type": "long-text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "kjnxia5o",
           "validation": [
             {
@@ -829,7 +829,7 @@
             "name": "text-inputs",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -837,7 +837,7 @@
           "label": "Test email list",
           "type": "text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "dze6oywc",
           "validation": [
             {
@@ -861,7 +861,7 @@
             "name": "text-inputs",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -869,7 +869,7 @@
           "label": "Text URL list",
           "type": "text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "qra96ii1",
           "validation": [
             {
@@ -893,7 +893,7 @@
             "name": "text-inputs",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -901,7 +901,7 @@
           "label": "Text lower case list",
           "type": "text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "3gd8y95x",
           "validation": [
             {
@@ -925,7 +925,7 @@
             "name": "text-inputs",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -933,7 +933,7 @@
           "label": "Text upper case list",
           "type": "text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "2qvi9a2b",
           "validation": [
             {
@@ -957,7 +957,7 @@
             "name": "text-inputs",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -965,7 +965,7 @@
           "label": "Text lower case with spaces list",
           "type": "text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "3t5q9liv",
           "validation": [
             {
@@ -989,7 +989,7 @@
             "name": "text-inputs",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -997,7 +997,7 @@
           "label": "Text upper case with spaces list",
           "type": "text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "o3e4zw6t",
           "validation": [
             {
@@ -1021,7 +1021,7 @@
             "name": "lexical-text-input",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1029,7 +1029,7 @@
           "label": "RTF",
           "type": "rich-text",
           "tags": [],
-          "placeholderText": "Random Text 2",
+          "placeholder": "Random Text 2",
           "id": "mc63eebi",
           "validation": [],
           "storageId": "rich-text@mc63eebi",
@@ -1043,7 +1043,7 @@
             "name": "lexical-text-inputs",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1051,7 +1051,7 @@
           "label": "RTF list",
           "type": "rich-text",
           "tags": [],
-          "placeholderText": "Random Text 2",
+          "placeholder": "Random Text 2",
           "id": "qbukt1jf",
           "validation": [],
           "storageId": "rich-text@qbukt1jf",
@@ -1065,7 +1065,7 @@
             "name": "hidden",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1073,7 +1073,7 @@
           "label": "RTF hidden",
           "type": "rich-text",
           "tags": [],
-          "placeholderText": "Random Text 2",
+          "placeholder": "Random Text 2",
           "id": "djwo6a2b",
           "validation": [],
           "storageId": "rich-text@djwo6a2b",
@@ -1087,7 +1087,7 @@
             "name": "hidden",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1095,7 +1095,7 @@
           "label": "Text hidden",
           "type": "text",
           "tags": [],
-          "placeholderText": "Random Text 2",
+          "placeholder": "Random Text 2",
           "id": "2k126xxh",
           "validation": [],
           "storageId": "text@2k126xxh",
@@ -1109,7 +1109,7 @@
             "name": "hidden",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1117,7 +1117,7 @@
           "label": "Text list hidden",
           "type": "text",
           "tags": [],
-          "placeholderText": "Random Text 2",
+          "placeholder": "Random Text 2",
           "id": "6nks60wc",
           "validation": [],
           "storageId": "text@6nks60wc",
@@ -1131,7 +1131,7 @@
             "name": "tags",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1139,7 +1139,7 @@
           "label": "Text list tags render",
           "type": "text",
           "tags": [],
-          "placeholderText": "Random Text 2",
+          "placeholder": "Random Text 2",
           "id": "ttwinycs",
           "validation": [],
           "storageId": "text@ttwinycs",
@@ -1153,7 +1153,7 @@
             "name": "number-input",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1161,7 +1161,7 @@
           "label": "Number",
           "type": "number",
           "tags": [],
-          "placeholderText": "Random Text 2",
+          "placeholder": "Random Text 2",
           "id": "umeiwduy",
           "validation": [],
           "storageId": "number@umeiwduy",
@@ -1175,7 +1175,7 @@
             "name": "number-inputs",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1183,7 +1183,7 @@
           "label": "Number list",
           "type": "number",
           "tags": [],
-          "placeholderText": "Random Text 2",
+          "placeholder": "Random Text 2",
           "id": "go3y700r",
           "validation": [],
           "storageId": "number@go3y700r",
@@ -1197,7 +1197,7 @@
             "name": "radio-buttons",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": true,
             "values": [
@@ -1231,7 +1231,7 @@
           "label": "Number predefined",
           "type": "number",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "7odsp0nj",
           "validation": [],
           "storageId": "number@7odsp0nj",
@@ -1245,7 +1245,7 @@
             "name": "checkboxes",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": true,
             "values": [
@@ -1269,7 +1269,7 @@
           "label": "Nmber predefined list with default",
           "type": "number",
           "tags": [],
-          "placeholderText": "Random Text 2",
+          "placeholder": "Random Text 2",
           "id": "tmdplj4z",
           "validation": [],
           "storageId": "number@tmdplj4z",
@@ -1283,7 +1283,7 @@
             "name": "checkboxes",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": true,
             "values": [
@@ -1312,7 +1312,7 @@
           "label": "Number predefined with default list",
           "type": "number",
           "tags": [],
-          "placeholderText": "Random Text 2",
+          "placeholder": "Random Text 2",
           "id": "keeixvk2",
           "validation": [],
           "storageId": "number@keeixvk2",
@@ -1326,7 +1326,7 @@
             "name": "hidden",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1334,7 +1334,7 @@
           "label": "Number - hidden",
           "type": "number",
           "tags": [],
-          "placeholderText": "Random Text 2",
+          "placeholder": "Random Text 2",
           "id": "9w1bvym9",
           "validation": [],
           "storageId": "number@9w1bvym9",
@@ -1350,7 +1350,7 @@
             "name": "boolean-input",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1358,7 +1358,7 @@
           "label": "Boolean True",
           "type": "boolean",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "vm27ase2",
           "validation": [],
           "storageId": "boolean@vm27ase2",
@@ -1374,7 +1374,7 @@
             "name": "boolean-input",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1382,7 +1382,7 @@
           "label": "Boolean false",
           "type": "boolean",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "pcgpnf7e",
           "validation": [],
           "storageId": "boolean@pcgpnf7e",
@@ -1398,7 +1398,7 @@
             "name": "hidden",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1406,7 +1406,7 @@
           "label": "Boolean hidden",
           "type": "boolean",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "nazo8176",
           "validation": [],
           "storageId": "boolean@nazo8176",
@@ -1420,7 +1420,7 @@
             "name": "file-input",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1428,7 +1428,7 @@
           "label": "Files basic",
           "type": "file",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "94n560i5",
           "validation": [],
           "storageId": "file@94n560i5",
@@ -1444,7 +1444,7 @@
             "name": "file-input",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1452,7 +1452,7 @@
           "label": "Images basic",
           "type": "file",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "iy45xut3",
           "validation": [],
           "storageId": "file@iy45xut3",
@@ -1466,7 +1466,7 @@
             "name": "file-inputs",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1474,7 +1474,7 @@
           "label": "Files gallery",
           "type": "file",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "ajfclng3",
           "validation": [],
           "storageId": "file@ajfclng3",
@@ -1490,7 +1490,7 @@
             "name": "file-inputs",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1498,7 +1498,7 @@
           "label": "Images gallery",
           "type": "file",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "moaurc1s",
           "validation": [],
           "storageId": "file@moaurc1s",
@@ -1512,7 +1512,7 @@
             "name": "file-input",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1520,7 +1520,7 @@
           "label": "Files required",
           "type": "file",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "lsti66ei",
           "validation": [
             {
@@ -1540,7 +1540,7 @@
             "name": "hidden",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1548,7 +1548,7 @@
           "label": "Files hidden",
           "type": "file",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "r7d4avps",
           "validation": [],
           "storageId": "file@r7d4avps",
@@ -1568,7 +1568,7 @@
             "name": "ref-advanced-single",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1576,7 +1576,7 @@
           "label": "Self-reference",
           "type": "ref",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "2dz3plal",
           "validation": [],
           "storageId": "ref@2dz3plal",
@@ -1598,7 +1598,7 @@
               "newItemPosition": "last"
             }
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1606,7 +1606,7 @@
           "label": "Self-refence list",
           "type": "ref",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "6tq48k30",
           "validation": [],
           "storageId": "ref@6tq48k30",
@@ -1625,7 +1625,7 @@
           "renderer": {
             "name": "ref-advanced-single"
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1633,7 +1633,7 @@
           "label": "REf 2",
           "type": "ref",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "0qgg1iv9",
           "validation": [],
           "storageId": "ref@0qgg1iv9",
@@ -1647,7 +1647,7 @@
             "name": "text-input",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1655,7 +1655,7 @@
           "label": "Title Two",
           "type": "text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "02b1oz70",
           "validation": [
             {
@@ -1691,7 +1691,7 @@
             "name": "date-time-input",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1699,7 +1699,7 @@
           "label": "Date Only",
           "type": "datetime",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "trk3vc4f",
           "validation": [],
           "storageId": "datetime@trk3vc4f",
@@ -1715,7 +1715,7 @@
             "name": "date-time-input",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1723,7 +1723,7 @@
           "label": "Time Only",
           "type": "datetime",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "fktin5dq",
           "validation": [],
           "storageId": "datetime@fktin5dq",
@@ -1739,7 +1739,7 @@
             "name": "date-time-input",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1747,7 +1747,7 @@
           "label": "DateTime With Timezone",
           "type": "datetime",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "fvcwsv35",
           "validation": [],
           "storageId": "datetime@fvcwsv35",
@@ -1763,7 +1763,7 @@
             "name": "date-time-input",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1771,7 +1771,7 @@
           "label": "DateTime Without Timezone",
           "type": "datetime",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "fhlf8nxg",
           "validation": [],
           "storageId": "datetime@fhlf8nxg",
@@ -1916,7 +1916,7 @@
             "name": "object",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1924,7 +1924,7 @@
           "label": "Single Object",
           "type": "object",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "rvehnj10",
           "validation": [],
           "storageId": "object@rvehnj10",
@@ -2086,7 +2086,7 @@
             "name": "objects",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -2094,7 +2094,7 @@
           "label": "Repeatable Object",
           "type": "object",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "tf50e6hi",
           "validation": [],
           "storageId": "object@tf50e6hi",
@@ -2259,7 +2259,7 @@
               "open": false
             }
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -2267,7 +2267,7 @@
           "label": "A Dynamic Zone",
           "type": "dynamicZone",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "0z79425z",
           "validation": [],
           "storageId": "dynamicZone@0z79425z",
@@ -2432,7 +2432,7 @@
               "open": false
             }
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -2440,7 +2440,7 @@
           "label": "A Repeatable Dynamic Zone",
           "type": "dynamicZone",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "5j23m293",
           "validation": [],
           "storageId": "dynamicZone@5j23m293",
@@ -2456,7 +2456,7 @@
             "name": "date-time-inputs",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -2464,7 +2464,7 @@
           "label": "Date Only List",
           "type": "datetime",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "d1r57p53",
           "validation": [],
           "storageId": "datetime@d1r57p53",
@@ -2480,7 +2480,7 @@
             "name": "date-time-inputs",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -2488,7 +2488,7 @@
           "label": "Time Only List",
           "type": "datetime",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "k5wkm7f6",
           "validation": [],
           "storageId": "datetime@k5wkm7f6",
@@ -2504,7 +2504,7 @@
             "name": "date-time-inputs",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -2512,7 +2512,7 @@
           "label": "DateTime With Timezone List",
           "type": "datetime",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "sk0peey7",
           "validation": [],
           "storageId": "datetime@sk0peey7",
@@ -2528,7 +2528,7 @@
             "name": "date-time-inputs",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -2536,7 +2536,7 @@
           "label": "DateTime Without Timezone List",
           "type": "datetime",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "a0gspaxr",
           "validation": [],
           "storageId": "datetime@a0gspaxr",

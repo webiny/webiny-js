@@ -18,8 +18,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -40,8 +40,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -62,8 +62,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -84,8 +84,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -106,8 +106,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -128,8 +128,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -150,8 +150,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -172,8 +172,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -194,8 +194,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -216,8 +216,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -238,8 +238,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -260,8 +260,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -282,8 +282,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -304,8 +304,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -326,8 +326,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -348,8 +348,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -372,8 +372,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -396,8 +396,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -420,8 +420,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -444,8 +444,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -468,8 +468,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -492,8 +492,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -516,8 +516,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -540,8 +540,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -564,8 +564,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -588,8 +588,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -612,8 +612,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -636,8 +636,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -660,8 +660,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -684,8 +684,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -706,8 +706,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -738,8 +738,8 @@ export const expectedSystemFields: Record<string, Field> = {
                         values: [],
                         enabled: false
                     },
-                    helpText: null,
-                    placeholderText: null,
+                    help: null,
+                    placeholder: null,
                     renderer: null
                 }
             ]
@@ -751,8 +751,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -775,8 +775,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [
             {
@@ -802,8 +802,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -824,8 +824,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -846,8 +846,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -876,8 +876,8 @@ export const expectedSystemFields: Record<string, Field> = {
                         values: [],
                         enabled: false
                     },
-                    helpText: null,
-                    placeholderText: null,
+                    help: null,
+                    placeholder: null,
                     renderer: null
                 },
                 {
@@ -894,8 +894,8 @@ export const expectedSystemFields: Record<string, Field> = {
                         values: [],
                         enabled: false
                     },
-                    helpText: null,
-                    placeholderText: null,
+                    help: null,
+                    placeholder: null,
                     renderer: null
                 },
                 {
@@ -912,8 +912,8 @@ export const expectedSystemFields: Record<string, Field> = {
                         values: [],
                         enabled: false
                     },
-                    helpText: null,
-                    placeholderText: null,
+                    help: null,
+                    placeholder: null,
                     renderer: null
                 }
             ]
@@ -925,8 +925,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [],
         system: true
@@ -947,8 +947,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [
             {
@@ -974,8 +974,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [
             {
@@ -1001,8 +1001,8 @@ export const expectedSystemFields: Record<string, Field> = {
             values: [],
             enabled: false
         },
-        helpText: null,
-        placeholderText: null,
+        help: null,
+        placeholder: null,
         renderer: null,
         parents: [
             {

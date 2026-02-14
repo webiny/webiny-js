@@ -55,7 +55,7 @@ describe("multiple values in field", () => {
             {
                 id: expect.any(String),
                 multipleValues: true,
-                helpText: "",
+                help: null,
                 label: "Available sizes",
                 storageId: expect.stringMatching("text@"),
                 fieldId: "availableSizes",
@@ -71,7 +71,7 @@ describe("multiple values in field", () => {
                     }
                 ],
                 listValidation: [],
-                placeholderText: "placeholder text",
+                placeholder: "placeholder text",
                 tags: [],
                 predefinedValues: {
                     enabled: true,

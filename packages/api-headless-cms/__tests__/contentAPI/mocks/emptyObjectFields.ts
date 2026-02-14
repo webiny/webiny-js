@@ -31,8 +31,8 @@ export const emptyObjectFields: Pick<CmsModel, "fields" | "layout"> = {
             renderer: {
                 name: "objects"
             },
-            helpText: null,
-            placeholderText: null,
+            help: null,
+            placeholder: null,
             predefinedValues: {
                 enabled: false,
                 values: []

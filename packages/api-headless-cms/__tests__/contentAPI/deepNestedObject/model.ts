@@ -25,7 +25,7 @@ export const createCarsModel = () => {
                     fieldId: "carsVehicle",
                     type: "text",
                     label: "Vehicle",
-                    helpText: "Make Model Year and Trim",
+                    help: "Make Model Year and Trim",
                     renderer: { name: "text-input" },
                     validation: [
                         {
@@ -39,7 +39,7 @@ export const createCarsModel = () => {
                     fieldId: "vehicleNmb",
                     type: "number",
                     label: "VehicleNumber",
-                    helpText: "A unique vehicle number",
+                    help: "A unique vehicle number",
                     renderer: { name: "text-input" },
                     validation: [
                         {

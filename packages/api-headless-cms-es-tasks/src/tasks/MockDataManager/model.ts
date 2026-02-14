@@ -17,7 +17,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 fieldId: "carsVehicle",
                 type: "text",
                 label: "Vehicle",
-                helpText: "Make Model Year and Trim",
+                help: "Make Model Year and Trim",
                 renderer: {
                     name: "text-input"
                 },
@@ -33,7 +33,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 fieldId: "vehicleNmb",
                 type: "number",
                 label: "VehicleNumber",
-                helpText: "A unique vehicle number",
+                help: "A unique vehicle number",
                 renderer: {
                     name: "number-input"
                 },
@@ -207,7 +207,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "number-input"
                 },
-                helpText: "This is a Required Field."
+                help: "This is a Required Field."
             }),
             createModelField({
                 id: "oemUrl",
@@ -523,7 +523,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 },
-                helpText: "This is a Required Field."
+                help: "This is a Required Field."
             }),
             createModelField({
                 id: "retainedValue",
@@ -551,7 +551,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "number-input"
                 },
-                helpText: "This is a Required Field."
+                help: "This is a Required Field."
             }),
             createModelField({
                 id: "carsPricePageShow",
@@ -561,7 +561,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "number-input"
                 },
-                helpText: "This is a Required Field."
+                help: "This is a Required Field."
             }),
             createModelField({
                 id: "carsEditorialRating",
@@ -834,7 +834,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             },
-                            helpText: "This is a Required Field."
+                            help: "This is a Required Field."
                         }),
                         createModelField({
                             id: "transmissionName",
@@ -2456,13 +2456,13 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             },
-                            helpText: "This is a Required Field."
+                            help: "This is a Required Field."
                         }),
                         createModelField({
                             id: "imageAngle",
                             fieldId: "imageAngle",
                             type: "text",
-                            helpText: "can be front or rear...etc",
+                            help: "can be front or rear...etc",
                             label: "Image Angle",
                             renderer: {
                                 name: "text-input"
@@ -2472,7 +2472,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "imageType",
                             fieldId: "imageType",
                             type: "text",
-                            helpText: "can be exterior or interior",
+                            help: "can be exterior or interior",
                             label: "Image Type",
                             renderer: {
                                 name: "text-input"
@@ -2482,7 +2482,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "imageOrder",
                             fieldId: "imageOrder",
                             type: "number",
-                            helpText: "can be use for display order",
+                            help: "can be use for display order",
                             label: "Image Order",
                             renderer: {
                                 name: "number-input"
@@ -5063,7 +5063,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             },
-                            helpText: "This is a Required Field."
+                            help: "This is a Required Field."
                         }),
                         createModelField({
                             id: "classSlugRedirect",
@@ -5109,7 +5109,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             },
-                            helpText: "This is a Required Field."
+                            help: "This is a Required Field."
                         }),
                         createModelField({
                             id: "subclassTitle",
@@ -5119,7 +5119,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             },
-                            helpText: "This is a Required Field."
+                            help: "This is a Required Field."
                         }),
                         createModelField({
                             id: "vrPerformance",
@@ -5147,7 +5147,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             },
-                            helpText: "This is a Required Field."
+                            help: "This is a Required Field."
                         }),
                         createModelField({
                             id: "toolTipOverallScore",
@@ -5247,7 +5247,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             },
-                            helpText: "This is a Required Field."
+                            help: "This is a Required Field."
                         }),
                         createModelField({
                             id: "vrcIsVehicleShow",
@@ -5257,7 +5257,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             },
-                            helpText: "This is a Required Field."
+                            help: "This is a Required Field."
                         }),
                         createModelField({
                             id: "vrcRankInSubclassText",
@@ -5276,7 +5276,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             },
-                            helpText: "This is a Required Field."
+                            help: "This is a Required Field."
                         }),
                         createModelField({
                             id: "vrcSubclass",
