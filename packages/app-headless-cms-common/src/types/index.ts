@@ -122,10 +122,10 @@ export interface CmsModelFieldTypePlugin extends Plugin {
          * Is it allowed to have multiple values in this field?
          *
          * ```ts
-         * allowMultipleValues: true
+         * allowList: true
          * ```
          */
-        allowMultipleValues?: boolean;
+        allowList?: boolean;
         /**
          * Does this field type have a fixed list of values that can be selected?
          *
@@ -137,7 +137,7 @@ export interface CmsModelFieldTypePlugin extends Plugin {
         /**
          * A ReactNode label when multiple values are enabled.
          */
-        multipleValuesLabel?: React.ReactNode;
+        listLabel?: React.ReactNode;
         /**
          * Determines if this field type should be hidden from the admin UI.
          * If set to `true`, the field type will not be visible or selectable in the admin interface.
@@ -291,7 +291,7 @@ export interface CmsModelFieldRendererPlugin extends Plugin {
          * ```ts
          * canUse({ field }) {
          *     return (
-         *         field.type === "myType" && !field.multipleValues
+         *         field.type === "myType" && !field.list
          *     );
          * }
          * ```

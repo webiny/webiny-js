@@ -557,12 +557,12 @@
               }
             },
             {
-              "name": "helpText",
+              "name": "description",
               "description": null,
               "type": { "kind": "SCALAR", "name": "String", "ofType": null }
             },
             {
-              "name": "placeholderText",
+              "name": "placeholder",
               "description": null,
               "type": { "kind": "SCALAR", "name": "String", "ofType": null }
             },
@@ -585,7 +585,7 @@
               }
             },
             {
-              "name": "multipleValues",
+              "name": "list",
               "description": null,
               "type": { "kind": "SCALAR", "name": "Boolean", "ofType": null }
             },

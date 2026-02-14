@@ -19,13 +19,13 @@ export abstract class FieldBuilder<TZod extends z.ZodTypeAny> {
         return this;
     }
 
-    helpText(text: string): this {
-        this.config.helpText = text;
+    help(text: string): this {
+        this.config.help = text;
         return this;
     }
 
     placeholder(text: string): this {
-        this.config.placeholderText = text;
+        this.config.placeholder = text;
         return this;
     }
 
@@ -34,8 +34,8 @@ export abstract class FieldBuilder<TZod extends z.ZodTypeAny> {
             fieldId: "",
             type: this.config.type!,
             label: this.config.label,
-            helpText: this.config.helpText,
-            placeholderText: this.config.placeholderText,
+            help: this.config.help,
+            placeholder: this.config.placeholder,
             validation: this.config.validation || [],
             settings: this.config.settings || {},
             zodSchema: this.zodSchema

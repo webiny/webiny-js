@@ -17,13 +17,13 @@ const DATA_FIELD = /* GraphQL*/ `
         fields {
             id
             label
-            helpText
-            placeholderText
+            help
+            placeholder
             storageId
             fieldId
             type
             tags
-            multipleValues
+            list
             predefinedValues {
                 enabled
                 values {

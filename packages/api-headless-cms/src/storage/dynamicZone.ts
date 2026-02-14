@@ -103,7 +103,7 @@ export const createDynamicZoneStorageTransform = (): StorageTransformPlugin => {
         toStorage: async ({ field, value: input, getStoragePlugin, model, plugins }) => {
             if (!input) {
                 return input;
-            } else if (field.multipleValues) {
+            } else if (field.list) {
                 if (!Array.isArray(input)) {
                     return input;
                 }
@@ -131,7 +131,7 @@ export const createDynamicZoneStorageTransform = (): StorageTransformPlugin => {
         fromStorage: async ({ field, value: input, getStoragePlugin, model, plugins }) => {
             if (!input) {
                 return input;
-            } else if (field.multipleValues) {
+            } else if (field.list) {
                 if (!Array.isArray(input)) {
                     return input;
                 }

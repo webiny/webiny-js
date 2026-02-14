@@ -12,7 +12,7 @@ const createFieldFactory: FieldFactory = base => {
             type: "object",
             storageId: "object@objectFieldId",
             fieldId: "objectField",
-            multipleValues: false,
+            list: false,
             settings: {
                 fields: [textField, numberField],
                 layout: [[textField.id], [numberField.id]]

@@ -46,13 +46,13 @@ export const pageModel: CmsModel = {
             type: "dynamicZone",
             label: "Content",
             tags: [],
-            placeholderText: null,
-            helpText: "Various content fragments that make up the content of the article.",
+            placeholder: null,
+            help: "Various content fragments that make up the content of the article.",
             predefinedValues: {
                 enabled: false,
                 values: []
             },
-            multipleValues: true,
+            list: true,
             renderer: {
                 name: "dynamicZone"
             },
@@ -224,7 +224,7 @@ export const pageModel: CmsModel = {
                                             fieldId: "objectNestedObject",
                                             type: "object",
                                             label: "Object nested object",
-                                            multipleValues: true,
+                                            list: true,
                                             settings: {
                                                 fields: [
                                                     {
@@ -328,7 +328,7 @@ export const pageModel: CmsModel = {
                                                     renderer: {
                                                         name: "ref-inputs"
                                                     },
-                                                    multipleValues: true,
+                                                    list: true,
                                                     listValidation: [],
                                                     label: "Authors",
                                                     fieldId: "authors",
@@ -384,8 +384,8 @@ export const pageModel: CmsModel = {
                         fields: [
                             {
                                 id: "jms49ui",
-                                multipleValues: false,
-                                helpText: "",
+                                list: false,
+                                help: "",
                                 label: "Author",
                                 fieldId: "author",
                                 type: "ref",
@@ -399,7 +399,7 @@ export const pageModel: CmsModel = {
                                 settings: {
                                     models: [{ modelId: "author" }]
                                 },
-                                placeholderText: "placeholder text",
+                                placeholder: "placeholder text",
                                 predefinedValues: {
                                     enabled: false,
                                     values: []
@@ -410,8 +410,8 @@ export const pageModel: CmsModel = {
                             },
                             {
                                 id: "xcv50da",
-                                multipleValues: true,
-                                helpText: "",
+                                list: true,
+                                help: "",
                                 label: "Authors",
                                 fieldId: "authors",
                                 type: "ref",
@@ -425,7 +425,7 @@ export const pageModel: CmsModel = {
                                 settings: {
                                     models: [{ modelId: "author" }]
                                 },
-                                placeholderText: "placeholder text",
+                                placeholder: "placeholder text",
                                 predefinedValues: {
                                     enabled: false,
                                     values: []
@@ -445,13 +445,13 @@ export const pageModel: CmsModel = {
             type: "dynamicZone",
             label: "Header",
             tags: [],
-            placeholderText: null,
-            helpText: "Select a page header that will be show at the top of your page.",
+            placeholder: null,
+            help: "Select a page header that will be show at the top of your page.",
             predefinedValues: {
                 enabled: false,
                 values: []
             },
-            multipleValues: false,
+            list: false,
             renderer: {
                 name: "dynamicZone"
             },
@@ -562,7 +562,7 @@ export const pageModel: CmsModel = {
                                             fieldId: "objectNestedObject",
                                             type: "object",
                                             label: "Object nested object",
-                                            multipleValues: true,
+                                            list: true,
                                             settings: {
                                                 fields: [
                                                     {
@@ -650,7 +650,7 @@ export const pageModel: CmsModel = {
         {
             id: "ahterwfesi2",
             fieldId: "reference",
-            helpText: "Single-value DZ with 2 templates",
+            help: "Single-value DZ with 2 templates",
             type: "dynamicZone",
             label: "Reference",
             listValidation: [],
@@ -686,9 +686,9 @@ export const pageModel: CmsModel = {
         {
             id: "rethawfesi2",
             fieldId: "references1",
-            helpText: "Single value DZ with multi-value ref field.",
+            help: "Single value DZ with multi-value ref field.",
             type: "dynamicZone",
-            multipleValues: false,
+            list: false,
             label: "Reference",
             listValidation: [],
             validation: [],
@@ -704,7 +704,7 @@ export const pageModel: CmsModel = {
                         fields: [
                             {
                                 id: "gt409u8qhgoudsahfds",
-                                multipleValues: true,
+                                list: true,
                                 fieldId: "authors",
                                 label: "Reference Field",
                                 type: "ref",
@@ -724,9 +724,9 @@ export const pageModel: CmsModel = {
         {
             id: "ahterwfesi3",
             fieldId: "references2",
-            helpText: "Multi-value DZ with a single-value ref field.",
+            help: "Multi-value DZ with a single-value ref field.",
             type: "dynamicZone",
-            multipleValues: true,
+            list: true,
             label: "Reference",
             listValidation: [],
             validation: [],

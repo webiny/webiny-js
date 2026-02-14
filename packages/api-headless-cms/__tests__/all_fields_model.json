@@ -19,14 +19,14 @@
       "pluralApiName": "MlMfs",
       "fields": [
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "text-input",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -34,7 +34,7 @@
           "label": "Title",
           "type": "text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "qx2jdkz3",
           "validation": [
             {
@@ -47,14 +47,14 @@
           "fieldId": "title"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "long-text-text-area",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -62,14 +62,14 @@
           "label": "Description",
           "type": "long-text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "m2h9zcyv",
           "validation": [],
           "storageId": "long-text@m2h9zcyv",
           "fieldId": "description"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {
             "imagesOnly": true
@@ -78,7 +78,7 @@
             "name": "file-input",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -86,21 +86,21 @@
           "label": "Image",
           "type": "file",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "n7m5mftv",
           "validation": [],
           "storageId": "file@n7m5mftv",
           "fieldId": "image"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "text-inputs",
             "settings": {}
           },
-          "helpText": "help text one",
+          "description": "help text one",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -108,21 +108,21 @@
           "label": "Text List of text",
           "type": "text",
           "tags": [],
-          "placeholderText": "placeholder text one",
+          "placeholder": "placeholder text one",
           "id": "ku8hnq2l",
           "validation": [],
           "storageId": "text@ku8hnq2l",
           "fieldId": "textListOfText"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "radio-buttons",
             "settings": {}
           },
-          "helpText": "random text 1",
+          "description": "random text 1",
           "predefinedValues": {
             "enabled": true,
             "values": [
@@ -156,21 +156,21 @@
           "label": "Text predefined values",
           "type": "text",
           "tags": [],
-          "placeholderText": "random text 2",
+          "placeholder": "random text 2",
           "id": "7xelqzme",
           "validation": [],
           "storageId": "text@7xelqzme",
           "fieldId": "textPredefinedValues"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "checkboxes",
             "settings": {}
           },
-          "helpText": "random text 1",
+          "description": "random text 1",
           "predefinedValues": {
             "enabled": true,
             "values": [
@@ -199,21 +199,21 @@
           "label": "Text list and predefined",
           "type": "text",
           "tags": [],
-          "placeholderText": "random text 2",
+          "placeholder": "random text 2",
           "id": "t9xhqoe5",
           "validation": [],
           "storageId": "text@t9xhqoe5",
           "fieldId": "textListAndPredefined"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "radio-buttons",
             "settings": {}
           },
-          "helpText": "random text 1",
+          "description": "random text 1",
           "predefinedValues": {
             "enabled": true,
             "values": [
@@ -242,21 +242,21 @@
           "label": "Text predefined with default",
           "type": "text",
           "tags": [],
-          "placeholderText": "random text 2",
+          "placeholder": "random text 2",
           "id": "7et1aukk",
           "validation": [],
           "storageId": "text@7et1aukk",
           "fieldId": "textPredefinedWithDefault"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "text-input",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -264,7 +264,7 @@
           "label": "Text Length validator",
           "type": "text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "2o2qliqr",
           "validation": [
             {
@@ -291,14 +291,14 @@
           "fieldId": "textValidators"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "text-input",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -306,7 +306,7 @@
           "label": "Text - email",
           "type": "text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "wcebxpxk",
           "validation": [
             {
@@ -323,14 +323,14 @@
           "fieldId": "text"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "text-input",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -338,7 +338,7 @@
           "label": "Text URL",
           "type": "text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "vkwsaunk",
           "validation": [
             {
@@ -355,14 +355,14 @@
           "fieldId": "textUrl"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "text-input",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -370,7 +370,7 @@
           "label": "Text lower case",
           "type": "text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "bnxdv1j5",
           "validation": [
             {
@@ -387,14 +387,14 @@
           "fieldId": "textLowerCase"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "text-input",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -402,7 +402,7 @@
           "label": "Text upper case",
           "type": "text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "tkaitbf4",
           "validation": [
             {
@@ -419,14 +419,14 @@
           "fieldId": "textUpperCase"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "text-input",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -434,7 +434,7 @@
           "label": "Text lower case with space",
           "type": "text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "5ywysrdy",
           "validation": [
             {
@@ -451,14 +451,14 @@
           "fieldId": "textLowerCaseWithSpace"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "text-input",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -466,7 +466,7 @@
           "label": "Text upper case with space",
           "type": "text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "2mhzs9d8",
           "validation": [
             {
@@ -483,14 +483,14 @@
           "fieldId": "textUpperCaseWithSpace"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "text-input",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -498,7 +498,7 @@
           "label": "Text unique plus",
           "type": "text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "7of8meqf",
           "validation": [
             {
@@ -521,14 +521,14 @@
           "fieldId": "textUniquePlus"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "long-text-text-area",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -536,21 +536,21 @@
           "label": "Long Text",
           "type": "long-text",
           "tags": [],
-          "placeholderText": "Random Text 2",
+          "placeholder": "Random Text 2",
           "id": "h1u5lgk6",
           "validation": [],
           "storageId": "long-text@h1u5lgk6",
           "fieldId": "longText"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "text-inputs",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -558,21 +558,21 @@
           "label": "Long Text List",
           "type": "text",
           "tags": [],
-          "placeholderText": "Random Text 2",
+          "placeholder": "Random Text 2",
           "id": "qsx442w7",
           "validation": [],
           "storageId": "text@qsx442w7",
           "fieldId": "longTextList"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "long-text-text-area",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -580,7 +580,7 @@
           "label": "Long Text validation min length  10",
           "type": "long-text",
           "tags": [],
-          "placeholderText": "Random Text 2",
+          "placeholder": "Random Text 2",
           "id": "ix94nkuc",
           "validation": [
             {
@@ -600,14 +600,14 @@
           "fieldId": "longTextValidationMinLenght"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "long-text-text-area",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -615,7 +615,7 @@
           "label": "Long Text Validation Max length 12",
           "type": "long-text",
           "tags": [],
-          "placeholderText": "Random Text 2",
+          "placeholder": "Random Text 2",
           "id": "x7klu8to",
           "validation": [
             {
@@ -630,14 +630,14 @@
           "fieldId": "longTextValidationMaxLength12"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "long-text-text-area",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -645,7 +645,7 @@
           "label": "Long Text Email",
           "type": "long-text",
           "tags": [],
-          "placeholderText": "Random Text 2",
+          "placeholder": "Random Text 2",
           "id": "8sqcjw45",
           "validation": [
             {
@@ -662,14 +662,14 @@
           "fieldId": "longTextEmail"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "long-text-text-area",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -677,7 +677,7 @@
           "label": "Long Text URL",
           "type": "long-text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "lf2ay7xn",
           "validation": [
             {
@@ -694,14 +694,14 @@
           "fieldId": "longTextUrl"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "long-text-text-area",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -709,7 +709,7 @@
           "label": "Long Text lower case",
           "type": "long-text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "cv5nnm9o",
           "validation": [
             {
@@ -726,14 +726,14 @@
           "fieldId": "longTextLowerCase"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "long-text-text-area",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -741,7 +741,7 @@
           "label": "Long Text Upper case",
           "type": "long-text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "awhn41u2",
           "validation": [
             {
@@ -758,14 +758,14 @@
           "fieldId": "longTextUpperCase"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "long-text-text-area",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -773,7 +773,7 @@
           "label": "Long Text lower case with space",
           "type": "long-text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "66le69tv",
           "validation": [
             {
@@ -790,14 +790,14 @@
           "fieldId": "longTextLowerCaseWithSpace"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "long-text-text-area",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -805,7 +805,7 @@
           "label": "Long Text  upper case with space",
           "type": "long-text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "kjnxia5o",
           "validation": [
             {
@@ -822,14 +822,14 @@
           "fieldId": "longTextUpperCaseWithSpace"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "text-inputs",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -837,7 +837,7 @@
           "label": "Test email list",
           "type": "text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "dze6oywc",
           "validation": [
             {
@@ -854,14 +854,14 @@
           "fieldId": "testEmailList"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "text-inputs",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -869,7 +869,7 @@
           "label": "Text URL list",
           "type": "text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "qra96ii1",
           "validation": [
             {
@@ -886,14 +886,14 @@
           "fieldId": "textUrlList"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "text-inputs",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -901,7 +901,7 @@
           "label": "Text lower case list",
           "type": "text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "3gd8y95x",
           "validation": [
             {
@@ -918,14 +918,14 @@
           "fieldId": "textLowerCaseList"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "text-inputs",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -933,7 +933,7 @@
           "label": "Text upper case list",
           "type": "text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "2qvi9a2b",
           "validation": [
             {
@@ -950,14 +950,14 @@
           "fieldId": "textUpperCaseList"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "text-inputs",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -965,7 +965,7 @@
           "label": "Text lower case with spaces list",
           "type": "text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "3t5q9liv",
           "validation": [
             {
@@ -982,14 +982,14 @@
           "fieldId": "textLowerCaseWithSpacesList"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "text-inputs",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -997,7 +997,7 @@
           "label": "Text upper case with spaces list",
           "type": "text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "o3e4zw6t",
           "validation": [
             {
@@ -1014,14 +1014,14 @@
           "fieldId": "textUpperCaseWithSpacesList"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "lexical-text-input",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1029,21 +1029,21 @@
           "label": "RTF",
           "type": "rich-text",
           "tags": [],
-          "placeholderText": "Random Text 2",
+          "placeholder": "Random Text 2",
           "id": "mc63eebi",
           "validation": [],
           "storageId": "rich-text@mc63eebi",
           "fieldId": "rtf"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "lexical-text-inputs",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1051,21 +1051,21 @@
           "label": "RTF list",
           "type": "rich-text",
           "tags": [],
-          "placeholderText": "Random Text 2",
+          "placeholder": "Random Text 2",
           "id": "qbukt1jf",
           "validation": [],
           "storageId": "rich-text@qbukt1jf",
           "fieldId": "rtfList"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "hidden",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1073,21 +1073,21 @@
           "label": "RTF hidden",
           "type": "rich-text",
           "tags": [],
-          "placeholderText": "Random Text 2",
+          "placeholder": "Random Text 2",
           "id": "djwo6a2b",
           "validation": [],
           "storageId": "rich-text@djwo6a2b",
           "fieldId": "rtfHidden"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "hidden",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1095,21 +1095,21 @@
           "label": "Text hidden",
           "type": "text",
           "tags": [],
-          "placeholderText": "Random Text 2",
+          "placeholder": "Random Text 2",
           "id": "2k126xxh",
           "validation": [],
           "storageId": "text@2k126xxh",
           "fieldId": "textHidden"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "hidden",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1117,21 +1117,21 @@
           "label": "Text list hidden",
           "type": "text",
           "tags": [],
-          "placeholderText": "Random Text 2",
+          "placeholder": "Random Text 2",
           "id": "6nks60wc",
           "validation": [],
           "storageId": "text@6nks60wc",
           "fieldId": "textListHidden"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "tags",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1139,21 +1139,21 @@
           "label": "Text list tags render",
           "type": "text",
           "tags": [],
-          "placeholderText": "Random Text 2",
+          "placeholder": "Random Text 2",
           "id": "ttwinycs",
           "validation": [],
           "storageId": "text@ttwinycs",
           "fieldId": "textListTagsRender"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "number-input",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1161,21 +1161,21 @@
           "label": "Number",
           "type": "number",
           "tags": [],
-          "placeholderText": "Random Text 2",
+          "placeholder": "Random Text 2",
           "id": "umeiwduy",
           "validation": [],
           "storageId": "number@umeiwduy",
           "fieldId": "number"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "number-inputs",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1183,21 +1183,21 @@
           "label": "Number list",
           "type": "number",
           "tags": [],
-          "placeholderText": "Random Text 2",
+          "placeholder": "Random Text 2",
           "id": "go3y700r",
           "validation": [],
           "storageId": "number@go3y700r",
           "fieldId": "numberList"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "radio-buttons",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": true,
             "values": [
@@ -1231,21 +1231,21 @@
           "label": "Number predefined",
           "type": "number",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "7odsp0nj",
           "validation": [],
           "storageId": "number@7odsp0nj",
           "fieldId": "numberPredefined"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "checkboxes",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": true,
             "values": [
@@ -1269,21 +1269,21 @@
           "label": "Nmber predefined list with default",
           "type": "number",
           "tags": [],
-          "placeholderText": "Random Text 2",
+          "placeholder": "Random Text 2",
           "id": "tmdplj4z",
           "validation": [],
           "storageId": "number@tmdplj4z",
           "fieldId": "nmberPredefinedListWithDefault"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "checkboxes",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": true,
             "values": [
@@ -1312,21 +1312,21 @@
           "label": "Number predefined with default list",
           "type": "number",
           "tags": [],
-          "placeholderText": "Random Text 2",
+          "placeholder": "Random Text 2",
           "id": "keeixvk2",
           "validation": [],
           "storageId": "number@keeixvk2",
           "fieldId": "numberPredefinedWithDefaultList"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "hidden",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1334,14 +1334,14 @@
           "label": "Number - hidden",
           "type": "number",
           "tags": [],
-          "placeholderText": "Random Text 2",
+          "placeholder": "Random Text 2",
           "id": "9w1bvym9",
           "validation": [],
           "storageId": "number@9w1bvym9",
           "fieldId": "numberHidden"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {
             "defaultValue": true
@@ -1350,7 +1350,7 @@
             "name": "boolean-input",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1358,14 +1358,14 @@
           "label": "Boolean True",
           "type": "boolean",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "vm27ase2",
           "validation": [],
           "storageId": "boolean@vm27ase2",
           "fieldId": "booleanTrue"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {
             "defaultValue": false
@@ -1374,7 +1374,7 @@
             "name": "boolean-input",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1382,14 +1382,14 @@
           "label": "Boolean false",
           "type": "boolean",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "pcgpnf7e",
           "validation": [],
           "storageId": "boolean@pcgpnf7e",
           "fieldId": "booleanFalse"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {
             "defaultValue": false
@@ -1398,7 +1398,7 @@
             "name": "hidden",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1406,21 +1406,21 @@
           "label": "Boolean hidden",
           "type": "boolean",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "nazo8176",
           "validation": [],
           "storageId": "boolean@nazo8176",
           "fieldId": "booleanHidden"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "file-input",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1428,14 +1428,14 @@
           "label": "Files basic",
           "type": "file",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "94n560i5",
           "validation": [],
           "storageId": "file@94n560i5",
           "fieldId": "filesBasic"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {
             "imagesOnly": true
@@ -1444,7 +1444,7 @@
             "name": "file-input",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1452,21 +1452,21 @@
           "label": "Images basic",
           "type": "file",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "iy45xut3",
           "validation": [],
           "storageId": "file@iy45xut3",
           "fieldId": "imagesBasic"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "file-inputs",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1474,14 +1474,14 @@
           "label": "Files gallery",
           "type": "file",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "ajfclng3",
           "validation": [],
           "storageId": "file@ajfclng3",
           "fieldId": "filesGallery"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {
             "imagesOnly": true
@@ -1490,7 +1490,7 @@
             "name": "file-inputs",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1498,21 +1498,21 @@
           "label": "Images gallery",
           "type": "file",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "moaurc1s",
           "validation": [],
           "storageId": "file@moaurc1s",
           "fieldId": "imagesGallery"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "file-input",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1520,7 +1520,7 @@
           "label": "Files required",
           "type": "file",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "lsti66ei",
           "validation": [
             {
@@ -1533,14 +1533,14 @@
           "fieldId": "filesRequired"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "hidden",
             "settings": {}
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1548,14 +1548,14 @@
           "label": "Files hidden",
           "type": "file",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "r7d4avps",
           "validation": [],
           "storageId": "file@r7d4avps",
           "fieldId": "filesHidden"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {
             "models": [
@@ -1568,7 +1568,7 @@
             "name": "ref-advanced-single",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1576,14 +1576,14 @@
           "label": "Self-reference",
           "type": "ref",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "2dz3plal",
           "validation": [],
           "storageId": "ref@2dz3plal",
           "fieldId": "selfReference"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {
             "models": [
@@ -1598,7 +1598,7 @@
               "newItemPosition": "last"
             }
           },
-          "helpText": "Random Text 1",
+          "description": "Random Text 1",
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1606,14 +1606,14 @@
           "label": "Self-refence list",
           "type": "ref",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "6tq48k30",
           "validation": [],
           "storageId": "ref@6tq48k30",
           "fieldId": "selfRefenceList"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {
             "models": [
@@ -1625,7 +1625,7 @@
           "renderer": {
             "name": "ref-advanced-single"
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1633,21 +1633,21 @@
           "label": "REf 2",
           "type": "ref",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "0qgg1iv9",
           "validation": [],
           "storageId": "ref@0qgg1iv9",
           "fieldId": "rEf2"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
             "name": "text-input",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1655,7 +1655,7 @@
           "label": "Title Two",
           "type": "text",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "02b1oz70",
           "validation": [
             {
@@ -1682,7 +1682,7 @@
           "fieldId": "titletwo"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {
             "type": "date"
@@ -1691,7 +1691,7 @@
             "name": "date-time-input",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1699,14 +1699,14 @@
           "label": "Date Only",
           "type": "datetime",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "trk3vc4f",
           "validation": [],
           "storageId": "datetime@trk3vc4f",
           "fieldId": "dateOnly"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {
             "type": "time"
@@ -1715,7 +1715,7 @@
             "name": "date-time-input",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1723,14 +1723,14 @@
           "label": "Time Only",
           "type": "datetime",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "fktin5dq",
           "validation": [],
           "storageId": "datetime@fktin5dq",
           "fieldId": "timeOnly"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {
             "type": "dateTimeWithTimezone"
@@ -1739,7 +1739,7 @@
             "name": "date-time-input",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1747,14 +1747,14 @@
           "label": "DateTime With Timezone",
           "type": "datetime",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "fvcwsv35",
           "validation": [],
           "storageId": "datetime@fvcwsv35",
           "fieldId": "dateTimeWithTimezone"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {
             "type": "dateTimeWithoutTimezone"
@@ -1763,7 +1763,7 @@
             "name": "date-time-input",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1771,14 +1771,14 @@
           "label": "DateTime Without Timezone",
           "type": "datetime",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "fhlf8nxg",
           "validation": [],
           "storageId": "datetime@fhlf8nxg",
           "fieldId": "dateTimeWithoutTimezone"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {
             "fields": [
@@ -1839,7 +1839,7 @@
                 "storageId": "datetime@pielxpv7"
               },
               {
-                "multipleValues": true,
+                "list": true,
                 "settings": {
                   "type": "date"
                 },
@@ -1869,7 +1869,7 @@
                 "storageId": "datetime@xkdlenm9"
               },
               {
-                "multipleValues": true,
+                "list": true,
                 "settings": {
                   "type": "dateTimeWithTimezone"
                 },
@@ -1885,7 +1885,7 @@
                 "storageId": "datetime@njje9j08"
               },
               {
-                "multipleValues": true,
+                "list": true,
                 "settings": {
                   "type": "dateTimeWithoutTimezone"
                 },
@@ -1916,7 +1916,7 @@
             "name": "object",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -1924,14 +1924,14 @@
           "label": "Single Object",
           "type": "object",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "rvehnj10",
           "validation": [],
           "storageId": "object@rvehnj10",
           "fieldId": "singleObject"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [
             {
               "name": "minLength",
@@ -2007,7 +2007,7 @@
                 "storageId": "datetime@3j4cjb8n"
               },
               {
-                "multipleValues": true,
+                "list": true,
                 "settings": {
                   "type": "date"
                 },
@@ -2023,7 +2023,7 @@
                 "storageId": "datetime@j5shdral"
               },
               {
-                "multipleValues": true,
+                "list": true,
                 "settings": {
                   "type": "time"
                 },
@@ -2039,7 +2039,7 @@
                 "storageId": "datetime@kj9ef5cp"
               },
               {
-                "multipleValues": true,
+                "list": true,
                 "settings": {
                   "type": "dateTimeWithTimezone"
                 },
@@ -2055,7 +2055,7 @@
                 "storageId": "datetime@gnc86dcc"
               },
               {
-                "multipleValues": true,
+                "list": true,
                 "settings": {
                   "type": "dateTimeWithoutTimezone"
                 },
@@ -2086,7 +2086,7 @@
             "name": "objects",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -2094,14 +2094,14 @@
           "label": "Repeatable Object",
           "type": "object",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "tf50e6hi",
           "validation": [],
           "storageId": "object@tf50e6hi",
           "fieldId": "repeatableObject"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [
             {
               "name": "dynamicZone",
@@ -2185,7 +2185,7 @@
                     "storageId": "datetime@70k9zimt"
                   },
                   {
-                    "multipleValues": true,
+                    "list": true,
                     "settings": {
                       "type": "date"
                     },
@@ -2201,7 +2201,7 @@
                     "storageId": "datetime@rs29ozkk"
                   },
                   {
-                    "multipleValues": true,
+                    "list": true,
                     "settings": {
                       "type": "time"
                     },
@@ -2217,7 +2217,7 @@
                     "storageId": "datetime@5ipm0trn"
                   },
                   {
-                    "multipleValues": true,
+                    "list": true,
                     "settings": {
                       "type": "dateTimeWithTimezone"
                     },
@@ -2233,7 +2233,7 @@
                     "storageId": "datetime@3jr6exlc"
                   },
                   {
-                    "multipleValues": true,
+                    "list": true,
                     "settings": {
                       "type": "dateTimeWithoutTimezone"
                     },
@@ -2259,7 +2259,7 @@
               "open": false
             }
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -2267,14 +2267,14 @@
           "label": "A Dynamic Zone",
           "type": "dynamicZone",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "0z79425z",
           "validation": [],
           "storageId": "dynamicZone@0z79425z",
           "fieldId": "aDynamicZone"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [
             {
               "name": "dynamicZone",
@@ -2358,7 +2358,7 @@
                     "storageId": "datetime@rc8w33f0"
                   },
                   {
-                    "multipleValues": true,
+                    "list": true,
                     "settings": {
                       "type": "date"
                     },
@@ -2374,7 +2374,7 @@
                     "storageId": "datetime@3iqbejbe"
                   },
                   {
-                    "multipleValues": true,
+                    "list": true,
                     "settings": {
                       "type": "time"
                     },
@@ -2390,7 +2390,7 @@
                     "storageId": "datetime@f3eh4tc1"
                   },
                   {
-                    "multipleValues": true,
+                    "list": true,
                     "settings": {
                       "type": "dateTimeWithTimezone"
                     },
@@ -2406,7 +2406,7 @@
                     "storageId": "datetime@08h1re3x"
                   },
                   {
-                    "multipleValues": true,
+                    "list": true,
                     "settings": {
                       "type": "dateTimeWithoutTimezone"
                     },
@@ -2432,7 +2432,7 @@
               "open": false
             }
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -2440,14 +2440,14 @@
           "label": "A Repeatable Dynamic Zone",
           "type": "dynamicZone",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "5j23m293",
           "validation": [],
           "storageId": "dynamicZone@5j23m293",
           "fieldId": "aRepeatableDynamicZone"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {
             "type": "date"
@@ -2456,7 +2456,7 @@
             "name": "date-time-inputs",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -2464,14 +2464,14 @@
           "label": "Date Only List",
           "type": "datetime",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "d1r57p53",
           "validation": [],
           "storageId": "datetime@d1r57p53",
           "fieldId": "dateOnlyList"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {
             "type": "time"
@@ -2480,7 +2480,7 @@
             "name": "date-time-inputs",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -2488,14 +2488,14 @@
           "label": "Time Only List",
           "type": "datetime",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "k5wkm7f6",
           "validation": [],
           "storageId": "datetime@k5wkm7f6",
           "fieldId": "timeOnlyList"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {
             "type": "dateTimeWithTimezone"
@@ -2504,7 +2504,7 @@
             "name": "date-time-inputs",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -2512,14 +2512,14 @@
           "label": "DateTime With Timezone List",
           "type": "datetime",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "sk0peey7",
           "validation": [],
           "storageId": "datetime@sk0peey7",
           "fieldId": "dateTimeWithTimezoneList"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {
             "type": "dateTimeWithoutTimezone"
@@ -2528,7 +2528,7 @@
             "name": "date-time-inputs",
             "settings": {}
           },
-          "helpText": null,
+          "description": null,
           "predefinedValues": {
             "enabled": false,
             "values": []
@@ -2536,7 +2536,7 @@
           "label": "DateTime Without Timezone List",
           "type": "datetime",
           "tags": [],
-          "placeholderText": null,
+          "placeholder": null,
           "id": "a0gspaxr",
           "validation": [],
           "storageId": "datetime@a0gspaxr",

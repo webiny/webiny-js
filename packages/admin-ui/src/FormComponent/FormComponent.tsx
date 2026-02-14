@@ -18,6 +18,11 @@ interface FormComponentProps<TValue = any> {
     note?: React.ReactNode;
 
     /**
+     * Hint to be displayed in a tooltip.
+     */
+    hint?: React.ReactNode;
+
+    /**
      * Indicates whether the form component is required.
      */
     required?: boolean;

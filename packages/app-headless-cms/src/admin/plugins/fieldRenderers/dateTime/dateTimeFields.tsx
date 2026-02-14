@@ -22,7 +22,7 @@ const plugin: CmsModelFieldRendererPlugin = {
         canUse({ field }) {
             return !!(
                 field.type === "datetime" &&
-                field.multipleValues &&
+                field.list &&
                 !get(field, "predefinedValues.enabled")
             );
         },

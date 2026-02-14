@@ -103,9 +103,9 @@ const plugin: CmsModelFieldTypePlugin = {
         label: t`Reference`,
         description: t`Reference existing content entries. For example, a book can reference one or more authors.`,
         icon: <RefIcon />,
-        allowMultipleValues: true,
+        allowList: true,
         allowPredefinedValues: false,
-        multipleValuesLabel: t`Use as a list of references`,
+        listLabel: t`Use as a list of references`,
         createField() {
             return {
                 type: this.type,

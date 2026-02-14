@@ -17,11 +17,7 @@ const plugin: CmsModelFieldRendererPlugin = {
         name: t`Text Inputs`,
         description: t`Renders a simple list of text inputs.`,
         canUse({ field }) {
-            return (
-                field.type === "text" &&
-                !!field.multipleValues &&
-                !get(field, "predefinedValues.enabled")
-            );
+            return field.type === "text" && !!field.list && !get(field, "predefinedValues.enabled");
         },
         render(props) {
             return (
@@ -36,7 +32,7 @@ const plugin: CmsModelFieldRendererPlugin = {
                                 validation={bind.index.validation}
                                 onEnter={() => bind.field.appendValue("")}
                                 label={t`Value {number}`({ number: index + 1 })}
-                                placeholder={props.field.placeholderText}
+                                placeholder={props.field.placeholder}
                                 data-testid={`fr.input.texts.${props.field.label}.${index + 1}`}
                                 endIcon={
                                     <Icon

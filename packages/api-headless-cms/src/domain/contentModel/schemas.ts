@@ -40,8 +40,12 @@ const fieldSystemFields: string[] = [
 
 const str = zod.string().trim();
 const shortString = str.max(255);
+const longString = str;
 const optionalShortString = shortString.optional();
-const optionalNullishShortString = optionalShortString.nullish();
+const optionalLongString = longString.optional();
+const optionalNullishShortString = optionalShortString.nullish().default(null);
+const optionalNullishLongString = optionalLongString.nullish().default(null);
+
 const icon = zod
     .object({
         type: zod.string(),
@@ -87,11 +91,13 @@ const fieldSchema = zod.object({
             }
         }),
     label: shortString,
-    helpText: optionalShortString.optional().nullish().default(null),
-    placeholderText: optionalShortString.optional().nullable().default(null),
+    help: optionalNullishLongString,
+    description: optionalNullishShortString,
+    note: optionalNullishShortString,
+    placeholder: optionalNullishShortString,
     type: shortString,
     tags: zod.array(shortString).optional().default([]),
-    multipleValues: zod
+    list: zod
         .boolean()
         .optional()
         .nullish()

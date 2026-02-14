@@ -35,13 +35,13 @@ const model = createModel({
         createModelField({
             fieldId: "authors",
             type: "object",
-            multipleValues: true,
+            list: true,
             settings: {
                 fields: [
                     createModelField({
                         fieldId: "name",
                         type: "text",
-                        multipleValues: false
+                        list: false
                     })
                 ]
             }

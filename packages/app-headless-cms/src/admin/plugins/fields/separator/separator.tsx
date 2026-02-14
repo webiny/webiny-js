@@ -15,7 +15,7 @@ export const separatorField: CmsModelFieldTypePlugin = {
         icon: <SeparatorIcon />,
         allowLayout: false,
         hideInAdmin: false,
-        allowMultipleValues: false,
+        allowList: false,
         allowPredefinedValues: false,
         createField() {
             return {

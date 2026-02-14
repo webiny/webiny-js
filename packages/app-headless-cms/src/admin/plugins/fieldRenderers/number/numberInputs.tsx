@@ -18,9 +18,7 @@ const plugin: CmsModelFieldRendererPlugin = {
         description: t`Renders a simple list of number inputs.`,
         canUse({ field }) {
             return (
-                field.type === "number" &&
-                !!field.multipleValues &&
-                !get(field, "predefinedValues.enabled")
+                field.type === "number" && !!field.list && !get(field, "predefinedValues.enabled")
             );
         },
         render(props) {
@@ -36,7 +34,7 @@ const plugin: CmsModelFieldRendererPlugin = {
                                 validation={bind.index.validation}
                                 onEnter={() => bind.field.appendValue("")}
                                 label={t`Value {number}`({ number: index + 1 })}
-                                placeholder={props.field.placeholderText}
+                                placeholder={props.field.placeholder}
                                 data-testid={`fr.input.numbers.${props.field.label}.${index + 1}`}
                                 type="number"
                                 endIcon={

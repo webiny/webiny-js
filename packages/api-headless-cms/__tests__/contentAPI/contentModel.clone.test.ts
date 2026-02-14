@@ -2,11 +2,12 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { CmsGroup, CmsModel, CmsModelField } from "~/types";
 import models from "./mocks/contentModels";
+import { createIcon } from "~tests/__helpers/icon.js";
 
 const setEmptyTextsAsNull = (fields: CmsModelField[]): CmsModelField[] => {
     return fields.map(field => {
-        field.helpText = field.helpText || null;
-        field.placeholderText = field.placeholderText || null;
+        field.help = field.help || null;
+        field.placeholder = field.placeholder || null;
 
         if (field?.settings?.fields) {
             field.settings.fields = setEmptyTextsAsNull(field.settings.fields);
@@ -52,7 +53,7 @@ describe("content model - cloning", () => {
             data: {
                 name: "Default group",
                 slug: "default-group",
-                icon: "ico/ico",
+                icon: createIcon("ico/ico"),
                 description: "description"
             }
         });
@@ -62,7 +63,7 @@ describe("content model - cloning", () => {
             data: {
                 name: "Clone group",
                 slug: "clone-group",
-                icon: "ico/ico",
+                icon: createIcon("ico/ico"),
                 description: "description"
             }
         });

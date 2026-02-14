@@ -35,13 +35,13 @@ const model = createModel({
         createModelField({
             fieldId: "profiles",
             type: "object",
-            multipleValues: true,
+            list: true,
             settings: {
                 fields: [
                     createModelField({
                         fieldId: "scores",
                         type: "number",
-                        multipleValues: true
+                        list: true
                     })
                 ]
             }

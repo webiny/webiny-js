@@ -25,7 +25,7 @@ const model = createModel({
         createModelField({
             fieldId: "metadata",
             type: "json",
-            multipleValues: false
+            list: false
         })
     ]
 });

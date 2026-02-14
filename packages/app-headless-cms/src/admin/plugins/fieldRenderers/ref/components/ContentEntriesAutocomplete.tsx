@@ -42,7 +42,7 @@ const ContentEntriesAutocomplete = ({ bind, field }: ContentEntriesAutocompleteP
             here: <SimpleLink to={link}>{t`here`}</SimpleLink>
         });
     }
-    const { renderNewEntryModal, refModelId, helpText } = useNewRefEntry({ field });
+    const { renderNewEntryModal, refModelId, help } = useNewRefEntry({ field });
     const model = models.find(model => model.modelId === refModelId);
 
     /*
@@ -71,7 +71,7 @@ const ContentEntriesAutocomplete = ({ bind, field }: ContentEntriesAutocompleteP
                     label={field.label}
                     note={entryInfo}
                     data-testid={`fr.input.autocomplete.${field.label}`}
-                    description={<>{field.helpText}</>}
+                    description={<>{field.help}</>}
                     onInput={debounce(search => setSearch(search), 250)}
                     noResultFound={<NewEntryButton onClick={() => setShowNewEntryModal(true)} />}
                 />
@@ -88,10 +88,10 @@ const ContentEntriesAutocomplete = ({ bind, field }: ContentEntriesAutocompleteP
             value={value || undefined}
             options={options}
             label={field.label}
-            description={<>{field.helpText}</>}
+            description={<>{field.help}</>}
             note={entryInfo}
             onInput={debounce(search => setSearch(search), 250)}
-            noResultFound={helpText}
+            noResultFound={help}
         />
     );
 };

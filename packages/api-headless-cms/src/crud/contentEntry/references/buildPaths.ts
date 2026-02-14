@@ -2,10 +2,7 @@ import type { CmsDynamicZoneTemplate, CmsEntryValues, CmsModelField } from "~/ty
 import dotPropImmutable from "dot-prop-immutable";
 import { getBaseFieldType } from "~/utils/getBaseFieldType.js";
 
-type INarrowedCmsModelField = Pick<
-    CmsModelField,
-    "fieldId" | "multipleValues" | "type" | "settings"
->;
+type INarrowedCmsModelField = Pick<CmsModelField, "fieldId" | "list" | "type" | "settings">;
 
 interface IResolveBaseRefField<TValues extends CmsEntryValues = CmsEntryValues> {
     collection: string[];
@@ -20,7 +17,7 @@ const resolveBaseRef = <TValues extends CmsEntryValues = CmsEntryValues>(
 ): string[] => {
     const { field, parentPaths, input, collection, isMultipleValues } = params;
     const parentPathsValue = parentPaths.length > 0 ? `${parentPaths.join(".")}.` : "";
-    if (field.multipleValues) {
+    if (field.list) {
         const inputValue = dotPropImmutable.get(input, `${field.fieldId}`, []);
         if (!Array.isArray(inputValue)) {
             return collection;
@@ -81,7 +78,7 @@ export const buildReferenceFieldPaths = <TValues extends CmsEntryValues = CmsEnt
             if (baseType === "dynamicZone") {
                 const templates: CmsDynamicZoneTemplate[] = field.settings?.templates || [];
 
-                if (field.multipleValues) {
+                if (field.list) {
                     const values = dotPropImmutable.get(input, field.fieldId, []);
                     if (!Array.isArray(values)) {
                         return collection;
@@ -147,7 +144,7 @@ export const buildReferenceFieldPaths = <TValues extends CmsEntryValues = CmsEnt
             /**
              * If field is multiple values one, we need to go through the input and use the existing keys.
              */
-            if (field.multipleValues) {
+            if (field.list) {
                 if (Array.isArray(objFieldInputValue) === false) {
                     return collection;
                 }

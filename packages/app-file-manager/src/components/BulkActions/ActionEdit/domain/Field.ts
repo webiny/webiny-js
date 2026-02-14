@@ -61,7 +61,7 @@ export class Operator {
             }
         ];
 
-        if (field.multipleValues) {
+        if (field.list) {
             operators.push({
                 label: "Append to existing values",
                 value: OperatorType.APPEND

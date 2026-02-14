@@ -97,7 +97,7 @@ const createResolver = (
 
             const typeName = `${graphQLType}_${createTypeName(field.fieldId)}`;
 
-            if (field.multipleValues && Array.isArray(value)) {
+            if (field.list && Array.isArray(value)) {
                 const remappedValues = value.map(v => {
                     const template = templates.find(tpl => tpl.id === v._templateId);
                     if (!template) {
@@ -221,7 +221,7 @@ export const createDynamicZoneField =
 
                     return {
                         fields: `${field.fieldId}: ${
-                            field.multipleValues ? `[${unionTypeName}!]` : unionTypeName
+                            field.list ? `[${unionTypeName}!]` : unionTypeName
                         }`,
                         typeDefs: typeDefs.join("\n")
                     };
@@ -260,7 +260,7 @@ export const createDynamicZoneField =
 
                     return {
                         fields: `${field.fieldId}: ${
-                            field.multipleValues ? `[${unionTypeName}!]` : unionTypeName
+                            field.list ? `[${unionTypeName}!]` : unionTypeName
                         }`,
                         typeDefs: typeDefs.concat(templateIds).join("\n")
                     };
@@ -319,7 +319,7 @@ export const createDynamicZoneField =
                 normalizeInput: ({ field, input }) => {
                     const templates = field.settings?.templates || [];
 
-                    if (Array.isArray(input) && field.multipleValues) {
+                    if (Array.isArray(input) && field.list) {
                         return input
                             .map(value => normalizeDynamicZoneInput(value, templates))
                             .filter(Boolean);

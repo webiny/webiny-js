@@ -35,13 +35,13 @@ const model = createModel({
         createModelField({
             fieldId: "profiles",
             type: "object",
-            multipleValues: true,
+            list: true,
             settings: {
                 fields: [
                     createModelField({
                         fieldId: "avatar",
                         type: "file",
-                        multipleValues: false
+                        list: false
                     })
                 ]
             }

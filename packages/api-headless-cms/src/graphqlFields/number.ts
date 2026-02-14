@@ -35,7 +35,7 @@ export const createNumberField = (): CmsModelFieldToGraphQLPlugin => {
             },
             createListFilters,
             createTypeField({ field }) {
-                if (field.multipleValues) {
+                if (field.list) {
                     return `${field.fieldId}: [Number]`;
                 }
 
@@ -45,7 +45,7 @@ export const createNumberField = (): CmsModelFieldToGraphQLPlugin => {
         manage: {
             createListFilters,
             createTypeField({ field }) {
-                if (field.multipleValues) {
+                if (field.list) {
                     return field.fieldId + ": [Number]";
                 }
 

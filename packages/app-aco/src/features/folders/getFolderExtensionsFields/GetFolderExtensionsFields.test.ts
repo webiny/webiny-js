@@ -28,7 +28,7 @@ describe("GetFolderExtensionsFields", () => {
                         message: "Value is required."
                     }
                 ],
-                multipleValues: false,
+                list: false,
                 predefinedValues: {
                     values: [],
                     enabled: false
@@ -113,13 +113,13 @@ describe("GetFolderExtensionsFields", () => {
                 },
                 listValidation: [],
                 validation: [],
-                multipleValues: false,
+                list: false,
                 predefinedValues: {
                     values: [],
                     enabled: false
                 },
-                helpText: null,
-                placeholderText: null,
+                help: null,
+                placeholder: null,
                 renderer: null
             }
         ],

@@ -38,9 +38,9 @@ const plugin: CmsModelFieldTypePlugin = {
         label: t`Boolean`,
         description: t`Store boolean ("yes" or "no" ) values.`,
         icon: <BooleanIcon />,
-        allowMultipleValues: false,
+        allowList: false,
         allowPredefinedValues: false,
-        multipleValuesLabel: t`Use as a list of booleans`,
+        listLabel: t`Use as a list of booleans`,
         createField() {
             return {
                 type: this.type,

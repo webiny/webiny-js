@@ -51,25 +51,25 @@ const model = createModel({
         createModelField({
             fieldId: "profile",
             type: "object",
-            multipleValues: false,
+            list: false,
             settings: {
                 fields: [
                     createModelField({
                         fieldId: "contacts",
                         type: "object",
-                        multipleValues: true,
+                        list: true,
                         settings: {
                             fields: [
                                 createModelField({
                                     fieldId: "info",
                                     type: "object",
-                                    multipleValues: false,
+                                    list: false,
                                     settings: {
                                         fields: [
                                             createModelField({
                                                 fieldId: "tags",
                                                 type: "text",
-                                                multipleValues: true
+                                                list: true
                                             })
                                         ]
                                     }

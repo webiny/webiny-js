@@ -81,7 +81,7 @@ export interface UniqueValidator {
 }
 
 /**
- * List validators (for multipleValues fields).
+ * List validators (for list fields).
  * These validate the array itself, not individual items.
  */
 export interface ListMinLengthValidator {

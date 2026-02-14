@@ -19,7 +19,7 @@ const model = createModel({
         createModelField({
             fieldId: "timestamps",
             type: "datetime",
-            multipleValues: true
+            list: true
         })
     ]
 });

@@ -24,13 +24,13 @@ class TenantModelFactory implements ModelFactory.Interface {
                 name: fields
                     .text()
                     .label("Name")
-                    .helpText("Enter a tenant name")
+                    .description("Enter a tenant name")
                     .required()
                     .renderer("text-input"),
                 description: fields
                     .longText()
                     .label("Description")
-                    .helpText("Enter a short tenant description")
+                    .description("Enter a short tenant description")
                     .renderer("long-text-text-area")
                     .required(),
                 status: fields

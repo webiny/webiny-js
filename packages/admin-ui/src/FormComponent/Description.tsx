@@ -1,6 +1,7 @@
 import React from "react";
 import { Text, type TextProps } from "~/Text/index.js";
 import { cn, cva, makeDecoratable, type VariantProps } from "~/utils.js";
+import { useAdminUi } from "~/AdminUiProvider/index.js";
 
 const formComponentDescriptionVariants = cva("mb-sm text-neutral-strong", {
     variants: {
@@ -21,6 +22,8 @@ const DecoratableFormComponentDescription = ({
     className,
     ...props
 }: FormComponentDescriptionProps) => {
+    const { compileMarkdown } = useAdminUi();
+
     if (!text) {
         return null;
     }
@@ -32,7 +35,7 @@ const DecoratableFormComponentDescription = ({
             as={"div"}
             className={cn(formComponentDescriptionVariants({ disabled }), className)}
         >
-            {text}
+            {compileMarkdown(text)}
         </Text>
     );
 };

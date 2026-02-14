@@ -42,9 +42,7 @@ describe("model field traverser", () => {
                       .sort()
                       .join(",")}`
                 : "";
-            result.push(
-                `${field.type}@${path.join(".")}#${field.multipleValues ? "m" : "s"}${ref}`
-            );
+            result.push(`${field.type}@${path.join(".")}#${field.list ? "m" : "s"}${ref}`);
         });
 
         expect(result).toEqual([
@@ -89,9 +87,7 @@ describe("model field traverser", () => {
                       .sort()
                       .join(",")}`
                 : "";
-            result.push(
-                `${field.type}@${path.join(".")}#${field.multipleValues ? "m" : "s"}${ref}`
-            );
+            result.push(`${field.type}@${path.join(".")}#${field.list ? "m" : "s"}${ref}`);
         });
 
         expect(result.sort()).toEqual([

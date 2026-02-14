@@ -15,7 +15,7 @@ const model = createModel({
         createModelField({
             fieldId: "isActive",
             type: "boolean",
-            multipleValues: false
+            list: false
         })
     ]
 });

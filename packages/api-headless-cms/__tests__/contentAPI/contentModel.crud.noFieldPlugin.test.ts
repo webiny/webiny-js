@@ -156,36 +156,36 @@ describe("content model test no field plugin", () => {
                 fields: [
                     {
                         id: "1234",
-                        multipleValues: false,
-                        helpText: "",
+                        list: false,
+                        description: "",
                         label: "Title",
                         type: "text",
                         storageId: "title",
                         validation: [],
                         listValidation: [],
-                        placeholderText: "placeholder text",
+                        placeholder: "placeholder text",
                         renderer: {
                             name: "renderer"
                         }
                     },
                     {
                         id: "2345",
-                        multipleValues: false,
-                        helpText: "",
+                        list: false,
+                        description: "",
                         label: "Slug",
                         type: "text",
                         storageId: "slug",
                         validation: [],
                         listValidation: [],
-                        placeholderText: "placeholder text",
+                        placeholder: "placeholder text",
                         renderer: {
                             name: "renderer"
                         }
                     },
                     {
                         id: "9999",
-                        multipleValues: false,
-                        helpText: "",
+                        list: false,
+                        description: "",
                         label: "Test",
                         type: "custom-test-field",
                         storageId: "test",

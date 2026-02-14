@@ -77,7 +77,7 @@ const objectField: CmsModelField = {
                             fieldId: "options",
                             storageId: "optionsStorageId",
                             type: "object",
-                            multipleValues: true,
+                            list: true,
                             settings: {
                                 fields: [
                                     {

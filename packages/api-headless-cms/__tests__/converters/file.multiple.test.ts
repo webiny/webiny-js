@@ -23,7 +23,7 @@ const model = createModel({
         createModelField({
             fieldId: "images",
             type: "file",
-            multipleValues: true
+            list: true
         })
     ]
 });

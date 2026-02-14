@@ -21,7 +21,7 @@ export const createImageModel = (group: Pick<CmsGroup, "slug">): TestCmsModel =>
                 type: "object",
                 label: "Images",
                 storageId: "",
-                multipleValues: true,
+                list: true,
                 settings: {
                     fields: [
                         createModelField({

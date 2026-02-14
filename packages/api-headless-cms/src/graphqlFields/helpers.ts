@@ -17,7 +17,7 @@ const envVars: string[] = [
  */
 export const createGraphQLInputField = (field: CmsModelField, graphQlType: string): string => {
     const singleRequired = getIsRequired(field.validation) ? "!" : "";
-    if (!field.multipleValues) {
+    if (!field.list) {
         return `${field.fieldId}: ${graphQlType}`;
     }
 

@@ -42,12 +42,12 @@ export const DynamicZoneContainer = makeDecoratable(
                 validation: { isValid, message }
             },
             title = field.label,
-            description = field.helpText,
+            description = field.help,
             className,
             children
         } = props;
 
-        const defaultClassName = field.multipleValues ? noBottomPadding : undefined;
+        const defaultClassName = field.list ? noBottomPadding : undefined;
         const { open } = getAccordionRenderSettings(field);
 
         return (
@@ -87,7 +87,7 @@ const DynamicZoneContent = ({ field, getBind, contentModel }: CmsModelFieldRende
 
     const Bind = getBind();
 
-    const Component = field.multipleValues ? MultiValueDynamicZone : SingleValueDynamicZone;
+    const Component = field.list ? MultiValueDynamicZone : SingleValueDynamicZone;
 
     return (
         <Bind>

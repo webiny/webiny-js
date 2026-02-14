@@ -912,7 +912,7 @@ describe("entry references", () => {
             }
         });
         /**
-         * Filtering on multipleValues field
+         * Filtering on list field
          */
 
         const [listArticlesFoodMultipleEntryIdResponse] = await articleReader.listArticles({

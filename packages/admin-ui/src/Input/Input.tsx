@@ -14,6 +14,7 @@ type InputProps = InputPrimitiveProps & FormComponentProps;
 const DecoratableInput = ({
     label,
     description,
+    hint,
     note,
     required,
     disabled,
@@ -49,6 +50,7 @@ const DecoratableInput = ({
                 required={required}
                 disabled={disabled}
                 invalid={invalid}
+                hint={hint}
             />
             <FormComponentDescription text={description} disabled={disabled} />
             <InputPrimitive

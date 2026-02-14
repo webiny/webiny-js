@@ -81,7 +81,7 @@ export class ContentEntryTraverser implements IContentEntryTraverser {
             value = values[fieldIdKey];
 
             if (nodeHasChildren(node) && childrenAreCollections(node)) {
-                if (field.multipleValues) {
+                if (field.list) {
                     const arrayValue = this.ensureArray(value);
                     for (let i = 0; i < arrayValue.length; i++) {
                         await this.findCollectionAndVisit<T>(
@@ -96,7 +96,7 @@ export class ContentEntryTraverser implements IContentEntryTraverser {
                 await this.findCollectionAndVisit<T>(node, value as T, fieldPath, visitor);
             }
 
-            if (field.multipleValues) {
+            if (field.list) {
                 const arrayValue = this.ensureArray(value);
                 for (let i = 0; i < arrayValue.length; i++) {
                     await this.visitTree(

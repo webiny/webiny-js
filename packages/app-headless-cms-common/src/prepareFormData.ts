@@ -65,7 +65,7 @@ export const prepareFormData = <T extends Record<string, any>>(
 
         const fieldId: keyof T = field.fieldId;
 
-        if (field.multipleValues) {
+        if (field.list) {
             const values = Array.isArray(inputValue) ? inputValue : undefined;
             if (!values) {
                 return output;

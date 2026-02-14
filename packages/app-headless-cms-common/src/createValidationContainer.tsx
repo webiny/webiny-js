@@ -20,8 +20,8 @@ export const createValidationContainer = (path: string) => {
     return function ValidationContainer({ children }: { children: React.ReactNode }) {
         const { field } = useModelField();
 
-        if (field.multipleValues === undefined) {
-            field.multipleValues = false;
+        if (field.list === undefined) {
+            field.list = false;
         }
 
         return (
@@ -29,7 +29,7 @@ export const createValidationContainer = (path: string) => {
                 class={"block"}
                 data-path={path}
                 data-field-type={field.type}
-                data-field-multiple-values={String(field.multipleValues)}
+                data-field-multiple-values={String(field.list)}
                 data-field-renderer={String(field.renderer.name)}
             >
                 {children}

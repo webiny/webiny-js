@@ -19,14 +19,14 @@ export const createRichTextResolver = (
 
         // If `lexical` state is requested explicitly
         if (outputFormat === "lexical") {
-            if (field.multipleValues) {
+            if (field.list) {
                 return (rawValue as unknown as RichTextContents[]).map(value => value.state);
             }
             return rawValue?.state ?? null;
         }
 
         // Otherwise return HTML
-        if (field.multipleValues) {
+        if (field.list) {
             return (rawValue as unknown as RichTextContents[]).map(value => value?.html ?? null);
         }
 

@@ -8,7 +8,7 @@ const createFieldFactory: FieldFactory = base => {
             type: "text",
             storageId: "text@textFieldId",
             fieldId: "textField",
-            multipleValues: false,
+            list: false,
             ...base,
             ...field
         };

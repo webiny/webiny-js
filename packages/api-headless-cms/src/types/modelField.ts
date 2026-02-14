@@ -57,17 +57,25 @@ export interface CmsModelField {
      */
     fieldId: string;
     /**
-     * A label for the field
+     * A label for the field.
      */
     label: string;
     /**
-     * Text below the field to clarify what is it meant to be in the field value
+     * Field description right below the label.
      */
-    helpText?: string | null;
+    description?: string | null;
     /**
-     * Text to be displayed in the field
+     * Note displayed below the input.
      */
-    placeholderText?: string | null;
+    note?: string | null;
+    /**
+     * Text in the tooltip next to the input label.
+     */
+    help?: string | null;
+    /**
+     * Placeholder text to be displayed in the field
+     */
+    placeholder?: string | null;
     /**
      * Are predefined values enabled? And list of them
      */
@@ -94,7 +102,7 @@ export interface CmsModelField {
      * Is this a multiple values field?
      *
      */
-    multipleValues?: boolean;
+    list?: boolean;
     /**
      * Fields can be tagged to give them contextual meaning.
      */
@@ -135,13 +143,21 @@ export interface CmsModelFieldInput {
      */
     label: string;
     /**
-     * Text to display below the field to help user what to write in the field.
+     * Field description right below the label.
      */
-    helpText?: string | null;
+    description?: string | null;
     /**
-     * Text to display in the field.
+     * Note displayed below the input.
      */
-    placeholderText?: string | null;
+    note?: string | null;
+    /**
+     * Text in the tooltip next to the input label.
+     */
+    help?: string | null;
+    /**
+     * Placeholder text to be displayed in the field
+     */
+    placeholder?: string | null;
     /**
      * Fields can be tagged to give them contextual meaning.
      */
@@ -149,7 +165,7 @@ export interface CmsModelFieldInput {
     /**
      * Are multiple values allowed?
      */
-    multipleValues?: boolean;
+    list?: boolean;
     /**
      * Predefined values options for the field. Check the reference for more information.
      */

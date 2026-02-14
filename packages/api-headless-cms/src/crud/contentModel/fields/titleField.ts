@@ -5,7 +5,7 @@ import { getApplicableFieldById } from "~/crud/contentModel/fields/getApplicable
 const defaultTitleFieldId = "id";
 
 const isFieldApplicable = (field: CmsModelField) => {
-    return getBaseFieldType(field) === "text" && !field.multipleValues;
+    return getBaseFieldType(field) === "text" && !field.list;
 };
 
 /**

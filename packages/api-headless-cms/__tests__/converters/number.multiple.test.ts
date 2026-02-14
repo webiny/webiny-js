@@ -15,7 +15,7 @@ const model = createModel({
         createModelField({
             fieldId: "scores",
             type: "number",
-            multipleValues: true
+            list: true
         })
     ]
 });

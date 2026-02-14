@@ -55,13 +55,13 @@ const model = createModel({
         createModelField({
             fieldId: "configs",
             type: "object",
-            multipleValues: true,
+            list: true,
             settings: {
                 fields: [
                     createModelField({
                         fieldId: "presets",
                         type: "json",
-                        multipleValues: true
+                        list: true
                     })
                 ]
             }

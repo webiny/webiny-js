@@ -17,7 +17,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 fieldId: "carsVehicle",
                 type: "text",
                 label: "Vehicle",
-                helpText: "Make Model Year and Trim",
+                help: "Make Model Year and Trim",
                 renderer: {
                     name: "text-input"
                 },
@@ -33,7 +33,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 fieldId: "vehicleNmb",
                 type: "number",
                 label: "VehicleNumber",
-                helpText: "A unique vehicle number",
+                help: "A unique vehicle number",
                 renderer: {
                     name: "number-input"
                 },
@@ -76,7 +76,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 fieldId: "trimName",
                 type: "text",
                 label: "TrimName",
-                multipleValues: false,
+                list: false,
                 renderer: {
                     name: "text-input"
                 }
@@ -84,7 +84,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
             createModelField({
                 id: "bodyStyle",
                 fieldId: "bodyStyle",
-                multipleValues: false,
+                list: false,
                 type: "text",
                 label: "BodyStyle",
                 renderer: {
@@ -207,7 +207,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "number-input"
                 },
-                helpText: "This is a Required Field."
+                help: "This is a Required Field."
             }),
             createModelField({
                 id: "oemUrl",
@@ -523,7 +523,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "text-input"
                 },
-                helpText: "This is a Required Field."
+                help: "This is a Required Field."
             }),
             createModelField({
                 id: "retainedValue",
@@ -551,7 +551,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "number-input"
                 },
-                helpText: "This is a Required Field."
+                help: "This is a Required Field."
             }),
             createModelField({
                 id: "carsPricePageShow",
@@ -561,7 +561,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 renderer: {
                     name: "number-input"
                 },
-                helpText: "This is a Required Field."
+                help: "This is a Required Field."
             }),
             createModelField({
                 id: "carsEditorialRating",
@@ -598,7 +598,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                         createModelField({
                             id: "driveTrain",
                             fieldId: "driveTrain",
-                            multipleValues: false,
+                            list: false,
                             type: "text",
                             label: "Drivetrain",
                             renderer: {
@@ -608,7 +608,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                         createModelField({
                             id: "seatingCapacity",
                             fieldId: "seatingCapacity",
-                            multipleValues: false,
+                            list: false,
                             type: "text",
                             label: "SeatingCapacity",
                             renderer: {
@@ -618,7 +618,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                         createModelField({
                             id: "specWidth",
                             fieldId: "specWidth",
-                            multipleValues: false,
+                            list: false,
                             type: "text",
                             label: "Width",
                             renderer: {
@@ -628,7 +628,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                         createModelField({
                             id: "specLength",
                             fieldId: "specLength",
-                            multipleValues: false,
+                            list: false,
                             type: "text",
                             label: "Length",
                             renderer: {
@@ -638,7 +638,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                         createModelField({
                             id: "specHeight",
                             fieldId: "specHeight",
-                            multipleValues: false,
+                            list: false,
                             type: "text",
                             label: "Height",
                             renderer: {
@@ -649,7 +649,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "specWheelase",
                             fieldId: "specWheelbase",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "Wheelbase",
                             renderer: {
                                 name: "text-input"
@@ -659,7 +659,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "frontHeadroom",
                             fieldId: "frontHeadroom",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "FrontHeadroom",
                             renderer: {
                                 name: "text-input"
@@ -669,7 +669,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "rearHeadroom",
                             fieldId: "rearHeadroom",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "RearHeadroom",
                             renderer: {
                                 name: "text-input"
@@ -679,7 +679,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "frontShoulderRoom",
                             fieldId: "frontShoulderRoom",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "FrontShoulderRoom",
                             renderer: {
                                 name: "text-input"
@@ -689,7 +689,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "rearShoulderRoom",
                             fieldId: "rearShoulderRoom",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "RearShoulderRoom",
                             renderer: {
                                 name: "text-input"
@@ -699,7 +699,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "frontLegroom",
                             fieldId: "frontLegroom",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "FrontLegroom",
                             renderer: {
                                 name: "text-input"
@@ -709,7 +709,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "rearLegroom",
                             fieldId: "rearLegroom",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "RearLegroom",
                             renderer: {
                                 name: "text-input"
@@ -719,7 +719,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "groundClearance",
                             fieldId: "groundClearance",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "GroundClearance",
                             renderer: {
                                 name: "text-input"
@@ -729,7 +729,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "curbWeight",
                             fieldId: "curbWeight",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "CurbWeight",
                             renderer: {
                                 name: "text-input"
@@ -739,7 +739,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "cargoCapacity",
                             fieldId: "cargoCapacity",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "CargoCapacity",
                             renderer: {
                                 name: "text-input"
@@ -749,7 +749,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "specGvwr",
                             fieldId: "specGvwr",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "GVWR",
                             renderer: {
                                 name: "text-input"
@@ -759,7 +759,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "payloadCapacity",
                             fieldId: "payloadCapacity",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "PayloadCapacity",
                             renderer: {
                                 name: "text-input"
@@ -769,7 +769,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "towingCapacity",
                             fieldId: "towingCapacity",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "TowingCapacity",
                             renderer: {
                                 name: "text-input"
@@ -779,7 +779,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "engineName",
                             fieldId: "engineName",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "EngineName",
                             renderer: {
                                 name: "text-input"
@@ -789,7 +789,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "specHorsepower",
                             fieldId: "specHorsepower",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "Horsepower",
                             renderer: {
                                 name: "text-input"
@@ -799,7 +799,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "specTorque",
                             fieldId: "specTorque",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "Torque",
                             renderer: {
                                 name: "text-input"
@@ -808,7 +808,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                         createModelField({
                             id: "fuelType",
                             fieldId: "fuelType",
-                            multipleValues: false,
+                            list: false,
                             type: "text",
                             label: "FuelType",
                             renderer: {
@@ -818,7 +818,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                         createModelField({
                             id: "fuelCapacity",
                             fieldId: "fuelCapacity",
-                            multipleValues: false,
+                            list: false,
                             type: "text",
                             label: "FuelCapacity (Non-Jato)",
                             renderer: {
@@ -829,18 +829,18 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "stdEpaMpg",
                             fieldId: "stdEpaMpg",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "StdEpaMpg",
                             renderer: {
                                 name: "text-input"
                             },
-                            helpText: "This is a Required Field."
+                            help: "This is a Required Field."
                         }),
                         createModelField({
                             id: "transmissionName",
                             fieldId: "transmissionName",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "TransmissionName",
                             renderer: {
                                 name: "text-input"
@@ -850,7 +850,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "transmissionType",
                             fieldId: "transmissionType",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "TransmissionType",
                             renderer: {
                                 name: "text-input"
@@ -860,7 +860,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "drivingRange",
                             fieldId: "drivingRange",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "DrivingRange",
                             renderer: {
                                 name: "text-input"
@@ -870,7 +870,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "cylinderConfiguration",
                             fieldId: "cylinderConfiguration",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "CylinderConfiguration",
                             renderer: {
                                 name: "text-input"
@@ -880,7 +880,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "numberOfCylinders",
                             fieldId: "numberOfCylinders",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "NumberOfCylinders",
                             renderer: {
                                 name: "text-input"
@@ -890,7 +890,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "specTonnage",
                             fieldId: "specTonnage",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "Tonnage (Non-Jato)",
                             renderer: {
                                 name: "text-input"
@@ -900,7 +900,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "stdMpgWithUnits",
                             fieldId: "stdMpgWithUnits",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "StdMpg With Units (Non-Jato)",
                             renderer: {
                                 name: "text-input"
@@ -910,7 +910,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "heroLabel1",
                             fieldId: "heroLabel1",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "Hero Label1 (Non-Jato)",
                             renderer: {
                                 name: "text-input"
@@ -920,7 +920,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "heroValue1",
                             fieldId: "heroValue1",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "Hero Value1 (Non-Jato)",
                             renderer: {
                                 name: "text-input"
@@ -930,7 +930,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "vehicleClass",
                             fieldId: "vehicleClass",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "VehicleClass (Non-Jato)",
                             renderer: {
                                 name: "text-input"
@@ -940,7 +940,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "engineType",
                             fieldId: "engineType",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "Engine Type (Non-Jato)",
                             renderer: {
                                 name: "text-input"
@@ -952,7 +952,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
             createModelField({
                 id: "powertrains",
                 fieldId: "powertrains",
-                multipleValues: true,
+                list: true,
                 label: "Powertrains (Non-Jato)",
                 renderer: {
                     name: "objects-accordion"
@@ -965,7 +965,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "ptHorseower",
                             fieldId: "ptHorseower",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "Horsepower",
                             renderer: {
                                 name: "number-input"
@@ -975,7 +975,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "ptCityMpg",
                             fieldId: "ptCityMpg",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "CityMpg",
                             renderer: {
                                 name: "number-input"
@@ -985,7 +985,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "ptHwyMpg",
                             fieldId: "ptHwyMpg",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "HwyMpg",
                             renderer: {
                                 name: "number-input"
@@ -1018,7 +1018,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "fullWarrantyMiles",
                             fieldId: "fullWarrantyMiles",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "FullWarrantyMiles",
                             renderer: {
                                 name: "text-input"
@@ -1028,7 +1028,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "fullWarrantyMonths",
                             fieldId: "fullWarrantyMonths",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "FullWarrantyMonths",
                             renderer: {
                                 name: "text-input"
@@ -1038,7 +1038,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "powertrainWarrantyMiles",
                             fieldId: "powertrainWarrantyMiles",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "PowertrainWarrantyMiles",
                             renderer: {
                                 name: "text-input"
@@ -1048,7 +1048,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "powertrainWarrantyMonths",
                             fieldId: "powertrainWarrantyMonths",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "PowertrainWarrantyMonths",
                             renderer: {
                                 name: "text-input"
@@ -1058,7 +1058,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "maintenanceWarrantyMiles",
                             fieldId: "maintenanceWarrantyMiles",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "MaintenanceWarrantyMiles (non-jato)",
                             renderer: {
                                 name: "text-input"
@@ -1068,7 +1068,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "maintenanceWarrantyMonths",
                             fieldId: "maintenanceWarrantyMonths",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "MaintenanceWarrantyMonths (non-jato)",
                             renderer: {
                                 name: "text-input"
@@ -1078,7 +1078,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "roadsideWarrantyMiles",
                             fieldId: "roadsideWarrantyMiles",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "RoadsideWarrantyMiles",
                             renderer: {
                                 name: "text-input"
@@ -1088,7 +1088,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "roadsideWarrantyMonths",
                             fieldId: "roadsideWarrantyMonths",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "RoadsideWarrantyMonths",
                             renderer: {
                                 name: "text-input"
@@ -1098,7 +1098,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "corrosionWarrantyMiles",
                             fieldId: "corrosionWarrantyMiles",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "CorrosionWarrantyMiles",
                             renderer: {
                                 name: "text-input"
@@ -1108,7 +1108,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "corrosionWarrantyMonths",
                             fieldId: "corrosionWarrantyMonths",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "CorrosionWarrantyMonths",
                             renderer: {
                                 name: "text-input"
@@ -1139,7 +1139,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "pInvoice",
                             fieldId: "pInvoice",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "Invoice",
                             renderer: {
                                 name: "number-input"
@@ -1149,7 +1149,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "pMsrp",
                             fieldId: "pMsrp",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "MSRP",
                             renderer: {
                                 name: "number-input"
@@ -1159,7 +1159,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "pDestination",
                             fieldId: "pDestination",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "Destination",
                             renderer: {
                                 name: "number-input"
@@ -1169,7 +1169,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "pEffectiveOn",
                             fieldId: "pEffectiveOn",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "PriceEffectiveOn",
                             renderer: {
                                 name: "text-input"
@@ -1179,7 +1179,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "pTargetPrice",
                             fieldId: "pTargetPrice",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "Target Price(Non-Jato)",
                             renderer: {
                                 name: "number-input"
@@ -1189,7 +1189,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "pTotalTargetPrice",
                             fieldId: "pTotalTargetPrice",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "Total TargetPrice(Non-Jato)",
                             renderer: {
                                 name: "number-input"
@@ -1199,7 +1199,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "pAverageSalesTaxAndFees",
                             fieldId: "pAverageSalesTaxAndFees",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "AverageSalesTaxAndFees(Non-Jato)",
                             renderer: {
                                 name: "number-input"
@@ -1209,7 +1209,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "pGasGuzzlerTax",
                             fieldId: "pGasGuzzlerTax",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "GasGuzzlerTax(Non-Jato)",
                             renderer: {
                                 name: "number-input"
@@ -1219,7 +1219,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "pTargetRebate",
                             fieldId: "pTargetRebate",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "Target Rebate(Non-Jato)",
                             renderer: {
                                 name: "number-input"
@@ -1229,7 +1229,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "pNewMonthly",
                             fieldId: "pNewMonthly",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "NewMonthly(Non-Jato)",
                             renderer: {
                                 name: "number-input"
@@ -1239,7 +1239,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "pCpoPrice",
                             fieldId: "pCpoPrice",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "CpoPrice(Non-Jato)",
                             renderer: {
                                 name: "text-input"
@@ -1249,7 +1249,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "pExcellentRetailValue",
                             fieldId: "pExcellentRetailValue",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "ExcellentRetailValue(Non-Jato)",
                             renderer: {
                                 name: "number-input"
@@ -1259,7 +1259,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "pMsrpLabel",
                             fieldId: "pMsrpLabel",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "MsrpLabel(Non-Jato)",
                             renderer: {
                                 name: "text-input"
@@ -1269,7 +1269,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "pMsrpValue",
                             fieldId: "pMsrpValue",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "MsrpValue(Non-Jato)",
                             renderer: {
                                 name: "text-input"
@@ -1279,7 +1279,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "pFmpOrCrvLabel",
                             fieldId: "pFmpOrCrvLabel",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "FmpOrCrvLabel(Non-Jato)",
                             renderer: {
                                 name: "text-input"
@@ -1289,7 +1289,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "pFmpOrCrvValue",
                             fieldId: "pFmpOrCrvValue",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "FmpOrCrvValue(Non-Jato)",
                             renderer: {
                                 name: "text-input"
@@ -1322,7 +1322,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "nhtsaRatingOverall",
                             fieldId: "nhtsaRatingOverall",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "NhtsaRatingOverall",
                             renderer: {
                                 name: "text-input"
@@ -1332,7 +1332,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "nhtsaRatingRollover",
                             fieldId: "nhtsaRatingRollover",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "NhtsaRatingRollover",
                             renderer: {
                                 name: "text-input"
@@ -1342,7 +1342,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "nhtsaRatingFrontDriver",
                             fieldId: "nhtsaRatingFrontDriver",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "NhtsaRatingFrontDriver (Non-Jato)",
                             renderer: {
                                 name: "text-input"
@@ -1352,7 +1352,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "nhtsaRatingFrontPassenger",
                             fieldId: "nhtsaRatingFrontPassenger",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "NhtsaRatingFrontPassenger (Non-Jato)",
                             renderer: {
                                 name: "text-input"
@@ -1362,7 +1362,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "nhtsaRatingFrontSide",
                             fieldId: "nhtsaRatingFrontSide",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "NhtsaRatingFrontSide (Non-Jato)",
                             renderer: {
                                 name: "text-input"
@@ -1372,7 +1372,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "nhtsaRatingRearSide",
                             fieldId: "nhtsaRatingRearSide",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "NhtsaRatingRearSide (Non-Jato)",
                             renderer: {
                                 name: "text-input"
@@ -1382,7 +1382,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "iihsFrontModerateOverlap",
                             fieldId: "iihsFrontModerateOverlap",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "IihsFrontModerateOverlap (Non-Jato)",
                             renderer: {
                                 name: "text-input"
@@ -1392,7 +1392,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "iihsOverallSideCrash",
                             fieldId: "iihsOverallSideCrash",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "IihsOverallSideCrash (Non-Jato)",
                             renderer: {
                                 name: "text-input"
@@ -1402,7 +1402,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "iihsBestPick",
                             fieldId: "iihsBestPick",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "IihsBestPick (Non-Jato)",
                             renderer: {
                                 name: "text-input"
@@ -1412,7 +1412,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "iihsRearCrash",
                             fieldId: "iihsRearCrash",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "IihsRearCrash (Non-Jato)",
                             renderer: {
                                 name: "text-input"
@@ -1422,7 +1422,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "iihsRoofStrength",
                             fieldId: "iihsRoofStrength",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "IihsRoofStrength (Non-Jato)",
                             renderer: {
                                 name: "text-input"
@@ -1432,7 +1432,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "iihsFrontSmallOverlap",
                             fieldId: "iihsFrontSmallOverlap",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "IihsFrontSmallOverlap (Non-Jato)",
                             renderer: {
                                 name: "text-input"
@@ -1462,7 +1462,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "depreciationTotal",
                             fieldId: "depreciationTotal",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "DepreciationTotal",
                             renderer: {
                                 name: "text-input"
@@ -1472,7 +1472,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "financingTotal",
                             fieldId: "financingTotal",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "FinancingTotal",
                             renderer: {
                                 name: "text-input"
@@ -1482,7 +1482,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "insuranceTotal",
                             fieldId: "insuranceTotal",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "InsuranceTotal",
                             renderer: {
                                 name: "text-input"
@@ -1492,7 +1492,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "stateFeesTotal",
                             fieldId: "stateFeesTotal",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "StateFeesTotal",
                             renderer: {
                                 name: "text-input"
@@ -1502,7 +1502,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "fuelTotal",
                             fieldId: "fuelTotal",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "FuelTotal",
                             renderer: {
                                 name: "text-input"
@@ -1512,7 +1512,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "maintenanceTotal",
                             fieldId: "maintenanceTotal",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "MaintenanceTotal",
                             renderer: {
                                 name: "text-input"
@@ -1522,7 +1522,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "repairsTotal",
                             fieldId: "repairsTotal",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "RepairsTotal",
                             renderer: {
                                 name: "text-input"
@@ -1532,7 +1532,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "total5YearOcCost",
                             fieldId: "total5YearOcCost",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "Total5YearOcCost",
                             renderer: {
                                 name: "text-input"
@@ -1542,7 +1542,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "total5YearOcCostLessHybrid",
                             fieldId: "total5YearOcCostLessHybrid",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "Total5YearOcCostLessHybrid",
                             renderer: {
                                 name: "number-input"
@@ -1552,7 +1552,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "similarVehicles",
                             fieldId: "similarVehicles",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "SimilarVehicles",
                             renderer: {
                                 name: "number-input"
@@ -1562,7 +1562,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "difference5YearCost",
                             fieldId: "difference5YearCost",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "Difference5YearCost",
                             renderer: {
                                 name: "number-input"
@@ -1572,7 +1572,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "hybridTax",
                             fieldId: "hybridTax",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "HybridTax",
                             renderer: {
                                 name: "text-input"
@@ -1582,7 +1582,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "valueRating",
                             fieldId: "valueRating",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "ValueRating",
                             renderer: {
                                 name: "text-input"
@@ -1612,7 +1612,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "usedMonthly",
                             fieldId: "usedMonthly",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "UsedMonthly",
                             renderer: {
                                 name: "number-input"
@@ -1622,7 +1622,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "cpoMonthly",
                             fieldId: "cpoMonthly",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "CPOMonthly",
                             renderer: {
                                 name: "number-input"
@@ -1632,7 +1632,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "usedMaintenanceRepairs",
                             fieldId: "usedMaintenanceRepairs",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "UsedMaintenanceRepairs",
                             renderer: {
                                 name: "number-input"
@@ -1642,7 +1642,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "cpoMaintenanceRepairs",
                             fieldId: "cpoMaintenanceRepairs",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "CPOMaintenanceRepairs",
                             renderer: {
                                 name: "number-input"
@@ -1652,7 +1652,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "usedTotalMonthly",
                             fieldId: "usedTotalMonthly",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "UsedTotalMonthly",
                             renderer: {
                                 name: "number-input"
@@ -1662,7 +1662,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "cpoTotalMonthly",
                             fieldId: "cpoTotalMonthly",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "CPOTotalMonthly",
                             renderer: {
                                 name: "number-input"
@@ -1672,7 +1672,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "cpoYear",
                             fieldId: "cpoYear",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "Year",
                             renderer: {
                                 name: "number-input"
@@ -1682,7 +1682,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "cpoMake",
                             fieldId: "cpoMake",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "Make",
                             renderer: {
                                 name: "text-input"
@@ -1692,7 +1692,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "modelName",
                             fieldId: "modelName",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "ModelName",
                             renderer: {
                                 name: "text-input"
@@ -1702,7 +1702,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "usedCarTrim",
                             fieldId: "usedCarTrim",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "UsedCarTrim",
                             renderer: {
                                 name: "text-input"
@@ -1712,7 +1712,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "cpoPrice",
                             fieldId: "cpoPrice",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "CPOPrice",
                             renderer: {
                                 name: "text-input"
@@ -1722,7 +1722,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "usedCarPrice",
                             fieldId: "usedCarPrice",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "UsedCarPrice",
                             renderer: {
                                 name: "number-input"
@@ -1732,7 +1732,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "vehicleRating",
                             fieldId: "vehicleRating",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "VehicleRating",
                             renderer: {
                                 name: "text-input"
@@ -1762,7 +1762,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "vrPerformance",
                             fieldId: "vrPerformance",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "Performance",
                             renderer: {
                                 name: "number-input"
@@ -1772,7 +1772,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "toolTipPerformance",
                             fieldId: "toolTipPerformance",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "ToolTipPerformance",
                             renderer: {
                                 name: "text-input"
@@ -1782,7 +1782,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "overallScore",
                             fieldId: "overallScore",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "OverallScore",
                             renderer: {
                                 name: "number-input"
@@ -1792,7 +1792,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "toolTipOverallScore",
                             fieldId: "toolTipOverallScore",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "ToolTipOverallScore",
                             renderer: {
                                 name: "text-input"
@@ -1802,7 +1802,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "fuelEconomy",
                             fieldId: "fuelEconomy",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "fuelEconomy",
                             renderer: {
                                 name: "number-input"
@@ -1812,7 +1812,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "toolTipFuelEconomy",
                             fieldId: "toolTipFuelEconomy",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "toolTipFuelEconomy",
                             renderer: {
                                 name: "text-input"
@@ -1822,7 +1822,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "techInnovation",
                             fieldId: "techInnovation",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "techInnovation",
                             renderer: {
                                 name: "number-input"
@@ -1832,7 +1832,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "toolTipTechInnovation",
                             fieldId: "toolTipTechInnovation",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "toolTipTechInnovation",
                             renderer: {
                                 name: "text-input"
@@ -1842,7 +1842,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "vrValue",
                             fieldId: "vrValue",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "Value",
                             renderer: {
                                 name: "number-input"
@@ -1852,7 +1852,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "toolTipValue",
                             fieldId: "toolTipValue",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "toolTipValue",
                             renderer: {
                                 name: "text-input"
@@ -1864,7 +1864,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
             createModelField({
                 id: "recalls",
                 fieldId: "recalls",
-                multipleValues: true,
+                list: true,
                 label: "Recalls (Non-Jato)",
                 renderer: {
                     name: "objects-accordion"
@@ -1882,7 +1882,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "recallId",
                             fieldId: "recallId",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "RecallID",
                             renderer: {
                                 name: "number-input"
@@ -1892,7 +1892,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "recallsCampNumber",
                             fieldId: "recallsCampNumber",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "Campno",
                             renderer: {
                                 name: "text-input"
@@ -1902,7 +1902,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "makeText",
                             fieldId: "makeText",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "Maketxt",
                             renderer: {
                                 name: "text-input"
@@ -1912,7 +1912,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "modelText",
                             fieldId: "modelText",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "Modeltxt",
                             renderer: {
                                 name: "text-input"
@@ -1922,7 +1922,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "yearText",
                             fieldId: "yearText",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "Yeartxt",
                             renderer: {
                                 name: "number-input"
@@ -1932,7 +1932,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "compName",
                             fieldId: "compName",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "Compname",
                             renderer: {
                                 name: "text-input"
@@ -1942,7 +1942,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "mfgText",
                             fieldId: "mfgText",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "Mfgtxt",
                             renderer: {
                                 name: "text-input"
@@ -1952,7 +1952,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "recallsPotaff",
                             fieldId: "recallsPotaff",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "Potaff",
                             renderer: {
                                 name: "number-input"
@@ -1962,7 +1962,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "rcDate",
                             fieldId: "rcDate",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "Rcdate",
                             renderer: {
                                 name: "text-input"
@@ -1972,7 +1972,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "descDefect",
                             fieldId: "descDefect",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "DescDefect",
                             renderer: {
                                 name: "text-input"
@@ -1982,7 +1982,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "consequenceDefect",
                             fieldId: "consequenceDefect",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "ConsequenceDefect",
                             renderer: {
                                 name: "text-input"
@@ -1992,7 +1992,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "correctiveAction",
                             fieldId: "correctiveAction",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "CorrectiveAction",
                             renderer: {
                                 name: "text-input"
@@ -2004,7 +2004,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
             createModelField({
                 id: "carsRebates",
                 fieldId: "carsRebates",
-                multipleValues: true,
+                list: true,
                 label: "Rebates (Non-Jato)",
                 renderer: {
                     name: "objects-accordion"
@@ -2020,7 +2020,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "rebatesExpDate",
                             fieldId: "rebatesExpDate",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "ExpDate",
                             renderer: {
                                 name: "text-input"
@@ -2030,7 +2030,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "rebatesLow",
                             fieldId: "rebatesLow",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "Low",
                             renderer: {
                                 name: "number-input"
@@ -2040,7 +2040,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "rebatesHigh",
                             fieldId: "rebatesHigh",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "High",
                             renderer: {
                                 name: "number-input"
@@ -2050,7 +2050,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "rebateText",
                             fieldId: "rebateText",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "RebateText",
                             renderer: {
                                 name: "text-input"
@@ -2060,7 +2060,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "nationallyAvailable",
                             fieldId: "nationallyAvailable",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "Nationally Available",
                             renderer: {
                                 name: "number-input"
@@ -2070,7 +2070,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "rebatesDescription",
                             fieldId: "rebatesDescription",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "Description",
                             renderer: {
                                 name: "text-input"
@@ -2102,7 +2102,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "cpoName",
                             fieldId: "cpoName",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "CpoName",
                             renderer: {
                                 name: "text-input"
@@ -2112,7 +2112,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "cpoInspectionPoint",
                             fieldId: "cpoInspectionPoint",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "CPOInspectionPoint",
                             renderer: {
                                 name: "text-input"
@@ -2122,7 +2122,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "cpoInspectionScore",
                             fieldId: "cpoInspectionScore",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "CPOInspectionScore",
                             renderer: {
                                 name: "number-input"
@@ -2132,7 +2132,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "cpoAgeMileage",
                             fieldId: "cpoAgeMileage",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "CPOAgeMileage",
                             renderer: {
                                 name: "text-input"
@@ -2142,7 +2142,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "cpoWarranty",
                             fieldId: "cpoWarranty",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "CPOWarranty",
                             renderer: {
                                 name: "text-input"
@@ -2152,7 +2152,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "cpoWarrantyDeductible",
                             fieldId: "cpoWarrantyDeductible",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "CPOWarrantyDeductible",
                             renderer: {
                                 name: "text-input"
@@ -2162,7 +2162,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "cpoWarrantyBbnc",
                             fieldId: "cpoWarrantyBbnc",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "CPOWarrantyBbnc",
                             renderer: {
                                 name: "text-input"
@@ -2172,7 +2172,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "cpoWarrantyTransferable",
                             fieldId: "cpoWarrantyTransferable",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "CPOWarrantyTransferable",
                             renderer: {
                                 name: "text-input"
@@ -2182,7 +2182,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "cpoWarrantyExtended",
                             fieldId: "cpoWarrantyExtended",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "CPOWarrantyExtended",
                             renderer: {
                                 name: "text-input"
@@ -2192,7 +2192,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "cpoRoadside",
                             fieldId: "cpoRoadside",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "CPORoadside",
                             renderer: {
                                 name: "text-input"
@@ -2202,7 +2202,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "cpoReturnExchange",
                             fieldId: "cpoReturnExchange",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "CPOReturnExchange",
                             renderer: {
                                 name: "text-input"
@@ -2212,7 +2212,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "cpoFinancing",
                             fieldId: "cpoFinancing",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "CPOFinancing",
                             renderer: {
                                 name: "text-input"
@@ -2222,7 +2222,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "cpoLease",
                             fieldId: "cpoLease",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "CPOLease",
                             renderer: {
                                 name: "text-input"
@@ -2232,7 +2232,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "cpoWebsite",
                             fieldId: "cpoWebsite",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "CPOWebsite",
                             renderer: {
                                 name: "text-input"
@@ -2242,7 +2242,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "cpoCustomerServiceNumber",
                             fieldId: "cpoCustomerServiceNumber",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "CPOCustomerServiceNumber",
                             renderer: {
                                 name: "text-input"
@@ -2252,7 +2252,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "cpoParticipation",
                             fieldId: "cpoParticipation",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "CPOParticipation",
                             renderer: {
                                 name: "text-input"
@@ -2262,7 +2262,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "cpoHistoryReport",
                             fieldId: "cpoHistoryReport",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "CPOHistoryReport",
                             renderer: {
                                 name: "number-input"
@@ -2272,7 +2272,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "cpoAdditionalBenefits",
                             fieldId: "cpoAdditionalBenefits",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "CPOAdditionalBenefits",
                             renderer: {
                                 name: "text-input"
@@ -2282,7 +2282,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "cpoProgramOverview",
                             fieldId: "cpoProgramOverview",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "CPOProgramOverview",
                             renderer: {
                                 name: "text-input"
@@ -2308,7 +2308,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "realmpgAverageMpg",
                             fieldId: "realmpgAverageMpg",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "RealmpgAverageMpg",
                             renderer: {
                                 name: "number-input"
@@ -2318,7 +2318,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "realmpgAverageMpgCity",
                             fieldId: "realmpgAverageMpgCity",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "RealmpgAverageMpgCity",
                             renderer: {
                                 name: "number-input"
@@ -2328,7 +2328,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "realmpgAverageMpgHwy",
                             fieldId: "realmpgAverageMpgHwy",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "RealmpgAverageMpgHwy",
                             renderer: {
                                 name: "number-input"
@@ -2340,7 +2340,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
             createModelField({
                 id: "hubs",
                 fieldId: "hubs",
-                multipleValues: true,
+                list: true,
                 label: "Hubs (Non-Jato)",
                 renderer: {
                     name: "objects-accordion"
@@ -2353,7 +2353,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "hubsImage",
                             fieldId: "hubsImage",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "Image",
                             renderer: {
                                 name: "text-input"
@@ -2363,7 +2363,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "makeModelHub",
                             fieldId: "makeModelHub",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "MakeModelHub",
                             renderer: {
                                 name: "number-input"
@@ -2373,7 +2373,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "hubsName",
                             fieldId: "hubsName",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "Name",
                             renderer: {
                                 name: "text-input"
@@ -2383,7 +2383,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "hubsText",
                             fieldId: "hubsText",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "Text",
                             renderer: {
                                 name: "text-input"
@@ -2406,7 +2406,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                         createModelField({
                             id: "seoType",
                             fieldId: "seoType",
-                            multipleValues: false,
+                            list: false,
                             type: "text",
                             label: "Type",
                             renderer: {
@@ -2416,7 +2416,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                         createModelField({
                             id: "seoTitle",
                             fieldId: "seoTitle",
-                            multipleValues: false,
+                            list: false,
                             type: "text",
                             label: "Title",
                             renderer: {
@@ -2426,7 +2426,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                         createModelField({
                             id: "seoContent",
                             fieldId: "seoContent",
-                            multipleValues: false,
+                            list: false,
                             type: "text",
                             label: "Content",
                             renderer: {
@@ -2439,7 +2439,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
             createModelField({
                 id: "images",
                 fieldId: "images",
-                multipleValues: true,
+                list: true,
                 label: "Images (Non-Jato)",
                 renderer: {
                     name: "objects-accordion"
@@ -2456,13 +2456,13 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             },
-                            helpText: "This is a Required Field."
+                            help: "This is a Required Field."
                         }),
                         createModelField({
                             id: "imageAngle",
                             fieldId: "imageAngle",
                             type: "text",
-                            helpText: "can be front or rear...etc",
+                            help: "can be front or rear...etc",
                             label: "Image Angle",
                             renderer: {
                                 name: "text-input"
@@ -2472,7 +2472,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "imageType",
                             fieldId: "imageType",
                             type: "text",
-                            helpText: "can be exterior or interior",
+                            help: "can be exterior or interior",
                             label: "Image Type",
                             renderer: {
                                 name: "text-input"
@@ -2482,7 +2482,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "imageOrder",
                             fieldId: "imageOrder",
                             type: "number",
-                            helpText: "can be use for display order",
+                            help: "can be use for display order",
                             label: "Image Order",
                             renderer: {
                                 name: "number-input"
@@ -2496,7 +2496,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 fieldId: "featuresIntellicar",
                 type: "object",
                 label: "Features(Non-Jato)",
-                multipleValues: false,
+                list: false,
                 renderer: {
                     name: "object-accordion"
                 },
@@ -2538,7 +2538,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             fieldId: "packageCategory",
                             type: "object",
                             label: "PACKAGE",
-                            multipleValues: true,
+                            list: true,
                             renderer: {
                                 name: "objects-accordion"
                             },
@@ -2571,7 +2571,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -2590,7 +2590,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Retail",
                                         renderer: {
                                             name: "number-input"
@@ -2600,7 +2600,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -2610,7 +2610,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "CategorySequenceNmb",
                                         renderer: {
                                             name: "number-input"
@@ -2624,7 +2624,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             fieldId: "engineCategory",
                             type: "object",
                             label: "ENGINE",
-                            multipleValues: true,
+                            list: true,
                             renderer: {
                                 name: "objects-accordion"
                             },
@@ -2657,7 +2657,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -2676,7 +2676,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Retail",
                                         renderer: {
                                             name: "number-input"
@@ -2686,7 +2686,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "SequenceNmb",
                                         renderer: {
                                             name: "number-input"
@@ -2696,7 +2696,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "CategorySequenceNmb",
                                         renderer: {
                                             name: "number-input"
@@ -2710,7 +2710,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             fieldId: "transmissionCategory",
                             type: "object",
                             label: "TRANSMISSION",
-                            multipleValues: true,
+                            list: true,
                             renderer: {
                                 name: "objects-accordion"
                             },
@@ -2743,7 +2743,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -2762,7 +2762,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Retail",
                                         renderer: {
                                             name: "number-input"
@@ -2772,7 +2772,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -2782,7 +2782,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "CategorySequenceNmb",
                                         renderer: {
                                             name: "number-input"
@@ -2796,7 +2796,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             fieldId: "exteriorColorCategory",
                             type: "object",
                             label: "EXTERIOR COLOR",
-                            multipleValues: true,
+                            list: true,
                             renderer: {
                                 name: "objects-accordion"
                             },
@@ -2829,7 +2829,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -2848,7 +2848,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Retail",
                                         renderer: {
                                             name: "number-input"
@@ -2858,7 +2858,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -2868,7 +2868,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "CategorySequenceNmb",
                                         renderer: {
                                             name: "number-input"
@@ -2882,7 +2882,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             fieldId: "interiorColorCategory",
                             type: "object",
                             label: "INTERIOR COLOR",
-                            multipleValues: true,
+                            list: true,
                             renderer: {
                                 name: "objects-accordion"
                             },
@@ -2915,7 +2915,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -2934,7 +2934,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Retail",
                                         renderer: {
                                             name: "number-input"
@@ -2944,7 +2944,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -2954,7 +2954,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "CategorySequenceNmb",
                                         renderer: {
                                             name: "number-input"
@@ -2968,7 +2968,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             fieldId: "topColorCategory",
                             type: "object",
                             label: "TOP COLOR",
-                            multipleValues: true,
+                            list: true,
                             renderer: {
                                 name: "objects-accordion"
                             },
@@ -3001,7 +3001,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -3020,7 +3020,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Retail",
                                         renderer: {
                                             name: "number-input"
@@ -3030,7 +3030,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -3040,7 +3040,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "CategorySequenceNmb",
                                         renderer: {
                                             name: "number-input"
@@ -3054,7 +3054,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             fieldId: "bodyCategory",
                             type: "object",
                             label: "BODY",
-                            multipleValues: true,
+                            list: true,
                             renderer: {
                                 name: "objects-accordion"
                             },
@@ -3087,7 +3087,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -3106,7 +3106,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Retail",
                                         renderer: {
                                             name: "number-input"
@@ -3116,7 +3116,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -3126,7 +3126,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "CategorySequenceNmb",
                                         renderer: {
                                             name: "number-input"
@@ -3140,7 +3140,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             fieldId: "brakesCategory",
                             type: "object",
                             label: "BRAKES",
-                            multipleValues: true,
+                            list: true,
                             renderer: {
                                 name: "objects-accordion"
                             },
@@ -3173,7 +3173,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -3192,7 +3192,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Retail",
                                         renderer: {
                                             name: "number-input"
@@ -3202,7 +3202,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -3212,7 +3212,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "CategorySequenceNmb",
                                         renderer: {
                                             name: "number-input"
@@ -3226,7 +3226,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             fieldId: "convenienceCategory",
                             type: "object",
                             label: "CONVENIENCE",
-                            multipleValues: true,
+                            list: true,
                             renderer: {
                                 name: "objects-accordion"
                             },
@@ -3259,7 +3259,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -3278,7 +3278,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Retail",
                                         renderer: {
                                             name: "number-input"
@@ -3288,7 +3288,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -3298,7 +3298,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "CategorySequenceNmb",
                                         renderer: {
                                             name: "number-input"
@@ -3312,7 +3312,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             fieldId: "driveCategory",
                             type: "object",
                             label: "DRIVE",
-                            multipleValues: true,
+                            list: true,
                             renderer: {
                                 name: "objects-accordion"
                             },
@@ -3345,7 +3345,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -3364,7 +3364,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Retail",
                                         renderer: {
                                             name: "number-input"
@@ -3374,7 +3374,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -3384,7 +3384,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "CategorySequenceNmb",
                                         renderer: {
                                             name: "number-input"
@@ -3398,7 +3398,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             fieldId: "engineeringCategory",
                             type: "object",
                             label: "ENGINEERING",
-                            multipleValues: true,
+                            list: true,
                             renderer: {
                                 name: "objects-accordion"
                             },
@@ -3431,7 +3431,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -3450,7 +3450,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Retail",
                                         renderer: {
                                             name: "number-input"
@@ -3460,7 +3460,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -3470,7 +3470,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "CategorySequenceNmb",
                                         renderer: {
                                             name: "number-input"
@@ -3484,7 +3484,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             fieldId: "exteriorCategory",
                             type: "object",
                             label: "EXTERIOR",
-                            multipleValues: true,
+                            list: true,
                             renderer: {
                                 name: "objects-accordion"
                             },
@@ -3517,7 +3517,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -3536,7 +3536,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Retail",
                                         renderer: {
                                             name: "number-input"
@@ -3546,7 +3546,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -3556,7 +3556,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "CategorySequenceNmb",
                                         renderer: {
                                             name: "number-input"
@@ -3570,7 +3570,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             fieldId: "interiorCategory",
                             type: "object",
                             label: "INTERIOR",
-                            multipleValues: true,
+                            list: true,
                             renderer: {
                                 name: "objects-accordion"
                             },
@@ -3603,7 +3603,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -3622,7 +3622,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Retail",
                                         renderer: {
                                             name: "number-input"
@@ -3632,7 +3632,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -3642,7 +3642,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "CategorySequenceNmb",
                                         renderer: {
                                             name: "number-input"
@@ -3656,7 +3656,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             fieldId: "lightingCategory",
                             type: "object",
                             label: "LIGHTING",
-                            multipleValues: true,
+                            list: true,
                             renderer: {
                                 name: "objects-accordion"
                             },
@@ -3689,7 +3689,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -3708,7 +3708,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Retail",
                                         renderer: {
                                             name: "number-input"
@@ -3718,7 +3718,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -3728,7 +3728,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "CategorySequenceNmb",
                                         renderer: {
                                             name: "number-input"
@@ -3742,7 +3742,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             fieldId: "mandatoryCategory",
                             type: "object",
                             label: "MANDATORY",
-                            multipleValues: true,
+                            list: true,
                             renderer: {
                                 name: "objects-accordion"
                             },
@@ -3775,7 +3775,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -3794,7 +3794,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Retail",
                                         renderer: {
                                             name: "number-input"
@@ -3804,7 +3804,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -3814,7 +3814,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "CategorySequenceNmb",
                                         renderer: {
                                             name: "number-input"
@@ -3828,7 +3828,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             fieldId: "mirrorsCategory",
                             type: "object",
                             label: "MIRRORS",
-                            multipleValues: true,
+                            list: true,
                             renderer: {
                                 name: "objects-accordion"
                             },
@@ -3861,7 +3861,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -3880,7 +3880,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Retail",
                                         renderer: {
                                             name: "number-input"
@@ -3890,7 +3890,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -3900,7 +3900,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "CategorySequenceNmb",
                                         renderer: {
                                             name: "number-input"
@@ -3914,7 +3914,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             fieldId: "noteCategory",
                             type: "object",
                             label: "NOTE",
-                            multipleValues: true,
+                            list: true,
                             renderer: {
                                 name: "objects-accordion"
                             },
@@ -3947,7 +3947,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -3966,7 +3966,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Retail",
                                         renderer: {
                                             name: "number-input"
@@ -3976,7 +3976,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -3986,7 +3986,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "CategorySequenceNmb",
                                         renderer: {
                                             name: "number-input"
@@ -4000,7 +4000,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             fieldId: "otherCategory",
                             type: "object",
                             label: "OTHER",
-                            multipleValues: true,
+                            list: true,
                             renderer: {
                                 name: "objects-accordion"
                             },
@@ -4033,7 +4033,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -4052,7 +4052,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Retail",
                                         renderer: {
                                             name: "number-input"
@@ -4062,7 +4062,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -4072,7 +4072,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "CategorySequenceNmb",
                                         renderer: {
                                             name: "number-input"
@@ -4086,7 +4086,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             fieldId: "paintCategory",
                             type: "object",
                             label: "PAINT",
-                            multipleValues: true,
+                            list: true,
                             renderer: {
                                 name: "objects-accordion"
                             },
@@ -4119,7 +4119,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -4138,7 +4138,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Retail",
                                         renderer: {
                                             name: "number-input"
@@ -4148,7 +4148,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -4158,7 +4158,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "CategorySequenceNmb",
                                         renderer: {
                                             name: "number-input"
@@ -4172,7 +4172,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             fieldId: "safetyCategory",
                             type: "object",
                             label: "SAFETY",
-                            multipleValues: true,
+                            list: true,
                             renderer: {
                                 name: "objects-accordion"
                             },
@@ -4205,7 +4205,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -4224,7 +4224,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Retail",
                                         renderer: {
                                             name: "number-input"
@@ -4234,7 +4234,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -4244,7 +4244,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "CategorySequenceNmb",
                                         renderer: {
                                             name: "number-input"
@@ -4258,7 +4258,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             fieldId: "seatsCategory",
                             type: "object",
                             label: "SEATS",
-                            multipleValues: true,
+                            list: true,
                             renderer: {
                                 name: "objects-accordion"
                             },
@@ -4291,7 +4291,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -4310,7 +4310,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Retail",
                                         renderer: {
                                             name: "number-input"
@@ -4320,7 +4320,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -4330,7 +4330,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "CategorySequenceNmb",
                                         renderer: {
                                             name: "number-input"
@@ -4344,7 +4344,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             fieldId: "soundCategory",
                             type: "object",
                             label: "SOUND",
-                            multipleValues: true,
+                            list: true,
                             renderer: {
                                 name: "objects-accordion"
                             },
@@ -4377,7 +4377,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -4396,7 +4396,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Retail",
                                         renderer: {
                                             name: "number-input"
@@ -4406,7 +4406,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -4416,7 +4416,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "CategorySequenceNmb",
                                         renderer: {
                                             name: "number-input"
@@ -4430,7 +4430,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             fieldId: "specialFeesCreditsOptionsCategory",
                             type: "object",
                             label: "SPECIAL FEES CREDITS OPTIONS",
-                            multipleValues: true,
+                            list: true,
                             renderer: {
                                 name: "objects-accordion"
                             },
@@ -4463,7 +4463,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -4482,7 +4482,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Retail",
                                         renderer: {
                                             name: "number-input"
@@ -4492,7 +4492,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -4502,7 +4502,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "CategorySequenceNmb",
                                         renderer: {
                                             name: "number-input"
@@ -4516,7 +4516,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             fieldId: "steeringCategory",
                             type: "object",
                             label: "STEERING",
-                            multipleValues: true,
+                            list: true,
                             renderer: {
                                 name: "objects-accordion"
                             },
@@ -4549,7 +4549,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -4568,7 +4568,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Retail",
                                         renderer: {
                                             name: "number-input"
@@ -4578,7 +4578,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -4588,7 +4588,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "CategorySequenceNmb",
                                         renderer: {
                                             name: "number-input"
@@ -4602,7 +4602,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             fieldId: "suspensionCategory",
                             type: "object",
                             label: "SUSPENSION",
-                            multipleValues: true,
+                            list: true,
                             renderer: {
                                 name: "objects-accordion"
                             },
@@ -4635,7 +4635,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -4654,7 +4654,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Retail",
                                         renderer: {
                                             name: "number-input"
@@ -4664,7 +4664,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -4674,7 +4674,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "CategorySequenceNmb",
                                         renderer: {
                                             name: "number-input"
@@ -4688,7 +4688,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             fieldId: "tiresCategory",
                             type: "object",
                             label: "TIRES",
-                            multipleValues: true,
+                            list: true,
                             renderer: {
                                 name: "objects-accordion"
                             },
@@ -4721,7 +4721,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -4740,7 +4740,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Retail",
                                         renderer: {
                                             name: "number-input"
@@ -4750,7 +4750,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -4760,7 +4760,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "CategorySequenceNmb",
                                         renderer: {
                                             name: "number-input"
@@ -4774,7 +4774,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             fieldId: "towingCategory",
                             type: "object",
                             label: "TOWING",
-                            multipleValues: true,
+                            list: true,
                             renderer: {
                                 name: "objects-accordion"
                             },
@@ -4807,7 +4807,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -4826,7 +4826,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Retail",
                                         renderer: {
                                             name: "number-input"
@@ -4836,7 +4836,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -4846,7 +4846,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "CategorySequenceNmb",
                                         renderer: {
                                             name: "number-input"
@@ -4860,7 +4860,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             fieldId: "truckBedsCategory",
                             type: "object",
                             label: "TRUCK BEDS",
-                            multipleValues: true,
+                            list: true,
                             renderer: {
                                 name: "objects-accordion"
                             },
@@ -4893,7 +4893,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -4912,7 +4912,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Retail",
                                         renderer: {
                                             name: "number-input"
@@ -4922,7 +4922,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -4932,7 +4932,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "CategorySequenceNmb",
                                         renderer: {
                                             name: "number-input"
@@ -4946,7 +4946,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             fieldId: "wheelsCategory",
                             type: "object",
                             label: "WHEELS",
-                            multipleValues: true,
+                            list: true,
                             renderer: {
                                 name: "objects-accordion"
                             },
@@ -4979,7 +4979,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "invoice",
                                         fieldId: "invoice",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -4998,7 +4998,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "retail",
                                         fieldId: "retail",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Retail",
                                         renderer: {
                                             name: "number-input"
@@ -5008,7 +5008,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "sequenceNmb",
                                         fieldId: "sequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Invoice",
                                         renderer: {
                                             name: "number-input"
@@ -5018,7 +5018,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                                         id: "categorySequenceNmb",
                                         fieldId: "categorySequenceNmb",
                                         type: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "CategorySequenceNmb",
                                         renderer: {
                                             name: "number-input"
@@ -5034,7 +5034,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                 id: "vehicleRankingClass",
                 fieldId: "vehicleRankingClass",
                 type: "object",
-                multipleValues: true,
+                list: true,
                 label: "Motortrend Scores (Non-Jato)",
                 renderer: {
                     name: "objects-accordion"
@@ -5063,7 +5063,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             },
-                            helpText: "This is a Required Field."
+                            help: "This is a Required Field."
                         }),
                         createModelField({
                             id: "classSlugRedirect",
@@ -5109,7 +5109,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             },
-                            helpText: "This is a Required Field."
+                            help: "This is a Required Field."
                         }),
                         createModelField({
                             id: "subclassTitle",
@@ -5119,7 +5119,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "text-input"
                             },
-                            helpText: "This is a Required Field."
+                            help: "This is a Required Field."
                         }),
                         createModelField({
                             id: "vrPerformance",
@@ -5147,7 +5147,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             },
-                            helpText: "This is a Required Field."
+                            help: "This is a Required Field."
                         }),
                         createModelField({
                             id: "toolTipOverallScore",
@@ -5247,7 +5247,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             },
-                            helpText: "This is a Required Field."
+                            help: "This is a Required Field."
                         }),
                         createModelField({
                             id: "vrcIsVehicleShow",
@@ -5257,7 +5257,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             },
-                            helpText: "This is a Required Field."
+                            help: "This is a Required Field."
                         }),
                         createModelField({
                             id: "vrcRankInSubclassText",
@@ -5276,7 +5276,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             renderer: {
                                 name: "number-input"
                             },
-                            helpText: "This is a Required Field."
+                            help: "This is a Required Field."
                         }),
                         createModelField({
                             id: "vrcSubclass",
@@ -5311,7 +5311,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
             createModelField({
                 id: "carMatchCustomRankings",
                 fieldId: "carMatchCustomRankings",
-                multipleValues: true,
+                list: true,
                 label: "carMatchCustomRankings (Non-Jato)",
                 renderer: {
                     name: "objects-accordion"
@@ -5331,7 +5331,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "carMatchBody",
                             fieldId: "carMatchBody",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "Body",
                             renderer: {
                                 name: "text-input"
@@ -5341,7 +5341,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "carMatchSeats",
                             fieldId: "carMatchSeats",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "Seats",
                             renderer: {
                                 name: "text-input"
@@ -5351,7 +5351,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "carMatchLuxury",
                             fieldId: "carMatchLuxury",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "Luxury",
                             renderer: {
                                 name: "text-input"
@@ -5361,7 +5361,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "carMatchGreen",
                             fieldId: "carMatchGreen",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "Green",
                             renderer: {
                                 name: "text-input"
@@ -5371,7 +5371,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "carMatchOffroad",
                             fieldId: "carMatchOffroad",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "Offroad",
                             renderer: {
                                 name: "text-input"
@@ -5381,7 +5381,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "carMatchBudget",
                             fieldId: "carMatchBudget",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "Budget",
                             renderer: {
                                 name: "text-input"
@@ -5391,7 +5391,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "totalPercentage",
                             fieldId: "totalPercentage",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "TotalPercentage",
                             renderer: {
                                 name: "number-input"
@@ -5401,7 +5401,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "carMatchPriority",
                             fieldId: "carMatchPriority",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "Priority",
                             renderer: {
                                 name: "number-input"
@@ -5411,7 +5411,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "carMatchEstimated",
                             fieldId: "carMatchEstimated",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "Estimated",
                             renderer: {
                                 name: "number-input"
@@ -5421,7 +5421,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "priceRange",
                             fieldId: "priceRange",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "PriceRange",
                             renderer: {
                                 name: "text-input"
@@ -5431,7 +5431,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "carMatchMpg",
                             fieldId: "carMatchMpg",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "Mpg",
                             renderer: {
                                 name: "text-input"
@@ -5441,7 +5441,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "seatingCapacity",
                             fieldId: "seatingCapacity",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "SeatingCapacity",
                             renderer: {
                                 name: "text-input"
@@ -5451,7 +5451,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "carMatchHorsepower",
                             fieldId: "carMatchHorsepower",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "horsepower",
                             renderer: {
                                 name: "text-input"
@@ -5461,7 +5461,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "winnerDescription",
                             fieldId: "winnerDescription",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "WinnerDescription",
                             renderer: {
                                 name: "text-input"
@@ -5471,7 +5471,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "rankWithinSubclass",
                             fieldId: "rankWithinSubclass",
                             type: "number",
-                            multipleValues: false,
+                            list: false,
                             label: "RankWithinSubclass",
                             renderer: {
                                 name: "number-input"
@@ -5481,7 +5481,7 @@ export const createCarsModel = (group: CmsGroup): CmsModelCreateInput => {
                             id: "carMatchSubClassTitle",
                             fieldId: "carMatchSubClassTitle",
                             type: "text",
-                            multipleValues: false,
+                            list: false,
                             label: "SubClassTitle",
                             renderer: {
                                 name: "text-input"

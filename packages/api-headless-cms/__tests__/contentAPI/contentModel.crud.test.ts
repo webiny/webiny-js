@@ -582,9 +582,9 @@ describe("content model test", () => {
             id: "someRandomTextFieldId",
             fieldId: "textField",
             label: "Text field",
-            helpText: "help text",
-            multipleValues: false,
-            placeholderText: "placeholder text",
+            help: "help text",
+            list: false,
+            placeholder: "placeholder text",
             tags: [],
             predefinedValues: {
                 enabled: false,
@@ -602,9 +602,9 @@ describe("content model test", () => {
             id: "someRandomNumberFieldId",
             fieldId: "numberField",
             label: "Number field",
-            helpText: "number help text",
-            multipleValues: false,
-            placeholderText: "number placeholder text",
+            help: "number help text",
+            list: false,
+            placeholder: "number placeholder text",
             predefinedValues: {
                 enabled: false,
                 values: []
@@ -686,9 +686,9 @@ describe("content model test", () => {
             id: "someRandomField1Id",
             fieldId: "field1",
             label: "Field 1",
-            helpText: "help text",
-            multipleValues: false,
-            placeholderText: "placeholder text",
+            help: "help text",
+            list: false,
+            placeholder: "placeholder text",
             predefinedValues: {
                 enabled: false,
                 values: []

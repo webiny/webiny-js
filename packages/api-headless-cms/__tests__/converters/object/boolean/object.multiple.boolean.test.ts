@@ -35,13 +35,13 @@ const model = createModel({
         createModelField({
             fieldId: "settingsList",
             type: "object",
-            multipleValues: true,
+            list: true,
             settings: {
                 fields: [
                     createModelField({
                         fieldId: "isActive",
                         type: "boolean",
-                        multipleValues: false
+                        list: false
                     })
                 ]
             }

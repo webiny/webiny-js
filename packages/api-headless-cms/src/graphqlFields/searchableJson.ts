@@ -11,7 +11,7 @@ export const createSearchableJsonField = (): CmsModelFieldToGraphQLPlugin => {
         fullTextSearch: true,
         read: {
             createTypeField({ field }) {
-                if (field.multipleValues) {
+                if (field.list) {
                     return `${field.fieldId}: [JSON]`;
                 }
 
@@ -26,7 +26,7 @@ export const createSearchableJsonField = (): CmsModelFieldToGraphQLPlugin => {
         },
         manage: {
             createTypeField({ field }) {
-                if (field.multipleValues) {
+                if (field.list) {
                     return `${field.fieldId}: [JSON]`;
                 }
                 return `${field.fieldId}: JSON`;

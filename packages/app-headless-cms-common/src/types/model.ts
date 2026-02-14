@@ -31,11 +31,13 @@ export type CmsModelField<T = unknown> = T & {
     fieldId: CmsEditorFieldId;
     storageId?: string;
     label: string;
-    helpText?: string | React.ReactNode;
-    placeholderText?: string;
+    help?: string | React.ReactNode;
+    description?: string | React.ReactNode;
+    note?: string | React.ReactNode;
+    placeholder?: string;
     validation?: (CmsModelFieldValidator | Validator)[];
     listValidation?: CmsModelFieldValidator[];
-    multipleValues?: boolean;
+    list?: boolean;
     predefinedValues?: CmsEditorFieldPredefinedValues;
     settings?: CmsModelFieldSettings<T>;
     renderer:

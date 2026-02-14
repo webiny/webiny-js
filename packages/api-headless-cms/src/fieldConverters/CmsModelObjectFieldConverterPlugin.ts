@@ -35,7 +35,7 @@ export class CmsModelObjectFieldConverterPlugin extends CmsModelFieldConverterPl
             return {};
         }
 
-        if (field.multipleValues) {
+        if (field.list) {
             if (Array.isArray(value) === false) {
                 return {
                     [field.storageId]: null
@@ -114,7 +114,7 @@ export class CmsModelObjectFieldConverterPlugin extends CmsModelFieldConverterPl
             return {};
         }
 
-        if (field.multipleValues) {
+        if (field.list) {
             if (Array.isArray(value) === false) {
                 return {
                     [field.fieldId]: null
