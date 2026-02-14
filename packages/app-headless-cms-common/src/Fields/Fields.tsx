@@ -1,6 +1,4 @@
 import React from "react";
-// @ts-expect-error Remove this one moduleResolution is set to `bundler`
-import { compiler } from "markdown-to-jsx/react";
 import { Grid, type ColumnProps } from "@webiny/admin-ui";
 import { FieldElement } from "./FieldElement.js";
 import { FieldElementError } from "./FieldElementError.js";
@@ -23,14 +21,6 @@ const getFieldById = (fields: CmsModelField[], id: string): CmsModelField | null
     return fields.find(field => field.id === id) || null;
 };
 
-const withMarkdown = (field: CmsModelField) => {
-    if (typeof field.help !== "string") {
-        return field;
-    }
-
-    return { ...field, help: compiler(field.help) };
-};
-
 export const Fields = ({ Bind, fields, layout, contentModel, gridClassName }: FieldsProps) => {
     return (
         <Grid className={gridClassName}>
@@ -46,7 +36,7 @@ export const Fields = ({ Bind, fields, layout, contentModel, gridClassName }: Fi
                             >
                                 {field ? (
                                     <FieldElement
-                                        field={withMarkdown(field)}
+                                        field={field}
                                         Bind={Bind}
                                         contentModel={contentModel}
                                     />
