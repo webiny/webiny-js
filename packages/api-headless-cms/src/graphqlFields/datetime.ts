@@ -47,7 +47,7 @@ export const createDateTimeField = (): CmsModelFieldToGraphQLPlugin => {
                 return `${field.fieldId}: ${getFieldGraphQLType(field)}`;
             },
             createTypeField({ field }) {
-                if (field.multipleValues) {
+                if (field.list) {
                     return `${field.fieldId}: [${getFieldGraphQLType(field)}]`;
                 }
 
@@ -57,7 +57,7 @@ export const createDateTimeField = (): CmsModelFieldToGraphQLPlugin => {
         manage: {
             createListFilters,
             createTypeField({ field }) {
-                if (field.multipleValues) {
+                if (field.list) {
                     return `${field.fieldId}: [${getFieldGraphQLType(field)}]`;
                 }
                 return `${field.fieldId}: ${getFieldGraphQLType(field)}`;

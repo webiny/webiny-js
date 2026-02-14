@@ -33,7 +33,7 @@ export const useDefaultValues = (model: CmsModel) => {
             /**
              * When checking if defaultValue is set in settings, we do the undefined check because it can be null, 0, empty string, false, etc...
              */
-            const { settings, multipleValues = false } = field;
+            const { settings, list = false } = field;
             if (settings && settings.defaultValue !== undefined) {
                 /**
                  * Special type of field is the boolean one.
@@ -56,7 +56,7 @@ export const useDefaultValues = (model: CmsModel) => {
             /**
              * When field is not a multiple values one, we find the first possible default selected value and set it as field value.
              */
-            if (!multipleValues) {
+            if (!list) {
                 const selectedValue = predefinedValues.values.find(({ selected }) => {
                     return !!selected;
                 });

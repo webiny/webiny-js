@@ -55,7 +55,7 @@ export function useBind({ Bind }: UseBindProps) {
 
         const validators = createValidators(field, field.validation || emptyValidators);
         const listValidators = createValidators(field, field.listValidation || emptyValidators);
-        const isMultipleValues = index === -1 && field.multipleValues;
+        const isMultipleValues = index === -1 && field.list;
         const inputValidators = isMultipleValues ? listValidators : validators;
 
         // We only use default values for single-value fields.
@@ -81,7 +81,7 @@ export function useBind({ Bind }: UseBindProps) {
                     {bind => {
                         // Multiple-values functions below.
                         const props = { ...bind };
-                        if (field.multipleValues && index === -1) {
+                        if (field.list && index === -1) {
                             props.appendValue = (newValue: any, index?: number) => {
                                 const currentValue = bind.value || [];
                                 const newIndex = index ?? currentValue.length;

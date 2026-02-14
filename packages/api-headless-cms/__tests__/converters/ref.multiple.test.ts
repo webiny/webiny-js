@@ -47,7 +47,7 @@ const model = createModel({
         createModelField({
             fieldId: "relatedArticles",
             type: "ref",
-            multipleValues: true
+            list: true
         })
     ]
 });

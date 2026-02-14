@@ -107,7 +107,7 @@ const models: CmsModel[] = [
         fields: [
             {
                 id: ids.field11,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "Title",
                 type: "text",
@@ -138,7 +138,7 @@ const models: CmsModel[] = [
             },
             {
                 id: ids.field12,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "Slug",
                 type: "text",
@@ -180,7 +180,7 @@ const models: CmsModel[] = [
         fields: [
             {
                 id: ids.field11,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "Title",
                 type: "text",
@@ -224,7 +224,7 @@ const models: CmsModel[] = [
             },
             {
                 id: ids.field12,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "Slug",
                 type: "text",
@@ -265,7 +265,7 @@ const models: CmsModel[] = [
         fields: [
             {
                 id: ids.field11,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "Title",
                 type: "text",
@@ -296,7 +296,7 @@ const models: CmsModel[] = [
             },
             {
                 id: ids.field12,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "Slug",
                 type: "text",
@@ -320,7 +320,7 @@ const models: CmsModel[] = [
             },
             {
                 id: ids.field34,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "Category",
                 type: "ref",
@@ -376,7 +376,7 @@ const models: CmsModel[] = [
         fields: [
             {
                 id: ids.field201,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "Title",
                 storageId: "text@titleStorageId",
@@ -400,7 +400,7 @@ const models: CmsModel[] = [
             },
             {
                 id: ids.field202,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "Category",
                 storageId: "ref@categoryStorageId",
@@ -428,7 +428,7 @@ const models: CmsModel[] = [
             },
             {
                 id: ids.field203,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "Price",
                 storageId: "number@priceStorageId",
@@ -452,7 +452,7 @@ const models: CmsModel[] = [
             },
             {
                 id: ids.field204,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "In Stock",
                 storageId: "boolean@inStockStorageId",
@@ -471,7 +471,7 @@ const models: CmsModel[] = [
             },
             {
                 id: ids.field205,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "Price",
                 storageId: "number@itemsInStockStorageId",
@@ -490,7 +490,7 @@ const models: CmsModel[] = [
             },
             {
                 id: ids.field206,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "Available on",
                 storageId: "datetime@availableOnStorageId",
@@ -512,7 +512,7 @@ const models: CmsModel[] = [
             },
             {
                 id: ids.field207,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "Color",
                 storageId: "text@colorStorageId",
@@ -556,7 +556,7 @@ const models: CmsModel[] = [
             },
             {
                 id: ids.field208,
-                multipleValues: true,
+                list: true,
                 help: null,
                 label: "Available sizes",
                 storageId: "text@availableSizesStorageId",
@@ -600,7 +600,7 @@ const models: CmsModel[] = [
             },
             {
                 id: ids.field209,
-                multipleValues: false,
+                list: false,
                 help: "Upload an image of the product",
                 label: "Image",
                 storageId: "file@imageStorageId",
@@ -627,7 +627,7 @@ const models: CmsModel[] = [
             },
             {
                 id: ids.field210,
-                multipleValues: false,
+                list: false,
                 help: "Rich text",
                 label: "Rich text",
                 storageId: "rich-text@richTextStorageId",
@@ -649,7 +649,7 @@ const models: CmsModel[] = [
             },
             {
                 id: ids.field211,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "Variant",
                 storageId: "object@variantStorageId",
@@ -659,7 +659,7 @@ const models: CmsModel[] = [
                     fields: [
                         {
                             id: ids.field212,
-                            multipleValues: false,
+                            list: false,
                             help: null,
                             label: "Name",
                             storageId: "text@nameStorageId",
@@ -681,7 +681,7 @@ const models: CmsModel[] = [
                         },
                         {
                             id: ids.field213,
-                            multipleValues: false,
+                            list: false,
                             help: null,
                             label: "Price",
                             storageId: "number@priceStorageId",
@@ -705,7 +705,7 @@ const models: CmsModel[] = [
                             id: ids.field2110,
                             fieldId: "images",
                             storageId: `file@${ids.field2110}`,
-                            multipleValues: true,
+                            list: true,
                             placeholder: null,
                             help: null,
                             label: "Image",
@@ -718,7 +718,7 @@ const models: CmsModel[] = [
                         },
                         {
                             id: ids.field217,
-                            multipleValues: false,
+                            list: false,
                             help: null,
                             label: "Category",
                             storageId: "ref@categoryStorageId",
@@ -740,7 +740,7 @@ const models: CmsModel[] = [
                         },
                         {
                             id: ids.field214,
-                            multipleValues: true,
+                            list: true,
                             help: null,
                             label: "Options",
                             storageId: "object@optionsStorageId",
@@ -750,7 +750,7 @@ const models: CmsModel[] = [
                                 fields: [
                                     {
                                         id: ids.field215,
-                                        multipleValues: false,
+                                        list: false,
                                         help: null,
                                         label: "Name",
                                         storageId: "text@nameStorageId",
@@ -772,7 +772,7 @@ const models: CmsModel[] = [
                                     },
                                     {
                                         id: ids.field216,
-                                        multipleValues: false,
+                                        list: false,
                                         help: null,
                                         label: "Price",
                                         storageId: "number@priceStorageId",
@@ -796,7 +796,7 @@ const models: CmsModel[] = [
                                         id: ids.field2111,
                                         fieldId: "image",
                                         storageId: `file@${ids.field2111}`,
-                                        multipleValues: false,
+                                        list: false,
                                         placeholder: null,
                                         help: null,
                                         label: "Image",
@@ -809,7 +809,7 @@ const models: CmsModel[] = [
                                     },
                                     {
                                         id: ids.field218,
-                                        multipleValues: false,
+                                        list: false,
                                         help: null,
                                         label: "Category",
                                         storageId: "ref@categoryStorageId",
@@ -831,7 +831,7 @@ const models: CmsModel[] = [
                                     },
                                     {
                                         id: ids.field219,
-                                        multipleValues: true,
+                                        list: true,
                                         help: null,
                                         label: "Categories",
                                         storageId: "ref@categoriesStorageId",
@@ -853,7 +853,7 @@ const models: CmsModel[] = [
                                     },
                                     {
                                         id: ids.field220,
-                                        multipleValues: true,
+                                        list: true,
                                         help: null,
                                         label: "Long Text List",
                                         storageId: "long-text@longTextStorageId",
@@ -899,7 +899,7 @@ const models: CmsModel[] = [
             },
             {
                 id: ids.field221,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "No fields object",
                 storageId: "object@fieldsObjectStorageId",
@@ -910,7 +910,7 @@ const models: CmsModel[] = [
                     fields: [
                         {
                             id: ids.field231,
-                            multipleValues: false,
+                            list: false,
                             help: null,
                             label: "Text",
                             type: "text",
@@ -959,7 +959,7 @@ const models: CmsModel[] = [
         fields: [
             {
                 id: ids.field31,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "Text",
                 type: "text",
@@ -983,7 +983,7 @@ const models: CmsModel[] = [
             },
             {
                 id: ids.field32,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "Product",
                 type: "ref",
@@ -1005,7 +1005,7 @@ const models: CmsModel[] = [
             },
             {
                 id: ids.field33,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "Rating",
                 type: "number",
@@ -1024,7 +1024,7 @@ const models: CmsModel[] = [
             },
             {
                 id: ids.field34,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "Author",
                 type: "ref",
@@ -1063,7 +1063,7 @@ const models: CmsModel[] = [
         fields: [
             {
                 id: ids.field40,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "Full name",
                 type: "text",
@@ -1120,7 +1120,7 @@ const models: CmsModel[] = [
             // required, minLength, maxLength
             {
                 id: ids.field501,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "Name",
                 type: "text",
@@ -1156,10 +1156,10 @@ const models: CmsModel[] = [
                     name: "renderer"
                 }
             },
-            // multipleValues: required, gte, lte, minLength, maxLength
+            // list: required, gte, lte, minLength, maxLength
             {
                 id: ids.field502,
-                multipleValues: true,
+                list: true,
                 help: null,
                 label: "Numbers",
                 type: "number",
@@ -1213,7 +1213,7 @@ const models: CmsModel[] = [
             // email
             {
                 id: ids.field503,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "E-mail",
                 type: "text",
@@ -1241,7 +1241,7 @@ const models: CmsModel[] = [
             // url
             {
                 id: ids.field504,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "Url",
                 type: "text",
@@ -1268,7 +1268,7 @@ const models: CmsModel[] = [
             },
             {
                 id: ids.field505,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "LowerCase",
                 type: "text",
@@ -1296,7 +1296,7 @@ const models: CmsModel[] = [
             // upperCase
             {
                 id: ids.field506,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "UpperCase",
                 type: "text",
@@ -1324,7 +1324,7 @@ const models: CmsModel[] = [
             // date
             {
                 id: ids.field507,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "Date",
                 type: "datetime",
@@ -1368,7 +1368,7 @@ const models: CmsModel[] = [
             // dateTime
             {
                 id: ids.field508,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "DateTime",
                 type: "datetime",
@@ -1412,7 +1412,7 @@ const models: CmsModel[] = [
             // dateTimeZ
             {
                 id: ids.field509,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "DateTime",
                 type: "datetime",
@@ -1456,7 +1456,7 @@ const models: CmsModel[] = [
             // time
             {
                 id: ids.field510,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "Time",
                 type: "datetime",
@@ -1500,7 +1500,7 @@ const models: CmsModel[] = [
             // boolean
             {
                 id: ids.field511,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "Is Something",
                 type: "boolean",
@@ -1523,7 +1523,7 @@ const models: CmsModel[] = [
             // number
             {
                 id: ids.field512,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "Rating",
                 type: "number",
@@ -1545,7 +1545,7 @@ const models: CmsModel[] = [
             },
             {
                 id: ids.field513,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "Description",
                 type: "long-text",
@@ -1565,7 +1565,7 @@ const models: CmsModel[] = [
             },
             {
                 id: ids.field514,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "Slug",
                 type: "text",
@@ -1607,7 +1607,7 @@ const models: CmsModel[] = [
         fields: [
             {
                 id: ids.field601,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "Name",
                 type: "text",
@@ -1626,7 +1626,7 @@ const models: CmsModel[] = [
             },
             {
                 id: ids.field602,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "Bug type",
                 type: "text",
@@ -1661,7 +1661,7 @@ const models: CmsModel[] = [
             },
             {
                 id: ids.field603,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "Bug developer value",
                 type: "number",
@@ -1693,7 +1693,7 @@ const models: CmsModel[] = [
             },
             {
                 id: ids.field604,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "Bug fixed?",
                 type: "number",
@@ -1742,7 +1742,7 @@ const models: CmsModel[] = [
         fields: [
             {
                 id: ids.field701,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "Title",
                 type: "text",
@@ -1761,7 +1761,7 @@ const models: CmsModel[] = [
             },
             {
                 id: ids.field702,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "Body",
                 type: "rich-text",
@@ -1780,7 +1780,7 @@ const models: CmsModel[] = [
             },
             {
                 id: ids.field703,
-                multipleValues: true,
+                list: true,
                 help: null,
                 label: "Categories",
                 type: "ref",
@@ -1802,7 +1802,7 @@ const models: CmsModel[] = [
             },
             {
                 id: ids.field704,
-                multipleValues: false,
+                list: false,
                 help: null,
                 label: "Category",
                 type: "ref",
@@ -1858,7 +1858,7 @@ const models: CmsModel[] = [
                 fieldId: "references",
                 type: "ref",
                 storageId: "ref@references",
-                multipleValues: true,
+                list: true,
                 validation: [],
                 listValidation: [],
                 settings: {

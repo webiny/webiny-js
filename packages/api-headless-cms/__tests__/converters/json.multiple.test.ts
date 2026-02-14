@@ -23,7 +23,7 @@ const model = createModel({
         createModelField({
             fieldId: "configs",
             type: "json",
-            multipleValues: true
+            list: true
         })
     ]
 });

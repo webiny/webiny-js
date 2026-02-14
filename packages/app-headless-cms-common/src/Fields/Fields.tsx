@@ -24,11 +24,11 @@ const getFieldById = (fields: CmsModelField[], id: string): CmsModelField | null
 };
 
 const withMarkdown = (field: CmsModelField) => {
-    if (typeof field.helpText !== "string") {
+    if (typeof field.help !== "string") {
         return field;
     }
 
-    return { ...field, helpText: compiler(field.helpText) };
+    return { ...field, help: compiler(field.help) };
 };
 
 export const Fields = ({ Bind, fields, layout, contentModel, gridClassName }: FieldsProps) => {

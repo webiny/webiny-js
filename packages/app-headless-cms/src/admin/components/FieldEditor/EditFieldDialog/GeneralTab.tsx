@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback, useRef, useMemo } from "react";
 import camelCase from "lodash/camelCase.js";
-import { Grid, Switch, Input, Label } from "@webiny/admin-ui";
+import { Grid, Switch, Input, Label, Textarea, FormComponentLabel } from "@webiny/admin-ui";
 import { validation } from "@webiny/validation";
 import { Tags } from "@webiny/ui/Tags/index.js";
 import { useForm, Bind } from "@webiny/form";
@@ -118,10 +118,10 @@ const GeneralTab = () => {
                 </Grid.Column>
 
                 <Grid.Column span={6}>
-                    <Bind name={"multipleValues"}>
+                    <Bind name={"list"}>
                         <Switch
-                            label={fieldPlugin.field.multipleValuesLabel}
-                            disabled={!fieldPlugin.field.allowMultipleValues}
+                            label={fieldPlugin.field.listLabel}
+                            disabled={!fieldPlugin.field.allowList}
                             data-testid={`cms.editor.field.settings.general.switch-multiplevalues`}
                         />
                     </Bind>
@@ -137,18 +137,40 @@ const GeneralTab = () => {
                 </Grid.Column>
 
                 <Grid.Column span={12}>
-                    <Bind name={"helpText"}>
+                    <Bind name={"description"}>
                         <Input
-                            label={<Label text={"Help text"} description={"(optional)"} />}
+                            label={"Description"}
+                            description={"This text will be shown below the label (optional)"}
                             size={"lg"}
-                            data-testid={`cms.editor.field.settings.general.helptext`}
+                            data-testid={`cms.editor.field.settings.general.description`}
+                        />
+                    </Bind>
+                </Grid.Column>
+                <Grid.Column span={12}>
+                    <Bind name={"note"}>
+                        <Input
+                            label={"Note"}
+                            description={"This text will be shown below the input (optional)"}
+                            size={"lg"}
+                            data-testid={`cms.editor.field.settings.general.note`}
+                        />
+                    </Bind>
+                </Grid.Column>
+                <Grid.Column span={12}>
+                    <Bind name={"help"}>
+                        <Textarea
+                            label={"Help"}
+                            description={"This text will be shown in a tooltip (optional)"}
+                            size={"lg"}
+                            data-testid={`cms.editor.field.settings.general.help`}
                         />
                     </Bind>
                 </Grid.Column>
                 <Grid.Column span={12}>
                     <Bind name={"tags"}>
                         <Tags
-                            label={<Label text={"Tags"} description={"(optional)"} />}
+                            label={"Tags"}
+                            description={"Field tags are useful for developers and are not visible in the UI (optional)"}
                             protectedTags={fieldPlugin.field.tags}
                             data-testid={`cms.editor.field.settings.general.tags`}
                         />

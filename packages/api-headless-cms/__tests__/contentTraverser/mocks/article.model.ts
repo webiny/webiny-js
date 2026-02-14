@@ -8,7 +8,7 @@ export const articleModel = createPrivateModelPlugin({
     fields: [
         createModelField({
             id: "title",
-            multipleValues: false,
+            list: false,
             label: "Title",
             type: "text",
             storageId: "text@title",
@@ -16,7 +16,7 @@ export const articleModel = createPrivateModelPlugin({
         }),
         createModelField({
             id: "body",
-            multipleValues: false,
+            list: false,
             label: "Body",
             type: "rich-text",
             storageId: "rich-text@body",
@@ -24,7 +24,7 @@ export const articleModel = createPrivateModelPlugin({
         }),
         createModelField({
             id: "categories",
-            multipleValues: true,
+            list: true,
             label: "Categories",
             type: "ref",
             storageId: "ref@categories",
@@ -39,7 +39,7 @@ export const articleModel = createPrivateModelPlugin({
             storageId: "dynamicZone@content",
             type: "dynamicZone",
             label: "Content",
-            multipleValues: true,
+            list: true,
             settings: {
                 templates: [
                     {
@@ -97,7 +97,7 @@ export const articleModel = createPrivateModelPlugin({
                                             fieldId: "seo",
                                             type: "object",
                                             label: "SEO",
-                                            multipleValues: true,
+                                            list: true,
                                             settings: {
                                                 fields: [
                                                     createModelField({
@@ -132,7 +132,7 @@ export const articleModel = createPrivateModelPlugin({
                                                             }
                                                         ]
                                                     },
-                                                    multipleValues: true,
+                                                    list: true,
                                                     label: "Authors",
                                                     fieldId: "authors",
                                                     id: "tuuehcqp"

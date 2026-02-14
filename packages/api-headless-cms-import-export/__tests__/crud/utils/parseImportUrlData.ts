@@ -15,7 +15,7 @@ describe("parseImportUrlData", () => {
                     pluralApiName: "Authors",
                     fields: [
                         {
-                            multipleValues: false,
+                            list: false,
                             listValidation: [],
                             settings: {},
                             renderer: { name: "text-input", settings: {} },
@@ -37,7 +37,7 @@ describe("parseImportUrlData", () => {
                             fieldId: "title"
                         },
                         {
-                            multipleValues: false,
+                            list: false,
                             listValidation: [],
                             settings: {},
                             renderer: { name: "long-text-text-area", settings: {} },
@@ -53,7 +53,7 @@ describe("parseImportUrlData", () => {
                             fieldId: "description"
                         },
                         {
-                            multipleValues: false,
+                            list: false,
                             listValidation: [],
                             settings: { imagesOnly: true },
                             renderer: { name: "file-input", settings: {} },
@@ -69,7 +69,7 @@ describe("parseImportUrlData", () => {
                             fieldId: "image"
                         },
                         {
-                            multipleValues: true,
+                            list: true,
                             listValidation: [],
                             settings: {},
                             renderer: { name: "file-inputs" },
@@ -128,7 +128,7 @@ describe("parseImportUrlData", () => {
                 pluralApiName: "Authors",
                 fields: [
                     {
-                        multipleValues: false,
+                        list: false,
                         listValidation: [],
                         settings: {},
                         renderer: { name: "text-input", settings: {} },
@@ -150,7 +150,7 @@ describe("parseImportUrlData", () => {
                         fieldId: "title"
                     },
                     {
-                        multipleValues: false,
+                        list: false,
                         listValidation: [],
                         settings: {},
                         renderer: { name: "long-text-text-area", settings: {} },
@@ -166,7 +166,7 @@ describe("parseImportUrlData", () => {
                         fieldId: "description"
                     },
                     {
-                        multipleValues: false,
+                        list: false,
                         listValidation: [],
                         settings: { imagesOnly: true },
                         renderer: { name: "file-input", settings: {} },
@@ -182,7 +182,7 @@ describe("parseImportUrlData", () => {
                         fieldId: "image"
                     },
                     {
-                        multipleValues: true,
+                        list: true,
                         listValidation: [],
                         settings: {},
                         renderer: { name: "file-inputs" },

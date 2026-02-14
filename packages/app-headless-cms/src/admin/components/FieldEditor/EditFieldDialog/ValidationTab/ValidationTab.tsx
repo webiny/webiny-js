@@ -21,7 +21,7 @@ export const ValidationTab = ({ field }: ValidationTabProps) => {
 
     return (
         <>
-            {field.multipleValues ? (
+            {field.list ? (
                 <>
                     <ValidationsSection
                         validators={listValidation.validators}
@@ -47,7 +47,7 @@ export const ValidationTab = ({ field }: ValidationTabProps) => {
                 </>
             ) : null}
 
-            {!field.multipleValues && hasValidators ? (
+            {!field.list && hasValidators ? (
                 <ValidatorsList name={"validation"} validators={individualValidation.validators} />
             ) : null}
         </>

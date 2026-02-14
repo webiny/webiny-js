@@ -26,7 +26,7 @@ const plugin: CmsModelFieldRendererPlugin = {
         canUse({ field }) {
             return [
                 field.type === "rich-text",
-                !!field.multipleValues,
+                !!field.list,
                 !get(field, "predefinedValues.enabled")
             ].every(Boolean);
         },
@@ -42,10 +42,10 @@ const plugin: CmsModelFieldRendererPlugin = {
                                 value={bind.index.value}
                                 onChange={bind.index.onChange}
                                 key={getKey(form.data.id, field, index)}
-                                placeholder={field.placeholderText}
+                                placeholder={field.placeholder}
                             />
-                            {field.multipleValues ? null : (
-                                <FormComponentNote text={field.helpText} />
+                            {field.list ? null : (
+                                <FormComponentNote text={field.help} />
                             )}
                             <div className={"absolute top-sm right-sm z-10"}>
                                 <IconButton

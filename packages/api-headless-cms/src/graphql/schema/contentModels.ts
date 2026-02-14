@@ -141,7 +141,7 @@ export const createModelsSchema = ({
                 fieldId: String!
                 type: String!
                 tags: [String!]
-                multipleValues: Boolean
+                list: Boolean
                 predefinedValues: CmsPredefinedValuesInput
                 renderer: CmsFieldRendererInput
                 validation: [CmsFieldValidationInput]
@@ -247,7 +247,7 @@ export const createModelsSchema = ({
                 placeholder: String
                 type: String!
                 tags: [String!]!
-                multipleValues: Boolean
+                list: Boolean
                 predefinedValues: CmsPredefinedValues
                 renderer: CmsFieldRenderer
                 validation: [CmsFieldValidation!]

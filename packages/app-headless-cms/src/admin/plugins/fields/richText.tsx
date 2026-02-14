@@ -15,9 +15,9 @@ const plugin: CmsModelFieldTypePlugin = {
         label: t`Rich text`,
         description: t`Text formatting with references and media.`,
         icon: <NotesIcon />,
-        allowMultipleValues: true,
+        allowList: true,
         allowPredefinedValues: false,
-        multipleValuesLabel: t`Use as a list of rich texts`,
+        listLabel: t`Use as a list of rich texts`,
         createField() {
             return {
                 type: this.type,
@@ -31,12 +31,13 @@ const plugin: CmsModelFieldTypePlugin = {
             return (
                 <Grid>
                     <Grid.Column span={12}>
-                        <Bind name={"placeholderText"}>
+                        <Bind name={"placeholder"}>
                             <Input
-                                label={
-                                    <Label text={t`Placeholder text`} description={t`(optional)`} />
-                                }
+                                label={t`Placeholder text`}
                                 size={"lg"}
+                                description={
+                                    "This text will be shown in an empty input component (optional)"
+                                }
                             />
                         </Bind>
                     </Grid.Column>

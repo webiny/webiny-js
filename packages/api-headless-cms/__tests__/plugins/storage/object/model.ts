@@ -34,7 +34,7 @@ export const createObjectMockModel = (): CmsModel => {
             {
                 fieldId: "titleFieldId",
                 storageId: "titleStorageId",
-                multipleValues: false,
+                list: false,
                 type: "text",
                 id: "titleId",
                 label: "Title",
@@ -47,7 +47,7 @@ export const createObjectMockModel = (): CmsModel => {
                 storageId: "objectStorageId",
                 label: "Object",
                 type: "object",
-                multipleValues: false,
+                list: false,
                 listValidation: [],
                 validation: [],
                 settings: {
@@ -55,7 +55,7 @@ export const createObjectMockModel = (): CmsModel => {
                         {
                             fieldId: "titleFieldId",
                             storageId: "titleStorageId",
-                            multipleValues: false,
+                            list: false,
                             type: "text",
                             id: "titleId",
                             label: "Title",
@@ -83,7 +83,7 @@ export const createObjectMockModel = (): CmsModel => {
                             id: "dateMultipleId",
                             label: "Date Multiple",
                             type: "datetime",
-                            multipleValues: true,
+                            list: true,
                             listValidation: [],
                             validation: []
                         },

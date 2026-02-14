@@ -27,7 +27,7 @@ const models: CmsModel[] = [
         fields: [
             {
                 id: ids.field11,
-                multipleValues: false,
+                list: false,
                 help: "",
                 label: "Title",
                 type: "text",
@@ -46,7 +46,7 @@ const models: CmsModel[] = [
             },
             {
                 id: ids.field12,
-                multipleValues: false,
+                list: false,
                 help: "",
                 label: "Slug",
                 type: "text",

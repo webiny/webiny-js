@@ -13,7 +13,7 @@ export const categoryModel: CmsModelInput = {
     fields: [
         createModelField({
             id: "titleFieldIdAbcdef",
-            multipleValues: false,
+            list: false,
             help: "",
             label: "Title",
             type: "text",
@@ -44,7 +44,7 @@ export const categoryModel: CmsModelInput = {
         }),
         createModelField({
             id: "slugFieldIdAbc",
-            multipleValues: false,
+            list: false,
             help: "",
             label: "Slug",
             type: "text",
@@ -68,7 +68,7 @@ export const categoryModel: CmsModelInput = {
         }),
         createModelField({
             id: "parentCategory",
-            multipleValues: false,
+            list: false,
             help: "",
             label: "Self - reference",
             type: "ref",
@@ -83,7 +83,7 @@ export const categoryModel: CmsModelInput = {
         }),
         createModelField({
             id: "tags",
-            multipleValues: true,
+            list: true,
             help: "",
             label: "Tags",
             type: "text",

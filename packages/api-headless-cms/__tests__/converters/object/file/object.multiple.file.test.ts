@@ -35,13 +35,13 @@ const model = createModel({
         createModelField({
             fieldId: "documents",
             type: "object",
-            multipleValues: true,
+            list: true,
             settings: {
                 fields: [
                     createModelField({
                         fieldId: "attachment",
                         type: "file",
-                        multipleValues: false
+                        list: false
                     })
                 ]
             }

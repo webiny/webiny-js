@@ -73,25 +73,25 @@ const model = createModel({
         createModelField({
             fieldId: "profile",
             type: "object",
-            multipleValues: false,
+            list: false,
             settings: {
                 fields: [
                     createModelField({
                         fieldId: "searches",
                         type: "object",
-                        multipleValues: true,
+                        list: true,
                         settings: {
                             fields: [
                                 createModelField({
                                     fieldId: "items",
                                     type: "object",
-                                    multipleValues: true,
+                                    list: true,
                                     settings: {
                                         fields: [
                                             createModelField({
                                                 fieldId: "searchableData",
                                                 type: "searchable-json",
-                                                multipleValues: false
+                                                list: false
                                             })
                                         ]
                                     }

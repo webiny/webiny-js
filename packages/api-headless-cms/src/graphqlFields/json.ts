@@ -10,7 +10,7 @@ export const createJsonField = (): CmsModelFieldToGraphQLPlugin => {
         isSearchable: false,
         read: {
             createTypeField({ field }) {
-                if (field.multipleValues) {
+                if (field.list) {
                     return `${field.fieldId}: [JSON]`;
                 }
 
@@ -22,7 +22,7 @@ export const createJsonField = (): CmsModelFieldToGraphQLPlugin => {
         },
         manage: {
             createTypeField({ field }) {
-                if (field.multipleValues) {
+                if (field.list) {
                     return `${field.fieldId}: [JSON]`;
                 }
                 return `${field.fieldId}: JSON`;

@@ -26,7 +26,7 @@ export class FieldBuilder<TType extends string = string> {
             label: label || "",
             validation: [],
             listValidation: [],
-            multipleValues: false,
+            list: false,
             predefinedValues: {
                 enabled: false,
                 values: []
@@ -83,7 +83,7 @@ export class FieldBuilder<TType extends string = string> {
     }
 
     list(): this {
-        this.config.multipleValues = true;
+        this.config.list = true;
         return this as this;
     }
 
@@ -93,7 +93,7 @@ export class FieldBuilder<TType extends string = string> {
     }
 
     /**
-     * List validators - these methods are available after calling multipleValues()
+     * List validators - these methods are available after calling list()
      */
     listMinLength(value: number, message?: string): this {
         return this.listValidation({
@@ -123,7 +123,7 @@ export class FieldBuilder<TType extends string = string> {
     }
 
     /**
-     * Add a list validation rule to this field (for multipleValues fields).
+     * Add a list validation rule to this field (for list fields).
      * This method is protected and should only be used by field-specific validator methods.
      * @internal
      */
@@ -170,7 +170,7 @@ export class FieldBuilder<TType extends string = string> {
             label: this.config.label,
             validation: this.config.validation || [],
             listValidation: this.config.listValidation || [],
-            multipleValues: this.config.multipleValues || false,
+            list: this.config.list || false,
             predefinedValues: this.config.predefinedValues || {
                 enabled: false,
                 values: []

@@ -16,7 +16,7 @@ const plugin: CmsModelFieldRendererPlugin = {
         canUse({ field }) {
             return (
                 field.type === "number" &&
-                !field.multipleValues &&
+                !field.list &&
                 !get(field, "predefinedValues.enabled")
             );
         },
@@ -34,8 +34,8 @@ const plugin: CmsModelFieldRendererPlugin = {
                             >
                                 <Input
                                     label={field.label}
-                                    placeholder={field.placeholderText}
-                                    description={field.helpText}
+                                    placeholder={field.placeholder}
+                                    description={field.description}
                                     type="number"
                                     data-testid={`fr.input.number.${field.label}`}
                                     validation={bind.validation}

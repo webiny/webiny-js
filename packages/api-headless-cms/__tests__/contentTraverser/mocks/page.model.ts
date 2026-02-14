@@ -45,7 +45,7 @@ export const pageModel = createPrivateModelPlugin({
         createModelField({
             id: "pageSettings",
             fieldId: "pageSettings",
-            multipleValues: false,
+            list: false,
             type: "object",
             label: "Page Settings",
             renderer: {
@@ -56,7 +56,7 @@ export const pageModel = createPrivateModelPlugin({
                     createModelField({
                         id: "generalPageSettings",
                         fieldId: "generalPageSettings",
-                        multipleValues: false,
+                        list: false,
                         type: "object",
                         label: "General",
                         renderer: {
@@ -568,7 +568,7 @@ export const pageModel = createPrivateModelPlugin({
                                     fieldId: "footerLinkList",
                                     label: "Footer Links",
                                     type: "object",
-                                    multipleValues: true,
+                                    list: true,
                                     renderer: {
                                         name: "objects"
                                     },
@@ -643,7 +643,7 @@ export const pageModel = createPrivateModelPlugin({
                                     fieldId: "socialMediaLinkList",
                                     label: "Social Media Links",
                                     type: "object",
-                                    multipleValues: true,
+                                    list: true,
                                     renderer: {
                                         name: "objects"
                                     },
@@ -701,7 +701,7 @@ export const pageModel = createPrivateModelPlugin({
                     createModelField({
                         id: "pageTeaserSettings",
                         fieldId: "pageTeaserSettings",
-                        multipleValues: false,
+                        list: false,
                         type: "object",
                         label: "Page Teaser",
                         renderer: {
@@ -712,7 +712,7 @@ export const pageModel = createPrivateModelPlugin({
                                 createModelField({
                                     type: "object",
                                     validation: [],
-                                    multipleValues: false,
+                                    list: false,
                                     renderer: {
                                         name: "asset-input"
                                     },
@@ -724,7 +724,7 @@ export const pageModel = createPrivateModelPlugin({
                                         fields: [
                                             createModelField({
                                                 type: "file",
-                                                multipleValues: false,
+                                                list: false,
                                                 label: "File",
                                                 help: "How to change the start image of a video please see http://acme.com/dam FAQ",
                                                 fieldId: "file",
@@ -733,7 +733,7 @@ export const pageModel = createPrivateModelPlugin({
                                             }),
                                             createModelField({
                                                 type: "text",
-                                                multipleValues: false,
+                                                list: false,
                                                 renderer: {
                                                     name: "text-input"
                                                 },
@@ -745,7 +745,7 @@ export const pageModel = createPrivateModelPlugin({
                                             }),
                                             createModelField({
                                                 type: "text",
-                                                multipleValues: false,
+                                                list: false,
                                                 renderer: {
                                                     name: "slug-field-input"
                                                 },
@@ -967,7 +967,7 @@ export const pageModel = createPrivateModelPlugin({
             fieldId: "pageTemplate",
             type: "dynamicZone",
             label: "Page Template",
-            multipleValues: false,
+            list: false,
             renderer: {
                 name: "dynamicZone"
             },
@@ -986,7 +986,7 @@ export const pageModel = createPrivateModelPlugin({
                                 fieldId: "introZone",
                                 label: "Introduction Zone",
                                 type: "dynamicZone",
-                                multipleValues: true,
+                                list: true,
                                 renderer: {
                                     name: "dynamicZone"
                                 },
@@ -1042,7 +1042,7 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: false,
+                                                    list: false,
                                                     renderer: {
                                                         name: "object"
                                                     },
@@ -1061,7 +1061,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                             "Title is required."
                                                                     }
                                                                 ],
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "enhanced-text-input"
                                                                 },
@@ -1078,7 +1078,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 validation: [],
                                                                 predefinedValues: {
                                                                     enabled: true,
@@ -1146,7 +1146,7 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: false,
+                                                    list: false,
                                                     renderer: {
                                                         name: "object"
                                                     },
@@ -1160,7 +1160,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             {
                                                                 type: "text",
                                                                 validation: [],
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "text-input"
                                                                 },
@@ -1190,7 +1190,7 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: false,
+                                                    list: false,
                                                     renderer: {
                                                         name: "asset-input"
                                                     },
@@ -1210,7 +1210,7 @@ export const pageModel = createPrivateModelPlugin({
                                                         fields: [
                                                             {
                                                                 type: "file",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 label: "File",
                                                                 help: "How to change the start image of a video please see http://acme.com/dam FAQ",
                                                                 fieldId: "file",
@@ -1219,7 +1219,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "text-input"
                                                                 },
@@ -1231,7 +1231,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "slug-field-input"
                                                                 },
@@ -1296,7 +1296,7 @@ export const pageModel = createPrivateModelPlugin({
                                 fieldId: "mainZone",
                                 label: "Main Zone",
                                 type: "dynamicZone",
-                                multipleValues: true,
+                                list: true,
                                 renderer: {
                                     name: "dynamicZone"
                                 },
@@ -1346,7 +1346,7 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: false,
+                                                    list: false,
                                                     renderer: {
                                                         name: "object"
                                                     },
@@ -1358,7 +1358,7 @@ export const pageModel = createPrivateModelPlugin({
                                                         fields: [
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "enhanced-text-input"
                                                                 },
@@ -1374,7 +1374,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 validation: [],
                                                                 predefinedValues: {
                                                                     enabled: true,
@@ -1428,7 +1428,7 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: true,
+                                                    list: true,
                                                     renderer: {
                                                         name: "objects"
                                                     },
@@ -1447,7 +1447,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                             "The field is required"
                                                                     }
                                                                 ],
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "text-input"
                                                                 },
@@ -1460,7 +1460,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "dynamicZone",
-                                                                multipleValues: true,
+                                                                list: true,
                                                                 validation: [
                                                                     {
                                                                         name: "required",
@@ -1527,7 +1527,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 {
                                                                                     type: "object",
                                                                                     validation: [],
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     renderer: {
                                                                                         name: "object"
                                                                                     },
@@ -1541,7 +1541,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                         fields: [
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 renderer:
                                                                                                     {
                                                                                                         name: "enhanced-text-input"
@@ -1561,7 +1561,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                             },
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 validation:
                                                                                                     [],
                                                                                                 predefinedValues:
@@ -1645,7 +1645,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 {
                                                                                     type: "object",
                                                                                     validation: [],
-                                                                                    multipleValues: true,
+                                                                                    list: true,
                                                                                     renderer: {
                                                                                         name: "asset-input"
                                                                                     },
@@ -1676,7 +1676,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                         fields: [
                                                                                             {
                                                                                                 type: "file",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 label: "File",
                                                                                                 help: "How to change the start image of a video please see http://acme.com/dam FAQ",
                                                                                                 fieldId:
@@ -1687,7 +1687,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                             },
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 renderer:
                                                                                                     {
                                                                                                         name: "text-input"
@@ -1702,7 +1702,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                             },
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 renderer:
                                                                                                     {
                                                                                                         name: "slug-field-input"
@@ -1717,7 +1717,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                             },
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 renderer:
                                                                                                     {
                                                                                                         name: "text-input"
@@ -1744,7 +1744,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                             },
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 renderer:
                                                                                                     {
                                                                                                         name: "text-input"
@@ -1803,7 +1803,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 {
                                                                                     type: "object",
                                                                                     validation: [],
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     renderer: {
                                                                                         name: "object"
                                                                                     },
@@ -1820,7 +1820,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                                 type: "text",
                                                                                                 validation:
                                                                                                     [],
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 renderer:
                                                                                                     {
                                                                                                         name: "text-input"
@@ -1859,7 +1859,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 {
                                                                                     type: "object",
                                                                                     validation: [],
-                                                                                    multipleValues: true,
+                                                                                    list: true,
                                                                                     renderer: {
                                                                                         name: "objects"
                                                                                     },
@@ -1873,7 +1873,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                         fields: [
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 validation:
                                                                                                     [
                                                                                                         {
@@ -1951,7 +1951,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 {
                                                                                     type: "object",
                                                                                     validation: [],
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     renderer: {
                                                                                         name: "object"
                                                                                     },
@@ -1965,7 +1965,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                         fields: [
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 renderer:
                                                                                                     {
                                                                                                         name: "enhanced-text-input"
@@ -1985,7 +1985,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                             },
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 validation:
                                                                                                     [],
                                                                                                 predefinedValues:
@@ -2097,7 +2097,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 {
                                                                                     type: "object",
                                                                                     validation: [],
-                                                                                    multipleValues: true,
+                                                                                    list: true,
                                                                                     renderer: {
                                                                                         name: "asset-input"
                                                                                     },
@@ -2133,7 +2133,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                         fields: [
                                                                                             {
                                                                                                 type: "file",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 label: "File",
                                                                                                 help: "How to change the start image of a video please see http://acme.com/dam FAQ",
                                                                                                 fieldId:
@@ -2144,7 +2144,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                             },
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 renderer:
                                                                                                     {
                                                                                                         name: "text-input"
@@ -2159,7 +2159,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                             },
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 renderer:
                                                                                                     {
                                                                                                         name: "slug-field-input"
@@ -2174,7 +2174,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                             },
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 renderer:
                                                                                                     {
                                                                                                         name: "text-input"
@@ -2201,7 +2201,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                             },
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 renderer:
                                                                                                     {
                                                                                                         name: "text-input"
@@ -2293,7 +2293,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 {
                                                                                     type: "object",
                                                                                     validation: [],
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     renderer: {
                                                                                         name: "asset-input"
                                                                                     },
@@ -2316,7 +2316,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                         fields: [
                                                                                             {
                                                                                                 type: "file",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 label: "File",
                                                                                                 help: "How to change the start image of a video please see http://acme.com/dam FAQ",
                                                                                                 fieldId:
@@ -2327,7 +2327,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                             },
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 renderer:
                                                                                                     {
                                                                                                         name: "text-input"
@@ -2342,7 +2342,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                             },
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 renderer:
                                                                                                     {
                                                                                                         name: "slug-field-input"
@@ -2395,7 +2395,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 {
                                                                                     type: "object",
                                                                                     validation: [],
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     renderer: {
                                                                                         name: "object"
                                                                                     },
@@ -2409,7 +2409,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                         fields: [
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 renderer:
                                                                                                     {
                                                                                                         name: "enhanced-text-input"
@@ -2429,7 +2429,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                             },
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 validation:
                                                                                                     [],
                                                                                                 predefinedValues:
@@ -2500,7 +2500,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 {
                                                                                     type: "object",
                                                                                     validation: [],
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     renderer: {
                                                                                         name: "object"
                                                                                     },
@@ -2517,7 +2517,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                                 type: "text",
                                                                                                 validation:
                                                                                                     [],
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 renderer:
                                                                                                     {
                                                                                                         name: "text-input"
@@ -2556,7 +2556,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 {
                                                                                     type: "object",
                                                                                     validation: [],
-                                                                                    multipleValues: true,
+                                                                                    list: true,
                                                                                     renderer: {
                                                                                         name: "objects"
                                                                                     },
@@ -2570,7 +2570,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                         fields: [
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 validation:
                                                                                                     [
                                                                                                         {
@@ -2672,7 +2672,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 {
                                                                                     type: "object",
                                                                                     validation: [],
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     renderer: {
                                                                                         name: "object"
                                                                                     },
@@ -2686,7 +2686,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                         fields: [
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 renderer:
                                                                                                     {
                                                                                                         name: "enhanced-text-input"
@@ -2706,7 +2706,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                             },
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 validation:
                                                                                                     [],
                                                                                                 predefinedValues:
@@ -2848,7 +2848,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                     renderer: {
                                                                                         name: "dynamicZone"
                                                                                     },
-                                                                                    multipleValues: true,
+                                                                                    list: true,
                                                                                     settings: {
                                                                                         templates: [
                                                                                             {
@@ -2866,7 +2866,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                                         type: "object",
                                                                                                         validation:
                                                                                                             [],
-                                                                                                        multipleValues: false,
+                                                                                                        list: false,
                                                                                                         renderer:
                                                                                                             {
                                                                                                                 name: "asset-input"
@@ -2891,7 +2891,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                                                 fields: [
                                                                                                                     {
                                                                                                                         type: "file",
-                                                                                                                        multipleValues: false,
+                                                                                                                        list: false,
                                                                                                                         label: "File",
                                                                                                                         help: "How to change the start image of a video please see http://acme.com/dam FAQ",
                                                                                                                         fieldId:
@@ -2902,7 +2902,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                                                     },
                                                                                                                     {
                                                                                                                         type: "text",
-                                                                                                                        multipleValues: false,
+                                                                                                                        list: false,
                                                                                                                         renderer:
                                                                                                                             {
                                                                                                                                 name: "text-input"
@@ -2917,7 +2917,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                                                     },
                                                                                                                     {
                                                                                                                         type: "text",
-                                                                                                                        multipleValues: false,
+                                                                                                                        list: false,
                                                                                                                         renderer:
                                                                                                                             {
                                                                                                                                 name: "slug-field-input"
@@ -3011,7 +3011,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                                                         "Value is required."
                                                                                                                 }
                                                                                                             ],
-                                                                                                        multipleValues: false,
+                                                                                                        list: false,
                                                                                                         renderer:
                                                                                                             {
                                                                                                                 name: "enhanced-text-input"
@@ -3033,7 +3033,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                                     },
                                                                                                     {
                                                                                                         type: "text",
-                                                                                                        multipleValues: false,
+                                                                                                        list: false,
                                                                                                         renderer:
                                                                                                             {
                                                                                                                 name: "enhanced-text-input"
@@ -3226,7 +3226,7 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: false,
+                                                    list: false,
                                                     renderer: {
                                                         name: "object"
                                                     },
@@ -3238,7 +3238,7 @@ export const pageModel = createPrivateModelPlugin({
                                                         fields: [
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "enhanced-text-input"
                                                                 },
@@ -3254,7 +3254,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 validation: [],
                                                                 predefinedValues: {
                                                                     enabled: true,
@@ -3357,7 +3357,7 @@ export const pageModel = createPrivateModelPlugin({
                                                     renderer: {
                                                         name: "dynamicZone"
                                                     },
-                                                    multipleValues: true,
+                                                    list: true,
                                                     settings: {
                                                         templates: [
                                                             {
@@ -3372,7 +3372,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                     {
                                                                         type: "object",
                                                                         validation: [],
-                                                                        multipleValues: false,
+                                                                        list: false,
                                                                         renderer: {
                                                                             name: "asset-input"
                                                                         },
@@ -3393,7 +3393,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                             fields: [
                                                                                 {
                                                                                     type: "file",
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     label: "File",
                                                                                     help: "How to change the start image of a video please see http://acme.com/dam FAQ",
                                                                                     fieldId: "file",
@@ -3403,7 +3403,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 },
                                                                                 {
                                                                                     type: "text",
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     renderer: {
                                                                                         name: "text-input"
                                                                                     },
@@ -3417,7 +3417,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 },
                                                                                 {
                                                                                     type: "text",
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     renderer: {
                                                                                         name: "slug-field-input"
                                                                                     },
@@ -3465,7 +3465,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                     {
                                                                         type: "object",
                                                                         validation: [],
-                                                                        multipleValues: false,
+                                                                        list: false,
                                                                         renderer: {
                                                                             name: "object"
                                                                         },
@@ -3478,7 +3478,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                             fields: [
                                                                                 {
                                                                                     type: "text",
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     renderer: {
                                                                                         name: "enhanced-text-input"
                                                                                     },
@@ -3496,7 +3496,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 },
                                                                                 {
                                                                                     type: "text",
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     validation: [],
                                                                                     predefinedValues:
                                                                                         {
@@ -3565,7 +3565,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                     {
                                                                         type: "object",
                                                                         validation: [],
-                                                                        multipleValues: false,
+                                                                        list: false,
                                                                         renderer: {
                                                                             name: "object"
                                                                         },
@@ -3580,7 +3580,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 {
                                                                                     type: "text",
                                                                                     validation: [],
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     renderer: {
                                                                                         name: "text-input"
                                                                                     },
@@ -3617,7 +3617,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                     {
                                                                         type: "object",
                                                                         validation: [],
-                                                                        multipleValues: true,
+                                                                        list: true,
                                                                         renderer: {
                                                                             name: "objects"
                                                                         },
@@ -3630,7 +3630,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                             fields: [
                                                                                 {
                                                                                     type: "text",
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     validation: [
                                                                                         {
                                                                                             name: "required",
@@ -3743,7 +3743,7 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: false,
+                                                    list: false,
                                                     renderer: {
                                                         name: "object"
                                                     },
@@ -3755,7 +3755,7 @@ export const pageModel = createPrivateModelPlugin({
                                                         fields: [
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "enhanced-text-input"
                                                                 },
@@ -3770,7 +3770,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 validation: [],
                                                                 predefinedValues: {
                                                                     enabled: true,
@@ -3869,7 +3869,7 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: true,
+                                                    list: true,
                                                     renderer: {
                                                         name: "asset-input"
                                                     },
@@ -3891,7 +3891,7 @@ export const pageModel = createPrivateModelPlugin({
                                                         fields: [
                                                             {
                                                                 type: "file",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 label: "File",
                                                                 help: "How to change the start image of a video please see http://acme.com/dam FAQ",
                                                                 fieldId: "file",
@@ -3900,7 +3900,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "text-input"
                                                                 },
@@ -3913,7 +3913,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "slug-field-input"
                                                                 },
@@ -3926,7 +3926,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "text-input"
                                                                 },
@@ -3949,7 +3949,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "text-input"
                                                                 },
@@ -4055,7 +4055,7 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: false,
+                                                    list: false,
                                                     renderer: {
                                                         name: "object"
                                                     },
@@ -4067,7 +4067,7 @@ export const pageModel = createPrivateModelPlugin({
                                                         fields: [
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "enhanced-text-input"
                                                                 },
@@ -4082,7 +4082,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 validation: [],
                                                                 predefinedValues: {
                                                                     enabled: true,
@@ -4156,7 +4156,7 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: true,
+                                                    list: true,
                                                     renderer: {
                                                         name: "asset-input"
                                                     },
@@ -4177,7 +4177,7 @@ export const pageModel = createPrivateModelPlugin({
                                                         fields: [
                                                             {
                                                                 type: "file",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 label: "File",
                                                                 help: "How to change the start image of a video please see http://acme.com/dam FAQ",
                                                                 fieldId: "file",
@@ -4186,7 +4186,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "text-input"
                                                                 },
@@ -4198,7 +4198,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "slug-field-input"
                                                                 },
@@ -4210,7 +4210,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "text-input"
                                                                 },
@@ -4232,7 +4232,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "text-input"
                                                                 },
@@ -4272,7 +4272,7 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: false,
+                                                    list: false,
                                                     renderer: {
                                                         name: "object"
                                                     },
@@ -4286,7 +4286,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             {
                                                                 type: "text",
                                                                 validation: [],
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "text-input"
                                                                 },
@@ -4314,7 +4314,7 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: true,
+                                                    list: true,
                                                     renderer: {
                                                         name: "objects"
                                                     },
@@ -4326,7 +4326,7 @@ export const pageModel = createPrivateModelPlugin({
                                                         fields: [
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 validation: [
                                                                     {
                                                                         name: "required",
@@ -4391,7 +4391,7 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: false,
+                                                    list: false,
                                                     renderer: {
                                                         name: "object"
                                                     },
@@ -4403,7 +4403,7 @@ export const pageModel = createPrivateModelPlugin({
                                                         fields: [
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "enhanced-text-input"
                                                                 },
@@ -4418,7 +4418,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 validation: [],
                                                                 predefinedValues: {
                                                                     enabled: true,
@@ -4527,7 +4527,7 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: false,
+                                                    list: false,
                                                     renderer: {
                                                         name: "asset-input"
                                                     },
@@ -4540,7 +4540,7 @@ export const pageModel = createPrivateModelPlugin({
                                                         fields: [
                                                             {
                                                                 type: "file",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 label: "File",
                                                                 help: "How to change the start image of a video please see http://acme.com/dam FAQ",
                                                                 fieldId: "file",
@@ -4549,7 +4549,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "text-input"
                                                                 },
@@ -4561,7 +4561,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "slug-field-input"
                                                                 },
@@ -4666,7 +4666,7 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: false,
+                                                    list: false,
                                                     renderer: {
                                                         name: "object"
                                                     },
@@ -4678,7 +4678,7 @@ export const pageModel = createPrivateModelPlugin({
                                                         fields: [
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "enhanced-text-input"
                                                                 },
@@ -4694,7 +4694,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 validation: [],
                                                                 predefinedValues: {
                                                                     enabled: true,
@@ -4750,7 +4750,7 @@ export const pageModel = createPrivateModelPlugin({
                                                     renderer: {
                                                         name: "dynamicZone"
                                                     },
-                                                    multipleValues: true,
+                                                    list: true,
                                                     settings: {
                                                         templates: [
                                                             {
@@ -4771,7 +4771,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                     "Must select a media"
                                                                             }
                                                                         ],
-                                                                        multipleValues: false,
+                                                                        list: false,
                                                                         renderer: {
                                                                             name: "asset-input"
                                                                         },
@@ -4795,7 +4795,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                             fields: [
                                                                                 {
                                                                                     type: "file",
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     label: "File",
                                                                                     help: "How to change the start image of a video please see http://acme.com/dam FAQ",
                                                                                     fieldId: "file",
@@ -4805,7 +4805,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 },
                                                                                 {
                                                                                     type: "text",
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     renderer: {
                                                                                         name: "text-input"
                                                                                     },
@@ -4819,7 +4819,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 },
                                                                                 {
                                                                                     type: "text",
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     renderer: {
                                                                                         name: "slug-field-input"
                                                                                     },
@@ -4866,7 +4866,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                     },
                                                                     {
                                                                         type: "text",
-                                                                        multipleValues: false,
+                                                                        list: false,
                                                                         renderer: {
                                                                             name: "text-input"
                                                                         },
@@ -4880,7 +4880,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                     },
                                                                     {
                                                                         type: "text",
-                                                                        multipleValues: false,
+                                                                        list: false,
                                                                         renderer: {
                                                                             name: "text-input"
                                                                         },
@@ -4894,7 +4894,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                     },
                                                                     {
                                                                         type: "text",
-                                                                        multipleValues: false,
+                                                                        list: false,
                                                                         renderer: {
                                                                             name: "text-input"
                                                                         },
@@ -4908,7 +4908,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                     },
                                                                     {
                                                                         type: "text",
-                                                                        multipleValues: false,
+                                                                        list: false,
                                                                         renderer: {
                                                                             name: "enhanced-text-input"
                                                                         },
@@ -4983,7 +4983,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                     {
                                                                         type: "object",
                                                                         validation: [],
-                                                                        multipleValues: false,
+                                                                        list: false,
                                                                         renderer: {
                                                                             name: "object"
                                                                         },
@@ -4998,7 +4998,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 {
                                                                                     type: "text",
                                                                                     validation: [],
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     renderer: {
                                                                                         name: "text-input"
                                                                                     },
@@ -5144,7 +5144,7 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: false,
+                                                    list: false,
                                                     renderer: {
                                                         name: "object"
                                                     },
@@ -5163,7 +5163,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                             "Title is required."
                                                                     }
                                                                 ],
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "enhanced-text-input"
                                                                 },
@@ -5180,7 +5180,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 validation: [],
                                                                 predefinedValues: {
                                                                     enabled: true,
@@ -5248,7 +5248,7 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: false,
+                                                    list: false,
                                                     renderer: {
                                                         name: "object"
                                                     },
@@ -5262,7 +5262,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             {
                                                                 type: "text",
                                                                 validation: [],
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "text-input"
                                                                 },
@@ -5292,7 +5292,7 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: false,
+                                                    list: false,
                                                     renderer: {
                                                         name: "asset-input"
                                                     },
@@ -5312,7 +5312,7 @@ export const pageModel = createPrivateModelPlugin({
                                                         fields: [
                                                             {
                                                                 type: "file",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 label: "File",
                                                                 help: "How to change the start image of a video please see http://acme.com/dam FAQ",
                                                                 fieldId: "file",
@@ -5321,7 +5321,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "text-input"
                                                                 },
@@ -5333,7 +5333,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "slug-field-input"
                                                                 },
@@ -5401,7 +5401,7 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: false,
+                                                    list: false,
                                                     renderer: {
                                                         name: "object"
                                                     },
@@ -5413,7 +5413,7 @@ export const pageModel = createPrivateModelPlugin({
                                                         fields: [
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "enhanced-text-input"
                                                                 },
@@ -5429,7 +5429,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 validation: [],
                                                                 predefinedValues: {
                                                                     enabled: true,
@@ -5560,7 +5560,7 @@ export const pageModel = createPrivateModelPlugin({
                                                     renderer: {
                                                         name: "dynamicZone"
                                                     },
-                                                    multipleValues: true,
+                                                    list: true,
                                                     settings: {
                                                         templates: [
                                                             {
@@ -5575,7 +5575,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                     {
                                                                         type: "object",
                                                                         validation: [],
-                                                                        multipleValues: false,
+                                                                        list: false,
                                                                         renderer: {
                                                                             name: "asset-input"
                                                                         },
@@ -5596,7 +5596,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                             fields: [
                                                                                 {
                                                                                     type: "file",
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     label: "File",
                                                                                     help: "How to change the start image of a video please see http://acme.com/dam FAQ",
                                                                                     fieldId: "file",
@@ -5606,7 +5606,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 },
                                                                                 {
                                                                                     type: "text",
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     renderer: {
                                                                                         name: "text-input"
                                                                                     },
@@ -5620,7 +5620,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 },
                                                                                 {
                                                                                     type: "text",
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     renderer: {
                                                                                         name: "slug-field-input"
                                                                                     },
@@ -5704,7 +5704,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                     "Value is required."
                                                                             }
                                                                         ],
-                                                                        multipleValues: false,
+                                                                        list: false,
                                                                         renderer: {
                                                                             name: "enhanced-text-input"
                                                                         },
@@ -5722,7 +5722,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                     },
                                                                     {
                                                                         type: "text",
-                                                                        multipleValues: false,
+                                                                        list: false,
                                                                         renderer: {
                                                                             name: "enhanced-text-input"
                                                                         },

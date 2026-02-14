@@ -17,7 +17,7 @@ const pageModelPlugin = new CmsModelPlugin({
             id: "jf7h0jsc",
             label: "Title",
             listValidation: [],
-            multipleValues: false,
+            list: false,
             placeholder: null,
             predefinedValues: {
                 enabled: false,
@@ -36,7 +36,7 @@ const pageModelPlugin = new CmsModelPlugin({
             id: "0kbfq0j6",
             label: "Content Blocks",
             listValidation: [],
-            multipleValues: false,
+            list: false,
             placeholder: null,
             predefinedValues: {
                 enabled: false,
@@ -94,7 +94,7 @@ const faqModelPlugin = new CmsModelPlugin({
             id: "c8pphxf2",
             label: "Question",
             listValidation: [],
-            multipleValues: false,
+            list: false,
             placeholder: null,
             predefinedValues: {
                 enabled: false,
@@ -113,7 +113,7 @@ const faqModelPlugin = new CmsModelPlugin({
             id: "477qeutg",
             label: "Answer",
             listValidation: [],
-            multipleValues: false,
+            list: false,
             placeholder: null,
             predefinedValues: {
                 enabled: false,
@@ -132,7 +132,7 @@ const faqModelPlugin = new CmsModelPlugin({
             id: "7jubpw3w",
             label: "Image",
             listValidation: [],
-            multipleValues: false,
+            list: false,
             placeholder: null,
             predefinedValues: {
                 enabled: false,
@@ -167,7 +167,7 @@ const faqGroupBannerModelPlugin = new CmsModelPlugin({
             id: "iqe2aw2g",
             label: "Eyebrow Text",
             listValidation: [],
-            multipleValues: false,
+            list: false,
             placeholder: null,
             predefinedValues: {
                 enabled: false,
@@ -186,7 +186,7 @@ const faqGroupBannerModelPlugin = new CmsModelPlugin({
             id: "25kvqahf",
             label: "Heading",
             listValidation: [],
-            multipleValues: false,
+            list: false,
             placeholder: null,
             predefinedValues: {
                 enabled: false,
@@ -205,7 +205,7 @@ const faqGroupBannerModelPlugin = new CmsModelPlugin({
             id: "an0tmg81",
             label: "Sub Heading",
             listValidation: [],
-            multipleValues: false,
+            list: false,
             placeholder: null,
             predefinedValues: {
                 enabled: false,
@@ -224,7 +224,7 @@ const faqGroupBannerModelPlugin = new CmsModelPlugin({
             id: "g4ei6uhp",
             label: "Alternate Background Color",
             listValidation: [],
-            multipleValues: false,
+            list: false,
             placeholder: null,
             predefinedValues: {
                 enabled: false,
@@ -245,7 +245,7 @@ const faqGroupBannerModelPlugin = new CmsModelPlugin({
             id: "g98nz2mr",
             label: "Is FAQ Item Collapsable",
             listValidation: [],
-            multipleValues: false,
+            list: false,
             placeholder: null,
             predefinedValues: {
                 enabled: false,
@@ -266,7 +266,7 @@ const faqGroupBannerModelPlugin = new CmsModelPlugin({
             id: "t03jq8ke",
             label: "Custom ID",
             listValidation: [],
-            multipleValues: false,
+            list: false,
             placeholder: null,
             predefinedValues: {
                 enabled: false,
@@ -285,7 +285,7 @@ const faqGroupBannerModelPlugin = new CmsModelPlugin({
             id: "5f0dbgvi",
             label: "FAQ Group",
             listValidation: [],
-            multipleValues: false,
+            list: false,
             placeholder: null,
             predefinedValues: {
                 enabled: false,

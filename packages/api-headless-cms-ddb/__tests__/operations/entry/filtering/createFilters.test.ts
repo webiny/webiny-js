@@ -76,7 +76,7 @@ describe("create filters from where conditions", () => {
                         parents: [
                             {
                                 fieldId: "values",
-                                multipleValues: false
+                                list: false
                             }
                         ]
                     }),

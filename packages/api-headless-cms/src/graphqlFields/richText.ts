@@ -11,7 +11,7 @@ export const createRichTextField = (): CmsModelFieldToGraphQLPlugin => {
         isSearchable: false,
         read: {
             createTypeField({ field }) {
-                if (field.multipleValues) {
+                if (field.list) {
                     return `${field.fieldId}(format: String): [JSON]`;
                 }
 
@@ -26,7 +26,7 @@ export const createRichTextField = (): CmsModelFieldToGraphQLPlugin => {
         },
         manage: {
             createTypeField({ field }) {
-                if (field.multipleValues) {
+                if (field.list) {
                     return `${field.fieldId}: [JSON]`;
                 }
                 return `${field.fieldId}: JSON`;

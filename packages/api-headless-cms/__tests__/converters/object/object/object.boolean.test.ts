@@ -23,19 +23,19 @@ const model = createModel({
         createModelField({
             fieldId: "profile",
             type: "object",
-            multipleValues: false,
+            list: false,
             settings: {
                 fields: [
                     createModelField({
                         fieldId: "settings",
                         type: "object",
-                        multipleValues: false,
+                        list: false,
                         settings: {
                             fields: [
                                 createModelField({
                                     fieldId: "isActive",
                                     type: "boolean",
-                                    multipleValues: false
+                                    list: false
                                 })
                             ]
                         }

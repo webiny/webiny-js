@@ -15,7 +15,7 @@ const model = createModel({
         createModelField({
             fieldId: "avatar",
             type: "file",
-            multipleValues: false
+            list: false
         })
     ]
 });

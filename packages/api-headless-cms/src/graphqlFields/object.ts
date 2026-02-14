@@ -143,7 +143,7 @@ export const createObjectField = (): CmsModelFieldToGraphQLPlugin<CmsModelObject
 
                 return {
                     fields: `${field.fieldId}: ${
-                        field.multipleValues ? `[${fieldType}!]` : fieldType
+                        field.list ? `[${fieldType}!]` : fieldType
                     }`,
                     typeDefs: `${typeDefs}${childTypeDefs}`
                 };
@@ -196,7 +196,7 @@ export const createObjectField = (): CmsModelFieldToGraphQLPlugin<CmsModelObject
 
                 return {
                     fields: `${field.fieldId}: ${
-                        field.multipleValues ? `[${fieldType}!]` : fieldType
+                        field.list ? `[${fieldType}!]` : fieldType
                     }`,
                     typeDefs: `${typeDefs}\n${childTypeDefs}`
                 };
@@ -222,7 +222,7 @@ export const createObjectField = (): CmsModelFieldToGraphQLPlugin<CmsModelObject
 
                 return {
                     fields: `${field.fieldId}: ${
-                        field.multipleValues ? `[${fieldType}!]` : fieldType
+                        field.list ? `[${fieldType}!]` : fieldType
                     }`,
                     typeDefs
                 };

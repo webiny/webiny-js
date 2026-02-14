@@ -23,7 +23,7 @@ const plugin: CmsModelFieldRendererPlugin = {
         canUse({ field }) {
             return [
                 field.type === "rich-text",
-                !field.multipleValues,
+                !field.list,
                 !get(field, "predefinedValues.enabled")
             ].every(Boolean);
         },
@@ -38,12 +38,12 @@ const plugin: CmsModelFieldRendererPlugin = {
                         return (
                             <Bind.ValidationContainer>
                                 <Label>{field.label}</Label>
-                                <FormComponentDescription text={field.helpText} />
+                                <FormComponentDescription text={field.help} />
                                 <LexicalCmsEditor
                                     value={bind.value}
                                     onChange={bind.onChange}
                                     key={getKey(form.data.id, field)}
-                                    placeholder={field.placeholderText}
+                                    placeholder={field.placeholder}
                                     data-testid={`fr.input.lexical.${field.label}`}
                                 />
                             </Bind.ValidationContainer>

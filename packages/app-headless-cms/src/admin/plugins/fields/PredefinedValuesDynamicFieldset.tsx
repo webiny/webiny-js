@@ -40,7 +40,7 @@ const onSelectedChange = (params: OnSelectedParams) => {
     form.setValue(
         "predefinedValues.values",
         bind.value.map((value: PredefinedValue, index: number) => {
-            const defaultValue = field.multipleValues ? value.selected : false;
+            const defaultValue = field.list ? value.selected : false;
             return {
                 ...value,
                 selected: index === targetIndex ? setToValue : defaultValue

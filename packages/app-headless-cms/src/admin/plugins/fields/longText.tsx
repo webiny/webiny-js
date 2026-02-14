@@ -16,9 +16,9 @@ const plugin: CmsModelFieldTypePlugin = {
         label: t`Long text`,
         description: t`Long comments, notes, multi line values.`,
         icon: <LongTextIcon />,
-        allowMultipleValues: true,
+        allowList: true,
         allowPredefinedValues: false, // TODO: implement "renderPredefinedValues" and set to true.
-        multipleValuesLabel: t`Use as a list of long texts`,
+        listLabel: t`Use as a list of long texts`,
         createField() {
             return {
                 type: this.type,
@@ -32,12 +32,13 @@ const plugin: CmsModelFieldTypePlugin = {
             return (
                 <Grid>
                     <Grid.Column span={12}>
-                        <Bind name={"placeholderText"}>
+                        <Bind name={"placeholder"}>
                             <Input
-                                label={
-                                    <Label text={t`Placeholder text`} description={t`(optional)`} />
-                                }
+                                label={t`Placeholder text`}
                                 size={"lg"}
+                                description={
+                                    "This text will be shown in an empty input component (optional)"
+                                }
                             />
                         </Bind>
                     </Grid.Column>

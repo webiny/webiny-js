@@ -15,7 +15,7 @@ const model = createModel({
         createModelField({
             fieldId: "age",
             type: "number",
-            multipleValues: false
+            list: false
         })
     ]
 });

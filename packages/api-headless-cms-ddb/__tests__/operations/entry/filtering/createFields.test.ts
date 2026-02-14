@@ -50,7 +50,7 @@ describe("create system and model fields", () => {
                 fieldId: "values",
                 createPath: expect.any(Function),
                 system: true,
-                multipleValues: false,
+                list: false,
                 transform: expect.any(Function),
                 label: "Values",
                 settings: expect.any(Object)
@@ -60,11 +60,11 @@ describe("create system and model fields", () => {
                 fieldId: "settings",
                 id: "settings",
                 label: "Settings",
-                multipleValues: false,
+                list: false,
                 parents: [
                     {
                         fieldId: "values",
-                        multipleValues: false
+                        list: false
                     }
                 ],
                 storageId: "searchableJson@settings",
@@ -77,7 +77,7 @@ describe("create system and model fields", () => {
                 parents: [
                     {
                         fieldId: "values",
-                        multipleValues: false
+                        list: false
                     }
                 ],
                 type: "text",
@@ -85,7 +85,7 @@ describe("create system and model fields", () => {
                 fieldId: "title",
                 createPath: expect.any(Function),
                 system: false,
-                multipleValues: false,
+                list: false,
                 transform: expect.any(Function),
                 label: "Title"
             },
@@ -94,11 +94,11 @@ describe("create system and model fields", () => {
                 fieldId: "priority",
                 id: "priority",
                 label: "Priority",
-                multipleValues: false,
+                list: false,
                 parents: [
                     {
                         fieldId: "values",
-                        multipleValues: false
+                        list: false
                     }
                 ],
                 storageId: "number@priorityStorageId",
@@ -111,11 +111,11 @@ describe("create system and model fields", () => {
                 fieldId: "parent",
                 id: "parent",
                 label: "Parent",
-                multipleValues: false,
+                list: false,
                 parents: [
                     {
                         fieldId: "values",
-                        multipleValues: false
+                        list: false
                     }
                 ],
                 storageId: "ref@parentStorageId",
@@ -128,11 +128,11 @@ describe("create system and model fields", () => {
                 fieldId: "authors",
                 id: "authors",
                 label: "Authors",
-                multipleValues: true,
+                list: true,
                 parents: [
                     {
                         fieldId: "values",
-                        multipleValues: false
+                        list: false
                     }
                 ],
                 storageId: "ref@authorsStorageId",
@@ -145,7 +145,7 @@ describe("create system and model fields", () => {
                 parents: [
                     {
                         fieldId: "values",
-                        multipleValues: false
+                        list: false
                     }
                 ],
                 type: "object",
@@ -153,7 +153,7 @@ describe("create system and model fields", () => {
                 fieldId: "options",
                 createPath: expect.any(Function),
                 system: false,
-                multipleValues: true,
+                list: true,
                 transform: expect.any(Function),
                 label: "Options",
                 settings: expect.any(Object)
@@ -163,15 +163,15 @@ describe("create system and model fields", () => {
                 fieldId: "keys",
                 id: "keys",
                 label: "Keys",
-                multipleValues: false,
+                list: false,
                 parents: [
                     {
                         fieldId: "values",
-                        multipleValues: false
+                        list: false
                     },
                     {
                         fieldId: "options",
-                        multipleValues: true
+                        list: true
                     }
                 ],
                 storageId: "text@keysStorageId",
@@ -184,15 +184,15 @@ describe("create system and model fields", () => {
                 fieldId: "optionId",
                 id: "optionId",
                 label: "Option ID",
-                multipleValues: false,
+                list: false,
                 parents: [
                     {
                         fieldId: "values",
-                        multipleValues: false
+                        list: false
                     },
                     {
                         fieldId: "options",
-                        multipleValues: true
+                        list: true
                     }
                 ],
                 storageId: "number@optionIdStorageId",
@@ -204,11 +204,11 @@ describe("create system and model fields", () => {
                 parents: [
                     {
                         fieldId: "values",
-                        multipleValues: false
+                        list: false
                     },
                     {
                         fieldId: "options",
-                        multipleValues: true
+                        list: true
                     }
                 ],
                 id: "variant",
@@ -217,7 +217,7 @@ describe("create system and model fields", () => {
                 fieldId: "variant",
                 createPath: expect.any(Function),
                 system: false,
-                multipleValues: false,
+                list: false,
                 transform: expect.any(Function),
                 label: "Variant",
                 settings: expect.any(Object)
@@ -226,15 +226,15 @@ describe("create system and model fields", () => {
                 parents: [
                     {
                         fieldId: "values",
-                        multipleValues: false
+                        list: false
                     },
                     {
                         fieldId: "options",
-                        multipleValues: true
+                        list: true
                     },
                     {
                         fieldId: "variant",
-                        multipleValues: false
+                        list: false
                     }
                 ],
                 id: "colors",
@@ -243,7 +243,7 @@ describe("create system and model fields", () => {
                 fieldId: "colors",
                 createPath: expect.any(Function),
                 system: false,
-                multipleValues: true,
+                list: true,
                 transform: expect.any(Function),
                 label: "Variant Colors"
             },
@@ -251,15 +251,15 @@ describe("create system and model fields", () => {
                 parents: [
                     {
                         fieldId: "values",
-                        multipleValues: false
+                        list: false
                     },
                     {
                         fieldId: "options",
-                        multipleValues: true
+                        list: true
                     },
                     {
                         fieldId: "variant",
-                        multipleValues: false
+                        list: false
                     }
                 ],
                 id: "number",
@@ -268,7 +268,7 @@ describe("create system and model fields", () => {
                 fieldId: "number",
                 createPath: expect.any(Function),
                 system: false,
-                multipleValues: false,
+                list: false,
                 transform: expect.any(Function),
                 label: "Variant Number"
             },
@@ -276,7 +276,7 @@ describe("create system and model fields", () => {
                 parents: [
                     {
                         fieldId: "values",
-                        multipleValues: false
+                        list: false
                     }
                 ],
                 id: "info",
@@ -285,7 +285,7 @@ describe("create system and model fields", () => {
                 fieldId: "info",
                 createPath: expect.any(Function),
                 system: false,
-                multipleValues: false,
+                list: false,
                 transform: expect.any(Function),
                 label: "Info",
                 settings: expect.any(Object)
@@ -294,11 +294,11 @@ describe("create system and model fields", () => {
                 parents: [
                     {
                         fieldId: "values",
-                        multipleValues: false
+                        list: false
                     },
                     {
                         fieldId: "info",
-                        multipleValues: false
+                        list: false
                     }
                 ],
                 id: "images",
@@ -307,7 +307,7 @@ describe("create system and model fields", () => {
                 fieldId: "images",
                 createPath: expect.any(Function),
                 system: false,
-                multipleValues: true,
+                list: true,
                 transform: expect.any(Function),
                 label: "Images",
                 settings: expect.any(Object)
@@ -316,15 +316,15 @@ describe("create system and model fields", () => {
                 parents: [
                     {
                         fieldId: "values",
-                        multipleValues: false
+                        list: false
                     },
                     {
                         fieldId: "info",
-                        multipleValues: false
+                        list: false
                     },
                     {
                         fieldId: "images",
-                        multipleValues: true
+                        list: true
                     }
                 ],
                 id: "file",
@@ -333,7 +333,7 @@ describe("create system and model fields", () => {
                 fieldId: "file",
                 createPath: expect.any(Function),
                 system: false,
-                multipleValues: false,
+                list: false,
                 transform: expect.any(Function),
                 label: "File"
             },
@@ -341,15 +341,15 @@ describe("create system and model fields", () => {
                 parents: [
                     {
                         fieldId: "values",
-                        multipleValues: false
+                        list: false
                     },
                     {
                         fieldId: "info",
-                        multipleValues: false
+                        list: false
                     },
                     {
                         fieldId: "images",
-                        multipleValues: true
+                        list: true
                     }
                 ],
                 id: "tags",
@@ -358,7 +358,7 @@ describe("create system and model fields", () => {
                 fieldId: "tags",
                 createPath: expect.any(Function),
                 system: false,
-                multipleValues: true,
+                list: true,
                 transform: expect.any(Function),
                 label: "Tags",
                 settings: expect.any(Object)
@@ -368,23 +368,23 @@ describe("create system and model fields", () => {
                 fieldId: "slug",
                 id: "slug",
                 label: "Slug",
-                multipleValues: false,
+                list: false,
                 parents: [
                     {
                         fieldId: "values",
-                        multipleValues: false
+                        list: false
                     },
                     {
                         fieldId: "info",
-                        multipleValues: false
+                        list: false
                     },
                     {
                         fieldId: "images",
-                        multipleValues: true
+                        list: true
                     },
                     {
                         fieldId: "tags",
-                        multipleValues: true
+                        list: true
                     }
                 ],
                 storageId: "text@infoImagesTagsSlugStorageId",
@@ -397,23 +397,23 @@ describe("create system and model fields", () => {
                 fieldId: "title",
                 id: "title",
                 label: "Title",
-                multipleValues: false,
+                list: false,
                 parents: [
                     {
                         fieldId: "values",
-                        multipleValues: false
+                        list: false
                     },
                     {
                         fieldId: "info",
-                        multipleValues: false
+                        list: false
                     },
                     {
                         fieldId: "images",
-                        multipleValues: true
+                        list: true
                     },
                     {
                         fieldId: "tags",
-                        multipleValues: true
+                        list: true
                     }
                 ],
                 storageId: "text@infoImagesTagsTitleStorageId",
@@ -426,19 +426,19 @@ describe("create system and model fields", () => {
                 fieldId: "title",
                 id: "title",
                 label: "Title",
-                multipleValues: false,
+                list: false,
                 parents: [
                     {
                         fieldId: "values",
-                        multipleValues: false
+                        list: false
                     },
                     {
                         fieldId: "info",
-                        multipleValues: false
+                        list: false
                     },
                     {
                         fieldId: "images",
-                        multipleValues: true
+                        list: true
                     }
                 ],
                 storageId: "text@infoImagesTitleStorageId",
@@ -451,15 +451,15 @@ describe("create system and model fields", () => {
                 fieldId: "keywords",
                 id: "keywords",
                 label: "Keywords",
-                multipleValues: true,
+                list: true,
                 parents: [
                     {
                         fieldId: "values",
-                        multipleValues: false
+                        list: false
                     },
                     {
                         fieldId: "info",
-                        multipleValues: false
+                        list: false
                     }
                 ],
                 storageId: "text@infoKeywordsStorageId",

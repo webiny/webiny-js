@@ -16,7 +16,7 @@ const plugin: CmsModelFieldRendererPlugin = {
         canUse({ field }) {
             return (
                 field.type === "long-text" &&
-                !field.multipleValues &&
+                !field.list &&
                 !get(field, "predefinedValues.enabled")
             );
         },
@@ -35,8 +35,8 @@ const plugin: CmsModelFieldRendererPlugin = {
                                 <Textarea
                                     rows={5}
                                     label={field.label}
-                                    placeholder={field.placeholderText}
-                                    description={field.helpText}
+                                    placeholder={field.placeholder}
+                                    description={field.description}
                                     data-testid={`fr.input.longtext.${field.label}`}
                                     validation={bind.validation}
                                 />

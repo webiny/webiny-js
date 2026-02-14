@@ -41,7 +41,7 @@ export interface ITextFieldBuilder extends FieldBuilder<z.ZodString> {
   email(): this;
   url(): this;
   unique(): this;
-  helpText(text: string): this;
+  help(text: string): this;
   placeholder(text: string): this;
 }
 
@@ -219,7 +219,7 @@ export interface IColorFieldBuilder extends FieldBuilder<z.ZodString> {
   default(hex: string): this;
   allowAlpha(): this;
   palette(colors: string[]): this;
-  helpText(text: string): this;
+  help(text: string): this;
 }
 
 class ColorFieldBuilder extends FieldBuilder<z.ZodString> implements IColorFieldBuilder {

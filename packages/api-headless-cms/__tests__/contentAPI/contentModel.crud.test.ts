@@ -583,7 +583,7 @@ describe("content model test", () => {
             fieldId: "textField",
             label: "Text field",
             help: "help text",
-            multipleValues: false,
+            list: false,
             placeholder: "placeholder text",
             tags: [],
             predefinedValues: {
@@ -603,7 +603,7 @@ describe("content model test", () => {
             fieldId: "numberField",
             label: "Number field",
             help: "number help text",
-            multipleValues: false,
+            list: false,
             placeholder: "number placeholder text",
             predefinedValues: {
                 enabled: false,
@@ -687,7 +687,7 @@ describe("content model test", () => {
             fieldId: "field1",
             label: "Field 1",
             help: "help text",
-            multipleValues: false,
+            list: false,
             placeholder: "placeholder text",
             predefinedValues: {
                 enabled: false,

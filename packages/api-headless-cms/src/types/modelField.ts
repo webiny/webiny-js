@@ -102,7 +102,7 @@ export interface CmsModelField {
      * Is this a multiple values field?
      *
      */
-    multipleValues?: boolean;
+    list?: boolean;
     /**
      * Fields can be tagged to give them contextual meaning.
      */
@@ -165,7 +165,7 @@ export interface CmsModelFieldInput {
     /**
      * Are multiple values allowed?
      */
-    multipleValues?: boolean;
+    list?: boolean;
     /**
      * Predefined values options for the field. Check the reference for more information.
      */

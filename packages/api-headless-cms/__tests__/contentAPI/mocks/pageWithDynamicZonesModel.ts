@@ -52,7 +52,7 @@ export const pageModel: CmsModel = {
                 enabled: false,
                 values: []
             },
-            multipleValues: true,
+            list: true,
             renderer: {
                 name: "dynamicZone"
             },
@@ -224,7 +224,7 @@ export const pageModel: CmsModel = {
                                             fieldId: "objectNestedObject",
                                             type: "object",
                                             label: "Object nested object",
-                                            multipleValues: true,
+                                            list: true,
                                             settings: {
                                                 fields: [
                                                     {
@@ -328,7 +328,7 @@ export const pageModel: CmsModel = {
                                                     renderer: {
                                                         name: "ref-inputs"
                                                     },
-                                                    multipleValues: true,
+                                                    list: true,
                                                     listValidation: [],
                                                     label: "Authors",
                                                     fieldId: "authors",
@@ -384,7 +384,7 @@ export const pageModel: CmsModel = {
                         fields: [
                             {
                                 id: "jms49ui",
-                                multipleValues: false,
+                                list: false,
                                 help: "",
                                 label: "Author",
                                 fieldId: "author",
@@ -410,7 +410,7 @@ export const pageModel: CmsModel = {
                             },
                             {
                                 id: "xcv50da",
-                                multipleValues: true,
+                                list: true,
                                 help: "",
                                 label: "Authors",
                                 fieldId: "authors",
@@ -451,7 +451,7 @@ export const pageModel: CmsModel = {
                 enabled: false,
                 values: []
             },
-            multipleValues: false,
+            list: false,
             renderer: {
                 name: "dynamicZone"
             },
@@ -562,7 +562,7 @@ export const pageModel: CmsModel = {
                                             fieldId: "objectNestedObject",
                                             type: "object",
                                             label: "Object nested object",
-                                            multipleValues: true,
+                                            list: true,
                                             settings: {
                                                 fields: [
                                                     {
@@ -688,7 +688,7 @@ export const pageModel: CmsModel = {
             fieldId: "references1",
             help: "Single value DZ with multi-value ref field.",
             type: "dynamicZone",
-            multipleValues: false,
+            list: false,
             label: "Reference",
             listValidation: [],
             validation: [],
@@ -704,7 +704,7 @@ export const pageModel: CmsModel = {
                         fields: [
                             {
                                 id: "gt409u8qhgoudsahfds",
-                                multipleValues: true,
+                                list: true,
                                 fieldId: "authors",
                                 label: "Reference Field",
                                 type: "ref",
@@ -726,7 +726,7 @@ export const pageModel: CmsModel = {
             fieldId: "references2",
             help: "Multi-value DZ with a single-value ref field.",
             type: "dynamicZone",
-            multipleValues: true,
+            list: true,
             label: "Reference",
             listValidation: [],
             validation: [],

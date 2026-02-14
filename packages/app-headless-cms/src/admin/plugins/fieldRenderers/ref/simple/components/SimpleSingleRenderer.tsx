@@ -45,7 +45,7 @@ export const SimpleSingleRenderer = (props: SimpleSingleRendererProps) => {
         <RadioGroup
             {...bind}
             label={field.label}
-            description={field.helpText}
+            description={field.description}
             value={value}
             items={items}
             onChange={(value: string) => {

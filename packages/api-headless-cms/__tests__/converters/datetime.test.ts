@@ -15,7 +15,7 @@ const model = createModel({
         createModelField({
             fieldId: "publishedAt",
             type: "datetime",
-            multipleValues: false
+            list: false
         })
     ]
 });

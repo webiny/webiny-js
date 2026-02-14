@@ -7,7 +7,7 @@ interface FieldValueTransform {
 
 export interface FieldParent {
     fieldId: string;
-    multipleValues?: boolean;
+    list?: boolean;
 }
 
 export interface Field

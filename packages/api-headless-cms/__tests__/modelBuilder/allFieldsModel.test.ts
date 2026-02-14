@@ -245,13 +245,13 @@ describe("All Field Types Model", () => {
 
         const sectionsField = model!.fields.find(f => f.fieldId === "sections");
         expect(sectionsField?.type).toBe("object");
-        expect(sectionsField?.multipleValues).toBe(true);
+        expect(sectionsField?.list).toBe(true);
         expect(sectionsField?.settings?.fields?.length).toBe(3);
         expect(sectionsField?.settings?.layout).toEqual([["title"], ["content"], ["order"]]);
 
         const dynamicContentField = model!.fields.find(f => f.fieldId === "dynamicContent");
         expect(dynamicContentField?.type).toBe("dynamicZone");
-        expect(dynamicContentField?.multipleValues).toBe(true);
+        expect(dynamicContentField?.list).toBe(true);
         expect(dynamicContentField?.settings?.templates).toHaveLength(3);
         expect(dynamicContentField?.settings?.templates![0].gqlTypeName).toBe("TextBlock");
         expect(dynamicContentField?.settings?.templates![0].layout).toEqual([
@@ -273,7 +273,7 @@ describe("All Field Types Model", () => {
         const statsField = statsTemplate.fields[0]!;
         expect(statsField.fieldId).toBe("stats");
         expect(statsField.type).toBe("object");
-        expect(statsField.multipleValues).toBe(true);
+        expect(statsField.list).toBe(true);
         expect(statsField.settings!.layout).toEqual([["label"], ["value"], ["trend"]]);
         expect(statsField.settings!.fields).toHaveLength(3);
         const trendField = statsField.settings!.fields!.find((f: any) => f.fieldId === "trend");

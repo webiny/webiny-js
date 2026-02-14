@@ -19,7 +19,7 @@ const plugin: CmsModelFieldRendererPlugin = {
         canUse({ field }) {
             return (
                 field.type === "long-text" &&
-                !!field.multipleValues &&
+                !!field.list &&
                 !get(field, "predefinedValues.enabled")
             );
         },
@@ -37,7 +37,7 @@ const plugin: CmsModelFieldRendererPlugin = {
                                     validation={bind.index.validation}
                                     rows={5}
                                     label={t`Value {number}`({ number: index + 1 })}
-                                    placeholder={props.field.placeholderText}
+                                    placeholder={props.field.placeholder}
                                     data-testid={`fr.input.longTexts.${props.field.label}.${
                                         index + 1
                                     }`}

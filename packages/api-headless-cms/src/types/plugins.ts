@@ -118,7 +118,7 @@ export interface CmsModelFieldToGraphQLPlugin<TField extends CmsModelField = Cms
          * ```ts
          * read: {
          *     createTypeField({ field }) {
-         *         if (field.multipleValues) {
+         *         if (field.list) {
          *             return `${field.fieldId}: [MyFieldType]`;
          *         }
          *
@@ -215,7 +215,7 @@ export interface CmsModelFieldToGraphQLPlugin<TField extends CmsModelField = Cms
          * ```ts
          * manage: {
          *     createTypeField({ field }) {
-         *         if (field.multipleValues) {
+         *         if (field.list) {
          *             return field.fieldId + ": [MyType]";
          *         }
          *
@@ -236,7 +236,7 @@ export interface CmsModelFieldToGraphQLPlugin<TField extends CmsModelField = Cms
          * ```ts
          * manage: {
          *     createInputField({ field }) {
-         *         if (field.multipleValues) {
+         *         if (field.list) {
          *             return field.fieldId + ": [MyField]";
          *         }
          *

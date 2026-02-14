@@ -31,13 +31,13 @@ const model = createModel({
         createModelField({
             fieldId: "profile",
             type: "object",
-            multipleValues: false,
+            list: false,
             settings: {
                 fields: [
                     createModelField({
                         fieldId: "content",
                         type: "dynamicZone",
-                        multipleValues: false,
+                        list: false,
                         settings: {
                             templates: [
                                 {
@@ -50,7 +50,7 @@ const model = createModel({
                                         createModelField({
                                             fieldId: "searchableData",
                                             type: "searchable-json",
-                                            multipleValues: false
+                                            list: false
                                         })
                                     ],
                                     layout: [],

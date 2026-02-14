@@ -37,7 +37,7 @@ const convertDefaultValue = (field: CmsModelField, value: DefaultValue): Default
 };
 
 const getDefaultValue = (field: CmsModelField): (DefaultValue | DefaultValue[]) | undefined => {
-    const { settings, multipleValues } = field;
+    const { settings, list } = field;
     if (settings && settings.defaultValue !== undefined) {
         return convertDefaultValue(field, settings.defaultValue);
     }
@@ -49,7 +49,7 @@ const getDefaultValue = (field: CmsModelField): (DefaultValue | DefaultValue[]) 
     ) {
         return undefined;
     }
-    if (!multipleValues) {
+    if (!list) {
         const selectedValue = predefinedValues.values.find(value => {
             return !!value.selected;
         });

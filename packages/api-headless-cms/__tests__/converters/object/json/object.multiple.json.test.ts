@@ -35,13 +35,13 @@ const model = createModel({
         createModelField({
             fieldId: "configs",
             type: "object",
-            multipleValues: true,
+            list: true,
             settings: {
                 fields: [
                     createModelField({
                         fieldId: "metadata",
                         type: "json",
-                        multipleValues: false
+                        list: false
                     })
                 ]
             }

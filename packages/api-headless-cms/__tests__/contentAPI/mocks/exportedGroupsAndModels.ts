@@ -27,7 +27,7 @@ export const exportedGroupsAndModels = {
             pluralApiName: "Articles",
             fields: [
                 {
-                    multipleValues: false,
+                    list: false,
                     listValidation: [],
                     settings: {},
                     renderer: { name: "text-input" },
@@ -43,7 +43,7 @@ export const exportedGroupsAndModels = {
                     fieldId: "title"
                 },
                 {
-                    multipleValues: false,
+                    list: false,
                     listValidation: [],
                     settings: {},
                     renderer: { name: "long-text-text-area" },
@@ -59,7 +59,7 @@ export const exportedGroupsAndModels = {
                     fieldId: "description"
                 },
                 {
-                    multipleValues: false,
+                    list: false,
                     listValidation: [],
                     settings: {},
                     renderer: { name: "lexical-text-input" },
@@ -75,7 +75,7 @@ export const exportedGroupsAndModels = {
                     fieldId: "body"
                 },
                 {
-                    multipleValues: false,
+                    list: false,
                     listValidation: [],
                     settings: { models: [{ modelId: "author" }] },
                     renderer: { name: "ref-advanced-single" },
@@ -91,7 +91,7 @@ export const exportedGroupsAndModels = {
                     fieldId: "author"
                 },
                 {
-                    multipleValues: true,
+                    list: true,
                     listValidation: [],
                     settings: { models: [{ modelId: "category" }] },
                     renderer: { name: "ref-advanced-multiple" },
@@ -120,7 +120,7 @@ export const exportedGroupsAndModels = {
             pluralApiName: "Authors",
             fields: [
                 {
-                    multipleValues: false,
+                    list: false,
                     listValidation: [],
                     settings: {},
                     renderer: { name: "text-input" },
@@ -136,7 +136,7 @@ export const exportedGroupsAndModels = {
                     fieldId: "name"
                 },
                 {
-                    multipleValues: false,
+                    list: false,
                     listValidation: [],
                     settings: {},
                     renderer: { name: "long-text-text-area" },
@@ -152,7 +152,7 @@ export const exportedGroupsAndModels = {
                     fieldId: "about"
                 },
                 {
-                    multipleValues: false,
+                    list: false,
                     listValidation: [],
                     settings: {},
                     renderer: { name: "lexical-text-input" },
@@ -168,7 +168,7 @@ export const exportedGroupsAndModels = {
                     fieldId: "biography"
                 },
                 {
-                    multipleValues: false,
+                    list: false,
                     listValidation: [],
                     settings: { type: "date" },
                     renderer: { name: "date-time-input" },
@@ -184,7 +184,7 @@ export const exportedGroupsAndModels = {
                     fieldId: "dateOfBirth"
                 },
                 {
-                    multipleValues: false,
+                    list: false,
                     listValidation: [],
                     settings: {},
                     renderer: { name: "boolean-input" },
@@ -213,7 +213,7 @@ export const exportedGroupsAndModels = {
             pluralApiName: "Categories",
             fields: [
                 {
-                    multipleValues: false,
+                    list: false,
                     listValidation: [],
                     settings: {},
                     renderer: { name: "text-input" },
@@ -243,7 +243,7 @@ export const exportedGroupsAndModels = {
             pluralApiName: "Machine",
             fields: [
                 {
-                    multipleValues: false,
+                    list: false,
                     listValidation: [],
                     settings: {},
                     renderer: { name: "text-input" },
@@ -286,7 +286,7 @@ export const createModels = () => {
             description: "",
             fields: [
                 {
-                    multipleValues: false,
+                    list: false,
                     listValidation: [],
                     settings: {},
                     renderer: { name: "text-input" },

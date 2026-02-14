@@ -13,8 +13,10 @@ export const FIELDS_FIELDS = `
     type
     label
     tags
-    placeholderText
-    helpText
+    placeholder
+    description
+    note
+    help
     predefinedValues {
         enabled
         values {
@@ -23,7 +25,7 @@ export const FIELDS_FIELDS = `
             selected
         }
     }
-    multipleValues
+    list
     renderer {
         name
         settings

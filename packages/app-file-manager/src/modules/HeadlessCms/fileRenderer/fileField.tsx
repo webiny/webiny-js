@@ -30,7 +30,7 @@ const FieldRenderer = ({ field, getBind }: CmsModelFieldRendererProps) => {
                                                 {...bind}
                                                 label={field.label}
                                                 validation={validation}
-                                                description={field.helpText}
+                                                description={field.description}
                                                 note={getSupportedExtensionsLabelHint(imagesOnly)}
                                                 value={value}
                                                 onSelectItem={() =>
@@ -38,7 +38,7 @@ const FieldRenderer = ({ field, getBind }: CmsModelFieldRendererProps) => {
                                                 }
                                                 onEditItem={() => editFile(value)}
                                                 onRemoveItem={() => onChange(null)}
-                                                placeholder={field.placeholderText}
+                                                placeholder={field.placeholder}
                                                 type={"compact"}
                                                 data-testid={`fr.input.filefield.${field.label}`}
                                             />
@@ -62,7 +62,7 @@ export const singleFile: CmsModelFieldRendererPlugin = {
         name: "File Input",
         description: "Enables selecting a single file via File Manager.",
         canUse({ field }) {
-            return field.type === "file" && !field.multipleValues;
+            return field.type === "file" && !field.list;
         },
         render(params) {
             return <FieldRenderer {...params} />;

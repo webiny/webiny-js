@@ -23,7 +23,7 @@ const DATA_FIELD = /* GraphQL*/ `
             fieldId
             type
             tags
-            multipleValues
+            list
             predefinedValues {
                 enabled
                 values {

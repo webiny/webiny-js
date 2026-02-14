@@ -156,7 +156,7 @@ describe("content model test no field plugin", () => {
                 fields: [
                     {
                         id: "1234",
-                        multipleValues: false,
+                        list: false,
                         description: "",
                         label: "Title",
                         type: "text",
@@ -170,7 +170,7 @@ describe("content model test no field plugin", () => {
                     },
                     {
                         id: "2345",
-                        multipleValues: false,
+                        list: false,
                         description: "",
                         label: "Slug",
                         type: "text",
@@ -184,7 +184,7 @@ describe("content model test no field plugin", () => {
                     },
                     {
                         id: "9999",
-                        multipleValues: false,
+                        list: false,
                         description: "",
                         label: "Test",
                         type: "custom-test-field",

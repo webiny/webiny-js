@@ -23,7 +23,7 @@ const model = createModel({
         createModelField({
             fieldId: "author",
             type: "ref",
-            multipleValues: false
+            list: false
         })
     ]
 });

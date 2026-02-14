@@ -1,7 +1,7 @@
 import type { CmsModelField as BaseCmsModelField } from "~/types";
 
 export interface CmsModelField extends BaseCmsModelField {
-    multipleValues: boolean;
+    list: boolean;
 }
 export interface FieldFactoryResponse {
     (properties?: Partial<CmsModelField>): CmsModelField;

@@ -23,7 +23,7 @@ const model = createModel({
         createModelField({
             fieldId: "descriptions",
             type: "long-text",
-            multipleValues: true
+            list: true
         })
     ]
 });

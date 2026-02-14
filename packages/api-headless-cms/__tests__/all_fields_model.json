@@ -19,7 +19,7 @@
       "pluralApiName": "MlMfs",
       "fields": [
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -47,7 +47,7 @@
           "fieldId": "title"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -69,7 +69,7 @@
           "fieldId": "description"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {
             "imagesOnly": true
@@ -93,7 +93,7 @@
           "fieldId": "image"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -115,7 +115,7 @@
           "fieldId": "textListOfText"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -163,7 +163,7 @@
           "fieldId": "textPredefinedValues"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -206,7 +206,7 @@
           "fieldId": "textListAndPredefined"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -249,7 +249,7 @@
           "fieldId": "textPredefinedWithDefault"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -291,7 +291,7 @@
           "fieldId": "textValidators"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -323,7 +323,7 @@
           "fieldId": "text"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -355,7 +355,7 @@
           "fieldId": "textUrl"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -387,7 +387,7 @@
           "fieldId": "textLowerCase"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -419,7 +419,7 @@
           "fieldId": "textUpperCase"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -451,7 +451,7 @@
           "fieldId": "textLowerCaseWithSpace"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -483,7 +483,7 @@
           "fieldId": "textUpperCaseWithSpace"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -521,7 +521,7 @@
           "fieldId": "textUniquePlus"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -543,7 +543,7 @@
           "fieldId": "longText"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -565,7 +565,7 @@
           "fieldId": "longTextList"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -600,7 +600,7 @@
           "fieldId": "longTextValidationMinLenght"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -630,7 +630,7 @@
           "fieldId": "longTextValidationMaxLength12"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -662,7 +662,7 @@
           "fieldId": "longTextEmail"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -694,7 +694,7 @@
           "fieldId": "longTextUrl"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -726,7 +726,7 @@
           "fieldId": "longTextLowerCase"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -758,7 +758,7 @@
           "fieldId": "longTextUpperCase"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -790,7 +790,7 @@
           "fieldId": "longTextLowerCaseWithSpace"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -822,7 +822,7 @@
           "fieldId": "longTextUpperCaseWithSpace"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -854,7 +854,7 @@
           "fieldId": "testEmailList"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -886,7 +886,7 @@
           "fieldId": "textUrlList"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -918,7 +918,7 @@
           "fieldId": "textLowerCaseList"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -950,7 +950,7 @@
           "fieldId": "textUpperCaseList"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -982,7 +982,7 @@
           "fieldId": "textLowerCaseWithSpacesList"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -1014,7 +1014,7 @@
           "fieldId": "textUpperCaseWithSpacesList"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -1036,7 +1036,7 @@
           "fieldId": "rtf"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -1058,7 +1058,7 @@
           "fieldId": "rtfList"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -1080,7 +1080,7 @@
           "fieldId": "rtfHidden"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -1102,7 +1102,7 @@
           "fieldId": "textHidden"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -1124,7 +1124,7 @@
           "fieldId": "textListHidden"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -1146,7 +1146,7 @@
           "fieldId": "textListTagsRender"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -1168,7 +1168,7 @@
           "fieldId": "number"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -1190,7 +1190,7 @@
           "fieldId": "numberList"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -1238,7 +1238,7 @@
           "fieldId": "numberPredefined"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -1276,7 +1276,7 @@
           "fieldId": "nmberPredefinedListWithDefault"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -1319,7 +1319,7 @@
           "fieldId": "numberPredefinedWithDefaultList"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -1341,7 +1341,7 @@
           "fieldId": "numberHidden"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {
             "defaultValue": true
@@ -1365,7 +1365,7 @@
           "fieldId": "booleanTrue"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {
             "defaultValue": false
@@ -1389,7 +1389,7 @@
           "fieldId": "booleanFalse"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {
             "defaultValue": false
@@ -1413,7 +1413,7 @@
           "fieldId": "booleanHidden"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -1435,7 +1435,7 @@
           "fieldId": "filesBasic"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {
             "imagesOnly": true
@@ -1459,7 +1459,7 @@
           "fieldId": "imagesBasic"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -1481,7 +1481,7 @@
           "fieldId": "filesGallery"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {
             "imagesOnly": true
@@ -1505,7 +1505,7 @@
           "fieldId": "imagesGallery"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -1533,7 +1533,7 @@
           "fieldId": "filesRequired"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -1555,7 +1555,7 @@
           "fieldId": "filesHidden"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {
             "models": [
@@ -1583,7 +1583,7 @@
           "fieldId": "selfReference"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {
             "models": [
@@ -1613,7 +1613,7 @@
           "fieldId": "selfRefenceList"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {
             "models": [
@@ -1640,7 +1640,7 @@
           "fieldId": "rEf2"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {},
           "renderer": {
@@ -1682,7 +1682,7 @@
           "fieldId": "titletwo"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {
             "type": "date"
@@ -1706,7 +1706,7 @@
           "fieldId": "dateOnly"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {
             "type": "time"
@@ -1730,7 +1730,7 @@
           "fieldId": "timeOnly"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {
             "type": "dateTimeWithTimezone"
@@ -1754,7 +1754,7 @@
           "fieldId": "dateTimeWithTimezone"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {
             "type": "dateTimeWithoutTimezone"
@@ -1778,7 +1778,7 @@
           "fieldId": "dateTimeWithoutTimezone"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [],
           "settings": {
             "fields": [
@@ -1839,7 +1839,7 @@
                 "storageId": "datetime@pielxpv7"
               },
               {
-                "multipleValues": true,
+                "list": true,
                 "settings": {
                   "type": "date"
                 },
@@ -1869,7 +1869,7 @@
                 "storageId": "datetime@xkdlenm9"
               },
               {
-                "multipleValues": true,
+                "list": true,
                 "settings": {
                   "type": "dateTimeWithTimezone"
                 },
@@ -1885,7 +1885,7 @@
                 "storageId": "datetime@njje9j08"
               },
               {
-                "multipleValues": true,
+                "list": true,
                 "settings": {
                   "type": "dateTimeWithoutTimezone"
                 },
@@ -1931,7 +1931,7 @@
           "fieldId": "singleObject"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [
             {
               "name": "minLength",
@@ -2007,7 +2007,7 @@
                 "storageId": "datetime@3j4cjb8n"
               },
               {
-                "multipleValues": true,
+                "list": true,
                 "settings": {
                   "type": "date"
                 },
@@ -2023,7 +2023,7 @@
                 "storageId": "datetime@j5shdral"
               },
               {
-                "multipleValues": true,
+                "list": true,
                 "settings": {
                   "type": "time"
                 },
@@ -2039,7 +2039,7 @@
                 "storageId": "datetime@kj9ef5cp"
               },
               {
-                "multipleValues": true,
+                "list": true,
                 "settings": {
                   "type": "dateTimeWithTimezone"
                 },
@@ -2055,7 +2055,7 @@
                 "storageId": "datetime@gnc86dcc"
               },
               {
-                "multipleValues": true,
+                "list": true,
                 "settings": {
                   "type": "dateTimeWithoutTimezone"
                 },
@@ -2101,7 +2101,7 @@
           "fieldId": "repeatableObject"
         },
         {
-          "multipleValues": false,
+          "list": false,
           "listValidation": [
             {
               "name": "dynamicZone",
@@ -2185,7 +2185,7 @@
                     "storageId": "datetime@70k9zimt"
                   },
                   {
-                    "multipleValues": true,
+                    "list": true,
                     "settings": {
                       "type": "date"
                     },
@@ -2201,7 +2201,7 @@
                     "storageId": "datetime@rs29ozkk"
                   },
                   {
-                    "multipleValues": true,
+                    "list": true,
                     "settings": {
                       "type": "time"
                     },
@@ -2217,7 +2217,7 @@
                     "storageId": "datetime@5ipm0trn"
                   },
                   {
-                    "multipleValues": true,
+                    "list": true,
                     "settings": {
                       "type": "dateTimeWithTimezone"
                     },
@@ -2233,7 +2233,7 @@
                     "storageId": "datetime@3jr6exlc"
                   },
                   {
-                    "multipleValues": true,
+                    "list": true,
                     "settings": {
                       "type": "dateTimeWithoutTimezone"
                     },
@@ -2274,7 +2274,7 @@
           "fieldId": "aDynamicZone"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [
             {
               "name": "dynamicZone",
@@ -2358,7 +2358,7 @@
                     "storageId": "datetime@rc8w33f0"
                   },
                   {
-                    "multipleValues": true,
+                    "list": true,
                     "settings": {
                       "type": "date"
                     },
@@ -2374,7 +2374,7 @@
                     "storageId": "datetime@3iqbejbe"
                   },
                   {
-                    "multipleValues": true,
+                    "list": true,
                     "settings": {
                       "type": "time"
                     },
@@ -2390,7 +2390,7 @@
                     "storageId": "datetime@f3eh4tc1"
                   },
                   {
-                    "multipleValues": true,
+                    "list": true,
                     "settings": {
                       "type": "dateTimeWithTimezone"
                     },
@@ -2406,7 +2406,7 @@
                     "storageId": "datetime@08h1re3x"
                   },
                   {
-                    "multipleValues": true,
+                    "list": true,
                     "settings": {
                       "type": "dateTimeWithoutTimezone"
                     },
@@ -2447,7 +2447,7 @@
           "fieldId": "aRepeatableDynamicZone"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {
             "type": "date"
@@ -2471,7 +2471,7 @@
           "fieldId": "dateOnlyList"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {
             "type": "time"
@@ -2495,7 +2495,7 @@
           "fieldId": "timeOnlyList"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {
             "type": "dateTimeWithTimezone"
@@ -2519,7 +2519,7 @@
           "fieldId": "dateTimeWithTimezoneList"
         },
         {
-          "multipleValues": true,
+          "list": true,
           "listValidation": [],
           "settings": {
             "type": "dateTimeWithoutTimezone"

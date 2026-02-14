@@ -12,7 +12,7 @@ export const tags: CmsModelFieldRendererPlugin = {
         canUse({ field }) {
             return (
                 field.type === "text" &&
-                field.multipleValues === true &&
+                field.list === true &&
                 !field.predefinedValues?.enabled
             );
         },
@@ -26,8 +26,8 @@ export const tags: CmsModelFieldRendererPlugin = {
                             <Bind.ValidationContainer>
                                 <Tags
                                     label={field.label}
-                                    placeholder={field.placeholderText || "Add values"}
-                                    description={field.helpText}
+                                    placeholder={field.placeholder || "Add values"}
+                                    description={field.description}
                                     {...props}
                                 />
                             </Bind.ValidationContainer>

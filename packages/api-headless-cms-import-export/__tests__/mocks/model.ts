@@ -30,28 +30,28 @@ export const model = {
     fields: [
         createModelField({
             id: "fullName",
-            multipleValues: false,
+            list: false,
             label: "Full name",
             type: "text",
             fieldId: "fullName"
         }),
         createModelField({
             id: "image",
-            multipleValues: false,
+            list: false,
             label: "Image",
             fieldId: "image",
             type: "file"
         }),
         createModelField({
             id: "images",
-            multipleValues: true,
+            list: true,
             label: "Image",
             fieldId: "images",
             type: "file"
         }),
         createModelField({
             id: "wrapper",
-            multipleValues: false,
+            list: false,
             label: "Wrapper",
             type: "object",
             fieldId: "wrapper",
@@ -59,14 +59,14 @@ export const model = {
                 fields: [
                     createModelField({
                         id: "image",
-                        multipleValues: false,
+                        list: false,
                         label: "Image",
                         fieldId: "image",
                         type: "file"
                     }),
                     createModelField({
                         id: "images",
-                        multipleValues: true,
+                        list: true,
                         label: "Images",
                         fieldId: "images",
                         type: "file"
@@ -76,7 +76,7 @@ export const model = {
         }),
         createModelField({
             id: "wrappers",
-            multipleValues: true,
+            list: true,
             label: "Wrappers",
             type: "object",
             fieldId: "wrappers",
@@ -84,14 +84,14 @@ export const model = {
                 fields: [
                     createModelField({
                         id: "image",
-                        multipleValues: false,
+                        list: false,
                         label: "Image",
                         fieldId: "image",
                         type: "file"
                     }),
                     createModelField({
                         id: "images",
-                        multipleValues: true,
+                        list: true,
                         label: "Images",
                         fieldId: "images",
                         type: "file"

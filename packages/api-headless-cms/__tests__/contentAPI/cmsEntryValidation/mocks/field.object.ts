@@ -19,7 +19,7 @@ export const createObjectField = (params: Partial<CreateFieldInput> = {}) => {
         parentId: createFieldFieldId(
             {
                 fieldId: "nested",
-                multipleValues: params.multipleValues
+                list: params.list
             },
             params.parentId
         )

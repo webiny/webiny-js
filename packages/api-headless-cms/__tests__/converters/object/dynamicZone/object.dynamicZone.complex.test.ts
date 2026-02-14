@@ -134,13 +134,13 @@ const model = createModel({
         createModelField({
             fieldId: "profile",
             type: "object",
-            multipleValues: false,
+            list: false,
             settings: {
                 fields: [
                     createModelField({
                         fieldId: "articleContent",
                         type: "dynamicZone",
-                        multipleValues: false,
+                        list: false,
                         settings: {
                             templates: [
                                 {
@@ -153,18 +153,18 @@ const model = createModel({
                                         createModelField({
                                             fieldId: "header",
                                             type: "object",
-                                            multipleValues: false,
+                                            list: false,
                                             settings: {
                                                 fields: [
                                                     createModelField({
                                                         fieldId: "title",
                                                         type: "text",
-                                                        multipleValues: false
+                                                        list: false
                                                     }),
                                                     createModelField({
                                                         fieldId: "metadata",
                                                         type: "dynamicZone",
-                                                        multipleValues: false,
+                                                        list: false,
                                                         settings: {
                                                             templates: [
                                                                 {
@@ -177,12 +177,12 @@ const model = createModel({
                                                                         createModelField({
                                                                             fieldId: "author",
                                                                             type: "text",
-                                                                            multipleValues: false
+                                                                            list: false
                                                                         }),
                                                                         createModelField({
                                                                             fieldId: "publishDate",
                                                                             type: "datetime",
-                                                                            multipleValues: false
+                                                                            list: false
                                                                         })
                                                                     ],
                                                                     layout: [],
@@ -197,18 +197,18 @@ const model = createModel({
                                         createModelField({
                                             fieldId: "sections",
                                             type: "object",
-                                            multipleValues: true,
+                                            list: true,
                                             settings: {
                                                 fields: [
                                                     createModelField({
                                                         fieldId: "sectionTitle",
                                                         type: "text",
-                                                        multipleValues: false
+                                                        list: false
                                                     }),
                                                     createModelField({
                                                         fieldId: "sectionContent",
                                                         type: "dynamicZone",
-                                                        multipleValues: false,
+                                                        list: false,
                                                         settings: {
                                                             templates: [
                                                                 {
@@ -222,12 +222,12 @@ const model = createModel({
                                                                         createModelField({
                                                                             fieldId: "body",
                                                                             type: "long-text",
-                                                                            multipleValues: false
+                                                                            list: false
                                                                         }),
                                                                         createModelField({
                                                                             fieldId: "wordCount",
                                                                             type: "number",
-                                                                            multipleValues: false
+                                                                            list: false
                                                                         })
                                                                     ],
                                                                     layout: [],
@@ -244,12 +244,12 @@ const model = createModel({
                                                                         createModelField({
                                                                             fieldId: "richBody",
                                                                             type: "rich-text",
-                                                                            multipleValues: false
+                                                                            list: false
                                                                         }),
                                                                         createModelField({
                                                                             fieldId: "tags",
                                                                             type: "text",
-                                                                            multipleValues: true
+                                                                            list: true
                                                                         })
                                                                     ],
                                                                     layout: [],
@@ -271,7 +271,7 @@ const model = createModel({
                     createModelField({
                         fieldId: "videoContent",
                         type: "dynamicZone",
-                        multipleValues: false,
+                        list: false,
                         settings: {
                             templates: [
                                 {
@@ -284,18 +284,18 @@ const model = createModel({
                                         createModelField({
                                             fieldId: "videoInfo",
                                             type: "object",
-                                            multipleValues: false,
+                                            list: false,
                                             settings: {
                                                 fields: [
                                                     createModelField({
                                                         fieldId: "videoTitle",
                                                         type: "text",
-                                                        multipleValues: false
+                                                        list: false
                                                     }),
                                                     createModelField({
                                                         fieldId: "details",
                                                         type: "dynamicZone",
-                                                        multipleValues: false,
+                                                        list: false,
                                                         settings: {
                                                             templates: [
                                                                 {
@@ -309,12 +309,12 @@ const model = createModel({
                                                                         createModelField({
                                                                             fieldId: "duration",
                                                                             type: "number",
-                                                                            multipleValues: false
+                                                                            list: false
                                                                         }),
                                                                         createModelField({
                                                                             fieldId: "resolution",
                                                                             type: "text",
-                                                                            multipleValues: false
+                                                                            list: false
                                                                         })
                                                                     ],
                                                                     layout: [],
@@ -329,18 +329,18 @@ const model = createModel({
                                         createModelField({
                                             fieldId: "chapters",
                                             type: "object",
-                                            multipleValues: true,
+                                            list: true,
                                             settings: {
                                                 fields: [
                                                     createModelField({
                                                         fieldId: "chapterName",
                                                         type: "text",
-                                                        multipleValues: false
+                                                        list: false
                                                     }),
                                                     createModelField({
                                                         fieldId: "chapterMeta",
                                                         type: "dynamicZone",
-                                                        multipleValues: false,
+                                                        list: false,
                                                         settings: {
                                                             templates: [
                                                                 {
@@ -354,12 +354,12 @@ const model = createModel({
                                                                         createModelField({
                                                                             fieldId: "timestamp",
                                                                             type: "number",
-                                                                            multipleValues: false
+                                                                            list: false
                                                                         }),
                                                                         createModelField({
                                                                             fieldId: "description",
                                                                             type: "text",
-                                                                            multipleValues: false
+                                                                            list: false
                                                                         })
                                                                     ],
                                                                     layout: [],

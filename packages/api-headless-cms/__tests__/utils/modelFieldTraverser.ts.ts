@@ -43,7 +43,7 @@ describe("model field traverser", () => {
                       .join(",")}`
                 : "";
             result.push(
-                `${field.type}@${path.join(".")}#${field.multipleValues ? "m" : "s"}${ref}`
+                `${field.type}@${path.join(".")}#${field.list ? "m" : "s"}${ref}`
             );
         });
 
@@ -90,7 +90,7 @@ describe("model field traverser", () => {
                       .join(",")}`
                 : "";
             result.push(
-                `${field.type}@${path.join(".")}#${field.multipleValues ? "m" : "s"}${ref}`
+                `${field.type}@${path.join(".")}#${field.list ? "m" : "s"}${ref}`
             );
         });
 

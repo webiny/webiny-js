@@ -13,7 +13,7 @@ export const expectedSystemFields: Record<string, Field> = {
         settings: {},
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -35,7 +35,7 @@ export const expectedSystemFields: Record<string, Field> = {
         settings: {},
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -57,7 +57,7 @@ export const expectedSystemFields: Record<string, Field> = {
         settings: {},
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -79,7 +79,7 @@ export const expectedSystemFields: Record<string, Field> = {
         settings: {},
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -101,7 +101,7 @@ export const expectedSystemFields: Record<string, Field> = {
         settings: {},
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -123,7 +123,7 @@ export const expectedSystemFields: Record<string, Field> = {
         settings: {},
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -145,7 +145,7 @@ export const expectedSystemFields: Record<string, Field> = {
         settings: {},
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -167,7 +167,7 @@ export const expectedSystemFields: Record<string, Field> = {
         settings: {},
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -189,7 +189,7 @@ export const expectedSystemFields: Record<string, Field> = {
         settings: {},
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -211,7 +211,7 @@ export const expectedSystemFields: Record<string, Field> = {
         settings: {},
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -233,7 +233,7 @@ export const expectedSystemFields: Record<string, Field> = {
         settings: {},
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -255,7 +255,7 @@ export const expectedSystemFields: Record<string, Field> = {
         settings: {},
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -277,7 +277,7 @@ export const expectedSystemFields: Record<string, Field> = {
         settings: {},
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -299,7 +299,7 @@ export const expectedSystemFields: Record<string, Field> = {
         settings: {},
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -321,7 +321,7 @@ export const expectedSystemFields: Record<string, Field> = {
         settings: {},
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -343,7 +343,7 @@ export const expectedSystemFields: Record<string, Field> = {
         settings: {},
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -367,7 +367,7 @@ export const expectedSystemFields: Record<string, Field> = {
         },
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -391,7 +391,7 @@ export const expectedSystemFields: Record<string, Field> = {
         },
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -415,7 +415,7 @@ export const expectedSystemFields: Record<string, Field> = {
         },
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -439,7 +439,7 @@ export const expectedSystemFields: Record<string, Field> = {
         },
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -463,7 +463,7 @@ export const expectedSystemFields: Record<string, Field> = {
         },
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -487,7 +487,7 @@ export const expectedSystemFields: Record<string, Field> = {
         },
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -511,7 +511,7 @@ export const expectedSystemFields: Record<string, Field> = {
         },
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -535,7 +535,7 @@ export const expectedSystemFields: Record<string, Field> = {
         },
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -559,7 +559,7 @@ export const expectedSystemFields: Record<string, Field> = {
         },
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -583,7 +583,7 @@ export const expectedSystemFields: Record<string, Field> = {
         },
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -607,7 +607,7 @@ export const expectedSystemFields: Record<string, Field> = {
         },
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -631,7 +631,7 @@ export const expectedSystemFields: Record<string, Field> = {
         },
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -655,7 +655,7 @@ export const expectedSystemFields: Record<string, Field> = {
         },
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -679,7 +679,7 @@ export const expectedSystemFields: Record<string, Field> = {
         },
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -701,7 +701,7 @@ export const expectedSystemFields: Record<string, Field> = {
         settings: {},
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -733,7 +733,7 @@ export const expectedSystemFields: Record<string, Field> = {
                     },
                     listValidation: [],
                     validation: [],
-                    multipleValues: false,
+                    list: false,
                     predefinedValues: {
                         values: [],
                         enabled: false
@@ -746,7 +746,7 @@ export const expectedSystemFields: Record<string, Field> = {
         },
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -770,7 +770,7 @@ export const expectedSystemFields: Record<string, Field> = {
         },
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -781,7 +781,7 @@ export const expectedSystemFields: Record<string, Field> = {
         parents: [
             {
                 fieldId: "wbyAco_location",
-                multipleValues: false
+                list: false
             }
         ],
         system: true
@@ -797,7 +797,7 @@ export const expectedSystemFields: Record<string, Field> = {
         settings: {},
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -819,7 +819,7 @@ export const expectedSystemFields: Record<string, Field> = {
         settings: {},
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -841,7 +841,7 @@ export const expectedSystemFields: Record<string, Field> = {
         settings: {},
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -871,7 +871,7 @@ export const expectedSystemFields: Record<string, Field> = {
                     settings: {},
                     listValidation: [],
                     validation: [],
-                    multipleValues: false,
+                    list: false,
                     predefinedValues: {
                         values: [],
                         enabled: false
@@ -889,7 +889,7 @@ export const expectedSystemFields: Record<string, Field> = {
                     settings: {},
                     listValidation: [],
                     validation: [],
-                    multipleValues: false,
+                    list: false,
                     predefinedValues: {
                         values: [],
                         enabled: false
@@ -907,7 +907,7 @@ export const expectedSystemFields: Record<string, Field> = {
                     settings: {},
                     listValidation: [],
                     validation: [],
-                    multipleValues: false,
+                    list: false,
                     predefinedValues: {
                         values: [],
                         enabled: false
@@ -920,7 +920,7 @@ export const expectedSystemFields: Record<string, Field> = {
         },
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -942,7 +942,7 @@ export const expectedSystemFields: Record<string, Field> = {
         settings: {},
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -953,7 +953,7 @@ export const expectedSystemFields: Record<string, Field> = {
         parents: [
             {
                 fieldId: "state",
-                multipleValues: false
+                list: false
             }
         ],
         system: true
@@ -969,7 +969,7 @@ export const expectedSystemFields: Record<string, Field> = {
         settings: {},
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -980,7 +980,7 @@ export const expectedSystemFields: Record<string, Field> = {
         parents: [
             {
                 fieldId: "state",
-                multipleValues: false
+                list: false
             }
         ],
         system: true
@@ -996,7 +996,7 @@ export const expectedSystemFields: Record<string, Field> = {
         settings: {},
         listValidation: [],
         validation: [],
-        multipleValues: false,
+        list: false,
         predefinedValues: {
             values: [],
             enabled: false
@@ -1007,7 +1007,7 @@ export const expectedSystemFields: Record<string, Field> = {
         parents: [
             {
                 fieldId: "state",
-                multipleValues: false
+                list: false
             }
         ],
         system: true

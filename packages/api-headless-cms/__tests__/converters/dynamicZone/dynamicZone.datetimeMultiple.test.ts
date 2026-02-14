@@ -25,7 +25,7 @@ const model = createModel({
         createModelField({
             fieldId: "content",
             type: "dynamicZone",
-            multipleValues: false,
+            list: false,
             settings: {
                 templates: [
                     {
@@ -38,7 +38,7 @@ const model = createModel({
                             createModelField({
                                 fieldId: "milestones",
                                 type: "datetime",
-                                multipleValues: true
+                                list: true
                             })
                         ],
                         layout: [],

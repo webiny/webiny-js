@@ -23,10 +23,10 @@ export const dynamicZoneField: CmsModelFieldTypePlugin = {
         label: t`Dynamic Zone`,
         description: t`Define content templates to be used during content creation.`,
         icon: <ObjectIcon />,
-        allowMultipleValues: true,
+        allowList: true,
         allowPredefinedValues: false,
         validators: field => {
-            if (field.multipleValues) {
+            if (field.list) {
                 return {
                     validators: ["dynamicZone"],
                     title: "Template Validators",
@@ -37,7 +37,7 @@ export const dynamicZoneField: CmsModelFieldTypePlugin = {
             return ["required"];
         },
         listValidators,
-        multipleValuesLabel: t`Use as a list of values`,
+        listLabel: t`Use as a list of values`,
         createField() {
             return {
                 type: this.type,

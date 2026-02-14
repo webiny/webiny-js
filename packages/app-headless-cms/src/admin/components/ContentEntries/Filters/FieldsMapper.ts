@@ -9,7 +9,7 @@ export class FieldsMapper {
             id: "status",
             type: "text",
             label: "Status",
-            multipleValues: false,
+            list: false,
             predefinedValues: {
                 enabled: true,
                 values: [
@@ -50,7 +50,7 @@ export class FieldsMapper {
                     id: modelField.fieldId,
                     type: modelField.type,
                     label: modelField.label,
-                    multipleValues: modelField.multipleValues || false,
+                    list: modelField.list || false,
                     predefinedValues: modelField?.predefinedValues || undefined,
                     settings: modelField.settings
                 };

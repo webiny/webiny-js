@@ -144,7 +144,7 @@ const runFieldValueValidations = async <TValues extends CmsEntryValues = CmsEntr
 
 const execValidation = async (params: ExecuteValidationParams): Promise<string | null> => {
     const { field } = params;
-    if (field.multipleValues) {
+    if (field.list) {
         return await runFieldMultipleValuesValidations(params);
     }
     return await runFieldValueValidations(params);
@@ -282,7 +282,7 @@ const executeFieldValidation = async <TValues extends CmsEntryValues = CmsEntryV
         }
         const values = (Array.isArray(objectValue) ? objectValue : [objectValue]) as TValues[];
         for (const index in values) {
-            const parents = field.multipleValues ? [field.fieldId, index] : [field.fieldId];
+            const parents = field.list ? [field.fieldId, index] : [field.fieldId];
             const value = values[index] as TValues;
             for (const childField of fields) {
                 const errors = await executeFieldValidation<typeof value>({
@@ -342,7 +342,7 @@ const executeFieldValidation = async <TValues extends CmsEntryValues = CmsEntryV
                  * - gqlTypeName
                  */
                 const parents = [field.fieldId];
-                if (field.multipleValues) {
+                if (field.list) {
                     parents.push(index);
                 }
                 parents.push(template.gqlTypeName);

@@ -16,7 +16,7 @@ const plugin: CmsModelFieldRendererPlugin = {
         canUse({ field }) {
             return (
                 field.type === "boolean" &&
-                !field.multipleValues &&
+                !field.list &&
                 !get(field, "predefinedValues.enabled")
             );
         },
@@ -29,7 +29,7 @@ const plugin: CmsModelFieldRendererPlugin = {
                         <Switch
                             {...bindProps}
                             label={field.label}
-                            description={field.helpText}
+                            description={field.description}
                             data-testid={`fr.input.boolean.${field.label}`}
                         />
                     )}

@@ -19,7 +19,7 @@ const DATA_FIELD = /* GraphQL*/ `
             storageId
             fieldId
             type
-            multipleValues
+            list
             predefinedValues {
                 enabled
                 values {

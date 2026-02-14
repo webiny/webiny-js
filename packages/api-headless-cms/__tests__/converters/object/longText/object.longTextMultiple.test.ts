@@ -27,13 +27,13 @@ const model = createModel({
         createModelField({
             fieldId: "article",
             type: "object",
-            multipleValues: false,
+            list: false,
             settings: {
                 fields: [
                     createModelField({
                         fieldId: "paragraphs",
                         type: "long-text",
-                        multipleValues: true
+                        list: true
                     })
                 ]
             }

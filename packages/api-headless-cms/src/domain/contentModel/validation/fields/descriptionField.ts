@@ -3,7 +3,7 @@ import { getBaseFieldType } from "~/utils/getBaseFieldType.js";
 import { getApplicableFieldById } from "./getApplicableFieldById.js";
 
 const isFieldApplicable = (field: CmsModelField) => {
-    return getBaseFieldType(field) === "long-text" && !field.multipleValues;
+    return getBaseFieldType(field) === "long-text" && !field.list;
 };
 
 /**

@@ -97,7 +97,7 @@ const fieldSchema = zod.object({
     placeholder: optionalNullishShortString,
     type: shortString,
     tags: zod.array(shortString).optional().default([]),
-    multipleValues: zod
+    list: zod
         .boolean()
         .optional()
         .nullish()

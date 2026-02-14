@@ -13,7 +13,7 @@ const plugin: CmsModelFieldRendererPlugin = {
         name: t`Reference Input`,
         description: t`Renders an auto-complete input, allowing selection of a single value.`,
         canUse({ field }) {
-            return field.type === "ref" && !field.multipleValues;
+            return field.type === "ref" && !field.list;
         },
         render(props) {
             const Bind = props.getBind();

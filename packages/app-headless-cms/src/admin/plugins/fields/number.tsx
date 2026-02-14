@@ -17,9 +17,9 @@ const plugin: CmsModelFieldTypePlugin = {
         description: t`Store numbers.`,
         icon: <FloatIcon />,
         validators: ["required", "gte", "lte"],
-        allowMultipleValues: true,
+        allowList: true,
         allowPredefinedValues: true,
-        multipleValuesLabel: t`Use as a list of numbers`,
+        listLabel: t`Use as a list of numbers`,
         createField() {
             return {
                 type: this.type,
@@ -33,12 +33,13 @@ const plugin: CmsModelFieldTypePlugin = {
             return (
                 <Grid>
                     <Grid.Column span={12}>
-                        <Bind name={"placeholderText"}>
+                        <Bind name={"placeholder"}>
                             <Input
-                                label={
-                                    <Label text={t`Placeholder text`} description={t`(optional)`} />
-                                }
+                                label={t`Placeholder text`}
                                 size={"lg"}
+                                description={
+                                    "This text will be shown in an empty input component (optional)"
+                                }
                             />
                         </Bind>
                     </Grid.Column>

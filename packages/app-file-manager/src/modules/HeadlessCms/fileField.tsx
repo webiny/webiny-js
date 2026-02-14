@@ -14,9 +14,9 @@ export const fileField: CmsModelFieldTypePlugin = {
         icon: <FileIcon />,
         validators: ["required"],
         listValidators: ["minLength", "maxLength"],
-        allowMultipleValues: true,
+        allowList: true,
         allowPredefinedValues: false,
-        multipleValuesLabel: "Use as a list of files or an image gallery",
+        listLabel: "Use as a list of files or an image gallery",
         createField() {
             return {
                 type: this.type,

@@ -94,8 +94,8 @@ const DynamicSection = ({
                                             }`}
                                         </span>
                                     </Separator>
-                                    {field.helpText && (
-                                        <FormComponentDescription text={field.helpText} />
+                                    {field.help && (
+                                        <FormComponentDescription text={field.help} />
                                     )}
                                 </div>
                             )}

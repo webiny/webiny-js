@@ -4,7 +4,7 @@ import { getApplicableFieldById } from "./getApplicableFieldById.js";
 
 const isFieldApplicable = (field: CmsModelField) => {
     return Boolean(
-        getBaseFieldType(field) === "file" && !field.multipleValues && field.settings?.imagesOnly
+        getBaseFieldType(field) === "file" && !field.list && field.settings?.imagesOnly
     );
 };
 
