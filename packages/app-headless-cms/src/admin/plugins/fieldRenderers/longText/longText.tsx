@@ -15,9 +15,7 @@ const plugin: CmsModelFieldRendererPlugin = {
         description: t`Renders a simple text area, suitable for larger amounts of text.`,
         canUse({ field }) {
             return (
-                field.type === "long-text" &&
-                !field.list &&
-                !get(field, "predefinedValues.enabled")
+                field.type === "long-text" && !field.list && !get(field, "predefinedValues.enabled")
             );
         },
         render({ field, getBind }) {

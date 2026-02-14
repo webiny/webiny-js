@@ -142,9 +142,7 @@ export const createObjectField = (): CmsModelFieldToGraphQLPlugin<CmsModelObject
                 });
 
                 return {
-                    fields: `${field.fieldId}: ${
-                        field.list ? `[${fieldType}!]` : fieldType
-                    }`,
+                    fields: `${field.fieldId}: ${field.list ? `[${fieldType}!]` : fieldType}`,
                     typeDefs: `${typeDefs}${childTypeDefs}`
                 };
             },
@@ -195,9 +193,7 @@ export const createObjectField = (): CmsModelFieldToGraphQLPlugin<CmsModelObject
                 });
 
                 return {
-                    fields: `${field.fieldId}: ${
-                        field.list ? `[${fieldType}!]` : fieldType
-                    }`,
+                    fields: `${field.fieldId}: ${field.list ? `[${fieldType}!]` : fieldType}`,
                     typeDefs: `${typeDefs}\n${childTypeDefs}`
                 };
             },
@@ -221,9 +217,7 @@ export const createObjectField = (): CmsModelFieldToGraphQLPlugin<CmsModelObject
                 const { fieldType, typeDefs } = result;
 
                 return {
-                    fields: `${field.fieldId}: ${
-                        field.list ? `[${fieldType}!]` : fieldType
-                    }`,
+                    fields: `${field.fieldId}: ${field.list ? `[${fieldType}!]` : fieldType}`,
                     typeDefs
                 };
             },

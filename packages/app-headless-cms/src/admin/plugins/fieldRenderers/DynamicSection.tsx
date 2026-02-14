@@ -94,9 +94,7 @@ const DynamicSection = ({
                                             }`}
                                         </span>
                                     </Separator>
-                                    {field.help && (
-                                        <FormComponentDescription text={field.help} />
-                                    )}
+                                    {field.help && <FormComponentDescription text={field.help} />}
                                 </div>
                             )}
                             <Grid className={classSet(gridClassName, style.gridContainer)}>

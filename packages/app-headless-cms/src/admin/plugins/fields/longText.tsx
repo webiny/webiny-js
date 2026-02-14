@@ -3,7 +3,7 @@ import { ReactComponent as LongTextIcon } from "@webiny/icons/notes.svg";
 import type { CmsModelFieldTypePlugin } from "~/types.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { Bind } from "@webiny/form";
-import { Grid, Input, Label } from "@webiny/admin-ui";
+import { Grid, Input } from "@webiny/admin-ui";
 
 const t = i18n.ns("app-headless-cms/admin/fields");
 

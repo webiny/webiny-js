@@ -36,7 +36,9 @@ const plugin: CmsModelFieldTypePlugin = {
                             <Input
                                 label={t`Placeholder text`}
                                 size={"lg"}
-                                description={"This text will be shown in an empty input component (optional)"}
+                                description={
+                                    "This text will be shown in an empty input component (optional)"
+                                }
                             />
                         </Bind>
                     </Grid.Column>

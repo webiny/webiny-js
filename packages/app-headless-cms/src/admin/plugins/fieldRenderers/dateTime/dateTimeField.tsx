@@ -18,9 +18,7 @@ const plugin: CmsModelFieldRendererPlugin = {
         description: t`Renders input for various formats of date and time.`,
         canUse({ field }) {
             return (
-                field.type === "datetime" &&
-                !field.list &&
-                !get(field, "predefinedValues.enabled")
+                field.type === "datetime" && !field.list && !get(field, "predefinedValues.enabled")
             );
         },
         render({ field, getBind }) {

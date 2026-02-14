@@ -44,9 +44,7 @@ const plugin: CmsModelFieldRendererPlugin = {
                                 key={getKey(form.data.id, field, index)}
                                 placeholder={field.placeholder}
                             />
-                            {field.list ? null : (
-                                <FormComponentNote text={field.help} />
-                            )}
+                            {field.list ? null : <FormComponentNote text={field.help} />}
                             <div className={"absolute top-sm right-sm z-10"}>
                                 <IconButton
                                     variant={"ghost"}

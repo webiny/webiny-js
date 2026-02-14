@@ -10,11 +10,7 @@ export const tags: CmsModelFieldRendererPlugin = {
         name: "Tags",
         description: `Renders a tags component.`,
         canUse({ field }) {
-            return (
-                field.type === "text" &&
-                field.list === true &&
-                !field.predefinedValues?.enabled
-            );
+            return field.type === "text" && field.list === true && !field.predefinedValues?.enabled;
         },
         render({ field, getBind }) {
             const Bind = getBind();

@@ -132,9 +132,7 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
                 return {
                     fields:
                         field.fieldId +
-                        `(populate: Boolean = true): ${
-                            field.list ? `[${gqlType}!]` : gqlType
-                        }`,
+                        `(populate: Boolean = true): ${field.list ? `[${gqlType}!]` : gqlType}`,
                     typeDefs
                 };
             },

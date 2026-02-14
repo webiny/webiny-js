@@ -15,9 +15,7 @@ const plugin: CmsModelFieldRendererPlugin = {
         description: t`Renders a simple switch button.`,
         canUse({ field }) {
             return (
-                field.type === "boolean" &&
-                !field.list &&
-                !get(field, "predefinedValues.enabled")
+                field.type === "boolean" && !field.list && !get(field, "predefinedValues.enabled")
             );
         },
         render({ field, getBind }) {

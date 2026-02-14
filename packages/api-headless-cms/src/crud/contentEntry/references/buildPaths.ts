@@ -2,10 +2,7 @@ import type { CmsDynamicZoneTemplate, CmsEntryValues, CmsModelField } from "~/ty
 import dotPropImmutable from "dot-prop-immutable";
 import { getBaseFieldType } from "~/utils/getBaseFieldType.js";
 
-type INarrowedCmsModelField = Pick<
-    CmsModelField,
-    "fieldId" | "list" | "type" | "settings"
->;
+type INarrowedCmsModelField = Pick<CmsModelField, "fieldId" | "list" | "type" | "settings">;
 
 interface IResolveBaseRefField<TValues extends CmsEntryValues = CmsEntryValues> {
     collection: string[];

@@ -2,7 +2,7 @@ import React from "react";
 import { i18n } from "@webiny/app/i18n/index.js";
 import type { CmsModelFieldTypePlugin } from "~/types.js";
 import { ReactComponent as NotesIcon } from "@webiny/icons/text_snippet.svg";
-import { Grid, Input, Label } from "@webiny/admin-ui";
+import { Grid, Input } from "@webiny/admin-ui";
 import { Bind } from "@webiny/form";
 
 const t = i18n.ns("app-headless-cms/admin/fields");

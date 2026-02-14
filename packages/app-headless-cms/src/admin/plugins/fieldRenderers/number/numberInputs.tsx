@@ -18,9 +18,7 @@ const plugin: CmsModelFieldRendererPlugin = {
         description: t`Renders a simple list of number inputs.`,
         canUse({ field }) {
             return (
-                field.type === "number" &&
-                !!field.list &&
-                !get(field, "predefinedValues.enabled")
+                field.type === "number" && !!field.list && !get(field, "predefinedValues.enabled")
             );
         },
         render(props) {

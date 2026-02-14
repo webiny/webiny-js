@@ -4,7 +4,7 @@ import { i18n } from "@webiny/app/i18n/index.js";
 import PredefinedValuesDynamicFieldset from "./PredefinedValuesDynamicFieldset.js";
 import { ReactComponent as FloatIcon } from "@webiny/icons/looks_3.svg";
 import { Bind } from "@webiny/form";
-import { Grid, Input, Label } from "@webiny/admin-ui";
+import { Grid, Input } from "@webiny/admin-ui";
 
 const t = i18n.ns("app-headless-cms/admin/fields");
 
