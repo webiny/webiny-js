@@ -3,7 +3,7 @@ import { type IProjectModel } from "~/abstractions/models/index.js";
 import { TsConfigPathResolver } from "./TsConfigPathResolver.js";
 
 export class ImplPathResolver {
-    private static tsConfigResolver: TsConfigPathResolver | null = null;
+    private static tsConfigResolvers: Map<string, TsConfigPathResolver> = new Map();
 
     /**
      * Import a module from a given file path.
@@ -15,19 +15,25 @@ export class ImplPathResolver {
     static async importFromPath(filePath: string, project: IProjectModel) {
         let importPath: string;
 
-        // Initialize tsconfig resolver if not already done.
-        if (!this.tsConfigResolver) {
-            const tsConfigPath = project.paths.tsConfigFile.toString();
+        const tsConfigPath = project.paths.tsConfigFile.toString();
+
+        // Initialize tsconfig resolver for this project if not already done.
+        if (!this.tsConfigResolvers.has(tsConfigPath)) {
             const projectRoot = project.paths.rootFolder.toString();
-            this.tsConfigResolver = new TsConfigPathResolver(tsConfigPath, projectRoot);
+            this.tsConfigResolvers.set(
+                tsConfigPath,
+                new TsConfigPathResolver(tsConfigPath, projectRoot)
+            );
         }
+
+        const tsConfigResolver = this.tsConfigResolvers.get(tsConfigPath)!;
 
         if (filePath.startsWith("/extensions/")) {
             // Resolve from project root.
             importPath = project.paths.rootFolder.join(filePath).toString();
         } else {
             // Try to resolve using tsconfig path aliases.
-            const resolved = this.tsConfigResolver.resolve(filePath);
+            const resolved = tsConfigResolver.resolve(filePath);
             if (resolved) {
                 importPath = resolved;
             } else {

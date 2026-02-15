@@ -30,15 +30,22 @@ export class TsConfigPathResolver {
             return;
         }
 
-        const tsConfig = readJsonSync(tsConfigPath) as TsConfig;
+        let tsConfig: TsConfig;
+        try {
+            tsConfig = readJsonSync(tsConfigPath) as TsConfig;
+        } catch (error) {
+            throw new Error(
+                `Failed to parse tsconfig.json at ${tsConfigPath}: ${(error as Error).message}`
+            );
+        }
 
-        // Handle extends.
+        // Handle extends - process parent first so child can override.
         if (tsConfig.extends) {
             const extendedPath = path.resolve(path.dirname(tsConfigPath), tsConfig.extends);
             this.loadTsConfig(extendedPath, projectRoot);
         }
 
-        // Process compiler options.
+        // Process compiler options - these override parent settings.
         if (tsConfig.compilerOptions) {
             if (tsConfig.compilerOptions.baseUrl) {
                 this.baseUrl = path.resolve(
@@ -60,7 +67,9 @@ export class TsConfigPathResolver {
         for (const [pattern, mappings] of this.pathMappings.entries()) {
             const match = this.matchPattern(importPath, pattern);
             if (match !== null) {
-                // Use the first mapping.
+                // Use the first mapping. TypeScript typically tries multiple mappings in order
+                // until one resolves to an existing file, but for simplicity we use the first one.
+                // This is sufficient for most common use cases.
                 const mapping = mappings[0];
                 const resolvedPath = this.replacePlaceholder(mapping, match);
                 return path.resolve(this.baseUrl, resolvedPath);
