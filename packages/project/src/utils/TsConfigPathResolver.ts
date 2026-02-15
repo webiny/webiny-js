@@ -74,8 +74,9 @@ export class TsConfigPathResolver {
         // Handle wildcard patterns like "@/*" or "@extensions/*".
         if (pattern.endsWith("/*")) {
             const prefix = pattern.slice(0, -2);
-            if (importPath === prefix || importPath.startsWith(prefix + "/")) {
-                return importPath.slice(prefix.length + 1) || "";
+            // Only match if there's a slash after the prefix.
+            if (importPath.startsWith(prefix + "/")) {
+                return importPath.slice(prefix.length + 1);
             }
         } else if (pattern === importPath) {
             return "";
