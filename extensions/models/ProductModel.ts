@@ -6,11 +6,12 @@ class ProductModelImpl implements ModelFactory.Interface {
     async execute(builder: ModelFactory.Builder) {
         return [
             builder
-                .public()
-                .modelId(PRODUCT_MODEL_ID)
-                .name("Product")
+                .public({
+                    modelId: PRODUCT_MODEL_ID,
+                    name: "Product",
+                    group: "Ungrouped"
+                })
                 .description("Products for our e-commerce store")
-                .group("ungrouped")
                 .fields(fields => ({
                     name: fields
                         .text()

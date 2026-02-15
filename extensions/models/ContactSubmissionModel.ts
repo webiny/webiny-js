@@ -6,11 +6,12 @@ class ContactSubmissionModelImpl implements ModelFactory.Interface {
     async execute(builder: ModelFactory.Builder) {
         return [
             builder
-                .public()
-                .modelId(CONTACT_SUBMISSION_MODEL_ID)
-                .name("Contact Submission")
+                .public({
+                    modelId: CONTACT_SUBMISSION_MODEL_ID,
+                    name: "Contact Submission",
+                    group: "Ungrouped"
+                })
                 .description("Stores contact form submissions from the website")
-                .group("ungrouped")
                 .fields(fields => ({
                     name: fields
                         .text()
