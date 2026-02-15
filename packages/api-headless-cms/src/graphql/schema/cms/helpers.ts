@@ -26,6 +26,56 @@ export const getModel = async (context: CmsContext, modelId: string): Promise<Cm
 };
 
 /**
+ * Transforms sort parameter to array format expected by GraphQL schema.
+ * Handles two input formats:
+ * 1. Object format: {createdOn: "desc"} -> [{createdOn: "DESC"}]
+ * 2. Array of strings: ["createdOn_DESC"] -> [{createdOn: "DESC"}]
+ *
+ * @param sort - Sort parameter (object or array of strings)
+ * @returns Array of sort objects in format [{field: "ASC"|"DESC"}] or undefined if no sort provided
+ *
+ * @example
+ * transformSortToArray({createdOn: "desc"})
+ * // Returns: [{createdOn: "DESC"}]
+ *
+ * @example
+ * transformSortToArray(["createdOn_DESC", "name_ASC"])
+ * // Returns: [{createdOn: "DESC"}, {name: "ASC"}]
+ */
+export const transformSortToArray = (
+    sort?: Record<string, unknown> | string[]
+): Array<Record<string, string>> | undefined => {
+    if (!sort) {
+        return undefined;
+    }
+
+    // Handle array of strings format: ["createdOn_DESC", "name_ASC"]
+    if (Array.isArray(sort)) {
+        return sort.map(item => {
+            // Parse "fieldName_DIRECTION" format.
+            const parts = String(item).split("_");
+            if (parts.length !== 2) {
+                throw new Error(
+                    `Invalid sort format: "${item}". Expected format: "fieldName_DIRECTION"`
+                );
+            }
+            const [field, direction] = parts;
+            return { [field]: direction.toUpperCase() };
+        });
+    }
+
+    // Handle object format: {createdOn: "desc", name: "asc"}
+    if (typeof sort === "object") {
+        return Object.entries(sort).map(([field, direction]) => {
+            const normalizedDirection = String(direction).toUpperCase();
+            return { [field]: normalizedDirection };
+        });
+    }
+
+    return undefined;
+};
+
+/**
  * Helper to build GraphQL fields selection from fields array.
  * Supports both top-level fields (e.g., "createdOn", "id") and values fields (e.g., "values.author.name").
  * Properly merges nested fields that share common parent paths.

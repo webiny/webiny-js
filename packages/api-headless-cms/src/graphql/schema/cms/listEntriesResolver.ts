@@ -1,12 +1,17 @@
 import type { CmsContext } from "~/types/index.js";
 import type { ApiEndpoint } from "~/types/index.js";
 import type { ExecutionResult } from "graphql";
-import { getModel, getErrorMessage, buildFieldsSelection } from "./helpers.js";
+import {
+    getModel,
+    getErrorMessage,
+    buildFieldsSelection,
+    transformSortToArray
+} from "./helpers.js";
 
 export interface ListEntriesArgs {
     modelId: string;
     where?: Record<string, unknown>;
-    sort?: Record<string, unknown>;
+    sort?: Record<string, unknown> | string[];
     limit?: number;
     after?: string;
     fields: string[];
@@ -26,6 +31,10 @@ export const createListEntriesResolver = () => {
             const executeSchema = await context.cms.getExecutableSchema(apiType);
 
             const fieldsSelection = buildFieldsSelection(fields);
+
+            // Transform sort to array format expected by the underlying GraphQL schema.
+            // Handles both object format {createdOn: "desc"} and array format ["createdOn_DESC"].
+            const transformedSort = transformSortToArray(sort);
 
             const query = /* GraphQL */ `
                 query List${model.pluralApiName}(
@@ -59,7 +68,7 @@ export const createListEntriesResolver = () => {
 
             const result = (await executeSchema({
                 query,
-                variables: { where, sort, limit, after }
+                variables: { where, sort: transformedSort, limit, after }
             })) as ExecutionResult;
 
             const operationName = `list${model.pluralApiName}`;

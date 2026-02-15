@@ -13,6 +13,9 @@ export async function executeGraphQL(
     let response: Response;
 
     try {
+        const body = JSON.stringify({ query, variables });
+
+        console.log(body);
         response = await fetchFn(url, {
             method: "POST",
             headers: {
@@ -21,7 +24,7 @@ export async function executeGraphQL(
                 "x-tenant": config.tenant,
                 "x-webiny-sdk": "v6"
             },
-            body: JSON.stringify({ query, variables })
+            body
         });
     } catch (error) {
         return Result.fail(
