@@ -179,7 +179,9 @@ describe("SDK GraphQL - CMS Schema Queries", () => {
             const result = await handler.listEntries({
                 modelId: "product",
                 fields: ["id", "values.name", "values.price"],
-                sort: ["createdOn_DESC"],
+                sort: {
+                    createdOn: "desc"
+                },
                 preview: true
             });
 
