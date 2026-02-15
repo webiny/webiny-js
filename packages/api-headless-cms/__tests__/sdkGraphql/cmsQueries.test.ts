@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { useCmsHandler } from "../testHelpers/useCmsHandler";
+import { useSdkGqlHandler } from "../testHelpers/useSdkGqlHandler";
+import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { setupGroupAndModels } from "../testHelpers/setup";
 import { createProductModel } from "./mocks/productModel";
 import { createProductCategoryModel } from "./mocks/productCategoryModel";
@@ -10,18 +11,19 @@ import { createProductCategoryModel } from "./mocks/productCategoryModel";
  * All CMS queries are executed on the main /graphql endpoint.
  */
 describe("SDK GraphQL - CMS Schema Queries", () => {
-    const handler = useCmsHandler();
+    const handler = useSdkGqlHandler();
+    const manageHandler = useGraphQLHandler({ path: "manage" });
 
     beforeEach(async () => {
         // Setup group and models using the manage endpoint.
         const { group } = await setupGroupAndModels({
-            manager: handler,
+            manager: manageHandler,
             models: undefined
         });
 
         // Create the product category and product models.
         const categoryModel = createProductCategoryModel(group);
-        await handler.createContentModelMutation({
+        await manageHandler.createContentModelMutation({
             data: {
                 ...categoryModel,
                 description: categoryModel.description || undefined,
@@ -30,7 +32,7 @@ describe("SDK GraphQL - CMS Schema Queries", () => {
         });
 
         const productModel = createProductModel(group);
-        await handler.createContentModelMutation({
+        await manageHandler.createContentModelMutation({
             data: {
                 ...productModel,
                 description: productModel.description || undefined,
@@ -42,7 +44,7 @@ describe("SDK GraphQL - CMS Schema Queries", () => {
     describe("listEntries", () => {
         it("should list entries with sort parameter", async () => {
             // Create test categories using the manage endpoint.
-            const [createCategory1] = await handler.invoke({
+            const [createCategory1] = await manageHandler.invoke({
                 body: {
                     query: `mutation CreateProductCategory($data: ProductCategoryInput!) {
                         createProductCategory(data: $data) {
@@ -70,7 +72,7 @@ describe("SDK GraphQL - CMS Schema Queries", () => {
             expect(createCategory1.data.createProductCategory.error).toBeNull();
 
             // Create test products.
-            const [createProduct1] = await handler.invoke({
+            const [createProduct1] = await manageHandler.invoke({
                 body: {
                     query: `mutation CreateProduct($data: ProductInput!) {
                         createProduct(data: $data) {
@@ -100,7 +102,7 @@ describe("SDK GraphQL - CMS Schema Queries", () => {
             console.log("Created product 1:", createProduct1.data.createProduct.data.id);
 
             // Publish the first product so it's visible to the preview API.
-            const [publishProduct1] = await handler.invoke({
+            const [publishProduct1] = await manageHandler.invoke({
                 body: {
                     query: `mutation PublishProduct($revision: ID!) {
                         publishProduct(revision: $revision) {
@@ -124,7 +126,7 @@ describe("SDK GraphQL - CMS Schema Queries", () => {
             // Wait a bit to ensure different createdOn timestamps.
             await new Promise(resolve => setTimeout(resolve, 100));
 
-            const [createProduct2] = await handler.invoke({
+            const [createProduct2] = await manageHandler.invoke({
                 body: {
                     query: `mutation CreateProduct($data: ProductInput!) {
                         createProduct(data: $data) {
@@ -154,7 +156,7 @@ describe("SDK GraphQL - CMS Schema Queries", () => {
             console.log("Created product 2:", createProduct2.data.createProduct.data.id);
 
             // Publish the second product so it's visible to the preview API.
-            const [publishProduct2] = await handler.invoke({
+            const [publishProduct2] = await manageHandler.invoke({
                 body: {
                     query: `mutation PublishProduct($revision: ID!) {
                         publishProduct(revision: $revision) {
@@ -204,7 +206,7 @@ describe("SDK GraphQL - CMS Schema Queries", () => {
 
         it("should list entries with where filter", async () => {
             // Create test products.
-            const [createProduct1] = await handler.invoke({
+            const [createProduct1] = await manageHandler.invoke({
                 body: {
                     query: `mutation CreateProduct($data: ProductInput!) {
                         createProduct(data: $data) {
@@ -233,7 +235,7 @@ describe("SDK GraphQL - CMS Schema Queries", () => {
             expect(createProduct1.data.createProduct.error).toBeNull();
             const productId = createProduct1.data.createProduct.data.id;
 
-            const [createProduct2] = await handler.invoke({
+            const [createProduct2] = await manageHandler.invoke({
                 body: {
                     query: `mutation CreateProduct($data: ProductInput!) {
                         createProduct(data: $data) {
@@ -280,7 +282,7 @@ describe("SDK GraphQL - CMS Schema Queries", () => {
         it("should list entries with limit and pagination", async () => {
             // Create 3 test products.
             for (let i = 1; i <= 3; i++) {
-                const [createResponse] = await handler.invoke({
+                const [createResponse] = await manageHandler.invoke({
                     body: {
                         query: `mutation CreateProduct($data: ProductInput!) {
                             createProduct(data: $data) {
@@ -341,7 +343,7 @@ describe("SDK GraphQL - CMS Schema Queries", () => {
     describe("getEntry", () => {
         it("should get a single entry by where clause", async () => {
             // Create test product.
-            const [createResponse] = await handler.invoke({
+            const [createResponse] = await manageHandler.invoke({
                 body: {
                     query: `mutation CreateProduct($data: ProductInput!) {
                         createProduct(data: $data) {
@@ -405,7 +407,7 @@ describe("SDK GraphQL - CMS Schema Queries", () => {
     describe("getEntryRevisionById", () => {
         it("should get a specific entry revision by ID", async () => {
             // Create test product.
-            const [createResponse] = await handler.invoke({
+            const [createResponse] = await manageHandler.invoke({
                 body: {
                     query: `mutation CreateProduct($data: ProductInput!) {
                         createProduct(data: $data) {

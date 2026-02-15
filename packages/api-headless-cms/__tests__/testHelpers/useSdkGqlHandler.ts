@@ -54,17 +54,16 @@ const extractCmsResponseData = async (response: Awaited<GqlHandlerInvokeResponse
     return parsedResponseBody.data.cms;
 };
 
-interface UseCmsHandlerParams extends GraphQLHandlerParams {}
+interface UseSdkGqlHandlerParams extends GraphQLHandlerParams {}
 
 /**
- * Creates a handler for testing CMS schema queries on the main /graphql endpoint.
+ * Creates a handler for testing SDK GraphQL schema queries on the main /graphql endpoint.
  * This handler exposes the { cms { ... } } queries that the SDK uses.
+ * Does not include manage endpoint methods - use a separate handler for those.
  */
-export const useCmsHandler = (params: UseCmsHandlerParams = {}) => {
-    // Use the main /graphql endpoint (no path specified) for CMS queries.
-    const mainHandler = useGraphQLHandler({ ...params });
-    // Keep manage handler for setup operations (creating models, entries, etc.).
-    const manageHandler = useGraphQLHandler({ ...params, path: "manage" });
+export const useSdkGqlHandler = (params: UseSdkGqlHandlerParams = {}) => {
+    // Use the main /graphql endpoint (no path specified) for SDK GraphQL queries.
+    const handler = useGraphQLHandler({ ...params });
 
     const createListEntriesQuery = (variables: CmsListEntriesVariables) => {
         return {
@@ -172,23 +171,21 @@ export const useCmsHandler = (params: UseCmsHandlerParams = {}) => {
     };
 
     return {
-        // Expose the manage handler for setup operations.
-        ...manageHandler,
-        // CMS query methods call the main /graphql endpoint.
+        // SDK GraphQL query methods that call the main /graphql endpoint.
         async listEntries(variables: CmsListEntriesVariables): Promise<CmsListResponse> {
-            const result = await mainHandler.invoke(createListEntriesQuery(variables));
+            const result = await handler.invoke(createListEntriesQuery(variables));
             const cmsData = await extractCmsResponseData(result);
             return cmsData.listEntries;
         },
         async getEntry(variables: CmsGetEntryVariables): Promise<CmsResponse> {
-            const result = await mainHandler.invoke(createGetEntryQuery(variables));
+            const result = await handler.invoke(createGetEntryQuery(variables));
             const cmsData = await extractCmsResponseData(result);
             return cmsData.getEntry;
         },
         async getEntryRevisionById(
             variables: CmsGetEntryRevisionByIdVariables
         ): Promise<CmsResponse> {
-            const result = await mainHandler.invoke(createGetEntryRevisionByIdQuery(variables));
+            const result = await handler.invoke(createGetEntryRevisionByIdQuery(variables));
             const cmsData = await extractCmsResponseData(result);
             return cmsData.getEntryRevisionById;
         }
