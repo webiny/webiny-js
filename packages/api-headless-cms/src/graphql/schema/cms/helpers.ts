@@ -96,34 +96,18 @@ export const buildFieldsSelection = (fields?: string[]): string => {
         `;
     }
 
-    // Separate top-level fields from values fields.
-    const topLevelFields: Set<string> = new Set();
-    const valuesFields: string[] = [];
-
-    fields.forEach(field => {
-        if (field.startsWith("values.")) {
-            // Extract the field path after "values."
-            valuesFields.push(field.substring(7)); // Remove "values." prefix
-        } else {
-            // Top-level field.
-            topLevelFields.add(field);
-        }
-    });
-
-    // Build a tree structure for nested values fields to avoid duplicate parent paths.
     interface FieldNode {
         [key: string]: FieldNode | null;
     }
 
     const fieldTree: FieldNode = {};
 
-    // Parse all values fields into the tree structure.
-    valuesFields.forEach(field => {
+    fields.forEach(field => {
         const parts = field.split(".");
         let current = fieldTree;
 
         parts.forEach((part, index) => {
-            if (!current[part]) {
+            if (current[part] === undefined) {
                 // Leaf node (null) or new branch (empty object)
                 current[part] = index === parts.length - 1 ? null : {};
             } else if (current[part] === null && index < parts.length - 1) {
@@ -147,7 +131,7 @@ export const buildFieldsSelection = (fields?: string[]): string => {
      * - Leaf nodes (value === null): Simple field name
      * - Branch nodes (value === object): Field name with nested selection in braces
      */
-    const buildSelection = (node: FieldNode, indent: string = "    "): string => {
+    const buildSelection = (node: FieldNode, indent: string = "        "): string => {
         const lines: string[] = [];
 
         Object.keys(node)
@@ -168,25 +152,5 @@ export const buildFieldsSelection = (fields?: string[]): string => {
         return lines.join("\n");
     };
 
-    // Build the top-level fields selection
-    const topLevelSelection = Array.from(topLevelFields)
-        .sort()
-        .map(f => `        ${f}`)
-        .join("\n");
-
-    // If we have values fields, build the values block
-    if (Object.keys(fieldTree).length > 0) {
-        const valuesSelection = buildSelection(fieldTree);
-        return `
-${topLevelSelection}
-        values {
-${valuesSelection}
-        }
-    `;
-    }
-
-    // If no values fields, just return top-level fields
-    return `
-${topLevelSelection}
-    `;
+    return buildSelection(fieldTree);
 };

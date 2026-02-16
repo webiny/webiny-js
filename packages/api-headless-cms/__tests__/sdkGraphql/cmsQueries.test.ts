@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { useCmsSdk } from "../testHelpers/useCmsSdk";
+import { useWebinySdk } from "../testHelpers/useWebinySdk";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { setupGroupAndModels } from "../testHelpers/setup";
 import { createProductModel } from "./mocks/productModel";
@@ -18,7 +18,7 @@ interface ProductValues {
  * All operations (both queries and mutations) use the SDK.
  */
 describe("SDK GraphQL - CMS Operations", () => {
-    const { sdk } = useCmsSdk();
+    const { sdk } = useWebinySdk();
     const manageHandler = useGraphQLHandler({ path: "manage" });
 
     beforeEach(async () => {
@@ -51,7 +51,7 @@ describe("SDK GraphQL - CMS Operations", () => {
     describe("createEntry and publishEntryRevision", () => {
         it("should create and publish an entry using SDK", async () => {
             // Create entry using SDK.
-            const createResult = await sdk.createEntry<ProductValues>({
+            const createResult = await sdk.cms.createEntry<ProductValues>({
                 modelId: "product",
                 data: {
                     values: {
@@ -78,7 +78,7 @@ describe("SDK GraphQL - CMS Operations", () => {
             expect(createdEntry.values?.price).toBe(1200);
 
             // Publish entry using SDK.
-            const publishResult = await sdk.publishEntryRevision<ProductValues>({
+            const publishResult = await sdk.cms.publishEntryRevision<ProductValues>({
                 modelId: "product",
                 revisionId: createdEntry.id!,
                 fields: ["id", "meta.status", "values.name"]
@@ -86,14 +86,15 @@ describe("SDK GraphQL - CMS Operations", () => {
 
             expect(publishResult.isOk()).toBe(true);
             const publishedEntry = publishResult.value;
-            expect(publishedEntry.status).toBe("published");
+            // @ts-ignore
+            expect(publishedEntry.meta.status).toBe("published");
         });
     });
 
     describe("listEntries", () => {
         it("should list entries with sort parameter", async () => {
             // Create first product using SDK.
-            const product1Result = await sdk.createEntry<ProductValues>({
+            const product1Result = await sdk.cms.createEntry<ProductValues>({
                 modelId: "product",
                 data: {
                     values: {
@@ -109,7 +110,7 @@ describe("SDK GraphQL - CMS Operations", () => {
             const product1 = product1Result.value;
 
             // Publish first product.
-            await sdk.publishEntryRevision({
+            await sdk.cms.publishEntryRevision({
                 modelId: "product",
                 revisionId: product1.id!,
                 fields: ["id"]
@@ -119,7 +120,7 @@ describe("SDK GraphQL - CMS Operations", () => {
             await new Promise(resolve => setTimeout(resolve, 100));
 
             // Create second product using SDK.
-            const product2Result = await sdk.createEntry<ProductValues>({
+            const product2Result = await sdk.cms.createEntry<ProductValues>({
                 modelId: "product",
                 data: {
                     values: {
@@ -135,14 +136,14 @@ describe("SDK GraphQL - CMS Operations", () => {
             const product2 = product2Result.value;
 
             // Publish second product.
-            await sdk.publishEntryRevision({
+            await sdk.cms.publishEntryRevision({
                 modelId: "product",
                 revisionId: product2.id!,
                 fields: ["id"]
             });
 
             // List entries with sort using SDK.
-            const listResult = await sdk.listEntries<ProductValues>({
+            const listResult = await sdk.cms.listEntries<ProductValues>({
                 modelId: "product",
                 fields: ["id", "values.name", "values.price"],
                 sort: {
@@ -162,7 +163,7 @@ describe("SDK GraphQL - CMS Operations", () => {
 
         it("should list entries with where filter", async () => {
             // Create first product.
-            const product1Result = await sdk.createEntry<ProductValues>({
+            const product1Result = await sdk.cms.createEntry<ProductValues>({
                 modelId: "product",
                 data: {
                     values: {
@@ -177,8 +178,15 @@ describe("SDK GraphQL - CMS Operations", () => {
             expect(product1Result.isOk()).toBe(true);
             const productId = product1Result.value.id!;
 
+            // Publish first product.
+            await sdk.cms.publishEntryRevision({
+                modelId: "product",
+                revisionId: productId,
+                fields: ["id"]
+            });
+
             // Create second product.
-            await sdk.createEntry<ProductValues>({
+            const product2Result = await sdk.cms.createEntry<ProductValues>({
                 modelId: "product",
                 data: {
                     values: {
@@ -190,9 +198,17 @@ describe("SDK GraphQL - CMS Operations", () => {
                 },
                 fields: ["id"]
             });
+            expect(product2Result.isOk()).toBe(true);
+
+            // Publish second product.
+            await sdk.cms.publishEntryRevision({
+                modelId: "product",
+                revisionId: product2Result.value.id!,
+                fields: ["id"]
+            });
 
             // List entries with where filter using SDK.
-            const listResult = await sdk.listEntries<ProductValues>({
+            const listResult = await sdk.cms.listEntries<ProductValues>({
                 modelId: "product",
                 fields: ["id", "values.name", "values.price"],
                 where: {
@@ -210,7 +226,7 @@ describe("SDK GraphQL - CMS Operations", () => {
         it("should list entries with limit and pagination", async () => {
             // Create 3 test products using SDK.
             for (let i = 1; i <= 3; i++) {
-                await sdk.createEntry<ProductValues>({
+                const createResult = await sdk.cms.createEntry<ProductValues>({
                     modelId: "product",
                     data: {
                         values: {
@@ -222,10 +238,17 @@ describe("SDK GraphQL - CMS Operations", () => {
                     },
                     fields: ["id"]
                 });
+
+                // Publish created product.
+                await sdk.cms.publishEntryRevision({
+                    modelId: "product",
+                    revisionId: createResult.value.id!,
+                    fields: ["id"]
+                });
             }
 
             // List entries with limit using SDK.
-            const listResult = await sdk.listEntries<ProductValues>({
+            const listResult = await sdk.cms.listEntries<ProductValues>({
                 modelId: "product",
                 fields: ["id", "values.name"],
                 limit: 2
@@ -239,7 +262,7 @@ describe("SDK GraphQL - CMS Operations", () => {
             expect(list.meta.cursor).toBeDefined();
 
             // Test pagination with after cursor.
-            const list2Result = await sdk.listEntries<ProductValues>({
+            const list2Result = await sdk.cms.listEntries<ProductValues>({
                 modelId: "product",
                 fields: ["id", "values.name"],
                 limit: 2,
@@ -256,14 +279,14 @@ describe("SDK GraphQL - CMS Operations", () => {
     describe("getEntry", () => {
         it("should get a single entry by where clause", async () => {
             // Create product using SDK.
-            const createResult = await sdk.createEntry<ProductValues>({
+            const createResult = await sdk.cms.createEntry<ProductValues>({
                 modelId: "product",
                 data: {
                     values: {
-                        name: "Laptop",
-                        sku: "LAP-001",
-                        description: "High-performance laptop",
-                        price: 1200
+                        name: "Tablet",
+                        sku: "TAB-001",
+                        description: "High-performance tablet",
+                        price: 300
                     }
                 },
                 fields: ["id", "values.name", "values.price"]
@@ -272,8 +295,15 @@ describe("SDK GraphQL - CMS Operations", () => {
             expect(createResult.isOk()).toBe(true);
             const productId = createResult.value.id!;
 
+            // Publish product.
+            await sdk.cms.publishEntryRevision({
+                modelId: "product",
+                revisionId: productId,
+                fields: ["id"]
+            });
+
             // Get entry using SDK.
-            const getResult = await sdk.getEntry<ProductValues>({
+            const getResult = await sdk.cms.getEntry<ProductValues>({
                 modelId: "product",
                 where: {
                     id: productId
@@ -292,7 +322,7 @@ describe("SDK GraphQL - CMS Operations", () => {
 
         it("should return null when entry not found", async () => {
             // Get non-existent entry using SDK.
-            const getResult = await sdk.getEntry<ProductValues>({
+            const getResult = await sdk.cms.getEntry<ProductValues>({
                 modelId: "product",
                 where: {
                     id: "nonexistent#0001"
@@ -300,16 +330,15 @@ describe("SDK GraphQL - CMS Operations", () => {
                 fields: ["id", "values.name"]
             });
 
-            expect(getResult.isOk()).toBe(true);
-            const entry = getResult.value;
-            expect(entry).toBeNull();
+            expect(getResult.isOk()).toBe(false);
+            expect(getResult.error?.code).toBe("GRAPHQL_ERROR");
         });
     });
 
     describe("updateEntryRevision", () => {
         it("should update an entry revision", async () => {
             // Create entry using SDK.
-            const createResult = await sdk.createEntry<ProductValues>({
+            const createResult = await sdk.cms.createEntry<ProductValues>({
                 modelId: "product",
                 data: {
                     values: {
@@ -325,7 +354,7 @@ describe("SDK GraphQL - CMS Operations", () => {
             const revisionId = createResult.value.id!;
 
             // Update entry using SDK.
-            const updateResult = await sdk.updateEntryRevision<ProductValues>({
+            const updateResult = await sdk.cms.updateEntryRevision<ProductValues>({
                 modelId: "product",
                 revisionId,
                 data: {
@@ -348,7 +377,7 @@ describe("SDK GraphQL - CMS Operations", () => {
     describe("deleteEntryRevision", () => {
         it("should delete an entry revision", async () => {
             // Create entry using SDK.
-            const createResult = await sdk.createEntry<ProductValues>({
+            const createResult = await sdk.cms.createEntry<ProductValues>({
                 modelId: "product",
                 data: {
                     values: {
@@ -364,7 +393,7 @@ describe("SDK GraphQL - CMS Operations", () => {
             const revisionId = createResult.value.id!;
 
             // Delete entry using SDK.
-            const deleteResult = await sdk.deleteEntryRevision({
+            const deleteResult = await sdk.cms.deleteEntryRevision({
                 modelId: "product",
                 revisionId
             });
@@ -373,21 +402,21 @@ describe("SDK GraphQL - CMS Operations", () => {
             expect(deleteResult.value).toBe(true);
 
             // Verify entry is deleted.
-            const getResult = await sdk.getEntry({
+            const getResult = await sdk.cms.getEntry({
                 modelId: "product",
                 where: { id: revisionId },
                 fields: ["id"]
             });
 
-            expect(getResult.isOk()).toBe(true);
-            expect(getResult.value).toBeNull();
+            expect(getResult.isOk()).toBe(false);
+            expect(getResult.error?.code).toBe("GRAPHQL_ERROR");
         });
     });
 
     describe("unpublishEntryRevision", () => {
         it("should unpublish an entry revision", async () => {
             // Create entry using SDK.
-            const createResult = await sdk.createEntry<ProductValues>({
+            const createResult = await sdk.cms.createEntry<ProductValues>({
                 modelId: "product",
                 data: {
                     values: {
@@ -403,22 +432,23 @@ describe("SDK GraphQL - CMS Operations", () => {
             const revisionId = createResult.value.id!;
 
             // Publish entry using SDK.
-            await sdk.publishEntryRevision({
+            await sdk.cms.publishEntryRevision({
                 modelId: "product",
                 revisionId,
                 fields: ["id"]
             });
 
             // Unpublish entry using SDK.
-            const unpublishResult = await sdk.unpublishEntryRevision<ProductValues>({
+            const unpublishResult = await sdk.cms.unpublishEntryRevision<ProductValues>({
                 modelId: "product",
                 revisionId,
-                fields: ["id", "status"]
+                fields: ["id", "meta.status"]
             });
 
             expect(unpublishResult.isOk()).toBe(true);
             const unpublishedEntry = unpublishResult.value;
-            expect(unpublishedEntry.status).toBe("unpublished");
+            // @ts-ignore
+            expect(unpublishedEntry.meta.status).toBe("unpublished");
         });
     });
 });

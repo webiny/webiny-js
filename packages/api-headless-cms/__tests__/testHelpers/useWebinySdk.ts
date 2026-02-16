@@ -1,4 +1,4 @@
-import { CmsSdk } from "@webiny/sdk";
+import { Sdk } from "@webiny/sdk";
 import type { GraphQLHandlerParams } from "./useGraphQLHandler";
 import { useGraphQLHandler } from "./useGraphQLHandler";
 
@@ -6,36 +6,18 @@ import { useGraphQLHandler } from "./useGraphQLHandler";
  * Creates a CMS SDK instance for testing with a custom fetch function.
  * The custom fetch intercepts HTTP requests and routes them to the test handler.
  */
-export const useCmsSdk = (params: GraphQLHandlerParams = {}) => {
+export const useWebinySdk = (params: GraphQLHandlerParams = {}) => {
     const handler = useGraphQLHandler({ ...params });
 
     // Custom fetch function that routes SDK HTTP requests to our test handler.
-    const customFetch: typeof fetch = async (url, options) => {
-        // Parse the URL to get the path.
-        const urlObj = new URL(url as string);
-        const path = urlObj.pathname;
-
+    const customFetch: typeof fetch = async (_, options) => {
         // Parse the request body.
         const body = options?.body ? JSON.parse(options.body as string) : undefined;
-
-        // Extract headers from the request.
-        const headers: Record<string, string> = {};
-        if (options?.headers) {
-            const headersObj = options.headers as Record<string, string>;
-            for (const [key, value] of Object.entries(headersObj)) {
-                // Extract token from "Bearer <token>" format.
-                // if (key.toLowerCase() === "authorization" && value.startsWith("Bearer ")) {
-                //     headers[key.toLowerCase()] = value.substring(7);
-                // } else {
-                //     headers[key.toLowerCase()] = value;
-                // }
-            }
-        }
 
         // Invoke the test handler with the GraphQL query.
         const [response] = await handler.invoke({
             body,
-            headers
+            headers: {}
         });
 
         // Convert the handler response to a fetch Response object.
@@ -49,7 +31,7 @@ export const useCmsSdk = (params: GraphQLHandlerParams = {}) => {
     };
 
     // Create and return the SDK instance with our custom fetch.
-    const sdk = new CmsSdk({
+    const sdk = new Sdk({
         endpoint: "http://localhost", // Dummy endpoint, not actually used.
         token: "aToken", // Token configured in plugins.ts.
         tenant: "root",
