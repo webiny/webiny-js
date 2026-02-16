@@ -30,6 +30,7 @@ export const Extensions = () => {
             <Api.Extension src={"/extensions/models/ProductCategoryModel.ts"} />
             <Api.Extension src={"/extensions/models/ProductModel.ts"} />
             <Api.Extension src={"/extensions/models/ContactSubmissionModel.ts"} />
+            <Api.Extension src={"/extensions/models/ContactSubmissionHook.ts"} />
 
             {/*<Api.BuildParam paramName="MY_CUSTOM_BUILD_PARAM" value="customValue" />*/}
             {/*<Api.BuildParam*/}

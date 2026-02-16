@@ -38,9 +38,18 @@ class ContactSubmissionModelImpl implements ModelFactory.Interface {
                         .required("Message is required")
                         .minLength(10)
                         .maxLength(1000)
-                        .helpText("Enter your message...")
+                        .helpText("Enter your message..."),
+                    emailType: fields
+                        .text()
+                        .renderer("radio-buttons")
+                        .label("Email Type")
+                        .helpText("Automatically classified as Work or Personal")
+                        .predefinedValues([
+                            { label: "Work", value: "work" },
+                            { label: "Personal", value: "personal" }
+                        ])
                 }))
-                .layout([["name", "email"], ["message"]])
+                .layout([["name", "email"], ["message"], ["emailType"]])
                 .titleFieldId("name")
                 .descriptionFieldId("message")
                 .singularApiName("ContactSubmission")
