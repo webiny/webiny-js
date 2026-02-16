@@ -41,7 +41,7 @@
     "lodash": "^4.17.23",
     "minimatch": "^5.1.6",
     "mobx": "^6.15.0",
-    "nanoid": "^3.3.11",
+    "nanoid": "^5.1.6",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "ts-invariant": "^0.10.3",
