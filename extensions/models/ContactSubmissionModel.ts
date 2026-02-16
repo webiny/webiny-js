@@ -9,7 +9,7 @@ class ContactSubmissionModelImpl implements ModelFactory.Interface {
                 .public({
                     modelId: CONTACT_SUBMISSION_MODEL_ID,
                     name: "Contact Submission",
-                    group: "Ungrouped"
+                    group: "ungrouped"
                 })
                 .description("Stores contact form submissions from the website")
                 .fields(fields => ({
@@ -58,7 +58,7 @@ class ContactSubmissionModelImpl implements ModelFactory.Interface {
     }
 }
 
-export const ContactSubmissionModel = ModelFactory.createImplementation({
+export default ModelFactory.createImplementation({
     implementation: ContactSubmissionModelImpl,
     dependencies: []
 });

@@ -9,7 +9,7 @@ class ProductCategoryModelImpl implements ModelFactory.Interface {
                 .public({
                     modelId: PRODUCT_CATEGORY_MODEL_ID,
                     name: "Product Category",
-                    group: "Ungrouped"
+                    group: "ungrouped"
                 })
                 .description("Product categories for organizing products")
                 .fields(fields => ({
