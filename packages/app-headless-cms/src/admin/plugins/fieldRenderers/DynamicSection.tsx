@@ -13,6 +13,7 @@ import {
     cn,
     FormComponentDescription,
     FormComponentErrorMessage,
+    FormComponentNote,
     Grid,
     Separator
 } from "@webiny/admin-ui";
@@ -94,8 +95,8 @@ const DynamicSection = ({
                                             }`}
                                         </span>
                                     </Separator>
-                                    {field.helpText && (
-                                        <FormComponentDescription text={field.helpText} />
+                                    {field.description && (
+                                        <FormComponentDescription text={field.description} />
                                     )}
                                 </div>
                             )}
@@ -119,6 +120,7 @@ const DynamicSection = ({
                                                                     index
                                                                 })}
                                                             </ParentValueIndexProvider>
+                                                            <FormComponentNote text={field.note} />
                                                         </BindField.ValidationContainer>
                                                     )}
                                                 </BindField>

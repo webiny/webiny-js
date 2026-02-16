@@ -19,7 +19,7 @@ const validateData = zod.object({
                     id: zod.string(),
                     fieldId: zod.string(),
                     type: zod.string(),
-                    multipleValues: zod.boolean().optional(),
+                    list: zod.boolean().optional(),
                     settings: zod
                         .object({
                             fields: zod.array(zod.object({}).passthrough()).optional(),

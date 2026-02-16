@@ -21,7 +21,7 @@ const model = createModel({
         createModelField({
             fieldId: "content",
             type: "dynamicZone",
-            multipleValues: false,
+            list: false,
             settings: {
                 templates: [
                     {
@@ -34,7 +34,7 @@ const model = createModel({
                             createModelField({
                                 fieldId: "avatar",
                                 type: "file",
-                                multipleValues: false
+                                list: false
                             })
                         ],
                         layout: [],

@@ -12,7 +12,7 @@ export const pageModel = createPrivateModelPlugin({
             fieldId: "pageTitle",
             type: "text",
             label: "Page Title",
-            helpText: "Title of the page",
+            help: "Title of the page",
             renderer: {
                 name: "text-input"
             },
@@ -36,7 +36,7 @@ export const pageModel = createPrivateModelPlugin({
             fieldId: "pageType",
             type: "text",
             label: "Page Type",
-            helpText: "Type of the page",
+            help: "Type of the page",
             renderer: {
                 name: "disabled-text-input"
             },
@@ -45,7 +45,7 @@ export const pageModel = createPrivateModelPlugin({
         createModelField({
             id: "pageSettings",
             fieldId: "pageSettings",
-            multipleValues: false,
+            list: false,
             type: "object",
             label: "Page Settings",
             renderer: {
@@ -56,7 +56,7 @@ export const pageModel = createPrivateModelPlugin({
                     createModelField({
                         id: "generalPageSettings",
                         fieldId: "generalPageSettings",
-                        multipleValues: false,
+                        list: false,
                         type: "object",
                         label: "General",
                         renderer: {
@@ -69,8 +69,7 @@ export const pageModel = createPrivateModelPlugin({
                                     fieldId: "pageSlug",
                                     type: "text",
                                     label: "Slug*",
-                                    helpText:
-                                        "Live name of this page. The field only allows latin lower-case letters, numbers, dashes. It must not be duplicating currently existing URL in the same folder. ",
+                                    help: "Live name of this page. The field only allows latin lower-case letters, numbers, dashes. It must not be duplicating currently existing URL in the same folder. ",
                                     renderer: {
                                         name: "text-input"
                                     },
@@ -104,8 +103,7 @@ export const pageModel = createPrivateModelPlugin({
                                     fieldId: "deliveryDomain",
                                     type: "text",
                                     label: "Delivery Domain",
-                                    helpText:
-                                        "With inherited the page gets the domain of the parent page.If Xcelerator is selected you have to fill in defined extra mandatory properties to ensure a smooth integration into this portfolio.",
+                                    help: "With inherited the page gets the domain of the parent page.If Xcelerator is selected you have to fill in defined extra mandatory properties to ensure a smooth integration into this portfolio.",
                                     renderer: {
                                         name: "select-box"
                                     },
@@ -137,8 +135,7 @@ export const pageModel = createPrivateModelPlugin({
                                     fieldId: "layout",
                                     type: "text",
                                     label: "Layout",
-                                    helpText:
-                                        "Employer brand design is only allowed for this campaign.",
+                                    help: "Employer brand design is only allowed for this campaign.",
                                     renderer: {
                                         name: "select-box"
                                     },
@@ -166,7 +163,7 @@ export const pageModel = createPrivateModelPlugin({
                                     fieldId: "pageClass",
                                     type: "text",
                                     label: "Page Class*",
-                                    placeholderText: "Please select",
+                                    placeholder: "Please select",
                                     renderer: {
                                         name: "select-box"
                                     },
@@ -205,7 +202,7 @@ export const pageModel = createPrivateModelPlugin({
                                     fieldId: "pageCategory",
                                     type: "text",
                                     label: "Page Category*",
-                                    placeholderText: "Please select",
+                                    placeholder: "Please select",
                                     renderer: {
                                         name: "select-box"
                                     },
@@ -256,8 +253,7 @@ export const pageModel = createPrivateModelPlugin({
                                     fieldId: "redirectUrl",
                                     type: "text",
                                     label: "Redirect (302)",
-                                    helpText:
-                                        "If redirected you can use tags and a filled Page teaser to appear in filter results but not in search results. This redirect is defined as “temporarily” (302) to inform search engines that the URL could come back so that they try to crawl again and again. So, if the page is deleted for the current eternity, please create a 301 redirect in our Redirect tool.",
+                                    help: "If redirected you can use tags and a filled Page teaser to appear in filter results but not in search results. This redirect is defined as “temporarily” (302) to inform search engines that the URL could come back so that they try to crawl again and again. So, if the page is deleted for the current eternity, please create a 301 redirect in our Redirect tool.",
                                     renderer: {
                                         name: "text-input"
                                     },
@@ -279,8 +275,7 @@ export const pageModel = createPrivateModelPlugin({
                                     fieldId: "browserTabTitle",
                                     type: "text",
                                     label: "Browser Tab Title*",
-                                    helpText:
-                                        "Defines the title of this page that is used in the browser's tab, favorite links and most importantly on search engine results pages.Max length is 60 characters - and our brand and your country name occupy some of them by default. ",
+                                    help: "Defines the title of this page that is used in the browser's tab, favorite links and most importantly on search engine results pages.Max length is 60 characters - and our brand and your country name occupy some of them by default. ",
                                     renderer: {
                                         name: "text-input"
                                     },
@@ -298,8 +293,7 @@ export const pageModel = createPrivateModelPlugin({
                                     fieldId: "description",
                                     type: "text",
                                     label: "Description*",
-                                    helpText:
-                                        "Used as part of the search snippet in search engine results page (SERP) incl. ACME search and is meant to give the user an idea of the content that exists within the page. \nLength should be between 140…160 characters incl. spaces - this can be ignored for the non-Latin characters.",
+                                    help: "Used as part of the search snippet in search engine results page (SERP) incl. ACME search and is meant to give the user an idea of the content that exists within the page. \nLength should be between 140…160 characters incl. spaces - this can be ignored for the non-Latin characters.",
                                     renderer: {
                                         name: "text-input"
                                     },
@@ -317,8 +311,7 @@ export const pageModel = createPrivateModelPlugin({
                                     fieldId: "customCanonicalUrl",
                                     type: "text",
                                     label: "Custom Canonical Url",
-                                    helpText:
-                                        "If not filled in, the canonical URL will be created automatically in page source code.",
+                                    help: "If not filled in, the canonical URL will be created automatically in page source code.",
                                     renderer: {
                                         name: "text-input"
                                     },
@@ -340,8 +333,7 @@ export const pageModel = createPrivateModelPlugin({
                                     fieldId: "contentOwner",
                                     type: "text",
                                     label: "Content responsible*",
-                                    helpText:
-                                        "SCD-connected email address of the employee we need to contact if there are issues with this page or content questions.",
+                                    help: "SCD-connected email address of the employee we need to contact if there are issues with this page or content questions.",
                                     renderer: {
                                         name: "text-input"
                                     },
@@ -368,8 +360,7 @@ export const pageModel = createPrivateModelPlugin({
                                     fieldId: "organisation",
                                     type: "text",
                                     label: "Organisation*",
-                                    helpText:
-                                        "Select the content responsible org unit for correct internal analytics data.",
+                                    help: "Select the content responsible org unit for correct internal analytics data.",
                                     renderer: {
                                         name: "text-input"
                                     },
@@ -387,8 +378,7 @@ export const pageModel = createPrivateModelPlugin({
                                     fieldId: "navTitle",
                                     type: "text",
                                     label: "Navigation and breadcrumb title",
-                                    helpText:
-                                        "Page name to be displayed in the navigation and breadcrumb. Avoid to use “ACME”, it should be clear for the user where he is.",
+                                    help: "Page name to be displayed in the navigation and breadcrumb. Avoid to use “ACME”, it should be clear for the user where he is.",
                                     renderer: {
                                         name: "text-input"
                                     },
@@ -434,8 +424,7 @@ export const pageModel = createPrivateModelPlugin({
                                     fieldId: "noFollow",
                                     type: "text",
                                     label: "Follow",
-                                    helpText:
-                                        "Prevents search engines to follow the links on this page. Use carefully and with competence.",
+                                    help: "Prevents search engines to follow the links on this page. Use carefully and with competence.",
                                     renderer: {
                                         name: "select-box"
                                     },
@@ -467,8 +456,7 @@ export const pageModel = createPrivateModelPlugin({
                                     fieldId: "noIndex",
                                     type: "text",
                                     label: "Index",
-                                    helpText:
-                                        "Prevents search engines incl. ACME internal search from indexing this page. Do not use for silent go live.",
+                                    help: "Prevents search engines incl. ACME internal search from indexing this page. Do not use for silent go live.",
                                     renderer: {
                                         name: "select-box"
                                     },
@@ -500,8 +488,7 @@ export const pageModel = createPrivateModelPlugin({
                                     fieldId: "publishTime",
                                     type: "datetime",
                                     label: "Publish",
-                                    helpText:
-                                        "Date an time this page will be published automatically. Leave empty for normal publishing process.",
+                                    help: "Date an time this page will be published automatically. Leave empty for normal publishing process.",
                                     renderer: {
                                         name: "date-time-input"
                                     },
@@ -515,8 +502,7 @@ export const pageModel = createPrivateModelPlugin({
                                     fieldId: "unPublishTime",
                                     type: "datetime",
                                     label: "Unpublish",
-                                    helpText:
-                                        "Date an time this page will be published automatically. Please be aware of possible 404 errors - better leave empty for normal unpublishing process.",
+                                    help: "Date an time this page will be published automatically. Please be aware of possible 404 errors - better leave empty for normal unpublishing process.",
                                     renderer: {
                                         name: "date-time-input"
                                     },
@@ -530,9 +516,8 @@ export const pageModel = createPrivateModelPlugin({
                                     fieldId: "headerContactLink",
                                     label: "Header contact link",
                                     type: "text",
-                                    placeholderText: "Inherited from parent",
-                                    helpText:
-                                        "If not filled in, inherited from parent page, if filled in, it inherits to child pages.The displayed text is pulled from an i18n list.",
+                                    placeholder: "Inherited from parent",
+                                    help: "If not filled in, inherited from parent page, if filled in, it inherits to child pages.The displayed text is pulled from an i18n list.",
                                     renderer: {
                                         name: "text-input"
                                     },
@@ -554,7 +539,7 @@ export const pageModel = createPrivateModelPlugin({
                                     fieldId: "copyRightText",
                                     label: "Copyright text",
                                     type: "text",
-                                    placeholderText: "Inherited from parent",
+                                    placeholder: "Inherited from parent",
                                     renderer: {
                                         name: "text-input"
                                     },
@@ -583,7 +568,7 @@ export const pageModel = createPrivateModelPlugin({
                                     fieldId: "footerLinkList",
                                     label: "Footer Links",
                                     type: "object",
-                                    multipleValues: true,
+                                    list: true,
                                     renderer: {
                                         name: "objects"
                                     },
@@ -601,8 +586,7 @@ export const pageModel = createPrivateModelPlugin({
                                                     name: "text-input"
                                                 },
                                                 label: "Link Text",
-                                                helpText:
-                                                    "Mandatory. For SEO avoid terms like “More” or “Click here”.",
+                                                help: "Mandatory. For SEO avoid terms like “More” or “Click here”.",
                                                 fieldId: "footerLinkText",
                                                 id: "footerLinkText",
                                                 storageId: "text@footerLinkText"
@@ -626,8 +610,7 @@ export const pageModel = createPrivateModelPlugin({
                                                     name: "text-input"
                                                 },
                                                 label: "Link",
-                                                helpText:
-                                                    "If link target is SmartCMS internal, create link relative via <Picker> to avoid 404 errors.",
+                                                help: "If link target is SmartCMS internal, create link relative via <Picker> to avoid 404 errors.",
                                                 fieldId: "footerLinkLink",
                                                 id: "footerLinkLink",
                                                 storageId: "text@footerLinkLink"
@@ -660,7 +643,7 @@ export const pageModel = createPrivateModelPlugin({
                                     fieldId: "socialMediaLinkList",
                                     label: "Social Media Links",
                                     type: "object",
-                                    multipleValues: true,
+                                    list: true,
                                     renderer: {
                                         name: "objects"
                                     },
@@ -673,8 +656,7 @@ export const pageModel = createPrivateModelPlugin({
                                                     name: "text-input"
                                                 },
                                                 label: "Link",
-                                                helpText:
-                                                    "The links are inherited to all child pages up to the moment, when a child page has its own entry.",
+                                                help: "The links are inherited to all child pages up to the moment, when a child page has its own entry.",
                                                 fieldId: "socialMediaLinkLink",
                                                 id: "socialMediaLinkLink",
                                                 storageId: "text@socialMediaLinkLink"
@@ -691,7 +673,7 @@ export const pageModel = createPrivateModelPlugin({
                                         name: "text-input"
                                     },
                                     label: "FragmentUUID",
-                                    helpText: "The technical ID of this element.",
+                                    help: "The technical ID of this element.",
                                     fieldId: "uuid",
                                     id: "pageUuid",
                                     storageId: "text@pageUuid"
@@ -719,7 +701,7 @@ export const pageModel = createPrivateModelPlugin({
                     createModelField({
                         id: "pageTeaserSettings",
                         fieldId: "pageTeaserSettings",
-                        multipleValues: false,
+                        list: false,
                         type: "object",
                         label: "Page Teaser",
                         renderer: {
@@ -730,7 +712,7 @@ export const pageModel = createPrivateModelPlugin({
                                 createModelField({
                                     type: "object",
                                     validation: [],
-                                    multipleValues: false,
+                                    list: false,
                                     renderer: {
                                         name: "asset-input"
                                     },
@@ -742,36 +724,33 @@ export const pageModel = createPrivateModelPlugin({
                                         fields: [
                                             createModelField({
                                                 type: "file",
-                                                multipleValues: false,
+                                                list: false,
                                                 label: "File",
-                                                helpText:
-                                                    "How to change the start image of a video please see http://acme.com/dam FAQ",
+                                                help: "How to change the start image of a video please see http://acme.com/dam FAQ",
                                                 fieldId: "file",
                                                 id: "pageTeaserMediaFile",
                                                 storageId: "file@pageTeaserMediaFile"
                                             }),
                                             createModelField({
                                                 type: "text",
-                                                multipleValues: false,
+                                                list: false,
                                                 renderer: {
                                                     name: "text-input"
                                                 },
                                                 label: "Alternative text",
-                                                helpText:
-                                                    "If not selected then image is marked as decorative. Please refer to Showroom, topic “WCAG” to learn more.",
+                                                help: "If not selected then image is marked as decorative. Please refer to Showroom, topic “WCAG” to learn more.",
                                                 fieldId: "altText",
                                                 id: "pageTeaserMediaAltText",
                                                 storageId: "text@pageTeaserMediaAltText"
                                             }),
                                             createModelField({
                                                 type: "text",
-                                                multipleValues: false,
+                                                list: false,
                                                 renderer: {
                                                     name: "slug-field-input"
                                                 },
                                                 label: "SEO name",
-                                                helpText:
-                                                    "Example: My selfie will be delivered as my-selfie.jpg. Used for SEO.",
+                                                help: "Example: My selfie will be delivered as my-selfie.jpg. Used for SEO.",
                                                 fieldId: "seoName",
                                                 id: "pageTeaserMediaSeoName",
                                                 storageId: "text@pageTeaserMediaSeoName"
@@ -783,7 +762,7 @@ export const pageModel = createPrivateModelPlugin({
                                                     name: "text-and-copy-input"
                                                 },
                                                 label: "Crop values",
-                                                helpText: "The value used to crop this media.",
+                                                help: "The value used to crop this media.",
                                                 fieldId: "crop",
                                                 id: "pageTeaserMediaCrop",
                                                 storageId: "text@pageTeaserMediaCrop",
@@ -805,8 +784,7 @@ export const pageModel = createPrivateModelPlugin({
                                     fieldId: "pageTeaserTitle",
                                     type: "text",
                                     label: "Teaser title on acme.com",
-                                    helpText:
-                                        "If you use more than 150 characters incl. spaces it could be that the text will be shortened by the destination page. Please avoid the word “ACME”: teasers appear only on acme.com",
+                                    help: "If you use more than 150 characters incl. spaces it could be that the text will be shortened by the destination page. Please avoid the word “ACME”: teasers appear only on acme.com",
                                     renderer: {
                                         name: "text-input"
                                     },
@@ -826,8 +804,7 @@ export const pageModel = createPrivateModelPlugin({
                                     fieldId: "pageTeaserText",
                                     type: "long-text",
                                     label: "Teaser text on acme.com",
-                                    helpText:
-                                        "If you use more than 150 characters incl. spaces it could be that the text will be shortened by the destination page.Please write in the first person: teasers appear only on acme.com.",
+                                    help: "If you use more than 150 characters incl. spaces it could be that the text will be shortened by the destination page.Please write in the first person: teasers appear only on acme.com.",
                                     renderer: {
                                         name: "long-text-text-area"
                                     },
@@ -838,7 +815,7 @@ export const pageModel = createPrivateModelPlugin({
                                     fieldId: "pageTeaserSocialMediaTitle",
                                     type: "text",
                                     label: "Teaser title for social media",
-                                    helpText: "",
+                                    help: "",
                                     renderer: {
                                         name: "text-input"
                                     },
@@ -858,7 +835,7 @@ export const pageModel = createPrivateModelPlugin({
                                     fieldId: "pageTeaserSocialMediaText",
                                     type: "long-text",
                                     label: "Teaser text for social media",
-                                    helpText: "",
+                                    help: "",
                                     renderer: {
                                         name: "long-text-text-area"
                                     },
@@ -869,8 +846,7 @@ export const pageModel = createPrivateModelPlugin({
                                     fieldId: "pageTeaserFakePublishDate",
                                     type: "datetime",
                                     label: "Fake publish",
-                                    helpText:
-                                        "For filter results sorting or feeding the recommendation engine with the real age of the page.The source code and sitemap.xml date, read by search engines, shows the real publish date.",
+                                    help: "For filter results sorting or feeding the recommendation engine with the real age of the page.The source code and sitemap.xml date, read by search engines, shows the real publish date.",
                                     renderer: {
                                         name: "date-time-input"
                                     },
@@ -884,8 +860,7 @@ export const pageModel = createPrivateModelPlugin({
                                     fieldId: "pageTeaserExpiryDate",
                                     type: "datetime",
                                     label: "Expire",
-                                    helpText:
-                                        "In Filter results the teaser will not be shown if a expire date is set. The page itself is not affected.",
+                                    help: "In Filter results the teaser will not be shown if a expire date is set. The page itself is not affected.",
                                     renderer: {
                                         name: "date-time-input"
                                     },
@@ -899,8 +874,7 @@ export const pageModel = createPrivateModelPlugin({
                                     fieldId: "pageTeaserFilterTags",
                                     type: "text",
                                     label: "Filter Tag(s)",
-                                    helpText:
-                                        "Select the tags in English. They will be translated into the browser language during delivery.",
+                                    help: "Select the tags in English. They will be translated into the browser language during delivery.",
                                     renderer: {
                                         name: "text-input"
                                     },
@@ -911,8 +885,7 @@ export const pageModel = createPrivateModelPlugin({
                                     fieldId: "pageTeaserVisualTag1",
                                     type: "text",
                                     label: "Visual Tag 1",
-                                    helpText:
-                                        "Not for filtering, only shown in the teasers' 1st topline.",
+                                    help: "Not for filtering, only shown in the teasers' 1st topline.",
                                     renderer: {
                                         name: "text-input"
                                     },
@@ -933,7 +906,7 @@ export const pageModel = createPrivateModelPlugin({
                                     fieldId: "pageTeaserEventLocation",
                                     type: "text",
                                     label: "Event Location",
-                                    helpText: "Please type in an event location, if needed",
+                                    help: "Please type in an event location, if needed",
                                     renderer: {
                                         name: "text-input"
                                     },
@@ -994,7 +967,7 @@ export const pageModel = createPrivateModelPlugin({
             fieldId: "pageTemplate",
             type: "dynamicZone",
             label: "Page Template",
-            multipleValues: false,
+            list: false,
             renderer: {
                 name: "dynamicZone"
             },
@@ -1013,7 +986,7 @@ export const pageModel = createPrivateModelPlugin({
                                 fieldId: "introZone",
                                 label: "Introduction Zone",
                                 type: "dynamicZone",
-                                multipleValues: true,
+                                list: true,
                                 renderer: {
                                     name: "dynamicZone"
                                 },
@@ -1034,8 +1007,7 @@ export const pageModel = createPrivateModelPlugin({
                                                     renderer: {
                                                         name: "select-box"
                                                     },
-                                                    helpText:
-                                                        "If used outside of Intro section the headline will be delivered as H2.",
+                                                    help: "If used outside of Intro section the headline will be delivered as H2.",
                                                     label: "Layout",
                                                     predefinedValues: {
                                                         enabled: true,
@@ -1070,7 +1042,7 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: false,
+                                                    list: false,
                                                     renderer: {
                                                         name: "object"
                                                     },
@@ -1089,13 +1061,12 @@ export const pageModel = createPrivateModelPlugin({
                                                                             "Title is required."
                                                                     }
                                                                 ],
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "enhanced-text-input"
                                                                 },
                                                                 label: "Title",
-                                                                helpText:
-                                                                    "Max. 70 characters incl. spaces are allowed. If you selected layout “Text only”: unlimited.",
+                                                                help: "Max. 70 characters incl. spaces are allowed. If you selected layout “Text only”: unlimited.",
                                                                 fieldId: "title",
                                                                 id: "stageTitleTitle",
                                                                 storageId: "text@stageTitleTitle",
@@ -1107,7 +1078,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 validation: [],
                                                                 predefinedValues: {
                                                                     enabled: true,
@@ -1143,8 +1114,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                     name: "select-box"
                                                                 },
                                                                 label: "Heading Rank",
-                                                                helpText:
-                                                                    "The heading rank is a page structure element needed for SEO, calculated by SmartCMS. To change the structure of the page you can choose another rank, following subtitles will be recalculated automatically.",
+                                                                help: "The heading rank is a page structure element needed for SEO, calculated by SmartCMS. To change the structure of the page you can choose another rank, following subtitles will be recalculated automatically.",
                                                                 fieldId: "headingRank",
                                                                 id: "stageTitleHeadingRank",
                                                                 storageId:
@@ -1166,10 +1136,9 @@ export const pageModel = createPrivateModelPlugin({
                                                         name: "enhanced-lexical-text-input"
                                                     },
                                                     label: "Text",
-                                                    helpText:
-                                                        "For a good user experience it is recommended not to use more than 600 characters incl. spaces. If there is the need for more, it is recommended to split the content into separate elements.",
+                                                    help: "For a good user experience it is recommended not to use more than 600 characters incl. spaces. If there is the need for more, it is recommended to split the content into separate elements.",
                                                     fieldId: "stageText",
-                                                    placeholderText:
+                                                    placeholder:
                                                         "Max. 400 characters incl. spaces are allowed. If you selected the “Text only”: unlimited.",
                                                     id: "stageText",
                                                     storageId: "rich-text@stageText"
@@ -1177,13 +1146,12 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: false,
+                                                    list: false,
                                                     renderer: {
                                                         name: "object"
                                                     },
                                                     label: "Button",
-                                                    helpText:
-                                                        "The button hierarchy and design is pre-defined per component. See the showroom for details.",
+                                                    help: "The button hierarchy and design is pre-defined per component. See the showroom for details.",
                                                     fieldId: "button",
                                                     id: "stageButton",
                                                     storageId: "object@stageButton",
@@ -1192,13 +1160,12 @@ export const pageModel = createPrivateModelPlugin({
                                                             {
                                                                 type: "text",
                                                                 validation: [],
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "text-input"
                                                                 },
                                                                 label: "Button Text",
-                                                                helpText:
-                                                                    "About 30 characters per row, if delivered on desktop. On mobile devices please calculate with ~20.",
+                                                                help: "About 30 characters per row, if delivered on desktop. On mobile devices please calculate with ~20.",
                                                                 fieldId: "buttonText",
                                                                 id: "stageButtonText",
                                                                 storageId: "text@stageButtonText"
@@ -1211,8 +1178,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                 label: "Button Link",
                                                                 fieldId: "linkpicker",
                                                                 id: "stageButtonLink",
-                                                                helpText:
-                                                                    "If link target is SmartCMS internal, create link relative via <Picker> to avoid 404 errors.",
+                                                                help: "If link target is SmartCMS internal, create link relative via <Picker> to avoid 404 errors.",
                                                                 storageId: "text@stageButtonLink"
                                                             }
                                                         ],
@@ -1224,13 +1190,12 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: false,
+                                                    list: false,
                                                     renderer: {
                                                         name: "asset-input"
                                                     },
                                                     label: "Media",
-                                                    helpText:
-                                                        "Image 16:9 or 4:3, video always 16:9. Gifs bigger that 6 MB might not be delivered for performance reasons.",
+                                                    help: "Image 16:9 or 4:3, video always 16:9. Gifs bigger that 6 MB might not be delivered for performance reasons.",
                                                     fieldId: "stageMedia",
                                                     id: "stageMedia",
                                                     storageId: "object@stageMedia",
@@ -1245,36 +1210,33 @@ export const pageModel = createPrivateModelPlugin({
                                                         fields: [
                                                             {
                                                                 type: "file",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 label: "File",
-                                                                helpText:
-                                                                    "How to change the start image of a video please see http://acme.com/dam FAQ",
+                                                                help: "How to change the start image of a video please see http://acme.com/dam FAQ",
                                                                 fieldId: "file",
                                                                 id: "stageMediaFile",
                                                                 storageId: "file@stageMediaFile"
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "text-input"
                                                                 },
                                                                 label: "Alternative text",
-                                                                helpText:
-                                                                    "If not selected then image is marked as decorative. Please refer to Showroom, topic “WCAG” to learn more.",
+                                                                help: "If not selected then image is marked as decorative. Please refer to Showroom, topic “WCAG” to learn more.",
                                                                 fieldId: "altText",
                                                                 id: "stageMediaAltText",
                                                                 storageId: "text@stageMediaAltText"
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "slug-field-input"
                                                                 },
                                                                 label: "SEO name",
-                                                                helpText:
-                                                                    "Example: My selfie will be delivered as my-selfie.jpg. Used for SEO.",
+                                                                help: "Example: My selfie will be delivered as my-selfie.jpg. Used for SEO.",
                                                                 fieldId: "seoName",
                                                                 id: "stageMediaSeoName",
                                                                 storageId: "text@stageMediaSeoName"
@@ -1286,8 +1248,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                     name: "text-and-copy-input"
                                                                 },
                                                                 label: "Crop values",
-                                                                helpText:
-                                                                    "The value used to crop this media.",
+                                                                help: "The value used to crop this media.",
                                                                 fieldId: "crop",
                                                                 id: "stageMediaCrop",
                                                                 storageId: "text@stageMediaCrop",
@@ -1311,7 +1272,7 @@ export const pageModel = createPrivateModelPlugin({
                                                         name: "text-input"
                                                     },
                                                     label: "FragmentUUID",
-                                                    helpText: "The technical ID of this element.",
+                                                    help: "The technical ID of this element.",
                                                     fieldId: "uuid",
                                                     id: "stageUuid",
                                                     storageId: "text@stageUuid"
@@ -1335,7 +1296,7 @@ export const pageModel = createPrivateModelPlugin({
                                 fieldId: "mainZone",
                                 label: "Main Zone",
                                 type: "dynamicZone",
-                                multipleValues: true,
+                                list: true,
                                 renderer: {
                                     name: "dynamicZone"
                                 },
@@ -1362,9 +1323,8 @@ export const pageModel = createPrivateModelPlugin({
                                                         name: "select-box"
                                                     },
                                                     label: "Layout",
-                                                    helpText:
-                                                        "For UX reasons please limit the amount of accordion splits to six.",
-                                                    placeholderText: "Please select",
+                                                    help: "For UX reasons please limit the amount of accordion splits to six.",
+                                                    placeholder: "Please select",
                                                     predefinedValues: {
                                                         enabled: true,
                                                         values: [
@@ -1386,7 +1346,7 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: false,
+                                                    list: false,
                                                     renderer: {
                                                         name: "object"
                                                     },
@@ -1398,13 +1358,12 @@ export const pageModel = createPrivateModelPlugin({
                                                         fields: [
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "enhanced-text-input"
                                                                 },
                                                                 label: "Title",
-                                                                helpText:
-                                                                    "Titles aren’t delivered in Accordion/Tab components for UX reasons.",
+                                                                help: "Titles aren’t delivered in Accordion/Tab components for UX reasons.",
                                                                 fieldId: "title",
                                                                 id: "accordionTabTitleTitle",
                                                                 storageId:
@@ -1415,7 +1374,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 validation: [],
                                                                 predefinedValues: {
                                                                     enabled: true,
@@ -1451,8 +1410,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                     name: "select-box"
                                                                 },
                                                                 label: "Heading Rank",
-                                                                helpText:
-                                                                    "The heading rank is a page structure element needed for SEO, calculated by SmartCMS. To change the structure of the page you can choose another rank, following subtitles will be recalculated automatically.",
+                                                                help: "The heading rank is a page structure element needed for SEO, calculated by SmartCMS. To change the structure of the page you can choose another rank, following subtitles will be recalculated automatically.",
                                                                 fieldId: "headingRank",
                                                                 id: "accordionTabTitleHeadingRank",
                                                                 storageId:
@@ -1470,7 +1428,7 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: true,
+                                                    list: true,
                                                     renderer: {
                                                         name: "objects"
                                                     },
@@ -1489,13 +1447,12 @@ export const pageModel = createPrivateModelPlugin({
                                                                             "The field is required"
                                                                     }
                                                                 ],
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "text-input"
                                                                 },
                                                                 label: "Split title",
-                                                                helpText:
-                                                                    "Title, visible in tab field or closed accordion fold. Works as an anchor.",
+                                                                help: "Title, visible in tab field or closed accordion fold. Works as an anchor.",
                                                                 fieldId: "splitTitle",
                                                                 id: "accordionTabSplitTitle",
                                                                 storageId:
@@ -1503,7 +1460,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "dynamicZone",
-                                                                multipleValues: true,
+                                                                list: true,
                                                                 validation: [
                                                                     {
                                                                         name: "required",
@@ -1531,8 +1488,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                     renderer: {
                                                                                         name: "select-box"
                                                                                     },
-                                                                                    helpText:
-                                                                                        "If single image, the ratio is free. For more than one it is set to 16:9.",
+                                                                                    help: "If single image, the ratio is free. For more than one it is set to 16:9.",
                                                                                     label: "Layout",
                                                                                     predefinedValues:
                                                                                         {
@@ -1562,8 +1518,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                         name: "text-input"
                                                                                     },
                                                                                     label: "FragmentUUID",
-                                                                                    helpText:
-                                                                                        "The technical ID of this element.",
+                                                                                    help: "The technical ID of this element.",
                                                                                     fieldId: "uuid",
                                                                                     id: "mrtUuid",
                                                                                     storageId:
@@ -1572,7 +1527,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 {
                                                                                     type: "object",
                                                                                     validation: [],
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     renderer: {
                                                                                         name: "object"
                                                                                     },
@@ -1586,14 +1541,13 @@ export const pageModel = createPrivateModelPlugin({
                                                                                         fields: [
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 renderer:
                                                                                                     {
                                                                                                         name: "enhanced-text-input"
                                                                                                     },
                                                                                                 label: "Title",
-                                                                                                helpText:
-                                                                                                    "Titles aren’t delivered in Accordion/Tab components for UX reasons.",
+                                                                                                help: "Titles aren’t delivered in Accordion/Tab components for UX reasons.",
                                                                                                 fieldId:
                                                                                                     "title",
                                                                                                 id: "mrtTitleTitle",
@@ -1607,7 +1561,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                             },
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 validation:
                                                                                                     [],
                                                                                                 predefinedValues:
@@ -1646,8 +1600,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                                         name: "select-box"
                                                                                                     },
                                                                                                 label: "Heading Rank",
-                                                                                                helpText:
-                                                                                                    "The heading rank is a page structure element needed for SEO, calculated by SmartCMS. To change the structure of the page you can choose another rank, following subtitles will be recalculated automatically.",
+                                                                                                help: "The heading rank is a page structure element needed for SEO, calculated by SmartCMS. To change the structure of the page you can choose another rank, following subtitles will be recalculated automatically.",
                                                                                                 fieldId:
                                                                                                     "headingRank",
                                                                                                 id: "mrtTitleHeadingRank",
@@ -1669,8 +1622,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                         name: "text-input"
                                                                                     },
                                                                                     label: "Subtitle",
-                                                                                    helpText:
-                                                                                        "Plain text, max 150 characters.",
+                                                                                    help: "Plain text, max 150 characters.",
                                                                                     fieldId:
                                                                                         "subtitle",
                                                                                     id: "mrtSubtitle",
@@ -1684,8 +1636,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                         name: "enhanced-lexical-text-input"
                                                                                     },
                                                                                     label: "Text",
-                                                                                    helpText:
-                                                                                        "For a good user experience it is recommended not to use more than 600 characters incl. spaces. If there is the need for more, it is recommended to split the content into separate elements.",
+                                                                                    help: "For a good user experience it is recommended not to use more than 600 characters incl. spaces. If there is the need for more, it is recommended to split the content into separate elements.",
                                                                                     fieldId: "text",
                                                                                     id: "mrtRichText",
                                                                                     storageId:
@@ -1694,13 +1645,12 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 {
                                                                                     type: "object",
                                                                                     validation: [],
-                                                                                    multipleValues: true,
+                                                                                    list: true,
                                                                                     renderer: {
                                                                                         name: "asset-input"
                                                                                     },
                                                                                     label: "Media",
-                                                                                    helpText:
-                                                                                        "The ratio is free for single images. For multiple images the ratio is fixed at 16:9.",
+                                                                                    help: "The ratio is free for single images. For multiple images the ratio is fixed at 16:9.",
                                                                                     fieldId:
                                                                                         "mrtMedia",
                                                                                     id: "mrtMedia",
@@ -1726,10 +1676,9 @@ export const pageModel = createPrivateModelPlugin({
                                                                                         fields: [
                                                                                             {
                                                                                                 type: "file",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 label: "File",
-                                                                                                helpText:
-                                                                                                    "How to change the start image of a video please see http://acme.com/dam FAQ",
+                                                                                                help: "How to change the start image of a video please see http://acme.com/dam FAQ",
                                                                                                 fieldId:
                                                                                                     "file",
                                                                                                 id: "mrtMediaFile",
@@ -1738,14 +1687,13 @@ export const pageModel = createPrivateModelPlugin({
                                                                                             },
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 renderer:
                                                                                                     {
                                                                                                         name: "text-input"
                                                                                                     },
                                                                                                 label: "Alternative text",
-                                                                                                helpText:
-                                                                                                    "If not selected then image is marked as decorative. Please refer to Showroom, topic “WCAG” to learn more.",
+                                                                                                help: "If not selected then image is marked as decorative. Please refer to Showroom, topic “WCAG” to learn more.",
                                                                                                 fieldId:
                                                                                                     "altText",
                                                                                                 id: "mrtMediaAltText",
@@ -1754,14 +1702,13 @@ export const pageModel = createPrivateModelPlugin({
                                                                                             },
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 renderer:
                                                                                                     {
                                                                                                         name: "slug-field-input"
                                                                                                     },
                                                                                                 label: "SEO name",
-                                                                                                helpText:
-                                                                                                    "Example: My selfie will be delivered as my-selfie.jpg. Used for SEO.",
+                                                                                                help: "Example: My selfie will be delivered as my-selfie.jpg. Used for SEO.",
                                                                                                 fieldId:
                                                                                                     "seoName",
                                                                                                 id: "mrtMediaSeoName",
@@ -1770,14 +1717,13 @@ export const pageModel = createPrivateModelPlugin({
                                                                                             },
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 renderer:
                                                                                                     {
                                                                                                         name: "text-input"
                                                                                                     },
                                                                                                 label: "Caption",
-                                                                                                helpText:
-                                                                                                    "Text length is max. 300 characters incl. spaces.",
+                                                                                                help: "Text length is max. 300 characters incl. spaces.",
                                                                                                 fieldId:
                                                                                                     "caption",
                                                                                                 id: "mrtMediaCaption",
@@ -1798,14 +1744,13 @@ export const pageModel = createPrivateModelPlugin({
                                                                                             },
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 renderer:
                                                                                                     {
                                                                                                         name: "text-input"
                                                                                                     },
                                                                                                 label: "Caption link",
-                                                                                                helpText:
-                                                                                                    "The link affects the complete text, not single words.",
+                                                                                                help: "The link affects the complete text, not single words.",
                                                                                                 fieldId:
                                                                                                     "captionLink",
                                                                                                 id: "mrtMediaCaptionLink",
@@ -1821,8 +1766,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                                         name: "text-and-copy-input"
                                                                                                     },
                                                                                                 label: "Crop values",
-                                                                                                helpText:
-                                                                                                    "The value used to crop this media.",
+                                                                                                help: "The value used to crop this media.",
                                                                                                 fieldId:
                                                                                                     "crop",
                                                                                                 id: "mrtMediaCrop",
@@ -1859,13 +1803,12 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 {
                                                                                     type: "object",
                                                                                     validation: [],
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     renderer: {
                                                                                         name: "object"
                                                                                     },
                                                                                     label: "Button",
-                                                                                    helpText:
-                                                                                        "The button hierarchy and design is pre-defined per component. See the showroom for details.",
+                                                                                    help: "The button hierarchy and design is pre-defined per component. See the showroom for details.",
                                                                                     fieldId:
                                                                                         "button",
                                                                                     id: "mrtButton",
@@ -1877,14 +1820,13 @@ export const pageModel = createPrivateModelPlugin({
                                                                                                 type: "text",
                                                                                                 validation:
                                                                                                     [],
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 renderer:
                                                                                                     {
                                                                                                         name: "text-input"
                                                                                                     },
                                                                                                 label: "Button Text",
-                                                                                                helpText:
-                                                                                                    "About 30 characters per row, if delivered on desktop. On mobile devices please calculate with ~20.",
+                                                                                                help: "About 30 characters per row, if delivered on desktop. On mobile devices please calculate with ~20.",
                                                                                                 fieldId:
                                                                                                     "buttonText",
                                                                                                 id: "mrtButtonText",
@@ -1901,8 +1843,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                                 fieldId:
                                                                                                     "linkpicker",
                                                                                                 id: "mrtButtonLink",
-                                                                                                helpText:
-                                                                                                    "If link target is SmartCMS internal, create link relative via <Picker> to avoid 404 errors.",
+                                                                                                help: "If link target is SmartCMS internal, create link relative via <Picker> to avoid 404 errors.",
                                                                                                 storageId:
                                                                                                     "text@mrtButtonLink"
                                                                                             }
@@ -1918,7 +1859,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 {
                                                                                     type: "object",
                                                                                     validation: [],
-                                                                                    multipleValues: true,
+                                                                                    list: true,
                                                                                     renderer: {
                                                                                         name: "objects"
                                                                                     },
@@ -1932,7 +1873,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                         fields: [
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 validation:
                                                                                                     [
                                                                                                         {
@@ -1946,8 +1887,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                                         name: "text-input"
                                                                                                     },
                                                                                                 label: "Link Text",
-                                                                                                helpText:
-                                                                                                    "Mandatory. For SEO avoid terms like “More” or “Click here”.",
+                                                                                                help: "Mandatory. For SEO avoid terms like “More” or “Click here”.",
                                                                                                 fieldId:
                                                                                                     "text",
                                                                                                 id: "mrtLinkListText",
@@ -1972,8 +1912,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                                 fieldId:
                                                                                                     "linkpicker",
                                                                                                 id: "mrtLinkListLink",
-                                                                                                helpText:
-                                                                                                    "If link is SmartCMS internal, create link relative via <Picker> to avoid 404 errors",
+                                                                                                help: "If link is SmartCMS internal, create link relative via <Picker> to avoid 404 errors",
                                                                                                 storageId:
                                                                                                     "text@mrtLinkListLink"
                                                                                             }
@@ -2012,7 +1951,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 {
                                                                                     type: "object",
                                                                                     validation: [],
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     renderer: {
                                                                                         name: "object"
                                                                                     },
@@ -2026,14 +1965,13 @@ export const pageModel = createPrivateModelPlugin({
                                                                                         fields: [
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 renderer:
                                                                                                     {
                                                                                                         name: "enhanced-text-input"
                                                                                                     },
                                                                                                 label: "Title",
-                                                                                                helpText:
-                                                                                                    "Titles aren’t delivered in Accordion/Tab components for UX reasons.",
+                                                                                                help: "Titles aren’t delivered in Accordion/Tab components for UX reasons.",
                                                                                                 fieldId:
                                                                                                     "title",
                                                                                                 id: "galleryTitleTitle",
@@ -2047,7 +1985,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                             },
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 validation:
                                                                                                     [],
                                                                                                 predefinedValues:
@@ -2086,8 +2024,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                                         name: "select-box"
                                                                                                     },
                                                                                                 label: "Heading Rank",
-                                                                                                helpText:
-                                                                                                    "The heading rank is a page structure element needed for SEO, calculated by SmartCMS. To change the structure of the page you can choose another rank, following subtitles will be recalculated automatically.",
+                                                                                                help: "The heading rank is a page structure element needed for SEO, calculated by SmartCMS. To change the structure of the page you can choose another rank, following subtitles will be recalculated automatically.",
                                                                                                 fieldId:
                                                                                                     "headingRank",
                                                                                                 id: "galleryTitleHeadingRank",
@@ -2110,8 +2047,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                         name: "object"
                                                                                     },
                                                                                     label: "Show on all images",
-                                                                                    helpText:
-                                                                                        "You can switch off/on the magnifier and/or the download icon, but only for all images - and not for videos",
+                                                                                    help: "You can switch off/on the magnifier and/or the download icon, but only for all images - and not for videos",
                                                                                     fieldId:
                                                                                         "showOnAllImages",
                                                                                     id: "galleryShowOnAllImage",
@@ -2161,13 +2097,12 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 {
                                                                                     type: "object",
                                                                                     validation: [],
-                                                                                    multipleValues: true,
+                                                                                    list: true,
                                                                                     renderer: {
                                                                                         name: "asset-input"
                                                                                     },
                                                                                     label: "Media",
-                                                                                    helpText:
-                                                                                        "The ratio is free for single images. For multiple images the ratio is fixed at 16:9.",
+                                                                                    help: "The ratio is free for single images. For multiple images the ratio is fixed at 16:9.",
                                                                                     fieldId:
                                                                                         "galleryMedia",
                                                                                     id: "galleryMedia",
@@ -2198,10 +2133,9 @@ export const pageModel = createPrivateModelPlugin({
                                                                                         fields: [
                                                                                             {
                                                                                                 type: "file",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 label: "File",
-                                                                                                helpText:
-                                                                                                    "How to change the start image of a video please see http://acme.com/dam FAQ",
+                                                                                                help: "How to change the start image of a video please see http://acme.com/dam FAQ",
                                                                                                 fieldId:
                                                                                                     "file",
                                                                                                 id: "galleryMediaFile",
@@ -2210,14 +2144,13 @@ export const pageModel = createPrivateModelPlugin({
                                                                                             },
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 renderer:
                                                                                                     {
                                                                                                         name: "text-input"
                                                                                                     },
                                                                                                 label: "Alternative text",
-                                                                                                helpText:
-                                                                                                    "If not selected then image is marked as decorative. Please refer to Showroom, topic “WCAG” to learn more.",
+                                                                                                help: "If not selected then image is marked as decorative. Please refer to Showroom, topic “WCAG” to learn more.",
                                                                                                 fieldId:
                                                                                                     "altText",
                                                                                                 id: "galleryMediaAltText",
@@ -2226,14 +2159,13 @@ export const pageModel = createPrivateModelPlugin({
                                                                                             },
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 renderer:
                                                                                                     {
                                                                                                         name: "slug-field-input"
                                                                                                     },
                                                                                                 label: "SEO name",
-                                                                                                helpText:
-                                                                                                    "Example: My selfie will be delivered as my-selfie.jpg. Used for SEO.",
+                                                                                                help: "Example: My selfie will be delivered as my-selfie.jpg. Used for SEO.",
                                                                                                 fieldId:
                                                                                                     "seoName",
                                                                                                 id: "galleryMediaSeoName",
@@ -2242,14 +2174,13 @@ export const pageModel = createPrivateModelPlugin({
                                                                                             },
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 renderer:
                                                                                                     {
                                                                                                         name: "text-input"
                                                                                                     },
                                                                                                 label: "Caption",
-                                                                                                helpText:
-                                                                                                    "Text length is max. 300 characters incl. spaces.",
+                                                                                                help: "Text length is max. 300 characters incl. spaces.",
                                                                                                 fieldId:
                                                                                                     "caption",
                                                                                                 id: "galleryMediaCaption",
@@ -2270,14 +2201,13 @@ export const pageModel = createPrivateModelPlugin({
                                                                                             },
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 renderer:
                                                                                                     {
                                                                                                         name: "text-input"
                                                                                                     },
                                                                                                 label: "Caption link",
-                                                                                                helpText:
-                                                                                                    "The link affects the complete text, not single words.",
+                                                                                                help: "The link affects the complete text, not single words.",
                                                                                                 fieldId:
                                                                                                     "captionLink",
                                                                                                 id: "galleryMediaCaptionLink",
@@ -2293,8 +2223,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                                         name: "text-and-copy-input"
                                                                                                     },
                                                                                                 label: "Crop values",
-                                                                                                helpText:
-                                                                                                    "The value used to crop this media.",
+                                                                                                help: "The value used to crop this media.",
                                                                                                 fieldId:
                                                                                                     "crop",
                                                                                                 id: "galleryMediaCrop",
@@ -2335,8 +2264,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                         name: "text-input"
                                                                                     },
                                                                                     label: "FragmentUUID",
-                                                                                    helpText:
-                                                                                        "The technical ID of this element.",
+                                                                                    help: "The technical ID of this element.",
                                                                                     fieldId: "uuid",
                                                                                     id: "galleryUuid",
                                                                                     storageId:
@@ -2365,7 +2293,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 {
                                                                                     type: "object",
                                                                                     validation: [],
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     renderer: {
                                                                                         name: "asset-input"
                                                                                     },
@@ -2388,10 +2316,9 @@ export const pageModel = createPrivateModelPlugin({
                                                                                         fields: [
                                                                                             {
                                                                                                 type: "file",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 label: "File",
-                                                                                                helpText:
-                                                                                                    "How to change the start image of a video please see http://acme.com/dam FAQ",
+                                                                                                help: "How to change the start image of a video please see http://acme.com/dam FAQ",
                                                                                                 fieldId:
                                                                                                     "file",
                                                                                                 id: "contentTeaserRowMediaFile",
@@ -2400,14 +2327,13 @@ export const pageModel = createPrivateModelPlugin({
                                                                                             },
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 renderer:
                                                                                                     {
                                                                                                         name: "text-input"
                                                                                                     },
                                                                                                 label: "Alternative text",
-                                                                                                helpText:
-                                                                                                    "If not selected then image is marked as decorative. Please refer to Showroom, topic “WCAG” to learn more.",
+                                                                                                help: "If not selected then image is marked as decorative. Please refer to Showroom, topic “WCAG” to learn more.",
                                                                                                 fieldId:
                                                                                                     "altText",
                                                                                                 id: "contentTeaserRowMediaAltText",
@@ -2416,14 +2342,13 @@ export const pageModel = createPrivateModelPlugin({
                                                                                             },
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 renderer:
                                                                                                     {
                                                                                                         name: "slug-field-input"
                                                                                                     },
                                                                                                 label: "SEO name",
-                                                                                                helpText:
-                                                                                                    "Example: My selfie will be delivered as my-selfie.jpg. Used for SEO.",
+                                                                                                help: "Example: My selfie will be delivered as my-selfie.jpg. Used for SEO.",
                                                                                                 fieldId:
                                                                                                     "seoName",
                                                                                                 id: "contentTeaserRowMediaSeoName",
@@ -2439,8 +2364,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                                         name: "text-and-copy-input"
                                                                                                     },
                                                                                                 label: "Crop values",
-                                                                                                helpText:
-                                                                                                    "The value used to crop this media.",
+                                                                                                help: "The value used to crop this media.",
                                                                                                 fieldId:
                                                                                                     "crop",
                                                                                                 id: "contentTeaserRowMediaCrop",
@@ -2471,7 +2395,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 {
                                                                                     type: "object",
                                                                                     validation: [],
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     renderer: {
                                                                                         name: "object"
                                                                                     },
@@ -2485,14 +2409,13 @@ export const pageModel = createPrivateModelPlugin({
                                                                                         fields: [
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 renderer:
                                                                                                     {
                                                                                                         name: "enhanced-text-input"
                                                                                                     },
                                                                                                 label: "Title",
-                                                                                                helpText:
-                                                                                                    "If teaser title and text missing, the teaser will not be delivered.",
+                                                                                                help: "If teaser title and text missing, the teaser will not be delivered.",
                                                                                                 fieldId:
                                                                                                     "title",
                                                                                                 id: "contentTeaserRowTeaserTitleTitle",
@@ -2506,7 +2429,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                             },
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 validation:
                                                                                                     [],
                                                                                                 predefinedValues:
@@ -2545,8 +2468,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                                         name: "select-box"
                                                                                                     },
                                                                                                 label: "Heading Rank",
-                                                                                                helpText:
-                                                                                                    "The heading rank is a page structure element needed for SEO, calculated by SmartCMS. To change the structure of the page you can choose another rank, following subtitles will be recalculated automatically.",
+                                                                                                help: "The heading rank is a page structure element needed for SEO, calculated by SmartCMS. To change the structure of the page you can choose another rank, following subtitles will be recalculated automatically.",
                                                                                                 fieldId:
                                                                                                     "headingRank",
                                                                                                 id: "contentTeaserRowTeaserTitleHeadingRank",
@@ -2569,8 +2491,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                         name: "enhanced-lexical-text-input"
                                                                                     },
                                                                                     label: "Text",
-                                                                                    helpText:
-                                                                                        "For a good user experience it is recommended not to use more than 600 characters incl. spaces. If there is the need for more, it is recommended to split the content into separate elements.",
+                                                                                    help: "For a good user experience it is recommended not to use more than 600 characters incl. spaces. If there is the need for more, it is recommended to split the content into separate elements.",
                                                                                     fieldId: "text",
                                                                                     id: "contentTeaserRowRichText",
                                                                                     storageId:
@@ -2579,13 +2500,12 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 {
                                                                                     type: "object",
                                                                                     validation: [],
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     renderer: {
                                                                                         name: "object"
                                                                                     },
                                                                                     label: "Button",
-                                                                                    helpText:
-                                                                                        "The button hierarchy and design is pre-defined per component. See the showroom for details.",
+                                                                                    help: "The button hierarchy and design is pre-defined per component. See the showroom for details.",
                                                                                     fieldId:
                                                                                         "button",
                                                                                     id: "contentTeaserRowButton",
@@ -2597,14 +2517,13 @@ export const pageModel = createPrivateModelPlugin({
                                                                                                 type: "text",
                                                                                                 validation:
                                                                                                     [],
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 renderer:
                                                                                                     {
                                                                                                         name: "text-input"
                                                                                                     },
                                                                                                 label: "Button Text",
-                                                                                                helpText:
-                                                                                                    "About 30 characters per row, if delivered on desktop. On mobile devices please calculate with ~20.",
+                                                                                                help: "About 30 characters per row, if delivered on desktop. On mobile devices please calculate with ~20.",
                                                                                                 fieldId:
                                                                                                     "buttonText",
                                                                                                 id: "contentTeaserRowButtonText",
@@ -2621,8 +2540,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                                 fieldId:
                                                                                                     "linkpicker",
                                                                                                 id: "contentTeaserRowButtonLink",
-                                                                                                helpText:
-                                                                                                    "If link target is SmartCMS internal, create link relative via <Picker> to avoid 404 errors.",
+                                                                                                help: "If link target is SmartCMS internal, create link relative via <Picker> to avoid 404 errors.",
                                                                                                 storageId:
                                                                                                     "text@contentTeaserRowButtonLink"
                                                                                             }
@@ -2638,7 +2556,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 {
                                                                                     type: "object",
                                                                                     validation: [],
-                                                                                    multipleValues: true,
+                                                                                    list: true,
                                                                                     renderer: {
                                                                                         name: "objects"
                                                                                     },
@@ -2652,7 +2570,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                         fields: [
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 validation:
                                                                                                     [
                                                                                                         {
@@ -2666,8 +2584,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                                         name: "text-input"
                                                                                                     },
                                                                                                 label: "Link Text",
-                                                                                                helpText:
-                                                                                                    "Mandatory. For SEO avoid terms like “More” or “Click here”.",
+                                                                                                help: "Mandatory. For SEO avoid terms like “More” or “Click here”.",
                                                                                                 fieldId:
                                                                                                     "text",
                                                                                                 id: "contentTeaserRowLinkListText",
@@ -2692,8 +2609,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                                 fieldId:
                                                                                                     "linkpicker",
                                                                                                 id: "contentTeaserRowLinkListLink",
-                                                                                                helpText:
-                                                                                                    "If link is SmartCMS internal, create link relative via <Picker> to avoid 404 errors",
+                                                                                                help: "If link is SmartCMS internal, create link relative via <Picker> to avoid 404 errors",
                                                                                                 storageId:
                                                                                                     "text@contentTeaserRowLinkListLink"
                                                                                             }
@@ -2715,8 +2631,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                         name: "text-input"
                                                                                     },
                                                                                     label: "FragmentUUID",
-                                                                                    helpText:
-                                                                                        "The technical ID of this element.",
+                                                                                    help: "The technical ID of this element.",
                                                                                     fieldId: "uuid",
                                                                                     id: "contentTeaserRowUuid",
                                                                                     storageId:
@@ -2757,7 +2672,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 {
                                                                                     type: "object",
                                                                                     validation: [],
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     renderer: {
                                                                                         name: "object"
                                                                                     },
@@ -2771,14 +2686,13 @@ export const pageModel = createPrivateModelPlugin({
                                                                                         fields: [
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 renderer:
                                                                                                     {
                                                                                                         name: "enhanced-text-input"
                                                                                                     },
                                                                                                 label: "Title",
-                                                                                                helpText:
-                                                                                                    "Titles aren’t delivered in Accordion/Tab components for UX reasons.",
+                                                                                                help: "Titles aren’t delivered in Accordion/Tab components for UX reasons.",
                                                                                                 fieldId:
                                                                                                     "title",
                                                                                                 id: "teaserRoutingTitleTitle",
@@ -2792,7 +2706,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                             },
                                                                                             {
                                                                                                 type: "text",
-                                                                                                multipleValues: false,
+                                                                                                list: false,
                                                                                                 validation:
                                                                                                     [],
                                                                                                 predefinedValues:
@@ -2831,8 +2745,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                                         name: "select-box"
                                                                                                     },
                                                                                                 label: "Heading Rank",
-                                                                                                helpText:
-                                                                                                    "The heading rank is a page structure element needed for SEO, calculated by SmartCMS. To change the structure of the page you can choose another rank, following subtitles will be recalculated automatically.",
+                                                                                                help: "The heading rank is a page structure element needed for SEO, calculated by SmartCMS. To change the structure of the page you can choose another rank, following subtitles will be recalculated automatically.",
                                                                                                 fieldId:
                                                                                                     "headingRank",
                                                                                                 id: "teaserRoutingTitleHeadingRank",
@@ -2855,8 +2768,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                         name: "text-input"
                                                                                     },
                                                                                     label: "FragmentUUID",
-                                                                                    helpText:
-                                                                                        "The technical ID of this element.",
+                                                                                    help: "The technical ID of this element.",
                                                                                     fieldId: "uuid",
                                                                                     id: "teaserRoutingUuid",
                                                                                     storageId:
@@ -2869,8 +2781,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                         name: "select-box"
                                                                                     },
                                                                                     label: "Layout",
-                                                                                    helpText:
-                                                                                        "When “with flyout” is selected, a flyout will only appear if in the flyout is in minimum one teaser: if there’s only the flyout title and/or text, it’s not shown due to UX reasons. In this case please use Accordion/Tab element.",
+                                                                                    help: "When “with flyout” is selected, a flyout will only appear if in the flyout is in minimum one teaser: if there’s only the flyout title and/or text, it’s not shown due to UX reasons. In this case please use Accordion/Tab element.",
                                                                                     predefinedValues:
                                                                                         {
                                                                                             enabled: true,
@@ -2937,7 +2848,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                     renderer: {
                                                                                         name: "dynamicZone"
                                                                                     },
-                                                                                    multipleValues: true,
+                                                                                    list: true,
                                                                                     settings: {
                                                                                         templates: [
                                                                                             {
@@ -2955,7 +2866,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                                         type: "object",
                                                                                                         validation:
                                                                                                             [],
-                                                                                                        multipleValues: false,
+                                                                                                        list: false,
                                                                                                         renderer:
                                                                                                             {
                                                                                                                 name: "asset-input"
@@ -2980,10 +2891,9 @@ export const pageModel = createPrivateModelPlugin({
                                                                                                                 fields: [
                                                                                                                     {
                                                                                                                         type: "file",
-                                                                                                                        multipleValues: false,
+                                                                                                                        list: false,
                                                                                                                         label: "File",
-                                                                                                                        helpText:
-                                                                                                                            "How to change the start image of a video please see http://acme.com/dam FAQ",
+                                                                                                                        help: "How to change the start image of a video please see http://acme.com/dam FAQ",
                                                                                                                         fieldId:
                                                                                                                             "file",
                                                                                                                         id: "teaserRoutingCardMediaFile",
@@ -2992,14 +2902,13 @@ export const pageModel = createPrivateModelPlugin({
                                                                                                                     },
                                                                                                                     {
                                                                                                                         type: "text",
-                                                                                                                        multipleValues: false,
+                                                                                                                        list: false,
                                                                                                                         renderer:
                                                                                                                             {
                                                                                                                                 name: "text-input"
                                                                                                                             },
                                                                                                                         label: "Alternative text",
-                                                                                                                        helpText:
-                                                                                                                            "If not selected then image is marked as decorative. Please refer to Showroom, topic “WCAG” to learn more.",
+                                                                                                                        help: "If not selected then image is marked as decorative. Please refer to Showroom, topic “WCAG” to learn more.",
                                                                                                                         fieldId:
                                                                                                                             "altText",
                                                                                                                         id: "teaserRoutingCardMediaAltText",
@@ -3008,14 +2917,13 @@ export const pageModel = createPrivateModelPlugin({
                                                                                                                     },
                                                                                                                     {
                                                                                                                         type: "text",
-                                                                                                                        multipleValues: false,
+                                                                                                                        list: false,
                                                                                                                         renderer:
                                                                                                                             {
                                                                                                                                 name: "slug-field-input"
                                                                                                                             },
                                                                                                                         label: "SEO name",
-                                                                                                                        helpText:
-                                                                                                                            "Example: My selfie will be delivered as my-selfie.jpg. Used for SEO.",
+                                                                                                                        help: "Example: My selfie will be delivered as my-selfie.jpg. Used for SEO.",
                                                                                                                         fieldId:
                                                                                                                             "seoName",
                                                                                                                         id: "teaserRoutingCardMediaSeoName",
@@ -3031,8 +2939,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                                                                 name: "text-and-copy-input"
                                                                                                                             },
                                                                                                                         label: "Crop values",
-                                                                                                                        helpText:
-                                                                                                                            "The value used to crop this media.",
+                                                                                                                        help: "The value used to crop this media.",
                                                                                                                         fieldId:
                                                                                                                             "crop",
                                                                                                                         id: "teaserRoutingCardMediaCrop",
@@ -3104,14 +3011,13 @@ export const pageModel = createPrivateModelPlugin({
                                                                                                                         "Value is required."
                                                                                                                 }
                                                                                                             ],
-                                                                                                        multipleValues: false,
+                                                                                                        list: false,
                                                                                                         renderer:
                                                                                                             {
                                                                                                                 name: "enhanced-text-input"
                                                                                                             },
                                                                                                         label: "Teaser title",
-                                                                                                        helpText:
-                                                                                                            "If empty, teaser title from relative linked page teaser content will be shown. Max. 70 characters recommended.",
+                                                                                                        help: "If empty, teaser title from relative linked page teaser content will be shown. Max. 70 characters recommended.",
                                                                                                         fieldId:
                                                                                                             "title",
                                                                                                         id: "teaserRoutingCardTitle",
@@ -3127,14 +3033,13 @@ export const pageModel = createPrivateModelPlugin({
                                                                                                     },
                                                                                                     {
                                                                                                         type: "text",
-                                                                                                        multipleValues: false,
+                                                                                                        list: false,
                                                                                                         renderer:
                                                                                                             {
                                                                                                                 name: "enhanced-text-input"
                                                                                                             },
                                                                                                         label: "Text",
-                                                                                                        helpText:
-                                                                                                            "It's recommended to not exceed a length of 150 characters.",
+                                                                                                        help: "It's recommended to not exceed a length of 150 characters.",
                                                                                                         fieldId:
                                                                                                             "text",
                                                                                                         id: "teaserRoutingCardText",
@@ -3175,8 +3080,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                                         fieldId:
                                                                                                             "linkpicker",
                                                                                                         id: "teaserRoutingCardLink",
-                                                                                                        helpText:
-                                                                                                            "If link is SmartCMS internal, create link relative via <Picker> to avoid 404 errors",
+                                                                                                        help: "If link is SmartCMS internal, create link relative via <Picker> to avoid 404 errors",
                                                                                                         storageId:
                                                                                                             "text@teaserRoutingCardLink"
                                                                                                     },
@@ -3189,8 +3093,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                                                 name: "text-input"
                                                                                                             },
                                                                                                         label: "FragmentUUID",
-                                                                                                        helpText:
-                                                                                                            "The technical ID of this element.",
+                                                                                                        help: "The technical ID of this element.",
                                                                                                         fieldId:
                                                                                                             "uuid",
                                                                                                         id: "teaserRoutingCardUuid",
@@ -3222,8 +3125,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                         ]
                                                                                     },
                                                                                     label: "Teaser Card",
-                                                                                    helpText:
-                                                                                        "Select one or more of the allowed elements or fragments. Be aware the title of the elements isn’t delivered live.",
+                                                                                    help: "Select one or more of the allowed elements or fragments. Be aware the title of the elements isn’t delivered live.",
                                                                                     fieldId:
                                                                                         "teaserRoutingCards",
                                                                                     id: "teaserRoutingCards",
@@ -3250,8 +3152,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                     ]
                                                                 },
                                                                 label: "Split content",
-                                                                helpText:
-                                                                    "Select one or more of the allowed elements or fragments. Be aware the title of the elements isn’t delivered live.",
+                                                                help: "Select one or more of the allowed elements or fragments. Be aware the title of the elements isn’t delivered live.",
                                                                 fieldId: "splitContent",
                                                                 id: "accordionTabSplitContent",
                                                                 storageId:
@@ -3271,7 +3172,7 @@ export const pageModel = createPrivateModelPlugin({
                                                         name: "text-input"
                                                     },
                                                     label: "FragmentUUID",
-                                                    helpText: "The technical ID of this element.",
+                                                    help: "The technical ID of this element.",
                                                     fieldId: "uuid",
                                                     id: "accordionTabUUID",
                                                     storageId: "text@accordionTabUUID"
@@ -3325,7 +3226,7 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: false,
+                                                    list: false,
                                                     renderer: {
                                                         name: "object"
                                                     },
@@ -3337,13 +3238,12 @@ export const pageModel = createPrivateModelPlugin({
                                                         fields: [
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "enhanced-text-input"
                                                                 },
                                                                 label: "Title",
-                                                                helpText:
-                                                                    "Title is not shown in the frontend Accordion/Tab",
+                                                                help: "Title is not shown in the frontend Accordion/Tab",
                                                                 fieldId: "title",
                                                                 id: "contentTeaserRowTitleTitle",
                                                                 storageId:
@@ -3354,7 +3254,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 validation: [],
                                                                 predefinedValues: {
                                                                     enabled: true,
@@ -3390,8 +3290,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                     name: "select-box"
                                                                 },
                                                                 label: "Heading Rank",
-                                                                helpText:
-                                                                    "The heading rank is a page structure element needed for SEO, calculated by SmartCMS. To change the structure of the page you can choose another rank, following subtitles will be recalculated automatically.",
+                                                                help: "The heading rank is a page structure element needed for SEO, calculated by SmartCMS. To change the structure of the page you can choose another rank, following subtitles will be recalculated automatically.",
                                                                 fieldId: "headingRank",
                                                                 id: "contentTeaserRowTitleHeadingRank",
                                                                 storageId:
@@ -3413,8 +3312,7 @@ export const pageModel = createPrivateModelPlugin({
                                                         name: "object"
                                                     },
                                                     label: "Show on all images",
-                                                    helpText:
-                                                        "You can switch off/on the magnifier and/or the download icon, but only for all images - and not for videos",
+                                                    help: "You can switch off/on the magnifier and/or the download icon, but only for all images - and not for videos",
                                                     fieldId: "showOnAllImages",
                                                     id: "contentTeaserRowShowOnAllImage",
                                                     storageId: "object@contentTeaserShowOnAllImage",
@@ -3459,7 +3357,7 @@ export const pageModel = createPrivateModelPlugin({
                                                     renderer: {
                                                         name: "dynamicZone"
                                                     },
-                                                    multipleValues: true,
+                                                    list: true,
                                                     settings: {
                                                         templates: [
                                                             {
@@ -3474,7 +3372,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                     {
                                                                         type: "object",
                                                                         validation: [],
-                                                                        multipleValues: false,
+                                                                        list: false,
                                                                         renderer: {
                                                                             name: "asset-input"
                                                                         },
@@ -3495,10 +3393,9 @@ export const pageModel = createPrivateModelPlugin({
                                                                             fields: [
                                                                                 {
                                                                                     type: "file",
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     label: "File",
-                                                                                    helpText:
-                                                                                        "How to change the start image of a video please see http://acme.com/dam FAQ",
+                                                                                    help: "How to change the start image of a video please see http://acme.com/dam FAQ",
                                                                                     fieldId: "file",
                                                                                     id: "contentTeaserRowMediaFile",
                                                                                     storageId:
@@ -3506,13 +3403,12 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 },
                                                                                 {
                                                                                     type: "text",
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     renderer: {
                                                                                         name: "text-input"
                                                                                     },
                                                                                     label: "Alternative text",
-                                                                                    helpText:
-                                                                                        "If not selected then image is marked as decorative. Please refer to Showroom, topic “WCAG” to learn more.",
+                                                                                    help: "If not selected then image is marked as decorative. Please refer to Showroom, topic “WCAG” to learn more.",
                                                                                     fieldId:
                                                                                         "altText",
                                                                                     id: "contentTeaserRowMediaAltText",
@@ -3521,13 +3417,12 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 },
                                                                                 {
                                                                                     type: "text",
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     renderer: {
                                                                                         name: "slug-field-input"
                                                                                     },
                                                                                     label: "SEO name",
-                                                                                    helpText:
-                                                                                        "Example: My selfie will be delivered as my-selfie.jpg. Used for SEO.",
+                                                                                    help: "Example: My selfie will be delivered as my-selfie.jpg. Used for SEO.",
                                                                                     fieldId:
                                                                                         "seoName",
                                                                                     id: "contentTeaserRowMediaSeoName",
@@ -3541,8 +3436,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                         name: "text-and-copy-input"
                                                                                     },
                                                                                     label: "Crop values",
-                                                                                    helpText:
-                                                                                        "The value used to crop this media.",
+                                                                                    help: "The value used to crop this media.",
                                                                                     fieldId: "crop",
                                                                                     id: "contentTeaserRowMediaCrop",
                                                                                     storageId:
@@ -3571,7 +3465,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                     {
                                                                         type: "object",
                                                                         validation: [],
-                                                                        multipleValues: false,
+                                                                        list: false,
                                                                         renderer: {
                                                                             name: "object"
                                                                         },
@@ -3584,13 +3478,12 @@ export const pageModel = createPrivateModelPlugin({
                                                                             fields: [
                                                                                 {
                                                                                     type: "text",
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     renderer: {
                                                                                         name: "enhanced-text-input"
                                                                                     },
                                                                                     label: "Title",
-                                                                                    helpText:
-                                                                                        "If teaser title and text missing, the teaser will not be delivered.",
+                                                                                    help: "If teaser title and text missing, the teaser will not be delivered.",
                                                                                     fieldId:
                                                                                         "title",
                                                                                     id: "contentTeaserRowTeaserTitleTitle",
@@ -3603,7 +3496,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 },
                                                                                 {
                                                                                     type: "text",
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     validation: [],
                                                                                     predefinedValues:
                                                                                         {
@@ -3640,8 +3533,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                         name: "select-box"
                                                                                     },
                                                                                     label: "Heading Rank",
-                                                                                    helpText:
-                                                                                        "The heading rank is a page structure element needed for SEO, calculated by SmartCMS. To change the structure of the page you can choose another rank, following subtitles will be recalculated automatically.",
+                                                                                    help: "The heading rank is a page structure element needed for SEO, calculated by SmartCMS. To change the structure of the page you can choose another rank, following subtitles will be recalculated automatically.",
                                                                                     fieldId:
                                                                                         "headingRank",
                                                                                     id: "contentTeaserRowTeaserTitleHeadingRank",
@@ -3664,8 +3556,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                             name: "enhanced-lexical-text-input"
                                                                         },
                                                                         label: "Text",
-                                                                        helpText:
-                                                                            "For a good user experience it is recommended not to use more than 600 characters incl. spaces. If there is the need for more, it is recommended to split the content into separate elements.",
+                                                                        help: "For a good user experience it is recommended not to use more than 600 characters incl. spaces. If there is the need for more, it is recommended to split the content into separate elements.",
                                                                         fieldId: "text",
                                                                         id: "contentTeaserRowRichText",
                                                                         storageId:
@@ -3674,13 +3565,12 @@ export const pageModel = createPrivateModelPlugin({
                                                                     {
                                                                         type: "object",
                                                                         validation: [],
-                                                                        multipleValues: false,
+                                                                        list: false,
                                                                         renderer: {
                                                                             name: "object"
                                                                         },
                                                                         label: "Button",
-                                                                        helpText:
-                                                                            "The button hierarchy and design is pre-defined per component. See the showroom for details.",
+                                                                        help: "The button hierarchy and design is pre-defined per component. See the showroom for details.",
                                                                         fieldId: "button",
                                                                         id: "contentTeaserRowButton",
                                                                         storageId:
@@ -3690,13 +3580,12 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 {
                                                                                     type: "text",
                                                                                     validation: [],
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     renderer: {
                                                                                         name: "text-input"
                                                                                     },
                                                                                     label: "Button Text",
-                                                                                    helpText:
-                                                                                        "About 30 characters per row, if delivered on desktop. On mobile devices please calculate with ~20.",
+                                                                                    help: "About 30 characters per row, if delivered on desktop. On mobile devices please calculate with ~20.",
                                                                                     fieldId:
                                                                                         "buttonText",
                                                                                     id: "contentTeaserRowButtonText",
@@ -3712,8 +3601,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                     fieldId:
                                                                                         "linkpicker",
                                                                                     id: "contentTeaserRowButtonLink",
-                                                                                    helpText:
-                                                                                        "If link target is SmartCMS internal, create link relative via <Picker> to avoid 404 errors.",
+                                                                                    help: "If link target is SmartCMS internal, create link relative via <Picker> to avoid 404 errors.",
                                                                                     storageId:
                                                                                         "text@contentTeaserRowButtonLink"
                                                                                 }
@@ -3729,7 +3617,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                     {
                                                                         type: "object",
                                                                         validation: [],
-                                                                        multipleValues: true,
+                                                                        list: true,
                                                                         renderer: {
                                                                             name: "objects"
                                                                         },
@@ -3742,7 +3630,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                             fields: [
                                                                                 {
                                                                                     type: "text",
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     validation: [
                                                                                         {
                                                                                             name: "required",
@@ -3754,8 +3642,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                         name: "text-input"
                                                                                     },
                                                                                     label: "Link Text",
-                                                                                    helpText:
-                                                                                        "Mandatory. For SEO avoid terms like “More” or “Click here”.",
+                                                                                    help: "Mandatory. For SEO avoid terms like “More” or “Click here”.",
                                                                                     fieldId: "text",
                                                                                     id: "contentTeaserRowLinkListText",
                                                                                     storageId:
@@ -3777,8 +3664,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                     fieldId:
                                                                                         "linkpicker",
                                                                                     id: "contentTeaserRowLinkListLink",
-                                                                                    helpText:
-                                                                                        "If link is SmartCMS internal, create link relative via <Picker> to avoid 404 errors",
+                                                                                    help: "If link is SmartCMS internal, create link relative via <Picker> to avoid 404 errors",
                                                                                     storageId:
                                                                                         "text@contentTeaserRowLinkListLink"
                                                                                 }
@@ -3800,8 +3686,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                             name: "text-input"
                                                                         },
                                                                         label: "FragmentUUID",
-                                                                        helpText:
-                                                                            "The technical ID of this element.",
+                                                                        help: "The technical ID of this element.",
                                                                         fieldId: "uuid",
                                                                         id: "contentTeaserRowUuid",
                                                                         storageId:
@@ -3820,8 +3705,7 @@ export const pageModel = createPrivateModelPlugin({
                                                         ]
                                                     },
                                                     label: "Cards content",
-                                                    helpText:
-                                                        "Select one or more of the allowed elements or fragments. Be aware the title of the elements isn’t delivered live.",
+                                                    help: "Select one or more of the allowed elements or fragments. Be aware the title of the elements isn’t delivered live.",
                                                     fieldId: "contentTeaserRowCards",
                                                     id: "contentTeaserRowCards",
                                                     storageId: "text@contentTeaserRowCards"
@@ -3833,7 +3717,7 @@ export const pageModel = createPrivateModelPlugin({
                                                         name: "text-input"
                                                     },
                                                     label: "FragmentUUID",
-                                                    helpText: "The technical ID of this element.",
+                                                    help: "The technical ID of this element.",
                                                     fieldId: "uuid",
                                                     id: "contentTeaserRowUuid",
                                                     storageId: "text@contentTeaserRowUuid"
@@ -3859,7 +3743,7 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: false,
+                                                    list: false,
                                                     renderer: {
                                                         name: "object"
                                                     },
@@ -3871,13 +3755,12 @@ export const pageModel = createPrivateModelPlugin({
                                                         fields: [
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "enhanced-text-input"
                                                                 },
                                                                 label: "Title",
-                                                                helpText:
-                                                                    "Titles aren’t delivered in Accordion/Tab components for UX reasons.",
+                                                                help: "Titles aren’t delivered in Accordion/Tab components for UX reasons.",
                                                                 fieldId: "title",
                                                                 id: "galleryTitleTitle",
                                                                 storageId: "text@galleryTitleTitle",
@@ -3887,7 +3770,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 validation: [],
                                                                 predefinedValues: {
                                                                     enabled: true,
@@ -3923,8 +3806,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                     name: "select-box"
                                                                 },
                                                                 label: "Heading Rank",
-                                                                helpText:
-                                                                    "The heading rank is a page structure element needed for SEO, calculated by SmartCMS. To change the structure of the page you can choose another rank, following subtitles will be recalculated automatically.",
+                                                                help: "The heading rank is a page structure element needed for SEO, calculated by SmartCMS. To change the structure of the page you can choose another rank, following subtitles will be recalculated automatically.",
                                                                 fieldId: "headingRank",
                                                                 id: "galleryTitleHeadingRank",
                                                                 storageId:
@@ -3946,8 +3828,7 @@ export const pageModel = createPrivateModelPlugin({
                                                         name: "object"
                                                     },
                                                     label: "Show on all images",
-                                                    helpText:
-                                                        "You can switch off/on the magnifier and/or the download icon, but only for all images - and not for videos",
+                                                    help: "You can switch off/on the magnifier and/or the download icon, but only for all images - and not for videos",
                                                     fieldId: "showOnAllImages",
                                                     id: "galleryShowOnAllImage",
                                                     storageId: "object@galleryShowOnAllImage",
@@ -3988,13 +3869,12 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: true,
+                                                    list: true,
                                                     renderer: {
                                                         name: "asset-input"
                                                     },
                                                     label: "Media",
-                                                    helpText:
-                                                        "The ratio is free for single images. For multiple images the ratio is fixed at 16:9.",
+                                                    help: "The ratio is free for single images. For multiple images the ratio is fixed at 16:9.",
                                                     fieldId: "galleryMedia",
                                                     id: "galleryMedia",
                                                     storageId: "object@galleryMedia",
@@ -4011,23 +3891,21 @@ export const pageModel = createPrivateModelPlugin({
                                                         fields: [
                                                             {
                                                                 type: "file",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 label: "File",
-                                                                helpText:
-                                                                    "How to change the start image of a video please see http://acme.com/dam FAQ",
+                                                                help: "How to change the start image of a video please see http://acme.com/dam FAQ",
                                                                 fieldId: "file",
                                                                 id: "galleryMediaFile",
                                                                 storageId: "file@galleryMediaFile"
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "text-input"
                                                                 },
                                                                 label: "Alternative text",
-                                                                helpText:
-                                                                    "If not selected then image is marked as decorative. Please refer to Showroom, topic “WCAG” to learn more.",
+                                                                help: "If not selected then image is marked as decorative. Please refer to Showroom, topic “WCAG” to learn more.",
                                                                 fieldId: "altText",
                                                                 id: "galleryMediaAltText",
                                                                 storageId:
@@ -4035,13 +3913,12 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "slug-field-input"
                                                                 },
                                                                 label: "SEO name",
-                                                                helpText:
-                                                                    "Example: My selfie will be delivered as my-selfie.jpg. Used for SEO.",
+                                                                help: "Example: My selfie will be delivered as my-selfie.jpg. Used for SEO.",
                                                                 fieldId: "seoName",
                                                                 id: "galleryMediaSeoName",
                                                                 storageId:
@@ -4049,13 +3926,12 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "text-input"
                                                                 },
                                                                 label: "Caption",
-                                                                helpText:
-                                                                    "Text length is max. 300 characters incl. spaces.",
+                                                                help: "Text length is max. 300 characters incl. spaces.",
                                                                 fieldId: "caption",
                                                                 id: "galleryMediaCaption",
                                                                 storageId:
@@ -4073,13 +3949,12 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "text-input"
                                                                 },
                                                                 label: "Caption link",
-                                                                helpText:
-                                                                    "The link affects the complete text, not single words.",
+                                                                help: "The link affects the complete text, not single words.",
                                                                 fieldId: "captionLink",
                                                                 id: "galleryMediaCaptionLink",
                                                                 storageId:
@@ -4092,8 +3967,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                     name: "text-and-copy-input"
                                                                 },
                                                                 label: "Crop values",
-                                                                helpText:
-                                                                    "The value used to crop this media.",
+                                                                help: "The value used to crop this media.",
                                                                 fieldId: "crop",
                                                                 id: "galleryMediaCrop",
                                                                 storageId: "text@galleryMediaCrop",
@@ -4119,7 +3993,7 @@ export const pageModel = createPrivateModelPlugin({
                                                         name: "text-input"
                                                     },
                                                     label: "FragmentUUID",
-                                                    helpText: "The technical ID of this element.",
+                                                    help: "The technical ID of this element.",
                                                     fieldId: "uuid",
                                                     id: "galleryUuid",
                                                     storageId: "text@galleryUuid"
@@ -4146,8 +4020,7 @@ export const pageModel = createPrivateModelPlugin({
                                                     renderer: {
                                                         name: "select-box"
                                                     },
-                                                    helpText:
-                                                        "If single image, the ratio is free. For more than one it is set to 16:9.",
+                                                    help: "If single image, the ratio is free. For more than one it is set to 16:9.",
                                                     label: "Layout",
                                                     predefinedValues: {
                                                         enabled: true,
@@ -4174,7 +4047,7 @@ export const pageModel = createPrivateModelPlugin({
                                                         name: "text-input"
                                                     },
                                                     label: "FragmentUUID",
-                                                    helpText: "The technical ID of this element.",
+                                                    help: "The technical ID of this element.",
                                                     fieldId: "uuid",
                                                     id: "mrtUuid",
                                                     storageId: "text@mrtUuid"
@@ -4182,7 +4055,7 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: false,
+                                                    list: false,
                                                     renderer: {
                                                         name: "object"
                                                     },
@@ -4194,13 +4067,12 @@ export const pageModel = createPrivateModelPlugin({
                                                         fields: [
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "enhanced-text-input"
                                                                 },
                                                                 label: "Title",
-                                                                helpText:
-                                                                    "Titles aren’t delivered in Accordion/Tab components for UX reasons.",
+                                                                help: "Titles aren’t delivered in Accordion/Tab components for UX reasons.",
                                                                 fieldId: "title",
                                                                 id: "mrtTitleTitle",
                                                                 storageId: "text@mrtTitleTitle",
@@ -4210,7 +4082,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 validation: [],
                                                                 predefinedValues: {
                                                                     enabled: true,
@@ -4246,8 +4118,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                     name: "select-box"
                                                                 },
                                                                 label: "Heading Rank",
-                                                                helpText:
-                                                                    "The heading rank is a page structure element needed for SEO, calculated by SmartCMS. To change the structure of the page you can choose another rank, following subtitles will be recalculated automatically.",
+                                                                help: "The heading rank is a page structure element needed for SEO, calculated by SmartCMS. To change the structure of the page you can choose another rank, following subtitles will be recalculated automatically.",
                                                                 fieldId: "headingRank",
                                                                 id: "mrtTitleHeadingRank",
                                                                 storageId:
@@ -4265,7 +4136,7 @@ export const pageModel = createPrivateModelPlugin({
                                                         name: "text-input"
                                                     },
                                                     label: "Subtitle",
-                                                    helpText: "Plain text, max 150 characters.",
+                                                    help: "Plain text, max 150 characters.",
                                                     fieldId: "subtitle",
                                                     id: "mrtSubtitle",
                                                     storageId: "text@mrtSubtitle"
@@ -4277,8 +4148,7 @@ export const pageModel = createPrivateModelPlugin({
                                                         name: "enhanced-lexical-text-input"
                                                     },
                                                     label: "Text",
-                                                    helpText:
-                                                        "For a good user experience it is recommended not to use more than 600 characters incl. spaces. If there is the need for more, it is recommended to split the content into separate elements.",
+                                                    help: "For a good user experience it is recommended not to use more than 600 characters incl. spaces. If there is the need for more, it is recommended to split the content into separate elements.",
                                                     fieldId: "text",
                                                     id: "mrtRichText",
                                                     storageId: "rich-text@mrtRichText"
@@ -4286,13 +4156,12 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: true,
+                                                    list: true,
                                                     renderer: {
                                                         name: "asset-input"
                                                     },
                                                     label: "Media",
-                                                    helpText:
-                                                        "The ratio is free for single images. For multiple images the ratio is fixed at 16:9.",
+                                                    help: "The ratio is free for single images. For multiple images the ratio is fixed at 16:9.",
                                                     fieldId: "mrtMedia",
                                                     id: "mrtMedia",
                                                     storageId: "object@mrtMedia",
@@ -4308,49 +4177,45 @@ export const pageModel = createPrivateModelPlugin({
                                                         fields: [
                                                             {
                                                                 type: "file",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 label: "File",
-                                                                helpText:
-                                                                    "How to change the start image of a video please see http://acme.com/dam FAQ",
+                                                                help: "How to change the start image of a video please see http://acme.com/dam FAQ",
                                                                 fieldId: "file",
                                                                 id: "mrtMediaFile",
                                                                 storageId: "file@mrtMediaFile"
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "text-input"
                                                                 },
                                                                 label: "Alternative text",
-                                                                helpText:
-                                                                    "If not selected then image is marked as decorative. Please refer to Showroom, topic “WCAG” to learn more.",
+                                                                help: "If not selected then image is marked as decorative. Please refer to Showroom, topic “WCAG” to learn more.",
                                                                 fieldId: "altText",
                                                                 id: "mrtMediaAltText",
                                                                 storageId: "text@mrtMediaAltText"
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "slug-field-input"
                                                                 },
                                                                 label: "SEO name",
-                                                                helpText:
-                                                                    "Example: My selfie will be delivered as my-selfie.jpg. Used for SEO.",
+                                                                help: "Example: My selfie will be delivered as my-selfie.jpg. Used for SEO.",
                                                                 fieldId: "seoName",
                                                                 id: "mrtMediaSeoName",
                                                                 storageId: "text@mrtMediaSeoName"
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "text-input"
                                                                 },
                                                                 label: "Caption",
-                                                                helpText:
-                                                                    "Text length is max. 300 characters incl. spaces.",
+                                                                help: "Text length is max. 300 characters incl. spaces.",
                                                                 fieldId: "caption",
                                                                 id: "mrtMediaCaption",
                                                                 storageId: "text@mrtMediaCaption",
@@ -4367,13 +4232,12 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "text-input"
                                                                 },
                                                                 label: "Caption link",
-                                                                helpText:
-                                                                    "The link affects the complete text, not single words.",
+                                                                help: "The link affects the complete text, not single words.",
                                                                 fieldId: "captionLink",
                                                                 id: "mrtMediaCaptionLink",
                                                                 storageId:
@@ -4386,8 +4250,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                     name: "text-and-copy-input"
                                                                 },
                                                                 label: "Crop values",
-                                                                helpText:
-                                                                    "The value used to crop this media.",
+                                                                help: "The value used to crop this media.",
                                                                 fieldId: "crop",
                                                                 id: "mrtMediaCrop",
                                                                 storageId: "text@mrtMediaCrop",
@@ -4409,13 +4272,12 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: false,
+                                                    list: false,
                                                     renderer: {
                                                         name: "object"
                                                     },
                                                     label: "Button",
-                                                    helpText:
-                                                        "The button hierarchy and design is pre-defined per component. See the showroom for details.",
+                                                    help: "The button hierarchy and design is pre-defined per component. See the showroom for details.",
                                                     fieldId: "button",
                                                     id: "mrtButton",
                                                     storageId: "object@mrtButton",
@@ -4424,13 +4286,12 @@ export const pageModel = createPrivateModelPlugin({
                                                             {
                                                                 type: "text",
                                                                 validation: [],
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "text-input"
                                                                 },
                                                                 label: "Button Text",
-                                                                helpText:
-                                                                    "About 30 characters per row, if delivered on desktop. On mobile devices please calculate with ~20.",
+                                                                help: "About 30 characters per row, if delivered on desktop. On mobile devices please calculate with ~20.",
                                                                 fieldId: "buttonText",
                                                                 id: "mrtButtonText",
                                                                 storageId: "text@mrtButtonText"
@@ -4443,8 +4304,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                 label: "Button Link",
                                                                 fieldId: "linkpicker",
                                                                 id: "mrtButtonLink",
-                                                                helpText:
-                                                                    "If link target is SmartCMS internal, create link relative via <Picker> to avoid 404 errors.",
+                                                                help: "If link target is SmartCMS internal, create link relative via <Picker> to avoid 404 errors.",
                                                                 storageId: "text@mrtButtonLink"
                                                             }
                                                         ],
@@ -4454,7 +4314,7 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: true,
+                                                    list: true,
                                                     renderer: {
                                                         name: "objects"
                                                     },
@@ -4466,7 +4326,7 @@ export const pageModel = createPrivateModelPlugin({
                                                         fields: [
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 validation: [
                                                                     {
                                                                         name: "required",
@@ -4478,8 +4338,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                     name: "text-input"
                                                                 },
                                                                 label: "Link Text",
-                                                                helpText:
-                                                                    "Mandatory. For SEO avoid terms like “More” or “Click here”.",
+                                                                help: "Mandatory. For SEO avoid terms like “More” or “Click here”.",
                                                                 fieldId: "text",
                                                                 id: "mrtLinkListText",
                                                                 storageId: "text@mrtLinkListText"
@@ -4499,8 +4358,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                 label: "Link",
                                                                 fieldId: "linkpicker",
                                                                 id: "mrtLinkListLink",
-                                                                helpText:
-                                                                    "If link is SmartCMS internal, create link relative via <Picker> to avoid 404 errors",
+                                                                help: "If link is SmartCMS internal, create link relative via <Picker> to avoid 404 errors",
                                                                 storageId: "text@mrtLinkListLink"
                                                             }
                                                         ],
@@ -4533,7 +4391,7 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: false,
+                                                    list: false,
                                                     renderer: {
                                                         name: "object"
                                                     },
@@ -4545,13 +4403,12 @@ export const pageModel = createPrivateModelPlugin({
                                                         fields: [
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "enhanced-text-input"
                                                                 },
                                                                 label: "Title",
-                                                                helpText:
-                                                                    "Titles aren’t delivered in Accordion/Tab components for UX reasons.",
+                                                                help: "Titles aren’t delivered in Accordion/Tab components for UX reasons.",
                                                                 fieldId: "title",
                                                                 id: "quoteTitleTitle",
                                                                 storageId: "text@quoteTitleTitle",
@@ -4561,7 +4418,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 validation: [],
                                                                 predefinedValues: {
                                                                     enabled: true,
@@ -4597,8 +4454,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                     name: "select-box"
                                                                 },
                                                                 label: "Heading Rank",
-                                                                helpText:
-                                                                    "The heading rank is a page structure element needed for SEO, calculated by SmartCMS. To change the structure of the page you can choose another rank, following subtitles will be recalculated automatically.",
+                                                                help: "The heading rank is a page structure element needed for SEO, calculated by SmartCMS. To change the structure of the page you can choose another rank, following subtitles will be recalculated automatically.",
                                                                 fieldId: "headingRank",
                                                                 id: "quoteTitleHeadingRank",
                                                                 storageId:
@@ -4646,8 +4502,7 @@ export const pageModel = createPrivateModelPlugin({
                                                         name: "select-box"
                                                     },
                                                     label: "Focus On",
-                                                    helpText:
-                                                        "Which one should be in user’s focus: the image or the quote?",
+                                                    help: "Which one should be in user’s focus: the image or the quote?",
                                                     predefinedValues: {
                                                         enabled: true,
                                                         values: [
@@ -4672,7 +4527,7 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: false,
+                                                    list: false,
                                                     renderer: {
                                                         name: "asset-input"
                                                     },
@@ -4685,36 +4540,33 @@ export const pageModel = createPrivateModelPlugin({
                                                         fields: [
                                                             {
                                                                 type: "file",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 label: "File",
-                                                                helpText:
-                                                                    "How to change the start image of a video please see http://acme.com/dam FAQ",
+                                                                help: "How to change the start image of a video please see http://acme.com/dam FAQ",
                                                                 fieldId: "file",
                                                                 id: "quoteMediaFile",
                                                                 storageId: "file@quoteMediaFile"
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "text-input"
                                                                 },
                                                                 label: "Alternative text",
-                                                                helpText:
-                                                                    "If not selected then image is marked as decorative. Please refer to Showroom, topic “WCAG” to learn more.",
+                                                                help: "If not selected then image is marked as decorative. Please refer to Showroom, topic “WCAG” to learn more.",
                                                                 fieldId: "altText",
                                                                 id: "quoteMediaAltText",
                                                                 storageId: "text@quoteMediaAltText"
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "slug-field-input"
                                                                 },
                                                                 label: "SEO name",
-                                                                helpText:
-                                                                    "Example: My selfie will be delivered as my-selfie.jpg. Used for SEO.",
+                                                                help: "Example: My selfie will be delivered as my-selfie.jpg. Used for SEO.",
                                                                 fieldId: "seoName",
                                                                 id: "quoteMediaSeoName",
                                                                 storageId: "text@quoteMediaSeoName"
@@ -4726,8 +4578,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                     name: "text-and-copy-input"
                                                                 },
                                                                 label: "Crop values",
-                                                                helpText:
-                                                                    "The value used to crop this media.",
+                                                                help: "The value used to crop this media.",
                                                                 fieldId: "crop",
                                                                 id: "quoteMediaCrop",
                                                                 storageId: "text@quoteMediaCrop",
@@ -4755,8 +4606,7 @@ export const pageModel = createPrivateModelPlugin({
                                                     renderer: {
                                                         name: "enhanced-text-input"
                                                     },
-                                                    helpText:
-                                                        "The recommended length is 160 characters, as longer quotes are often not read by users.",
+                                                    help: "The recommended length is 160 characters, as longer quotes are often not read by users.",
                                                     label: "Quote",
                                                     fieldId: "quoteText",
                                                     id: "quoteText",
@@ -4772,8 +4622,7 @@ export const pageModel = createPrivateModelPlugin({
                                                     renderer: {
                                                         name: "enhanced-text-input"
                                                     },
-                                                    helpText:
-                                                        "It's recommended to not exceed a length of 160 characters.",
+                                                    help: "It's recommended to not exceed a length of 160 characters.",
                                                     label: "Source",
                                                     fieldId: "quoteSource",
                                                     id: "quoteSource",
@@ -4791,7 +4640,7 @@ export const pageModel = createPrivateModelPlugin({
                                                         name: "text-input"
                                                     },
                                                     label: "FragmentUUID",
-                                                    helpText: "The technical ID of this element.",
+                                                    help: "The technical ID of this element.",
                                                     fieldId: "uuid",
                                                     id: "quoteUuid",
                                                     storageId: "text@quoteUuid"
@@ -4817,7 +4666,7 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: false,
+                                                    list: false,
                                                     renderer: {
                                                         name: "object"
                                                     },
@@ -4829,13 +4678,12 @@ export const pageModel = createPrivateModelPlugin({
                                                         fields: [
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "enhanced-text-input"
                                                                 },
                                                                 label: "Title",
-                                                                helpText:
-                                                                    "Titles aren’t delivered in Accordion/Tab components for UX reasons.",
+                                                                help: "Titles aren’t delivered in Accordion/Tab components for UX reasons.",
                                                                 fieldId: "title",
                                                                 id: "referenceSliderTitleTitle",
                                                                 storageId:
@@ -4846,7 +4694,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 validation: [],
                                                                 predefinedValues: {
                                                                     enabled: true,
@@ -4882,8 +4730,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                     name: "select-box"
                                                                 },
                                                                 label: "Heading Rank",
-                                                                helpText:
-                                                                    "The heading rank is a page structure element needed for SEO, calculated by SmartCMS. To change the structure of the page you can choose another rank, following subtitles will be recalculated automatically.",
+                                                                help: "The heading rank is a page structure element needed for SEO, calculated by SmartCMS. To change the structure of the page you can choose another rank, following subtitles will be recalculated automatically.",
                                                                 fieldId: "headingRank",
                                                                 id: "referenceSliderTitleHeadingRank",
                                                                 storageId:
@@ -4903,7 +4750,7 @@ export const pageModel = createPrivateModelPlugin({
                                                     renderer: {
                                                         name: "dynamicZone"
                                                     },
-                                                    multipleValues: true,
+                                                    list: true,
                                                     settings: {
                                                         templates: [
                                                             {
@@ -4924,7 +4771,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                     "Must select a media"
                                                                             }
                                                                         ],
-                                                                        multipleValues: false,
+                                                                        list: false,
                                                                         renderer: {
                                                                             name: "asset-input"
                                                                         },
@@ -4948,10 +4795,9 @@ export const pageModel = createPrivateModelPlugin({
                                                                             fields: [
                                                                                 {
                                                                                     type: "file",
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     label: "File",
-                                                                                    helpText:
-                                                                                        "How to change the start image of a video please see http://acme.com/dam FAQ",
+                                                                                    help: "How to change the start image of a video please see http://acme.com/dam FAQ",
                                                                                     fieldId: "file",
                                                                                     id: "referenceSliderCardMediaFile",
                                                                                     storageId:
@@ -4959,13 +4805,12 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 },
                                                                                 {
                                                                                     type: "text",
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     renderer: {
                                                                                         name: "text-input"
                                                                                     },
                                                                                     label: "Alternative text",
-                                                                                    helpText:
-                                                                                        "If not selected then image is marked as decorative. Please refer to Showroom, topic “WCAG” to learn more.",
+                                                                                    help: "If not selected then image is marked as decorative. Please refer to Showroom, topic “WCAG” to learn more.",
                                                                                     fieldId:
                                                                                         "altText",
                                                                                     id: "referenceSliderCardMediaAltText",
@@ -4974,13 +4819,12 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 },
                                                                                 {
                                                                                     type: "text",
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     renderer: {
                                                                                         name: "slug-field-input"
                                                                                     },
                                                                                     label: "SEO name",
-                                                                                    helpText:
-                                                                                        "Example: My selfie will be delivered as my-selfie.jpg. Used for SEO.",
+                                                                                    help: "Example: My selfie will be delivered as my-selfie.jpg. Used for SEO.",
                                                                                     fieldId:
                                                                                         "seoName",
                                                                                     id: "referenceSliderCardMediaSeoName",
@@ -4994,8 +4838,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                         name: "text-and-copy-input"
                                                                                     },
                                                                                     label: "Crop values",
-                                                                                    helpText:
-                                                                                        "The value used to crop this media.",
+                                                                                    help: "The value used to crop this media.",
                                                                                     fieldId: "crop",
                                                                                     id: "referenceSliderCardMediaCrop",
                                                                                     storageId:
@@ -5023,13 +4866,12 @@ export const pageModel = createPrivateModelPlugin({
                                                                     },
                                                                     {
                                                                         type: "text",
-                                                                        multipleValues: false,
+                                                                        list: false,
                                                                         renderer: {
                                                                             name: "text-input"
                                                                         },
                                                                         label: "Customer name",
-                                                                        helpText:
-                                                                            "Appears like a Tag above the headline, optional",
+                                                                        help: "Appears like a Tag above the headline, optional",
                                                                         fieldId:
                                                                             "referenceSliderCardCustomerName",
                                                                         id: "referenceSliderCardCustomerName",
@@ -5038,13 +4880,12 @@ export const pageModel = createPrivateModelPlugin({
                                                                     },
                                                                     {
                                                                         type: "text",
-                                                                        multipleValues: false,
+                                                                        list: false,
                                                                         renderer: {
                                                                             name: "text-input"
                                                                         },
                                                                         label: "Location",
-                                                                        helpText:
-                                                                            "Appears like a Tag above the headline, optional",
+                                                                        help: "Appears like a Tag above the headline, optional",
                                                                         fieldId:
                                                                             "referenceSliderCardLocation",
                                                                         id: "referenceSliderCardLocation",
@@ -5053,13 +4894,12 @@ export const pageModel = createPrivateModelPlugin({
                                                                     },
                                                                     {
                                                                         type: "text",
-                                                                        multipleValues: false,
+                                                                        list: false,
                                                                         renderer: {
                                                                             name: "text-input"
                                                                         },
                                                                         label: "Market",
-                                                                        helpText:
-                                                                            "Appears like a Tag above the headline, optional",
+                                                                        help: "Appears like a Tag above the headline, optional",
                                                                         fieldId:
                                                                             "referenceSliderCardMarket",
                                                                         id: "referenceSliderCardMarket",
@@ -5068,13 +4908,12 @@ export const pageModel = createPrivateModelPlugin({
                                                                     },
                                                                     {
                                                                         type: "text",
-                                                                        multipleValues: false,
+                                                                        list: false,
                                                                         renderer: {
                                                                             name: "enhanced-text-input"
                                                                         },
                                                                         label: "Title",
-                                                                        helpText:
-                                                                            "Mandatory, max. 70 characters recommended",
+                                                                        help: "Mandatory, max. 70 characters recommended",
                                                                         fieldId:
                                                                             "referenceSliderCardTitle",
                                                                         id: "referenceSliderCardTitle",
@@ -5100,11 +4939,10 @@ export const pageModel = createPrivateModelPlugin({
                                                                             name: "enhanced-lexical-text-input"
                                                                         },
                                                                         label: "Bullet point 1",
-                                                                        helpText:
-                                                                            "For a good user experience it is recommended not to use more than 600 characters incl. spaces. If there is the need for more, it is recommended to split the content into separate elements.",
+                                                                        help: "For a good user experience it is recommended not to use more than 600 characters incl. spaces. If there is the need for more, it is recommended to split the content into separate elements.",
                                                                         fieldId:
                                                                             "referenceSliderCardBulletPoint1",
-                                                                        placeholderText:
+                                                                        placeholder:
                                                                             "Max. 140 characters recommended, optional",
                                                                         id: "referenceSliderCardBulletPoint1",
                                                                         storageId:
@@ -5117,11 +4955,10 @@ export const pageModel = createPrivateModelPlugin({
                                                                             name: "enhanced-lexical-text-input"
                                                                         },
                                                                         label: "Bullet point 2",
-                                                                        helpText:
-                                                                            "For a good user experience it is recommended not to use more than 600 characters incl. spaces. If there is the need for more, it is recommended to split the content into separate elements.",
+                                                                        help: "For a good user experience it is recommended not to use more than 600 characters incl. spaces. If there is the need for more, it is recommended to split the content into separate elements.",
                                                                         fieldId:
                                                                             "referenceSliderCardBulletPoint2",
-                                                                        placeholderText:
+                                                                        placeholder:
                                                                             "Max. 140 characters recommended, optional",
                                                                         id: "referenceSliderCardBulletPoint2",
                                                                         storageId:
@@ -5134,11 +4971,10 @@ export const pageModel = createPrivateModelPlugin({
                                                                             name: "enhanced-lexical-text-input"
                                                                         },
                                                                         label: "Bullet point 3",
-                                                                        helpText:
-                                                                            "For a good user experience it is recommended not to use more than 600 characters incl. spaces. If there is the need for more, it is recommended to split the content into separate elements.",
+                                                                        help: "For a good user experience it is recommended not to use more than 600 characters incl. spaces. If there is the need for more, it is recommended to split the content into separate elements.",
                                                                         fieldId:
                                                                             "referenceSliderCardBulletPoint3",
-                                                                        placeholderText:
+                                                                        placeholder:
                                                                             "Max. 140 characters recommended, optional",
                                                                         id: "referenceSliderCardBulletPoint3",
                                                                         storageId:
@@ -5147,13 +4983,12 @@ export const pageModel = createPrivateModelPlugin({
                                                                     {
                                                                         type: "object",
                                                                         validation: [],
-                                                                        multipleValues: false,
+                                                                        list: false,
                                                                         renderer: {
                                                                             name: "object"
                                                                         },
                                                                         label: "Button",
-                                                                        helpText:
-                                                                            "The button hierarchy and design is pre-defined per component. See the showroom for details.",
+                                                                        help: "The button hierarchy and design is pre-defined per component. See the showroom for details.",
                                                                         fieldId: "button",
                                                                         id: "referenceSliderCardButton",
                                                                         storageId:
@@ -5163,13 +4998,12 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 {
                                                                                     type: "text",
                                                                                     validation: [],
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     renderer: {
                                                                                         name: "text-input"
                                                                                     },
                                                                                     label: "Button Text",
-                                                                                    helpText:
-                                                                                        "About 30 characters per row, if delivered on desktop. On mobile devices please calculate with ~20.",
+                                                                                    help: "About 30 characters per row, if delivered on desktop. On mobile devices please calculate with ~20.",
                                                                                     fieldId:
                                                                                         "buttonText",
                                                                                     id: "referenceSliderCardButtonText",
@@ -5185,8 +5019,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                     fieldId:
                                                                                         "linkpicker",
                                                                                     id: "referenceSliderCardButtonLink",
-                                                                                    helpText:
-                                                                                        "If link target is SmartCMS internal, create link relative via <Picker> to avoid 404 errors.",
+                                                                                    help: "If link target is SmartCMS internal, create link relative via <Picker> to avoid 404 errors.",
                                                                                     storageId:
                                                                                         "text@referenceSliderCardButtonLink"
                                                                                 }
@@ -5206,8 +5039,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                             name: "text-input"
                                                                         },
                                                                         label: "FragmentUUID",
-                                                                        helpText:
-                                                                            "The technical ID of this element.",
+                                                                        help: "The technical ID of this element.",
                                                                         fieldId: "uuid",
                                                                         id: "referenceSliderCardUuid",
                                                                         storageId:
@@ -5238,8 +5070,7 @@ export const pageModel = createPrivateModelPlugin({
                                                         ]
                                                     },
                                                     label: "Cards content",
-                                                    helpText:
-                                                        "Select one or more of the allowed elements or fragments. Be aware the title of the elements isn’t delivered live.",
+                                                    help: "Select one or more of the allowed elements or fragments. Be aware the title of the elements isn’t delivered live.",
                                                     fieldId: "referenceSliderCards",
                                                     id: "referenceSliderCards",
                                                     storageId: "text@referenceSliderCards"
@@ -5251,7 +5082,7 @@ export const pageModel = createPrivateModelPlugin({
                                                         name: "text-input"
                                                     },
                                                     label: "FragmentUUID",
-                                                    helpText: "The technical ID of this element.",
+                                                    help: "The technical ID of this element.",
                                                     fieldId: "uuid",
                                                     id: "referenceSliderUuid",
                                                     storageId: "text@referenceSliderUuid"
@@ -5278,8 +5109,7 @@ export const pageModel = createPrivateModelPlugin({
                                                     renderer: {
                                                         name: "select-box"
                                                     },
-                                                    helpText:
-                                                        "If used outside of Intro section the headline will be delivered as H2.",
+                                                    help: "If used outside of Intro section the headline will be delivered as H2.",
                                                     label: "Layout",
                                                     predefinedValues: {
                                                         enabled: true,
@@ -5314,7 +5144,7 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: false,
+                                                    list: false,
                                                     renderer: {
                                                         name: "object"
                                                     },
@@ -5333,13 +5163,12 @@ export const pageModel = createPrivateModelPlugin({
                                                                             "Title is required."
                                                                     }
                                                                 ],
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "enhanced-text-input"
                                                                 },
                                                                 label: "Title",
-                                                                helpText:
-                                                                    "Max. 70 characters incl. spaces are allowed. If you selected layout “Text only”: unlimited.",
+                                                                help: "Max. 70 characters incl. spaces are allowed. If you selected layout “Text only”: unlimited.",
                                                                 fieldId: "title",
                                                                 id: "stageTitleTitle",
                                                                 storageId: "text@stageTitleTitle",
@@ -5351,7 +5180,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 validation: [],
                                                                 predefinedValues: {
                                                                     enabled: true,
@@ -5387,8 +5216,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                     name: "select-box"
                                                                 },
                                                                 label: "Heading Rank",
-                                                                helpText:
-                                                                    "The heading rank is a page structure element needed for SEO, calculated by SmartCMS. To change the structure of the page you can choose another rank, following subtitles will be recalculated automatically.",
+                                                                help: "The heading rank is a page structure element needed for SEO, calculated by SmartCMS. To change the structure of the page you can choose another rank, following subtitles will be recalculated automatically.",
                                                                 fieldId: "headingRank",
                                                                 id: "stageTitleHeadingRank",
                                                                 storageId:
@@ -5410,10 +5238,9 @@ export const pageModel = createPrivateModelPlugin({
                                                         name: "enhanced-lexical-text-input"
                                                     },
                                                     label: "Text",
-                                                    helpText:
-                                                        "For a good user experience it is recommended not to use more than 600 characters incl. spaces. If there is the need for more, it is recommended to split the content into separate elements.",
+                                                    help: "For a good user experience it is recommended not to use more than 600 characters incl. spaces. If there is the need for more, it is recommended to split the content into separate elements.",
                                                     fieldId: "stageText",
-                                                    placeholderText:
+                                                    placeholder:
                                                         "Max. 400 characters incl. spaces are allowed. If you selected the “Text only”: unlimited.",
                                                     id: "stageText",
                                                     storageId: "rich-text@stageText"
@@ -5421,13 +5248,12 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: false,
+                                                    list: false,
                                                     renderer: {
                                                         name: "object"
                                                     },
                                                     label: "Button",
-                                                    helpText:
-                                                        "The button hierarchy and design is pre-defined per component. See the showroom for details.",
+                                                    help: "The button hierarchy and design is pre-defined per component. See the showroom for details.",
                                                     fieldId: "button",
                                                     id: "stageButton",
                                                     storageId: "object@stageButton",
@@ -5436,13 +5262,12 @@ export const pageModel = createPrivateModelPlugin({
                                                             {
                                                                 type: "text",
                                                                 validation: [],
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "text-input"
                                                                 },
                                                                 label: "Button Text",
-                                                                helpText:
-                                                                    "About 30 characters per row, if delivered on desktop. On mobile devices please calculate with ~20.",
+                                                                help: "About 30 characters per row, if delivered on desktop. On mobile devices please calculate with ~20.",
                                                                 fieldId: "buttonText",
                                                                 id: "stageButtonText",
                                                                 storageId: "text@stageButtonText"
@@ -5455,8 +5280,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                 label: "Button Link",
                                                                 fieldId: "linkpicker",
                                                                 id: "stageButtonLink",
-                                                                helpText:
-                                                                    "If link target is SmartCMS internal, create link relative via <Picker> to avoid 404 errors.",
+                                                                help: "If link target is SmartCMS internal, create link relative via <Picker> to avoid 404 errors.",
                                                                 storageId: "text@stageButtonLink"
                                                             }
                                                         ],
@@ -5468,13 +5292,12 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: false,
+                                                    list: false,
                                                     renderer: {
                                                         name: "asset-input"
                                                     },
                                                     label: "Media",
-                                                    helpText:
-                                                        "Image 16:9 or 4:3, video always 16:9. Gifs bigger that 6 MB might not be delivered for performance reasons.",
+                                                    help: "Image 16:9 or 4:3, video always 16:9. Gifs bigger that 6 MB might not be delivered for performance reasons.",
                                                     fieldId: "stageMedia",
                                                     id: "stageMedia",
                                                     storageId: "object@stageMedia",
@@ -5489,36 +5312,33 @@ export const pageModel = createPrivateModelPlugin({
                                                         fields: [
                                                             {
                                                                 type: "file",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 label: "File",
-                                                                helpText:
-                                                                    "How to change the start image of a video please see http://acme.com/dam FAQ",
+                                                                help: "How to change the start image of a video please see http://acme.com/dam FAQ",
                                                                 fieldId: "file",
                                                                 id: "stageMediaFile",
                                                                 storageId: "file@stageMediaFile"
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "text-input"
                                                                 },
                                                                 label: "Alternative text",
-                                                                helpText:
-                                                                    "If not selected then image is marked as decorative. Please refer to Showroom, topic “WCAG” to learn more.",
+                                                                help: "If not selected then image is marked as decorative. Please refer to Showroom, topic “WCAG” to learn more.",
                                                                 fieldId: "altText",
                                                                 id: "stageMediaAltText",
                                                                 storageId: "text@stageMediaAltText"
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "slug-field-input"
                                                                 },
                                                                 label: "SEO name",
-                                                                helpText:
-                                                                    "Example: My selfie will be delivered as my-selfie.jpg. Used for SEO.",
+                                                                help: "Example: My selfie will be delivered as my-selfie.jpg. Used for SEO.",
                                                                 fieldId: "seoName",
                                                                 id: "stageMediaSeoName",
                                                                 storageId: "text@stageMediaSeoName"
@@ -5530,8 +5350,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                     name: "text-and-copy-input"
                                                                 },
                                                                 label: "Crop values",
-                                                                helpText:
-                                                                    "The value used to crop this media.",
+                                                                help: "The value used to crop this media.",
                                                                 fieldId: "crop",
                                                                 id: "stageMediaCrop",
                                                                 storageId: "text@stageMediaCrop",
@@ -5555,7 +5374,7 @@ export const pageModel = createPrivateModelPlugin({
                                                         name: "text-input"
                                                     },
                                                     label: "FragmentUUID",
-                                                    helpText: "The technical ID of this element.",
+                                                    help: "The technical ID of this element.",
                                                     fieldId: "uuid",
                                                     id: "stageUuid",
                                                     storageId: "text@stageUuid"
@@ -5582,7 +5401,7 @@ export const pageModel = createPrivateModelPlugin({
                                                 {
                                                     type: "object",
                                                     validation: [],
-                                                    multipleValues: false,
+                                                    list: false,
                                                     renderer: {
                                                         name: "object"
                                                     },
@@ -5594,13 +5413,12 @@ export const pageModel = createPrivateModelPlugin({
                                                         fields: [
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 renderer: {
                                                                     name: "enhanced-text-input"
                                                                 },
                                                                 label: "Title",
-                                                                helpText:
-                                                                    "Titles aren’t delivered in Accordion/Tab components for UX reasons.",
+                                                                help: "Titles aren’t delivered in Accordion/Tab components for UX reasons.",
                                                                 fieldId: "title",
                                                                 id: "teaserRoutingTitleTitle",
                                                                 storageId:
@@ -5611,7 +5429,7 @@ export const pageModel = createPrivateModelPlugin({
                                                             },
                                                             {
                                                                 type: "text",
-                                                                multipleValues: false,
+                                                                list: false,
                                                                 validation: [],
                                                                 predefinedValues: {
                                                                     enabled: true,
@@ -5647,8 +5465,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                     name: "select-box"
                                                                 },
                                                                 label: "Heading Rank",
-                                                                helpText:
-                                                                    "The heading rank is a page structure element needed for SEO, calculated by SmartCMS. To change the structure of the page you can choose another rank, following subtitles will be recalculated automatically.",
+                                                                help: "The heading rank is a page structure element needed for SEO, calculated by SmartCMS. To change the structure of the page you can choose another rank, following subtitles will be recalculated automatically.",
                                                                 fieldId: "headingRank",
                                                                 id: "teaserRoutingTitleHeadingRank",
                                                                 storageId:
@@ -5670,7 +5487,7 @@ export const pageModel = createPrivateModelPlugin({
                                                         name: "text-input"
                                                     },
                                                     label: "FragmentUUID",
-                                                    helpText: "The technical ID of this element.",
+                                                    help: "The technical ID of this element.",
                                                     fieldId: "uuid",
                                                     id: "teaserRoutingUuid",
                                                     storageId: "text@teaserRoutingUuid"
@@ -5682,8 +5499,7 @@ export const pageModel = createPrivateModelPlugin({
                                                         name: "select-box"
                                                     },
                                                     label: "Layout",
-                                                    helpText:
-                                                        "When “with flyout” is selected, a flyout will only appear if in the flyout is in minimum one teaser: if there’s only the flyout title and/or text, it’s not shown due to UX reasons. In this case please use Accordion/Tab element.",
+                                                    help: "When “with flyout” is selected, a flyout will only appear if in the flyout is in minimum one teaser: if there’s only the flyout title and/or text, it’s not shown due to UX reasons. In this case please use Accordion/Tab element.",
                                                     predefinedValues: {
                                                         enabled: true,
                                                         values: [
@@ -5744,7 +5560,7 @@ export const pageModel = createPrivateModelPlugin({
                                                     renderer: {
                                                         name: "dynamicZone"
                                                     },
-                                                    multipleValues: true,
+                                                    list: true,
                                                     settings: {
                                                         templates: [
                                                             {
@@ -5759,7 +5575,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                     {
                                                                         type: "object",
                                                                         validation: [],
-                                                                        multipleValues: false,
+                                                                        list: false,
                                                                         renderer: {
                                                                             name: "asset-input"
                                                                         },
@@ -5780,10 +5596,9 @@ export const pageModel = createPrivateModelPlugin({
                                                                             fields: [
                                                                                 {
                                                                                     type: "file",
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     label: "File",
-                                                                                    helpText:
-                                                                                        "How to change the start image of a video please see http://acme.com/dam FAQ",
+                                                                                    help: "How to change the start image of a video please see http://acme.com/dam FAQ",
                                                                                     fieldId: "file",
                                                                                     id: "teaserRoutingCardMediaFile",
                                                                                     storageId:
@@ -5791,13 +5606,12 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 },
                                                                                 {
                                                                                     type: "text",
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     renderer: {
                                                                                         name: "text-input"
                                                                                     },
                                                                                     label: "Alternative text",
-                                                                                    helpText:
-                                                                                        "If not selected then image is marked as decorative. Please refer to Showroom, topic “WCAG” to learn more.",
+                                                                                    help: "If not selected then image is marked as decorative. Please refer to Showroom, topic “WCAG” to learn more.",
                                                                                     fieldId:
                                                                                         "altText",
                                                                                     id: "teaserRoutingCardMediaAltText",
@@ -5806,13 +5620,12 @@ export const pageModel = createPrivateModelPlugin({
                                                                                 },
                                                                                 {
                                                                                     type: "text",
-                                                                                    multipleValues: false,
+                                                                                    list: false,
                                                                                     renderer: {
                                                                                         name: "slug-field-input"
                                                                                     },
                                                                                     label: "SEO name",
-                                                                                    helpText:
-                                                                                        "Example: My selfie will be delivered as my-selfie.jpg. Used for SEO.",
+                                                                                    help: "Example: My selfie will be delivered as my-selfie.jpg. Used for SEO.",
                                                                                     fieldId:
                                                                                         "seoName",
                                                                                     id: "teaserRoutingCardMediaSeoName",
@@ -5826,8 +5639,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                                         name: "text-and-copy-input"
                                                                                     },
                                                                                     label: "Crop values",
-                                                                                    helpText:
-                                                                                        "The value used to crop this media.",
+                                                                                    help: "The value used to crop this media.",
                                                                                     fieldId: "crop",
                                                                                     id: "teaserRoutingCardMediaCrop",
                                                                                     storageId:
@@ -5892,13 +5704,12 @@ export const pageModel = createPrivateModelPlugin({
                                                                                     "Value is required."
                                                                             }
                                                                         ],
-                                                                        multipleValues: false,
+                                                                        list: false,
                                                                         renderer: {
                                                                             name: "enhanced-text-input"
                                                                         },
                                                                         label: "Teaser title",
-                                                                        helpText:
-                                                                            "If empty, teaser title from relative linked page teaser content will be shown. Max. 70 characters recommended.",
+                                                                        help: "If empty, teaser title from relative linked page teaser content will be shown. Max. 70 characters recommended.",
                                                                         fieldId: "title",
                                                                         id: "teaserRoutingCardTitle",
                                                                         storageId:
@@ -5911,13 +5722,12 @@ export const pageModel = createPrivateModelPlugin({
                                                                     },
                                                                     {
                                                                         type: "text",
-                                                                        multipleValues: false,
+                                                                        list: false,
                                                                         renderer: {
                                                                             name: "enhanced-text-input"
                                                                         },
                                                                         label: "Text",
-                                                                        helpText:
-                                                                            "It's recommended to not exceed a length of 150 characters.",
+                                                                        help: "It's recommended to not exceed a length of 150 characters.",
                                                                         fieldId: "text",
                                                                         id: "teaserRoutingCardText",
                                                                         storageId:
@@ -5951,8 +5761,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                         label: "Link",
                                                                         fieldId: "linkpicker",
                                                                         id: "teaserRoutingCardLink",
-                                                                        helpText:
-                                                                            "If link is SmartCMS internal, create link relative via <Picker> to avoid 404 errors",
+                                                                        help: "If link is SmartCMS internal, create link relative via <Picker> to avoid 404 errors",
                                                                         storageId:
                                                                             "text@teaserRoutingCardLink"
                                                                     },
@@ -5963,8 +5772,7 @@ export const pageModel = createPrivateModelPlugin({
                                                                             name: "text-input"
                                                                         },
                                                                         label: "FragmentUUID",
-                                                                        helpText:
-                                                                            "The technical ID of this element.",
+                                                                        help: "The technical ID of this element.",
                                                                         fieldId: "uuid",
                                                                         id: "teaserRoutingCardUuid",
                                                                         storageId:
@@ -5985,8 +5793,7 @@ export const pageModel = createPrivateModelPlugin({
                                                         ]
                                                     },
                                                     label: "Teaser Card",
-                                                    helpText:
-                                                        "Select one or more of the allowed elements or fragments. Be aware the title of the elements isn’t delivered live.",
+                                                    help: "Select one or more of the allowed elements or fragments. Be aware the title of the elements isn’t delivered live.",
                                                     fieldId: "teaserRoutingCards",
                                                     id: "teaserRoutingCards",
                                                     storageId: "text@teaserRoutingCards"

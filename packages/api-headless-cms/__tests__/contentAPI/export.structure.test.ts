@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { useGraphQLHandler } from "~tests/testHelpers/useGraphQLHandler";
 import type { CmsGroup } from "~tests/types";
 import models from "./mocks/contentModels";
-import type { CmsModel, CmsModelField } from "~/types";
+import type { CmsModel } from "~/types";
 import { createIcon } from "~tests/__helpers/icon.js";
 
 interface JsonResult {
@@ -24,31 +24,6 @@ const groups: Omit<CmsGroup, "id">[] = [
         description: "Group 2 description"
     }
 ];
-
-const fixFields = (fields: CmsModelField[]): CmsModelField[] => {
-    return fields.map(field => {
-        const result = {
-            ...field,
-            helpText: field.helpText || null,
-            placeholderText: field.placeholderText || null
-        };
-        if (result.settings?.fields) {
-            result.settings.fields = fixFields(result.settings.fields);
-        }
-        if (result.predefinedValues) {
-            result.predefinedValues = {
-                ...result.predefinedValues,
-                values: (result.predefinedValues.values || []).map(value => {
-                    return {
-                        ...value,
-                        selected: value.selected || false
-                    };
-                })
-            };
-        }
-        return result;
-    });
-};
 
 describe("export cms structure", () => {
     const insertGroups = async (mutation: (variables: any) => Promise<any>) => {
@@ -131,7 +106,7 @@ describe("export cms structure", () => {
                 titleFieldId: model.titleFieldId,
                 icon: model.icon,
                 group: group.slug,
-                fields: fixFields(model.fields),
+                fields: model.fields,
                 layout: model.layout
             });
             expect(jsonModel.imageFieldId).toEqual(model.imageFieldId ?? null);

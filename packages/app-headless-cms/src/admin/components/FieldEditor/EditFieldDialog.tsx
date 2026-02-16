@@ -82,7 +82,7 @@ const EditFieldDialog = (props: EditFieldDialogProps) => {
 
                 const individualValidation = getFieldValidators(shadowField, fieldPlugin);
                 const showValidatorsTab =
-                    shadowField.multipleValues || individualValidation.validators.length > 0;
+                    shadowField.list || individualValidation.validators.length > 0;
 
                 return (
                     <Dialog

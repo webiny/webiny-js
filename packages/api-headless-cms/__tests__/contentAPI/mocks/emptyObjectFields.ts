@@ -4,12 +4,12 @@ export const emptyObjectFields: Pick<CmsModel, "fields" | "layout"> = {
     layout: [["T87zmyqoF"]],
     fields: [
         {
-            multipleValues: true,
+            list: true,
             listValidation: [],
             settings: {
                 fields: [
                     {
-                        multipleValues: true,
+                        list: true,
                         settings: {
                             fields: [],
                             layout: []
@@ -31,8 +31,8 @@ export const emptyObjectFields: Pick<CmsModel, "fields" | "layout"> = {
             renderer: {
                 name: "objects"
             },
-            helpText: null,
-            placeholderText: null,
+            help: null,
+            placeholder: null,
             predefinedValues: {
                 enabled: false,
                 values: []

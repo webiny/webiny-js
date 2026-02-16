@@ -51,13 +51,13 @@ const model = createModel({
         createModelField({
             fieldId: "post",
             type: "object",
-            multipleValues: false,
+            list: false,
             settings: {
                 fields: [
                     createModelField({
                         fieldId: "relatedPosts",
                         type: "ref",
-                        multipleValues: true
+                        list: true
                     })
                 ]
             }

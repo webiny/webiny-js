@@ -47,7 +47,7 @@ const model = createModel({
         createModelField({
             fieldId: "content",
             type: "dynamicZone",
-            multipleValues: false,
+            list: false,
             settings: {
                 templates: [
                     {
@@ -60,18 +60,18 @@ const model = createModel({
                             createModelField({
                                 fieldId: "config",
                                 type: "object",
-                                multipleValues: false,
+                                list: false,
                                 settings: {
                                     fields: [
                                         createModelField({
                                             fieldId: "title",
                                             type: "text",
-                                            multipleValues: false
+                                            list: false
                                         }),
                                         createModelField({
                                             fieldId: "metadata",
                                             type: "json",
-                                            multipleValues: false
+                                            list: false
                                         })
                                     ]
                                 }
@@ -79,18 +79,18 @@ const model = createModel({
                             createModelField({
                                 fieldId: "items",
                                 type: "object",
-                                multipleValues: true,
+                                list: true,
                                 settings: {
                                     fields: [
                                         createModelField({
                                             fieldId: "label",
                                             type: "text",
-                                            multipleValues: false
+                                            list: false
                                         }),
                                         createModelField({
                                             fieldId: "value",
                                             type: "number",
-                                            multipleValues: false
+                                            list: false
                                         })
                                     ]
                                 }

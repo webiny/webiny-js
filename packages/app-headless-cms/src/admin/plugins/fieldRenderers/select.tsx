@@ -14,7 +14,7 @@ const plugin: CmsModelFieldRendererPlugin = {
         name: t`Select Box`,
         description: t`Renders a select box, allowing selection of a single value.`,
         canUse({ field }) {
-            return !field.multipleValues && !!get(field, "predefinedValues.enabled");
+            return !field.list && !!get(field, "predefinedValues.enabled");
         },
         render({ field, getBind }) {
             const Bind = getBind();
@@ -29,9 +29,11 @@ const plugin: CmsModelFieldRendererPlugin = {
                             <Select
                                 {...bind}
                                 label={field.label}
-                                description={field.helpText}
+                                description={field.description}
+                                note={field.note}
+                                hint={field.help}
                                 options={options}
-                                placeholder={field.placeholderText}
+                                placeholder={field.placeholder}
                                 data-testid={`fr.input.select.${field.label}`}
                                 value={typeof value !== "undefined" ? String(value) : undefined}
                                 onChange={value => {

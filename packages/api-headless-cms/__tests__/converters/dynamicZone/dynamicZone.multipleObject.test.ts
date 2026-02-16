@@ -53,7 +53,7 @@ const model = createModel({
         createModelField({
             fieldId: "content",
             type: "dynamicZone",
-            multipleValues: false,
+            list: false,
             settings: {
                 templates: [
                     {
@@ -66,23 +66,23 @@ const model = createModel({
                             createModelField({
                                 fieldId: "profiles",
                                 type: "object",
-                                multipleValues: true,
+                                list: true,
                                 settings: {
                                     fields: [
                                         createModelField({
                                             fieldId: "name",
                                             type: "text",
-                                            multipleValues: false
+                                            list: false
                                         }),
                                         createModelField({
                                             fieldId: "age",
                                             type: "number",
-                                            multipleValues: false
+                                            list: false
                                         }),
                                         createModelField({
                                             fieldId: "isActive",
                                             type: "boolean",
-                                            multipleValues: false
+                                            list: false
                                         })
                                     ]
                                 }

@@ -27,13 +27,13 @@ const model = createModel({
         createModelField({
             fieldId: "post",
             type: "object",
-            multipleValues: false,
+            list: false,
             settings: {
                 fields: [
                     createModelField({
                         fieldId: "author",
                         type: "ref",
-                        multipleValues: false
+                        list: false
                     })
                 ]
             }

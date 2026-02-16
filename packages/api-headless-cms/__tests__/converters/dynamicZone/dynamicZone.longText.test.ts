@@ -23,7 +23,7 @@ const model = createModel({
         createModelField({
             fieldId: "content",
             type: "dynamicZone",
-            multipleValues: false,
+            list: false,
             settings: {
                 templates: [
                     {
@@ -36,7 +36,7 @@ const model = createModel({
                             createModelField({
                                 fieldId: "description",
                                 type: "long-text",
-                                multipleValues: false
+                                list: false
                             })
                         ],
                         layout: [],

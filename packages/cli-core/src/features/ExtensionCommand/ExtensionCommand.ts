@@ -38,7 +38,7 @@ export class ExtensionCommand implements CliCommandFactory.Interface<IExtensionC
                     const result = await projectSdk.installExtension(source);
 
                     spinner.succeed(
-                        `Extension "${result.extensionName}" installed successfully to ${result.extensionPaths.join(", ")}`
+                        `Extension ${chalk.blue(result.extensionName)} installed successfully to ${chalk.blue(result.extensionPaths.join(", "))}.`
                     );
 
                     // Display next steps if available
@@ -60,7 +60,7 @@ export class ExtensionCommand implements CliCommandFactory.Interface<IExtensionC
                         this.uiService.text(chalk.bold("Additional Notes"));
                         result.additionalNotes.forEach(({ text, variables = [] }) => {
                             const formattedText = variables.reduce(
-                                (acc, variable) => acc.replace(`%s`, chalk.green(variable)),
+                                (acc, variable) => acc.replace(`%s`, chalk.blue(variable)),
                                 text
                             );
                             this.uiService.text(`‣ ${formattedText}`);

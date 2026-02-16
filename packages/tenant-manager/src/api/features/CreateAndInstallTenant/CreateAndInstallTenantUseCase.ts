@@ -10,9 +10,12 @@ import { GetTenantByIdUseCase } from "../GetTenantById/abstractions.js";
 import { UpdateTenantUseCase } from "../UpdateTenant/abstractions.js";
 import { CreateAndInstallTenantUseCase as UseCaseAbstraction } from "./abstractions.js";
 import * as Tenancy from "@webiny/api-core/exports/api/tenancy.js";
+import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/errors.js";
+import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 
 class CreateAndInstallTenantUseCase implements UseCaseAbstraction.Interface {
     constructor(
+        private identityContext: IdentityContext.Interface,
         // Tenant manager deps
         private getTenantByIdUseCase: GetTenantByIdUseCase.Interface,
         private updateTenantUseCase: UpdateTenantUseCase.Interface,
@@ -25,6 +28,15 @@ class CreateAndInstallTenantUseCase implements UseCaseAbstraction.Interface {
     ) {}
 
     async execute(tenantId: string): Promise<Result<Tenant, UseCaseAbstraction.Error>> {
+        // Authorization checks
+        if (!this.identityContext.getPermission("tm.tenant")) {
+            return Result.fail(
+                new NotAuthorizedError({
+                    message: "Not authorized to create tenants!"
+                })
+            );
+        }
+
         const entryId = EntryId.from(tenantId);
 
         // Get tenant details
@@ -98,6 +110,7 @@ class CreateAndInstallTenantUseCase implements UseCaseAbstraction.Interface {
 export default UseCaseAbstraction.createImplementation({
     implementation: CreateAndInstallTenantUseCase,
     dependencies: [
+        IdentityContext,
         GetTenantByIdUseCase,
         UpdateTenantUseCase,
         Tenancy.GetTenantByIdUseCase,

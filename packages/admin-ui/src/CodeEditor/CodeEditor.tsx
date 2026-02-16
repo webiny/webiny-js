@@ -16,6 +16,7 @@ const DecoratableCodeEditor = ({
     label,
     description,
     note,
+    hint,
     required,
     disabled,
     validation,
@@ -28,6 +29,7 @@ const DecoratableCodeEditor = ({
         <div className={"w-full"}>
             <FormComponentLabel
                 text={label}
+                hint={hint}
                 required={required}
                 disabled={disabled}
                 invalid={invalid}

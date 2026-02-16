@@ -23,7 +23,7 @@ const model = createModel({
         createModelField({
             fieldId: "contents",
             type: "rich-text",
-            multipleValues: true
+            list: true
         })
     ]
 });

@@ -7,7 +7,7 @@ import DynamicSection from "../DynamicSection.js";
 import { LexicalCmsEditor } from "~/admin/components/LexicalCmsEditor/LexicalCmsEditor.js";
 import { useForm } from "@webiny/form";
 import { MultiValueRendererSettings } from "~/admin/plugins/fieldRenderers/MultiValueRendererSettings.js";
-import { FormComponentNote, IconButton } from "@webiny/admin-ui";
+import { IconButton } from "@webiny/admin-ui";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
@@ -26,7 +26,7 @@ const plugin: CmsModelFieldRendererPlugin = {
         canUse({ field }) {
             return [
                 field.type === "rich-text",
-                !!field.multipleValues,
+                !!field.list,
                 !get(field, "predefinedValues.enabled")
             ].every(Boolean);
         },
@@ -42,11 +42,8 @@ const plugin: CmsModelFieldRendererPlugin = {
                                 value={bind.index.value}
                                 onChange={bind.index.onChange}
                                 key={getKey(form.data.id, field, index)}
-                                placeholder={field.placeholderText}
+                                placeholder={field.placeholder}
                             />
-                            {field.multipleValues ? null : (
-                                <FormComponentNote text={field.helpText} />
-                            )}
                             <div className={"absolute top-sm right-sm z-10"}>
                                 <IconButton
                                     variant={"ghost"}

@@ -2,14 +2,14 @@ import { describe, expect, it } from "vitest";
 import { ToStorageParams } from "~/plugins/StorageTransformPlugin";
 import { createDateStorageTransformPlugin } from "~/storage/date";
 
-const createDefaultArgs = ({ storageId = "storageId", type = "", multipleValues = false }) => {
+const createDefaultArgs = ({ storageId = "storageId", type = "", list = false }) => {
     return {
         field: {
             storageId,
             settings: {
                 type
             },
-            multipleValues
+            list
         }
     };
 };
@@ -19,7 +19,7 @@ const defaultDateArgs = createDefaultArgs({
 });
 const defaultDateMultipleArgs = createDefaultArgs({
     type: "date",
-    multipleValues: true
+    list: true
 });
 const defaultTimeArgs = createDefaultArgs({
     type: "time"

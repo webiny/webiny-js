@@ -78,7 +78,7 @@ export const dynamicZoneFieldValidator: CmsModelFieldValidatorPlugin = {
             return <TemplateValidationSettings />;
         },
         validate: async (value: TemplateValue[], { field }) => {
-            // This validator only runs for Dynamic Zone fields with `multipleValues=true`.
+            // This validator only runs for Dynamic Zone fields with `list=true`.
             const templates = field.settings?.templates || [];
             for (const template of templates) {
                 const validationRules = template.validation || [];

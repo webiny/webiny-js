@@ -2,7 +2,7 @@ import type { CmsModelField } from "@webiny/app-headless-cms-common/types/model.
 
 export type FieldRaw = Pick<
     CmsModelField,
-    "id" | "type" | "label" | "multipleValues" | "predefinedValues" | "settings"
+    "id" | "type" | "label" | "list" | "predefinedValues" | "settings"
 >;
 
 export enum FieldType {

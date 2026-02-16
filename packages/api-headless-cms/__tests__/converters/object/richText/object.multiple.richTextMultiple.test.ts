@@ -55,13 +55,13 @@ const model = createModel({
         createModelField({
             fieldId: "blogs",
             type: "object",
-            multipleValues: true,
+            list: true,
             settings: {
                 fields: [
                     createModelField({
                         fieldId: "sections",
                         type: "rich-text",
-                        multipleValues: true
+                        list: true
                     })
                 ]
             }

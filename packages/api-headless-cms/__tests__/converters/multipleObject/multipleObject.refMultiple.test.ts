@@ -101,13 +101,13 @@ const model = createModel({
         createModelField({
             fieldId: "profiles",
             type: "object",
-            multipleValues: true,
+            list: true,
             settings: {
                 fields: [
                     createModelField({
                         fieldId: "relatedPosts",
                         type: "ref",
-                        multipleValues: true
+                        list: true
                     })
                 ]
             }

@@ -12,7 +12,7 @@ interface UseNewRefEntryParams {
 interface UseNewRefEntry {
     renderNewEntryModal: boolean;
     refModelId: string;
-    helpText: React.ReactElement;
+    help: React.ReactElement;
 }
 
 export const useNewRefEntry = ({ field }: UseNewRefEntryParams): UseNewRefEntry => {
@@ -46,18 +46,18 @@ export const useNewRefEntry = ({ field }: UseNewRefEntryParams): UseNewRefEntry 
         renderNewEntryModal = !contentEntriesContext.insideDialog;
     }
     /**
-     * Set "helpText" value.
+     * Set "help" value.
      */
-    let helpText;
+    let help;
     if (referenceMultipleModels) {
-        helpText = <ReferenceMultipleModelsHelpText />;
+        help = <ReferenceMultipleModelsHelpText />;
     } else {
-        helpText = <MissingEntryHelpText refModelId={refModelId} />;
+        help = <MissingEntryHelpText refModelId={refModelId} />;
     }
 
     return {
         renderNewEntryModal,
         refModelId,
-        helpText
+        help
     };
 };

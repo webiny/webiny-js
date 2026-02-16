@@ -31,19 +31,19 @@ const model = createModel({
         createModelField({
             fieldId: "profile",
             type: "object",
-            multipleValues: false,
+            list: false,
             settings: {
                 fields: [
                     createModelField({
                         fieldId: "config",
                         type: "object",
-                        multipleValues: false,
+                        list: false,
                         settings: {
                             fields: [
                                 createModelField({
                                     fieldId: "presets",
                                     type: "json",
-                                    multipleValues: true
+                                    list: true
                                 })
                             ]
                         }

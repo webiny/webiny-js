@@ -94,10 +94,7 @@ export const DateTimeWithTimezone = ({ bind, trailingIcon, field }: DateTimeWith
                             return bind.onChange(`${value}T${getHHmmss(time)}${timezone}`);
                         }
                     }}
-                    field={{
-                        ...field,
-                        label: `${field.label} date`
-                    }}
+                    field={field}
                     type={"date"}
                 />
             </Grid.Column>
@@ -128,7 +125,6 @@ export const DateTimeWithTimezone = ({ bind, trailingIcon, field }: DateTimeWith
             </Grid.Column>
             <Grid.Column span={cellSize}>
                 <Select
-                    label="Timezone"
                     value={timezone}
                     onChange={value => {
                         if (!value) {

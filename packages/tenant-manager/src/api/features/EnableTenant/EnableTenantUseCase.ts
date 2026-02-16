@@ -20,8 +20,7 @@ class EnableTenantUseCase implements UseCaseAbstraction.Interface {
 
     async execute(tenantId: string): Promise<Result<void, UseCaseAbstraction.Error>> {
         // Authorization checks
-        const identity = this.identityContext.getIdentity();
-        if (!identity.isAdmin() || !this.identityContext.getPermission("tm.tenant")) {
+        if (!this.identityContext.getPermission("tm.tenant")) {
             return Result.fail(
                 new NotAuthorizedError({ message: "Not authorized to enable tenants." })
             );

@@ -14,7 +14,7 @@ const plugin: CmsModelFieldRendererPlugin = {
         name: t`Radio Buttons`,
         description: t`Renders radio buttons, allowing selection of a single value.`,
         canUse({ field }) {
-            return !field.multipleValues && !!get(field, "predefinedValues.enabled");
+            return !field.list && !!get(field, "predefinedValues.enabled");
         },
         render({ field, getBind }) {
             const Bind = getBind();
@@ -32,7 +32,9 @@ const plugin: CmsModelFieldRendererPlugin = {
                             <RadioGroup
                                 {...bind}
                                 label={field.label}
-                                description={field.helpText}
+                                description={field.description}
+                                note={field.note}
+                                hint={field.help}
                                 items={options.map(option => ({
                                     label: option.label,
                                     value: String(option.value),

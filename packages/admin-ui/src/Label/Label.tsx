@@ -1,7 +1,8 @@
-import * as React from "react";
+import React from "react";
 import { Label as LabelPrimitive } from "radix-ui";
 import { cn, makeDecoratable, cva, type VariantProps } from "~/utils.js";
 import { LabelDescription, LabelHint, LabelRequired, LabelValue } from "./components/index.js";
+import { useAdminUi } from "~/AdminUiProvider/index.js";
 
 const labelVariants = cva(
     [
@@ -51,6 +52,8 @@ const LabelBase = ({
     invalid,
     ...props
 }: LabelProps) => {
+    const { compileMarkdown } = useAdminUi();
+
     if (!text) {
         return null;
     }
@@ -63,8 +66,13 @@ const LabelBase = ({
             <span>
                 <span className={"flex items-center gap-xxs"}>
                     <span className={"webiny_label-text"}>{text}</span>
-                    {description && <LabelDescription content={description} disabled={disabled} />}
-                    {hint && <LabelHint content={hint} />}
+                    {description && (
+                        <LabelDescription
+                            content={compileMarkdown(description)}
+                            disabled={disabled}
+                        />
+                    )}
+                    {hint && <LabelHint content={compileMarkdown(hint)} />}
                     {required && <LabelRequired disabled={disabled} />}
                 </span>
             </span>

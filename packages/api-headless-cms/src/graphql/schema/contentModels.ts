@@ -131,15 +131,17 @@ export const createModelsSchema = ({
             input CmsContentModelFieldInput {
                 id: ID!
                 label: String!
-                helpText: String
-                placeholderText: String
+                help: String
+                description: String
+                note: String
+                placeholder: String
                 # we never use user input - this is here to the GraphQL does not break when posting from our UI
                 # used for debugging purposes
                 storageId: String
                 fieldId: String!
                 type: String!
                 tags: [String!]
-                multipleValues: Boolean
+                list: Boolean
                 predefinedValues: CmsPredefinedValuesInput
                 renderer: CmsFieldRendererInput
                 validation: [CmsFieldValidationInput]
@@ -239,11 +241,13 @@ export const createModelsSchema = ({
                 storageId: String
                 fieldId: String!
                 label: String!
-                helpText: String
-                placeholderText: String
+                help: String
+                description: String
+                note: String
+                placeholder: String
                 type: String!
                 tags: [String!]!
-                multipleValues: Boolean
+                list: Boolean
                 predefinedValues: CmsPredefinedValues
                 renderer: CmsFieldRenderer
                 validation: [CmsFieldValidation!]

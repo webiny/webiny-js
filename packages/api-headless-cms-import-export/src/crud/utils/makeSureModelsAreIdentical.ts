@@ -29,7 +29,7 @@ const getModelValues = (ast: CmsModelAst): IResult[] => {
                   .join(",")}`
             : "";
 
-        const key = `${field.type}@${path.join(".")}#${field.multipleValues ? "m" : "s"}${ref}`;
+        const key = `${field.type}@${path.join(".")}#${field.list ? "m" : "s"}${ref}`;
         results.push({
             key,
             field,

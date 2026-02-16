@@ -72,7 +72,7 @@ describe("content entry validation", () => {
         "should return error for invalid %s field - multiple values",
         async (name, fn) => {
             const field = fn({
-                multipleValues: true
+                list: true
             });
             const { plugins, model } = createValidationStructure({
                 modelId: `testingMultipleValue${ucFirst(camelCase(name))}`,
@@ -136,7 +136,7 @@ describe("content entry validation", () => {
 
     it("should return errors for array not having any items", async () => {
         const field = createTextField({
-            multipleValues: true
+            list: true
         });
         const { plugins, model } = createValidationStructure({
             modelId: `testingEmptyArrayValues`,

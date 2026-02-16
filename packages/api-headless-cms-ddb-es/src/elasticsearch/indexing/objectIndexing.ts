@@ -163,7 +163,7 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
         /**
          * In "object" field, value is either an object or an array of objects.
          */
-        if (field.multipleValues) {
+        if (field.list) {
             const result: ToIndexMultipleFieldValue = {
                 value: [],
                 rawValue: []
@@ -209,7 +209,7 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
         /**
          * In "object" field, value is either an object or an array of objects.
          */
-        if (field.multipleValues) {
+        if (field.list) {
             /**
              * Why this `value || rawValue || []`?
              * It's possible that an object contains all non-indexable fields, or vice-versa, and so

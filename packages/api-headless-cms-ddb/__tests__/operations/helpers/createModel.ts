@@ -23,7 +23,7 @@ export const createModel = (): CmsModel => {
         fields: [
             {
                 id: "title",
-                multipleValues: false,
+                list: false,
                 label: "Title",
                 type: "text",
                 storageId: "text@titleStorageId",
@@ -31,7 +31,7 @@ export const createModel = (): CmsModel => {
             },
             {
                 id: "priority",
-                multipleValues: false,
+                list: false,
                 label: "Priority",
                 type: "number",
                 storageId: "number@priorityStorageId",
@@ -39,7 +39,7 @@ export const createModel = (): CmsModel => {
             },
             {
                 id: "parent",
-                multipleValues: false,
+                list: false,
                 label: "Parent",
                 type: "ref",
                 storageId: "ref@parentStorageId",
@@ -47,7 +47,7 @@ export const createModel = (): CmsModel => {
             },
             {
                 id: "authors",
-                multipleValues: true,
+                list: true,
                 label: "Authors",
                 type: "ref",
                 storageId: "ref@authorsStorageId",
@@ -55,7 +55,7 @@ export const createModel = (): CmsModel => {
             },
             {
                 id: "options",
-                multipleValues: true,
+                list: true,
                 label: "Options",
                 type: "object",
                 storageId: "object@optionsStorageId",
@@ -64,7 +64,7 @@ export const createModel = (): CmsModel => {
                     fields: [
                         {
                             id: "optionId",
-                            multipleValues: false,
+                            list: false,
                             label: "Option ID",
                             type: "number",
                             storageId: "number@optionIdStorageId",
@@ -72,7 +72,7 @@ export const createModel = (): CmsModel => {
                         },
                         {
                             id: "keys",
-                            multipleValues: false,
+                            list: false,
                             label: "Keys",
                             type: "text",
                             storageId: "text@keysStorageId",
@@ -80,7 +80,7 @@ export const createModel = (): CmsModel => {
                         },
                         {
                             id: "variant",
-                            multipleValues: false,
+                            list: false,
                             label: "Variant",
                             type: "object",
                             storageId: "object@variantStorageId",
@@ -89,7 +89,7 @@ export const createModel = (): CmsModel => {
                                 fields: [
                                     {
                                         id: "number",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Variant Number",
                                         type: "number",
                                         storageId: "number@variantNumberStorageId",
@@ -97,7 +97,7 @@ export const createModel = (): CmsModel => {
                                     },
                                     {
                                         id: "colors",
-                                        multipleValues: true,
+                                        list: true,
                                         label: "Variant Colors",
                                         type: "text",
                                         storageId: "text@variantColorsStorageId",
@@ -111,7 +111,7 @@ export const createModel = (): CmsModel => {
             },
             {
                 id: "info",
-                multipleValues: false,
+                list: false,
                 label: "Info",
                 type: "object",
                 storageId: "object@infoStorageId",
@@ -120,7 +120,7 @@ export const createModel = (): CmsModel => {
                     fields: [
                         {
                             id: "keywords",
-                            multipleValues: true,
+                            list: true,
                             label: "Keywords",
                             type: "text",
                             storageId: "text@infoKeywordsStorageId",
@@ -128,7 +128,7 @@ export const createModel = (): CmsModel => {
                         },
                         {
                             id: "images",
-                            multipleValues: true,
+                            list: true,
                             label: "Images",
                             type: "object",
                             storageId: "object@infoImagesStorageId",
@@ -137,7 +137,7 @@ export const createModel = (): CmsModel => {
                                 fields: [
                                     {
                                         id: "file",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "File",
                                         type: "file",
                                         storageId: "file@infoImagesFileStorageId",
@@ -145,7 +145,7 @@ export const createModel = (): CmsModel => {
                                     },
                                     {
                                         id: "title",
-                                        multipleValues: false,
+                                        list: false,
                                         label: "Title",
                                         type: "text",
                                         storageId: "text@infoImagesTitleStorageId",
@@ -153,7 +153,7 @@ export const createModel = (): CmsModel => {
                                     },
                                     {
                                         id: "tags",
-                                        multipleValues: true,
+                                        list: true,
                                         label: "Tags",
                                         type: "object",
                                         storageId: "object@infoImagesTagsStorageId",
@@ -162,7 +162,7 @@ export const createModel = (): CmsModel => {
                                             fields: [
                                                 {
                                                     id: "title",
-                                                    multipleValues: false,
+                                                    list: false,
                                                     label: "Title",
                                                     type: "text",
                                                     storageId: "text@infoImagesTagsTitleStorageId",
@@ -170,7 +170,7 @@ export const createModel = (): CmsModel => {
                                                 },
                                                 {
                                                     id: "slug",
-                                                    multipleValues: false,
+                                                    list: false,
                                                     label: "Slug",
                                                     type: "text",
                                                     storageId: "text@infoImagesTagsSlugStorageId",
@@ -187,7 +187,7 @@ export const createModel = (): CmsModel => {
             },
             {
                 id: "settings",
-                multipleValues: false,
+                list: false,
                 type: "searchable-json",
                 fieldId: "settings",
                 storageId: "searchableJson@settings",

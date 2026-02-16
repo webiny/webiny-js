@@ -10,7 +10,7 @@ export const createFileField = (): CmsModelFieldToGraphQLPlugin => {
         isSearchable: false,
         read: {
             createTypeField({ field }) {
-                if (field.multipleValues) {
+                if (field.list) {
                     return `${field.fieldId}: [String]`;
                 }
 
@@ -19,7 +19,7 @@ export const createFileField = (): CmsModelFieldToGraphQLPlugin => {
         },
         manage: {
             createTypeField({ field }) {
-                if (field.multipleValues) {
+                if (field.list) {
                     return field.fieldId + ": [String]";
                 }
                 return field.fieldId + ": String";

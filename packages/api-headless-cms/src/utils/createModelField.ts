@@ -23,13 +23,13 @@ export const createModelField = (params: CreateModelFieldParams): CmsModelField 
         settings = {},
         listValidation = [],
         validation = [],
-        multipleValues = false,
+        list = false,
         predefinedValues = {
             values: [],
             enabled: false
         },
-        helpText = null,
-        placeholderText = null,
+        help = null,
+        placeholder = null,
         renderer = null
     } = params;
 
@@ -47,10 +47,10 @@ export const createModelField = (params: CreateModelFieldParams): CmsModelField 
         tags,
         listValidation,
         validation,
-        multipleValues,
+        list,
         predefinedValues,
-        helpText,
-        placeholderText,
+        help,
+        placeholder,
         renderer
     };
 };

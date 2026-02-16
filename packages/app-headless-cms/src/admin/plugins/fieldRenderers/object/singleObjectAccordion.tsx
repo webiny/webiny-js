@@ -22,7 +22,7 @@ const plugin: CmsModelFieldRendererPlugin = {
         name: t`Accordion`,
         description: t`Renders fields within an accordion.`,
         canUse({ field }) {
-            return field.type === "object" && !field.multipleValues;
+            return field.type === "object" && !field.list;
         },
         render({ field, getBind, contentModel }) {
             const Bind = getBind();
@@ -53,7 +53,7 @@ const plugin: CmsModelFieldRendererPlugin = {
                                                 />
                                             }
                                             title={field.label}
-                                            description={field.helpText}
+                                            description={field.description}
                                             defaultOpen={open}
                                         >
                                             <Fields

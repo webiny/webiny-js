@@ -9,6 +9,8 @@ export interface FieldBuilderConfig
     extends Omit<CmsModelField, "id" | "fieldId" | "storageId" | "type"> {
     _storageId?: string;
     _fieldId?: string;
+    description?: string | null;
+    note?: string | null;
 }
 
 /**
@@ -24,13 +26,15 @@ export class FieldBuilder<TType extends string = string> {
             label: label || "",
             validation: [],
             listValidation: [],
-            multipleValues: false,
+            list: false,
             predefinedValues: {
                 enabled: false,
                 values: []
             },
-            helpText: null,
-            placeholderText: null,
+            help: null,
+            placeholder: null,
+            description: null,
+            note: null,
             renderer: null,
             settings: {},
             tags: []
@@ -42,18 +46,29 @@ export class FieldBuilder<TType extends string = string> {
         return this;
     }
 
-    helpText(text: string): this {
-        this.config.helpText = text;
+    help(text: string): this {
+        this.config.help = text;
+        return this;
+    }
+
+    description(text: string): this {
+        this.config.description = text;
+        return this;
+    }
+
+    note(text: string): this {
+        this.config.note = text;
         return this;
     }
 
     placeholder(text: string): this {
-        this.config.placeholderText = text;
+        this.config.placeholder = text;
         return this;
     }
 
     storageId(id: string): this {
-        this.config._storageId = id;
+        // We do not allow developers to specify the field type!
+        this.config._storageId = id.split("@").pop();
         return this;
     }
 
@@ -68,7 +83,7 @@ export class FieldBuilder<TType extends string = string> {
     }
 
     list(): this {
-        this.config.multipleValues = true;
+        this.config.list = true;
         return this as this;
     }
 
@@ -78,7 +93,7 @@ export class FieldBuilder<TType extends string = string> {
     }
 
     /**
-     * List validators - these methods are available after calling multipleValues()
+     * List validators - these methods are available after calling list()
      */
     listMinLength(value: number, message?: string): this {
         return this.listValidation({
@@ -108,7 +123,7 @@ export class FieldBuilder<TType extends string = string> {
     }
 
     /**
-     * Add a list validation rule to this field (for multipleValues fields).
+     * Add a list validation rule to this field (for list fields).
      * This method is protected and should only be used by field-specific validator methods.
      * @internal
      */
@@ -145,7 +160,7 @@ export class FieldBuilder<TType extends string = string> {
      */
     build(): CmsModelField {
         const fieldId = this.config._fieldId || camelCase(this.config.label);
-        const storageId = this.config._storageId || `${this.type}@${fieldId}`;
+        const storageId = `${this.type}@${this.config._storageId ?? fieldId}`;
 
         return {
             id: fieldId,
@@ -155,13 +170,15 @@ export class FieldBuilder<TType extends string = string> {
             label: this.config.label,
             validation: this.config.validation || [],
             listValidation: this.config.listValidation || [],
-            multipleValues: this.config.multipleValues || false,
+            list: this.config.list || false,
             predefinedValues: this.config.predefinedValues || {
                 enabled: false,
                 values: []
             },
-            helpText: this.config.helpText || null,
-            placeholderText: this.config.placeholderText || null,
+            help: this.config.help || null,
+            placeholder: this.config.placeholder || null,
+            description: this.config.description || null,
+            note: this.config.note || null,
             renderer: this.config.renderer || null,
             settings: this.config.settings || {},
             tags: this.config.tags || []

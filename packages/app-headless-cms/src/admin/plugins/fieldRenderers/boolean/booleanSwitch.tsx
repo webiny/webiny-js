@@ -15,9 +15,7 @@ const plugin: CmsModelFieldRendererPlugin = {
         description: t`Renders a simple switch button.`,
         canUse({ field }) {
             return (
-                field.type === "boolean" &&
-                !field.multipleValues &&
-                !get(field, "predefinedValues.enabled")
+                field.type === "boolean" && !field.list && !get(field, "predefinedValues.enabled")
             );
         },
         render({ field, getBind }) {
@@ -29,7 +27,8 @@ const plugin: CmsModelFieldRendererPlugin = {
                         <Switch
                             {...bindProps}
                             label={field.label}
-                            description={field.helpText}
+                            description={field.description}
+                            note={field.note}
                             data-testid={`fr.input.boolean.${field.label}`}
                         />
                     )}

@@ -125,7 +125,7 @@ describe("Model Builder Comparison - Old vs New API", () => {
                 expect(newField.type).toBe(oldField.type);
                 expect(newField.label).toBe(oldField.label);
                 expect(newField.storageId).toBe(oldField.storageId);
-                expect(newField.multipleValues).toBe(oldField.multipleValues);
+                expect(newField.list).toBe(oldField.list);
                 // Builder ensures all properties are always defined (never undefined)
                 expect(newField.validation).toEqual(oldField.validation);
                 // Old model may have undefined tags, new builder always returns []

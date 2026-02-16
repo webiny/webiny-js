@@ -34,11 +34,6 @@ class InstallTenantSchema implements GraphQLSchemaFactory.Interface {
                 installTenant: CreateAndInstallTenantUseCase.Interface
             ) => {
                 return async ({ args }) => {
-                    const identity = identityContext.getIdentity();
-                    if (!identity.isAdmin()) {
-                        return new NotAuthorizedResponse();
-                    }
-
                     if (!identityContext.getPermission("tm.tenant")) {
                         return new NotAuthorizedResponse();
                     }

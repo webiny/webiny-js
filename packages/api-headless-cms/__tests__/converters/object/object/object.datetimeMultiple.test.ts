@@ -27,19 +27,19 @@ const model = createModel({
         createModelField({
             fieldId: "profile",
             type: "object",
-            multipleValues: false,
+            list: false,
             settings: {
                 fields: [
                     createModelField({
                         fieldId: "timeline",
                         type: "object",
-                        multipleValues: false,
+                        list: false,
                         settings: {
                             fields: [
                                 createModelField({
                                     fieldId: "milestones",
                                     type: "datetime",
-                                    multipleValues: true
+                                    list: true
                                 })
                             ]
                         }

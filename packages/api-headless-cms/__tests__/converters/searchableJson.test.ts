@@ -25,7 +25,7 @@ const model = createModel({
         createModelField({
             fieldId: "searchableData",
             type: "searchable-json",
-            multipleValues: false
+            list: false
         })
     ]
 });

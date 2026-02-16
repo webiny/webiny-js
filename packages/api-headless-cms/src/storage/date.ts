@@ -52,13 +52,13 @@ export const createDateStorageTransformPlugin = () => {
             const { type } = field.settings || {};
             if (!value || !type || excludeTypes.includes(type)) {
                 return value;
-            } else if (field.multipleValues) {
+            } else if (field.list) {
                 if (!Array.isArray(value)) {
                     return [];
                 }
-                const multipleValues = value as unknown[];
+                const list = value as unknown[];
                 const results: (Date | unknown)[] = [];
-                for (const input of multipleValues) {
+                for (const input of list) {
                     if (input instanceof Date) {
                         if (isNaN(input.getTime())) {
                             continue;
@@ -86,10 +86,10 @@ export const createDateStorageTransformPlugin = () => {
             if (!value || !type || excludeTypes.includes(type)) {
                 return value;
             }
-            if (field.multipleValues) {
-                const multipleValues = value as (string | Date | null | undefined)[];
+            if (field.list) {
+                const list = value as (string | Date | null | undefined)[];
                 const results: string[] = [];
-                for (const input of multipleValues) {
+                for (const input of list) {
                     if (!input) {
                         continue;
                     }

@@ -3,14 +3,14 @@ import type { BindComponentRenderProp } from "@webiny/form";
 
 interface GetValueParams {
     bind: BindComponentRenderProp;
-    field: Pick<CmsModelField, "multipleValues">;
+    field: Pick<CmsModelField, "list">;
     index: number;
 }
 export const getValue = (params: GetValueParams): string => {
     const { bind, field, index } = params;
     let value = bind.value || null;
 
-    if (field.multipleValues) {
+    if (field.list) {
         if (!Array.isArray(value)) {
             value = [];
         }

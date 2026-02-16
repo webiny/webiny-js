@@ -38,7 +38,7 @@ const createFieldCollection = (params: AddFieldsToCollectionParams): FieldCollec
             ...parents,
             {
                 fieldId: field.fieldId,
-                multipleValues: field.multipleValues
+                list: field.list
             }
         ]
             .map(f => f.fieldId)
@@ -85,7 +85,7 @@ const createFieldCollection = (params: AddFieldsToCollectionParams): FieldCollec
                 ...parents,
                 {
                     fieldId: field.fieldId,
-                    multipleValues: field.multipleValues
+                    list: field.list
                 }
             ],
             transformValuePlugins,
@@ -130,7 +130,7 @@ export const createFields = (params: Params) => {
         parents: [
             {
                 fieldId: "values",
-                multipleValues: false
+                list: false
             }
         ],
         system: false

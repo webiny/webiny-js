@@ -35,13 +35,13 @@ const model = createModel({
         createModelField({
             fieldId: "events",
             type: "object",
-            multipleValues: true,
+            list: true,
             settings: {
                 fields: [
                     createModelField({
                         fieldId: "scheduledAt",
                         type: "datetime",
-                        multipleValues: false
+                        list: false
                     })
                 ]
             }

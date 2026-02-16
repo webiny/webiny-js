@@ -46,13 +46,13 @@ const model = createModel({
         createModelField({
             fieldId: "profiles",
             type: "object",
-            multipleValues: true,
+            list: true,
             settings: {
                 fields: [
                     createModelField({
                         fieldId: "paragraphs",
                         type: "long-text",
-                        multipleValues: true
+                        list: true
                     })
                 ]
             }

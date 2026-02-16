@@ -57,7 +57,7 @@ const AppearanceTab = () => {
         }
 
         console.info(`No renderers for field ${field.fieldId} found.`, field);
-    }, [field.id, field.multipleValues, field.predefinedValues?.enabled, selectedPlugin]);
+    }, [field.id, field.list, field.predefinedValues?.enabled, selectedPlugin]);
 
     return (
         <>

@@ -86,12 +86,12 @@ const createModelFields = (): CmsModelField[] => {
         createModelField({
             fieldId: "images",
             type: "file",
-            multipleValues: true
+            list: true
         }),
         createModelField({
             fieldId: "imagesUndefined",
             type: "file",
-            multipleValues: true
+            list: true
         }),
         createModelField({
             fieldId: "description",
@@ -223,28 +223,28 @@ const createModelFields = (): CmsModelField[] => {
                     }),
                     createModelField({
                         type: "object",
-                        multipleValues: true,
+                        list: true,
                         fieldId: "myObjectOptions",
                         settings: {
                             fields: [
                                 createModelField({
                                     type: "text",
-                                    multipleValues: false,
+                                    list: false,
                                     fieldId: "titleInMyObjectOptions"
                                 }),
                                 createModelField({
                                     type: "text",
-                                    multipleValues: false,
+                                    list: false,
                                     fieldId: "titleEmptyInMyObjectOptions"
                                 }),
                                 createModelField({
                                     type: "number",
-                                    multipleValues: true,
+                                    list: true,
                                     fieldId: "valuesInMyObjectOptions"
                                 }),
                                 createModelField({
                                     type: "object",
-                                    multipleValues: true,
+                                    list: true,
                                     fieldId: "objectInMyObjectOptions",
                                     settings: {
                                         /**
@@ -254,17 +254,17 @@ const createModelFields = (): CmsModelField[] => {
                                         fields: [
                                             createModelField({
                                                 type: "text",
-                                                multipleValues: true,
+                                                list: true,
                                                 fieldId: "textInObjectInMyObjectOptions"
                                             }),
                                             createModelField({
                                                 type: "number",
-                                                multipleValues: true,
+                                                list: true,
                                                 fieldId: "numberInObjectInMyObjectOptions"
                                             }),
                                             createModelField({
                                                 type: "object",
-                                                multipleValues: false,
+                                                list: false,
                                                 fieldId: "objectInObjectInMyObjectOptions",
                                                 settings: {
                                                     fields: [
@@ -287,18 +287,18 @@ const createModelFields = (): CmsModelField[] => {
                     }),
                     createModelField({
                         type: "object",
-                        multipleValues: true,
+                        list: true,
                         fieldId: "myObjectOptionsEmpty",
                         settings: {
                             fields: [
                                 createModelField({
                                     type: "text",
-                                    multipleValues: false,
+                                    list: false,
                                     fieldId: "titleInMyObjectOptions"
                                 }),
                                 createModelField({
                                     type: "number",
-                                    multipleValues: true,
+                                    list: true,
                                     fieldId: "valuesInMyObjectOptions"
                                 })
                             ]
@@ -307,7 +307,7 @@ const createModelFields = (): CmsModelField[] => {
                     createModelField({
                         type: "dynamicZone",
                         fieldId: "myObjectDz",
-                        multipleValues: false,
+                        list: false,
                         settings: {
                             templates: [
                                 {
@@ -324,12 +324,12 @@ const createModelFields = (): CmsModelField[] => {
                                     fields: [
                                         createModelField({
                                             type: "rich-text",
-                                            multipleValues: false,
+                                            list: false,
                                             fieldId: "myObjectDzRichText"
                                         }),
                                         createModelField({
                                             type: "rich-text",
-                                            multipleValues: true,
+                                            list: true,
                                             fieldId: "myObjectDzRichTextMultiple"
                                         })
                                     ]
@@ -426,18 +426,18 @@ const createModelFields = (): CmsModelField[] => {
                     }),
                     createModelField({
                         type: "object",
-                        multipleValues: true,
+                        list: true,
                         fieldId: "myObjectOptions",
                         settings: {
                             fields: [
                                 createModelField({
                                     type: "text",
-                                    multipleValues: false,
+                                    list: false,
                                     fieldId: "titleInMyObjectOptions"
                                 }),
                                 createModelField({
                                     type: "number",
-                                    multipleValues: true,
+                                    list: true,
                                     fieldId: "valuesInMyObjectOptions"
                                 })
                             ]
@@ -449,7 +449,7 @@ const createModelFields = (): CmsModelField[] => {
         createModelField({
             fieldId: "myObjectList",
             type: "object",
-            multipleValues: true,
+            list: true,
             settings: {
                 fields: [
                     createModelField({
@@ -470,18 +470,18 @@ const createModelFields = (): CmsModelField[] => {
                     }),
                     createModelField({
                         type: "object",
-                        multipleValues: true,
+                        list: true,
                         fieldId: "myObjectListOptions",
                         settings: {
                             fields: [
                                 createModelField({
                                     type: "text",
-                                    multipleValues: false,
+                                    list: false,
                                     fieldId: "titleInMyObjectListOptions"
                                 }),
                                 createModelField({
                                     type: "number",
-                                    multipleValues: true,
+                                    list: true,
                                     fieldId: "valuesInMyObjectListOptions"
                                 })
                             ]
@@ -493,7 +493,7 @@ const createModelFields = (): CmsModelField[] => {
         createModelField({
             type: "dynamicZone",
             fieldId: "dynamicZoneArray",
-            multipleValues: true,
+            list: true,
             settings: {
                 templates: [
                     {
@@ -523,23 +523,23 @@ const createModelFields = (): CmsModelField[] => {
                             }),
                             createModelField({
                                 type: "rich-text",
-                                multipleValues: false,
+                                list: false,
                                 fieldId: "dzArrayRichText"
                             }),
                             createModelField({
                                 type: "rich-text",
-                                multipleValues: true,
+                                list: true,
                                 fieldId: "dzArrayRichTextMultiple"
                             }),
                             createModelField({
                                 type: "object",
-                                multipleValues: true,
+                                list: true,
                                 fieldId: "dzObjectArray",
                                 settings: {
                                     fields: [
                                         createModelField({
                                             type: "text",
-                                            multipleValues: false,
+                                            list: false,
                                             fieldId: "titleInDzObjectArray"
                                         })
                                     ]
@@ -547,13 +547,13 @@ const createModelFields = (): CmsModelField[] => {
                             }),
                             createModelField({
                                 type: "object",
-                                multipleValues: false,
+                                list: false,
                                 fieldId: "dzObject",
                                 settings: {
                                     fields: [
                                         createModelField({
                                             type: "text",
-                                            multipleValues: false,
+                                            list: false,
                                             fieldId: "titleInDzObject"
                                         })
                                     ]
@@ -567,7 +567,7 @@ const createModelFields = (): CmsModelField[] => {
         createModelField({
             type: "dynamicZone",
             fieldId: "dynamicZoneObject",
-            multipleValues: false,
+            list: false,
             settings: {
                 templates: [
                     {
@@ -597,23 +597,23 @@ const createModelFields = (): CmsModelField[] => {
                             }),
                             createModelField({
                                 type: "rich-text",
-                                multipleValues: false,
+                                list: false,
                                 fieldId: "dzObjectRichText"
                             }),
                             createModelField({
                                 type: "rich-text",
-                                multipleValues: true,
+                                list: true,
                                 fieldId: "dzObjectRichTextMultiple"
                             }),
                             createModelField({
                                 type: "object",
-                                multipleValues: true,
+                                list: true,
                                 fieldId: "dzObjectArray",
                                 settings: {
                                     fields: [
                                         createModelField({
                                             type: "text",
-                                            multipleValues: false,
+                                            list: false,
                                             fieldId: "titleInDzObjectArray"
                                         })
                                     ]
@@ -621,13 +621,13 @@ const createModelFields = (): CmsModelField[] => {
                             }),
                             createModelField({
                                 type: "object",
-                                multipleValues: false,
+                                list: false,
                                 fieldId: "dzObject",
                                 settings: {
                                     fields: [
                                         createModelField({
                                             type: "text",
-                                            multipleValues: false,
+                                            list: false,
                                             fieldId: "titleInDzObject"
                                         })
                                     ]

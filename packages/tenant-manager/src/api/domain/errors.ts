@@ -17,7 +17,7 @@ export class TenantModelNotFoundError extends BaseError {
 }
 
 export class TenantPersistenceError extends BaseError<{ error: Error }> {
-    override readonly code = "Tenant/Persistence" as const;
+    override readonly code = "Tenant/Persist" as const;
 
     constructor(error: Error) {
         super({ message: error.message, data: { error } });
@@ -25,7 +25,7 @@ export class TenantPersistenceError extends BaseError<{ error: Error }> {
 }
 
 export class TenantCreationError extends BaseError<{ error: Error }> {
-    override readonly code = "Tenant/Creation" as const;
+    override readonly code = "Tenant/Create" as const;
 
     constructor(error: Error) {
         super({ message: error.message, data: { error } });
@@ -33,7 +33,7 @@ export class TenantCreationError extends BaseError<{ error: Error }> {
 }
 
 export class TenantInstallationError extends BaseError<{ error: Error }> {
-    override readonly code = "Tenant/Installation" as const;
+    override readonly code = "Tenant/Install" as const;
 
     constructor(error: Error) {
         super({ message: error.message, data: { error } });

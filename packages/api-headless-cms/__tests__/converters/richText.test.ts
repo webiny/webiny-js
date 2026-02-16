@@ -16,7 +16,7 @@ const model = createModel({
         createModelField({
             fieldId: "content",
             type: "rich-text",
-            multipleValues: false
+            list: false
         })
     ]
 });

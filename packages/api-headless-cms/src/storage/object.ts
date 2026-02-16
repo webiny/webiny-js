@@ -53,7 +53,7 @@ export const createObjectStorageTransform = (): StorageTransformPlugin => {
 
             const fields = (field.settings?.fields || []) as CmsModelField[];
 
-            if (field.multipleValues) {
+            if (field.list) {
                 return await pMap(value as GenericRecord[], value =>
                     processValue({
                         sourceValue: value,
@@ -82,7 +82,7 @@ export const createObjectStorageTransform = (): StorageTransformPlugin => {
 
             const fields = (field.settings?.fields || []) as CmsModelField[];
 
-            if (field.multipleValues) {
+            if (field.list) {
                 const values = input as GenericRecord[];
 
                 return await Promise.all(

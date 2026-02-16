@@ -48,14 +48,14 @@ describe("multiple values in field", () => {
         const updatedContentModel: any = updateResponse.data.updateContentModel.data;
 
         const multipleValueFields = updatedContentModel.fields.filter((field: CmsModelField) => {
-            return field.multipleValues === true;
+            return field.list === true;
         });
 
         expect(multipleValueFields).toEqual([
             {
                 id: expect.any(String),
-                multipleValues: true,
-                helpText: "",
+                list: true,
+                help: null,
                 label: "Available sizes",
                 storageId: expect.stringMatching("text@"),
                 fieldId: "availableSizes",
@@ -71,7 +71,7 @@ describe("multiple values in field", () => {
                     }
                 ],
                 listValidation: [],
-                placeholderText: "placeholder text",
+                placeholder: "placeholder text",
                 tags: [],
                 predefinedValues: {
                     enabled: true,

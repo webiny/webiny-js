@@ -24,7 +24,7 @@
     "load-json-file": "6.2.0",
     "ora": "4.1.1",
     "os": "0.1.2",
-    "rimraf": "^6.1.2",
+    "rimraf": "^6.1.3",
     "type-fest": "^5.4.4",
     "uuid": "^13.0.0",
     "validate-npm-package-name": "^6.0.2",

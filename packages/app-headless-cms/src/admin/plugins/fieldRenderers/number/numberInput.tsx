@@ -15,9 +15,7 @@ const plugin: CmsModelFieldRendererPlugin = {
         description: t`Renders a simple input with its type set to "number".`,
         canUse({ field }) {
             return (
-                field.type === "number" &&
-                !field.multipleValues &&
-                !get(field, "predefinedValues.enabled")
+                field.type === "number" && !field.list && !get(field, "predefinedValues.enabled")
             );
         },
         render({ field, getBind }) {
@@ -34,8 +32,10 @@ const plugin: CmsModelFieldRendererPlugin = {
                             >
                                 <Input
                                     label={field.label}
-                                    placeholder={field.placeholderText}
-                                    description={field.helpText}
+                                    placeholder={field.placeholder}
+                                    description={field.description}
+                                    note={field.note}
+                                    hint={field.help}
                                     type="number"
                                     data-testid={`fr.input.number.${field.label}`}
                                     validation={bind.validation}

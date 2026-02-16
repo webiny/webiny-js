@@ -24,7 +24,7 @@ export const createBooleanField = (): CmsModelFieldToGraphQLPlugin => {
                 return `${field.fieldId}: Boolean`;
             },
             createTypeField({ field }) {
-                if (field.multipleValues) {
+                if (field.list) {
                     return `${field.fieldId}: [Boolean]`;
                 }
 
@@ -34,7 +34,7 @@ export const createBooleanField = (): CmsModelFieldToGraphQLPlugin => {
         manage: {
             createListFilters,
             createTypeField({ field }) {
-                if (field.multipleValues) {
+                if (field.list) {
                     return field.fieldId + ": [Boolean]";
                 }
 

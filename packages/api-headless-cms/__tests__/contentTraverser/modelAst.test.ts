@@ -33,7 +33,7 @@ describe("Model to AST", () => {
                     type: "field",
                     field: {
                         id: "title",
-                        multipleValues: false,
+                        list: false,
                         label: "Title",
                         type: "text",
                         storageId: "text@title",
@@ -45,7 +45,7 @@ describe("Model to AST", () => {
                     type: "field",
                     field: {
                         id: "body",
-                        multipleValues: false,
+                        list: false,
                         label: "Body",
                         type: "rich-text",
                         storageId: "rich-text@body",
@@ -57,7 +57,7 @@ describe("Model to AST", () => {
                     type: "field",
                     field: {
                         id: "categories",
-                        multipleValues: true,
+                        list: true,
                         label: "Categories",
                         type: "ref",
                         storageId: "ref@categories",
@@ -76,7 +76,7 @@ describe("Model to AST", () => {
                         storageId: "dynamicZone@content",
                         type: "dynamicZone",
                         label: "Content",
-                        multipleValues: true,
+                        list: true,
                         settings: expect.toBeObject()
                     },
                     children: [
@@ -164,7 +164,7 @@ describe("Model to AST", () => {
                                                 fieldId: "seo",
                                                 type: "object",
                                                 label: "SEO",
-                                                multipleValues: true,
+                                                list: true,
                                                 settings: expect.toBeObject()
                                             },
                                             children: [
@@ -210,7 +210,7 @@ describe("Model to AST", () => {
                                                         fieldId: "authors",
                                                         label: "Authors",
                                                         type: "ref",
-                                                        multipleValues: true,
+                                                        list: true,
                                                         settings: {
                                                             models: [
                                                                 {

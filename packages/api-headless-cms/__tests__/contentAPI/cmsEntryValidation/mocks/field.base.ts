@@ -5,7 +5,7 @@ import { createMinLengthValidation, createRequiredValidation } from "./validatio
 export interface CreateFieldInput
     extends Pick<
         CmsModelField,
-        "id" | "fieldId" | "type" | "label" | "listValidation" | "validation" | "multipleValues"
+        "id" | "fieldId" | "type" | "label" | "listValidation" | "validation" | "list"
     > {
     parentId?: string;
 }
@@ -22,7 +22,7 @@ export const createLayout = (fields: Pick<CmsModelField, "id" | "settings">[]) =
 };
 
 export const createFieldId = (
-    field: Pick<CmsModelField, "id" | "multipleValues">,
+    field: Pick<CmsModelField, "id" | "list">,
     parentId?: string
 ): string => {
     const list = [field.id];
@@ -30,14 +30,14 @@ export const createFieldId = (
         list[0] = ucFirst(list[0]);
         list.unshift(parentId);
     }
-    if (field.multipleValues) {
+    if (field.list) {
         list[0] = ucFirst(list[0]);
         list.unshift(`multiValue`);
     }
     return list.join("");
 };
 export const createFieldFieldId = (
-    field: Pick<CmsModelField, "fieldId" | "multipleValues">,
+    field: Pick<CmsModelField, "fieldId" | "list">,
     parentId?: string
 ): string => {
     const list = [field.fieldId];
@@ -45,7 +45,7 @@ export const createFieldFieldId = (
         list[0] = ucFirst(list[0]);
         list.unshift(parentId);
     }
-    if (field.multipleValues) {
+    if (field.list) {
         list[0] = ucFirst(list[0]);
         list.unshift(`multiValue`);
     }
@@ -70,8 +70,8 @@ export const createField: CreateFieldCb = input => {
         ],
         id,
         fieldId,
-        helpText: `Helper text for ${input.label}`,
-        placeholderText: `A ${input.label} value`
+        help: `Helper text for ${input.label}`,
+        placeholder: `A ${input.label} value`
     };
     return result as CmsModelField;
 };

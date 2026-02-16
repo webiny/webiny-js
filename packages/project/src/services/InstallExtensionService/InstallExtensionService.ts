@@ -61,12 +61,29 @@ class DefaultInstallExtensionService implements InstallExtensionService.Interfac
         const randomId = String(Date.now());
         const downloadFolderPath = path.join(os.tmpdir(), `wby-ext-${randomId}`);
 
-        await downloadFolderFromS3({
-            bucketName: S3_BUCKET_NAME,
-            bucketRegion: S3_BUCKET_REGION,
-            bucketFolderKey: source,
-            downloadFolderPath
-        });
+        // Check if source is a local path
+        const isLocalPath =
+            source.startsWith("../") || source.startsWith("./") || source.startsWith("/");
+
+        if (isLocalPath) {
+            // Resolve the local path relative to the project root
+            const resolvedPath = path.isAbsolute(source)
+                ? source
+                : path.resolve(projectRoot, source);
+
+            // Copy the local directory to the temporary download folder
+            await fsAsync.cp(resolvedPath, downloadFolderPath, {
+                recursive: true
+            });
+        } else {
+            // Download from S3
+            await downloadFolderFromS3({
+                bucketName: S3_BUCKET_NAME,
+                bucketRegion: S3_BUCKET_REGION,
+                bucketFolderKey: source,
+                downloadFolderPath
+            });
+        }
 
         let extensionsFolderToCopyPath = path.join(downloadFolderPath, "extensions");
         let extensionJsonPath = path.join(downloadFolderPath, "extension.json");

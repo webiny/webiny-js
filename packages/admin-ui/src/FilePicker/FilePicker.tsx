@@ -21,6 +21,7 @@ type FilePickerProps = FilePickerPrimitiveProps & FormComponentProps;
 
 const BaseFilePicker = ({
     label,
+    hint,
     description,
     note,
     required,
@@ -53,6 +54,7 @@ const BaseFilePicker = ({
                 <>
                     <FilePickerLabel
                         label={label}
+                        hint={hint}
                         required={required}
                         disabled={disabled}
                         invalid={invalid}

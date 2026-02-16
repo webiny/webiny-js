@@ -30,7 +30,7 @@ export const createLongTextField = (): CmsModelFieldToGraphQLPlugin => {
         fullTextSearch: true,
         read: {
             createTypeField({ field }) {
-                if (field.multipleValues) {
+                if (field.list) {
                     return `${field.fieldId}: [String]`;
                 }
 
@@ -42,7 +42,7 @@ export const createLongTextField = (): CmsModelFieldToGraphQLPlugin => {
         manage: {
             createListFilters,
             createTypeField({ field }) {
-                if (field.multipleValues) {
+                if (field.list) {
                     return field.fieldId + ": [String]";
                 }
 

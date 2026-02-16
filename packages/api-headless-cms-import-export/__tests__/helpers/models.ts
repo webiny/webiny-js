@@ -13,8 +13,8 @@ export const categoryModel: CmsModelInput = {
     fields: [
         createModelField({
             id: "titleFieldIdAbcdef",
-            multipleValues: false,
-            helpText: "",
+            list: false,
+            help: "",
             label: "Title",
             type: "text",
             storageId: "text@titleStorageId",
@@ -33,7 +33,7 @@ export const categoryModel: CmsModelInput = {
                 }
             ],
             listValidation: [],
-            placeholderText: "placeholder text",
+            placeholder: "placeholder text",
             predefinedValues: {
                 enabled: false,
                 values: []
@@ -44,8 +44,8 @@ export const categoryModel: CmsModelInput = {
         }),
         createModelField({
             id: "slugFieldIdAbc",
-            multipleValues: false,
-            helpText: "",
+            list: false,
+            help: "",
             label: "Slug",
             type: "text",
             storageId: "text@slugStorageId",
@@ -57,7 +57,7 @@ export const categoryModel: CmsModelInput = {
                 }
             ],
             listValidation: [],
-            placeholderText: "placeholder text",
+            placeholder: "placeholder text",
             predefinedValues: {
                 enabled: false,
                 values: []
@@ -68,8 +68,8 @@ export const categoryModel: CmsModelInput = {
         }),
         createModelField({
             id: "parentCategory",
-            multipleValues: false,
-            helpText: "",
+            list: false,
+            help: "",
             label: "Self - reference",
             type: "ref",
             fieldId: "parent",
@@ -83,8 +83,8 @@ export const categoryModel: CmsModelInput = {
         }),
         createModelField({
             id: "tags",
-            multipleValues: true,
-            helpText: "",
+            list: true,
+            help: "",
             label: "Tags",
             type: "text",
             fieldId: "tags"

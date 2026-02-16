@@ -132,9 +132,7 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
                 return {
                     fields:
                         field.fieldId +
-                        `(populate: Boolean = true): ${
-                            field.multipleValues ? `[${gqlType}!]` : gqlType
-                        }`,
+                        `(populate: Boolean = true): ${field.list ? `[${gqlType}!]` : gqlType}`,
                     typeDefs
                 };
             },
@@ -182,7 +180,7 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
                         return initialValue;
                     }
 
-                    if (field.multipleValues) {
+                    if (field.list) {
                         /**
                          * We cast because value really can be array and single value.
                          * At this point, we are 99% sure that it is an array (+ we check for it)
@@ -333,7 +331,7 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
                 };
             },
             createTypeField({ field }) {
-                if (field.multipleValues) {
+                if (field.list) {
                     return `${field.fieldId}: [RefField!]`;
                 }
                 return `${field.fieldId}: RefField`;

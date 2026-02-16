@@ -26,8 +26,8 @@ export * from "./field.time";
 export * from "./field.text";
 
 export const createFields = () => {
-    const multipleValuesParams = {
-        multipleValues: true
+    const listParams = {
+        list: true
     };
     return [
         createTextField(),
@@ -43,15 +43,15 @@ export const createFields = () => {
         createObjectField(),
         createDynamicZoneField(),
         // multiple values
-        createTextField(multipleValuesParams),
-        createLongTextField(multipleValuesParams),
-        createRichTextField(multipleValuesParams),
-        createNumberField(multipleValuesParams),
-        createBooleanField(multipleValuesParams),
-        createDateField(multipleValuesParams),
-        createTimeField(multipleValuesParams),
-        createDateTimeField(multipleValuesParams),
-        createFileField(multipleValuesParams),
-        createReferenceField(multipleValuesParams)
+        createTextField(listParams),
+        createLongTextField(listParams),
+        createRichTextField(listParams),
+        createNumberField(listParams),
+        createBooleanField(listParams),
+        createDateField(listParams),
+        createTimeField(listParams),
+        createDateTimeField(listParams),
+        createFileField(listParams),
+        createReferenceField(listParams)
     ];
 };

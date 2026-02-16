@@ -27,7 +27,7 @@ const ContentEntriesMultiAutocomplete = ({ bind, field }: ContentEntriesMultiAut
     const [showNewEntryModal, setShowNewEntryModal] = useState(false);
     const { options, setSearch, entries, loading, onChange } = useReferences({ bind, field });
 
-    const { renderNewEntryModal, refModelId, helpText } = useNewRefEntry({ field });
+    const { renderNewEntryModal, refModelId, help } = useNewRefEntry({ field });
 
     const entryWarning = (entry: OptionItem, index: number): React.ReactElement | null => {
         const { id, modelId, name, published } = entry;
@@ -88,7 +88,7 @@ const ContentEntriesMultiAutocomplete = ({ bind, field }: ContentEntriesMultiAut
                     options={options}
                     label={field.label}
                     onInput={debounce(setSearch, 250)}
-                    description={<>{field.helpText}</>}
+                    description={<>{field.help}</>}
                     note={warning}
                     noResultFound={<NewEntryButton onClick={() => setShowNewEntryModal(true)} />}
                 />
@@ -109,9 +109,9 @@ const ContentEntriesMultiAutocomplete = ({ bind, field }: ContentEntriesMultiAut
             options={options}
             label={field.label}
             onInput={debounce(setSearch, 250)}
-            description={<>{field.helpText}</>}
+            description={<>{field.help}</>}
             note={warning}
-            noResultFound={helpText}
+            noResultFound={help}
         />
     );
 };

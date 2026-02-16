@@ -18,7 +18,7 @@ const mockField: CmsModelField = {
     label: "Text",
     validation: [],
     listValidation: [],
-    multipleValues: false,
+    list: false,
     renderer: {
         name: "any"
     },
@@ -28,8 +28,8 @@ const mockField: CmsModelField = {
         enabled: false,
         values: []
     },
-    placeholderText: "text",
-    helpText: "text"
+    placeholder: "text",
+    help: "text"
 };
 
 const getFieldTypePlugin = (): CmsModelFieldToGraphQLPlugin => {

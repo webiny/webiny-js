@@ -68,9 +68,9 @@ const plugin: CmsModelFieldTypePlugin = {
         description: t`Store date and time.`,
         icon: <DateTimeIcon />,
         validators: ["required", "dateGte", "dateLte"],
-        allowMultipleValues: true,
+        allowList: true,
         allowPredefinedValues: false, // TODO: implement "renderPredefinedValues" and set to true.
-        multipleValuesLabel: t`Use as a list of dates and times`,
+        listLabel: t`Use as a list of dates and times`,
         createField() {
             return {
                 type: this.type,

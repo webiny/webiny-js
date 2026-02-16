@@ -7,6 +7,49 @@ interface UpdateWebinyConfigParams {
 }
 
 /**
+ * Serializes a props object to JSX attribute syntax.
+ * Examples:
+ * - { secretKey: "value" } => 'secretKey={"value"}'
+ * - { enabled: true } => 'enabled={true}'
+ * - { count: 42 } => 'count={42}'
+ * - { config: { key: "value" } } => 'config={{"key":"value"}}'
+ */
+const serializePropsToJsx = (props: Record<string, any>): string => {
+    const attributes: string[] = [];
+
+    for (const [key, value] of Object.entries(props)) {
+        // Skip undefined values
+        if (value === undefined) {
+            continue;
+        }
+
+        // Determine the serialization based on value type
+        let serializedValue: string;
+
+        if (typeof value === "string") {
+            // Strings: use JSON.stringify to handle escaping, then wrap in curly braces
+            serializedValue = `{${JSON.stringify(value)}}`;
+        } else if (typeof value === "number" || typeof value === "boolean") {
+            // Numbers and booleans: wrap in curly braces without quotes
+            serializedValue = `{${value}}`;
+        } else if (value === null) {
+            // Null values
+            serializedValue = `{null}`;
+        } else if (Array.isArray(value) || typeof value === "object") {
+            // Arrays and objects: use JSON.stringify, then wrap in curly braces
+            serializedValue = `{${JSON.stringify(value)}}`;
+        } else {
+            // Fallback for any other types
+            serializedValue = `{${JSON.stringify(value)}}`;
+        }
+
+        attributes.push(`${key}=${serializedValue}`);
+    }
+
+    return attributes.join(" ");
+};
+
+/**
  * Update the webiny.config.tsx file to add extension imports and component.
  */
 export const updateWebinyConfig = async (params: UpdateWebinyConfigParams): Promise<void> => {
@@ -48,7 +91,15 @@ export const updateWebinyConfig = async (params: UpdateWebinyConfigParams): Prom
     // Add component to the Extensions function
     if (webinyConfigTsx.component) {
         const componentName = webinyConfigTsx.component.name;
-        const componentTag = `<${componentName} />`;
+        const props = webinyConfigTsx.component.props;
+
+        // Serialize props to JSX attributes
+        const propsString = props ? serializePropsToJsx(props) : "";
+
+        // Generate component tag with or without props
+        const componentTag = propsString
+            ? `<${componentName} ${propsString} />`
+            : `<${componentName} />`;
 
         // Check if component already exists
         if (!content.includes(componentTag)) {

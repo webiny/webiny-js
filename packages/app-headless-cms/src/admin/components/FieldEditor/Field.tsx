@@ -17,7 +17,7 @@ const t = i18n.ns("app-headless-cms/admin/components/editor/field");
 const allowedTitleFieldTypes: string[] = ["text", "number"];
 
 const isFieldAllowedToBeTitle = (model: CmsModel, field: CmsModelField, parent?: CmsModelField) => {
-    if (field.multipleValues || parent) {
+    if (field.list || parent) {
         return false;
     } else if (allowedTitleFieldTypes.includes(field.type) === false) {
         return false;
@@ -31,7 +31,7 @@ const isFieldAllowedToBeDescription = (
     field: CmsModelField,
     parent?: CmsModelField
 ) => {
-    if (field.multipleValues || parent) {
+    if (field.list || parent) {
         return false;
     } else if (model.descriptionFieldId === field.fieldId) {
         return false;
@@ -40,7 +40,7 @@ const isFieldAllowedToBeDescription = (
 };
 
 const isFieldAllowedToBeImage = (model: CmsModel, field: CmsModelField, parent?: CmsModelField) => {
-    if (field.multipleValues || parent) {
+    if (field.list || parent) {
         return false;
     } else if (model.imageFieldId === field.fieldId) {
         return false;
@@ -178,7 +178,7 @@ const Field = (props: FieldProps) => {
 
     const fieldInformationRenderer = fieldPlugin.field?.renderInfo;
 
-    const info = [rendererPlugin?.renderer.name, field.multipleValues ? "multiple values" : null]
+    const info = [rendererPlugin?.renderer.name, field.list ? "multiple values" : null]
         .filter(Boolean)
         .join(", ");
 

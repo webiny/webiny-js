@@ -79,7 +79,7 @@ const FieldRenderer = ({ getBind, field }: CmsModelFieldRendererProps) => {
                                                 {...bind}
                                                 label={field.label}
                                                 validation={validation}
-                                                description={field.helpText}
+                                                description={field.description}
                                                 note={getSupportedExtensionsLabelHint(imagesOnly)}
                                                 values={values}
                                                 onSelectItem={() => selectFiles()}
@@ -99,7 +99,7 @@ const FieldRenderer = ({ getBind, field }: CmsModelFieldRendererProps) => {
 
                                                     editFile(value.url);
                                                 }}
-                                                placeholder={field.placeholderText}
+                                                placeholder={field.placeholder}
                                                 type={"compact"}
                                                 data-testid={`fr.input.filefields.${field.label}`}
                                             />
@@ -123,7 +123,7 @@ export const multipleFiles: CmsModelFieldRendererPlugin = {
         name: t`File Inputs`,
         description: t`Enables selecting multiple files via File Manager.`,
         canUse({ field }) {
-            return field.type === "file" && !!field.multipleValues;
+            return field.type === "file" && !!field.list;
         },
         render(props) {
             return <FieldRenderer {...props} />;

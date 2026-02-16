@@ -16,9 +16,9 @@ const plugin: CmsModelFieldTypePlugin = {
         label: t`Object`,
         description: t`Store nested data structures.`,
         icon: <ObjectIcon />,
-        allowMultipleValues: true,
+        allowList: true,
         allowPredefinedValues: false,
-        multipleValuesLabel: t`Use as a repeatable object`,
+        listLabel: t`Use as a repeatable object`,
         createField() {
             return {
                 type: this.type,

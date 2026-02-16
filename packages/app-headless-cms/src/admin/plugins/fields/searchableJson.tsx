@@ -13,9 +13,9 @@ const plugin: CmsModelFieldTypePlugin = {
         label: t`Searchable JSON`,
         description: t`Store Searchable JSON values.`,
         icon: <JsonIcon />,
-        allowMultipleValues: true,
+        allowList: true,
         allowPredefinedValues: true,
-        multipleValuesLabel: t`Use as a list of Searchable JSONs`,
+        listLabel: t`Use as a list of Searchable JSONs`,
         hideInAdmin: true,
         createField() {
             return {
