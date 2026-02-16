@@ -15,7 +15,6 @@ export async function executeGraphQL(
     try {
         const body = JSON.stringify({ query, variables });
 
-        console.log(body);
         response = await fetchFn(url, {
             method: "POST",
             headers: {
