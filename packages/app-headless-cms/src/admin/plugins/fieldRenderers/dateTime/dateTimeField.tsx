@@ -6,6 +6,7 @@ import { DateOnly } from "./DateOnly.js";
 import { DateTimeWithoutTimezone } from "./DateTimeWithoutTimezone.js";
 import { DateTimeWithTimezone } from "./DateTimeWithTimezone.js";
 import { Time } from "./Time.js";
+import { FormComponentDescription, FormComponentLabel, FormComponentNote } from "@webiny/admin-ui";
 
 const t = i18n.ns("app-headless-cms/admin/fields/date-time");
 
@@ -44,7 +45,12 @@ const plugin: CmsModelFieldRendererPlugin = {
                     {bind => {
                         return (
                             <Bind.ValidationContainer>
+                                <FormComponentLabel text={field.label} hint={field.help} />
+                                {field.description ? (
+                                    <FormComponentDescription text={field.description} />
+                                ) : null}
                                 <Component bind={bind} field={field} />
+                                <FormComponentNote text={field.note} />
                             </Bind.ValidationContainer>
                         );
                     }}

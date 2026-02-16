@@ -46,6 +46,8 @@ export const SimpleMultipleRenderer = (props: SimpleMultipleRendererProps) => {
             {...bind}
             label={field.label}
             description={field.description}
+            note={field.note}
+            hint={field.help}
             value={values}
             items={items}
             onChange={(values: string[]) => {

@@ -1,10 +1,12 @@
 import React from "react";
 import get from "lodash/get.js";
 import { i18n } from "@webiny/app/i18n/index.js";
+import { FormComponentLabel } from "@webiny/admin-ui";
+import { FormComponentNote } from "@webiny/admin-ui";
+import { FormComponentDescription } from "@webiny/admin-ui";
 import type { CmsModelFieldRendererPlugin, CmsModelField } from "~/types.js";
 import { useForm } from "@webiny/form";
 import { LexicalCmsEditor } from "~/admin/components/LexicalCmsEditor/LexicalCmsEditor.js";
-import { FormComponentDescription } from "@webiny/admin-ui";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
@@ -27,7 +29,7 @@ const plugin: CmsModelFieldRendererPlugin = {
                 !get(field, "predefinedValues.enabled")
             ].every(Boolean);
         },
-        render({ field, getBind, Label }) {
+        render({ field, getBind }) {
             const form = useForm();
 
             const Bind = getBind();
@@ -37,8 +39,8 @@ const plugin: CmsModelFieldRendererPlugin = {
                     {bind => {
                         return (
                             <Bind.ValidationContainer>
-                                <Label>{field.label}</Label>
-                                <FormComponentDescription text={field.help} />
+                                <FormComponentLabel text={field.label} hint={field.help} />
+                                <FormComponentDescription text={field.description} />
                                 <LexicalCmsEditor
                                     value={bind.value}
                                     onChange={bind.onChange}
@@ -46,6 +48,7 @@ const plugin: CmsModelFieldRendererPlugin = {
                                     placeholder={field.placeholder}
                                     data-testid={`fr.input.lexical.${field.label}`}
                                 />
+                                {field.note ? <FormComponentNote text={field.note} /> : null}
                             </Bind.ValidationContainer>
                         );
                     }}

@@ -16,6 +16,7 @@ const DecoratableTextarea = ({
     label,
     description,
     note,
+    hint,
     required,
     disabled,
     validation,
@@ -45,6 +46,7 @@ const DecoratableTextarea = ({
             <FormComponentLabel
                 htmlFor={id}
                 text={label}
+                hint={hint}
                 required={required}
                 disabled={disabled}
                 invalid={invalid}

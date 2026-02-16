@@ -30,6 +30,8 @@ const plugin: CmsModelFieldRendererPlugin = {
                                 {...bind}
                                 label={field.label}
                                 description={field.description}
+                                note={field.note}
+                                hint={field.help}
                                 options={options}
                                 placeholder={field.placeholder}
                                 data-testid={`fr.input.select.${field.label}`}
