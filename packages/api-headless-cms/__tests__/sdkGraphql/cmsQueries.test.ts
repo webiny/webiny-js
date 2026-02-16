@@ -64,13 +64,6 @@ describe("SDK GraphQL - CMS Operations", () => {
                 fields: ["id", "values.name", "values.price"]
             });
 
-            if (createResult.isFail()) {
-                console.log(
-                    "Create failed with error:",
-                    JSON.stringify(createResult.error, null, 2)
-                );
-            }
-
             expect(createResult.isOk()).toBe(true);
             const createdEntry = createResult.value;
             expect(createdEntry.id).toBeDefined();
@@ -86,7 +79,6 @@ describe("SDK GraphQL - CMS Operations", () => {
 
             expect(publishResult.isOk()).toBe(true);
             const publishedEntry = publishResult.value;
-            // @ts-ignore
             expect(publishedEntry.meta.status).toBe("published");
         });
     });
@@ -447,7 +439,6 @@ describe("SDK GraphQL - CMS Operations", () => {
 
             expect(unpublishResult.isOk()).toBe(true);
             const unpublishedEntry = unpublishResult.value;
-            // @ts-ignore
             expect(unpublishedEntry.meta.status).toBe("unpublished");
         });
     });
