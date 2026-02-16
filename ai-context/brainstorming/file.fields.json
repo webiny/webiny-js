@@ -1,0 +1,375 @@
+{
+  "fields": [
+    {
+      "id": "name",
+      "fieldId": "name",
+      "storageId": "text@name",
+      "type": "text",
+      "label": "Name",
+      "validation": [
+        {
+          "name": "required",
+          "message": "Value is required.",
+          "settings": {}
+        }
+      ],
+      "listValidation": [],
+      "list": false,
+      "predefinedValues": {
+        "enabled": false,
+        "values": []
+      },
+      "help": null,
+      "placeholder": null,
+      "description": null,
+      "note": null,
+      "renderer": null,
+      "settings": {},
+      "tags": []
+    },
+    {
+      "id": "key",
+      "fieldId": "key",
+      "storageId": "text@key",
+      "type": "text",
+      "label": "Key",
+      "validation": [
+        {
+          "name": "required",
+          "message": "Value is required.",
+          "settings": {}
+        }
+      ],
+      "listValidation": [],
+      "list": false,
+      "predefinedValues": {
+        "enabled": false,
+        "values": []
+      },
+      "help": null,
+      "placeholder": null,
+      "description": null,
+      "note": null,
+      "renderer": null,
+      "settings": {},
+      "tags": []
+    },
+    {
+      "id": "type",
+      "fieldId": "type",
+      "storageId": "text@type",
+      "type": "text",
+      "label": "Type",
+      "validation": [
+        {
+          "name": "required",
+          "message": "Value is required.",
+          "settings": {}
+        }
+      ],
+      "listValidation": [],
+      "list": false,
+      "predefinedValues": {
+        "enabled": false,
+        "values": []
+      },
+      "help": null,
+      "placeholder": null,
+      "description": null,
+      "note": null,
+      "renderer": null,
+      "settings": {},
+      "tags": []
+    },
+    {
+      "id": "size",
+      "fieldId": "size",
+      "storageId": "number@size",
+      "type": "number",
+      "label": "Size",
+      "validation": [
+        {
+          "name": "required",
+          "message": "Value is required.",
+          "settings": {}
+        }
+      ],
+      "listValidation": [],
+      "list": false,
+      "predefinedValues": {
+        "enabled": false,
+        "values": []
+      },
+      "help": null,
+      "placeholder": null,
+      "description": null,
+      "note": null,
+      "renderer": null,
+      "settings": {},
+      "tags": []
+    },
+    {
+      "id": "metadata",
+      "fieldId": "metadata",
+      "storageId": "object@metadata",
+      "type": "object",
+      "label": "Metadata",
+      "validation": [],
+      "listValidation": [],
+      "list": false,
+      "predefinedValues": {
+        "enabled": false,
+        "values": []
+      },
+      "help": null,
+      "placeholder": null,
+      "description": null,
+      "note": null,
+      "renderer": {
+        "name": "hidden",
+        "settings": null
+      },
+      "settings": {
+        "fields": [
+          {
+            "id": "image",
+            "fieldId": "image",
+            "storageId": "object@image",
+            "type": "object",
+            "label": "Image",
+            "validation": [],
+            "listValidation": [],
+            "list": false,
+            "predefinedValues": {
+              "enabled": false,
+              "values": []
+            },
+            "help": null,
+            "placeholder": null,
+            "description": null,
+            "note": null,
+            "renderer": null,
+            "settings": {
+              "fields": [
+                {
+                  "id": "width",
+                  "fieldId": "width",
+                  "storageId": "number@width",
+                  "type": "number",
+                  "label": "Width",
+                  "validation": [],
+                  "listValidation": [],
+                  "list": false,
+                  "predefinedValues": {
+                    "enabled": false,
+                    "values": []
+                  },
+                  "help": null,
+                  "placeholder": null,
+                  "description": null,
+                  "note": null,
+                  "renderer": null,
+                  "settings": {},
+                  "tags": []
+                },
+                {
+                  "id": "height",
+                  "fieldId": "height",
+                  "storageId": "number@height",
+                  "type": "number",
+                  "label": "Height",
+                  "validation": [],
+                  "listValidation": [],
+                  "list": false,
+                  "predefinedValues": {
+                    "enabled": false,
+                    "values": []
+                  },
+                  "help": null,
+                  "placeholder": null,
+                  "description": null,
+                  "note": null,
+                  "renderer": null,
+                  "settings": {},
+                  "tags": []
+                },
+                {
+                  "id": "format",
+                  "fieldId": "format",
+                  "storageId": "text@format",
+                  "type": "text",
+                  "label": "Format",
+                  "validation": [],
+                  "listValidation": [],
+                  "list": false,
+                  "predefinedValues": {
+                    "enabled": false,
+                    "values": []
+                  },
+                  "help": null,
+                  "placeholder": null,
+                  "description": null,
+                  "note": null,
+                  "renderer": null,
+                  "settings": {},
+                  "tags": []
+                },
+                {
+                  "id": "orientation",
+                  "fieldId": "orientation",
+                  "storageId": "number@orientation",
+                  "type": "number",
+                  "label": "Orientation",
+                  "validation": [],
+                  "listValidation": [],
+                  "list": false,
+                  "predefinedValues": {
+                    "enabled": false,
+                    "values": []
+                  },
+                  "help": null,
+                  "placeholder": null,
+                  "description": null,
+                  "note": null,
+                  "renderer": null,
+                  "settings": {},
+                  "tags": []
+                }
+              ],
+              "layout": []
+            },
+            "tags": []
+          },
+          {
+            "id": "exif",
+            "fieldId": "exif",
+            "storageId": "searchable-json@exif",
+            "type": "searchable-json",
+            "label": "EXIF Data",
+            "validation": [],
+            "listValidation": [],
+            "list": false,
+            "predefinedValues": {
+              "enabled": false,
+              "values": []
+            },
+            "help": null,
+            "placeholder": null,
+            "description": null,
+            "note": null,
+            "renderer": null,
+            "settings": {},
+            "tags": []
+          },
+          {
+            "id": "iptc",
+            "fieldId": "iptc",
+            "storageId": "searchable-json@iptc",
+            "type": "searchable-json",
+            "label": "IPTC Data",
+            "validation": [],
+            "listValidation": [],
+            "list": false,
+            "predefinedValues": {
+              "enabled": false,
+              "values": []
+            },
+            "help": null,
+            "placeholder": null,
+            "description": null,
+            "note": null,
+            "renderer": null,
+            "settings": {},
+            "tags": []
+          }
+        ],
+        "layout": []
+      },
+      "tags": []
+    },
+    {
+      "id": "tags",
+      "fieldId": "tags",
+      "storageId": "text@tags",
+      "type": "text",
+      "label": "Tags",
+      "validation": [
+        {
+          "name": "required",
+          "message": "Value is required.",
+          "settings": {}
+        }
+      ],
+      "listValidation": [],
+      "list": true,
+      "predefinedValues": {
+        "enabled": false,
+        "values": []
+      },
+      "help": null,
+      "placeholder": null,
+      "description": null,
+      "note": null,
+      "renderer": null,
+      "settings": {},
+      "tags": ["$bulk-edit"]
+    },
+    {
+      "id": "accessControl",
+      "fieldId": "accessControl",
+      "storageId": "object@accessControl",
+      "type": "object",
+      "label": "Access Control",
+      "validation": [],
+      "listValidation": [],
+      "list": false,
+      "predefinedValues": {
+        "enabled": false,
+        "values": []
+      },
+      "help": null,
+      "placeholder": null,
+      "description": null,
+      "note": null,
+      "renderer": null,
+      "settings": {
+        "fields": [
+          {
+            "id": "type",
+            "fieldId": "type",
+            "storageId": "text@type",
+            "type": "text",
+            "label": "Type",
+            "validation": [],
+            "listValidation": [],
+            "list": false,
+            "predefinedValues": {
+              "enabled": true,
+              "values": [
+                {
+                  "label": "Public",
+                  "value": "public",
+                  "selected": true
+                },
+                {
+                  "label": "Private",
+                  "value": "private-authenticated",
+                  "selected": false
+                }
+              ]
+            },
+            "help": null,
+            "placeholder": null,
+            "description": null,
+            "note": null,
+            "renderer": null,
+            "settings": {},
+            "tags": []
+          }
+        ],
+        "layout": []
+      },
+      "tags": ["$bulk-edit"]
+    }
+  ]
+}
