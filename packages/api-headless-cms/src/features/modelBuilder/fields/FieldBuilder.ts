@@ -24,11 +24,40 @@ export interface FieldBuilderConfig
  *       }
  *   }
  */
-export interface FieldRendererRegistry {}
+export interface FieldRendererRegistry {
+    "boolean-input": undefined;
+    checkboxes: undefined;
+    "date-time-input": undefined;
+    "date-time-inputs": { multiValue?: { addValueButtonLabel?: string } };
+    dynamicZone: { open?: boolean };
+    hidden: undefined;
+    "lexical-text-input": undefined;
+    "lexical-text-inputs": { multiValue?: { addValueButtonLabel?: string } };
+    "long-text-inputs": { multiValue?: { addValueButtonLabel?: string } };
+    "long-text-text-area": undefined;
+    "number-input": undefined;
+    "number-inputs": { multiValue?: { addValueButtonLabel?: string } };
+    "object-accordion": { open?: boolean };
+    "objects-accordion": {
+        open?: boolean;
+        multiValue?: { addValueButtonLabel?: string };
+    };
+    passthrough: undefined;
+    "radio-buttons": undefined;
+    "ref-advanced-multiple": { newItemPosition?: "first" | "last" };
+    "ref-advanced-single": undefined;
+    "ref-input": undefined;
+    "ref-inputs": undefined;
+    "ref-simple-multiple": undefined;
+    "ref-simple-single": undefined;
+    "select-box": undefined;
+    tags: undefined;
+    "text-input": undefined;
+    "text-inputs": { multiValue?: { addValueButtonLabel?: string } };
+    "text-separator": undefined;
+}
 
-export type FieldRendererName = keyof FieldRendererRegistry extends never
-    ? string
-    : keyof FieldRendererRegistry & string;
+export type FieldRendererName = keyof FieldRendererRegistry;
 
 export type FieldRendererSettings<TName extends FieldRendererName> =
     keyof FieldRendererRegistry extends never
