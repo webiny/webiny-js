@@ -32,7 +32,7 @@ const getVersionFromVersionFolders = async (
     let versionToUse = "";
 
     // When developing Webiny, we want to use the latest version.
-    if (currentWebinyVersion === WEBINY_DEV_VERSION) {
+    if (currentWebinyVersion.startsWith(WEBINY_DEV_VERSION)) {
         versionToUse = availableVersions[availableVersions.length - 1];
     } else {
         for (const availableVersion of availableVersions) {
