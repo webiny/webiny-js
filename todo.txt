@@ -1,8 +1,4 @@
-- AST with Pavel
-- fields optional
-  - depth
-- include, exclude, includeType
-- GRAPHQL_ERROR in tests (use message too)
+
 - test getEntry / getEntryById
 - packages/sdk/__tests__/CmsSdk.test.ts
 - packages/sdk/__tests__/Sdk.test.ts
@@ -11,3 +7,9 @@ packages/api-headless-cms/src/graphql/schema/cms/helpers.ts
 packages/sdk/src/types.ts
 packages/api-headless-cms/__tests__/testHelpers/useWebinySdk.ts - check auth? no header?
 packages/api-headless-cms/__tests__/graphql/schema/cms/helpers.test.ts
+
+SH
+- AST with Pavel
+- fields optional
+  - depth
+- include, exclude, includeType

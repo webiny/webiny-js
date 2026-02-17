@@ -289,6 +289,7 @@ describe("SDK GraphQL - CMS Operations", () => {
 
             expect(getResult.isOk()).toBe(false);
             expect(getResult.error?.code).toBe("GRAPHQL_ERROR");
+            expect(getResult.error?.message).toBe("Entry was not found!");
         });
     });
 });
