@@ -1,11 +1,8 @@
 import type { CmsSdkConfig } from "./types.js";
-import type { GetEntryParams, CmsEntryData } from "./methods/getEntry.js";
+import type { CmsEntryValues, CmsEntryData } from "./methods/cmsTypes.js";
+import type { GetEntryParams } from "./methods/getEntry.js";
 import type { ListEntriesParams, ListEntriesResult } from "./methods/listEntries.js";
-import type {
-    CreateEntryParams,
-    CreateCmsEntryData,
-    CmsEntryValues
-} from "./methods/createEntry.js";
+import type { CreateEntryParams, CreateCmsEntryData } from "./methods/createEntry.js";
 import type {
     UpdateEntryRevisionParams,
     UpdateCmsEntryData
