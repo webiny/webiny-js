@@ -17,33 +17,33 @@ class ContactSubmissionModelImpl implements ModelFactory.Interface {
                         .text()
                         .renderer("text-input")
                         .label("Name")
-                        .helpText("Full name of the person submitting the form")
+                        .help("Full name of the person submitting the form")
                         .required("Name is required")
                         .minLength(2)
                         .maxLength(100)
-                        .helpText("Enter your full name"),
+                        .help("Enter your full name"),
                     email: fields
                         .text()
                         .renderer("text-input")
                         .label("Email")
-                        .helpText("Email address for contact")
+                        .help("Email address for contact")
                         .required("Email is required")
                         .email()
-                        .helpText("Enter a valid email address"),
+                        .help("Enter a valid email address"),
                     message: fields
                         .longText()
                         .renderer("long-text-text-area")
                         .label("Message")
-                        .helpText("Message content from the contact form")
+                        .help("Message content from the contact form")
                         .required("Message is required")
                         .minLength(10)
                         .maxLength(1000)
-                        .helpText("Enter your message..."),
+                        .help("Enter your message..."),
                     emailType: fields
                         .text()
                         .renderer("radio-buttons")
                         .label("Email Type")
-                        .helpText("Automatically classified as Work or Personal")
+                        .help("Automatically classified as Work or Personal")
                         .predefinedValues([
                             { label: "Work", value: "work" },
                             { label: "Personal", value: "personal" }

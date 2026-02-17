@@ -17,7 +17,7 @@ class ProductCategoryModelImpl implements ModelFactory.Interface {
                         .text()
                         .renderer("text-input")
                         .label("Name")
-                        .helpText("Name of the product category")
+                        .help("Name of the product category")
                         .required("Name is required")
                         .minLength(2)
                         .maxLength(100),
@@ -25,7 +25,7 @@ class ProductCategoryModelImpl implements ModelFactory.Interface {
                         .text()
                         .renderer("text-input")
                         .label("Slug")
-                        .helpText("URL-friendly identifier")
+                        .help("URL-friendly identifier")
                         .required("Slug is required")
                         .unique(),
                     description: fields

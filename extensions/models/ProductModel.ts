@@ -17,20 +17,20 @@ class ProductModelImpl implements ModelFactory.Interface {
                         .text()
                         .renderer("text-input")
                         .label("Name")
-                        .helpText("Product name")
+                        .help("Product name")
                         .required("Name is required"),
                     sku: fields
                         .text()
                         .renderer("text-input")
                         .label("SKU")
-                        .helpText("Stock Keeping Unit - unique product identifier")
+                        .help("Stock Keeping Unit - unique product identifier")
                         .required("SKU is required")
                         .unique(),
                     description: fields
                         .longText()
                         .renderer("long-text-text-area")
                         .label("Description")
-                        .helpText("Detailed product description"),
+                        .help("Detailed product description"),
                     price: fields
                         .number()
                         .renderer("number-input")
