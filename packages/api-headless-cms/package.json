@@ -57,7 +57,7 @@
     "apollo-graphql": "^0.9.7",
     "graphql": "^16.12.0",
     "prettier": "3.6.2",
-    "rimraf": "^6.1.2",
+    "rimraf": "^6.1.3",
     "typescript": "5.9.3",
     "vitest": "^3.2.4",
     "write-json-file": "^4.3.0"

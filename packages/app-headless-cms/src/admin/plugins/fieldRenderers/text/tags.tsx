@@ -1,5 +1,5 @@
 import React from "react";
-import { Tags } from "@webiny/ui/Tags/index.js";
+import { Tags } from "@webiny/admin-ui";
 import type { CmsModelFieldRendererPlugin } from "~/types.js";
 
 export const tags: CmsModelFieldRendererPlugin = {
@@ -24,6 +24,8 @@ export const tags: CmsModelFieldRendererPlugin = {
                                     label={field.label}
                                     placeholder={field.placeholder || "Add values"}
                                     description={field.description}
+                                    note={field.note}
+                                    hint={field.help}
                                     {...props}
                                 />
                             </Bind.ValidationContainer>

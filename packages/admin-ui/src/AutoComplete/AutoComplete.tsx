@@ -16,6 +16,7 @@ const DecoratableAutoComplete = ({
     label,
     description,
     note,
+    hint,
     required,
     disabled,
     validation,
@@ -38,6 +39,7 @@ const DecoratableAutoComplete = ({
         <div className={"w-full"}>
             <FormComponentLabel
                 text={label}
+                hint={hint}
                 required={required}
                 disabled={disabled}
                 invalid={invalid}

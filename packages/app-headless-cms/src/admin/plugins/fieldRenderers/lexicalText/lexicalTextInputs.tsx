@@ -7,7 +7,7 @@ import DynamicSection from "../DynamicSection.js";
 import { LexicalCmsEditor } from "~/admin/components/LexicalCmsEditor/LexicalCmsEditor.js";
 import { useForm } from "@webiny/form";
 import { MultiValueRendererSettings } from "~/admin/plugins/fieldRenderers/MultiValueRendererSettings.js";
-import { FormComponentNote, IconButton } from "@webiny/admin-ui";
+import { IconButton } from "@webiny/admin-ui";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
@@ -44,7 +44,6 @@ const plugin: CmsModelFieldRendererPlugin = {
                                 key={getKey(form.data.id, field, index)}
                                 placeholder={field.placeholder}
                             />
-                            {field.list ? null : <FormComponentNote text={field.help} />}
                             <div className={"absolute top-sm right-sm z-10"}>
                                 <IconButton
                                     variant={"ghost"}

@@ -20,7 +20,13 @@ type RangeSliderProps = RangeSliderPrimitiveProps &
         valueConverter?: (value: number) => string;
     };
 
-const DecoratableRangeSlider = ({ description, note, validation, ...props }: RangeSliderProps) => {
+const DecoratableRangeSlider = ({
+    description,
+    note,
+    hint,
+    validation,
+    ...props
+}: RangeSliderProps) => {
     const { isValid: validationIsValid, message: validationMessage } = validation || {};
     const invalid = React.useMemo(() => validationIsValid === false, [validationIsValid]);
     const { onValuesChange, onValuesCommit, ...restProps } = props;
@@ -34,6 +40,7 @@ const DecoratableRangeSlider = ({ description, note, validation, ...props }: Ran
         <div className={"w-full"}>
             <FormComponentLabel
                 text={props.label}
+                hint={hint}
                 required={props.required}
                 disabled={props.disabled}
                 invalid={invalid}

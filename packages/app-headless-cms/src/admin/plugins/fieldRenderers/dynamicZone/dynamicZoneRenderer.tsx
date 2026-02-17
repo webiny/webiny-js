@@ -42,7 +42,7 @@ export const DynamicZoneContainer = makeDecoratable(
                 validation: { isValid, message }
             },
             title = field.label,
-            description = field.help,
+            description = field.description,
             className,
             children
         } = props;

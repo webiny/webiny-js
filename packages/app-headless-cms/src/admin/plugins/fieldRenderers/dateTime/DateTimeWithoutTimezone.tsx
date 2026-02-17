@@ -85,10 +85,7 @@ export const DateTimeWithoutTimezone = ({
                             return bind.onChange(`${value} ${getHHmmss(time)}`);
                         }
                     }}
-                    field={{
-                        ...field,
-                        label: `${field.label} date`
-                    }}
+                    field={field}
                     type={"date"}
                 />
             </Grid.Column>
@@ -107,10 +104,7 @@ export const DateTimeWithoutTimezone = ({
                             return bind.onChange(`${date || getCurrentDate()} ${getHHmmss(value)}`);
                         }
                     }}
-                    field={{
-                        ...field,
-                        label: `${field.label} time`
-                    }}
+                    field={field}
                     type={"time"}
                     step={60}
                 />

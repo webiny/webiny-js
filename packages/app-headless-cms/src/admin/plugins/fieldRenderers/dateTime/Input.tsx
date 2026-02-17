@@ -42,9 +42,10 @@ export const Input = ({ bind, trailingIcon, ...props }: InputProps) => {
                 }
                 return bind.onChange(value);
             }}
-            label={props.field.label}
+            label={null}
+            note={null}
+            description={null}
             placeholder={props.field.placeholder}
-            description={props.field.list ? undefined : props.field.help}
             type={props.type}
             endIcon={endIcon}
             data-testid={`fr.input.${props.field.label}`}

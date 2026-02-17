@@ -46,6 +46,8 @@ export const SimpleSingleRenderer = (props: SimpleSingleRendererProps) => {
             {...bind}
             label={field.label}
             description={field.description}
+            note={field.note}
+            hint={field.help}
             value={value}
             items={items}
             onChange={(value: string) => {

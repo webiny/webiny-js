@@ -31,11 +31,12 @@ const FieldRenderer = ({ field, getBind }: CmsModelFieldRendererProps) => {
                                                 label={field.label}
                                                 validation={validation}
                                                 description={field.description}
+                                                hint={field.help}
                                                 note={getSupportedExtensionsLabelHint(imagesOnly)}
                                                 value={value}
-                                                onSelectItem={() =>
-                                                    showFileManager(file => onChange(file.src))
-                                                }
+                                                onSelectItem={() => {
+                                                    showFileManager(file => onChange(file.src));
+                                                }}
                                                 onEditItem={() => editFile(value)}
                                                 onRemoveItem={() => onChange(null)}
                                                 placeholder={field.placeholder}

@@ -28,6 +28,7 @@ const plugin: CmsModelFieldRendererPlugin = {
                             {...bindProps}
                             label={field.label}
                             description={field.description}
+                            note={field.note}
                             data-testid={`fr.input.boolean.${field.label}`}
                         />
                     )}

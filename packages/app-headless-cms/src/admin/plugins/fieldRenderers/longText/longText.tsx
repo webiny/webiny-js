@@ -35,6 +35,8 @@ const plugin: CmsModelFieldRendererPlugin = {
                                     label={field.label}
                                     placeholder={field.placeholder}
                                     description={field.description}
+                                    note={field.note}
+                                    hint={field.help}
                                     data-testid={`fr.input.longtext.${field.label}`}
                                     validation={bind.validation}
                                 />
