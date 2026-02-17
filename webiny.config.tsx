@@ -1,5 +1,5 @@
 import React from "react";
-import { Api, Cli, Infra, Project, Security } from "webiny/extensions";
+import { Admin, Api, Cli, Infra, Project, Security } from "webiny/extensions";
 import { Cognito } from "@webiny/cognito";
 // import { MyIdpExtension } from "./extensions/idp/okta/MyIdpExtension.js";
 
@@ -26,11 +26,11 @@ export const Extensions = () => {
             <Infra.Aws.Tags tags={{ OWNER2: "me2", PROJECT2: "my-project-2" }} />
             <Infra.Aws.DefaultRegion name={"eu-central-1"} />
 
-            {/*<Api.Extension src={"/extensions/models/ProductCategoryModel.ts"} />*/}
-            {/*<Api.Extension src={"/extensions/models/ProductModel.ts"} />*/}
-            {/*<Api.Extension src={"/extensions/models/ContactSubmissionModel.ts"} />*/}
-            {/*<Api.Extension src={"/extensions/models/ContactSubmissionHook.ts"} />*/}
-            {/*<Admin.Extension src={"/extensions/models/EmailTypeEntryListColumn.tsx"} />*/}
+            <Api.Extension src={"/extensions/models/ProductCategoryModel.ts"} />
+            <Api.Extension src={"/extensions/models/ProductModel.ts"} />
+            <Api.Extension src={"/extensions/models/ContactSubmissionModel.ts"} />
+            <Api.Extension src={"/extensions/models/ContactSubmissionHook.ts"} />
+            <Admin.Extension src={"/extensions/models/EmailTypeEntryListColumn.tsx"} />
 
             {/*<Api.BuildParam paramName="MY_CUSTOM_BUILD_PARAM" value="customValue" />*/}
             {/*<Api.BuildParam*/}
