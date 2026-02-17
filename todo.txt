@@ -1,8 +1,5 @@
-packages/api-headless-cms/src/graphql/schema/cms/helpers.ts
-- packages/api-headless-cms/__tests__/testHelpers/useWebinySdk.ts - check auth? no header?
-- packages/api-headless-cms/__tests__/graphql/schema/cms/helpers.test.ts
-
 SH
+- packages/api-headless-cms/__tests__/testHelpers/useWebinySdk.ts - check auth? no header?
 - AST with Pavel
 - fields optional
   - depth
