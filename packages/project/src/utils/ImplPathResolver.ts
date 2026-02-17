@@ -1,17 +1,7 @@
 import path from "path";
 import fs from "fs";
-import stripJsonComments from "strip-json-comments";
+import { getTsconfig } from "get-tsconfig";
 import { type IProjectModel } from "~/abstractions/models/index.js";
-
-interface TsConfig {
-    extends?: string;
-    compilerOptions?: {
-        baseUrl?: string;
-        paths?: {
-            [key: string]: string[];
-        };
-    };
-}
 
 export class ImplPathResolver {
     private static pathMappings: { [key: string]: string[] } | null = null;
@@ -100,42 +90,19 @@ export class ImplPathResolver {
 
     private static loadPathMappings(project: IProjectModel): void {
         const tsConfigPath = project.paths.tsConfigFile.toString();
-        const projectRoot = project.paths.rootFolder.toString();
-
-        this.pathMappings = this.loadTsConfigWithExtends(tsConfigPath, projectRoot);
-    }
-
-    private static loadTsConfigWithExtends(
-        tsConfigPath: string,
-        projectRoot: string
-    ): { [key: string]: string[] } {
-        if (!fs.existsSync(tsConfigPath)) {
-            return {};
-        }
 
         try {
-            const tsConfigContent = fs.readFileSync(tsConfigPath, "utf-8");
-            const tsConfigWithoutComments = stripJsonComments(tsConfigContent);
-            const tsConfig = JSON.parse(tsConfigWithoutComments) as TsConfig;
+            // Use get-tsconfig to parse tsconfig with extends resolution.
+            const tsconfig = getTsconfig(tsConfigPath);
 
-            let paths: { [key: string]: string[] } = {};
-
-            // First, load paths from extended config if it exists.
-            if (tsConfig.extends) {
-                const extendedPath = path.resolve(path.dirname(tsConfigPath), tsConfig.extends);
-                const extendedPaths = this.loadTsConfigWithExtends(extendedPath, projectRoot);
-                paths = { ...extendedPaths };
+            if (tsconfig?.config.compilerOptions?.paths) {
+                this.pathMappings = tsconfig.config.compilerOptions.paths;
+            } else {
+                this.pathMappings = {};
             }
-
-            // Then, merge paths from current config (overriding extended ones).
-            if (tsConfig.compilerOptions?.paths) {
-                paths = { ...paths, ...tsConfig.compilerOptions.paths };
-            }
-
-            return paths;
         } catch (error) {
             // Ignore tsconfig parsing errors.
-            return {};
+            this.pathMappings = {};
         }
     }
 
