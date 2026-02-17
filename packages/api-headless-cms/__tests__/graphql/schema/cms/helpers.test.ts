@@ -10,7 +10,7 @@ describe("CMS Schema Helpers", () => {
     describe("transformSortToArray", () => {
         it("should transform single sort field from object to array", () => {
             const input = { createdOn: "desc" };
-            const expected = [{ createdOn: "DESC" }];
+            const expected = ["createdOn_DESC"];
 
             const result = transformSortToArray(input);
 
@@ -19,7 +19,7 @@ describe("CMS Schema Helpers", () => {
 
         it("should transform multiple sort fields from object to array", () => {
             const input = { createdOn: "desc", name: "asc" };
-            const expected = [{ createdOn: "DESC" }, { name: "ASC" }];
+            const expected = ["createdOn_DESC", "name_ASC"];
 
             const result = transformSortToArray(input);
 
@@ -28,7 +28,7 @@ describe("CMS Schema Helpers", () => {
 
         it("should handle uppercase direction values", () => {
             const input = { createdOn: "DESC" };
-            const expected = [{ createdOn: "DESC" }];
+            const expected = ["createdOn_DESC"];
 
             const result = transformSortToArray(input);
 
@@ -37,7 +37,7 @@ describe("CMS Schema Helpers", () => {
 
         it("should handle lowercase direction values", () => {
             const input = { modifiedOn: "asc" };
-            const expected = [{ modifiedOn: "ASC" }];
+            const expected = ["modifiedOn_ASC"];
 
             const result = transformSortToArray(input);
 
