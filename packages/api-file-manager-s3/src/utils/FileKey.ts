@@ -1,3 +1,4 @@
+import sanitizeFilename from "sanitize-filename";
 import type { PresignedPostPayloadData } from "~/types.js";
 import { FileExtension } from "~/utils/FileExtension.js";
 
@@ -26,6 +27,8 @@ export class FileKey {
     }
 
     private getSanitizedKey() {
-        return ["original", this.getExtension()].filter(Boolean).join(".");
+        const key = sanitizeFilename(this.data.key || this.data.name).replace(/\s/g, "");
+
+        return [key, this.getExtension()].filter(Boolean).join(".");
     }
 }
