@@ -4,6 +4,7 @@ import stripJsonComments from "strip-json-comments";
 import { type IProjectModel } from "~/abstractions/models/index.js";
 
 interface TsConfig {
+    extends?: string;
     compilerOptions?: {
         baseUrl?: string;
         paths?: {
@@ -99,10 +100,17 @@ export class ImplPathResolver {
 
     private static loadPathMappings(project: IProjectModel): void {
         const tsConfigPath = project.paths.tsConfigFile.toString();
+        const projectRoot = project.paths.rootFolder.toString();
 
+        this.pathMappings = this.loadTsConfigWithExtends(tsConfigPath, projectRoot);
+    }
+
+    private static loadTsConfigWithExtends(
+        tsConfigPath: string,
+        projectRoot: string
+    ): { [key: string]: string[] } {
         if (!fs.existsSync(tsConfigPath)) {
-            this.pathMappings = {};
-            return;
+            return {};
         }
 
         try {
@@ -110,14 +118,24 @@ export class ImplPathResolver {
             const tsConfigWithoutComments = stripJsonComments(tsConfigContent);
             const tsConfig = JSON.parse(tsConfigWithoutComments) as TsConfig;
 
-            if (tsConfig.compilerOptions?.paths) {
-                this.pathMappings = tsConfig.compilerOptions.paths;
-            } else {
-                this.pathMappings = {};
+            let paths: { [key: string]: string[] } = {};
+
+            // First, load paths from extended config if it exists.
+            if (tsConfig.extends) {
+                const extendedPath = path.resolve(path.dirname(tsConfigPath), tsConfig.extends);
+                const extendedPaths = this.loadTsConfigWithExtends(extendedPath, projectRoot);
+                paths = { ...extendedPaths };
             }
+
+            // Then, merge paths from current config (overriding extended ones).
+            if (tsConfig.compilerOptions?.paths) {
+                paths = { ...paths, ...tsConfig.compilerOptions.paths };
+            }
+
+            return paths;
         } catch (error) {
             // Ignore tsconfig parsing errors.
-            this.pathMappings = {};
+            return {};
         }
     }
 
