@@ -176,17 +176,9 @@ const defineColumns = <T,>(
                 size = 100
             } = column;
 
-            // Use provided accessorKey or default to id.
-            let finalAccessorKey = accessorKey || id;
-
-            // Always prefix with "data." if not already present.
-            if (finalAccessorKey && !finalAccessorKey.startsWith("data.")) {
-                finalAccessorKey = `data.${finalAccessorKey}`;
-            }
-
             return {
                 id,
-                accessorKey: finalAccessorKey,
+                accessorKey: accessorKey || id,
                 header: () => header,
                 cell: props => {
                     if (cell && typeof cell === "function") {

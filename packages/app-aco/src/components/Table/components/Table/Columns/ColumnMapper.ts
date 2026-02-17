@@ -25,8 +25,11 @@ export class ColumnMapper {
             cell: string | React.ReactElement
         ) => string | number | JSX.Element | null
     ): DataTableColumn<T> {
+        // Prefix path with "data." if provided.
+        const accessorKey = column.path ? `data.${column.path}` : undefined;
+
         return {
-            accessorKey: column.path,
+            accessorKey,
             header: column.header,
             className: column.className,
             size: column.size,
