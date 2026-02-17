@@ -28,7 +28,6 @@
     "object-hash": "^3.0.0",
     "p-map": "^7.0.4",
     "p-reduce": "^3.0.0",
-    "sanitize-filename": "^1.6.3",
     "sharp": "^0.34.5"
   },
   "devDependencies": {
