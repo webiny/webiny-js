@@ -40,7 +40,7 @@ export async function executeGraphQL(
     let result: any;
     try {
         result = await response.json();
-    } catch (error) {
+    } catch {
         return Result.fail(new NetworkError("Failed to parse response JSON"));
     }
 

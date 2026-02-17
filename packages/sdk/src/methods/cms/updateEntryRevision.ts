@@ -1,7 +1,7 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
 import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
-import type { CmsEntryValues, CmsIdentity, IEntryState } from "./cmsTypes.js";
+import type { CmsEntryValues, CmsIdentity } from "./cmsTypes.js";
 
 /**
  * Update entry revision data.
