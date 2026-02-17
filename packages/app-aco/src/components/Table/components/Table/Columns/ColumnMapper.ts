@@ -10,6 +10,7 @@ export class ColumnMapper {
             header: column.header,
             hideable: column.hideable,
             name: column.name,
+            path: column.path,
             resizable: column.resizable,
             size: column.size,
             sortable: column.sortable,
@@ -25,6 +26,7 @@ export class ColumnMapper {
         ) => string | number | JSX.Element | null
     ): DataTableColumn<T> {
         return {
+            accessorKey: column.path,
             header: column.header,
             className: column.className,
             size: column.size,
