@@ -49,3 +49,17 @@ declare module "../abstractions.js" {
         ref(): IRefFieldBuilder;
     }
 }
+
+declare module "./FieldBuilder.js" {
+    interface FieldRendererRegistry {
+        "ref-advanced-multiple": {
+            fieldType: "ref";
+            settings: { newItemPosition?: "first" | "last" };
+        };
+        "ref-advanced-single": { fieldType: "ref"; settings: undefined };
+        "ref-input": { fieldType: "ref"; settings: undefined };
+        "ref-inputs": { fieldType: "ref"; settings: undefined };
+        "ref-simple-multiple": { fieldType: "ref"; settings: undefined };
+        "ref-simple-single": { fieldType: "ref"; settings: undefined };
+    }
+}

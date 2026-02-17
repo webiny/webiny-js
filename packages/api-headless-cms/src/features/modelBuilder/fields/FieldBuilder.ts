@@ -13,11 +13,6 @@ export interface FieldBuilderConfig
     note?: string | null;
 }
 
-interface FieldRendererEntry {
-    fieldType: string;
-    settings: Record<string, any> | undefined;
-}
-
 /**
  * Augmentable renderer registry.
  * Each entry maps a renderer name to its applicable field type(s) and settings.
@@ -30,56 +25,8 @@ interface FieldRendererEntry {
  *   }
  */
 export interface FieldRendererRegistry {
-    "boolean-input": { fieldType: "boolean"; settings: undefined };
-    checkboxes: { fieldType: "text" | "number"; settings: undefined };
-    "date-time-input": { fieldType: "datetime"; settings: undefined };
-    "date-time-inputs": {
-        fieldType: "datetime";
-        settings: { multiValue?: { addValueButtonLabel?: string } };
-    };
-    dynamicZone: { fieldType: "dynamicZone"; settings: { open?: boolean } };
     hidden: { fieldType: string; settings: undefined };
-    "lexical-text-input": { fieldType: "rich-text"; settings: undefined };
-    "lexical-text-inputs": {
-        fieldType: "rich-text";
-        settings: { multiValue?: { addValueButtonLabel?: string } };
-    };
-    "long-text-inputs": {
-        fieldType: "long-text";
-        settings: { multiValue?: { addValueButtonLabel?: string } };
-    };
-    "long-text-text-area": { fieldType: "long-text"; settings: undefined };
-    "number-input": { fieldType: "number"; settings: undefined };
-    "number-inputs": {
-        fieldType: "number";
-        settings: { multiValue?: { addValueButtonLabel?: string } };
-    };
-    "object-accordion": { fieldType: "object"; settings: { open?: boolean } };
-    "objects-accordion": {
-        fieldType: "object";
-        settings: {
-            open?: boolean;
-            multiValue?: { addValueButtonLabel?: string };
-        };
-    };
     passthrough: { fieldType: string; settings: undefined };
-    "radio-buttons": { fieldType: "text" | "number"; settings: undefined };
-    "ref-advanced-multiple": {
-        fieldType: "ref";
-        settings: { newItemPosition?: "first" | "last" };
-    };
-    "ref-advanced-single": { fieldType: "ref"; settings: undefined };
-    "ref-input": { fieldType: "ref"; settings: undefined };
-    "ref-inputs": { fieldType: "ref"; settings: undefined };
-    "ref-simple-multiple": { fieldType: "ref"; settings: undefined };
-    "ref-simple-single": { fieldType: "ref"; settings: undefined };
-    "select-box": { fieldType: "text" | "number"; settings: undefined };
-    tags: { fieldType: "text"; settings: undefined };
-    "text-input": { fieldType: "text"; settings: undefined };
-    "text-inputs": {
-        fieldType: "text";
-        settings: { multiValue?: { addValueButtonLabel?: string } };
-    };
     "text-separator": { fieldType: "separator"; settings: undefined };
 }
 
@@ -231,7 +178,7 @@ export class FieldBuilder<TType extends string = string> {
     renderer<TName extends FieldRendererName<TType>>(
         name: TName,
         ...args: FieldRendererSettings<TName> extends undefined
-            ? [settings?: Record<string, any>]
+            ? []
             : [settings: FieldRendererSettings<TName>]
     ): this {
         this.config.renderer = {

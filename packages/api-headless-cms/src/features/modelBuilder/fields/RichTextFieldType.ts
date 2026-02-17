@@ -39,3 +39,13 @@ declare module "../abstractions.js" {
         richText(): IRichTextFieldBuilder;
     }
 }
+
+declare module "./FieldBuilder.js" {
+    interface FieldRendererRegistry {
+        "lexical-text-input": { fieldType: "rich-text"; settings: undefined };
+        "lexical-text-inputs": {
+            fieldType: "rich-text";
+            settings: { multiValue?: { addValueButtonLabel?: string } };
+        };
+    }
+}

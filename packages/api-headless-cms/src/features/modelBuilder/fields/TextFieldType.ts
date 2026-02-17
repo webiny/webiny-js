@@ -36,6 +36,20 @@ declare module "../abstractions.js" {
     }
 }
 
+declare module "./FieldBuilder.js" {
+    interface FieldRendererRegistry {
+        checkboxes: { fieldType: "text" | "number"; settings: undefined };
+        "radio-buttons": { fieldType: "text" | "number"; settings: undefined };
+        "select-box": { fieldType: "text" | "number"; settings: undefined };
+        tags: { fieldType: "text"; settings: undefined };
+        "text-input": { fieldType: "text"; settings: undefined };
+        "text-inputs": {
+            fieldType: "text";
+            settings: { multiValue?: { addValueButtonLabel?: string } };
+        };
+    }
+}
+
 class TextFieldBuilder extends FieldBuilder<"text"> implements ITextFieldBuilder {
     public constructor() {
         super("text");

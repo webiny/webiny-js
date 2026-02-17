@@ -57,3 +57,13 @@ declare module "../abstractions.js" {
         number(): INumberFieldBuilder;
     }
 }
+
+declare module "./FieldBuilder.js" {
+    interface FieldRendererRegistry {
+        "number-input": { fieldType: "number"; settings: undefined };
+        "number-inputs": {
+            fieldType: "number";
+            settings: { multiValue?: { addValueButtonLabel?: string } };
+        };
+    }
+}
