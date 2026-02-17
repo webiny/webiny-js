@@ -1,6 +1,6 @@
-import type { CmsSdkConfig } from "../types.js";
-import { Result } from "../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../errors.js";
+import type { WebinyConfig } from "../../types.js";
+import { Result } from "../../Result.js";
+import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
 import type { CmsEntryValues, CmsIdentity, IEntryState } from "./cmsTypes.js";
 
 /**
@@ -71,13 +71,13 @@ export interface UpdateEntryRevisionParams<TValues extends CmsEntryValues = CmsE
  * @returns Result containing the updated entry data or an error
  */
 export async function updateEntryRevision<TValues extends CmsEntryValues = CmsEntryValues>(
-    config: CmsSdkConfig,
+    config: WebinyConfig,
     fetchFn: typeof fetch,
     params: UpdateEntryRevisionParams<TValues>
 ): Promise<Result<UpdateCmsEntryData<TValues>, HttpError | GraphQLError | NetworkError>> {
     const { modelId, revisionId, data, fields } = params;
 
-    const { executeGraphQL } = await import("./executeGraphQL.js");
+    const { executeGraphQL } = await import("../executeGraphQL.js");
 
     const query = `
         mutation UpdateEntryRevision($modelId: ID!, $revisionId: ID!, $data: JSON!, $fields: [String!]!) {
@@ -107,7 +107,7 @@ export async function updateEntryRevision<TValues extends CmsEntryValues = CmsEn
     const responseData = result.value;
 
     if (responseData.cms.updateEntryRevision.error) {
-        const { GraphQLError } = await import("../errors.js");
+        const { GraphQLError } = await import("../../errors.js");
         return Result.fail(
             new GraphQLError(
                 responseData.cms.updateEntryRevision.error.message,

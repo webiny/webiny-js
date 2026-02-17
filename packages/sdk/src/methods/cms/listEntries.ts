@@ -1,6 +1,6 @@
-import type { CmsSdkConfig } from "../types.js";
-import { Result } from "../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../errors.js";
+import type { WebinyConfig } from "../../types.js";
+import { Result } from "../../Result.js";
+import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
 import type { CmsEntryValues, CmsEntryData } from "./cmsTypes.js";
 
 export interface ListEntriesParams {
@@ -39,13 +39,13 @@ export interface ListEntriesResult<TValues extends CmsEntryValues = CmsEntryValu
  * @returns Result containing list of entries with pagination metadata or an error
  */
 export async function listEntries<TValues extends CmsEntryValues = CmsEntryValues>(
-    config: CmsSdkConfig,
+    config: WebinyConfig,
     fetchFn: typeof fetch,
     params: ListEntriesParams
 ): Promise<Result<ListEntriesResult<TValues>, HttpError | GraphQLError | NetworkError>> {
     const { modelId, where, sort, limit = 10, after, fields, preview } = params;
 
-    const { executeGraphQL } = await import("./executeGraphQL.js");
+    const { executeGraphQL } = await import("../executeGraphQL.js");
 
     const query = `
         query ListEntries(
@@ -99,7 +99,7 @@ export async function listEntries<TValues extends CmsEntryValues = CmsEntryValue
     const responseData = result.value;
 
     if (responseData.cms.listEntries.error) {
-        const { GraphQLError } = await import("../errors.js");
+        const { GraphQLError } = await import("../../errors.js");
         return Result.fail(
             new GraphQLError(
                 responseData.cms.listEntries.error.message,

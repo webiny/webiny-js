@@ -1,6 +1,6 @@
-import type { CmsSdkConfig } from "../types.js";
-import { Result } from "../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../errors.js";
+import type { WebinyConfig } from "../../types.js";
+import { Result } from "../../Result.js";
+import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
 import type { CmsEntryValues, CmsEntryData } from "./cmsTypes.js";
 
 export interface GetEntryWhere {
@@ -33,13 +33,13 @@ export interface GetEntryParams {
  * @returns Result containing the entry data (or null if not found) or an error
  */
 export async function getEntry<TValues extends CmsEntryValues = CmsEntryValues>(
-    config: CmsSdkConfig,
+    config: WebinyConfig,
     fetchFn: typeof fetch,
     params: GetEntryParams
 ): Promise<Result<CmsEntryData<TValues> | null, HttpError | GraphQLError | NetworkError>> {
     const { modelId, where, fields, preview } = params;
 
-    const { executeGraphQL } = await import("./executeGraphQL.js");
+    const { executeGraphQL } = await import("../executeGraphQL.js");
 
     const query = `
         query GetEntry($modelId: ID!, $where: JSON!, $fields: [String!]!, $preview: Boolean) {
@@ -69,7 +69,7 @@ export async function getEntry<TValues extends CmsEntryValues = CmsEntryValues>(
     const responseData = result.value;
 
     if (responseData.cms.getEntry.error) {
-        const { GraphQLError } = await import("../errors.js");
+        const { GraphQLError } = await import("../../errors.js");
         return Result.fail(
             new GraphQLError(
                 responseData.cms.getEntry.error.message,

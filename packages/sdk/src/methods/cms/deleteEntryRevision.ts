@@ -1,6 +1,6 @@
-import type { CmsSdkConfig } from "../types.js";
-import { Result } from "../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../errors.js";
+import type { WebinyConfig } from "../../types.js";
+import { Result } from "../../Result.js";
+import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
 
 export interface DeleteEntryRevisionParams {
     modelId: string;
@@ -20,13 +20,13 @@ export interface DeleteEntryRevisionParams {
  * @returns Result containing true if deletion succeeded or an error
  */
 export async function deleteEntryRevision(
-    config: CmsSdkConfig,
+    config: WebinyConfig,
     fetchFn: typeof fetch,
     params: DeleteEntryRevisionParams
 ): Promise<Result<boolean, HttpError | GraphQLError | NetworkError>> {
     const { modelId, revisionId, permanent = false } = params;
 
-    const { executeGraphQL } = await import("./executeGraphQL.js");
+    const { executeGraphQL } = await import("../executeGraphQL.js");
 
     const query = `
         mutation DeleteEntryRevision($modelId: ID!, $revisionId: ID!, $permanent: Boolean) {
@@ -51,7 +51,7 @@ export async function deleteEntryRevision(
     const data = result.value;
 
     if (data.cms.deleteEntryRevision.error) {
-        const { GraphQLError } = await import("../errors.js");
+        const { GraphQLError } = await import("../../errors.js");
         return Result.fail(
             new GraphQLError(
                 data.cms.deleteEntryRevision.error.message,

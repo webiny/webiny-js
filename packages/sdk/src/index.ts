@@ -11,22 +11,22 @@ export type {
     CmsIdentity,
     IEntryState,
     CmsEntryData
-} from "./methods/cmsTypes.js";
+} from "./methods/cms/cmsTypes.js";
 
 // Export types from methods.
-export type { CreateCmsEntryData, CreateEntryParams } from "./methods/createEntry.js";
+export type { CreateCmsEntryData, CreateEntryParams } from "./methods/cms/createEntry.js";
 
 export type {
     UpdateCmsEntryData,
     UpdateEntryRevisionParams
-} from "./methods/updateEntryRevision.js";
+} from "./methods/cms/updateEntryRevision.js";
 
-export type { GetEntryParams, GetEntryWhere } from "./methods/getEntry.js";
+export type { GetEntryParams, GetEntryWhere } from "./methods/cms/getEntry.js";
 
-export type { ListEntriesParams, ListEntriesResult } from "./methods/listEntries.js";
+export type { ListEntriesParams, ListEntriesResult } from "./methods/cms/listEntries.js";
 
-export type { DeleteEntryRevisionParams } from "./methods/deleteEntryRevision.js";
+export type { DeleteEntryRevisionParams } from "./methods/cms/deleteEntryRevision.js";
 
-export type { PublishEntryRevisionParams } from "./methods/publishEntryRevision.js";
+export type { PublishEntryRevisionParams } from "./methods/cms/publishEntryRevision.js";
 
-export type { UnpublishEntryRevisionParams } from "./methods/unpublishEntryRevision.js";
+export type { UnpublishEntryRevisionParams } from "./methods/cms/unpublishEntryRevision.js";

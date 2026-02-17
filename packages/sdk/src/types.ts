@@ -1,4 +1,4 @@
-export interface CmsSdkConfig {
+export interface WebinyConfig {
     token: string;
     endpoint: string;
     tenant: string;

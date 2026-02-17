@@ -1,6 +1,6 @@
-import type { CmsSdkConfig } from "../types.js";
-import { Result } from "../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../errors.js";
+import type { WebinyConfig } from "../../types.js";
+import { Result } from "../../Result.js";
+import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
 import type { CmsEntryValues, CmsEntryStatus, CmsIdentity, IEntryState } from "./cmsTypes.js";
 
 /**
@@ -72,13 +72,13 @@ export interface CreateEntryParams<TValues extends CmsEntryValues = CmsEntryValu
  * @returns Result containing the created entry data or an error
  */
 export async function createEntry<TValues extends CmsEntryValues = CmsEntryValues>(
-    config: CmsSdkConfig,
+    config: WebinyConfig,
     fetchFn: typeof fetch,
     params: CreateEntryParams<TValues>
 ): Promise<Result<CreateCmsEntryData<TValues>, HttpError | GraphQLError | NetworkError>> {
     const { modelId, data, fields } = params;
 
-    const { executeGraphQL } = await import("./executeGraphQL.js");
+    const { executeGraphQL } = await import("../executeGraphQL.js");
 
     const query = `
         mutation CreateEntry($modelId: ID!, $data: JSON!, $fields: [String!]!) {
@@ -103,7 +103,7 @@ export async function createEntry<TValues extends CmsEntryValues = CmsEntryValue
     const responseData = result.value;
 
     if (responseData.cms.createEntry.error) {
-        const { GraphQLError } = await import("../errors.js");
+        const { GraphQLError } = await import("../../errors.js");
         return Result.fail(
             new GraphQLError(
                 responseData.cms.createEntry.error.message,

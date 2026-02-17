@@ -1,6 +1,6 @@
-import type { CmsSdkConfig } from "../types.js";
-import { Result } from "../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../errors.js";
+import type { WebinyConfig } from "../../types.js";
+import { Result } from "../../Result.js";
+import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
 import type { CmsEntryValues, CmsEntryData } from "./cmsTypes.js";
 
 export interface UnpublishEntryRevisionParams {
@@ -22,13 +22,13 @@ export interface UnpublishEntryRevisionParams {
  * @returns Result containing the unpublished entry data or an error
  */
 export async function unpublishEntryRevision<TValues extends CmsEntryValues = CmsEntryValues>(
-    config: CmsSdkConfig,
+    config: WebinyConfig,
     fetchFn: typeof fetch,
     params: UnpublishEntryRevisionParams
 ): Promise<Result<CmsEntryData<TValues>, HttpError | GraphQLError | NetworkError>> {
     const { modelId, revisionId, fields } = params;
 
-    const { executeGraphQL } = await import("./executeGraphQL.js");
+    const { executeGraphQL } = await import("../executeGraphQL.js");
 
     const query = `
         mutation UnpublishEntryRevision($modelId: ID!, $revisionId: ID!, $fields: [String!]!) {
@@ -53,7 +53,7 @@ export async function unpublishEntryRevision<TValues extends CmsEntryValues = Cm
     const data = result.value;
 
     if (data.cms.unpublishEntryRevision.error) {
-        const { GraphQLError } = await import("../errors.js");
+        const { GraphQLError } = await import("../../errors.js");
         return Result.fail(
             new GraphQLError(
                 data.cms.unpublishEntryRevision.error.message,

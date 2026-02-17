@@ -1,6 +1,6 @@
-import type { CmsSdkConfig } from "../types.js";
-import { Result } from "../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../errors.js";
+import type { WebinyConfig } from "../../types.js";
+import { Result } from "../../Result.js";
+import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
 import type { CmsEntryValues, CmsEntryData } from "./cmsTypes.js";
 
 export interface PublishEntryRevisionParams {
@@ -22,13 +22,13 @@ export interface PublishEntryRevisionParams {
  * @returns Result containing the published entry data or an error
  */
 export async function publishEntryRevision<TValues extends CmsEntryValues = CmsEntryValues>(
-    config: CmsSdkConfig,
+    config: WebinyConfig,
     fetchFn: typeof fetch,
     params: PublishEntryRevisionParams
 ): Promise<Result<CmsEntryData<TValues>, HttpError | GraphQLError | NetworkError>> {
     const { modelId, revisionId, fields } = params;
 
-    const { executeGraphQL } = await import("./executeGraphQL.js");
+    const { executeGraphQL } = await import("../executeGraphQL.js");
 
     const query = `
         mutation PublishEntryRevision($modelId: ID!, $revisionId: ID!, $fields: [String!]!) {
@@ -53,7 +53,7 @@ export async function publishEntryRevision<TValues extends CmsEntryValues = CmsE
     const responseData = result.value;
 
     if (responseData.cms.publishEntryRevision.error) {
-        const { GraphQLError } = await import("../errors.js");
+        const { GraphQLError } = await import("../../errors.js");
         return Result.fail(
             new GraphQLError(
                 responseData.cms.publishEntryRevision.error.message,

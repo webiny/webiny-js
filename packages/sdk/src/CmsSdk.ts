@@ -1,30 +1,30 @@
-import type { CmsSdkConfig } from "./types.js";
-import type { CmsEntryValues, CmsEntryData } from "./methods/cmsTypes.js";
-import type { GetEntryParams } from "./methods/getEntry.js";
-import type { ListEntriesParams, ListEntriesResult } from "./methods/listEntries.js";
-import type { CreateEntryParams, CreateCmsEntryData } from "./methods/createEntry.js";
+import type { WebinyConfig } from "./types.js";
+import type { CmsEntryValues, CmsEntryData } from "./methods/cms/cmsTypes.js";
+import type { GetEntryParams } from "./methods/cms/getEntry.js";
+import type { ListEntriesParams, ListEntriesResult } from "./methods/cms/listEntries.js";
+import type { CreateEntryParams, CreateCmsEntryData } from "./methods/cms/createEntry.js";
 import type {
     UpdateEntryRevisionParams,
     UpdateCmsEntryData
-} from "./methods/updateEntryRevision.js";
-import type { DeleteEntryRevisionParams } from "./methods/deleteEntryRevision.js";
-import type { PublishEntryRevisionParams } from "./methods/publishEntryRevision.js";
-import type { UnpublishEntryRevisionParams } from "./methods/unpublishEntryRevision.js";
+} from "./methods/cms/updateEntryRevision.js";
+import type { DeleteEntryRevisionParams } from "./methods/cms/deleteEntryRevision.js";
+import type { PublishEntryRevisionParams } from "./methods/cms/publishEntryRevision.js";
+import type { UnpublishEntryRevisionParams } from "./methods/cms/unpublishEntryRevision.js";
 import type { HttpError, GraphQLError, NetworkError } from "./errors.js";
 import type { Result } from "./Result.js";
-import { getEntry as getEntryFn } from "./methods/getEntry.js";
-import { listEntries as listEntriesFn } from "./methods/listEntries.js";
-import { createEntry as createEntryFn } from "./methods/createEntry.js";
-import { updateEntryRevision as updateEntryRevisionFn } from "./methods/updateEntryRevision.js";
-import { deleteEntryRevision as deleteEntryRevisionFn } from "./methods/deleteEntryRevision.js";
-import { publishEntryRevision as publishEntryRevisionFn } from "./methods/publishEntryRevision.js";
-import { unpublishEntryRevision as unpublishEntryRevisionFn } from "./methods/unpublishEntryRevision.js";
+import { getEntry as getEntryFn } from "./methods/cms/getEntry.js";
+import { listEntries as listEntriesFn } from "./methods/cms/listEntries.js";
+import { createEntry as createEntryFn } from "./methods/cms/createEntry.js";
+import { updateEntryRevision as updateEntryRevisionFn } from "./methods/cms/updateEntryRevision.js";
+import { deleteEntryRevision as deleteEntryRevisionFn } from "./methods/cms/deleteEntryRevision.js";
+import { publishEntryRevision as publishEntryRevisionFn } from "./methods/cms/publishEntryRevision.js";
+import { unpublishEntryRevision as unpublishEntryRevisionFn } from "./methods/cms/unpublishEntryRevision.js";
 
 export class CmsSdk {
-    private config: CmsSdkConfig;
+    private config: WebinyConfig;
     private fetchFn: typeof fetch;
 
-    constructor(config: CmsSdkConfig) {
+    constructor(config: WebinyConfig) {
         this.config = config;
         this.fetchFn = config.fetch || fetch;
     }

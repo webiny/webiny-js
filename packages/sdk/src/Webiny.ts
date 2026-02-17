@@ -1,7 +1,5 @@
-import type { CmsSdkConfig } from "./types.js";
+import type { WebinyConfig } from "./types.js";
 import { CmsSdk } from "./CmsSdk.js";
-
-export type WebinyConfig = CmsSdkConfig;
 
 export class Webiny {
     public readonly cms: CmsSdk;

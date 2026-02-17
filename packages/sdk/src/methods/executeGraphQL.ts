@@ -1,9 +1,9 @@
-import type { CmsSdkConfig } from "../types.js";
+import type { WebinyConfig } from "../types.js";
 import { Result } from "../Result.js";
 import { HttpError, GraphQLError, NetworkError } from "../errors.js";
 
 export async function executeGraphQL(
-    config: CmsSdkConfig,
+    config: WebinyConfig,
     fetchFn: typeof fetch,
     query: string,
     variables: Record<string, unknown> = {}
