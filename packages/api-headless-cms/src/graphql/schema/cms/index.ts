@@ -8,7 +8,6 @@ import {
     QueryCmsResolverImpl,
     MutationCmsResolverImpl,
     GetEntryResolverImpl,
-    GetEntryRevisionByIdResolverImpl,
     ListEntriesResolverImpl,
     CreateEntryResolverImpl,
     UpdateEntryRevisionResolverImpl,
@@ -28,7 +27,6 @@ export const createCmsSchema = () => {
         context.container.register(QueryCmsResolverImpl);
         context.container.register(MutationCmsResolverImpl);
         context.container.register(GetEntryResolverImpl);
-        context.container.register(GetEntryRevisionByIdResolverImpl);
         context.container.register(ListEntriesResolverImpl);
         context.container.register(CreateEntryResolverImpl);
         context.container.register(UpdateEntryRevisionResolverImpl);

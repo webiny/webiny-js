@@ -1,6 +1,5 @@
 import type { CmsSdkConfig } from "./types.js";
 import type { GetEntryParams, CmsEntryData } from "./methods/getEntry.js";
-import type { GetEntryRevisionByIdParams } from "./methods/getEntryRevisionById.js";
 import type { ListEntriesParams, ListEntriesResult } from "./methods/listEntries.js";
 import type {
     CreateEntryParams,
@@ -17,7 +16,6 @@ import type { UnpublishEntryRevisionParams } from "./methods/unpublishEntryRevis
 import type { HttpError, GraphQLError, NetworkError } from "./errors.js";
 import type { Result } from "./Result.js";
 import { getEntry as getEntryFn } from "./methods/getEntry.js";
-import { getEntryRevisionById as getEntryRevisionByIdFn } from "./methods/getEntryRevisionById.js";
 import { listEntries as listEntriesFn } from "./methods/listEntries.js";
 import { createEntry as createEntryFn } from "./methods/createEntry.js";
 import { updateEntryRevision as updateEntryRevisionFn } from "./methods/updateEntryRevision.js";
@@ -38,12 +36,6 @@ export class CmsSdk {
         params: GetEntryParams
     ): Promise<Result<CmsEntryData<TValues> | null, HttpError | GraphQLError | NetworkError>> {
         return getEntryFn<TValues>(this.config, this.fetchFn, params);
-    }
-
-    async getEntryRevisionById<TValues extends CmsEntryValues = CmsEntryValues>(
-        params: GetEntryRevisionByIdParams
-    ): Promise<Result<CmsEntryData<TValues> | null, HttpError | GraphQLError | NetworkError>> {
-        return getEntryRevisionByIdFn<TValues>(this.config, this.fetchFn, params);
     }
 
     async listEntries<TValues extends CmsEntryValues = CmsEntryValues>(

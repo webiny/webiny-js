@@ -1,7 +1,6 @@
 export { QueryCmsResolverImpl } from "./queryCms.js";
 export { MutationCmsResolverImpl } from "./mutationCms.js";
 export { GetEntryResolverImpl } from "./getEntry.js";
-export { GetEntryRevisionByIdResolverImpl } from "./getEntryRevisionById.js";
 export { ListEntriesResolverImpl } from "./listEntries.js";
 export { CreateEntryResolverImpl } from "./createEntry.js";
 export { UpdateEntryRevisionResolverImpl } from "./updateEntryRevision.js";

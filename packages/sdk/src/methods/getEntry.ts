@@ -83,9 +83,15 @@ export interface CmsEntryData<TValues extends CmsEntryValues = CmsEntryValues> {
     values?: TValues;
 }
 
+export interface GetEntryWhere {
+    id?: string;
+    entryId?: string;
+    values?: Record<string, unknown>;
+}
+
 export interface GetEntryParams {
     modelId: string;
-    where: Record<string, unknown>;
+    where: GetEntryWhere;
     fields: string[];
     preview?: boolean;
 }
@@ -98,7 +104,10 @@ export interface GetEntryParams {
  * @param fetchFn - Fetch function to use for HTTP requests
  * @param params - Parameters for retrieving the entry
  * @param params.modelId - The model ID of the entry to retrieve
- * @param params.where - Where conditions to filter the entry
+ * @param params.where - Where conditions to filter the entry. Can filter by id, entryId, or values
+ * @param params.where.id - The revision ID (e.g., "123#0001")
+ * @param params.where.entryId - The entry ID (e.g., "123")
+ * @param params.where.values - Filter by entry values
  * @param params.fields - Fields to include in the response. Use "values." prefix for entry values (e.g., "values.author.name") or specify top-level fields like "createdOn"
  * @param params.preview - When true, uses preview API to access unpublished/draft content. When false (default), uses read API for published content only.
  * @returns Result containing the entry data (or null if not found) or an error

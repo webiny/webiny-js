@@ -18,9 +18,7 @@ export type {
     UpdateEntryRevisionParams
 } from "./methods/updateEntryRevision.js";
 
-export type { CmsEntryData, GetEntryParams } from "./methods/getEntry.js";
-
-export type { GetEntryRevisionByIdParams } from "./methods/getEntryRevisionById.js";
+export type { CmsEntryData, GetEntryParams, GetEntryWhere } from "./methods/getEntry.js";
 
 export type { ListEntriesParams, ListEntriesResult } from "./methods/listEntries.js";
 
