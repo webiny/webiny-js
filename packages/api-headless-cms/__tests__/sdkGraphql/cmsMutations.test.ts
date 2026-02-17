@@ -78,7 +78,6 @@ describe("SDK GraphQL - CMS Mutation Operations", () => {
 
             expect(publishResult.isOk()).toBe(true);
             const publishedEntry = publishResult.value;
-            // @ts-ignore
             expect(publishedEntry.meta.status).toBe("published");
         });
     });
@@ -195,7 +194,6 @@ describe("SDK GraphQL - CMS Mutation Operations", () => {
 
             expect(unpublishResult.isOk()).toBe(true);
             const unpublishedEntry = unpublishResult.value;
-            // @ts-ignore
             expect(unpublishedEntry.meta.status).toBe("unpublished");
         });
     });
