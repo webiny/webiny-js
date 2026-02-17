@@ -23,22 +23,7 @@ export class ImplPathResolver {
      * Returns the default export or named export matching the filename.
      */
     static async importFromPath(filePath: string, project: IProjectModel) {
-        let importPath: string;
-
-        if (filePath.startsWith("/extensions/")) {
-            // Resolve from project root.
-            importPath = project.paths.rootFolder.join(filePath).toString();
-        } else {
-            // Try to resolve using tsconfig path aliases.
-            const resolved = this.resolvePathAlias(filePath, project);
-            if (resolved) {
-                importPath = resolved;
-            } else {
-                // Treat as absolute path.
-                importPath = filePath;
-            }
-        }
-
+        const importPath = this.resolvePath(filePath, project);
         const exportName = path.basename(filePath).replace(path.extname(filePath), "");
 
         const importedModule = await import(importPath);
@@ -48,6 +33,29 @@ export class ImplPathResolver {
         return (
             ("default" in importedModule && importedModule.default) || importedModule[exportName]
         );
+    }
+
+    /**
+     * Resolve a file path to an absolute path.
+     * - If path starts with "/extensions/", it resolves from project root
+     * - If path matches tsconfig path alias (e.g., "@/*"), it resolves using tsconfig
+     * - Otherwise, treats path as absolute
+     * Returns the absolute path without importing.
+     */
+    static resolvePath(filePath: string, project: IProjectModel): string {
+        if (filePath.startsWith("/extensions/")) {
+            // Resolve from project root.
+            return project.paths.rootFolder.join(filePath).toString();
+        } else {
+            // Try to resolve using tsconfig path aliases.
+            const resolved = this.resolvePathAlias(filePath, project);
+            if (resolved) {
+                return resolved;
+            } else {
+                // Treat as absolute path.
+                return filePath;
+            }
+        }
     }
 
     private static resolvePathAlias(filePath: string, project: IProjectModel): string | null {

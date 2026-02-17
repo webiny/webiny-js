@@ -9,6 +9,7 @@ import { ImplPathResolver } from "~/utils/index.js";
 /**
  * TypeScript type for source paths.
  * - `/extensions/${string}` - resolves from project root
+ * - `@/${string}` or other tsconfig aliases - resolves using tsconfig.json paths
  * - string (absolute path) - treated as absolute path
  */
 export type SrcPath = `/extensions/${string}` | string;
@@ -28,8 +29,8 @@ export const zodSrcPath = (options: ZodSrcPathOptions) => {
 
     const tokenName = abstraction ? getTokenName(abstraction.token) : undefined;
     const description = abstraction
-        ? `Path to a file exporting ${tokenName}. Use "/extensions/..." to resolve from project root, or provide an absolute path.`
-        : `Path: "/extensions/..." resolves from project root, or provide an absolute path.`;
+        ? `Path to a file exporting ${tokenName}. Use "/extensions/..." to resolve from project root, "@/..." for tsconfig path aliases, or provide an absolute path.`
+        : `Path: "/extensions/..." resolves from project root, "@/..." resolves using tsconfig path aliases, or provide an absolute path.`;
 
     return z
         .string()
@@ -37,14 +38,7 @@ export const zodSrcPath = (options: ZodSrcPathOptions) => {
         .transform((val): SrcPath => val as SrcPath)
         .superRefine(async (src, ctx) => {
             // Convert to absolute path for file existence check.
-            let absoluteSrcPath: string;
-            if (src.startsWith("/extensions/")) {
-                // Resolve from project root.
-                absoluteSrcPath = project.paths.rootFolder.join(src).toString();
-            } else {
-                // Treat as absolute path.
-                absoluteSrcPath = src;
-            }
+            const absoluteSrcPath = ImplPathResolver.resolvePath(src, project);
 
             if (!fs.existsSync(absoluteSrcPath)) {
                 ctx.addIssue({
