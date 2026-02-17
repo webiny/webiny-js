@@ -14,6 +14,30 @@ export interface FieldBuilderConfig
 }
 
 /**
+ * Augmentable renderer registry.
+ * Augment this interface to register renderer names and their settings.
+ *
+ * Example:
+ *   declare module "@webiny/api-headless-cms/types" {
+ *       interface FieldRendererRegistry {
+ *           "my-renderer": { color: string };
+ *       }
+ *   }
+ */
+export interface FieldRendererRegistry {}
+
+export type FieldRendererName = keyof FieldRendererRegistry extends never
+    ? string
+    : keyof FieldRendererRegistry & string;
+
+export type FieldRendererSettings<TName extends FieldRendererName> =
+    keyof FieldRendererRegistry extends never
+        ? Record<string, any> | undefined
+        : TName extends keyof FieldRendererRegistry
+          ? FieldRendererRegistry[TName] | undefined
+          : Record<string, any> | undefined;
+
+/**
  * Base FieldBuilder class providing common field configuration methods
  */
 export class FieldBuilder<TType extends string = string> {
@@ -141,10 +165,15 @@ export class FieldBuilder<TType extends string = string> {
         return this;
     }
 
-    renderer(name: string, settings?: Record<string, any>): this {
+    renderer<TName extends FieldRendererName>(
+        name: TName,
+        ...args: FieldRendererSettings<TName> extends undefined
+            ? [settings?: Record<string, any>]
+            : [settings: FieldRendererSettings<TName>]
+    ): this {
         this.config.renderer = {
             name,
-            settings: settings || null
+            settings: args[0] ?? null
         };
         return this;
     }
