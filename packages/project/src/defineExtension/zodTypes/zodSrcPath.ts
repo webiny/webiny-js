@@ -1,7 +1,6 @@
 import { type Abstraction, Metadata } from "@webiny/di";
 import { z } from "zod";
 import path from "path";
-import fs from "fs";
 import { type IProjectModel } from "~/abstractions/models/index.js";
 import { ProjectError } from "~/ProjectError.js";
 import { ImplPathResolver } from "~/utils/index.js";
@@ -37,10 +36,8 @@ export const zodSrcPath = (options: ZodSrcPathOptions) => {
         .describe(description)
         .transform((val): SrcPath => val as SrcPath)
         .superRefine(async (src, ctx) => {
-            // Convert to absolute path for file existence check.
-            const absoluteSrcPath = ImplPathResolver.resolvePath(src, project);
-
-            if (!fs.existsSync(absoluteSrcPath)) {
+            // Check if file exists using ImplPathResolver.
+            if (!ImplPathResolver.existsSync(src, project)) {
                 ctx.addIssue({
                     code: z.ZodIssueCode.custom,
                     message: ProjectError.formatMessage(
@@ -53,6 +50,7 @@ export const zodSrcPath = (options: ZodSrcPathOptions) => {
 
             // If abstraction validation is required
             if (abstraction) {
+                const absoluteSrcPath = ImplPathResolver.resolvePath(src, project);
                 const exportName = path
                     .basename(absoluteSrcPath)
                     .replace(path.extname(absoluteSrcPath), "");

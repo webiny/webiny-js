@@ -58,6 +58,19 @@ export class ImplPathResolver {
         }
     }
 
+    /**
+     * Check if a file exists at the given path.
+     * Resolves the path using the same logic as resolvePath before checking.
+     * - If path starts with "/extensions/", it resolves from project root
+     * - If path matches tsconfig path alias (e.g., "@/*"), it resolves using tsconfig
+     * - Otherwise, treats path as absolute
+     * Returns true if the file exists, false otherwise.
+     */
+    static existsSync(filePath: string, project: IProjectModel): boolean {
+        const absolutePath = this.resolvePath(filePath, project);
+        return fs.existsSync(absolutePath);
+    }
+
     private static resolvePathAlias(filePath: string, project: IProjectModel): string | null {
         const projectRoot = project.paths.rootFolder.toString();
 
