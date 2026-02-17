@@ -4,21 +4,24 @@ export * from "./types.js";
 export { Result } from "./Result.js";
 export { HttpError, GraphQLError, NetworkError } from "./errors.js";
 
-// Export types from methods.
+// Export shared CMS types.
 export type {
     CmsEntryValues,
     CmsEntryStatus,
     CmsIdentity,
-    CreateCmsEntryData,
-    CreateEntryParams
-} from "./methods/createEntry.js";
+    IEntryState,
+    CmsEntryData
+} from "./methods/cmsTypes.js";
+
+// Export types from methods.
+export type { CreateCmsEntryData, CreateEntryParams } from "./methods/createEntry.js";
 
 export type {
     UpdateCmsEntryData,
     UpdateEntryRevisionParams
 } from "./methods/updateEntryRevision.js";
 
-export type { CmsEntryData, GetEntryParams, GetEntryWhere } from "./methods/getEntry.js";
+export type { GetEntryParams, GetEntryWhere } from "./methods/getEntry.js";
 
 export type { ListEntriesParams, ListEntriesResult } from "./methods/listEntries.js";
 

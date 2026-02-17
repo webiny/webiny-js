@@ -1,41 +1,7 @@
 import type { CmsSdkConfig } from "../types.js";
 import { Result } from "../Result.js";
 import type { HttpError, GraphQLError, NetworkError } from "../errors.js";
-
-/**
- * Entry values type.
- */
-export interface CmsEntryValues {
-    [key: string]: any;
-}
-
-/**
- * CMS identity.
- */
-export interface CmsIdentity {
-    /**
-     * ID of the user.
-     */
-    id: string;
-    /**
-     * Full name of the user.
-     */
-    displayName: string;
-    /**
-     * Type of the user (admin, user).
-     */
-    type: string;
-}
-
-/**
- * Entry state.
- */
-export interface IEntryState {
-    state: string;
-    workflowId: string;
-    stepId: string;
-    stepName: string;
-}
+import type { CmsEntryValues, CmsIdentity, IEntryState } from "./cmsTypes.js";
 
 /**
  * Update entry revision data.
