@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import isHotkey from "is-hotkey";
+import { isHotkey } from "is-hotkey";
 
 export function useModKey() {
     const [pressed, setPressed] = useState(false);
