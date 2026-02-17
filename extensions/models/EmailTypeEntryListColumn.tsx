@@ -4,7 +4,7 @@ import { ContentEntryListConfig } from "webiny/admin/cms/entry/list";
 // You can destructure config components to make the code more readable and easier to work with.
 const { Browser } = ContentEntryListConfig;
 
-interface EmailTypeCellProps {
+interface ContactSubmissionTableRow {
     values: {
         emailType: "work" | "personal";
     };
@@ -14,7 +14,7 @@ export const EmailTypeCell = () => {
     // You can destructure child methods to make the code more readable and easier to work with.
     const { useTableRow, isFolderRow } = ContentEntryListConfig.Browser.Table.Column;
     // useTableRow() allows you to access the entire data of the current row.
-    const { row } = useTableRow<EmailTypeCellProps>();
+    const { row } = useTableRow<ContactSubmissionTableRow>();
 
     // isFolderRow() allows for custom rendering when the current row is a folder.
     if (isFolderRow(row)) {
