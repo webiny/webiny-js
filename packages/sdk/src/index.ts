@@ -1,4 +1,4 @@
-export * from "./Sdk.js";
+export * from "./Webiny.js";
 export * from "./CmsSdk.js";
 export * from "./types.js";
 export { Result } from "./Result.js";

@@ -1,4 +1,4 @@
-import { Sdk } from "@webiny/sdk";
+import { Webiny } from "@webiny/sdk";
 import type { GraphQLHandlerParams } from "./useGraphQLHandler";
 import { useGraphQLHandler } from "./useGraphQLHandler";
 
@@ -31,7 +31,7 @@ export const useWebinySdk = (params: GraphQLHandlerParams = {}) => {
     };
 
     // Create and return the SDK instance with our custom fetch.
-    const sdk = new Sdk({
+    const sdk = new Webiny({
         endpoint: "http://localhost", // Dummy endpoint, not actually used.
         token: "aToken", // Token configured in plugins.ts.
         tenant: "root",
