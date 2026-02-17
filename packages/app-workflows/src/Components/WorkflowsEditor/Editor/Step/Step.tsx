@@ -9,7 +9,7 @@ import { StepFormTitle } from "./Form/StepFormTitle.js";
 import { StepFormColor } from "./Form/StepFormColor.js";
 import { StepFormDescription } from "./Form/StepFormDescription.js";
 import { StepFormTeams } from "./Form/StepFormTeams.js";
-import { StepFormNotifications } from "./Form/StepFormNotifications.js";
+// import { StepFormNotifications } from "./Form/StepFormNotifications.js";
 import { RemoveStep } from "./Step/RemoveStep.js";
 
 export interface IStepProps {
@@ -53,8 +53,8 @@ export const Step = observer(
         canMoveUp,
         onMoveDown,
         canMoveDown,
-        open,
-        notifications
+        open
+        // notifications
     }: IStepProps) => {
         const { editing, stopEditing, startEditing } = useEditing(open);
 
@@ -142,9 +142,9 @@ export const Step = observer(
                                             <Grid.Column span={12}>
                                                 <StepFormTeams />
                                             </Grid.Column>
-                                            <Grid.Column span={12}>
-                                                <StepFormNotifications items={notifications} />
-                                            </Grid.Column>
+                                            {/*<Grid.Column span={12}>*/}
+                                            {/*    <StepFormNotifications items={notifications} />*/}
+                                            {/*</Grid.Column>*/}
                                         </Grid>
                                     </Card>
                                 </>
