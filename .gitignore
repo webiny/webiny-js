@@ -58,5 +58,5 @@ packages/tasks/tpl/*
 packages/webiny/src/admin/icons
 ./nextjs
 
-CLAUDE*.md
-.claude/*
+CLAUDE.local.md
+.claude/*.local.*
