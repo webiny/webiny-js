@@ -1,21 +1,19 @@
 import path from "path";
-import readJsonSync from "read-json-sync";
 import fs from "fs";
+import stripJsonComments from "strip-json-comments";
 import { type IProjectModel } from "~/abstractions/models/index.js";
-
-interface TsConfigPaths {
-    [key: string]: string[];
-}
 
 interface TsConfig {
     compilerOptions?: {
         baseUrl?: string;
-        paths?: TsConfigPaths;
+        paths?: {
+            [key: string]: string[];
+        };
     };
 }
 
 export class ImplPathResolver {
-    private static pathMappings: Map<string, Map<string, string[]>> = new Map();
+    private static pathMappings: { [key: string]: string[] } | null = null;
 
     /**
      * Import a module from a given file path.
@@ -53,21 +51,19 @@ export class ImplPathResolver {
     }
 
     private static resolvePathAlias(filePath: string, project: IProjectModel): string | null {
-        const tsConfigPath = project.paths.tsConfigFile.toString();
         const projectRoot = project.paths.rootFolder.toString();
 
         // Load path mappings from tsconfig if not already cached.
-        if (!this.pathMappings.has(tsConfigPath)) {
-            this.loadPathMappings(tsConfigPath, projectRoot);
+        if (this.pathMappings === null) {
+            this.loadPathMappings(project);
         }
 
-        const mappings = this.pathMappings.get(tsConfigPath);
-        if (!mappings) {
+        if (!this.pathMappings) {
             return null;
         }
 
         // Try to match against each path pattern.
-        for (const [pattern, targets] of mappings.entries()) {
+        for (const [pattern, targets] of Object.entries(this.pathMappings)) {
             const match = this.matchPattern(filePath, pattern);
             if (match !== null) {
                 // Use the first mapping.
@@ -80,27 +76,28 @@ export class ImplPathResolver {
         return null;
     }
 
-    private static loadPathMappings(tsConfigPath: string, projectRoot: string): void {
-        const mappings = new Map<string, string[]>();
+    private static loadPathMappings(project: IProjectModel): void {
+        const tsConfigPath = project.paths.tsConfigFile.toString();
 
         if (!fs.existsSync(tsConfigPath)) {
-            this.pathMappings.set(tsConfigPath, mappings);
+            this.pathMappings = {};
             return;
         }
 
         try {
-            const tsConfig = readJsonSync(tsConfigPath) as TsConfig;
+            const tsConfigContent = fs.readFileSync(tsConfigPath, "utf-8");
+            const tsConfigWithoutComments = stripJsonComments(tsConfigContent);
+            const tsConfig = JSON.parse(tsConfigWithoutComments) as TsConfig;
 
             if (tsConfig.compilerOptions?.paths) {
-                for (const [pattern, targets] of Object.entries(tsConfig.compilerOptions.paths)) {
-                    mappings.set(pattern, targets);
-                }
+                this.pathMappings = tsConfig.compilerOptions.paths;
+            } else {
+                this.pathMappings = {};
             }
         } catch (error) {
             // Ignore tsconfig parsing errors.
+            this.pathMappings = {};
         }
-
-        this.pathMappings.set(tsConfigPath, mappings);
     }
 
     private static matchPattern(importPath: string, pattern: string): string | null {
