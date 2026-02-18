@@ -1,20 +1,29 @@
 import { createCmsGroupPlugin, createModelPlugin } from "~/plugins";
+import type { CmsImportStructureParamsData } from "~/export/types.js";
 
-export const exportedGroupsAndModels = {
+export const exportedGroupsAndModels: CmsImportStructureParamsData = {
     groups: [
         {
             id: "64d4c105110b570008736515",
             name: "Blog",
             slug: "blog",
             description: null,
-            icon: "fab/blogger-b"
+            icon: {
+                name: "fab/blogger-b",
+                value: "fab/blogger-b",
+                type: "fab/blogger-b"
+            }
         },
         {
             id: "64d4c105110b570008736516",
             name: "Machines",
             slug: "machines",
             description: null,
-            icon: "fas/location-dot"
+            icon: {
+                name: "fas/location-dot",
+                value: "fas/location-dot",
+                type: "fas/location-dot"
+            }
         }
     ],
     models: [
@@ -22,7 +31,11 @@ export const exportedGroupsAndModels = {
             modelId: "article",
             name: "Article",
             group: "machines",
-            icon: "far/newspaper",
+            icon: {
+                name: "far/newspaper",
+                value: "far/newspaper",
+                type: "far/newspaper"
+            },
             singularApiName: "Article",
             pluralApiName: "Articles",
             fields: [
@@ -115,7 +128,11 @@ export const exportedGroupsAndModels = {
             modelId: "author",
             name: "Author",
             group: "blog",
-            icon: "fas/person",
+            icon: {
+                name: "fas/person",
+                value: "fas/person",
+                type: "fas/person"
+            },
             singularApiName: "Author",
             pluralApiName: "Authors",
             fields: [
@@ -208,7 +225,11 @@ export const exportedGroupsAndModels = {
             modelId: "category",
             name: "Category",
             group: "machines",
-            icon: "fas/location-dot",
+            icon: {
+                name: "fas/location-dot",
+                value: "fas/location-dot",
+                type: "fas/location-dot"
+            },
             singularApiName: "Category",
             pluralApiName: "Categories",
             fields: [
@@ -238,7 +259,11 @@ export const exportedGroupsAndModels = {
             modelId: "machines",
             name: "Machines",
             group: "machines",
-            icon: "fas/location-dot",
+            icon: {
+                name: "fas/location-dot",
+                value: "fas/location-dot",
+                type: "fas/location-dot"
+            },
             singularApiName: "Machine",
             pluralApiName: "Machine",
             fields: [
@@ -274,13 +299,21 @@ export const createModels = () => {
             name: "Machines",
             slug: "machines",
             description: null,
-            icon: "fas/location-dot"
+            icon: {
+                name: "fas/location-dot",
+                value: "fas/location-dot",
+                type: "fas/location-dot"
+            }
         }),
         createModelPlugin({
             modelId: "machines",
             name: "Machines",
             group: "machines",
-            icon: "fas/location-dot",
+            icon: {
+                name: "fas/location-dot",
+                value: "fas/location-dot",
+                type: "fas/location-dot"
+            },
             singularApiName: "Machine",
             pluralApiName: "Machines",
             description: "",

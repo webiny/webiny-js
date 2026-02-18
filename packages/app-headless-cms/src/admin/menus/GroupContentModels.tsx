@@ -1,6 +1,6 @@
 import React from "react";
 import type { CmsGroup } from "~/types.js";
-import { useRouter, AdminConfig } from "@webiny/app-admin";
+import { AdminConfig, useRouter } from "@webiny/app-admin";
 import { HasContentEntryPermissions } from "./HasContentEntryPermissions.js";
 import { Routes } from "~/routes.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -8,19 +8,23 @@ import { normalizeIcon } from "~/utils/normalizeIcon.js";
 
 const { Menu } = AdminConfig;
 
+interface IGroupContentModelsProps {
+    group: Pick<CmsGroup, "id" | "slug" | "contentModels">;
+}
+
 /**
  * Renders menu items for all content models within a group.
  * If the group has no content models, displays a "Nothing to show" message.
  * Wraps each content model menu item with permission checks.
  */
-export const GroupContentModels = ({ group }: { group: CmsGroup }) => {
+export const GroupContentModels = ({ group }: IGroupContentModelsProps) => {
     const router = useRouter();
 
     if (group.contentModels.length === 0) {
         return (
             <Menu
                 parent="headlessCMSContent"
-                name={`${group.id}-empty`}
+                name={`cms/group/${group.slug}-empty`}
                 element={<Menu.Group text="Nothing to show" />}
             />
         );
@@ -38,8 +42,8 @@ export const GroupContentModels = ({ group }: { group: CmsGroup }) => {
                         contentModel={contentModel}
                     >
                         <Menu
-                            parent={group.id}
-                            name={contentModel.modelId}
+                            parent={`cms/group/${group.slug}`}
+                            name={`cms/model/${contentModel.modelId}`}
                             element={
                                 <Menu.Link
                                     pinnable={true}
