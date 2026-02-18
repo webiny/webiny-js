@@ -1,0 +1,12 @@
+MH
+- packages/api-headless-cms/__tests__/testHelpers/useWebinySdk.ts - check auth? no header?
+- `fields` optional
+  - AST with Pavel
+  - depth
+- dyn-zones
+- `tenant: process.env.WEBINY_API_TENANT || "root" - OPTIONAL HERE?
+`
+
+NTH
+- include, exclude, includeType
+- manage endpoint for getEntry? atm it's only working with READ/PREVIEW
