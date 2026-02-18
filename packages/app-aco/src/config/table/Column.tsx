@@ -24,6 +24,7 @@ export interface ColumnProps {
     header?: string | ReactElement;
     hideable?: boolean;
     name: string;
+    path?: string;
     remove?: boolean;
     resizable?: boolean;
     size?: number;
@@ -39,6 +40,7 @@ const BaseColumn: React.FC<ColumnProps> = ({
     header = undefined,
     hideable = true,
     name,
+    path = "",
     remove = false,
     resizable = true,
     size = 100,
@@ -61,6 +63,7 @@ const BaseColumn: React.FC<ColumnProps> = ({
                 after={placeAfter}
             >
                 <Property id={getId(name, "name")} name={"name"} value={name} />
+                <Property id={getId(name, "path")} name={"path"} value={path} />
                 <Property id={getId(name, "sortable")} name={"sortable"} value={sortable} />
                 <Property id={getId(name, "resizable")} name={"resizable"} value={resizable} />
                 <Property id={getId(name, "hideable")} name={"hideable"} value={hideable} />

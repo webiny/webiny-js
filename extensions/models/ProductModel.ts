@@ -6,30 +6,31 @@ class ProductModelImpl implements ModelFactory.Interface {
     async execute(builder: ModelFactory.Builder) {
         return [
             builder
-                .public()
-                .modelId(PRODUCT_MODEL_ID)
-                .name("Product")
+                .public({
+                    modelId: PRODUCT_MODEL_ID,
+                    name: "Product",
+                    group: "ungrouped"
+                })
                 .description("Products for our e-commerce store")
-                .group("ungrouped")
                 .fields(fields => ({
                     name: fields
                         .text()
                         .renderer("textInput")
                         .label("Name")
-                        .helpText("Product name")
+                        .help("Product name")
                         .required("Name is required"),
                     sku: fields
                         .text()
                         .renderer("textInput")
                         .label("SKU")
-                        .helpText("Stock Keeping Unit - unique product identifier")
+                        .help("Stock Keeping Unit - unique product identifier")
                         .required("SKU is required")
                         .unique(),
                     description: fields
                         .longText()
                         .renderer("textarea")
                         .label("Description")
-                        .helpText("Detailed product description"),
+                        .help("Detailed product description"),
                     price: fields
                         .number()
                         .renderer("numberInput")

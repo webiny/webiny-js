@@ -9,16 +9,15 @@ class ProductCategoryModelImpl implements ModelFactory.Interface {
                 .public({
                     modelId: PRODUCT_CATEGORY_MODEL_ID,
                     name: "Product Category",
-                    group: "hidden"
+                    group: "ungrouped"
                 })
                 .description("Product categories for organizing products")
-                .group("ungrouped")
                 .fields(fields => ({
                     name: fields
                         .text()
                         .renderer("textInput")
                         .label("Name")
-                        .description("Name of the product category")
+                        .help("Name of the product category")
                         .required("Name is required")
                         .minLength(2)
                         .maxLength(100),
@@ -26,7 +25,7 @@ class ProductCategoryModelImpl implements ModelFactory.Interface {
                         .text()
                         .renderer("textInput")
                         .label("Slug")
-                        .description("URL-friendly identifier")
+                        .help("URL-friendly identifier")
                         .required("Slug is required")
                         .unique(),
                     description: fields
