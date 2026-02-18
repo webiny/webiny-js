@@ -10,6 +10,7 @@ interface ContactSubmissionTableRow {
     };
 }
 
+// test
 export const EmailTypeCell = () => {
     // You can destructure child methods to make the code more readable and easier to work with.
     const { useTableRow, isFolderRow } = ContentEntryListConfig.Browser.Table.Column;
