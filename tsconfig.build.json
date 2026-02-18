@@ -20,7 +20,8 @@
     "baseUrl": ".",
     "paths": {
       // For testing purposes (`webiny.config.tsx` and `/extensions`).
-      "webiny/*": ["./packages/webiny/src/*"]
+      "webiny/*": ["./packages/webiny/src/*"],
+      "@/*": ["./*"]
     },
     "typeRoots": ["./typings", "./node_modules/@types", "@types/testing-library__cypress"],
     "isolatedModules": false,

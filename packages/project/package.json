@@ -30,6 +30,7 @@
     "exit-hook": "^4.0.0",
     "fast-glob": "^3.3.3",
     "find-up": "^5.0.0",
+    "get-tsconfig": "^4.13.6",
     "graphql-request": "^7.4.0",
     "humanize-duration": "3.33.2",
     "load-json-file": "6.2.0",

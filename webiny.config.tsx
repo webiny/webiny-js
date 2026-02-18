@@ -8,7 +8,7 @@ export const Extensions = () => {
         <>
             {/*<Admin.Extension src={"/extensions/LexicalPlugin.tsx"} />*/}
             {/* Admin 👇 */}
-            {/*<Admin.Extension src={"/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />*/}
+            <Admin.Extension src={"@/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />
             {/*<Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />*/}
             {/*<Admin.BuildParam paramName="ADMIN_CUSTOM_PARAM" value="adminValue" />*/}
             {/*<Admin.BuildParam*/}

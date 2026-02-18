@@ -1,7 +1,7 @@
 import { type IProjectModel } from "~/abstractions/models/index.js";
 import { type IProjectConfigModel } from "~/abstractions/models/index.js";
 import { Container } from "@webiny/di";
-import { ImplPathResolver } from "~/utils/index.js";
+import { ExtensionSrcResolver } from "~/utils/index.js";
 import { ProjectImplementation as ProjectImplementationExt } from "~/extensions/ProjectImplementation.js";
 
 export const registerImplementations = async (
@@ -14,7 +14,7 @@ export const registerImplementations = async (
     ];
 
     for (const projectImplementation of projectImplementations) {
-        const projectImplementationImpl = await ImplPathResolver.importFromPath(
+        const projectImplementationImpl = await ExtensionSrcResolver.importFromPath(
             projectImplementation.params.src,
             project
         );
