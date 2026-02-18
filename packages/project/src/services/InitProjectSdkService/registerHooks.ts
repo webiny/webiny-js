@@ -55,7 +55,10 @@ export const registerHooks = async (
     ];
 
     for (const hookExtension of hooksExtensions) {
-        const hookImpl = await ExtensionSrcResolver.importFromPath(hookExtension.params.src, project);
+        const hookImpl = await ExtensionSrcResolver.importFromPath(
+            hookExtension.params.src,
+            project
+        );
         container.register(hookImpl).inSingletonScope();
     }
 };

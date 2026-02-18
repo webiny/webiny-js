@@ -55,7 +55,10 @@ export const zodSrcPath = (options: ZodSrcPathOptions) => {
                     .basename(absoluteSrcPath)
                     .replace(path.extname(absoluteSrcPath), "");
 
-                const exportedImplementation = await ExtensionSrcResolver.importFromPath(src, project);
+                const exportedImplementation = await ExtensionSrcResolver.importFromPath(
+                    src,
+                    project
+                );
 
                 if (!exportedImplementation) {
                     ctx.addIssue({
