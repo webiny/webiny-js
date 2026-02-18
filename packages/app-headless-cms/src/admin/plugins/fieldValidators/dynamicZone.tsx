@@ -1,6 +1,6 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { AccordionItem } from "@webiny/ui/Accordion/index.js";
+import { Accordion } from "@webiny/admin-ui";
 import { Bind } from "@webiny/form";
 import type {
     CmsDynamicZoneTemplate,
@@ -39,7 +39,7 @@ function TemplateValidationSettings() {
                             const icon = normalizeIcon(template.icon);
 
                             return (
-                                <AccordionItem
+                                <Accordion.Item
                                     key={template.id}
                                     title={template.name}
                                     description={template.description}
@@ -51,7 +51,7 @@ function TemplateValidationSettings() {
                                             v => new CmsModelFieldValidatorConfigAdapter(field, v)
                                         )}
                                     />
-                                </AccordionItem>
+                                </Accordion.Item>
                             );
                         })}
                     </>
