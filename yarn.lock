@@ -15208,6 +15208,7 @@ __metadata:
     exit-hook: "npm:^4.0.0"
     fast-glob: "npm:^3.3.3"
     find-up: "npm:^5.0.0"
+    get-tsconfig: "npm:^4.13.6"
     graphql-request: "npm:^7.4.0"
     humanize-duration: "npm:3.33.2"
     load-json-file: "npm:6.2.0"
@@ -22142,7 +22143,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"get-tsconfig@npm:^4.7.5":
+"get-tsconfig@npm:^4.13.6, get-tsconfig@npm:^4.7.5":
   version: 4.13.6
   resolution: "get-tsconfig@npm:4.13.6"
   dependencies:
