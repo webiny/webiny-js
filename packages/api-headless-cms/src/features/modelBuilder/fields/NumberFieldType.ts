@@ -58,12 +58,3 @@ declare module "../abstractions.js" {
     }
 }
 
-declare module "./FieldBuilder.js" {
-    interface FieldRendererRegistry {
-        "number-input": { fieldType: "number"; settings: undefined };
-        "number-inputs": {
-            fieldType: "number";
-            settings: { multiValue?: { addValueButtonLabel?: string } };
-        };
-    }
-}

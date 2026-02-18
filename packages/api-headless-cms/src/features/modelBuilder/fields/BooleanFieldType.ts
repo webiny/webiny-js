@@ -36,9 +36,3 @@ declare module "../abstractions.js" {
         boolean(): IBooleanFieldBuilder;
     }
 }
-
-declare module "./FieldBuilder.js" {
-    interface FieldRendererRegistry {
-        "boolean-input": { fieldType: "boolean"; settings: undefined };
-    }
-}

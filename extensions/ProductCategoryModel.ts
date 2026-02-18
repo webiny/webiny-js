@@ -16,7 +16,7 @@ class ProductCategoryModelImpl implements ModelFactory.Interface {
                 .fields(fields => ({
                     name: fields
                         .text()
-                        .renderer("text-input")
+                        .renderer("textINput")
                         .label("Name")
                         .description("Name of the product category")
                         .required("Name is required")
@@ -24,14 +24,14 @@ class ProductCategoryModelImpl implements ModelFactory.Interface {
                         .maxLength(100),
                     slug: fields
                         .text()
-                        .renderer("text-input")
+                        .renderer("textInput")
                         .label("Slug")
                         .description("URL-friendly identifier")
                         .required("Slug is required")
                         .unique(),
                     description: fields
                         .longText()
-                        .renderer("long-text-text-area")
+                        .renderer("textarea")
                         .label("Description")
                         .minLength(10)
                 }))

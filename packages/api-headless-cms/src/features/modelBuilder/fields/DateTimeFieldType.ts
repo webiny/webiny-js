@@ -89,13 +89,3 @@ declare module "../abstractions.js" {
         datetime(): IDateTimeFieldBuilder;
     }
 }
-
-declare module "./FieldBuilder.js" {
-    interface FieldRendererRegistry {
-        "date-time-input": { fieldType: "datetime"; settings: undefined };
-        "date-time-inputs": {
-            fieldType: "datetime";
-            settings: { multiValue?: { addValueButtonLabel?: string } };
-        };
-    }
-}

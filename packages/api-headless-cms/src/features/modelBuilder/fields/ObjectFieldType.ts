@@ -92,16 +92,3 @@ declare module "../abstractions.js" {
         object(): IObjectFieldBuilder;
     }
 }
-
-declare module "./FieldBuilder.js" {
-    interface FieldRendererRegistry {
-        "object-accordion": { fieldType: "object"; settings: { open?: boolean } };
-        "objects-accordion": {
-            fieldType: "object";
-            settings: {
-                open?: boolean;
-                multiValue?: { addValueButtonLabel?: string };
-            };
-        };
-    }
-}

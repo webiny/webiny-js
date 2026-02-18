@@ -109,9 +109,3 @@ declare module "../abstractions.js" {
         dynamicZone(): IDynamicZoneFieldBuilder;
     }
 }
-
-declare module "./FieldBuilder.js" {
-    interface FieldRendererRegistry {
-        dynamicZone: { fieldType: "dynamicZone"; settings: { open?: boolean } };
-    }
-}

@@ -45,10 +45,3 @@ declare module "../abstractions.js" {
         file(): IFileFieldBuilder;
     }
 }
-
-declare module "./FieldBuilder.js" {
-    interface FieldRendererRegistry {
-        "file-input": { fieldType: "file"; settings: undefined };
-        "file-inputs": { fieldType: "file"; settings: undefined };
-    }
-}

@@ -25,9 +25,98 @@ export interface FieldBuilderConfig
  *   }
  */
 export interface FieldRendererRegistry {
+    switch: { fieldType: "boolean"; settings: undefined };
+    checkboxes: { fieldType: "text" | "number"; settings: undefined };
+    dateTimeInput: { fieldType: "datetime"; settings: undefined };
+    dateTimeInputs: {
+        fieldType: "datetime";
+        settings: { multiValue?: { addValueButtonLabel?: string } };
+    };
+    dynamicZone: { fieldType: "dynamicZone"; settings: { open?: boolean } };
     hidden: { fieldType: string; settings: undefined };
+    lexicalEditor: { fieldType: "rich-text"; settings: undefined };
+    lexicalEditors: {
+        fieldType: "rich-text";
+        settings: { multiValue?: { addValueButtonLabel?: string } };
+    };
+    textarea: { fieldType: "long-text"; settings: undefined };
+    textareas: {
+        fieldType: "long-text";
+        settings: { multiValue?: { addValueButtonLabel?: string } };
+    };
+    numberInput: { fieldType: "number"; settings: undefined };
+    numberInputs: {
+        fieldType: "number";
+        settings: { multiValue?: { addValueButtonLabel?: string } };
+    };
+    objectAccordionSingle: { fieldType: "object"; settings: { open?: boolean } };
+    objectAccordionMultiple: {
+        fieldType: "object";
+        settings: {
+            open?: boolean;
+            multiValue?: { addValueButtonLabel?: string };
+        };
+    };
     passthrough: { fieldType: string; settings: undefined };
-    "text-separator": { fieldType: "separator"; settings: undefined };
+    radioButtons: { fieldType: "text" | "number"; settings: undefined };
+    refDialogSingle: { fieldType: "ref"; settings: undefined };
+    refDialogMultiple: {
+        fieldType: "ref";
+        settings: { newItemPosition?: "first" | "last" };
+    };
+    refAutocompleteSingle: { fieldType: "ref"; settings: undefined };
+    refAutocompleteMultiple: { fieldType: "ref"; settings: undefined };
+    refCheckboxes: { fieldType: "ref"; settings: undefined };
+    refRadioButtons: { fieldType: "ref"; settings: undefined };
+    dropdown: { fieldType: "text" | "number"; settings: undefined };
+    tags: { fieldType: "text"; settings: undefined };
+    textInput: { fieldType: "text"; settings: undefined };
+    textInputs: {
+        fieldType: "text";
+        settings: { multiValue?: { addValueButtonLabel?: string } };
+    };
+    textSeparator: { fieldType: "separator"; settings: undefined };
+}
+
+/**
+ * Maps camelCase renderer names (used in the builder API) to the
+ * kebab-case names expected by the frontend renderer registry.
+ */
+const rendererNameMap: Record<keyof FieldRendererRegistry, string> = {
+    switch: "boolean-input",
+    checkboxes: "checkboxes",
+    dateTimeInput: "date-time-input",
+    dateTimeInputs: "date-time-inputs",
+    dynamicZone: "dynamicZone",
+    hidden: "hidden",
+    lexicalEditor: "lexical-text-input",
+    lexicalEditors: "lexical-text-inputs",
+    textarea: "long-text-text-area",
+    textareas: "long-text-inputs",
+    numberInput: "number-input",
+    numberInputs: "number-inputs",
+    objectAccordionSingle: "object-accordion",
+    objectAccordionMultiple: "objects-accordion",
+    passthrough: "passthrough",
+    radioButtons: "radio-buttons",
+    refDialogSingle: "ref-advanced-single",
+    refDialogMultiple: "ref-advanced-multiple",
+    refAutocompleteSingle: "ref-input",
+    refAutocompleteMultiple: "ref-inputs",
+    refCheckboxes: "ref-simple-multiple",
+    refRadioButtons: "ref-simple-single",
+    dropdown: "select-box",
+    tags: "tags",
+    textInput: "text-input",
+    textInputs: "text-inputs",
+    textSeparator: "text-separator"
+};
+
+/**
+ * Resolves a camelCase renderer name to the kebab-case name used by the frontend.
+ */
+function resolveRendererName(name: string): string {
+    return rendererNameMap[name as keyof FieldRendererRegistry] ?? name;
 }
 
 /**
@@ -182,7 +271,7 @@ export class FieldBuilder<TType extends string = string> {
             : [settings: FieldRendererSettings<TName>]
     ): this {
         this.config.renderer = {
-            name,
+            name: resolveRendererName(name),
             settings: args[0] ?? null
         };
         return this;

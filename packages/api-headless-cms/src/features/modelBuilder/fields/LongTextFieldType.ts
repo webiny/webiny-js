@@ -161,12 +161,3 @@ declare module "../abstractions.js" {
     }
 }
 
-declare module "./FieldBuilder.js" {
-    interface FieldRendererRegistry {
-        "long-text-inputs": {
-            fieldType: "long-text";
-            settings: { multiValue?: { addValueButtonLabel?: string } };
-        };
-        "long-text-text-area": { fieldType: "long-text"; settings: undefined };
-    }
-}
