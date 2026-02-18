@@ -5,7 +5,7 @@ import { setFloatingElemPosition } from "~/utils/setFloatingElemPosition.js";
 import { sanitizeUrl } from "~/utils/sanitizeUrl.js";
 import { isChildOfLinkEditor } from "./isChildOfLinkEditor.js";
 import { LinkEditForm as DefaultLinkEditForm } from "./LinkEditForm.js";
-import { LinkPreviewForm } from "./LinkPreviewForm.js";
+import { LinkPreviewForm as DefaultLinkPreviewForm } from "./LinkPreviewForm.js";
 import {
     SELECTION_CHANGE_COMMAND,
     type BaseSelection,
@@ -28,13 +28,15 @@ interface FloatingLinkEditorProps {
     isVisible: boolean;
     anchorElem: HTMLElement;
     LinkEditForm?: typeof DefaultLinkEditForm;
+    LinkPreviewForm?: typeof DefaultLinkPreviewForm;
 }
 
 export function FloatingLinkEditor({
     editor,
     isVisible,
     anchorElem,
-    LinkEditForm = DefaultLinkEditForm
+    LinkEditForm = DefaultLinkEditForm,
+    LinkPreviewForm = DefaultLinkPreviewForm
 }: FloatingLinkEditorProps) {
     const editorRef = useRef<HTMLDivElement | null>(null);
     const [linkData, setLinkData] = useState<LinkData>({
@@ -87,23 +89,13 @@ export function FloatingLinkEditor({
             rootElement !== null &&
             rootElement.contains(nativeSelection.anchorNode)
         ) {
-            const domRange = nativeSelection.getRangeAt(0);
-            let rect;
-            if (nativeSelection.anchorNode === rootElement) {
-                let inner = rootElement;
-                while (inner.firstElementChild != null) {
-                    inner = inner.firstElementChild as HTMLElement;
-                }
-                rect = inner.getBoundingClientRect();
-            } else {
-                rect = domRange.getBoundingClientRect();
-            }
+            const range = nativeSelection.getRangeAt(0);
 
-            setFloatingElemPosition(rect, editorElem, anchorElem);
+            setFloatingElemPosition(range, editorElem);
             setLastSelection(selection);
         } else if (!activeElement || activeElement.className !== "link-input") {
             if (rootElement !== null) {
-                setFloatingElemPosition(null, editorElem, anchorElem);
+                setFloatingElemPosition(null, editorElem);
             }
             setLastSelection(null);
             setEditMode(false);
@@ -130,30 +122,6 @@ export function FloatingLinkEditor({
             setEditMode(false);
         }
     };
-
-    useEffect(() => {
-        const scrollerElem = anchorElem.parentElement;
-
-        const update = () => {
-            editor.read(() => {
-                updateLinkEditor();
-            });
-        };
-
-        window.addEventListener("resize", update);
-
-        if (scrollerElem) {
-            scrollerElem.addEventListener("scroll", update);
-        }
-
-        return () => {
-            window.removeEventListener("resize", update);
-
-            if (scrollerElem) {
-                scrollerElem.removeEventListener("scroll", update);
-            }
-        };
-    }, [anchorElem.parentElement, editor, updateLinkEditor]);
 
     useEffect(() => {
         return mergeRegister(
@@ -194,8 +162,8 @@ export function FloatingLinkEditor({
     return (
         <div
             ref={editorRef}
-            className="link-editor"
-            style={{ display: isVisible ? "block" : "none" }}
+            className="z-dialog absolute link-editor"
+            style={{ opacity: isVisible ? 1 : 0, pointerEvents: isVisible ? "auto" : "none" }}
         >
             {isEditMode ? (
                 <LinkEditForm

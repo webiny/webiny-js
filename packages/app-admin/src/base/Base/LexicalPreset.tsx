@@ -4,6 +4,7 @@ import { LexicalTheme } from "~/config/AdminConfig/LexicalTheme.js";
 import { LexicalEditorConfig } from "@webiny/lexical-editor/components/LexicalEditorConfig/LexicalEditorConfig.js";
 import { FloatingLinkEditorPlugin } from "@webiny/lexical-editor";
 import { LinkEditForm } from "./LexicalPreset/LinkEditForm.js";
+import { LinkPreviewForm } from "./LexicalPreset/LinkPreviewForm.js";
 
 const { Color, Typography } = LexicalTheme;
 
@@ -66,8 +67,8 @@ export const LexicalPreset = () => {
                     name={"floatingLinkEditor"}
                     element={
                         <FloatingLinkEditorPlugin
-                            anchorElem={() => document.body}
                             LinkEditForm={LinkEditForm}
+                            LinkPreviewForm={LinkPreviewForm}
                         />
                     }
                 />

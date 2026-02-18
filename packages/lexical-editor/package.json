@@ -8,6 +8,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@floating-ui/dom": "^1.7.5",
     "@lexical/code": "^0.39.0",
     "@lexical/history": "^0.39.0",
     "@lexical/react": "^0.39.0",

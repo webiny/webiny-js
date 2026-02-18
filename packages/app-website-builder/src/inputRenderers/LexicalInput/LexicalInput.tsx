@@ -10,6 +10,7 @@ import {
     useExpandedEditor
 } from "~/inputRenderers/LexicalInput/ExpandedEditor.js";
 import { LinkEditForm } from "~/inputRenderers/LexicalInput/LinkEditForm.js";
+import { LinkPreviewForm } from "~/inputRenderers/LexicalInput/LinkPreviewForm.js";
 
 const { Plugin } = LexicalEditorConfig;
 
@@ -75,13 +76,8 @@ const EditorDialog = (props: EditorDialogProps) => {
                         name={"floatingLinkEditor"}
                         element={
                             <FloatingLinkEditorPlugin
-                                anchorElem={() => {
-                                    return (
-                                        document.getElementById("lexical-editor-dialog") ??
-                                        document.body
-                                    );
-                                }}
                                 LinkEditForm={LinkEditForm}
+                                LinkPreviewForm={LinkPreviewForm}
                             />
                         }
                     />

@@ -1,6 +1,6 @@
 import React from "react";
 import type { FloatingLinkEditorPlugin } from "@webiny/lexical-editor";
-import { Button, Grid, Input, Switch, Text } from "@webiny/admin-ui";
+import { Button, Grid, Input, Switch, Heading } from "@webiny/admin-ui";
 import { Bind, Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
 
@@ -18,9 +18,9 @@ export const LinkEditForm = ({ linkData, onSave, onCancel }: LinkEditFormProps) 
         <Form data={linkData} onSubmit={onSubmit}>
             {form => (
                 <div className={"p-md"}>
-                    <Grid>
+                    <Grid gap={"small"}>
                         <Grid.Column span={12}>
-                            <Text size={"lg"}>Edit Link</Text>
+                            <Heading level={5}>Edit Link</Heading>
                         </Grid.Column>
                         <Grid.Column span={12}>
                             <Bind name={"url"} validate={validation.create("url")}>

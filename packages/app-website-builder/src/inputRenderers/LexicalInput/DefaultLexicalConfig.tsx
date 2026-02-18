@@ -24,6 +24,7 @@ import { LexicalEditorConfig } from "@webiny/lexical-editor";
 import { TypographyDropDown } from "./TypographyDropDown.js";
 import { ExpandEditorAction } from "./ExpandEditorAction.js";
 import { LinkEditForm } from "./LinkEditForm.js";
+import { LinkPreviewForm } from "./LinkPreviewForm.js";
 
 const { ToolbarElement, Plugin } = LexicalEditorConfig;
 
@@ -37,8 +38,8 @@ const sharedPlugins = (
             name={"floatingLinkEditor"}
             element={
                 <FloatingLinkEditorPlugin
-                    anchorElem={() => document.body}
                     LinkEditForm={LinkEditForm}
+                    LinkPreviewForm={LinkPreviewForm}
                 />
             }
         />

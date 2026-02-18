@@ -11,16 +11,33 @@ import {
     BLUR_COMMAND,
     COMMAND_PRIORITY_CRITICAL,
     COMMAND_PRIORITY_LOW,
+    type LexicalEditor,
     SELECTION_CHANGE_COMMAND
 } from "lexical";
 import { $findMatchingParent, mergeRegister } from "@lexical/utils";
 import { FloatingLinkEditor } from "./FloatingLinkEditor.js";
 import type { LinkEditForm } from "./LinkEditForm.js";
+import type { LinkPreviewForm } from "./LinkPreviewForm.js";
 
 interface FloatingLinkEditorProps {
-    anchorElem: () => HTMLElement;
+    anchorElem?: (editor: LexicalEditor) => HTMLElement;
     LinkEditForm?: typeof LinkEditForm;
+    LinkPreviewForm?: typeof LinkPreviewForm;
 }
+
+const defaultGetAnchorElement = (editor: LexicalEditor): HTMLElement => {
+    const rootElement = editor.getRootElement();
+    if (!rootElement) {
+        return document.body;
+    }
+    const shell = rootElement.closest(".editor-shell");
+    if (!shell) {
+        return document.body;
+    }
+    const overlays = shell.previousElementSibling;
+
+    return (overlays ?? document.body) as HTMLElement;
+};
 
 export const FloatingLinkEditorController = (props: FloatingLinkEditorProps) => {
     const { editor } = useRichTextEditor();
@@ -87,13 +104,18 @@ export const FloatingLinkEditorController = (props: FloatingLinkEditorProps) => 
         );
     }, [editor, updateToolbar]);
 
+    const getAnchorElement = props.anchorElem || defaultGetAnchorElement;
+
+    const anchorElement = getAnchorElement(editor)!;
+
     return createPortal(
         <FloatingLinkEditor
             isVisible={isLink}
             editor={editor}
-            anchorElem={props.anchorElem()}
+            anchorElem={anchorElement}
             LinkEditForm={props.LinkEditForm}
+            LinkPreviewForm={props.LinkPreviewForm}
         />,
-        props.anchorElem()
+        anchorElement
     );
 };
