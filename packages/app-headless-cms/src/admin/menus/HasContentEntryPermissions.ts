@@ -2,8 +2,8 @@ import type { CmsGroup, CmsModel } from "~/types.js";
 import { usePermission } from "~/admin/hooks/usePermission.js";
 
 interface HasContentEntryPermissionsProps {
-    group: CmsGroup;
-    contentModel?: CmsModel;
+    group: Pick<CmsGroup, "id" | "contentModels">;
+    contentModel?: Pick<CmsModel, "modelId">;
     children: JSX.Element;
 }
 
