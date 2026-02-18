@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@pulumi/aws": "^7.19.0",
-    "@pulumi/pulumi": "^3.220.0",
+    "@pulumi/pulumi": "^3.221.0",
     "decompress": "^4.2.1",
     "execa": "^5.1.1",
     "find-up": "^5.0.0",

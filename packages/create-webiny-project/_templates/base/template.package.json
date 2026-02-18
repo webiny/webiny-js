@@ -1,18 +1,18 @@
 {
   "type": "module",
   "devDependencies": {
-    "@eslint/js": "^9.39.2",
+    "@eslint/js": "^10.0.1",
     "@types/node": "^24.10.13",
     "@types/react": "18.2.79",
     "@types/react-dom": "18.2.25",
     "@webiny/cli": "latest",
     "@webiny/cognito": "latest",
-    "eslint": "^9.39.2",
+    "eslint": "^10.0.0",
     "eslint-plugin-react": "^7.37.5",
     "globals": "^16.3.0",
     "prettier": "^3.6.2",
     "typescript": "5.9.3",
-    "typescript-eslint": "^8.43.0",
+    "@typescript-eslint/eslint-plugin": "^8.56.0",
     "webiny": "latest"
   },
   "scripts": {
