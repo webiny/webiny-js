@@ -3,6 +3,7 @@ import { Node, Project, ArrayLiteralExpression } from "ts-morph";
 import { Abstraction } from "@webiny/di";
 import { defineExtension } from "~/defineExtension/index.js";
 import { zodSrcPath } from "~/defineExtension/zodTypes/zodSrcPath.js";
+import { ImplPathResolver } from "~/utils/index.js";
 import path from "path";
 import crypto from "crypto";
 
@@ -32,16 +33,10 @@ export const defineApiExtension = (params: DefineApiExtensionParams) =>
             const { src: extensionFilePath } = params;
 
             // Resolve to absolute path for file operations
-            let absoluteExtensionFilePath: string;
-            if (extensionFilePath.startsWith("/extensions/")) {
-                // Resolve from project root
-                absoluteExtensionFilePath = ctx.project.paths.rootFolder
-                    .join(extensionFilePath)
-                    .toString();
-            } else {
-                // Treat as absolute path
-                absoluteExtensionFilePath = extensionFilePath;
-            }
+            const absoluteExtensionFilePath = ImplPathResolver.resolvePath(
+                extensionFilePath,
+                ctx.project
+            );
 
             const extensionFileName = path.basename(absoluteExtensionFilePath);
 

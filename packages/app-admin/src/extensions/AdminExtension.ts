@@ -1,4 +1,5 @@
 import { defineExtension, zodSrcPath } from "@webiny/project/extensions/index.js";
+import { ImplPathResolver } from "@webiny/project/utils/index.js";
 import { z } from "zod";
 import path from "path";
 import { type JsxFragment, Node, Project } from "ts-morph";
@@ -23,16 +24,10 @@ export const AdminExtension = defineExtension({
         const { src: extensionFilePath } = params;
 
         // Resolve to absolute path for file operations.
-        let absoluteExtensionFilePath: string;
-        if (extensionFilePath.startsWith("/extensions/")) {
-            // Resolve from project root.
-            absoluteExtensionFilePath = ctx.project.paths.rootFolder
-                .join(extensionFilePath)
-                .toString();
-        } else {
-            // Treat as absolute path.
-            absoluteExtensionFilePath = extensionFilePath;
-        }
+        const absoluteExtensionFilePath = ImplPathResolver.resolvePath(
+            extensionFilePath,
+            ctx.project
+        );
 
         const extensionFileName = path.basename(absoluteExtensionFilePath);
 
