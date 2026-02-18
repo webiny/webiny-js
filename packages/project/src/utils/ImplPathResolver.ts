@@ -100,7 +100,7 @@ export class ImplPathResolver {
             } else {
                 this.pathMappings = {};
             }
-        } catch (error) {
+        } catch {
             // Ignore tsconfig parsing errors.
             this.pathMappings = {};
         }
