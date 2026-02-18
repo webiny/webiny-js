@@ -160,4 +160,3 @@ declare module "../abstractions.js" {
         longText(): ILongTextFieldBuilder;
     }
 }
-

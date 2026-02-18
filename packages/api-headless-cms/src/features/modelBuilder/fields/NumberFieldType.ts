@@ -57,4 +57,3 @@ declare module "../abstractions.js" {
         number(): INumberFieldBuilder;
     }
 }
-

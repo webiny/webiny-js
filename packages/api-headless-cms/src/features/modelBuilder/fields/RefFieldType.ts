@@ -49,4 +49,3 @@ declare module "../abstractions.js" {
         ref(): IRefFieldBuilder;
     }
 }
-
