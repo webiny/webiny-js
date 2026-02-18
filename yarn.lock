@@ -13376,6 +13376,7 @@ __metadata:
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
+    "@webiny/sdk": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
@@ -15314,6 +15315,16 @@ __metadata:
     identity-obj-proxy: "npm:^3.0.0"
     prettier: "npm:3.6.2"
     react: "npm:18.2.0"
+    vitest: "npm:^3.2.4"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/sdk@npm:0.0.0, @webiny/sdk@workspace:packages/sdk":
+  version: 0.0.0-use.local
+  resolution: "@webiny/sdk@workspace:packages/sdk"
+  dependencies:
+    "@webiny/build-tools": "npm:0.0.0"
+    typescript: "npm:5.9.3"
     vitest: "npm:^3.2.4"
   languageName: unknown
   linkType: soft

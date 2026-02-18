@@ -1,0 +1,9 @@
+SH
+- packages/api-headless-cms/__tests__/testHelpers/useWebinySdk.ts - check auth? no header?
+- AST with Pavel
+- fields optional
+  - depth
+- include, exclude, includeType
+
+NTH
+- manage endpoint for getEntry? atm it's only working with READ/PREVIEW

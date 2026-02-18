@@ -10,6 +10,7 @@ export class ColumnMapper {
             header: column.header,
             hideable: column.hideable,
             name: column.name,
+            path: column.path,
             resizable: column.resizable,
             size: column.size,
             sortable: column.sortable,
@@ -24,7 +25,11 @@ export class ColumnMapper {
             cell: string | React.ReactElement
         ) => string | number | JSX.Element | null
     ): DataTableColumn<T> {
+        // Prefix path with "data." if provided.
+        const accessorKey = column.path ? `data.${column.path}` : undefined;
+
         return {
+            accessorKey,
             header: column.header,
             className: column.className,
             size: column.size,
