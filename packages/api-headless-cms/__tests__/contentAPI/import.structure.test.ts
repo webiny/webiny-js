@@ -37,11 +37,10 @@ describe("import cms structure", () => {
     });
 
     it("should return error as there are no models to validate", async () => {
-        const group: CmsGroup = {
+        const group: Omit<CmsGroup, "tenant"> = {
             id: "group-1",
             name: "Group 1",
             slug: "group-1",
-            tenant: "root",
             icon: {
                 name: "fas/star",
                 type: "fas/star",
@@ -84,7 +83,6 @@ describe("import cms structure", () => {
             id: "group-1",
             slug: "",
             name: "Group 1",
-            tenant: "root",
             icon: {
                 name: "fas/star",
                 type: "fas/star",
@@ -95,7 +93,6 @@ describe("import cms structure", () => {
             id: "",
             slug: "group-2",
             name: "Group 2",
-            tenant: "root",
             icon: {
                 name: "fas/star",
                 type: "fas/star",
@@ -105,7 +102,10 @@ describe("import cms structure", () => {
 
         const [result] = await validateCmsStructureMutation({
             data: {
-                groups: [group1, group2],
+                groups: [group1, group2].map(group => {
+                    const input = structuredClone(group);
+                    return input;
+                }),
                 models: []
             }
         });
@@ -156,7 +156,6 @@ describe("import cms structure", () => {
                     id: "group-1-original",
                     slug: "group-1",
                     name: "Group 1 Original",
-                    tenant: "root",
                     icon: {
                         name: "fas/star",
                         type: "fas/star",
@@ -168,7 +167,6 @@ describe("import cms structure", () => {
                     id: "group-2",
                     slug: "group-2-original",
                     name: "Group 2 Original",
-                    tenant: "root",
                     icon: {
                         name: "fas/star",
                         type: "fas/star",
@@ -183,7 +181,6 @@ describe("import cms structure", () => {
             id: "group-1",
             slug: "group-1",
             name: "Group 1",
-            tenant: "root",
             icon: {
                 name: "fas/star",
                 type: "fas/star",
@@ -194,7 +191,6 @@ describe("import cms structure", () => {
             id: "group-2",
             slug: "group-2",
             name: "Group 2",
-            tenant: "root",
             icon: {
                 name: "fas/star",
                 type: "fas/star",
@@ -205,7 +201,6 @@ describe("import cms structure", () => {
             id: "group-3",
             slug: "group-3",
             name: "Group 3",
-            tenant: "root",
             icon: {
                 name: "fas/star",
                 type: "fas/star",
@@ -271,7 +266,6 @@ describe("import cms structure", () => {
             id: "group-1",
             slug: "group-1",
             name: "Group 1",
-            tenant: "root",
             icon: {
                 name: "fas/star",
                 type: "fas/star",
@@ -282,7 +276,6 @@ describe("import cms structure", () => {
             id: "group-2",
             slug: "group-2",
             name: "Group 2",
-            tenant: "root",
             icon: {
                 name: "fas/star",
                 type: "fas/star",
@@ -332,7 +325,6 @@ describe("import cms structure", () => {
             id: "group-1",
             slug: "group-1",
             name: "Group 1",
-            tenant: "root",
             icon: {
                 name: "fas/star",
                 type: "fas/star",
@@ -426,7 +418,6 @@ describe("import cms structure", () => {
             id: "group-1",
             slug: "group-1",
             name: "Group 1",
-            tenant: "root",
             icon: {
                 name: "fas/star",
                 type: "fas/star",
