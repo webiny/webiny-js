@@ -6,16 +6,19 @@ import { normalizeIcon } from "~/utils/normalizeIcon.js";
 
 const { Menu } = AdminConfig;
 
+interface IGroupMenuProps {
+    group: Pick<CmsGroup, "slug" | "name" | "icon">;
+}
 /**
  * Renders a menu item for a given content group.
  * Displays the group's name and icon in the menu.
  */
-export const GroupMenu = ({ group }: { group: CmsGroup }) => {
+export const GroupMenu = ({ group }: IGroupMenuProps) => {
     const icon = normalizeIcon(group.icon);
 
     return (
         <Menu
-            name={group.id}
+            name={`cms/group/${group.slug}`}
             parent="headlessCMSContent"
             element={
                 <Menu.Item
