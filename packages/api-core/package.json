@@ -72,7 +72,7 @@
     "jose": "^5.10.0",
     "jsonwebtoken": "^9.0.3",
     "lodash": "^4.17.23",
-    "minimatch": "^5.1.6",
+    "minimatch": "^10.2.1",
     "pino": "^9.14.0",
     "pino-lambda": "^4.4.1",
     "ts-morph": "^27.0.2",

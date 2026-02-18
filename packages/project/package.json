@@ -35,7 +35,7 @@
     "humanize-duration": "3.33.2",
     "load-json-file": "6.2.0",
     "lodash": "^4.17.23",
-    "minimatch": "^5.1.6",
+    "minimatch": "^10.2.1",
     "mqtt": "^5.15.0",
     "neverthrow": "^8.2.0",
     "p-retry": "^7.1.1",

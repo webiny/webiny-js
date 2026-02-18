@@ -51,7 +51,7 @@
     "is-hotkey": "^0.2.0",
     "lodash": "^4.17.23",
     "markdown-to-jsx": "^9.7.4",
-    "minimatch": "^5.1.6",
+    "minimatch": "^10.2.1",
     "mobx": "^6.15.0",
     "mobx-react-lite": "^3.4.3",
     "monaco-editor": "^0.53.0",
