@@ -51,6 +51,10 @@ interface DataTableColumn<T> {
      * Enable column visibility toggling.
      */
     enableHiding?: boolean;
+    /*
+     * Accessor key for the column data path.
+     */
+    accessorKey?: string;
 }
 
 type DataTableColumns<T> = {
@@ -161,6 +165,7 @@ const defineColumns = <T,>(
 
         const defaults: ColumnDef<T>[] = columnsList.map(column => {
             const {
+                accessorKey,
                 cell,
                 className,
                 enableHiding = true,
@@ -173,7 +178,7 @@ const defineColumns = <T,>(
 
             return {
                 id,
-                accessorKey: id,
+                accessorKey: accessorKey || id,
                 header: () => header,
                 cell: props => {
                     if (cell && typeof cell === "function") {

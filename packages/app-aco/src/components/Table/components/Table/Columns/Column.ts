@@ -7,6 +7,7 @@ export interface ColumnDTO {
     header: string | number | JSX.Element;
     hideable: boolean;
     name: string;
+    path?: string;
     resizable: boolean;
     size: number;
     sortable: boolean;
@@ -19,6 +20,7 @@ export class Column {
     public header: string | number | JSX.Element;
     public hideable: boolean;
     public name: string;
+    public path?: string;
     public resizable: boolean;
     public size: number;
     public sortable: boolean;
@@ -35,6 +37,7 @@ export class Column {
         size?: number;
         className?: string;
         hideable?: boolean;
+        path?: string;
         sortable?: boolean;
         resizable?: boolean;
         visible?: boolean;
@@ -45,6 +48,7 @@ export class Column {
         this.size = data.size || 100;
         this.className = data.className || "";
         this.hideable = data.hideable ?? true;
+        this.path = data.path || "";
         this.sortable = data.sortable ?? false;
         this.resizable = data.resizable ?? true;
         this.visible = data.visible ?? true;
