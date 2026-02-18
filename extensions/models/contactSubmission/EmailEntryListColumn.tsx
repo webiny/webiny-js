@@ -25,7 +25,7 @@ export const EmailTypeCell = () => {
     return emailType === "work" ? <>{"Business"}</> : <>{"Personal"}</>;
 };
 
-const EmailTypeEntryListColumn = () => {
+const EmailEntryListColumn = () => {
     return (
         <ContentEntryListConfig>
             <Browser.Table.Column
@@ -44,4 +44,4 @@ const EmailTypeEntryListColumn = () => {
     );
 };
 
-export default EmailTypeEntryListColumn;
+export default EmailEntryListColumn;
