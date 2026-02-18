@@ -1,7 +1,7 @@
 import { type IProjectModel } from "~/abstractions/models/index.js";
 import { type IProjectConfigModel } from "~/abstractions/models/index.js";
 import { Container } from "@webiny/di";
-import { SrcPathResolver } from "~/utils/index.js";
+import { ExtensionSrcResolver } from "~/utils/index.js";
 import {
     CorePulumi as CorePulumiExt,
     ApiPulumi as ApiPulumiExt,
@@ -20,7 +20,7 @@ export const registerPulumiExtensions = async (
     ];
 
     for (const pulumiExtension of pulumiExtensions) {
-        const pulumiImpl = await SrcPathResolver.importFromPath(
+        const pulumiImpl = await ExtensionSrcResolver.importFromPath(
             pulumiExtension.params.src,
             project
         );

@@ -3,7 +3,7 @@ import fs from "fs";
 import { getTsconfig } from "get-tsconfig";
 import { type IProjectModel } from "~/abstractions/models/index.js";
 
-export class SrcPathResolver {
+export class ExtensionSrcResolver {
     private static pathMappings: { [key: string]: string[] } | null = null;
 
     /**

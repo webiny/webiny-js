@@ -3,7 +3,7 @@ import { z } from "zod";
 import path from "path";
 import { type IProjectModel } from "~/abstractions/models/index.js";
 import { ProjectError } from "~/ProjectError.js";
-import { SrcPathResolver } from "~/utils/index.js";
+import { ExtensionSrcResolver } from "~/utils/index.js";
 
 /**
  * TypeScript type for source paths.
@@ -36,8 +36,8 @@ export const zodSrcPath = (options: ZodSrcPathOptions) => {
         .describe(description)
         .transform((val): SrcPath => val as SrcPath)
         .superRefine(async (src, ctx) => {
-            // Check if file exists using SrcPathResolver.
-            if (!SrcPathResolver.existsSync(src, project)) {
+            // Check if file exists using ExtensionSrcResolver.
+            if (!ExtensionSrcResolver.existsSync(src, project)) {
                 ctx.addIssue({
                     code: z.ZodIssueCode.custom,
                     message: ProjectError.formatMessage(
@@ -50,12 +50,12 @@ export const zodSrcPath = (options: ZodSrcPathOptions) => {
 
             // If abstraction validation is required
             if (abstraction) {
-                const absoluteSrcPath = SrcPathResolver.resolvePath(src, project);
+                const absoluteSrcPath = ExtensionSrcResolver.resolvePath(src, project);
                 const exportName = path
                     .basename(absoluteSrcPath)
                     .replace(path.extname(absoluteSrcPath), "");
 
-                const exportedImplementation = await SrcPathResolver.importFromPath(src, project);
+                const exportedImplementation = await ExtensionSrcResolver.importFromPath(src, project);
 
                 if (!exportedImplementation) {
                     ctx.addIssue({
