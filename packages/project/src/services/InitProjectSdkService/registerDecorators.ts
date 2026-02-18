@@ -1,7 +1,7 @@
 import { type IProjectModel } from "~/abstractions/models/index.js";
 import { type IProjectConfigModel } from "~/abstractions/models/index.js";
 import { Container } from "@webiny/di";
-import { ImplPathResolver } from "~/utils/index.js";
+import { SrcPathResolver } from "~/utils/index.js";
 import { ProjectDecorator as ProjectDecoratorExt } from "~/extensions/ProjectDecorator.js";
 
 export const registerDecorators = async (
@@ -12,7 +12,7 @@ export const registerDecorators = async (
     const projectDecorators = [...projectExtensions.extensionsByType(ProjectDecoratorExt)];
 
     for (const projectDecorator of projectDecorators) {
-        const projectDecoratorImpl = await ImplPathResolver.importFromPath(
+        const projectDecoratorImpl = await SrcPathResolver.importFromPath(
             projectDecorator.params.src,
             project
         );

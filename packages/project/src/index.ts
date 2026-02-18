@@ -28,6 +28,8 @@ export { PackageJson } from "@webiny/build-tools/utils/PackageJson.js";
 
 export { createPathResolver } from "./utils/createPathResolver.js";
 
+export { SrcPathResolver } from "./utils/SrcPathResolver.js";
+
 export { GracefulError } from "./GracefulError.js";
 
 export { Wcp } from "./components/Wcp.js";
