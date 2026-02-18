@@ -230,15 +230,11 @@
     ]
   },
   "resolutions": {
-    "systeminformation": "^5.23.18",
     "@emotion/react": "11.10.8",
-    "@octokit/rest": "^20.1.2",
-    "@types/jsdom": "link:./typings/void",
     "@types/react": "18.2.79",
     "@types/react-dom": "18.2.25",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "jsonwebtoken": "^9.0.3",
     "lerna@8.1.2": "patch:lerna@npm%3A8.1.2#./.yarn/patches/lerna-npm-8.1.2-be48ad2329.patch",
     "apollo-link@^1.2.14": "patch:apollo-link@npm%3A1.2.14#./.yarn/patches/apollo-link-npm-1.2.14-74f0ba01f9.patch",
     "apollo-link@^1.0.0": "patch:apollo-link@npm%3A1.2.14#./.yarn/patches/apollo-link-npm-1.2.14-74f0ba01f9.patch"
