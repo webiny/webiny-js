@@ -15,7 +15,7 @@ class ContactSubmissionModelImpl implements ModelFactory.Interface {
                 .fields(fields => ({
                     name: fields
                         .text()
-                        .renderer("text-input")
+                        .renderer("textInput")
                         .label("Name")
                         .help("Full name of the person submitting the form")
                         .required("Name is required")
@@ -24,7 +24,7 @@ class ContactSubmissionModelImpl implements ModelFactory.Interface {
                         .help("Enter your full name"),
                     email: fields
                         .text()
-                        .renderer("text-input")
+                        .renderer("textInput")
                         .label("Email")
                         .help("Email address for contact")
                         .required("Email is required")
@@ -32,7 +32,7 @@ class ContactSubmissionModelImpl implements ModelFactory.Interface {
                         .help("Enter a valid email address"),
                     message: fields
                         .longText()
-                        .renderer("long-text-text-area")
+                        .renderer("textarea")
                         .label("Message")
                         .help("Message content from the contact form")
                         .required("Message is required")
@@ -41,7 +41,7 @@ class ContactSubmissionModelImpl implements ModelFactory.Interface {
                         .help("Enter your message..."),
                     emailType: fields
                         .text()
-                        .renderer("radio-buttons")
+                        .renderer("radioButtons")
                         .label("Email Type")
                         .help("Automatically classified as Work or Personal")
                         .predefinedValues([

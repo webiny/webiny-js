@@ -85,6 +85,7 @@ class DynamicZoneFieldBuilder
         // Set templates in settings before building
         this.config.settings = this.config.settings || {};
         this.config.settings.templates = this.templates;
+        this.config.listValidation = [{ name: "dynamicZone", message: "" }];
         return super.build();
     }
 }

@@ -1,9 +1,9 @@
 import React from "react";
-import { Cell } from "@webiny/ui/Grid/index.js";
-import { Input } from "@webiny/ui/Input/index.js";
+import { Grid } from "@webiny/admin-ui";
+import { Input } from "@webiny/admin-ui";
+import { Bind } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import type { CmsModelFieldValidatorPlugin } from "~/types.js";
-import { Bind } from "@webiny/form";
 
 const plugin: CmsModelFieldValidatorPlugin = {
     type: "cms-model-field-validator",
@@ -19,7 +19,7 @@ const plugin: CmsModelFieldValidatorPlugin = {
         },
         renderSettings(config) {
             return (
-                <Cell span={12}>
+                <Grid.Column span={12}>
                     <Bind
                         name={"settings.value"}
                         validators={validation.create("required,numeric")}
@@ -30,7 +30,7 @@ const plugin: CmsModelFieldValidatorPlugin = {
                             description={config.getVariableDescription("value")}
                         />
                     </Bind>
-                </Cell>
+                </Grid.Column>
             );
         },
         validate: async (value, { validator }) => {

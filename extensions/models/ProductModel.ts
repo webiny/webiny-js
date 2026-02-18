@@ -15,31 +15,31 @@ class ProductModelImpl implements ModelFactory.Interface {
                 .fields(fields => ({
                     name: fields
                         .text()
-                        .renderer("text-input")
+                        .renderer("textInput")
                         .label("Name")
                         .help("Product name")
                         .required("Name is required"),
                     sku: fields
                         .text()
-                        .renderer("text-input")
+                        .renderer("textInput")
                         .label("SKU")
                         .help("Stock Keeping Unit - unique product identifier")
                         .required("SKU is required")
                         .unique(),
                     description: fields
                         .longText()
-                        .renderer("long-text-text-area")
+                        .renderer("textarea")
                         .label("Description")
                         .help("Detailed product description"),
                     price: fields
                         .number()
-                        .renderer("number-input")
+                        .renderer("numberInput")
                         .label("Price")
                         .required("Price is required")
                         .gte(0, "Price must be greater than or equal to 0"),
                     category: fields
                         .ref()
-                        .renderer("ref-advanced-single")
+                        .renderer("refDialogSingle")
                         .label("Category")
                         .models([{ modelId: "productCategory" }])
                 }))

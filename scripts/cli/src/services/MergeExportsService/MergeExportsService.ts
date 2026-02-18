@@ -21,10 +21,15 @@ export class DefaultMergeExportsService implements MergeExportsServiceNamespace.
             );
 
             for (const statement of exportStatements) {
-                const sourceWithPackageName = statement.source.replace(
+                let sourceWithPackageName = statement.source.replace(
                     /^~\//,
                     `${input.packageName}/`
                 );
+
+                // `~/index.js` means root import; strip `/index.js` to get bare package name.
+                if (statement.source === "~/index.js") {
+                    sourceWithPackageName = input.packageName;
+                }
 
                 mergedExports.push({
                     namedExports: statement.namedExports,

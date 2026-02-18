@@ -2,6 +2,7 @@
 export { ModelFactory } from "~/features/modelBuilder/abstractions.js";
 export { ModelBuilder } from "~/features/modelBuilder/models/ModelBuilder.js";
 export { FieldBuilder } from "~/features/modelBuilder/fields/FieldBuilder.js";
+export type { FieldRendererRegistry } from "~/features/modelBuilder/fields/FieldBuilder.js";
 export { FieldType } from "~/features/modelBuilder/fields/abstractions.js";
 export { LayoutBuilder } from "~/features/modelBuilder/LayoutBuilder.js";
 
