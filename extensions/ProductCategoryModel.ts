@@ -16,7 +16,7 @@ class ProductCategoryModelImpl implements ModelFactory.Interface {
                 .fields(fields => ({
                     name: fields
                         .text()
-                        .renderer("textINput")
+                        .renderer("textInput")
                         .label("Name")
                         .description("Name of the product category")
                         .required("Name is required")
