@@ -1,13 +1,12 @@
 import React, { Fragment, memo } from "react";
 import { AdminConfig, AdminLayout } from "@webiny/app-admin";
-import { plugins } from "@webiny/plugins";
 import { HasPermission } from "@webiny/app-admin";
 import { useRouter } from "@webiny/app-admin";
 import { Permission } from "./plugins/constants.js";
 import { UsersView } from "./ui/views/Users/UsersView.js";
 import { UserAccountForm } from "./ui/views/Account/index.js";
 import { AccountDetails } from "./plugins/userMenu/AccountDetails.js";
-import permissionRenderer from "./plugins/permissionRenderer/index.js";
+import { SecurityPermission } from "./SecurityPermission.js";
 import { CognitoLogin, type CognitoLoginProps } from "./CognitoLogin.js";
 import { Routes } from "./routes.js";
 
@@ -20,10 +19,9 @@ export interface CognitoAdminProps {
 const CognitoIdP = (props: CognitoAdminProps) => {
     const { getLink } = useRouter();
 
-    plugins.register([permissionRenderer]);
-
     return (
         <Fragment>
+            <SecurityPermission />
             <CognitoLogin {...props.login} />
             <AdminConfig>
                 <HasPermission name={Permission.Users}>
