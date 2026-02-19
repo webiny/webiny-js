@@ -1,8 +1,11 @@
 import React, { useState, useCallback, useRef } from "react";
 import Editor, { type OnMount, type BeforeMount } from "@monaco-editor/react";
 import type { editor } from "monaco-editor";
-import { Button } from "@webiny/ui/Button";
+import { Button, ButtonSecondary } from "@webiny/ui/Button";
+import { ReactComponent as PlayArrowIcon } from "@webiny/icons/play_arrow.svg";
+import { ReactComponent as AutoFixHighIcon } from "@webiny/icons/auto_fix_high.svg";
 import { CircularProgress } from "@webiny/ui/Progress";
+import { Loader } from "@webiny/admin-ui";
 import { useSnackbar, useIdentity, useTenantContext } from "@webiny/app-admin";
 import { config as appConfig } from "@webiny/app/config.js";
 import { Webiny } from "@webiny/sdk";
@@ -138,6 +141,10 @@ const Playground: React.FC = () => {
         );
     }, []);
 
+    const handleFormat = useCallback(() => {
+        editorRef.current?.getAction("editor.action.formatDocument")?.run();
+    }, []);
+
     const handleEditorDidMount: OnMount = useCallback(
         (ed, monaco) => {
             editorRef.current = ed;
@@ -172,11 +179,25 @@ const Playground: React.FC = () => {
                 <div>
                     <strong>SDK Playground</strong>
                     <span style={{ marginLeft: 16, fontSize: 12, color: "#666" }}>
-                        Use Ctrl+Enter to run code
+                        Use {navigator.platform.startsWith("Mac") ? "Cmd" : "Ctrl"}+Enter to run
+                        code
                     </span>
                 </div>
                 <ToolbarActions>
-                    <Button onClick={handleRun} disabled={isRunning}>
+                    <ButtonSecondary onClick={handleFormat} icon={<AutoFixHighIcon />}>
+                        Format
+                    </ButtonSecondary>
+                    <Button
+                        onClick={handleRun}
+                        disabled={isRunning}
+                        icon={
+                            isRunning ? (
+                                <Loader size={"xs"} variant={"negative"} />
+                            ) : (
+                                <PlayArrowIcon />
+                            )
+                        }
+                    >
                         {isRunning ? "Running..." : "Run Code"}
                     </Button>
                 </ToolbarActions>
