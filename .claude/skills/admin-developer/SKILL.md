@@ -1,6 +1,6 @@
 ---
 name: admin-developer
-description: Use when implementing admin-area features (headless or presentation). Covers headless features (use cases, services, repositories, gateways), presentation features (presenters, view models, React views), DI container wiring, MobX reactivity, and when to use which type.
+description: Use when implementing admin-area features (headless or presentation). Covers headless features (use cases, services, repositories, gateways), presentation features (presenters, view models, React views), DI container wiring, MobX reactivity, permissions (Security.Permissions schema and custom UI), and when to use which type.
 ---
 
 # Admin Developer Guide
@@ -508,6 +508,179 @@ export const MyExtensionFeature = createFeature({
     }
 });
 ```
+
+---
+
+## Permissions
+
+Register permissions via `AdminConfig` + `Security.Permissions`. The framework auto-generates the UI and handles serialization. No form code needed for most apps.
+
+### Schema-Based (Auto-Generated UI)
+
+```tsx
+import React from "react";
+import { AdminConfig } from "@webiny/app-admin";
+import { ReactComponent as Icon } from "@webiny/icons/shield.svg";
+
+const { Security } = AdminConfig;
+
+export const MyPermission = () => {
+    return (
+        <AdminConfig>
+            <Security.Permissions
+                name="store-manager"
+                title="Store Manager"
+                description="Manage Store Manager permissions."
+                icon={<Icon />}
+                schema={{
+                    prefix: "sm",
+                    fullAccess: { name: "sm.*" },
+                    entities: [
+                        {
+                            id: "product",
+                            title: "Products",
+                            permission: "sm.product",
+                            scopes: ["full", "own"],
+                            actions: [
+                                { name: "rwd" },
+                                { name: "pw" },
+                                { name: "import", label: "Import products" },
+                                { name: "export", label: "Export products" }
+                            ]
+                        },
+                        {
+                            id: "category",
+                            title: "Categories",
+                            permission: "sm.category",
+                            scopes: ["full"],
+                            actions: [{ name: "rwd" }]
+                        },
+                        {
+                            id: "settings",
+                            title: "Settings",
+                            permission: "sm.settings",
+                            scopes: ["full"]
+                        }
+                    ]
+                }}
+            />
+        </AdminConfig>
+    );
+};
+```
+
+Render `<MyPermission />` anywhere in your app's extension component.
+
+### Schema Reference
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `prefix` | `string` | Yes | Permission prefix (e.g., `"sm"`). |
+| `fullAccess` | `{ name: string }` | Yes | Permission emitted on "Full access" (e.g., `{ name: "sm.*" }`). |
+| `entities` | `EntityDefinition[]` | No | Entity definitions. Omit for binary full/no access. |
+
+#### Entity Definition
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `id` | `string` | Yes | Unique identifier for form field naming. |
+| `title` | `string` | No | Display title. Falls back to `id`. |
+| `permission` | `string` | Yes | Permission name emitted (e.g., `"sm.product"`). |
+| `scopes` | `("full" \| "own")[]` | Yes | Available access scopes. |
+| `actions` | `ActionDefinition[]` | No | Actions on this entity. |
+| `dependsOn` | `{ entity: string; requires: string }` | No | Dependency on another entity. |
+
+#### Actions
+
+- `{ name: "rwd" }` — Read/Write/Delete select dropdown. Auto-set to `"rwd"` when scope is `"own"`.
+- `{ name: "pw" }` — Publish/Unpublish checkbox group.
+- `{ name: "custom", label: "Label" }` — Custom boolean flag.
+
+#### Entity Dependencies
+
+Child entities can depend on a parent. If the parent lacks the required action, the child is pruned from output. `"own"` scope cascades to dependents.
+
+```ts
+{
+    id: "review",
+    permission: "sm.review",
+    scopes: ["full", "own"],
+    actions: [{ name: "rwd" }],
+    dependsOn: { entity: "product", requires: "r" }
+}
+```
+
+### Simple Apps (No Entities)
+
+Omit `entities` for binary full/no access:
+
+```tsx
+<Security.Permissions
+    name="my-app"
+    title="My App"
+    description="Manage My App access permissions."
+    schema={{ prefix: "ma", fullAccess: { name: "ma.*" } }}
+/>
+```
+
+### Custom Permission UI
+
+When the auto-generated UI isn't enough (resource pickers, custom controls), pass `element` instead of `schema`:
+
+```tsx
+<Security.Permissions
+    name="headless-cms"
+    title="Headless CMS"
+    description="Manage CMS access permissions."
+    icon={<CmsIcon />}
+    element={<CmsPermissions />}
+/>
+```
+
+The custom component uses `usePermissionValue` and `usePermissionForm`:
+
+```tsx
+import { usePermissionValue, usePermissionForm, createPermissionSchema } from "@webiny/app-admin";
+import { Form } from "@webiny/form";
+
+const schema = createPermissionSchema({
+    prefix: "cms",
+    fullAccess: { name: "cms.*" },
+    entities: [/* ... */]
+});
+
+const CmsPermissions = () => {
+    const { value, onChange } = usePermissionValue();
+    const { formData, onFormChange } = usePermissionForm(schema, {
+        value,
+        onChange,
+        deserialize(permissions) {
+            return { selectedEndpoints: extractEndpoints(permissions) };
+        },
+        serialize(formData, corePermissions) {
+            return applyEndpoints(formData, corePermissions);
+        }
+    });
+
+    return (
+        <Form data={formData} onChange={onFormChange}>
+            {/* Custom form UI */}
+        </Form>
+    );
+};
+```
+
+### `Security.Permissions` Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `name` | `string` | Yes | Unique identifier for this permission renderer. |
+| `title` | `string` | Yes | Display title in the accordion header. |
+| `description` | `string` | No | Description shown below the title. |
+| `icon` | `ReactElement` | No | Icon in the accordion header. |
+| `schema` | `PermissionSchema` | One of `schema`/`element` | Auto-generate UI from schema. |
+| `element` | `ReactElement` | One of `schema`/`element` | Fully custom permission UI. |
+| `system` | `boolean` | No | If `true`, renders before app-level permissions. |
 
 ---
 
