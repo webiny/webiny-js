@@ -1,0 +1,88 @@
+import type React from "react";
+
+/**
+ * A single permission object from the API.
+ */
+export interface Permission {
+    name: string;
+    [key: string]: any;
+}
+
+/**
+ * Defines an entity within a permission schema.
+ */
+export interface EntityDefinition {
+    /** Unique ID, used for form field naming: ${id}AccessScope, ${id}RWD, etc. */
+    id: string;
+    /** Permission name emitted for this entity (e.g. "fm.file") */
+    permission: string;
+    /** Available access scopes */
+    scopes: ("full" | "own")[];
+    /** Available action selectors */
+    actions?: {
+        /** read/write/delete */
+        rwd?: boolean;
+        /** publish/unpublish workflow */
+        pw?: boolean;
+    };
+    /** Dependency on another entity */
+    dependsOn?: {
+        /** ID of parent entity */
+        entity: string;
+        /** Required action character (e.g. "r") */
+        requires: string;
+    };
+}
+
+/**
+ * Configuration for creating a permission schema.
+ */
+export interface PermissionSchemaConfig {
+    /** Permission prefix — used to filter permissions from the array */
+    prefix: string;
+    /** Permission object emitted on "full access" */
+    fullAccess: { name: string };
+    /** Entity definitions (optional — simple apps have none) */
+    entities?: EntityDefinition[];
+}
+
+/**
+ * A compiled permission schema returned by `createPermissionSchema`.
+ */
+export interface PermissionSchema {
+    prefix: string;
+    fullAccess: { name: string };
+    entities: EntityDefinition[];
+}
+
+/**
+ * Options passed to the `usePermissionForm` hook.
+ */
+export interface UsePermissionFormOptions {
+    value: Permission[];
+    onChange: (value: Permission[]) => void;
+    /** Merge extra fields into deserialized form data (for CMS endpoints, resource scopes, etc.) */
+    deserialize?: (permissions: Permission[]) => Record<string, any>;
+    /** Transform or extend the core-serialized permissions (for CMS endpoints, resource scopes, etc.) */
+    serialize?: (formData: Record<string, any>, corePermissions: Permission[]) => Permission[];
+}
+
+/**
+ * Return value of `usePermissionForm`.
+ */
+export interface UsePermissionFormResult {
+    formData: Record<string, any>;
+    onFormChange: (data: Record<string, any>) => void;
+}
+
+/**
+ * Configuration for a permission renderer registered via AdminConfig.
+ */
+export interface PermissionRendererConfig {
+    name: string;
+    title: string;
+    description?: string;
+    icon?: React.ReactElement;
+    element: React.ReactElement;
+    system?: boolean;
+}
