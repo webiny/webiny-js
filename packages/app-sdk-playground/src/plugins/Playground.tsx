@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef } from "react";
 import Editor, { type OnMount, type BeforeMount } from "@monaco-editor/react";
-import { type editor } from "monaco-editor";
+import type { editor } from "monaco-editor";
 import { Button } from "@webiny/ui/Button";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { useSnackbar, useIdentity, useTenantContext } from "@webiny/app-admin";
@@ -154,7 +154,6 @@ const Playground: React.FC = () => {
             ed.setModel(newModel);
             existingModel?.dispose();
 
-            // Add keyboard shortcut for running code.
             ed.addAction({
                 id: "run-code",
                 label: "Run Code",
