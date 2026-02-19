@@ -22,7 +22,6 @@ export type { AdminProps } from "./base/Admin.js";
 
 // Plugins
 export * from "./base/plugins/AddGraphQLQuerySelection.js";
-export * from "./plugins/PermissionRendererPlugin.js";
 
 // Permissions
 export * from "./permissions/index.js";

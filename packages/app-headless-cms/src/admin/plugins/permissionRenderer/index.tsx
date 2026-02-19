@@ -10,7 +10,7 @@ export const CmsSecurityPermission = () => (
         <Security.Permissions
             name="cms"
             title="Headless CMS"
-            description="Manage Headless CMS app access permissions."
+            description="Manage Headless CMS permissions."
             icon={<PermissionsIcon />}
             element={<CMSPermissions />}
         />

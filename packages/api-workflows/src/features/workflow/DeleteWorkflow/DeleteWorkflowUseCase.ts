@@ -64,7 +64,7 @@ class DeleteWorkflowUseCaseImpl implements UseCase.Interface {
         for (const permission of permissions) {
             if (permission.name === "*") {
                 return Result.ok();
-            } else if (permission.editor === WorkflowsSecurityPermissionAccessLevel.YES) {
+            } else if (permission.editor) {
                 return Result.ok();
             }
         }

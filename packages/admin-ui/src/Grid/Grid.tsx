@@ -79,7 +79,7 @@ interface GridProps
         VariantProps<typeof gridVariants> {
     children:
         | React.ReactElement<ColumnProps, typeof Column>
-        | Array<React.ReactElement<ColumnProps, typeof Column>>
+        | Array<React.ReactElement<ColumnProps, typeof Column>>;
 }
 
 const GridBase = ({ gap, children, className, ...props }: GridProps) => {
