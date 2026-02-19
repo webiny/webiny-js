@@ -15156,6 +15156,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/lexical-editor@workspace:packages/lexical-editor"
   dependencies:
+    "@floating-ui/dom": "npm:^1.7.5"
     "@lexical/code": "npm:^0.39.0"
     "@lexical/history": "npm:^0.39.0"
     "@lexical/react": "npm:^0.39.0"
