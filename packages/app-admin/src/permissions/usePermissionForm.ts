@@ -7,6 +7,10 @@ import type {
     UsePermissionFormResult
 } from "./types.js";
 
+function hasAction(entity: EntityDefinition, name: string): boolean {
+    return entity.actions?.some(a => a.name === name) ?? false;
+}
+
 /**
  * Deserialize Permission[] into form data based on the schema.
  */
@@ -32,8 +36,9 @@ function deserializePermissions(
 
     // Custom access level — extract per-entity form fields.
     const data: Record<string, any> = { accessLevel: "custom" };
+    const entities = schema.entities || [];
 
-    for (const entity of schema.entities) {
+    for (const entity of entities) {
         const perm = ownPermissions.find(p => p.name === entity.permission);
         if (!perm) {
             continue;
@@ -46,14 +51,16 @@ function deserializePermissions(
             data[`${entity.id}AccessScope`] = "full";
         }
 
-        // RWD actions.
-        if (entity.actions?.rwd) {
-            data[`${entity.id}RWD`] = perm.rwd || "r";
-        }
-
-        // Publishing workflow actions.
-        if (entity.actions?.pw) {
-            data[`${entity.id}PW`] = perm.pw ? perm.pw.split("") : [];
+        // Process actions.
+        for (const action of entity.actions ?? []) {
+            if (action.name === "rwd") {
+                data[`${entity.id}RWD`] = perm.rwd || "r";
+            } else if (action.name === "pw") {
+                data[`${entity.id}PW`] = perm.pw ? perm.pw.split("") : [];
+            } else {
+                // Custom boolean action.
+                data[`${entity.id}Action_${action.name}`] = perm[action.name] === true;
+            }
         }
     }
 
@@ -81,16 +88,18 @@ function serializePermissions(
         return [...filtered, { name: schema.fullAccess.name }];
     }
 
+    const entities = schema.entities || [];
+
     // Custom access — build entity permissions.
     // First, build a map of entity definitions by ID for dependency lookups.
     const entityMap = new Map<string, EntityDefinition>();
-    for (const entity of schema.entities) {
+    for (const entity of entities) {
         entityMap.set(entity.id, entity);
     }
 
     // Resolve cascading "own" scopes: if a parent is "own", children must be "own" too.
     const resolvedScopes = new Map<string, string>();
-    for (const entity of schema.entities) {
+    for (const entity of entities) {
         const scope = formData[`${entity.id}AccessScope`];
         if (!scope || scope === "no") {
             continue;
@@ -112,7 +121,7 @@ function serializePermissions(
 
     // Prune resolved scopes based on dependencies (must run before building permissions
     // so that transitive dependencies are properly pruned).
-    for (const entity of schema.entities) {
+    for (const entity of entities) {
         if (!entity.dependsOn || !resolvedScopes.has(entity.id)) {
             continue;
         }
@@ -125,7 +134,7 @@ function serializePermissions(
         }
 
         const parentEntity = entityMap.get(entity.dependsOn.entity);
-        if (parentEntity?.actions?.rwd) {
+        if (parentEntity && hasAction(parentEntity, "rwd")) {
             const parentRwd =
                 parentScope === "own" ? "rwd" : formData[`${entity.dependsOn.entity}RWD`] || "r";
             if (!parentRwd.includes(entity.dependsOn.requires)) {
@@ -138,33 +147,41 @@ function serializePermissions(
     // Build permissions from the pruned resolved scopes.
     const permissions: Permission[] = [];
 
-    for (const entity of schema.entities) {
+    for (const entity of entities) {
         const scope = resolvedScopes.get(entity.id);
         if (!scope) {
             continue;
         }
 
         const perm: Permission = {
-            name: entity.permission,
-            own: false
+            name: entity.permission
         };
 
         if (scope === "own") {
             perm.own = true;
-            if (entity.actions?.rwd) {
+            if (hasAction(entity, "rwd")) {
                 perm.rwd = "rwd";
             }
-        } else {
-            if (entity.actions?.rwd) {
-                perm.rwd = formData[`${entity.id}RWD`] || "r";
-            }
+        } else if (hasAction(entity, "rwd")) {
+            perm.rwd = formData[`${entity.id}RWD`] || "r";
         }
 
-        // Publishing workflow.
-        if (entity.actions?.pw) {
-            const pw: string[] = formData[`${entity.id}PW`] || [];
-            if (pw.length > 0) {
-                perm.pw = pw.join("");
+        // Process non-rwd actions.
+        for (const action of entity.actions ?? []) {
+            if (action.name === "rwd") {
+                continue; // Already handled above.
+            }
+
+            if (action.name === "pw") {
+                const pw: string[] = formData[`${entity.id}PW`] || [];
+                if (pw.length > 0) {
+                    perm.pw = pw.join("");
+                }
+            } else {
+                // Custom boolean action.
+                if (formData[`${entity.id}Action_${action.name}`]) {
+                    perm[action.name] = true;
+                }
             }
         }
 

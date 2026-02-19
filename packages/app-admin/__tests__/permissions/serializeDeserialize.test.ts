@@ -15,7 +15,7 @@ const fmSchema = createPermissionSchema({
             title: "Files",
             permission: "fm.file",
             scopes: ["full", "own"],
-            actions: { rwd: true }
+            actions: [{ name: "rwd" }]
         },
         {
             id: "settings",
@@ -46,14 +46,14 @@ const cmsSchema = createPermissionSchema({
             title: "Content Model Groups",
             permission: "cms.contentModelGroup",
             scopes: ["full", "own"],
-            actions: { rwd: true }
+            actions: [{ name: "rwd" }]
         },
         {
             id: "contentModel",
             title: "Content Models",
             permission: "cms.contentModel",
             scopes: ["full", "own"],
-            actions: { rwd: true },
+            actions: [{ name: "rwd" }],
             dependsOn: { entity: "contentModelGroup", requires: "r" }
         },
         {
@@ -61,8 +61,29 @@ const cmsSchema = createPermissionSchema({
             title: "Content Entries",
             permission: "cms.contentEntry",
             scopes: ["full", "own"],
-            actions: { rwd: true, pw: true },
+            actions: [{ name: "rwd" }, { name: "pw" }],
             dependsOn: { entity: "contentModel", requires: "r" }
+        }
+    ]
+});
+
+/**
+ * Tenant Manager schema — entities with custom boolean actions.
+ */
+const tmSchema = createPermissionSchema({
+    prefix: "tm",
+    fullAccess: { name: "tm.*" },
+    entities: [
+        {
+            id: "tenant",
+            title: "Tenants",
+            permission: "tm.tenant",
+            scopes: ["full"],
+            actions: [
+                { name: "rwd" },
+                { name: "install", label: "Install" },
+                { name: "disable", label: "Disable" }
+            ]
         }
     ]
 });
@@ -198,10 +219,7 @@ describe("serializePermissions", () => {
                 },
                 []
             );
-            expect(result).toEqual([
-                { name: "fm.file", own: false, rwd: "rw" },
-                { name: "fm.settings", own: false }
-            ]);
+            expect(result).toEqual([{ name: "fm.file", rwd: "rw" }, { name: "fm.settings" }]);
         });
 
         it("should serialize custom access with own scope", () => {
@@ -228,7 +246,7 @@ describe("serializePermissions", () => {
                 },
                 []
             );
-            expect(result).toEqual([{ name: "fm.file", own: false, rwd: "r" }]);
+            expect(result).toEqual([{ name: "fm.file", rwd: "r" }]);
         });
 
         it("should strip existing FM permissions and rebuild", () => {
@@ -246,7 +264,7 @@ describe("serializePermissions", () => {
                 },
                 existing
             );
-            expect(result).toEqual([{ name: "pb.*" }, { name: "fm.file", own: false, rwd: "r" }]);
+            expect(result).toEqual([{ name: "pb.*" }, { name: "fm.file", rwd: "r" }]);
         });
     });
 
@@ -286,13 +304,11 @@ describe("serializePermissions", () => {
             expect(result).toEqual([
                 {
                     name: "cms.contentModelGroup",
-                    own: false,
                     rwd: "rwd"
                 },
-                { name: "cms.contentModel", own: false, rwd: "rw" },
+                { name: "cms.contentModel", rwd: "rw" },
                 {
                     name: "cms.contentEntry",
-                    own: false,
                     rwd: "rwd",
                     pw: "pu"
                 }
@@ -318,7 +334,6 @@ describe("serializePermissions", () => {
             expect(result).toEqual([
                 {
                     name: "cms.contentModelGroup",
-                    own: false,
                     rwd: "wd"
                 }
             ]);
@@ -340,7 +355,6 @@ describe("serializePermissions", () => {
             expect(result).toEqual([
                 {
                     name: "cms.contentModelGroup",
-                    own: false,
                     rwd: "rwd"
                 }
             ]);
@@ -465,7 +479,6 @@ describe("serializePermissions", () => {
             expect(result).toEqual([
                 {
                     name: "cms.contentModelGroup",
-                    own: false,
                     rwd: "rwd"
                 },
                 { name: "cms.endpoint.manage" },
@@ -523,5 +536,80 @@ describe("roundtrip: serialize -> deserialize", () => {
         const permissions = serializePermissions(wbSchema, original, []);
         const result = deserializePermissions(wbSchema, permissions);
         expect(result).toEqual({ accessLevel: "full" });
+    });
+
+    it("should roundtrip TM custom access with boolean actions", () => {
+        const original = {
+            accessLevel: "custom",
+            tenantAccessScope: "full",
+            tenantRWD: "rwd",
+            tenantAction_install: true,
+            tenantAction_disable: false
+        };
+        const permissions = serializePermissions(tmSchema, original, []);
+        const result = deserializePermissions(tmSchema, permissions);
+        expect(result).toEqual({
+            accessLevel: "custom",
+            tenantAccessScope: "full",
+            tenantRWD: "rwd",
+            tenantAction_install: true,
+            tenantAction_disable: false
+        });
+    });
+});
+
+describe("custom boolean actions", () => {
+    it("should deserialize custom boolean actions", () => {
+        const result = deserializePermissions(tmSchema, [
+            { name: "tm.tenant", own: false, rwd: "rw", install: true, disable: false }
+        ]);
+        expect(result).toEqual({
+            accessLevel: "custom",
+            tenantAccessScope: "full",
+            tenantRWD: "rw",
+            tenantAction_install: true,
+            tenantAction_disable: false
+        });
+    });
+
+    it("should deserialize missing custom actions as false", () => {
+        const result = deserializePermissions(tmSchema, [
+            { name: "tm.tenant", own: false, rwd: "r" }
+        ]);
+        expect(result.tenantAction_install).toBe(false);
+        expect(result.tenantAction_disable).toBe(false);
+    });
+
+    it("should serialize custom boolean actions", () => {
+        const result = serializePermissions(
+            tmSchema,
+            {
+                accessLevel: "custom",
+                tenantAccessScope: "full",
+                tenantRWD: "rwd",
+                tenantAction_install: true,
+                tenantAction_disable: false
+            },
+            []
+        );
+        expect(result).toEqual([{ name: "tm.tenant", rwd: "rwd", install: true }]);
+    });
+
+    it("should not include false custom actions on permission object", () => {
+        const result = serializePermissions(
+            tmSchema,
+            {
+                accessLevel: "custom",
+                tenantAccessScope: "full",
+                tenantRWD: "r",
+                tenantAction_install: false,
+                tenantAction_disable: false
+            },
+            []
+        );
+        const perm = result.find(p => p.name === "tm.tenant");
+        expect(perm).toBeDefined();
+        expect(perm!.install).toBeUndefined();
+        expect(perm!.disable).toBeUndefined();
     });
 });

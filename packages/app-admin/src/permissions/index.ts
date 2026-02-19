@@ -9,6 +9,7 @@ export type { PermissionRendererProps } from "./PermissionRenderer.js";
 export { usePermissionValue, PermissionValueProvider } from "./PermissionValueContext.js";
 export type {
     Permission,
+    ActionDefinition,
     EntityDefinition,
     PermissionSchemaConfig,
     PermissionSchema,

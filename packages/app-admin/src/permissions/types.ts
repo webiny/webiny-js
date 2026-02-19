@@ -9,6 +9,23 @@ export interface Permission {
 }
 
 /**
+ * An action definition on an entity.
+ *
+ * Built-in actions:
+ * - `{ name: "rwd" }` — read/write/delete single-select (serialized as joined string, e.g. "rw")
+ * - `{ name: "pw" }` — publish/unpublish multi-select (serialized as joined string, e.g. "pu")
+ *
+ * Custom actions:
+ * - `{ name: "install", label: "Install" }` — boolean flag (serialized as `install: true`)
+ */
+export interface ActionDefinition {
+    /** Key on the permission object (e.g. "rwd", "pw", "install") */
+    name: string;
+    /** Display label for the UI. Required for custom actions; ignored for built-in "rwd"/"pw". */
+    label?: string;
+}
+
+/**
  * Defines an entity within a permission schema.
  */
 export interface EntityDefinition {
@@ -20,13 +37,8 @@ export interface EntityDefinition {
     permission: string;
     /** Available access scopes */
     scopes: ("full" | "own")[];
-    /** Available action selectors */
-    actions?: {
-        /** read/write/delete */
-        rwd?: boolean;
-        /** publish/unpublish workflow */
-        pw?: boolean;
-    };
+    /** Action definitions for this entity */
+    actions?: ActionDefinition[];
     /** Dependency on another entity */
     dependsOn?: {
         /** ID of parent entity */
@@ -54,7 +66,7 @@ export interface PermissionSchemaConfig {
 export interface PermissionSchema {
     prefix: string;
     fullAccess: { name: string };
-    entities: EntityDefinition[];
+    entities?: EntityDefinition[];
 }
 
 /**

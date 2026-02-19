@@ -1,4 +1,4 @@
-import React, { Fragment, useMemo } from "react";
+import React, { Fragment, useCallback, useMemo } from "react";
 import { CheckboxGroup, Grid, Select } from "@webiny/admin-ui";
 import { Form } from "@webiny/form";
 import type { BindComponent } from "@webiny/form";
@@ -9,7 +9,7 @@ import {
 } from "../components/Permissions/index.js";
 import { usePermissionForm } from "./usePermissionForm.js";
 import type { AaclPermission } from "../features/wcp/types.js";
-import type { PermissionSchema, EntityDefinition } from "./types.js";
+import type { ActionDefinition, PermissionSchema, EntityDefinition } from "./types.js";
 import { usePermissionValue } from "./PermissionValueContext.js";
 import { useAuthentication } from "~/exports/admin/security.js";
 
@@ -32,6 +32,10 @@ const PW_OPTIONS = [
     { value: "u", label: "Unpublish" }
 ];
 
+function hasAction(entity: EntityDefinition, name: string): boolean {
+    return entity.actions?.some(a => a.name === name) ?? false;
+}
+
 function buildScopeOptions(entity: EntityDefinition) {
     const options = [{ value: NO_ACCESS, label: "No access" }];
 
@@ -46,6 +50,12 @@ function buildScopeOptions(entity: EntityDefinition) {
     return options;
 }
 
+const BUILTIN_ACTIONS = new Set(["rwd", "pw"]);
+
+function getCustomActions(entity: EntityDefinition): ActionDefinition[] {
+    return (entity.actions ?? []).filter(a => !BUILTIN_ACTIONS.has(a.name));
+}
+
 interface EntitySectionProps {
     entity: EntityDefinition;
     data: Record<string, any>;
@@ -56,68 +66,96 @@ interface EntitySectionProps {
 
 function EntitySection({ entity, data, cannotUseAAcl, Bind, setValue }: EntitySectionProps) {
     const scopeField = `${entity.id}AccessScope`;
-    const rwdField = `${entity.id}RWD`;
-    const pwField = `${entity.id}PW`;
     const currentScope = data[scopeField];
+    const scopeDisabled = cannotUseAAcl || !currentScope || currentScope === NO_ACCESS;
+    const customActions = useMemo(() => getCustomActions(entity), [entity]);
+
+    // Derive the selected values array from individual boolean form fields.
+    const customActionsValue = useMemo(() => {
+        return customActions.filter(a => data[`${entity.id}Action_${a.name}`]).map(a => a.name);
+    }, [data, customActions, entity.id]);
+
+    const onCustomActionsChange = useCallback(
+        (selected: string[]) => {
+            const selectedSet = new Set(selected);
+            for (const action of customActions) {
+                setValue(`${entity.id}Action_${action.name}`, selectedSet.has(action.name));
+            }
+        },
+        [customActions, entity.id, setValue]
+    );
+
+    const columns = [
+        <Grid.Column span={12} key={"access"}>
+            <Bind
+                name={scopeField}
+                beforeChange={(value: string, cb: (v: string) => void) => {
+                    if (value === "own" && hasAction(entity, "rwd")) {
+                        setValue(`${entity.id}RWD`, "rwd");
+                    }
+                    cb(value);
+                }}
+            >
+                <Select
+                    label={"Access Scope"}
+                    disabled={cannotUseAAcl}
+                    options={buildScopeOptions(entity)}
+                />
+            </Bind>
+        </Grid.Column>
+    ];
+
+    if (hasAction(entity, "rwd")) {
+        columns.push(
+            <Grid.Column span={12} key={"pw"}>
+                <Bind name={`${entity.id}RWD`}>
+                    <Select
+                        label={"Primary Actions"}
+                        disabled={scopeDisabled || currentScope === "own"}
+                        options={RWD_OPTIONS}
+                    />
+                </Bind>
+            </Grid.Column>
+        );
+    }
+
+    if (hasAction(entity, "pw")) {
+        columns.push(
+            <Grid.Column span={12} key={"pw"}>
+                <Bind name={`${entity.id}PW`}>
+                    <CheckboxGroup
+                        label={"Publishing actions"}
+                        description={"Publishing-related actions that can be performed on entries."}
+                        items={PW_OPTIONS.map(opt => ({
+                            ...opt,
+                            disabled: scopeDisabled
+                        }))}
+                    />
+                </Bind>
+            </Grid.Column>
+        );
+    }
+
+    if (customActions.length > 0) {
+        columns.push(
+            <Grid.Column span={12} key={"other"}>
+                <CheckboxGroup
+                    label={"Other Actions"}
+                    value={customActionsValue}
+                    onChange={onCustomActionsChange}
+                    items={customActions.map(action => ({
+                        value: action.name,
+                        label: action.label || action.name,
+                        disabled: scopeDisabled
+                    }))}
+                />
+            </Grid.Column>
+        );
+    }
 
     return (
         <PermissionsGroup title={entity.title || entity.id}>
-            <Grid>
-                <Grid.Column span={12}>
-                    <Bind
-                        name={scopeField}
-                        beforeChange={(value: string, cb: (v: string) => void) => {
-                            if (value === "own" && entity.actions?.rwd) {
-                                setValue(rwdField, "rwd");
-                            }
-                            cb(value);
-                        }}
-                    >
-                        <Select
-                            label={"Access Scope"}
-                            disabled={cannotUseAAcl}
-                            options={buildScopeOptions(entity)}
-                        />
-                    </Bind>
-                </Grid.Column>
-            </Grid>
-            {entity.actions?.rwd && (
-                <Grid>
-                    <Grid.Column span={12}>
-                        <Bind name={rwdField}>
-                            <Select
-                                label={"Primary Actions"}
-                                disabled={
-                                    cannotUseAAcl ||
-                                    currentScope === "own" ||
-                                    !currentScope ||
-                                    currentScope === NO_ACCESS
-                                }
-                                options={RWD_OPTIONS}
-                            />
-                        </Bind>
-                    </Grid.Column>
-                </Grid>
-            )}
-            {entity.actions?.pw && (
-                <Grid>
-                    <Grid.Column span={12}>
-                        <Bind name={pwField}>
-                            <CheckboxGroup
-                                label={"Publishing actions"}
-                                description={
-                                    "Publishing-related actions that can be performed on entries."
-                                }
-                                items={PW_OPTIONS.map(opt => ({
-                                    ...opt,
-                                    disabled:
-                                        cannotUseAAcl || !currentScope || currentScope === NO_ACCESS
-                                }))}
-                            />
-                        </Bind>
-                    </Grid.Column>
-                </Grid>
-            )}
+            <Grid>{columns}</Grid>
         </PermissionsGroup>
     );
 }
@@ -132,7 +170,8 @@ export const PermissionRenderer = ({ schema }: PermissionRendererProps) => {
 
     const { formData, onFormChange } = usePermissionForm(schema, { value, onChange });
 
-    const hasEntities = schema.entities.length > 0;
+    const entities = schema.entities || [];
+    const hasEntities = entities.length > 0;
 
     const accessLevelOptions = hasEntities
         ? [
@@ -168,7 +207,7 @@ export const PermissionRenderer = ({ schema }: PermissionRendererProps) => {
                     </Grid>
                     {data.accessLevel === CUSTOM_ACCESS && hasEntities && (
                         <div className={"mt-lg"}>
-                            {schema.entities.map(entity => (
+                            {entities.map(entity => (
                                 <EntitySection
                                     key={entity.id}
                                     entity={entity}
