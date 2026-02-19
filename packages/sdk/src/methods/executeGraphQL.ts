@@ -17,7 +17,7 @@ export async function executeGraphQL(
 
         const headers: Record<string, string> = {
             "Content-Type": "application/json",
-            "x-tenant": config.tenant,
+            "x-tenant": config.tenant ?? "root",
             ...config.headers
         };
 
@@ -29,7 +29,8 @@ export async function executeGraphQL(
         response = await fetchFn(url, {
             method: "POST",
             headers,
-            body
+            body,
+            credentials: "include"
         });
     } catch (error) {
         return Result.fail(
