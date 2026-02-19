@@ -39,7 +39,7 @@ const wbSchema = createPermissionSchema({
  */
 const rlSchema = createPermissionSchema({
     prefix: "recordLocking",
-    fullAccess: { name: "recordLocking", canForceUnlock: "yes" }
+    fullAccess: { name: "recordLocking", canForceUnlock: true }
 });
 
 /**
@@ -625,7 +625,7 @@ describe("custom boolean actions", () => {
 describe("fullAccess with extra properties", () => {
     it("should serialize full access with all fullAccess properties", () => {
         const result = serializePermissions(rlSchema, { accessLevel: "full" }, []);
-        expect(result).toEqual([{ name: "recordLocking", canForceUnlock: "yes" }]);
+        expect(result).toEqual([{ name: "recordLocking", canForceUnlock: true }]);
     });
 
     it("should serialize full access preserving other permissions", () => {
@@ -633,13 +633,13 @@ describe("fullAccess with extra properties", () => {
         const result = serializePermissions(rlSchema, { accessLevel: "full" }, existing);
         expect(result).toEqual([
             { name: "pb.*" },
-            { name: "recordLocking", canForceUnlock: "yes" }
+            { name: "recordLocking", canForceUnlock: true }
         ]);
     });
 
     it("should deserialize full access when matching permission exists", () => {
         const result = deserializePermissions(rlSchema, [
-            { name: "recordLocking", canForceUnlock: "yes" }
+            { name: "recordLocking", canForceUnlock: true }
         ]);
         expect(result).toEqual({ accessLevel: "full" });
     });
@@ -662,7 +662,7 @@ describe("fullAccess with extra properties", () => {
     it("should strip existing permissions and rebuild on full access", () => {
         const existing: Permission[] = [
             { name: "pb.*" },
-            { name: "recordLocking", canForceUnlock: "yes" }
+            { name: "recordLocking", canForceUnlock: true }
         ];
         const result = serializePermissions(rlSchema, { accessLevel: "no" }, existing);
         expect(result).toEqual([{ name: "pb.*" }]);
@@ -671,7 +671,7 @@ describe("fullAccess with extra properties", () => {
     it("should roundtrip full access with extra properties", () => {
         const original = { accessLevel: "full" };
         const permissions = serializePermissions(rlSchema, original, []);
-        expect(permissions).toEqual([{ name: "recordLocking", canForceUnlock: "yes" }]);
+        expect(permissions).toEqual([{ name: "recordLocking", canForceUnlock: true }]);
         const result = deserializePermissions(rlSchema, permissions);
         expect(result).toEqual({ accessLevel: "full" });
     });

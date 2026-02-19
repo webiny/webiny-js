@@ -14,7 +14,7 @@ export const SecurityPermissions = () => {
                 icon={<LockIcon />}
                 schema={{
                     prefix: "recordLocking",
-                    fullAccess: { name: "recordLocking", canForceUnlock: "yes" }
+                    fullAccess: { name: "recordLocking", canForceUnlock: true }
                 }}
             />
         </AdminConfig>
