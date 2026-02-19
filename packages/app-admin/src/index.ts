@@ -26,6 +26,7 @@ export * from "./plugins/PermissionRendererPlugin.js";
 
 // Components
 export * from "./components/index.js";
+export type { RichTextValueWithHtml } from "./components/index.js";
 export { HasPermission } from "./presentation/security/components/HasPermission.js";
 export { SecureRoute } from "./presentation/security/components/SecureRoute.js";
 

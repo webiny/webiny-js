@@ -20,11 +20,10 @@ import {
     TextAlignmentAction
 } from "@webiny/lexical-editor";
 import { CompositionScope } from "@webiny/app-admin";
+import { LexicalLinkForm } from "@webiny/app-admin";
 import { LexicalEditorConfig } from "@webiny/lexical-editor";
 import { TypographyDropDown } from "./TypographyDropDown.js";
 import { ExpandEditorAction } from "./ExpandEditorAction.js";
-import { LinkEditForm } from "./LinkEditForm.js";
-import { LinkPreviewForm } from "./LinkPreviewForm.js";
 
 const { ToolbarElement, Plugin } = LexicalEditorConfig;
 
@@ -34,15 +33,6 @@ const sharedPlugins = (
         <Plugin name={"list"} element={<ListPlugin />} />
         <Plugin name={"typography"} element={<TypographyPlugin />} />
         <Plugin name={"link"} element={<LinkPlugin />} />
-        <Plugin
-            name={"floatingLinkEditor"}
-            element={
-                <FloatingLinkEditorPlugin
-                    LinkEditForm={LinkEditForm}
-                    LinkPreviewForm={LinkPreviewForm}
-                />
-            }
-        />
         <Plugin name={"quote"} element={<QuotePlugin />} />
     </>
 );
@@ -64,6 +54,10 @@ export const DefaultLexicalConfig = () => {
                 <LexicalEditorConfig priority={"primary"}>
                     <TypographyAction.TypographyDropDown element={<TypographyDropDown />} />
                     {sharedPlugins}
+                    <Plugin
+                        name={"floatingLinkEditor"}
+                        element={<FloatingLinkEditorPlugin LinkForm={LexicalLinkForm} />}
+                    />
                     <ToolbarElement name="fontColor" element={<FontColorAction />} />
                     <ToolbarElement name="typography" element={<TypographyAction />} />
                     <ToolbarElement name="textAlignment" element={<TextAlignmentAction />} />

@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Dialog, DelayedOnChange, FormComponentLabel } from "@webiny/admin-ui";
 import { CompositionScope } from "@webiny/app-admin";
-import type { RichTextValueWithHtml } from "@webiny/app-admin/components/LexicalEditor/index.js";
+import { LexicalLinkForm } from "@webiny/app-admin";
+import type { RichTextValueWithHtml } from "@webiny/app-admin";
 import { FloatingLinkEditorPlugin, LexicalEditorConfig } from "@webiny/lexical-editor";
 import { LexicalEditor } from "./LexicalEditor.js";
 import type { ElementInputRendererProps } from "~/BaseEditor/index.js";
@@ -9,8 +10,6 @@ import {
     ExpandedEditorProvider,
     useExpandedEditor
 } from "~/inputRenderers/LexicalInput/ExpandedEditor.js";
-import { LinkEditForm } from "~/inputRenderers/LexicalInput/LinkEditForm.js";
-import { LinkPreviewForm } from "~/inputRenderers/LexicalInput/LinkPreviewForm.js";
 
 const { Plugin } = LexicalEditorConfig;
 
@@ -74,12 +73,7 @@ const EditorDialog = (props: EditorDialogProps) => {
                 <LexicalEditorConfig>
                     <Plugin
                         name={"floatingLinkEditor"}
-                        element={
-                            <FloatingLinkEditorPlugin
-                                LinkEditForm={LinkEditForm}
-                                LinkPreviewForm={LinkPreviewForm}
-                            />
-                        }
+                        element={<FloatingLinkEditorPlugin LinkForm={LexicalLinkForm} />}
                     />
                 </LexicalEditorConfig>
             </CompositionScope>

@@ -2,54 +2,22 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
   "references": [
-    {
-      "path": "../api"
-    },
-    {
-      "path": "../api-core"
-    },
-    {
-      "path": "../error"
-    },
-    {
-      "path": "../feature"
-    },
-    {
-      "path": "../handler"
-    },
-    {
-      "path": "../handler-aws"
-    },
-    {
-      "path": "../handler-db"
-    },
-    {
-      "path": "../handler-graphql"
-    },
-    {
-      "path": "../plugins"
-    },
-    {
-      "path": "../project"
-    },
-    {
-      "path": "../utils"
-    },
-    {
-      "path": "../validation"
-    },
-    {
-      "path": "../aws-sdk"
-    },
-    {
-      "path": "../db-dynamodb"
-    },
-    {
-      "path": "../wcp"
-    },
-    {
-      "path": "../sdk"
-    }
+    { "path": "../api" },
+    { "path": "../api-core" },
+    { "path": "../error" },
+    { "path": "../feature" },
+    { "path": "../handler" },
+    { "path": "../handler-aws" },
+    { "path": "../handler-db" },
+    { "path": "../handler-graphql" },
+    { "path": "../plugins" },
+    { "path": "../project" },
+    { "path": "../utils" },
+    { "path": "../validation" },
+    { "path": "../aws-sdk" },
+    { "path": "../db-dynamodb" },
+    { "path": "../sdk" },
+    { "path": "../wcp" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -206,10 +174,10 @@
       "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
-      "@webiny/wcp/*": ["../wcp/src/*"],
-      "@webiny/wcp": ["../wcp/src"],
       "@webiny/sdk/*": ["../sdk/src/*"],
-      "@webiny/sdk": ["../sdk/src"]
+      "@webiny/sdk": ["../sdk/src"],
+      "@webiny/wcp/*": ["../wcp/src/*"],
+      "@webiny/wcp": ["../wcp/src"]
     },
     "baseUrl": "."
   }

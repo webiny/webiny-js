@@ -9,7 +9,6 @@ export function setFloatingElemPosition(
     // A small timeout gives enough time for DOM to update and provides us with correct bounding rect values.
     setTimeout(() => {
         if (basePosition === null) {
-            elementToPosition.style.opacity = "0";
             elementToPosition.style.transform = "translate(-10000px, -10000px)";
             return;
         }
@@ -26,7 +25,6 @@ export function setFloatingElemPosition(
                 shift({ padding: GAP }) // slides along the axis to stay within viewport
             ]
         }).then(({ x, y }) => {
-            // elementToPosition.style.opacity = "1";
             elementToPosition.style.transform = `translate(${x}px, ${y}px)`;
         });
     }, 10);

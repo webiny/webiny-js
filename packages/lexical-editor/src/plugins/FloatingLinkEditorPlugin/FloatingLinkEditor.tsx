@@ -3,41 +3,24 @@ import { getSelectedNode } from "~/utils/getSelectedNode.js";
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@webiny/lexical-nodes";
 import { setFloatingElemPosition } from "~/utils/setFloatingElemPosition.js";
 import { sanitizeUrl } from "~/utils/sanitizeUrl.js";
-import { isChildOfLinkEditor } from "./isChildOfLinkEditor.js";
-import { LinkEditForm as DefaultLinkEditForm } from "./LinkEditForm.js";
-import { LinkPreviewForm as DefaultLinkPreviewForm } from "./LinkPreviewForm.js";
 import {
     SELECTION_CHANGE_COMMAND,
     type BaseSelection,
     type LexicalEditor,
     COMMAND_PRIORITY_LOW,
-    BLUR_COMMAND,
     $getSelection,
     $isRangeSelection
 } from "lexical";
 import { mergeRegister } from "@lexical/utils";
-
-export interface LinkData {
-    url: string;
-    target: string | null;
-    alt: string | null;
-}
+import { LinkData, LinkFormProps } from "./types.js";
 
 interface FloatingLinkEditorProps {
     editor: LexicalEditor;
     isVisible: boolean;
-    anchorElem: HTMLElement;
-    LinkEditForm?: typeof DefaultLinkEditForm;
-    LinkPreviewForm?: typeof DefaultLinkPreviewForm;
+    LinkForm: React.FunctionComponent<LinkFormProps>;
 }
 
-export function FloatingLinkEditor({
-    editor,
-    isVisible,
-    anchorElem,
-    LinkEditForm = DefaultLinkEditForm,
-    LinkPreviewForm = DefaultLinkPreviewForm
-}: FloatingLinkEditorProps) {
+export function FloatingLinkEditor({ editor, isVisible, LinkForm }: FloatingLinkEditorProps) {
     const editorRef = useRef<HTMLDivElement | null>(null);
     const [linkData, setLinkData] = useState<LinkData>({
         url: "",
@@ -45,7 +28,6 @@ export function FloatingLinkEditor({
         alt: null
     });
 
-    const [isEditMode, setEditMode] = useState(false);
     const [lastSelection, setLastSelection] = useState<BaseSelection | null>(null);
 
     const updateLinkEditor = useCallback(() => {
@@ -98,16 +80,14 @@ export function FloatingLinkEditor({
                 setFloatingElemPosition(null, editorElem);
             }
             setLastSelection(null);
-            setEditMode(false);
             setLinkData(emptyLinkData);
         }
 
         return true;
-    }, [anchorElem, editor]);
+    }, [editor]);
 
     const removeLink = () => {
         editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
-        setEditMode(false);
     };
 
     const applyChanges = (linkData: LinkData) => {
@@ -119,7 +99,6 @@ export function FloatingLinkEditor({
 
         if (lastSelection !== null) {
             editor.dispatchCommand(TOGGLE_LINK_COMMAND, confirmedLinkData);
-            setEditMode(false);
         }
     };
 
@@ -135,17 +114,6 @@ export function FloatingLinkEditor({
                 SELECTION_CHANGE_COMMAND,
                 () => {
                     updateLinkEditor();
-                    return false;
-                },
-                COMMAND_PRIORITY_LOW
-            ),
-
-            editor.registerCommand(
-                BLUR_COMMAND,
-                payload => {
-                    if (!isChildOfLinkEditor(payload.relatedTarget as HTMLElement)) {
-                        // setEditMode(false);
-                    }
                     return false;
                 },
                 COMMAND_PRIORITY_LOW
@@ -165,21 +133,9 @@ export function FloatingLinkEditor({
             className="z-dialog absolute link-editor"
             style={{ opacity: isVisible ? 1 : 0, pointerEvents: isVisible ? "auto" : "none" }}
         >
-            {isEditMode ? (
-                <LinkEditForm
-                    linkData={linkData}
-                    onSave={applyChanges}
-                    onCancel={() => setEditMode(false)}
-                />
-            ) : (
-                <LinkPreviewForm
-                    linkData={linkData}
-                    removeLink={removeLink}
-                    onEdit={() => {
-                        setEditMode(true);
-                    }}
-                />
-            )}
+            {isVisible ? (
+                <LinkForm linkData={linkData} onSave={applyChanges} removeLink={removeLink} />
+            ) : null}
         </div>
     );
 }

@@ -11,36 +11,18 @@ import {
     BLUR_COMMAND,
     COMMAND_PRIORITY_CRITICAL,
     COMMAND_PRIORITY_LOW,
-    type LexicalEditor,
     SELECTION_CHANGE_COMMAND
 } from "lexical";
 import { $findMatchingParent, mergeRegister } from "@lexical/utils";
 import { FloatingLinkEditor } from "./FloatingLinkEditor.js";
-import type { LinkEditForm } from "./LinkEditForm.js";
-import type { LinkPreviewForm } from "./LinkPreviewForm.js";
+import { LinkFormProps } from "./types.js";
 
 interface FloatingLinkEditorProps {
-    anchorElem?: (editor: LexicalEditor) => HTMLElement;
-    LinkEditForm?: typeof LinkEditForm;
-    LinkPreviewForm?: typeof LinkPreviewForm;
+    LinkForm: React.FunctionComponent<LinkFormProps>;
 }
 
-const defaultGetAnchorElement = (editor: LexicalEditor): HTMLElement => {
-    const rootElement = editor.getRootElement();
-    if (!rootElement) {
-        return document.body;
-    }
-    const shell = rootElement.closest(".editor-shell");
-    if (!shell) {
-        return document.body;
-    }
-    const overlays = shell.previousElementSibling;
-
-    return (overlays ?? document.body) as HTMLElement;
-};
-
 export const FloatingLinkEditorController = (props: FloatingLinkEditorProps) => {
-    const { editor } = useRichTextEditor();
+    const { editor, getOverlaysElement } = useRichTextEditor();
     const [isLink, setIsLink] = useState(false);
 
     const debounceSetIsLink = useCallback(debounce(setIsLink, 50), []);
@@ -104,18 +86,8 @@ export const FloatingLinkEditorController = (props: FloatingLinkEditorProps) => 
         );
     }, [editor, updateToolbar]);
 
-    const getAnchorElement = props.anchorElem || defaultGetAnchorElement;
-
-    const anchorElement = getAnchorElement(editor)!;
-
     return createPortal(
-        <FloatingLinkEditor
-            isVisible={isLink}
-            editor={editor}
-            anchorElem={anchorElement}
-            LinkEditForm={props.LinkEditForm}
-            LinkPreviewForm={props.LinkPreviewForm}
-        />,
-        anchorElement
+        <FloatingLinkEditor isVisible={isLink} editor={editor} LinkForm={props.LinkForm} />,
+        getOverlaysElement()
     );
 };

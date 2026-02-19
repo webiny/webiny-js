@@ -20,7 +20,9 @@ export {
     default as SingleImageUpload,
     type SingleImageUploadProps
 } from "~/components/SingleImageUpload.js";
-export { LexicalEditor } from "~/components/LexicalEditor/LexicalEditor.js";
+export { LexicalEditor } from "~/components/LexicalEditor/index.js";
+export type { RichTextValueWithHtml } from "~/components/LexicalEditor/index.js";
+export { LexicalLinkForm } from "~/components/LexicalEditor/index.js";
 export { Wcp } from "~/components/Wcp.js";
 export * from "~/components/IconPicker/index.js";
 export * from "~/components/NavigationPrompt.js";
