@@ -9,8 +9,6 @@
     { "path": "../app-headless-cms" },
     { "path": "../app-websockets" },
     { "path": "../error" },
-    { "path": "../form" },
-    { "path": "../plugins" },
     { "path": "../utils" }
   ],
   "compilerOptions": {
@@ -34,10 +32,6 @@
       "@webiny/app-websockets": ["../app-websockets/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
-      "@webiny/form/*": ["../form/src/*"],
-      "@webiny/form": ["../form/src"],
-      "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"]
     },
