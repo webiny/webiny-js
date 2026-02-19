@@ -5,15 +5,10 @@ import { ReactComponent as CodeIcon } from "@webiny/icons/code.svg";
 import Playground from "./plugins/Playground.js";
 import sdkPlaygroundPlugins from "./plugins/index.js";
 import { Routes } from "./routes.js";
-import type { WebinyConfig } from "@webiny/sdk";
 
 const { Route, Menu } = AdminConfig;
 
-interface SdkPlaygroundProps {
-    config: WebinyConfig;
-}
-
-const SdkPlaygroundExtension = ({ config }: SdkPlaygroundProps) => {
+const SdkPlaygroundExtension = () => {
     const router = useRouter();
     plugins.register(sdkPlaygroundPlugins);
 
@@ -37,7 +32,7 @@ const SdkPlaygroundExtension = ({ config }: SdkPlaygroundProps) => {
                 route={Routes.SdkPlayground}
                 element={
                     <AdminLayout title={"SDK Playground"}>
-                        <Playground config={config} />
+                        <Playground />
                     </AdminLayout>
                 }
             />

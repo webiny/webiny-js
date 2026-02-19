@@ -15,14 +15,20 @@ export async function executeGraphQL(
     try {
         const body = JSON.stringify({ query, variables });
 
+        const headers: Record<string, string> = {
+            "Content-Type": "application/json",
+            "x-tenant": config.tenant,
+            ...config.headers
+        };
+
+        // Only add Authorization header if token is provided and not already set in custom headers.
+        if (config.token && !headers.Authorization) {
+            headers.Authorization = `Bearer ${config.token}`;
+        }
+
         response = await fetchFn(url, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${config.token}`,
-                "x-tenant": config.tenant,
-                "x-webiny-sdk": "v6"
-            },
+            headers,
             body
         });
     } catch (error) {

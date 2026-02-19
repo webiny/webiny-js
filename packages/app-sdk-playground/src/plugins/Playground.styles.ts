@@ -23,20 +23,6 @@ export const ToolbarActions = styled.div`
     align-items: center;
 `;
 
-export const ConfigInput = styled.input`
-    padding: 6px 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 13px;
-    font-family: monospace;
-
-    &:focus {
-        outline: none;
-        border-color: #1976d2;
-        box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
-    }
-`;
-
 export const SplitPane = styled.div`
     display: flex;
     flex: 1;

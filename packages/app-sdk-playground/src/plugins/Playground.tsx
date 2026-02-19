@@ -3,7 +3,8 @@ import Editor, { type OnMount, type BeforeMount } from "@monaco-editor/react";
 import { type editor } from "monaco-editor";
 import { Button } from "@webiny/ui/Button";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { useSnackbar } from "@webiny/app-admin";
+import { useSnackbar, useIdentity, useTenantContext } from "@webiny/app-admin";
+import { config as appConfig } from "@webiny/app/config.js";
 import { Webiny } from "@webiny/sdk";
 import {
     Container,
@@ -11,12 +12,10 @@ import {
     OutputContainer,
     SplitPane,
     Toolbar,
-    ToolbarActions,
-    ConfigInput
+    ToolbarActions
 } from "./Playground.styles.js";
 import { defaultSdkCode } from "./default-code.js";
 import { SDK_TYPE_DEFINITIONS } from "./constants.js";
-import type { SdkPlaygroundProps } from "../types.js";
 
 interface ConsoleMessage {
     type: "log" | "error" | "warn" | "info";
@@ -24,20 +23,25 @@ interface ConsoleMessage {
     timestamp: string;
 }
 
-const Playground: React.FC<SdkPlaygroundProps> = ({ config }) => {
+const Playground: React.FC = () => {
     const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
     const monacoRef = useRef<typeof import("monaco-editor") | null>(null);
     const [code, setCode] = useState(defaultSdkCode);
     const [output, setOutput] = useState<ConsoleMessage[]>([]);
     const [isRunning, setIsRunning] = useState(false);
-    const [endpoint, setEndpoint] = useState(config.endpoint || "");
-    const [token, setToken] = useState(config.token || "");
-    const [tenant, setTenant] = useState(config.tenant || "");
     const { showSnackbar } = useSnackbar();
+    const { identity } = useIdentity();
+    const { tenant } = useTenantContext();
 
     const handleRun = useCallback(async () => {
-        if (!endpoint || !token || !tenant) {
-            showSnackbar("Please configure endpoint, token, and tenant");
+        if (!identity?.isAuthenticated) {
+            showSnackbar("You must be logged in to use the SDK Playground");
+            return;
+        }
+
+        const apiUrl = appConfig.getKey("API_URL", process.env.REACT_APP_API_URL) as string;
+        if (!apiUrl) {
+            showSnackbar("API URL is not configured");
             return;
         }
 
@@ -72,11 +76,17 @@ const Playground: React.FC<SdkPlaygroundProps> = ({ config }) => {
         };
 
         try {
-            // Create SDK instance.
+            // Create SDK instance with current tenant and API endpoint.
+            // Note: The SDK will use cookie-based authentication (credentials: "include")
+            // when running in the browser, as the admin app sets up the necessary cookies.
             const sdk = new Webiny({
-                endpoint,
-                token,
-                tenant
+                endpoint: apiUrl,
+                tenant: tenant || identity?.currentTenant?.id || "root",
+                headers: {
+                    // Add any additional headers if needed.
+                    // The Authorization header with Bearer token is handled via cookies
+                    // when running within the admin app context.
+                }
             });
 
             // Wrap code in async function to allow top-level await.
@@ -106,7 +116,7 @@ const Playground: React.FC<SdkPlaygroundProps> = ({ config }) => {
         } finally {
             setIsRunning(false);
         }
-    }, [code, endpoint, token, tenant, showSnackbar]);
+    }, [code, identity, tenant, showSnackbar]);
 
     // Configure Monaco editor with SDK types.
     const handleBeforeMount: BeforeMount = useCallback(monaco => {
@@ -180,27 +190,6 @@ const Playground: React.FC<SdkPlaygroundProps> = ({ config }) => {
                     </span>
                 </div>
                 <ToolbarActions>
-                    <ConfigInput
-                        type="text"
-                        placeholder="Endpoint URL"
-                        value={endpoint}
-                        onChange={e => setEndpoint(e.target.value)}
-                        style={{ width: 300 }}
-                    />
-                    <ConfigInput
-                        type="password"
-                        placeholder="Token"
-                        value={token}
-                        onChange={e => setToken(e.target.value)}
-                        style={{ width: 200 }}
-                    />
-                    <ConfigInput
-                        type="text"
-                        placeholder="Tenant"
-                        value={tenant}
-                        onChange={e => setTenant(e.target.value)}
-                        style={{ width: 150 }}
-                    />
                     <Button onClick={handleRun} disabled={isRunning}>
                         {isRunning ? "Running..." : "Run Code"}
                     </Button>
