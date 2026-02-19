@@ -5,7 +5,8 @@ export const defaultSdkCode = `// SDK Playground - Try out the Webiny SDK
 async function run() {
     // List entries from a CMS model
     const result = await sdk.cms.listEntries({
-        model: "article"
+        modelId: "article",
+        fields: ["id", "createdOn", "values.title"]
     });
 
     // Handle the result

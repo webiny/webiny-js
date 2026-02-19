@@ -2,108 +2,59 @@
 export const MONACO_LOADER_URL =
     "https://cdn.jsdelivr.net/npm/monaco-editor@0.52.0/min/vs/loader.js";
 
-// SDK TypeScript definition files that will be loaded into Monaco.
-// These will be generated from the @webiny/sdk package.
-export const SDK_TYPE_DEFINITIONS: Record<string, string> = {
-    "sdk-types.ts": `
-declare global {
-    interface Window {
-        sdk: Sdk;
-    }
-}
-
-export interface WebinyConfig {
-    token: string;
-    endpoint: string;
-    tenant: string;
-    fetch?: typeof fetch;
-}
-
-export class Webiny {
-    readonly cms: CmsSdk;
-    constructor(config: WebinyConfig);
-}
-
-export { Webiny as Sdk };
-export type { WebinyConfig as SdkConfig };
-
-export interface CmsEntryValues {
-    [key: string]: any;
-}
-
-export type CmsEntryStatus = "published" | "unpublished" | "draft";
-
-export interface CmsIdentity {
+// Global ambient declaration injected into Monaco's TypeScript language service.
+//
+// RULES (do not break these):
+//   1. This string must contain NO top-level `import` or `export` statements.
+//      Any import/export makes TypeScript treat the file as a module, scoping
+//      all declarations locally instead of globally.
+//   2. All types must be declared inline — no cross-file references.
+//   3. Register this with addExtraLib using a "file:///" URI.
+export const SDK_GLOBAL_DECLARATION = `
+interface SdkIdentity {
     id: string;
     displayName: string;
     type: string;
 }
 
-export interface IEntryState {
-    state: string;
-    workflowId: string;
-    stepId: string;
-    stepName: string;
+type SdkEntryStatus = "published" | "unpublished" | "draft";
+
+interface SdkEntryValues {
+    [key: string]: any;
 }
 
-export interface CmsEntryData<TValues extends CmsEntryValues = CmsEntryValues> {
-    id: string;
-    entryId: string;
-    modelId: string;
-    createdOn: string;
-    modifiedOn: string;
-    savedOn: string;
-    firstPublishedOn?: string;
-    lastPublishedOn?: string;
-    revisionCreatedOn: string;
-    revisionModifiedOn: string;
-    revisionSavedOn: string;
-    revisionFirstPublishedOn?: string;
-    revisionLastPublishedOn?: string;
-    createdBy: CmsIdentity;
-    modifiedBy: CmsIdentity;
-    savedBy: CmsIdentity;
-    firstPublishedBy?: CmsIdentity;
-    lastPublishedBy?: CmsIdentity;
-    revisionCreatedBy: CmsIdentity;
-    revisionModifiedBy: CmsIdentity;
-    revisionSavedBy: CmsIdentity;
-    revisionFirstPublishedBy?: CmsIdentity;
-    revisionLastPublishedBy?: CmsIdentity;
-    version: number;
-    revision: number;
-    status: CmsEntryStatus;
-    locked: boolean;
-    location: {
-        folderId: string;
-    };
-    values: TValues;
-    meta?: {
-        state?: IEntryState;
-    };
-}
-
-export interface GetEntryWhere {
+interface SdkEntryData<TValues extends SdkEntryValues = SdkEntryValues> {
     id?: string;
     entryId?: string;
-    version?: number;
+    status?: SdkEntryStatus;
+    createdOn?: string;
+    modifiedOn?: string | null;
+    savedOn?: string;
+    deletedOn?: string | null;
+    restoredOn?: string | null;
+    createdBy?: SdkIdentity;
+    modifiedBy?: SdkIdentity;
+    savedBy?: SdkIdentity;
+    firstPublishedOn?: string;
+    lastPublishedOn?: string;
+    firstPublishedBy?: SdkIdentity;
+    lastPublishedBy?: SdkIdentity;
+    revisionCreatedOn?: string;
+    revisionModifiedOn?: string | null;
+    revisionSavedOn?: string;
+    revisionCreatedBy?: SdkIdentity;
+    revisionModifiedBy?: SdkIdentity | null;
+    revisionSavedBy?: SdkIdentity;
+    revisionFirstPublishedOn?: string;
+    revisionLastPublishedOn?: string;
+    revisionFirstPublishedBy?: SdkIdentity;
+    revisionLastPublishedBy?: SdkIdentity;
+    location?: { folderId?: string | null };
+    values?: TValues;
 }
 
-export interface GetEntryParams {
-    model: string;
-    where: GetEntryWhere;
-}
-
-export interface ListEntriesParams {
-    model: string;
-    limit?: number;
-    after?: string;
-    where?: Record<string, any>;
-    sort?: string[];
-}
-
-export interface ListEntriesResult<TValues extends CmsEntryValues = CmsEntryValues> {
-    data: CmsEntryData<TValues>[];
+interface SdkListEntriesResult<TValues extends SdkEntryValues = SdkEntryValues> {
+    data: SdkEntryData<TValues>[];
     meta: {
         cursor: string | null;
         hasMoreItems: boolean;
@@ -111,162 +62,147 @@ export interface ListEntriesResult<TValues extends CmsEntryValues = CmsEntryValu
     };
 }
 
-export interface CreateEntryParams<TValues extends CmsEntryValues = CmsEntryValues> {
-    model: string;
-    values: TValues;
-    locale?: string;
-    location?: {
-        folderId?: string;
-    };
+interface SdkResult<TValue, TError = never> {
+    isOk(): this is { readonly value: TValue } & SdkResult<TValue, TError>;
+    isFail(): this is { readonly error: TError } & SdkResult<TValue, TError>;
+    readonly value: TValue;
+    readonly error: TError;
 }
 
-export interface CreateCmsEntryData<TValues extends CmsEntryValues = CmsEntryValues> {
-    id: string;
-    entryId: string;
+interface SdkGetEntryParams {
+    /** The model ID to query. */
     modelId: string;
-    createdOn: string;
-    modifiedOn: string;
-    savedOn: string;
-    createdBy: CmsIdentity;
-    modifiedBy: CmsIdentity;
-    savedBy: CmsIdentity;
-    version: number;
-    revision: number;
-    status: CmsEntryStatus;
-    locked: boolean;
-    location: {
-        folderId: string;
+    where: {
+        /** Revision ID, e.g. "abc#0001". */
+        id?: string;
+        /** Entry ID, e.g. "abc". */
+        entryId?: string;
+        /** Filter by entry field values. */
+        values?: Record<string, unknown>;
     };
-    values: TValues;
+    /** Fields to include in the response. Use "values.fieldName" for entry values. */
+    fields: string[];
+    /** When true, returns unpublished/draft content. Defaults to false. */
+    preview?: boolean;
 }
 
-export interface UpdateEntryRevisionParams<TValues extends CmsEntryValues = CmsEntryValues> {
-    model: string;
-    id: string;
-    values: TValues;
-}
-
-export interface UpdateCmsEntryData<TValues extends CmsEntryValues = CmsEntryValues> {
-    id: string;
-    entryId: string;
+interface SdkListEntriesParams {
+    /** The model ID to query. */
     modelId: string;
-    createdOn: string;
-    modifiedOn: string;
-    savedOn: string;
-    revisionCreatedOn: string;
-    revisionModifiedOn: string;
-    revisionSavedOn: string;
-    createdBy: CmsIdentity;
-    modifiedBy: CmsIdentity;
-    savedBy: CmsIdentity;
-    revisionCreatedBy: CmsIdentity;
-    revisionModifiedBy: CmsIdentity;
-    revisionSavedBy: CmsIdentity;
-    version: number;
-    revision: number;
-    status: CmsEntryStatus;
-    locked: boolean;
-    location: {
-        folderId: string;
-    };
-    values: TValues;
+    /** Filter conditions. */
+    where?: Record<string, unknown>;
+    /** Sort order per field, e.g. { createdOn: "desc" }. */
+    sort?: Record<string, "asc" | "desc">;
+    /** Maximum number of entries to return. Defaults to 10. */
+    limit?: number;
+    /** Pagination cursor from a previous response. */
+    after?: string;
+    /** Fields to include in the response. Use "values.fieldName" for entry values. */
+    fields: string[];
+    /** When true, returns unpublished/draft content. Defaults to false. */
+    preview?: boolean;
 }
 
-export interface DeleteEntryRevisionParams {
-    model: string;
-    id: string;
+interface SdkCreateEntryData<TValues extends SdkEntryValues = SdkEntryValues> {
+    values: TValues | undefined;
+    status?: SdkEntryStatus;
+    location?: { folderId?: string | null };
 }
 
-export interface PublishEntryRevisionParams {
-    model: string;
-    id: string;
+interface SdkCreateEntryParams<TValues extends SdkEntryValues = SdkEntryValues> {
+    /** The model ID. */
+    modelId: string;
+    /** The entry data to create. */
+    data: SdkCreateEntryData<TValues>;
+    /** Fields to include in the response. */
+    fields: string[];
 }
 
-export interface UnpublishEntryRevisionParams {
-    model: string;
-    id: string;
+interface SdkUpdateEntryData<TValues extends SdkEntryValues = SdkEntryValues> {
+    values?: Partial<TValues>;
+    location?: { folderId?: string | null };
 }
 
-export class CmsSdk {
-    getEntry<TValues extends CmsEntryValues = CmsEntryValues>(
-        params: GetEntryParams
-    ): Promise<Result<CmsEntryData<TValues> | null, HttpError | GraphQLError | NetworkError>>;
+interface SdkUpdateEntryRevisionParams<TValues extends SdkEntryValues = SdkEntryValues> {
+    /** The model ID. */
+    modelId: string;
+    /** The revision ID, e.g. "abc#0001". */
+    revisionId: string;
+    /** The fields to update. */
+    data: SdkUpdateEntryData<TValues>;
+    /** Fields to include in the response. */
+    fields: string[];
+}
 
-    listEntries<TValues extends CmsEntryValues = CmsEntryValues>(
-        params: ListEntriesParams
-    ): Promise<Result<ListEntriesResult<TValues>, HttpError | GraphQLError | NetworkError>>;
+interface SdkDeleteEntryRevisionParams {
+    /** The model ID. */
+    modelId: string;
+    /** The revision ID, e.g. "abc#0001". */
+    revisionId: string;
+    /** When true, permanently deletes the entry. Defaults to false. */
+    permanent?: boolean;
+}
 
-    createEntry<TValues extends CmsEntryValues = CmsEntryValues>(
-        params: CreateEntryParams<TValues>
-    ): Promise<Result<CreateCmsEntryData<TValues>, HttpError | GraphQLError | NetworkError>>;
+interface SdkPublishEntryRevisionParams {
+    /** The model ID. */
+    modelId: string;
+    /** The revision ID, e.g. "abc#0001". */
+    revisionId: string;
+    /** Fields to include in the response. */
+    fields: string[];
+}
 
-    updateEntryRevision<TValues extends CmsEntryValues = CmsEntryValues>(
-        params: UpdateEntryRevisionParams<TValues>
-    ): Promise<Result<UpdateCmsEntryData<TValues>, HttpError | GraphQLError | NetworkError>>;
+interface SdkUnpublishEntryRevisionParams {
+    /** The model ID. */
+    modelId: string;
+    /** The revision ID, e.g. "abc#0001". */
+    revisionId: string;
+    /** Fields to include in the response. */
+    fields: string[];
+}
 
+interface SdkCms {
+    /** Get a single entry by ID or field values. */
+    getEntry<TValues extends SdkEntryValues = SdkEntryValues>(
+        params: SdkGetEntryParams
+    ): Promise<SdkResult<SdkEntryData<TValues> | null>>;
+
+    /** List entries with optional filtering, sorting, and pagination. */
+    listEntries<TValues extends SdkEntryValues = SdkEntryValues>(
+        params: SdkListEntriesParams
+    ): Promise<SdkResult<SdkListEntriesResult<TValues>>>;
+
+    /** Create a new entry. */
+    createEntry<TValues extends SdkEntryValues = SdkEntryValues>(
+        params: SdkCreateEntryParams<TValues>
+    ): Promise<SdkResult<SdkEntryData<TValues>>>;
+
+    /** Update an existing entry revision. */
+    updateEntryRevision<TValues extends SdkEntryValues = SdkEntryValues>(
+        params: SdkUpdateEntryRevisionParams<TValues>
+    ): Promise<SdkResult<SdkEntryData<TValues>>>;
+
+    /** Delete an entry revision. */
     deleteEntryRevision(
-        params: DeleteEntryRevisionParams
-    ): Promise<Result<boolean, HttpError | GraphQLError | NetworkError>>;
+        params: SdkDeleteEntryRevisionParams
+    ): Promise<SdkResult<boolean>>;
 
-    publishEntryRevision<TValues extends CmsEntryValues = CmsEntryValues>(
-        params: PublishEntryRevisionParams
-    ): Promise<Result<CmsEntryData<TValues>, HttpError | GraphQLError | NetworkError>>;
+    /** Publish an entry revision. */
+    publishEntryRevision<TValues extends SdkEntryValues = SdkEntryValues>(
+        params: SdkPublishEntryRevisionParams
+    ): Promise<SdkResult<SdkEntryData<TValues>>>;
 
-    unpublishEntryRevision<TValues extends CmsEntryValues = CmsEntryValues>(
-        params: UnpublishEntryRevisionParams
-    ): Promise<Result<CmsEntryData<TValues>, HttpError | GraphQLError | NetworkError>>;
+    /** Unpublish an entry revision. */
+    unpublishEntryRevision<TValues extends SdkEntryValues = SdkEntryValues>(
+        params: SdkUnpublishEntryRevisionParams
+    ): Promise<SdkResult<SdkEntryData<TValues>>>;
 }
 
-export interface HttpErrorData {
-    status: number;
+interface SdkWebiny {
+    /** CMS operations: list, get, create, update, delete, publish entries. */
+    readonly cms: SdkCms;
 }
 
-export interface GraphQLErrorData {
-    code?: string;
-    message: string;
-}
-
-export class BaseError<TData = void> extends Error {
-    abstract readonly code: string;
-    readonly data: TData;
-    constructor(message: string, data: TData);
-}
-
-export class HttpError extends BaseError<HttpErrorData> {
-    readonly code = "HTTP_ERROR";
-    readonly data: HttpErrorData;
-    constructor(message: string, status: number);
-}
-
-export class GraphQLError extends BaseError<GraphQLErrorData> {
-    readonly code = "GRAPHQL_ERROR";
-    readonly data: GraphQLErrorData;
-    constructor(message: string, data: GraphQLErrorData);
-}
-
-export class NetworkError extends BaseError<void> {
-    readonly code = "NETWORK_ERROR";
-}
-
-/**
- * A container type that represents either a successful result (ok) or a failure (fail).
- */
-export class Result<TValue, TError = never> {
-    static ok<T>(value: T): Result<T, never>;
-    static ok(): Result<void, never>;
-    
-    static fail<E>(error: E): Result<never, E>;
-    
-    isOk(): this is { _value: TValue } & Result<TValue, TError>;
-    isFail(): this is { _error: TError } & Result<TValue, TError>;
-    
-    get value(): TValue;
-    get error(): TError;
-    
-    map<U>(fn: (value: TValue) => U): Result<U, TError>;
-    mapError<F>(fn: (error: TError) => F): Result<TValue, F>;
-    flatMap<U>(fn: (value: TValue) => Result<U, TError>): Result<U, TError>;
-    match<U>(handlers: { ok: (value: TValue) => U; fail: (error: TError) => U }): U;
-}
-`
-};
+declare const sdk: SdkWebiny;
+declare interface Window { sdk: SdkWebiny; }
+`;

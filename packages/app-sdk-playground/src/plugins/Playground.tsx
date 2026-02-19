@@ -15,7 +15,7 @@ import {
     ToolbarActions
 } from "./Playground.styles.js";
 import { defaultSdkCode } from "./default-code.js";
-import { SDK_TYPE_DEFINITIONS } from "./constants.js";
+import { SDK_GLOBAL_DECLARATION } from "./constants.js";
 
 interface ConsoleMessage {
     type: "log" | "error" | "warn" | "info";
@@ -25,7 +25,6 @@ interface ConsoleMessage {
 
 const Playground: React.FC = () => {
     const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
-    const monacoRef = useRef<typeof import("monaco-editor") | null>(null);
     const [code, setCode] = useState(defaultSdkCode);
     const [output, setOutput] = useState<ConsoleMessage[]>([]);
     const [isRunning, setIsRunning] = useState(false);
@@ -120,9 +119,6 @@ const Playground: React.FC = () => {
 
     // Configure Monaco editor with SDK types.
     const handleBeforeMount: BeforeMount = useCallback(monaco => {
-        monacoRef.current = monaco;
-
-        // Add TypeScript compiler options.
         monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
             target: monaco.languages.typescript.ScriptTarget.ES2020,
             allowNonTsExtensions: true,
@@ -130,52 +126,43 @@ const Playground: React.FC = () => {
             module: monaco.languages.typescript.ModuleKind.CommonJS,
             noEmit: true,
             esModuleInterop: true,
-            jsx: monaco.languages.typescript.JsxEmit.React,
-            reactNamespace: "React",
-            allowJs: true,
-            typeRoots: ["node_modules/@types"]
+            allowJs: true
         });
 
-        // Add SDK type definitions.
-        Object.entries(SDK_TYPE_DEFINITIONS).forEach(([filename, content]) => {
-            monaco.languages.typescript.typescriptDefaults.addExtraLib(
-                content,
-                `file:///node_modules/@webiny/sdk/${filename}`
-            );
-        });
-
-        // Add global SDK variable declaration.
+        // Single addExtraLib call with a pure script-mode string (no import/export).
+        // This makes TypeScript treat the file as an ambient script, so all
+        // declare statements become true globals visible to user code.
         monaco.languages.typescript.typescriptDefaults.addExtraLib(
-            `
-            import { Webiny, WebinyConfig } from "./sdk-types";
-            declare global {
-                interface Window {
-                    sdk: Webiny;
-                }
-                const sdk: Webiny;
-            }
-            export {};
-            `,
-            "file:///global-sdk.d.ts"
+            SDK_GLOBAL_DECLARATION,
+            "file:///sdk-globals.d.ts"
         );
     }, []);
 
     const handleEditorDidMount: OnMount = useCallback(
-        ed => {
+        (ed, monaco) => {
             editorRef.current = ed;
 
+            // Re-create the model with a file:/// URI so it lives in the same
+            // virtual FS namespace as the addExtraLib file, giving the TS
+            // language service full visibility into the ambient declarations.
+            const existingModel = ed.getModel();
+            const newModel = monaco.editor.createModel(
+                existingModel?.getValue() ?? defaultSdkCode,
+                "typescript",
+                monaco.Uri.parse("file:///user-script.ts")
+            );
+            ed.setModel(newModel);
+            existingModel?.dispose();
+
             // Add keyboard shortcut for running code.
-            const monaco = monacoRef.current;
-            if (monaco) {
-                ed.addAction({
-                    id: "run-code",
-                    label: "Run Code",
-                    keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter],
-                    run: () => {
-                        void handleRun();
-                    }
-                });
-            }
+            ed.addAction({
+                id: "run-code",
+                label: "Run Code",
+                keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter],
+                run: () => {
+                    void handleRun();
+                }
+            });
         },
         [handleRun]
     );
