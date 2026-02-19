@@ -10,11 +10,11 @@ export const createSeparatorFieldRenderer = (): CmsModelFieldRendererPlugin => {
         type: "cms-editor-field-renderer",
         name: "cms-editor-field-renderer-separator",
         renderer: {
-            rendererName: "text-separator",
+            rendererName: "uiSeparator",
             name: t`Separator`,
             description: t`Renders a separator field.`,
             canUse({ field }) {
-                return field.type === "text:separator";
+                return field.type === "ui";
             },
             render({ field }) {
                 return (
