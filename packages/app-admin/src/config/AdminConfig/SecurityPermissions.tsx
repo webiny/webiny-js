@@ -1,12 +1,18 @@
 import React from "react";
 import { ConnectToProperties, Property, useIdGenerator } from "@webiny/react-properties";
+import type { PermissionSchema } from "~/permissions/types.js";
 
-export interface SecurityPermissionsProps {
+export type SecurityPermissionsProps = SecurityPermissionsPropsBase &
+    (
+        | { schema: PermissionSchema; element?: never }
+        | { schema?: never; element: React.ReactElement }
+    );
+
+export interface SecurityPermissionsPropsBase {
     name: string;
     title: string;
     description?: string;
     icon?: React.ReactElement;
-    element: React.ReactElement;
     system?: boolean;
 }
 
@@ -15,6 +21,7 @@ export const SecurityPermissions = ({
     title,
     description,
     icon,
+    schema,
     element,
     system
 }: SecurityPermissionsProps) => {
@@ -26,7 +33,7 @@ export const SecurityPermissions = ({
                 id={getId(name)}
                 name={"permissionRenderers"}
                 array={true}
-                value={{ name, title, description, icon, element, system }}
+                value={{ name, title, description, icon, schema, element, system }}
             />
         </ConnectToProperties>
     );

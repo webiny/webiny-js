@@ -14,6 +14,8 @@ export interface Permission {
 export interface EntityDefinition {
     /** Unique ID, used for form field naming: ${id}AccessScope, ${id}RWD, etc. */
     id: string;
+    /** Display title for the UI renderer (e.g. "Files", "Settings") */
+    title?: string;
     /** Permission name emitted for this entity (e.g. "fm.file") */
     permission: string;
     /** Available access scopes */
@@ -77,12 +79,21 @@ export interface UsePermissionFormResult {
 
 /**
  * Configuration for a permission renderer registered via AdminConfig.
+ *
+ * Either `schema` or `element` must be provided:
+ * - `schema`: uses the built-in PermissionRenderer for auto-generated UI.
+ * - `element`: uses a custom React element for full control.
  */
-export interface PermissionRendererConfig {
+export type PermissionRendererConfig = PermissionRendererConfigBase &
+    (
+        | { schema: PermissionSchema; element?: never }
+        | { schema?: never; element: React.ReactElement }
+    );
+
+interface PermissionRendererConfigBase {
     name: string;
     title: string;
     description?: string;
     icon?: React.ReactElement;
-    element: React.ReactElement;
     system?: boolean;
 }

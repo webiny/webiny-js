@@ -1,11 +1,13 @@
 import React, { useMemo } from "react";
 import type { AdminAppPermissionRendererPlugin } from "~/types.js";
-import { Accordion } from "@webiny/ui/Accordion/index.js";
+import { Accordion } from "@webiny/admin-ui";
 import { plugins } from "@webiny/plugins";
 import type { BindComponentRenderProp } from "@webiny/form";
 import type { PermissionRendererPlugin } from "~/plugins/PermissionRendererPlugin.js";
 import { useAdminConfig } from "~/config/AdminConfig.js";
 import type { PermissionRendererConfig } from "~/permissions/types.js";
+import { PermissionValueProvider } from "~/permissions/PermissionValueContext.js";
+import { PermissionRenderer } from "~/permissions/PermissionRenderer.js";
 
 interface PermissionsProps extends BindComponentRenderProp {
     id: string;
@@ -65,21 +67,43 @@ export const Permissions = ({ id, value, onChange, ...props }: PermissionsProps)
     }, [permissionRenderers, systemPlugins, permissionPlugins]);
 
     return (
-        <Accordion elevation={0}>
-            {items.map(item => {
-                if (item.type === "plugin") {
+        <Accordion>
+            <PermissionValueProvider value={value} onChange={onChange}>
+                {items.map(item => {
+                    if (item.type === "plugin") {
+                        return (
+                            <React.Fragment key={item.plugin.name + "." + id}>
+                                {item.plugin.render({ value, onChange })}
+                            </React.Fragment>
+                        );
+                    }
+
+                    const { renderer } = item;
+
                     return (
-                        <React.Fragment key={item.plugin.name + "." + id}>
-                            {item.plugin.render({ value, onChange })}
-                        </React.Fragment>
+                        <Accordion.Item
+                            key={renderer.name + "." + id}
+                            title={renderer.title}
+                            description={renderer.description}
+                            icon={
+                                renderer.icon ? (
+                                    <Accordion.Item.Icon
+                                        icon={renderer.icon}
+                                        label={renderer.title}
+                                    />
+                                ) : undefined
+                            }
+                            data-testid={`permission.${renderer.name}`}
+                        >
+                            {renderer.schema ? (
+                                <PermissionRenderer schema={renderer.schema} />
+                            ) : (
+                                renderer.element
+                            )}
+                        </Accordion.Item>
                     );
-                }
-                return (
-                    <React.Fragment key={item.renderer.name + "." + id}>
-                        {React.cloneElement(item.renderer.element, { value, onChange })}
-                    </React.Fragment>
-                );
-            })}
+                })}
+            </PermissionValueProvider>
         </Accordion>
     );
 };

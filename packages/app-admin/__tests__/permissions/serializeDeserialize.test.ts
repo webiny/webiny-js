@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { createPermissionSchema } from "~/permissions/createPermissionSchema";
 import { deserializePermissions, serializePermissions } from "~/permissions/usePermissionForm";
-import type { Permission, PermissionSchema } from "~/permissions/types";
+import type { Permission } from "~/permissions/types";
 
 /**
  * File Manager schema — typical case with entities.
@@ -12,12 +12,14 @@ const fmSchema = createPermissionSchema({
     entities: [
         {
             id: "file",
+            title: "Files",
             permission: "fm.file",
             scopes: ["full", "own"],
             actions: { rwd: true }
         },
         {
             id: "settings",
+            title: "Settings",
             permission: "fm.settings",
             scopes: ["full"]
         }
@@ -41,12 +43,14 @@ const cmsSchema = createPermissionSchema({
     entities: [
         {
             id: "contentModelGroup",
+            title: "Content Model Groups",
             permission: "cms.contentModelGroup",
             scopes: ["full", "own"],
             actions: { rwd: true }
         },
         {
             id: "contentModel",
+            title: "Content Models",
             permission: "cms.contentModel",
             scopes: ["full", "own"],
             actions: { rwd: true },
@@ -54,6 +58,7 @@ const cmsSchema = createPermissionSchema({
         },
         {
             id: "contentEntry",
+            title: "Content Entries",
             permission: "cms.contentEntry",
             scopes: ["full", "own"],
             actions: { rwd: true, pw: true },
@@ -423,7 +428,7 @@ describe("serializePermissions", () => {
                 }
             });
 
-            const merged = { ...coreData, ...customDeserialize(permissions) };
+            const merged: Record<string, any> = { ...coreData, ...customDeserialize(permissions) };
             expect(merged.accessLevel).toBe("custom");
             expect(merged.endpoints).toEqual(["manage", "read"]);
             expect(merged.contentModelGroupProps).toEqual({
