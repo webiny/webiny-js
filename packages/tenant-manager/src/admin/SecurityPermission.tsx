@@ -10,7 +10,7 @@ export const SecurityPermission = () => {
             <Security.Permissions
                 name="tenant-manager"
                 title="Tenant Manager"
-                description="Manage Tenant Manager app access permissions."
+                description="Manage Tenant Manager permissions."
                 icon={<PermissionsIcon />}
                 schema={{
                     prefix: "tm",
