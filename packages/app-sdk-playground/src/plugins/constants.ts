@@ -62,12 +62,33 @@ interface SdkListEntriesResult<TValues extends SdkEntryValues = SdkEntryValues> 
     };
 }
 
-interface SdkResult<TValue, TError = never> {
-    isOk(): this is { readonly value: TValue } & SdkResult<TValue, TError>;
-    isFail(): this is { readonly error: TError } & SdkResult<TValue, TError>;
+interface SdkResult<TValue, TError = unknown> {
+    isOk(): boolean;
+    isFail(): boolean;
     readonly value: TValue;
     readonly error: TError;
 }
+
+declare class SdkBaseError extends Error {
+    readonly code: string;
+    readonly message: string;
+}
+
+declare class SdkHttpError extends SdkBaseError {
+    readonly code: "HTTP_ERROR";
+    readonly data: { status: number };
+}
+
+declare class SdkGraphQLError extends SdkBaseError {
+    readonly code: "GRAPHQL_ERROR";
+    readonly data: { code?: string };
+}
+
+declare class SdkNetworkError extends SdkBaseError {
+    readonly code: "NETWORK_ERROR";
+}
+
+type SdkCmsError = SdkHttpError | SdkGraphQLError | SdkNetworkError;
 
 interface SdkGetEntryParams {
     /** The model ID to query. */
@@ -165,37 +186,37 @@ interface SdkCms {
     /** Get a single entry by ID or field values. */
     getEntry<TValues extends SdkEntryValues = SdkEntryValues>(
         params: SdkGetEntryParams
-    ): Promise<SdkResult<SdkEntryData<TValues> | null>>;
+    ): Promise<SdkResult<SdkEntryData<TValues> | null, SdkCmsError>>;
 
     /** List entries with optional filtering, sorting, and pagination. */
     listEntries<TValues extends SdkEntryValues = SdkEntryValues>(
         params: SdkListEntriesParams
-    ): Promise<SdkResult<SdkListEntriesResult<TValues>>>;
+    ): Promise<SdkResult<SdkListEntriesResult<TValues>, SdkCmsError>>;
 
     /** Create a new entry. */
     createEntry<TValues extends SdkEntryValues = SdkEntryValues>(
         params: SdkCreateEntryParams<TValues>
-    ): Promise<SdkResult<SdkEntryData<TValues>>>;
+    ): Promise<SdkResult<SdkEntryData<TValues>, SdkCmsError>>;
 
     /** Update an existing entry revision. */
     updateEntryRevision<TValues extends SdkEntryValues = SdkEntryValues>(
         params: SdkUpdateEntryRevisionParams<TValues>
-    ): Promise<SdkResult<SdkEntryData<TValues>>>;
+    ): Promise<SdkResult<SdkEntryData<TValues>, SdkCmsError>>;
 
     /** Delete an entry revision. */
     deleteEntryRevision(
         params: SdkDeleteEntryRevisionParams
-    ): Promise<SdkResult<boolean>>;
+    ): Promise<SdkResult<boolean, SdkCmsError>>;
 
     /** Publish an entry revision. */
     publishEntryRevision<TValues extends SdkEntryValues = SdkEntryValues>(
         params: SdkPublishEntryRevisionParams
-    ): Promise<SdkResult<SdkEntryData<TValues>>>;
+    ): Promise<SdkResult<SdkEntryData<TValues>, SdkCmsError>>;
 
     /** Unpublish an entry revision. */
     unpublishEntryRevision<TValues extends SdkEntryValues = SdkEntryValues>(
         params: SdkUnpublishEntryRevisionParams
-    ): Promise<SdkResult<SdkEntryData<TValues>>>;
+    ): Promise<SdkResult<SdkEntryData<TValues>, SdkCmsError>>;
 }
 
 interface SdkWebiny {
