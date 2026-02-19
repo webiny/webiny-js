@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Dialog, DelayedOnChange, FormComponentLabel } from "@webiny/admin-ui";
+import { Dialog, FormComponentLabel } from "@webiny/admin-ui";
 import { CompositionScope } from "@webiny/app-admin";
 import { LexicalLinkForm } from "@webiny/app-admin";
 import type { RichTextValueWithHtml } from "@webiny/app-admin";
@@ -67,9 +67,7 @@ const EditorDialog = (props: EditorDialogProps) => {
             }
         >
             <CompositionScope name={"expanded"}>
-                <DelayedOnChange value={localValue} onChange={setLocalValue}>
-                    {({ value, onChange }) => <LexicalEditor value={value} onChange={onChange} />}
-                </DelayedOnChange>
+                <LexicalEditor value={localValue} onChange={setLocalValue} />
                 <LexicalEditorConfig>
                     <Plugin
                         name={"floatingLinkEditor"}
@@ -101,11 +99,7 @@ const ExpandableLexicalInputRenderer = ({
         <>
             <FormComponentLabel text={label} />
             <CompositionScope name={"compact"}>
-                <DelayedOnChange value={value} onChange={onChange}>
-                    {({ value, onChange }) => (
-                        <LexicalEditor value={value} onChange={onChange} key={input.name} />
-                    )}
-                </DelayedOnChange>
+                <LexicalEditor value={value} onChange={onChange} key={input.name} />
             </CompositionScope>
             <EditorDialog
                 open={isExpanded}
