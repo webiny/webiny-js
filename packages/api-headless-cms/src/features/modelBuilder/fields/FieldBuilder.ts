@@ -1,8 +1,8 @@
 import camelCase from "lodash/camelCase.js";
 import type {
     CmsModelField,
-    CmsModelFieldValidation,
-    CmsModelFieldPredefinedValues
+    CmsModelFieldPredefinedValues,
+    CmsModelFieldValidation
 } from "~/types/index.js";
 
 export interface FieldBuilderConfig
@@ -25,57 +25,157 @@ export interface FieldBuilderConfig
  *   }
  */
 export interface FieldRendererRegistry {
-    switch: { fieldType: "boolean"; settings: undefined };
-    checkboxes: { fieldType: "text" | "number"; settings: undefined };
-    dateTimeInput: { fieldType: "datetime"; settings: undefined };
+    switch: {
+        fieldType: "boolean";
+        settings: undefined;
+    };
+    checkboxes: {
+        fieldType: "text" | "number";
+        settings: undefined;
+    };
+    dateTimeInput: {
+        fieldType: "datetime";
+        settings: undefined;
+    };
     dateTimeInputs: {
         fieldType: "datetime";
-        settings: { multiValue?: { addValueButtonLabel?: string } };
-    };
-    dynamicZone: { fieldType: "dynamicZone"; settings: { open?: boolean } };
-    hidden: { fieldType: string; settings: undefined };
-    lexicalEditor: { fieldType: "rich-text"; settings: undefined };
-    lexicalEditors: {
-        fieldType: "rich-text";
-        settings: { multiValue?: { addValueButtonLabel?: string } };
-    };
-    textarea: { fieldType: "long-text"; settings: undefined };
-    textareas: {
-        fieldType: "long-text";
-        settings: { multiValue?: { addValueButtonLabel?: string } };
-    };
-    numberInput: { fieldType: "number"; settings: undefined };
-    numberInputs: {
-        fieldType: "number";
-        settings: { multiValue?: { addValueButtonLabel?: string } };
-    };
-    objectAccordionSingle: { fieldType: "object"; settings: { open?: boolean } };
-    objectAccordionMultiple: {
-        fieldType: "object";
-        settings: {
-            open?: boolean;
-            multiValue?: { addValueButtonLabel?: string };
+        settings?: {
+            multiValue?: {
+                addValueButtonLabel?: string;
+            };
         };
     };
-    passthrough: { fieldType: string; settings: undefined };
-    radioButtons: { fieldType: "text" | "number"; settings: undefined };
-    refDialogSingle: { fieldType: "ref"; settings: undefined };
+    dynamicZone: {
+        fieldType: "dynamicZone";
+        settings?: {
+            open?: boolean;
+        };
+    };
+    hidden: {
+        fieldType: string;
+        settings: undefined;
+    };
+    lexicalEditor: {
+        fieldType: "rich-text";
+        settings: undefined;
+    };
+    lexicalEditors: {
+        fieldType: "rich-text";
+        settings?: {
+            multiValue?: {
+                addValueButtonLabel?: string;
+            };
+        };
+    };
+    textarea: {
+        fieldType: "long-text";
+        settings: undefined;
+    };
+    textareas: {
+        fieldType: "long-text";
+        settings: {
+            multiValue?: {
+                addValueButtonLabel?: string;
+            };
+        };
+    };
+    numberInput: {
+        fieldType: "number";
+        settings: undefined;
+    };
+    numberInputs: {
+        fieldType: "number";
+        settings?: {
+            multiValue?: {
+                addValueButtonLabel?: string;
+            };
+        };
+    };
+    objectAccordionSingle: {
+        fieldType: "object";
+        settings?: {
+            open?: boolean;
+        };
+    };
+    objectAccordionMultiple: {
+        fieldType: "object";
+        settings?: {
+            open?: boolean;
+            multiValue?: {
+                addValueButtonLabel?: string;
+            };
+        };
+    };
+    passthrough: {
+        fieldType: string;
+        settings: undefined;
+    };
+    radioButtons: {
+        fieldType: "text" | "number";
+        settings: undefined;
+    };
+    refDialogSingle: {
+        fieldType: "ref";
+        settings: undefined;
+    };
     refDialogMultiple: {
         fieldType: "ref";
-        settings: { newItemPosition?: "first" | "last" };
+        settings?: {
+            newItemPosition?: "first" | "last";
+        };
     };
-    refAutocompleteSingle: { fieldType: "ref"; settings: undefined };
-    refAutocompleteMultiple: { fieldType: "ref"; settings: undefined };
-    refCheckboxes: { fieldType: "ref"; settings: undefined };
-    refRadioButtons: { fieldType: "ref"; settings: undefined };
-    dropdown: { fieldType: "text" | "number"; settings: undefined };
-    tags: { fieldType: "text"; settings: undefined };
-    textInput: { fieldType: "text"; settings: undefined };
+    refAutocompleteSingle: {
+        fieldType: "ref";
+        settings: undefined;
+    };
+    refAutocompleteMultiple: {
+        fieldType: "ref";
+        settings: undefined;
+    };
+    refCheckboxes: {
+        fieldType: "ref";
+        settings: undefined;
+    };
+    refRadioButtons: {
+        fieldType: "ref";
+        settings: undefined;
+    };
+    dropdown: {
+        fieldType: "text" | "number";
+        settings: undefined;
+    };
+    tags: {
+        fieldType: "text";
+        settings: undefined;
+    };
+    textInput: {
+        fieldType: "text";
+        settings: undefined;
+    };
     textInputs: {
         fieldType: "text";
-        settings: { multiValue?: { addValueButtonLabel?: string } };
+        settings?: {
+            multiValue?: {
+                addValueButtonLabel?: string;
+            };
+        };
     };
-    textSeparator: { fieldType: "separator"; settings: undefined };
+    textSeparator: {
+        fieldType: "separator";
+        settings: undefined;
+    };
+    file: {
+        fieldType: "file";
+        settings?: {
+            imagesOnly?: boolean;
+        };
+    };
+    files: {
+        fieldType: "file";
+        settings?: {
+            imagesOnly?: boolean;
+        };
+    };
 }
 
 /**
@@ -109,7 +209,9 @@ const rendererNameMap: Record<keyof FieldRendererRegistry, string> = {
     tags: "tags",
     textInput: "text-input",
     textInputs: "text-inputs",
-    textSeparator: "text-separator"
+    textSeparator: "text-separator",
+    file: "file-input",
+    files: "file-inputs"
 };
 
 /**
@@ -133,7 +235,7 @@ export type FieldRendererName<TType extends string = string> = string extends TT
           string;
 
 export type FieldRendererSettings<TName extends string> = TName extends keyof FieldRendererRegistry
-    ? FieldRendererRegistry[TName]["settings"] | undefined
+    ? FieldRendererRegistry[TName]["settings"]
     : Record<string, any> | undefined;
 
 /**
@@ -266,9 +368,11 @@ export class FieldBuilder<TType extends string = string> {
 
     renderer<TName extends FieldRendererName<TType>>(
         name: TName,
-        ...args: FieldRendererSettings<TName> extends undefined
-            ? []
-            : [settings: FieldRendererSettings<TName>]
+        ...args: undefined extends FieldRendererSettings<TName>
+            ? [settings?: FieldRendererSettings<TName>]
+            : FieldRendererSettings<TName> extends undefined
+              ? []
+              : [settings: FieldRendererSettings<TName>]
     ): this {
         this.config.renderer = {
             name: resolveRendererName(name),
