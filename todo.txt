@@ -5,7 +5,7 @@ MH
   - depth
 - dyn-zones
 - `tenant: process.env.WEBINY_API_TENANT || "root" - OPTIONAL HERE?
--
+- search?
 
 NTH
 - include, exclude, includeType
