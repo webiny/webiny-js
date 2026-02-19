@@ -1,7 +1,3 @@
-/**
- * @pavel Please review types for security permissions
- * TODO @ts-refactor
- */
 import React, { useCallback, useMemo } from "react";
 import ContentModelGroupPermission from "./components/ContentModelGroupPermission.js";
 import { i18n } from "@webiny/app/i18n/index.js";
@@ -10,13 +6,14 @@ import {
     PermissionInfo,
     gridWithPaddingClass,
     SimpleLink,
-    AaclPermission
+    usePermissionValue,
+    useAuthentication
 } from "@webiny/app-admin";
+import type { AaclPermission } from "@webiny/app-admin";
 import { Form } from "@webiny/form";
 import { ContentModelPermission } from "./components/ContentModelPermission.js";
 import { ContentEntryPermission } from "./components/ContentEntryPermission.js";
 import type { CmsSecurityPermission } from "~/types.js";
-import { useSecurity } from "@webiny/app-admin";
 import { CheckboxGroup, Grid, Select } from "@webiny/admin-ui";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
@@ -36,17 +33,13 @@ const API_ENDPOINTS = [
 const GRAPHQL_API_TYPES_LINK =
     "https://www.webiny.com/docs/key-topics/webiny-applications/headless-cms/graphql-api/#graphql-api-types";
 
-export interface CMSPermissionsProps {
-    value: CmsSecurityPermission[];
-    onChange: (value: CmsSecurityPermission[]) => void;
-}
-
-export const CMSPermissions = ({ value, onChange }: CMSPermissionsProps) => {
-    const { getPermission } = useSecurity();
+export const CMSPermissions = () => {
+    const { value, onChange } = usePermissionValue();
+    const { identity } = useAuthentication();
 
     // We disable form elements for custom permissions if AACL cannot be used.
     const cannotUseAAcl = useMemo(() => {
-        return !getPermission<AaclPermission>("aacl", true);
+        return !identity.getPermission<AaclPermission>("aacl", true);
     }, []);
 
     const canRead = useCallback((value: any[], permissionName: string) => {

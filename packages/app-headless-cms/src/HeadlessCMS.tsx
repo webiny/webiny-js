@@ -10,6 +10,7 @@ import allPlugins from "~/allPlugins.js";
 import { LexicalEditorCmsPlugin } from "~/admin/components/LexicalCmsEditor/LexicalEditorCmsPlugin.js";
 import { SingletonContentEntryModule } from "~/admin/views/contentEntries/SingletonContentEntryModule.js";
 import { RoutesConfig } from "./admin/RoutesConfig.js";
+import { CmsSecurityPermission } from "~/admin/plugins/permissionRenderer/index.js";
 
 interface HeadlessCMSProvider {
     children: React.ReactNode;
@@ -69,6 +70,7 @@ const HeadlessCMSExtension = ({ createApolloClient }: HeadlessCMSProps) => {
             <SingletonContentEntryModule />
             <Provider hoc={createHeadlessCMSProvider(createApolloClient)} />
             <LexicalEditorCmsPlugin />
+            <CmsSecurityPermission />
         </Fragment>
     );
 };

@@ -1,28 +1,18 @@
 import React from "react";
-import { Accordion } from "@webiny/admin-ui";
-import type { AdminAppPermissionRendererPlugin } from "@webiny/app-admin/types.js";
+import { AdminConfig } from "@webiny/app-admin";
 import { ReactComponent as PermissionsIcon } from "@webiny/icons/devices_other.svg";
 import { CMSPermissions } from "./CmsPermissions.js";
 
-const plugin: AdminAppPermissionRendererPlugin = {
-    type: "admin-app-permissions-renderer",
-    name: "admin-app-permissions-renderer-cms",
-    render(props) {
-        return (
-            <Accordion.Item
-                icon={
-                    <Accordion.Item.Icon
-                        icon={<PermissionsIcon />}
-                        label={"Headless CMS Permissions"}
-                    />
-                }
-                title={"Headless CMS"}
-                description={"Manage Headless CMS app access permissions."}
-                data-testid={"permission.cms"}
-            >
-                <CMSPermissions {...props} />
-            </Accordion.Item>
-        );
-    }
-};
-export default plugin;
+const { Security } = AdminConfig;
+
+export const CmsSecurityPermission = () => (
+    <AdminConfig>
+        <Security.Permissions
+            name="cms"
+            title="Headless CMS"
+            description="Manage Headless CMS app access permissions."
+            icon={<PermissionsIcon />}
+            element={<CMSPermissions />}
+        />
+    </AdminConfig>
+);
