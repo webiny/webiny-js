@@ -8,13 +8,13 @@ const t = i18n.ns("app-headless-cms/admin/fields/text");
 export const createSeparatorFieldRenderer = (): CmsModelFieldRendererPlugin => {
     return {
         type: "cms-editor-field-renderer",
-        name: "cms-editor-field-renderer-separator",
+        name: "cms-editor-field-renderer-ui-separator",
         renderer: {
             rendererName: "uiSeparator",
             name: t`Separator`,
             description: t`Renders a separator field.`,
             canUse({ field }) {
-                return field.type === "ui";
+                return field.type === "ui:separator";
             },
             render({ field }) {
                 return (

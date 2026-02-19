@@ -19,7 +19,7 @@ export const uiSeparatorField: CmsModelFieldTypePlugin = {
         allowPredefinedValues: false,
         createField() {
             return {
-                type: this.type,
+                type: "ui:separator",
                 renderer: {
                     name: "uiSeparator"
                 }

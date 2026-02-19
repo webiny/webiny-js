@@ -405,6 +405,10 @@ export const FieldEditorProvider = ({
         [fields.map(f => f.fieldId).join(".")]
     );
 
+    console.log({
+        fieldEditorContext: fields
+    });
+
     const value: FieldEditorContext = {
         parent,
         depth,
