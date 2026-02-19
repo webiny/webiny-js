@@ -7,13 +7,13 @@
  *
  */
 import { useEffect } from "react";
-import { mergeRegister } from "@lexical/utils";
 import type { LexicalEditor } from "lexical";
 import {
     $createRangeSelection,
     $getSelection,
     $isNodeSelection,
     $setSelection,
+    mergeRegister,
     COMMAND_PRIORITY_EDITOR,
     COMMAND_PRIORITY_HIGH,
     COMMAND_PRIORITY_LOW,

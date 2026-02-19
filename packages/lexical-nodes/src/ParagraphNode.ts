@@ -10,10 +10,9 @@ import type {
     DOMExportOutput,
     RangeSelection
 } from "lexical";
-import { ParagraphNode as BaseParagraphNode } from "lexical";
+import { ParagraphNode as BaseParagraphNode, addClassNamesToElement } from "lexical";
 import type { EditorConfig } from "lexical";
 import { Theme } from "@webiny/lexical-theme";
-import { addClassNamesToElement } from "@lexical/utils";
 import type { TypographyStylesNode, ThemeStyleValue } from "~/types.js";
 import { getStyleId } from "./utils/getStyleId.js";
 

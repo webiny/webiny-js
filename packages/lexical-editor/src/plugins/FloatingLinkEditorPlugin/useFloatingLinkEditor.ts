@@ -5,9 +5,9 @@ import {
     type LexicalEditor,
     COMMAND_PRIORITY_LOW,
     $getSelection,
-    $isRangeSelection
+    $isRangeSelection,
+    mergeRegister
 } from "lexical";
-import { mergeRegister } from "@lexical/utils";
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@webiny/lexical-nodes";
 import { getSelectedNode } from "~/utils/getSelectedNode.js";
 import { setFloatingElemPosition } from "~/utils/setFloatingElemPosition.js";

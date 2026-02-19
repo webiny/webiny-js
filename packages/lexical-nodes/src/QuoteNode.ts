@@ -8,9 +8,8 @@ import type {
     NodeKey,
     Spread
 } from "lexical";
-import { $applyNodeReplacement } from "lexical";
+import { $applyNodeReplacement, addClassNamesToElement } from "lexical";
 import { Theme } from "@webiny/lexical-theme";
-import { addClassNamesToElement } from "@lexical/utils";
 import type { SerializedQuoteNode as BaseSerializedQuoteNode } from "@lexical/rich-text";
 import { QuoteNode as BaseQuoteNode } from "@lexical/rich-text";
 import type { ThemeStyleValue, TypographyStylesNode } from "~/types.js";

@@ -9,10 +9,10 @@ import * as React from "react";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 
 import type { LexicalEditor, NodeKey, BaseSelection } from "lexical";
+import { mergeRegister } from "lexical";
 
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
-import { mergeRegister } from "@lexical/utils";
 import {
     $getNodeByKey,
     $getSelection,
@@ -221,7 +221,7 @@ export default function ImageComponent({
                         maxWidth={maxWidth}
                     />
                 </div>
-                {resizable && $isNodeSelection(selection) && isFocused && (
+                {resizable && $isNodeSelection(selection) && isFocused ? (
                     <ImageResizer
                         editor={editor}
                         imageRef={imageRef}
@@ -229,7 +229,7 @@ export default function ImageComponent({
                         onResizeStart={onResizeStart}
                         onResizeEnd={onResizeEnd}
                     />
-                )}
+                ) : null}
             </>
         </Suspense>
     );

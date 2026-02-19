@@ -11,9 +11,10 @@ import {
     BLUR_COMMAND,
     COMMAND_PRIORITY_CRITICAL,
     COMMAND_PRIORITY_LOW,
-    SELECTION_CHANGE_COMMAND
+    SELECTION_CHANGE_COMMAND,
+    mergeRegister,
+    $findMatchingParent
 } from "lexical";
-import { $findMatchingParent, mergeRegister } from "@lexical/utils";
 import { FloatingLinkEditor } from "./FloatingLinkEditor.js";
 import { LinkFormProps } from "./types.js";
 

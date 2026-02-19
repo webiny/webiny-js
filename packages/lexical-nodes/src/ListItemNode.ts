@@ -10,10 +10,15 @@ import type {
     SerializedElementNode,
     Spread
 } from "lexical";
-import { $isElementNode, $isRangeSelection, ElementNode } from "lexical";
+import {
+    $isElementNode,
+    $isRangeSelection,
+    ElementNode,
+    addClassNamesToElement,
+    removeClassNamesFromElement
+} from "lexical";
 import type { ListNode } from "~/ListNode.js";
 import { $createListNode, $isListNode } from "~/ListNode.js";
-import { addClassNamesToElement, removeClassNamesFromElement } from "@lexical/utils";
 import {
     $handleIndent,
     $handleOutdent,

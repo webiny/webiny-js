@@ -8,8 +8,7 @@ import type {
     DOMExportOutput,
     DOMConversionMap
 } from "lexical";
-import { $applyNodeReplacement, setNodeIndentFromDOM } from "lexical";
-import { addClassNamesToElement } from "@lexical/utils";
+import { $applyNodeReplacement, setNodeIndentFromDOM, addClassNamesToElement } from "lexical";
 import type {
     HeadingTagType,
     SerializedHeadingNode as BaseSerializedHeadingNode
