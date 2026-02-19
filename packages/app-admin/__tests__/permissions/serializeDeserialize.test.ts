@@ -35,6 +35,14 @@ const wbSchema = createPermissionSchema({
 });
 
 /**
+ * Record Locking schema — fullAccess with extra properties, no entities.
+ */
+const rlSchema = createPermissionSchema({
+    prefix: "recordLocking",
+    fullAccess: { name: "recordLocking", canForceUnlock: "yes" }
+});
+
+/**
  * CMS schema — entities with dependencies and PW.
  */
 const cmsSchema = createPermissionSchema({
@@ -611,5 +619,60 @@ describe("custom boolean actions", () => {
         expect(perm).toBeDefined();
         expect(perm!.install).toBeUndefined();
         expect(perm!.disable).toBeUndefined();
+    });
+});
+
+describe("fullAccess with extra properties", () => {
+    it("should serialize full access with all fullAccess properties", () => {
+        const result = serializePermissions(rlSchema, { accessLevel: "full" }, []);
+        expect(result).toEqual([{ name: "recordLocking", canForceUnlock: "yes" }]);
+    });
+
+    it("should serialize full access preserving other permissions", () => {
+        const existing: Permission[] = [{ name: "pb.*" }];
+        const result = serializePermissions(rlSchema, { accessLevel: "full" }, existing);
+        expect(result).toEqual([
+            { name: "pb.*" },
+            { name: "recordLocking", canForceUnlock: "yes" }
+        ]);
+    });
+
+    it("should deserialize full access when matching permission exists", () => {
+        const result = deserializePermissions(rlSchema, [
+            { name: "recordLocking", canForceUnlock: "yes" }
+        ]);
+        expect(result).toEqual({ accessLevel: "full" });
+    });
+
+    it("should deserialize full access for wildcard", () => {
+        const result = deserializePermissions(rlSchema, [{ name: "*" }]);
+        expect(result).toEqual({ accessLevel: "full" });
+    });
+
+    it("should return no access when no matching permissions exist", () => {
+        const result = deserializePermissions(rlSchema, [{ name: "pb.*" }]);
+        expect(result).toEqual({ accessLevel: "no" });
+    });
+
+    it("should emit nothing for no access", () => {
+        const result = serializePermissions(rlSchema, { accessLevel: "no" }, []);
+        expect(result).toEqual([]);
+    });
+
+    it("should strip existing permissions and rebuild on full access", () => {
+        const existing: Permission[] = [
+            { name: "pb.*" },
+            { name: "recordLocking", canForceUnlock: "yes" }
+        ];
+        const result = serializePermissions(rlSchema, { accessLevel: "no" }, existing);
+        expect(result).toEqual([{ name: "pb.*" }]);
+    });
+
+    it("should roundtrip full access with extra properties", () => {
+        const original = { accessLevel: "full" };
+        const permissions = serializePermissions(rlSchema, original, []);
+        expect(permissions).toEqual([{ name: "recordLocking", canForceUnlock: "yes" }]);
+        const result = deserializePermissions(rlSchema, permissions);
+        expect(result).toEqual({ accessLevel: "full" });
     });
 });

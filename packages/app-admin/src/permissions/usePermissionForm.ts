@@ -85,7 +85,7 @@ function serializePermissions(
     }
 
     if (formData.accessLevel === "full") {
-        return [...filtered, { name: schema.fullAccess.name }];
+        return [...filtered, { ...schema.fullAccess }];
     }
 
     const entities = schema.entities || [];

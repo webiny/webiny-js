@@ -54,8 +54,8 @@ export interface EntityDefinition {
 export interface PermissionSchemaConfig {
     /** Permission prefix — used to filter permissions from the array */
     prefix: string;
-    /** Permission object emitted on "full access" */
-    fullAccess: { name: string };
+    /** Permission object emitted on "full access". All properties are spread onto the permission. */
+    fullAccess: { name: string; [key: string]: any };
     /** Entity definitions (optional — simple apps have none) */
     entities?: EntityDefinition[];
 }
@@ -65,7 +65,8 @@ export interface PermissionSchemaConfig {
  */
 export interface PermissionSchema {
     prefix: string;
-    fullAccess: { name: string };
+    /** Permission object emitted on "full access". All properties are spread onto the permission. */
+    fullAccess: { name: string; [key: string]: any };
     entities?: EntityDefinition[];
 }
 
