@@ -160,10 +160,6 @@ export interface FieldRendererRegistry {
             };
         };
     };
-    textSeparator: {
-        fieldType: "separator";
-        settings: undefined;
-    };
     file: {
         fieldType: "file";
         settings?: {
@@ -175,6 +171,10 @@ export interface FieldRendererRegistry {
         settings?: {
             imagesOnly?: boolean;
         };
+    };
+    uiSeparator: {
+        fieldType: "ui";
+        settings: undefined;
     };
 }
 
@@ -209,9 +209,9 @@ const rendererNameMap: Record<keyof FieldRendererRegistry, string> = {
     tags: "tags",
     textInput: "text-input",
     textInputs: "text-inputs",
-    textSeparator: "text-separator",
     file: "file-input",
-    files: "file-inputs"
+    files: "file-inputs",
+    uiSeparator: "uiSeparator"
 };
 
 /**

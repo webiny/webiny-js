@@ -7,10 +7,11 @@ import { createDateTimeField } from "./datetime.js";
 import { createRichTextField } from "./richText.js";
 import { createFileField } from "./file.js";
 import { createObjectField } from "./object.js";
-import { createDynamicZoneField } from "~/graphqlFields/dynamicZone/index.js";
+import { createDynamicZoneField } from "./dynamicZone/index.js";
 import type { CmsModelFieldToGraphQLPlugin } from "~/types/index.js";
-import { createJsonField } from "~/graphqlFields/json.js";
-import { createSearchableJsonField } from "~/graphqlFields/searchableJson.js";
+import { createJsonField } from "./json.js";
+import { createSearchableJsonField } from "./searchableJson.js";
+import { createUiField } from "./ui.js";
 
 export const createGraphQLFields = (): CmsModelFieldToGraphQLPlugin<any>[] => [
     createTextField(),
@@ -24,5 +25,6 @@ export const createGraphQLFields = (): CmsModelFieldToGraphQLPlugin<any>[] => [
     createSearchableJsonField(),
     createFileField(),
     createObjectField(),
-    createDynamicZoneField()
+    createDynamicZoneField(),
+    createUiField()
 ];
