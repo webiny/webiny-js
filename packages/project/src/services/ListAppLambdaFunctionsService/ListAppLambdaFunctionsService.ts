@@ -6,7 +6,7 @@ import {
 } from "~/abstractions/index.js";
 import { type AppModel } from "~/models/index.js";
 import path from "path";
-import minimatch from "minimatch";
+import { minimatch } from "minimatch";
 
 interface ExpectedStackExport {
     deployment: {

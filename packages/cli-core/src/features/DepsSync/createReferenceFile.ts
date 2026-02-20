@@ -1,4 +1,4 @@
-import writeJsonFile from "write-json-file";
+import { writeJsonFileSync } from "write-json-file";
 import { IProjectModel } from "@webiny/project";
 import { UiService } from "~/abstractions/services/index.js";
 import { getDuplicatesFilePath, getReferencesFilePath } from "./paths.js";
@@ -31,13 +31,13 @@ export const createReferenceFile = (
     };
 
     ui.info(`Creating %s...`, refsFilePath);
-    writeJsonFile.sync(refsFilePath, json, {
+    writeJsonFileSync(refsFilePath, json, {
         indent: 0
     });
 
     ui.info(`Creating %s...`, dupesFilePath);
 
-    writeJsonFile.sync(dupesFilePath, tree.duplicates, {
+    writeJsonFileSync(dupesFilePath, tree.duplicates, {
         indent: 0
     });
 };

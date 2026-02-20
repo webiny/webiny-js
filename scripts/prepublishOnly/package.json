@@ -11,8 +11,8 @@
     "find-up": "^5.0.0",
     "fs-extra": "^11.3.3",
     "get-yarn-workspaces": "1.0.2",
-    "load-json-file": "^6.2.0",
-    "write-json-file": "^4.3.0"
+    "load-json-file": "^7.0.1",
+    "write-json-file": "^7.0.0"
   },
   "devDependencies": {
     "type-fest": "^5.4.4"

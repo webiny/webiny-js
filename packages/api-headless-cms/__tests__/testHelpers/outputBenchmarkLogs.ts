@@ -1,5 +1,5 @@
 import pathPackage from "path";
-import writeJson from "write-json-file";
+import { writeJsonFileSync } from "write-json-file";
 import { ContextPlugin } from "@webiny/handler";
 
 /**
@@ -18,7 +18,7 @@ export const createOutputBenchmarkLogs = () => {
                     "../logs",
                     `${new Date().toISOString()}.json`
                 );
-                writeJson.sync(
+                writeJsonFileSync(
                     target,
                     {
                         elapsed: benchmark.elapsed,

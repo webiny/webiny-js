@@ -3,7 +3,7 @@ import { dirname, join, relative, resolve } from "path";
 import { getPackage, getPackages, PROJECT_ROOT, rootPackageJson } from "./utils/getPackages.js";
 import chalk from "chalk";
 import yargs from "yargs";
-import minimatch from "minimatch";
+import { minimatch } from "minimatch";
 
 const { cyan, gray, green, red, yellow } = chalk;
 const { _: packagesToCheck } = yargs().argv;

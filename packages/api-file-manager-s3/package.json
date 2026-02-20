@@ -23,7 +23,7 @@
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/validation": "0.0.0",
-    "exifreader": "^4.36.1",
+    "exifreader": "^4.36.2",
     "mime": "^3.0.0",
     "object-hash": "^3.0.0",
     "p-map": "^7.0.4",

@@ -9,7 +9,7 @@
   "author": "Webiny Ltd.",
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
-    "@aws-amplify/auth": "^5.6.17",
+    "@aws-amplify/auth": "^5.6.18",
     "@webiny/admin-ui": "*",
     "@webiny/api-core": "*",
     "@webiny/app": "*",

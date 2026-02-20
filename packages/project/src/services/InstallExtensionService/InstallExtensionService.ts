@@ -2,12 +2,12 @@ import os from "os";
 import path from "path";
 import fs from "fs";
 import fsAsync from "fs/promises";
-import loadJsonFile from "load-json-file";
+import { loadJsonFileSync } from "load-json-file";
 import { createImplementation } from "@webiny/di";
 import {
-    InstallExtensionService,
+    GetProjectService,
     GetProjectVersionService,
-    GetProjectService
+    InstallExtensionService
 } from "~/abstractions/index.js";
 import { downloadFolderFromS3 } from "./downloadFolderFromS3.js";
 import { mergePackageJson } from "./mergePackageJson.js";
@@ -119,7 +119,7 @@ class DefaultInstallExtensionService implements InstallExtensionService.Interfac
         // Read and parse extension.json.
         const extensionJsonExists = fs.existsSync(extensionJsonPath);
         const extensionJson: ExtensionJson = extensionJsonExists
-            ? await loadJsonFile(extensionJsonPath)
+            ? loadJsonFileSync(extensionJsonPath)
             : { name: "unknown", type: "admin" };
 
         // Ensure the extensions root folder exists.
