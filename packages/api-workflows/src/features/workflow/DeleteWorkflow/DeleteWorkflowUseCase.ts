@@ -7,7 +7,6 @@ import { WorkflowAfterDeleteEvent, WorkflowBeforeDeleteEvent } from "./events.js
 import { WorkflowNotAuthorizedError, WorkflowNotFoundError } from "~/domain/workflow/errors.js";
 import { WORKFLOWS_PERMISSION } from "~/constants.js";
 import type { IWorkflowsSecurityPermission } from "~/types.js";
-import { WorkflowsSecurityPermissionAccessLevel } from "~/types.js";
 
 class DeleteWorkflowUseCaseImpl implements UseCase.Interface {
     constructor(

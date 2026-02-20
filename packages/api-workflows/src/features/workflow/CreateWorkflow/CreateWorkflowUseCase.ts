@@ -6,7 +6,6 @@ import { WorkflowAfterCreateEvent, WorkflowBeforeCreateEvent } from "./events.js
 import { WorkflowNotAuthorizedError } from "~/domain/workflow/errors.js";
 import { WORKFLOWS_PERMISSION } from "~/constants.js";
 import type { IWorkflowsSecurityPermission } from "~/types.js";
-import { WorkflowsSecurityPermissionAccessLevel } from "~/types.js";
 
 class CreateWorkflowUseCaseImpl implements UseCase.Interface {
     constructor(
