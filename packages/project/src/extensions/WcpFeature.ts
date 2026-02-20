@@ -243,8 +243,7 @@ const WcpFeatureAdmin = defineExtension({
         const fileName = `${className}.ts`;
         const filePath = path.join(buildParamsDir, fileName);
 
-        if (!fs.existsSync(filePath)) {
-            const fileContent = `import { BuildParam } from "webiny/admin/buildParams";
+        const fileContent = `import { BuildParam } from "webiny/admin/buildParams";
 
 class ${className} implements BuildParam.Interface {
     key = "${paramName}";
@@ -256,8 +255,7 @@ export default BuildParam.createImplementation({
     dependencies: []
 });
 `;
-            fs.writeFileSync(filePath, fileContent, "utf8");
-        }
+        fs.writeFileSync(filePath, fileContent, "utf8");
 
         await generateAdminBuildParamsFeature(buildParamsDir, ctx);
     }
@@ -289,8 +287,7 @@ const WcpFeatureApi = defineExtension({
         const fileName = `${className}.ts`;
         const filePath = path.join(buildParamsDir, fileName);
 
-        if (!fs.existsSync(filePath)) {
-            const fileContent = `import { BuildParam } from "webiny/api/buildParams";
+        const fileContent = `import { BuildParam } from "webiny/api/buildParams";
 
 class ${className} implements BuildParam.Interface {
     key = "${paramName}";
@@ -302,8 +299,7 @@ export default BuildParam.createImplementation({
     dependencies: []
 });
 `;
-            fs.writeFileSync(filePath, fileContent, "utf8");
-        }
+        fs.writeFileSync(filePath, fileContent, "utf8");
 
         await updateApiExtensions(extensionsTsFilePath, className, filePath);
     }
@@ -331,8 +327,9 @@ function WcpFeatureComponent({ name, enabled }: WcpFeatureProps) {
 
 export const WcpFeature = WcpFeatureComponent;
 
-export const WcpFeatureAdminDef = WcpFeatureAdmin.def;
-export const WcpFeatureApiDef = WcpFeatureApi.def;
+// Export extension objects for definitions registration.
+export { WcpFeatureAdmin };
+export { WcpFeatureApi };
 
 export const Wcp = {
     Feature: WcpFeatureComponent

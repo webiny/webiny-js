@@ -5,7 +5,7 @@ import { ProjectId } from "./ProjectId.js";
 import { Telemetry } from "./Telemetry.js";
 import { EnvVar } from "./EnvVar.js";
 import { DatabaseSetup } from "./DatabaseSetup.js";
-import { WcpFeatureAdminDef, WcpFeatureApiDef } from "./WcpFeature.js";
+import { WcpFeatureAdmin, WcpFeatureApi } from "./WcpFeature.js";
 
 // Hooks.
 import {
@@ -50,8 +50,8 @@ export { ProjectImplementation };
 export { ExtensionDefinitions };
 export { EnvVar };
 export { DatabaseSetup };
-export { WcpFeatureAdminDef };
-export { WcpFeatureApiDef };
+export { WcpFeatureAdmin };
+export { WcpFeatureApi };
 
 // Hooks.
 export { BeforeBuild };
@@ -126,8 +126,8 @@ export const definitions = [
     DatabaseSetup.def,
 
     // Wcp feature overrides.
-    WcpFeatureAdminDef,
-    WcpFeatureApiDef
+    WcpFeatureAdmin.def,
+    WcpFeatureApi.def
 ];
 
 export { Project } from "./Project.js";

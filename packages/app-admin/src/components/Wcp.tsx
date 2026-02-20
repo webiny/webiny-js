@@ -1,16 +1,21 @@
 import React from "react";
 import { useWcp } from "~/presentation/wcp/useWcp.js";
-import { useFeature } from "@webiny/app";
-import { BuildParamsFeature } from "~/features/buildParams/feature.js";
+import { useContainer } from "@webiny/app";
+import { BuildParams } from "~/features/buildParams/abstractions.js";
 
 interface ChildrenProps {
     children: React.ReactNode;
 }
 
 function useWcpFeatureEnabled(featureName: string): boolean {
-    const buildParams = useFeature(BuildParamsFeature);
-    const value = buildParams.get<boolean>(`wcp.feature.${featureName}`);
-    return value !== false;
+    const container = useContainer();
+    try {
+        const buildParams = container.resolve(BuildParams);
+        const value = buildParams.get<boolean>(`wcp.feature.${featureName}`);
+        return value !== false;
+    } catch {
+        return true;
+    }
 }
 
 function CanUseTeams({ children }: ChildrenProps) {
