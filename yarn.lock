@@ -13979,14 +13979,12 @@ __metadata:
     "@emotion/react": "npm:11.10.8"
     "@emotion/styled": "npm:11.10.6"
     "@types/react": "npm:18.2.79"
-    "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/common-audit-logs": "npm:0.0.0"
     "@webiny/form": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
-    "@webiny/plugins": "npm:0.0.0"
     "@webiny/react-composition": "npm:0.0.0"
     "@webiny/react-properties": "npm:0.0.0"
     "@webiny/ui": "npm:0.0.0"
@@ -14296,9 +14294,7 @@ __metadata:
     "@webiny/app-websockets": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
-    "@webiny/form": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
-    "@webiny/plugins": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     apollo-client: "npm:^2.6.10"
     apollo-link: "npm:^1.2.14"
@@ -14324,7 +14320,6 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/form": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
-    "@webiny/plugins": "npm:0.0.0"
     "@webiny/ui": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
     graphql-tag: "npm:^2.12.6"
@@ -14479,7 +14474,6 @@ __metadata:
     "@webiny/lexical-editor": "npm:0.0.0"
     "@webiny/lexical-nodes": "npm:0.0.0"
     "@webiny/lexical-theme": "npm:0.0.0"
-    "@webiny/plugins": "npm:0.0.0"
     "@webiny/react-composition": "npm:0.0.0"
     "@webiny/react-properties": "npm:0.0.0"
     "@webiny/ui": "npm:0.0.0"
@@ -14543,7 +14537,6 @@ __metadata:
     "@webiny/error": "npm:0.0.0"
     "@webiny/form": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
-    "@webiny/plugins": "npm:0.0.0"
     "@webiny/ui": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
@@ -14799,7 +14792,6 @@ __metadata:
     "@webiny/form": "npm:*"
     "@webiny/handler-graphql": "npm:*"
     "@webiny/icons": "npm:*"
-    "@webiny/plugins": "npm:*"
     "@webiny/project": "npm:*"
     "@webiny/project-aws": "npm:*"
     "@webiny/project-utils": "npm:*"
@@ -15267,7 +15259,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/plugins@npm:*, @webiny/plugins@npm:0.0.0, @webiny/plugins@workspace:packages/plugins":
+"@webiny/plugins@npm:0.0.0, @webiny/plugins@workspace:packages/plugins":
   version: 0.0.0-use.local
   resolution: "@webiny/plugins@workspace:packages/plugins"
   dependencies:
@@ -15611,10 +15603,8 @@ __metadata:
     "@webiny/app-headless-cms": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
-    "@webiny/form": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
-    "@webiny/plugins": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
     graphql-tag: "npm:^2.12.6"

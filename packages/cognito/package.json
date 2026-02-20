@@ -20,7 +20,6 @@
     "@webiny/form": "*",
     "@webiny/handler-graphql": "*",
     "@webiny/icons": "*",
-    "@webiny/plugins": "*",
     "@webiny/project": "*",
     "@webiny/project-aws": "*",
     "@webiny/ui": "*",

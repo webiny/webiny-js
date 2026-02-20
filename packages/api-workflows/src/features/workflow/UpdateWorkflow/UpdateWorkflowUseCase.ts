@@ -6,7 +6,6 @@ import { WorkflowAfterUpdateEvent, WorkflowBeforeUpdateEvent } from "./events.js
 import { WorkflowNotAuthorizedError } from "~/domain/workflow/errors.js";
 import { WORKFLOWS_PERMISSION } from "~/constants.js";
 import type { IWorkflowsSecurityPermission } from "~/types.js";
-import { WorkflowsSecurityPermissionAccessLevel } from "~/types.js";
 
 class UpdateWorkflowUseCaseImpl implements UseCase.Interface {
     constructor(
@@ -61,7 +60,7 @@ class UpdateWorkflowUseCaseImpl implements UseCase.Interface {
         for (const permission of permissions) {
             if (permission.name === "*") {
                 return Result.ok();
-            } else if (permission.editor === WorkflowsSecurityPermissionAccessLevel.YES) {
+            } else if (permission.editor) {
                 return Result.ok();
             }
         }

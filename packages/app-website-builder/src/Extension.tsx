@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
-import { plugins } from "@webiny/plugins";
 import { AdminConfig, RegisterFeature, useContainer } from "@webiny/app-admin";
 import { HasPermission } from "@webiny/app-admin";
 import { useRouter } from "@webiny/app-admin";
 import { ReactComponent as PagesIcon } from "@webiny/icons/table_chart.svg";
+import { ReactComponent as PermissionsIcon } from "@webiny/icons/table_chart.svg";
 import { PageEditor } from "~/modules/pages/PageEditor.js";
 import { PageList } from "~/modules/pages/PageList.js";
 import { useSettingsDialog } from "~/modules/settings/useSettingsDialog.js";
@@ -15,17 +15,15 @@ import { Routes } from "~/routes.js";
 import { PagesWidget } from "~/modules/widgets/PagesWidget.js";
 import { PageListFeature } from "~/presentation/pages/PageList/feature.js";
 import { Extension as NavigationExtension } from "./presentation/navigation/Extension.js";
-import { permissionRenderer } from "~/plugins/permissionRenderer.js";
 import { NextjsConfigFeature } from "~/presentation/navigation/NextjsConfig/feature.js";
 
-const { Menu, Route, Dashboard } = AdminConfig;
+const { Security, Menu, Route, Dashboard } = AdminConfig;
 
 export const Extension = () => {
     const router = useRouter();
     const container = useContainer();
 
     useEffect(() => {
-        plugins.register(permissionRenderer);
         PageListFeature.register(container);
     }, []);
 
@@ -33,6 +31,16 @@ export const Extension = () => {
         <>
             <RegisterFeature feature={NextjsConfigFeature} />
             <AdminConfig>
+                <Security.Permissions
+                    name="website-builder"
+                    title="Website Builder"
+                    description="Manage Website Builder permissions."
+                    icon={<PermissionsIcon />}
+                    schema={{
+                        prefix: "wb",
+                        fullAccess: { name: "wb.*" }
+                    }}
+                />
                 <HasPermission any={["wb.page", "wb.redirect"]}>
                     <Menu
                         name="wb"

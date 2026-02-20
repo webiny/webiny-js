@@ -1,106 +1,106 @@
-import React, { memo } from "react";
-import { plugins } from "@webiny/plugins";
+import React, { Fragment, memo } from "react";
 import { useRouter, AdminConfig, AdminLayout, Wcp } from "@webiny/app-admin";
 import { HasPermission } from "@webiny/app-admin";
-import { Permission } from "~/plugins/constants.js";
+import { Permission } from "~/constants.js";
 import { Roles } from "~/ui/views/Roles/index.js";
 import { Teams } from "~/ui/views/Teams/index.js";
 import { ApiKeys } from "~/ui/views/ApiKeys/index.js";
 import { Routes } from "~/routes.js";
-import { permissionRendererPlugin } from "~/plugins/permissionRenderer/index.js";
+import { SecurityPermissions } from "./SecurityPermissions.js";
 
 const { Menu, Route } = AdminConfig;
 
 const AccessManagementExtension = () => {
     const router = useRouter();
 
-    plugins.register(permissionRendererPlugin);
-
     return (
-        <AdminConfig>
-            <HasPermission name={Permission.Roles}>
-                <Route
-                    route={Routes.Roles.List}
-                    element={
-                        <AdminLayout title={"Access Management - Roles"}>
-                            <Roles />
-                        </AdminLayout>
-                    }
-                />
-            </HasPermission>
-            <Wcp.CanUseTeams>
-                <HasPermission name={Permission.Teams}>
+        <Fragment>
+            <SecurityPermissions />
+            <AdminConfig>
+                <HasPermission name={Permission.Roles}>
                     <Route
-                        route={Routes.Teams.List}
+                        route={Routes.Roles.List}
                         element={
-                            <AdminLayout title={"Access Management - Teams"}>
-                                <Teams />
+                            <AdminLayout title={"Access Management - Roles"}>
+                                <Roles />
                             </AdminLayout>
                         }
                     />
                 </HasPermission>
-            </Wcp.CanUseTeams>
-            <HasPermission name={Permission.ApiKeys}>
-                <Route
-                    route={Routes.ApiKeys.List}
-                    element={
-                        <AdminLayout title={"Access Management - API Keys"}>
-                            <ApiKeys />
-                        </AdminLayout>
-                    }
-                />
-            </HasPermission>
-
-            <HasPermission any={[Permission.Roles, Permission.ApiKeys, Permission.Teams]}>
-                <Menu
-                    name={"security.settings"}
-                    parent={"settings"}
-                    element={<Menu.Group text={"Access Management"} />}
-                />
-            </HasPermission>
-            <HasPermission name={Permission.Roles}>
-                <Menu
-                    name={"security.roles"}
-                    parent={"settings"}
-                    element={
-                        <Menu.Link
-                            text={"Roles"}
-                            to={router.getLink(Routes.Roles.List)}
-                            pinnable={true}
+                <Wcp.CanUseTeams>
+                    <HasPermission name={Permission.Teams}>
+                        <Route
+                            route={Routes.Teams.List}
+                            element={
+                                <AdminLayout title={"Access Management - Teams"}>
+                                    <Teams />
+                                </AdminLayout>
+                            }
                         />
-                    }
-                />
-            </HasPermission>
-            <Wcp.CanUseTeams>
-                <HasPermission name={Permission.Teams}>
+                    </HasPermission>
+                </Wcp.CanUseTeams>
+                <HasPermission name={Permission.ApiKeys}>
+                    <Route
+                        route={Routes.ApiKeys.List}
+                        element={
+                            <AdminLayout title={"Access Management - API Keys"}>
+                                <ApiKeys />
+                            </AdminLayout>
+                        }
+                    />
+                </HasPermission>
+
+                <HasPermission any={[Permission.Roles, Permission.ApiKeys, Permission.Teams]}>
                     <Menu
-                        name={"security.teams"}
+                        name={"security.settings"}
+                        parent={"settings"}
+                        element={<Menu.Group text={"Access Management"} />}
+                    />
+                </HasPermission>
+                <HasPermission name={Permission.Roles}>
+                    <Menu
+                        name={"security.roles"}
                         parent={"settings"}
                         element={
                             <Menu.Link
-                                text={"Teams"}
-                                to={router.getLink(Routes.Teams.List)}
+                                text={"Roles"}
+                                to={router.getLink(Routes.Roles.List)}
                                 pinnable={true}
                             />
                         }
                     />
                 </HasPermission>
-            </Wcp.CanUseTeams>
-
-            <HasPermission name={Permission.ApiKeys}>
-                <Menu
-                    name={"security.apiKeys"}
-                    parent={"settings"}
-                    element={
-                        <Menu.Link
-                            text={"API Keys"}
-                            to={router.getLink(Routes.ApiKeys.List)}
-                            pinnable={true}
+                <Wcp.CanUseTeams>
+                    <HasPermission name={Permission.Teams}>
+                        <Menu
+                            name={"security.teams"}
+                            parent={"settings"}
+                            element={
+                                <Menu.Link
+                                    text={"Teams"}
+                                    to={router.getLink(Routes.Teams.List)}
+                                    pinnable={true}
+                                />
+                            }
                         />
-                    }
-                />
-            </HasPermission>
-        </AdminConfig>
+                    </HasPermission>
+                </Wcp.CanUseTeams>
+
+                <HasPermission name={Permission.ApiKeys}>
+                    <Menu
+                        name={"security.apiKeys"}
+                        parent={"settings"}
+                        element={
+                            <Menu.Link
+                                text={"API Keys"}
+                                to={router.getLink(Routes.ApiKeys.List)}
+                                pinnable={true}
+                            />
+                        }
+                    />
+                </HasPermission>
+            </AdminConfig>
+        </Fragment>
     );
 };
 

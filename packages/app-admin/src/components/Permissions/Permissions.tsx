@@ -1,51 +1,65 @@
 import React, { useMemo } from "react";
-import type { AdminAppPermissionRendererPlugin } from "~/types.js";
-import { Accordion } from "@webiny/ui/Accordion/index.js";
-import { plugins } from "@webiny/plugins";
+import { Accordion } from "@webiny/admin-ui";
 import type { BindComponentRenderProp } from "@webiny/form";
-import type { PermissionRendererPlugin } from "~/plugins/PermissionRendererPlugin.js";
+import { useAdminConfig } from "~/config/AdminConfig.js";
+import type { PermissionRendererConfig } from "~/permissions/types.js";
+import { PermissionValueProvider } from "~/permissions/PermissionValueContext.js";
+import { PermissionRenderer } from "~/permissions/PermissionRenderer.js";
+
+const byTitle = (a: PermissionRendererConfig, b: PermissionRendererConfig) => {
+    return a.title.localeCompare(b.title);
+};
 
 interface PermissionsProps extends BindComponentRenderProp {
     id: string;
-    plugins?: PermissionRendererPlugin[];
 }
 
-interface PermissionPlugins {
-    systemPlugins: (AdminAppPermissionRendererPlugin | PermissionRendererPlugin)[];
-    permissionPlugins: (AdminAppPermissionRendererPlugin | PermissionRendererPlugin)[];
-}
+export const Permissions = ({ id, value, onChange }: PermissionsProps) => {
+    const { permissionRenderers } = useAdminConfig();
 
-export const Permissions = ({ id, value, onChange, ...props }: PermissionsProps) => {
-    const { systemPlugins, permissionPlugins } = useMemo<PermissionPlugins>(() => {
-        if (props.plugins) {
-            return { permissionPlugins: props.plugins, systemPlugins: [] };
+    const renderers = useMemo<PermissionRendererConfig[]>(() => {
+        const systemRenderers: PermissionRendererConfig[] = [];
+        const appRenderers: PermissionRendererConfig[] = [];
+
+        for (const renderer of permissionRenderers) {
+            if (renderer.system) {
+                systemRenderers.push(renderer);
+            } else {
+                appRenderers.push(renderer);
+            }
         }
 
-        return plugins
-            .byType<AdminAppPermissionRendererPlugin>("admin-app-permissions-renderer")
-            .reduce(
-                (acc, plugin) => {
-                    if (plugin.system === true) {
-                        acc.systemPlugins.push(plugin);
-                    } else {
-                        acc.permissionPlugins.push(plugin);
-                    }
-                    return acc;
-                },
-                { systemPlugins: [], permissionPlugins: [] } as PermissionPlugins
-            );
-    }, []);
+        return [...systemRenderers.sort(byTitle), ...appRenderers.sort(byTitle)];
+    }, [permissionRenderers]);
 
     return (
-        <Accordion elevation={0}>
-            {[...systemPlugins, ...permissionPlugins].map(pl => (
-                <React.Fragment key={pl.name + "." + id}>
-                    {pl.render({
-                        value,
-                        onChange
-                    })}
-                </React.Fragment>
-            ))}
+        <Accordion>
+            <PermissionValueProvider value={value} onChange={onChange}>
+                {renderers.map(renderer => {
+                    return (
+                        <Accordion.Item
+                            key={renderer.name + "." + id}
+                            title={renderer.title}
+                            description={renderer.description}
+                            icon={
+                                renderer.icon ? (
+                                    <Accordion.Item.Icon
+                                        icon={renderer.icon}
+                                        label={renderer.title}
+                                    />
+                                ) : undefined
+                            }
+                            data-testid={`permission.${renderer.name}`}
+                        >
+                            {renderer.schema ? (
+                                <PermissionRenderer schema={renderer.schema} />
+                            ) : (
+                                renderer.element
+                            )}
+                        </Accordion.Item>
+                    );
+                })}
+            </PermissionValueProvider>
         </Accordion>
     );
 };

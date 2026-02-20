@@ -5,7 +5,6 @@ import type { CmsDataCmsGroup, CmsDataCmsModel } from "./useCmsData.js";
 import { useCmsData } from "./useCmsData.js";
 import ContentModelList from "./ContentModelList.js";
 import type { BindComponent } from "@webiny/form/types.js";
-import type { CmsSecurityPermission } from "~/types.js";
 import { FormComponentNote, Grid, Select } from "@webiny/admin-ui";
 import { PermissionsGroup } from "@webiny/app-admin";
 
@@ -13,7 +12,7 @@ const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
 interface ContentModelPermissionProps {
     Bind: BindComponent;
-    data: CmsSecurityPermission;
+    data: Record<string, any>;
     setValue: (name: string, value: string) => void;
     entity: string;
     title: string;

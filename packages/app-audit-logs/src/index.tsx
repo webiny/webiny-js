@@ -4,7 +4,7 @@ import { ReactComponent as Icon } from "@webiny/icons/manage_search.svg";
 import { AdminConfig, AdminLayout, useWcp } from "@webiny/app-admin";
 import { HasPermission } from "@webiny/app-admin";
 import { LogsModule } from "~/views/Logs/LogsModule.js";
-import { AuditLogsPermissions } from "~/plugins/permissionRenderer/index.js";
+import { SecurityPermission } from "~/SecurityPermission.js";
 import { LogsView } from "~/views/Logs/LogsView.js";
 import { AuditLogsListWithConfig } from "~/config/list/index.js";
 import { Routes } from "~/routes.js";
@@ -22,6 +22,7 @@ export const AuditLogs = () => {
     return (
         <>
             <LogsModule />
+            <SecurityPermission />
             <AdminConfig>
                 <HasPermission any={["al.*"]}>
                     <Menu
@@ -47,7 +48,6 @@ export const AuditLogs = () => {
                     />
                 </HasPermission>
             </AdminConfig>
-            <AuditLogsPermissions />
         </>
     );
 };
