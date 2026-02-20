@@ -3,17 +3,10 @@ import type { Container } from "@webiny/di";
 import { WcpContextImpl } from "./WcpContext.js";
 import { WcpContext } from "./abstractions.js";
 import type { ILicense } from "@webiny/wcp/types.js";
-import { BuildParams } from "../../buildParams/abstractions.js";
 
 export const WcpContextFeature = createFeature({
     name: "WcpContext",
     register(container: Container, license: ILicense) {
-        let buildParams;
-        try {
-            buildParams = container.resolve(BuildParams);
-        } catch {
-            buildParams = undefined;
-        }
-        container.registerInstance(WcpContext, new WcpContextImpl(license, buildParams));
+        container.registerInstance(WcpContext, new WcpContextImpl(license));
     }
 });
