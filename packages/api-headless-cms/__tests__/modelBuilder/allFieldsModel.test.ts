@@ -180,11 +180,12 @@ describe("All Field Types Model", () => {
                             ui: fields
                                 .ui()
                                 .label("UI Configuration")
-                                .renderer("uiSeparator")
+                                .renderer("passthrough")
                                 .settings({
                                     customSetting1: "value1",
                                     customSetting2: "value2"
-                                })
+                                }),
+                            separator: fields.separator().label("UI Separator")
                         }))
                 ];
             }
@@ -292,11 +293,15 @@ describe("All Field Types Model", () => {
         // ui field
         const uiField = model!.fields.find(f => f.fieldId === "ui");
         expect(uiField?.type).toBe("ui");
-        expect(uiField?.renderer?.name).toBe("uiSeparator");
+        expect(uiField?.renderer?.name).toBe("passthrough");
         expect(uiField?.settings).toEqual({
             customSetting1: "value1",
             customSetting2: "value2"
         });
+        // ui separator field
+        const separatorField = model!.fields.find(f => f.fieldId === "separator");
+        expect(separatorField?.type).toBe("ui");
+        expect(separatorField?.label).toBe("UI Separator");
     });
 
     it("should support all public-model-specific methods", async () => {

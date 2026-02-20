@@ -11,7 +11,7 @@ declare module "../abstractions.js" {
     }
 }
 
-class UiFieldBuilder extends FieldBuilder<"ui"> implements IUiFieldBuilder {
+export class UiFieldBuilder extends FieldBuilder<"ui"> implements IUiFieldBuilder {
     public constructor() {
         super("ui");
     }
