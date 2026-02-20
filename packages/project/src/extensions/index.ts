@@ -5,6 +5,7 @@ import { ProjectId } from "./ProjectId.js";
 import { Telemetry } from "./Telemetry.js";
 import { EnvVar } from "./EnvVar.js";
 import { DatabaseSetup } from "./DatabaseSetup.js";
+import { Wcp, wcpDefinitions } from "./Wcp.js";
 
 // Hooks.
 import {
@@ -50,6 +51,7 @@ export { ProjectImplementation };
 export { ExtensionDefinitions };
 export { EnvVar };
 export { DatabaseSetup };
+export { Wcp };
 
 // Hooks.
 export { BeforeBuild };
@@ -121,7 +123,8 @@ export const definitions = [
     CoreStackOutputValue.def,
     ApiStackOutputValue.def,
     AdminStackOutputValue.def,
-    DatabaseSetup.def
+    DatabaseSetup.def,
+    ...wcpDefinitions
 ];
 
 export { Project } from "./Project.js";

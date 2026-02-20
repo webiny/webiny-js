@@ -1,5 +1,5 @@
 export { EnvVar } from "@webiny/project/extensions/EnvVar.js";
-export { Wcp } from "@webiny/project-aws/Wcp.js";
+export { Wcp } from "@webiny/project/extensions/Wcp.js";
 export { Api } from "@webiny/project-aws/api.js";
 export { Admin } from "@webiny/project-aws/admin.js";
 export { Cli } from "@webiny/project-aws/cli.js";

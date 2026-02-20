@@ -1,13 +1,12 @@
 import { WcpFeatureOverrides as WcpFeatureOverridesAbstraction } from "./abstractions.js";
 import { BuildParams } from "../../buildParams/abstractions.js";
-
-type FeatureFlags = Record<string, any>;
+import type { WcpFeatureFlags } from "@webiny/wcp/types.js";
 
 class WcpFeatureOverridesImpl implements WcpFeatureOverridesAbstraction.Interface {
     constructor(private buildParams: BuildParams.Interface) {}
 
     isEnabled(featureName: string): boolean {
-        const features = this.buildParams.get<FeatureFlags>("Wcp/FeatureFlags");
+        const features = this.buildParams.get<WcpFeatureFlags>("Wcp/FeatureFlags");
         if (!features) {
             return true;
         }
@@ -31,10 +30,7 @@ class WcpFeatureOverridesImpl implements WcpFeatureOverridesAbstraction.Interfac
             case "recordLocking":
                 return features.recordLocking?.enabled !== false;
             case "fileManagerThreatDetection":
-                return (
-                    features.fileManager?.enabled !== false &&
-                    features.fileManager?.options?.threatDetection !== false
-                );
+                return features.fileManager?.options?.threatDetection !== false;
             default:
                 return true;
         }
