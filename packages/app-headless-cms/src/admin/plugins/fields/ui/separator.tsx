@@ -16,10 +16,15 @@ export const uiSeparatorField: CmsModelFieldTypePlugin = {
         allowLayout: false,
         hideInAdmin: false,
         allowList: false,
+        canEditSettings: true,
         allowPredefinedValues: false,
+        tags: undefined,
         createField() {
             return {
                 type: "ui:separator",
+                list: false,
+                validation: undefined,
+                listValidation: undefined,
                 renderer: {
                     name: "uiSeparator"
                 }
