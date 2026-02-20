@@ -4,6 +4,7 @@ export { Cli } from "~/cli.js";
 export { Infra } from "~/infra.js";
 export { Project } from "~/project.js";
 export { Security } from "~/security.js";
+export { Wcp } from "@webiny/project/exports/extensions.js";
 export {
     ApiStackOutputService,
     CoreStackOutputService,

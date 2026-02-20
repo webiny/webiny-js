@@ -5,6 +5,7 @@ import { ProjectId } from "./ProjectId.js";
 import { Telemetry } from "./Telemetry.js";
 import { EnvVar } from "./EnvVar.js";
 import { DatabaseSetup } from "./DatabaseSetup.js";
+import { WcpFeatureAdminDef, WcpFeatureApiDef } from "./WcpFeature.js";
 
 // Hooks.
 import {
@@ -42,7 +43,6 @@ import {
     AdminStackOutputValue
 } from "./pulumi/index.js";
 
-// Exports.
 export { Telemetry };
 export { ProjectId };
 export { ProjectDecorator };
@@ -50,6 +50,8 @@ export { ProjectImplementation };
 export { ExtensionDefinitions };
 export { EnvVar };
 export { DatabaseSetup };
+export { WcpFeatureAdminDef };
+export { WcpFeatureApiDef };
 
 // Hooks.
 export { BeforeBuild };
@@ -121,7 +123,11 @@ export const definitions = [
     CoreStackOutputValue.def,
     ApiStackOutputValue.def,
     AdminStackOutputValue.def,
-    DatabaseSetup.def
+    DatabaseSetup.def,
+
+    // Wcp feature overrides.
+    WcpFeatureAdminDef,
+    WcpFeatureApiDef
 ];
 
 export { Project } from "./Project.js";

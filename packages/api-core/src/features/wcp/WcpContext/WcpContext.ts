@@ -9,6 +9,7 @@ import type {
 } from "@webiny/wcp/types.js";
 import { WcpContext } from "./abstractions.js";
 import { wcpFetch } from "./utils.js";
+import type { IBuildParams } from "../../buildParams/abstractions.js";
 
 const wcpProjectEnvironment = getWcpProjectEnvironment();
 
@@ -17,7 +18,18 @@ export interface CreateWcpContextParams {
 }
 
 export class WcpContextImpl implements WcpContext.Interface {
-    constructor(private license: ILicense) {}
+    constructor(
+        private license: ILicense,
+        private buildParams?: IBuildParams
+    ) {}
+
+    private isFeatureEnabled(featureName: string): boolean {
+        if (!this.buildParams) {
+            return true;
+        }
+        const value = this.buildParams.get<boolean>(`wcp.feature.${featureName}`);
+        return value !== false;
+    }
 
     private getWcpProjectUrl(path = ""): string | null {
         if (!wcpProjectEnvironment) {
@@ -97,35 +109,41 @@ export class WcpContextImpl implements WcpContext.Interface {
     }
 
     canUseAacl(): boolean {
-        return this.license.canUseAacl();
+        return this.license.canUseAacl() && this.isFeatureEnabled("aacl");
     }
 
     canUseTeams(): boolean {
-        return this.license.canUseTeams();
+        return this.license.canUseTeams() && this.isFeatureEnabled("teams");
     }
 
     canUseFolderLevelPermissions(): boolean {
-        return this.license.canUseFolderLevelPermissions();
+        return (
+            this.license.canUseFolderLevelPermissions() &&
+            this.isFeatureEnabled("folderLevelPermissions")
+        );
     }
 
     canUsePrivateFiles(): boolean {
-        return this.license.canUsePrivateFiles();
+        return this.license.canUsePrivateFiles() && this.isFeatureEnabled("privateFiles");
     }
 
     canUseAuditLogs(): boolean {
-        return this.license.canUseAuditLogs();
+        return this.license.canUseAuditLogs() && this.isFeatureEnabled("auditLogs");
     }
 
     canUseRecordLocking(): boolean {
-        return this.license.canUseRecordLocking();
+        return this.license.canUseRecordLocking() && this.isFeatureEnabled("recordLocking");
     }
 
     canUseFileManagerThreatDetection(): boolean {
-        return this.license.canUseFileManagerThreatDetection();
+        return (
+            this.license.canUseFileManagerThreatDetection() &&
+            this.isFeatureEnabled("fileManagerThreatDetection")
+        );
     }
 
     canUseWorkflows(): boolean {
-        return this.license.canUseWorkflows();
+        return this.license.canUseWorkflows() && this.isFeatureEnabled("workflows");
     }
 
     ensureCanUseFeature(wcpFeatureId: keyof typeof WCP_FEATURE_LABEL): void {

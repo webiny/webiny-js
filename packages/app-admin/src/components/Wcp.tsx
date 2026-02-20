@@ -1,32 +1,44 @@
 import React from "react";
 import { useWcp } from "~/presentation/wcp/useWcp.js";
+import { useFeature } from "@webiny/app";
+import { BuildParamsFeature } from "~/features/buildParams/feature.js";
 
 interface ChildrenProps {
     children: React.ReactNode;
 }
 
+function useWcpFeatureEnabled(featureName: string): boolean {
+    const buildParams = useFeature(BuildParamsFeature);
+    const value = buildParams.get<boolean>(`wcp.feature.${featureName}`);
+    return value !== false;
+}
+
 function CanUseTeams({ children }: ChildrenProps) {
     const wcp = useWcp();
+    const enabled = useWcpFeatureEnabled("teams");
 
-    return wcp.canUseTeams() ? <>{children}</> : null;
+    return wcp.canUseTeams() && enabled ? <>{children}</> : null;
 }
 
 function CanUsePrivateFiles({ children }: ChildrenProps) {
     const wcp = useWcp();
+    const enabled = useWcpFeatureEnabled("privateFiles");
 
-    return wcp.canUsePrivateFiles() ? <>{children}</> : null;
+    return wcp.canUsePrivateFiles() && enabled ? <>{children}</> : null;
 }
 
 function CanUseFileManagerThreatDetection({ children }: ChildrenProps) {
     const wcp = useWcp();
+    const enabled = useWcpFeatureEnabled("fileManagerThreatDetection");
 
-    return wcp.canUseFileManagerThreatDetection() ? <>{children}</> : null;
+    return wcp.canUseFileManagerThreatDetection() && enabled ? <>{children}</> : null;
 }
 
 function CanUseWorkflows({ children }: ChildrenProps) {
     const wcp = useWcp();
+    const enabled = useWcpFeatureEnabled("workflows");
 
-    return wcp.canUseWorkflows() ? <>{children}</> : null;
+    return wcp.canUseWorkflows() && enabled ? <>{children}</> : null;
 }
 
 export const Wcp = {
