@@ -1,5 +1,4 @@
-import { DeployApp, GetApp, PulumiGetStackOutputService, WatchedLambdaFunctionsService } from "~/abstractions/index.js";
-import { type ICoreStackOutput } from "~/abstractions/features/GetAppStackOutput.js";
+import { DeployApp, GetApp, WatchedLambdaFunctionsService } from "~/abstractions/index.js";
 
 /**
  * Decorator that clears watched Lambda functions after successful deployment.
@@ -9,22 +8,16 @@ import { type ICoreStackOutput } from "~/abstractions/features/GetAppStackOutput
 export class DeployAppClearWatchedLambdaFunctions implements DeployApp.Interface {
     constructor(
         private getApp: GetApp.Interface,
-        private pulumiGetStackOutputService: PulumiGetStackOutputService.Interface,
         private watchedLambdaFunctionsService: WatchedLambdaFunctionsService.Interface,
         private decoratee: DeployApp.Interface
     ) {}
 
     async execute(params: DeployApp.Params) {
-        const coreApp = this.getApp.execute("core");
-        const coreStackOutput =
-            await this.pulumiGetStackOutputService.execute<ICoreStackOutput>(coreApp);
-        this.watchedLambdaFunctionsService.setDeploymentId(coreStackOutput?.deploymentId);
-
         const result = await this.decoratee.execute(params);
 
         // Clear Lambda URNs that needed replacement after successful deployment
         const app = this.getApp.execute(params.app);
-        this.watchedLambdaFunctionsService.clearDirty(app.name);
+        await this.watchedLambdaFunctionsService.clearDirty(app.name);
 
         return result;
     }
@@ -32,5 +25,5 @@ export class DeployAppClearWatchedLambdaFunctions implements DeployApp.Interface
 
 export const deployAppClearWatchedLambdaFunctions = DeployApp.createDecorator({
     decorator: DeployAppClearWatchedLambdaFunctions,
-    dependencies: [GetApp, PulumiGetStackOutputService, WatchedLambdaFunctionsService]
+    dependencies: [GetApp, WatchedLambdaFunctionsService]
 });

@@ -1,6 +1,12 @@
 import { createImplementation } from "@webiny/di";
-import { WatchedLambdaFunctionsService, LocalStorageService } from "~/abstractions/index.js";
+import {
+    WatchedLambdaFunctionsService,
+    LocalStorageService,
+    GetApp,
+    PulumiGetStackOutputService
+} from "~/abstractions/index.js";
 import { type AppName } from "~/abstractions/types.js";
+import { type ICoreStackOutput } from "~/abstractions/features/GetAppStackOutput.js";
 
 const WATCHED_LAMBDA_FUNCTIONS_KEY = "watchedLambdaFunctions";
 
@@ -11,16 +17,17 @@ interface WatchedLambdaFunctionsData {
 export class DefaultWatchedLambdaFunctionsService
     implements WatchedLambdaFunctionsService.Interface
 {
-    private deploymentId: string | undefined;
+    private cacheKey: Promise<string> | undefined;
 
-    constructor(private localStorageService: LocalStorageService.Interface) {}
+    constructor(
+        private localStorageService: LocalStorageService.Interface,
+        private getApp: GetApp.Interface,
+        private pulumiGetStackOutputService: PulumiGetStackOutputService.Interface
+    ) {}
 
-    setDeploymentId(deploymentId: string | undefined): void {
-        this.deploymentId = deploymentId;
-    }
-
-    markDirty(app: AppName, functionUrns: string[]): void {
-        const data = this.getData();
+    async markDirty(app: AppName, functionUrns: string[]): Promise<void> {
+        const key = await this.getCacheKey();
+        const data = this.getData(key);
 
         if (!data[app]) {
             data[app] = [];
@@ -33,32 +40,48 @@ export class DefaultWatchedLambdaFunctionsService
             }
         }
 
-        this.setData(data);
+        this.setData(key, data);
     }
 
-    getDirty(app: AppName): string[] {
-        const data = this.getData();
+    async getDirty(app: AppName): Promise<string[]> {
+        const key = await this.getCacheKey();
+        const data = this.getData(key);
         return data[app] || [];
     }
 
-    clearDirty(app: AppName): void {
-        const data = this.getData();
+    async clearDirty(app: AppName): Promise<void> {
+        const key = await this.getCacheKey();
+        const data = this.getData(key);
         delete data[app];
-        this.setData(data);
+        this.setData(key, data);
     }
 
-    clearAll(): void {
-        this.setData({});
+    async clearAll(): Promise<void> {
+        const key = await this.getCacheKey();
+        this.setData(key, {});
     }
 
-    private getCacheKey(): string {
-        return this.deploymentId
-            ? `${WATCHED_LAMBDA_FUNCTIONS_KEY}-${this.deploymentId}`
+    private getCacheKey(): Promise<string> {
+        if (!this.cacheKey) {
+            this.cacheKey = this.resolveCacheKey();
+        }
+
+        return this.cacheKey;
+    }
+
+    private async resolveCacheKey(): Promise<string> {
+        const coreApp = this.getApp.execute("core");
+        const coreStackOutput =
+            await this.pulumiGetStackOutputService.execute<ICoreStackOutput>(coreApp);
+        const deploymentId = coreStackOutput?.deploymentId;
+
+        return deploymentId
+            ? `${WATCHED_LAMBDA_FUNCTIONS_KEY}-${deploymentId}`
             : WATCHED_LAMBDA_FUNCTIONS_KEY;
     }
 
-    private getData(): WatchedLambdaFunctionsData {
-        const data = this.localStorageService.get(this.getCacheKey());
+    private getData(key: string): WatchedLambdaFunctionsData {
+        const data = this.localStorageService.get(key);
         if (!data) {
             return {};
         }
@@ -70,13 +93,13 @@ export class DefaultWatchedLambdaFunctionsService
         }
     }
 
-    private setData(data: WatchedLambdaFunctionsData): void {
-        this.localStorageService.set(this.getCacheKey(), data);
+    private setData(key: string, data: WatchedLambdaFunctionsData): void {
+        this.localStorageService.set(key, data);
     }
 }
 
 export const watchedLambdaFunctionsService = createImplementation({
     abstraction: WatchedLambdaFunctionsService,
     implementation: DefaultWatchedLambdaFunctionsService,
-    dependencies: [LocalStorageService]
+    dependencies: [LocalStorageService, GetApp, PulumiGetStackOutputService]
 });
