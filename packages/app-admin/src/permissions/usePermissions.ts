@@ -189,22 +189,24 @@ function buildResult<S extends PermissionSchemaConfig>(
     } as UsePermissionsResult<S>;
 }
 
-export function usePermissions<const S extends PermissionSchemaConfig>(
+export function createUsePermissions<const S extends PermissionSchemaConfig>(
     schema: S
-): UsePermissionsResult<S> {
-    const { identity } = useIdentity();
+): () => UsePermissionsResult<S> {
+    return function usePermissions(): UsePermissionsResult<S> {
+        const { identity } = useIdentity();
 
-    let byIdentityId = cache.get(schema);
-    if (!byIdentityId) {
-        byIdentityId = new Map();
-        cache.set(schema, byIdentityId);
-    }
+        let byIdentityId = cache.get(schema);
+        if (!byIdentityId) {
+            byIdentityId = new Map();
+            cache.set(schema, byIdentityId);
+        }
 
-    let result = byIdentityId.get(identity.id) as UsePermissionsResult<S> | undefined;
-    if (!result) {
-        result = buildResult(schema, identity);
-        byIdentityId.set(identity.id, result as UsePermissionsResult<any>);
-    }
+        let result = byIdentityId.get(identity.id) as UsePermissionsResult<S> | undefined;
+        if (!result) {
+            result = buildResult(schema, identity);
+            byIdentityId.set(identity.id, result as UsePermissionsResult<any>);
+        }
 
-    return result;
+        return result;
+    };
 }

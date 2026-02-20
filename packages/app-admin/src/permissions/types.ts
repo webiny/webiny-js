@@ -185,6 +185,54 @@ export interface UsePermissionsResultUntyped {
     canAction: (action: string, entityId: string) => boolean;
 }
 
+/**
+ * Action values accepted by `HasPermission`.
+ *
+ * Built-in actions are always available; custom action names from the schema are inferred automatically.
+ */
+export type HasPermissionAction<S extends PermissionSchemaConfig> =
+    | "read"
+    | "create"
+    | "edit"
+    | "delete"
+    | "publish"
+    | "unpublish"
+    | CustomActionNames<S>;
+
+/**
+ * Props for a schema-bound `HasPermission` component created via `createHasPermission`.
+ *
+ * Exactly one of `entity`, `any`, or `all` must be provided.
+ */
+export type HasPermissionProps<S extends PermissionSchemaConfig> =
+    | SingleEntityProps<S>
+    | AnyEntitiesProps<S>
+    | AllEntitiesProps<S>;
+
+interface SingleEntityProps<S extends PermissionSchemaConfig> {
+    entity: AllEntityIds<S>;
+    any?: never;
+    all?: never;
+    action?: HasPermissionAction<S>;
+    children: React.ReactNode;
+}
+
+interface AnyEntitiesProps<S extends PermissionSchemaConfig> {
+    entity?: never;
+    any: AllEntityIds<S>[];
+    all?: never;
+    action?: HasPermissionAction<S>;
+    children: React.ReactNode;
+}
+
+interface AllEntitiesProps<S extends PermissionSchemaConfig> {
+    entity?: never;
+    any?: never;
+    all: AllEntityIds<S>[];
+    action?: HasPermissionAction<S>;
+    children: React.ReactNode;
+}
+
 type UsePermissionsResultTyped<S extends PermissionSchemaConfig> = {
     canAccess: (entityId: AllEntityIds<S>) => boolean;
     canAction: (
