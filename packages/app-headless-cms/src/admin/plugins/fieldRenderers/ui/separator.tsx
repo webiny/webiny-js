@@ -14,7 +14,7 @@ export const createSeparatorFieldRenderer = (): CmsModelFieldRendererPlugin => {
             name: t`Separator`,
             description: t`Renders a separator field.`,
             canUse({ field }) {
-                return field.type === "ui:separator";
+                return field.type === "ui" || field.type === "ui:separator";
             },
             render({ field }) {
                 return (
