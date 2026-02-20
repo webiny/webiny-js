@@ -1,12 +1,43 @@
 import { WcpFeatureOverrides as WcpFeatureOverridesAbstraction } from "./abstractions.js";
 import { BuildParams } from "../../buildParams/abstractions.js";
 
+type FeatureFlags = Record<string, any>;
+
 class WcpFeatureOverridesImpl implements WcpFeatureOverridesAbstraction.Interface {
     constructor(private buildParams: BuildParams.Interface) {}
 
     isEnabled(featureName: string): boolean {
-        const value = this.buildParams.get<boolean>(`wcp.feature.${featureName}`);
-        return value !== false;
+        const features = this.buildParams.get<FeatureFlags>("Wcp/FeatureFlags");
+        if (!features) {
+            return true;
+        }
+
+        switch (featureName) {
+            case "multiTenancy":
+                return features.multiTenancy?.enabled !== false;
+            case "workflows":
+                return features.advancedPublishingWorkflow?.enabled !== false;
+            case "aacl":
+                return features.advancedAccessControlLayer?.enabled !== false;
+            case "teams":
+                return features.advancedAccessControlLayer?.options?.teams !== false;
+            case "privateFiles":
+                return features.advancedAccessControlLayer?.options?.privateFiles !== false;
+            case "folderLevelPermissions":
+                return features.advancedAccessControlLayer?.options?.folderLevelPermissions !==
+                    false;
+            case "auditLogs":
+                return features.auditLogs?.enabled !== false;
+            case "recordLocking":
+                return features.recordLocking?.enabled !== false;
+            case "fileManagerThreatDetection":
+                return (
+                    features.fileManager?.enabled !== false &&
+                    features.fileManager?.options?.threatDetection !== false
+                );
+            default:
+                return true;
+        }
     }
 }
 

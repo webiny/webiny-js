@@ -7,12 +7,32 @@ interface ChildrenProps {
     children: React.ReactNode;
 }
 
+type FeatureFlags = Record<string, any>;
+
 function useWcpFeatureEnabled(featureName: string): boolean {
     const container = useContainer();
     try {
         const buildParams = container.resolve(BuildParams);
-        const value = buildParams.get<boolean>(`wcp.feature.${featureName}`);
-        return value !== false;
+        const features = buildParams.get<FeatureFlags>("Wcp/FeatureFlags");
+        if (!features) {
+            return true;
+        }
+
+        switch (featureName) {
+            case "teams":
+                return features.advancedAccessControlLayer?.options?.teams !== false;
+            case "privateFiles":
+                return features.advancedAccessControlLayer?.options?.privateFiles !== false;
+            case "fileManagerThreatDetection":
+                return (
+                    features.fileManager?.enabled !== false &&
+                    features.fileManager?.options?.threatDetection !== false
+                );
+            case "workflows":
+                return features.advancedPublishingWorkflow?.enabled !== false;
+            default:
+                return true;
+        }
     } catch {
         return true;
     }

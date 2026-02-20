@@ -1,10 +1,6 @@
 import React, { createContext, useContext, useMemo } from "react";
 import { License } from "@webiny/wcp";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types.js";
-import {
-    WcpFeatureOverridesProvider,
-    useWcpFeatureOverrides
-} from "../../components/WcpFeatureOverridesContext.js";
 
 export interface WcpProjectLicenseContextValue {
     hasLicense: boolean;
@@ -17,9 +13,9 @@ export interface WcpProjectLicenseContextValue {
 
 const WcpProjectLicenseContext = createContext<WcpProjectLicenseContextValue | null>(null);
 
-const WcpProjectLicenseInner: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { overrides } = useWcpFeatureOverrides();
-
+export const WcpProjectLicenseProvider: React.FC<{ children: React.ReactNode }> = ({
+    children
+}) => {
     const license = useMemo(() => {
         const licenseEnv = process.env.WCP_PROJECT_LICENSE;
         if (!licenseEnv) {
@@ -40,43 +36,20 @@ const WcpProjectLicenseInner: React.FC<{ children: React.ReactNode }> = ({ child
 
     const hasLicense = !!license;
 
-    const isFeatureEnabled = (name: string, licenseAllows: boolean) => {
-        if (name in overrides) {
-            // User can only disable; cannot enable beyond what the license permits.
-            return overrides[name] === false ? false : licenseAllows;
-        }
-        return licenseAllows;
-    };
-
     const value: WcpProjectLicenseContextValue = {
         hasLicense,
-        canUseMultiTenancy: () => isFeatureEnabled("multiTenancy", hasLicense),
-        canUseTeams: () => isFeatureEnabled("teams", license?.canUseTeams() ?? false),
-        canUsePrivateFiles: () =>
-            isFeatureEnabled("privateFiles", license?.canUsePrivateFiles() ?? false),
+        canUseMultiTenancy: () => hasLicense,
+        canUseTeams: () => license?.canUseTeams() ?? false,
+        canUsePrivateFiles: () => license?.canUsePrivateFiles() ?? false,
         canUseFileManagerThreatDetection: () =>
-            isFeatureEnabled(
-                "fileManagerThreatDetection",
-                license?.canUseFileManagerThreatDetection() ?? false
-            ),
-        canUseWorkflows: () =>
-            isFeatureEnabled("workflows", license?.canUseWorkflows() ?? false)
+            license?.canUseFileManagerThreatDetection() ?? false,
+        canUseWorkflows: () => license?.canUseWorkflows() ?? false
     };
 
     return (
         <WcpProjectLicenseContext.Provider value={value}>
             {children}
         </WcpProjectLicenseContext.Provider>
-    );
-};
-
-export const WcpProjectLicenseProvider: React.FC<{ children: React.ReactNode }> = ({
-    children
-}) => {
-    return (
-        <WcpFeatureOverridesProvider>
-            <WcpProjectLicenseInner>{children}</WcpProjectLicenseInner>
-        </WcpFeatureOverridesProvider>
     );
 };
 
