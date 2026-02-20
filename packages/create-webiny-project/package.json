@@ -28,7 +28,7 @@
     "type-fest": "^5.4.4",
     "uuid": "^13.0.0",
     "validate-npm-package-name": "^6.0.2",
-    "write-json-file": "^4.3.0",
+    "write-json-file": "^7.0.0",
     "yargs": "^17.7.2",
     "yesno": "^0.4.0"
   },

@@ -2,7 +2,7 @@ import os from "os";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import readJson from "load-json-file";
-import writeJson from "write-json-file";
+import { writeJsonFileSync } from "write-json-file";
 import { isCI } from "ci-info";
 
 const GLOBAL_CONFIG_PATH = path.join(os.homedir(), ".webiny", "config");
@@ -29,7 +29,7 @@ export const globalConfig = {
                 // Also, in CI environments, we always set this to `false`.
                 newUser: isCI ? false : true
             };
-            writeJson.sync(GLOBAL_CONFIG_PATH, this.__globalConfig);
+            writeJsonFileSync(GLOBAL_CONFIG_PATH, this.__globalConfig);
         }
 
         return key ? this.__globalConfig[key] : this.__globalConfig;

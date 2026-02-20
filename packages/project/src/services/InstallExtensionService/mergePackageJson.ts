@@ -1,5 +1,5 @@
 import loadJson from "load-json-file";
-import writeJson from "write-json-file";
+import { writeJsonFileSync } from "write-json-file";
 import deepmerge from "deepmerge";
 
 interface MergePackageJsonParams {
@@ -29,5 +29,5 @@ export const mergePackageJson = async (params: MergePackageJsonParams): Promise<
     });
 
     // Write the merged package.json back
-    await writeJson(packageJsonPath, mergedPackageJson);
+    return writeJsonFileSync(packageJsonPath, mergedPackageJson);
 };

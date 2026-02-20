@@ -1,5 +1,5 @@
 import loadJsonFile from "load-json-file";
-import writeJsonFile from "write-json-file";
+import { writeJsonFileSync } from "write-json-file";
 import { GetCwpVersion } from "./GetCwpVersion.js";
 import { GetProjectRootPath } from "./GetProjectRootPath.js";
 import { CliParams } from "../types.js";
@@ -28,7 +28,7 @@ export class SetWebinyPackageVersions {
             }
         }
 
-        writeJsonFile.sync(projectPackageJsonPath, projectPackageJson);
+        writeJsonFileSync(projectPackageJsonPath, projectPackageJson);
     }
 
     private isWebinyDependency(depName: string): boolean {

@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import minimatch from "minimatch";
+import { minimatch } from "minimatch";
 import type { Tenant } from "~/features/tenancy/abstractions.js";
 
 export interface IPermission {

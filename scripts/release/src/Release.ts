@@ -1,8 +1,8 @@
 import pRetry from "p-retry";
-import semver, { SemVer } from "semver";
+import semver from "semver";
 import execa from "execa";
 import loadJSON from "load-json-file";
-import writeJSON from "write-json-file";
+import { writeJsonFileSync } from "write-json-file";
 import { Octokit } from "@octokit/rest";
 import { Changelog } from "./Changelog";
 
@@ -76,7 +76,7 @@ export class Release {
             const lernaJSON = this.__loadLernaJson("example.lerna.json");
             lernaJSON.version = this.mostRecentVersion;
 
-            await writeJSON("lerna.json", lernaJSON);
+            writeJsonFileSync("lerna.json", lernaJSON);
             this.logger.info("Lerna config was written to %s", "lerna.json");
         }
 

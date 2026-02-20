@@ -1,6 +1,6 @@
 import path from "path";
 import { AbstractGenerator } from "./AbstractGenerator";
-import writeJson from "write-json-file";
+import { writeJsonFileSync } from "write-json-file";
 import type { PackageJson } from "type-fest";
 import findUp from "find-up";
 import { sync } from "load-json-file";
@@ -57,7 +57,7 @@ export class LockedDepsGenerator extends AbstractGenerator {
             }
         }
 
-        await writeJson(this.webinyPackage.paths.distPackageJsonFile, lockedPackageJson);
+        writeJsonFileSync(this.webinyPackage.paths.distPackageJsonFile, lockedPackageJson);
     }
 
     private assertExists(

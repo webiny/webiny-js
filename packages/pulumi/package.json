@@ -15,7 +15,7 @@
     "directory": "dist"
   },
   "dependencies": {
-    "@pulumi/pulumi": "^3.221.0",
+    "@pulumi/pulumi": "^3.223.0",
     "@webiny/project": "0.0.0",
     "find-up": "^5.0.0",
     "lodash": "^4.17.23"
