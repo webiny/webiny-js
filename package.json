@@ -108,7 +108,7 @@
     "load-json-file": "^6.2.0",
     "lodash": "^4.17.23",
     "longest": "^2.0.1",
-    "minimatch": "^5.1.6",
+    "minimatch": "^10.2.1",
     "nanoid": "^5.1.6",
     "prettier": "3.6.2",
     "react": "18.2.0",

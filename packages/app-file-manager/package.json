@@ -43,7 +43,7 @@
     "load-script": "^1.0.0",
     "lodash": "^4.17.23",
     "mime": "^3.0.0",
-    "minimatch": "^5.1.6",
+    "minimatch": "^10.2.2",
     "mobx": "^6.15.0",
     "mobx-react-lite": "^3.4.3",
     "prop-types": "^15.8.1",
