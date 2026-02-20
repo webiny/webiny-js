@@ -40,11 +40,12 @@ const WcpProjectLicenseInner: React.FC<{ children: React.ReactNode }> = ({ child
 
     const hasLicense = !!license;
 
-    const isFeatureEnabled = (name: string, fallback: boolean) => {
+    const isFeatureEnabled = (name: string, licenseAllows: boolean) => {
         if (name in overrides) {
-            return overrides[name];
+            // User can only disable; cannot enable beyond what the license permits.
+            return overrides[name] === false ? false : licenseAllows;
         }
-        return fallback;
+        return licenseAllows;
     };
 
     const value: WcpProjectLicenseContextValue = {
