@@ -1,5 +1,4 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { validateModelFields } from "~/crud/contentModel/validateModelFields";
 import { PluginsContainer } from "@webiny/plugins";
 import type { CmsContext } from "~/types";
 import {
@@ -14,6 +13,7 @@ import { createNumberField } from "~tests/validations/fields/number";
 import { createObjectField } from "~tests/validations/fields/object";
 import { useHandler } from "~tests/testHelpers/useHandler";
 import { createTestModel as createModel } from "./models/test";
+import { validateModelFields } from "~/domain/contentModel/validation/modelFields";
 
 interface ErrorObject {
     message?: string;

@@ -9,13 +9,13 @@ export const createUiField = (): CmsModelFieldToGraphQLPlugin => {
         isSearchable: false,
         fullTextSearch: false,
         read: {
-            createTypeField() {
-                return ``;
+            createTypeField({ field }) {
+                return `${field.fieldId}: String`;
             }
         },
         manage: {
-            createTypeField() {
-                return ``;
+            createTypeField({ field }) {
+                return `${field.fieldId}: String`;
             },
             createInputField() {
                 return "";
