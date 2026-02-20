@@ -3,6 +3,11 @@ import { type AppName } from "~/abstractions/types.js";
 
 export interface IWatchedLambdaFunctionsService {
     /**
+     * Set the deployment ID to scope the cache key per deployment.
+     */
+    setDeploymentId(deploymentId: string | undefined): void;
+
+    /**
      * Mark Lambda functions as needing replacement on next deployment
      */
     markDirty(app: AppName, functionUrns: string[]): void;

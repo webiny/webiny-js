@@ -11,7 +11,13 @@ interface WatchedLambdaFunctionsData {
 export class DefaultWatchedLambdaFunctionsService
     implements WatchedLambdaFunctionsService.Interface
 {
+    private deploymentId: string | undefined;
+
     constructor(private localStorageService: LocalStorageService.Interface) {}
+
+    setDeploymentId(deploymentId: string | undefined): void {
+        this.deploymentId = deploymentId;
+    }
 
     markDirty(app: AppName, functionUrns: string[]): void {
         const data = this.getData();
@@ -45,8 +51,14 @@ export class DefaultWatchedLambdaFunctionsService
         this.setData({});
     }
 
+    private getCacheKey(): string {
+        return this.deploymentId
+            ? `${WATCHED_LAMBDA_FUNCTIONS_KEY}-${this.deploymentId}`
+            : WATCHED_LAMBDA_FUNCTIONS_KEY;
+    }
+
     private getData(): WatchedLambdaFunctionsData {
-        const data = this.localStorageService.get(WATCHED_LAMBDA_FUNCTIONS_KEY);
+        const data = this.localStorageService.get(this.getCacheKey());
         if (!data) {
             return {};
         }
@@ -59,7 +71,7 @@ export class DefaultWatchedLambdaFunctionsService
     }
 
     private setData(data: WatchedLambdaFunctionsData): void {
-        this.localStorageService.set(WATCHED_LAMBDA_FUNCTIONS_KEY, data);
+        this.localStorageService.set(this.getCacheKey(), data);
     }
 }
 

@@ -229,6 +229,8 @@ export class DefaultWatch implements Watch.Interface {
 
         const deploymentId = coreStackOutput?.deploymentId;
 
+        this.watchedLambdaFunctionsService.setDeploymentId(deploymentId);
+
         const iotEndpointTopic = `webiny-watch-${deploymentId}`;
         const iotEndpoint = await getIotEndpoint(coreStackOutput);
 
