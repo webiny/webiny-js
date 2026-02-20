@@ -4,6 +4,7 @@ import { FileManagerApiProviderModule } from "~/modules/FileManagerApiProvider/i
 import { FileManagerRendererModule } from "~/modules/FileManagerRenderer/index.js";
 import { HeadlessCmsModule } from "~/modules/HeadlessCms/index.js";
 import { EnterpriseModule } from "~/modules/Enterprise/index.js";
+import { SecurityPermissions } from "./modules/SecurityPermissions.js";
 
 export const FileManager = () => {
     return (
@@ -13,6 +14,7 @@ export const FileManager = () => {
             <FileManagerRendererModule />
             <HeadlessCmsModule />
             <EnterpriseModule />
+            <SecurityPermissions />
         </>
     );
 };

@@ -111,5 +111,5 @@ export interface IRecordLockingError<T = GenericRecord> {
 }
 
 export interface RecordLockingSecurityPermission extends Identity.Permission {
-    canForceUnlock?: string;
+    canForceUnlock?: boolean;
 }

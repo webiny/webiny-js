@@ -7,7 +7,6 @@
     { "path": "../app-admin/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
     { "path": "../form/tsconfig.build.json" },
-    { "path": "../plugins/tsconfig.build.json" },
     { "path": "../ui/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" }
@@ -29,8 +28,6 @@
       "@webiny/error": ["../error/src"],
       "@webiny/form/*": ["../form/src/*"],
       "@webiny/form": ["../form/src"],
-      "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"],
       "@webiny/ui/*": ["../ui/src/*"],
       "@webiny/ui": ["../ui/src"],
       "@webiny/utils/*": ["../utils/src/*"],

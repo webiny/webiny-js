@@ -1,7 +1,7 @@
 import type { IDependencyTree } from "./types.js";
 import { DependencyTree } from "./DependencyTree.js";
 import type { PackageJson } from "type-fest";
-import loadJsonFile from "load-json-file";
+import { loadJsonFileSync } from "load-json-file";
 
 export interface IBuildDependencyTreeParams {
     basePath: string;
@@ -15,7 +15,7 @@ export class BuildDependencyTree {
         const tree = new DependencyTree();
         for (const file of files) {
             try {
-                const json = loadJsonFile.sync<PackageJson>(file);
+                const json = loadJsonFileSync<PackageJson>(file);
                 tree.push({
                     file: file.replace(basePath, ""),
                     json,

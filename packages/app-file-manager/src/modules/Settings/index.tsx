@@ -1,8 +1,6 @@
 import React from "react";
 import { AdminConfig, useRouter, AdminLayout } from "@webiny/app-admin";
-import { plugins } from "@webiny/plugins";
 import { HasPermission } from "@webiny/app-admin";
-import permissionRenderer from "./plugins/permissionRenderer/index.js";
 import { FileManagerSettings } from "./views/FileManagerSettings.js";
 import { Routes } from "~/routes.js";
 
@@ -10,7 +8,6 @@ const { Menu, Route } = AdminConfig;
 
 export const SettingsModule = () => {
     const { getLink } = useRouter();
-    plugins.register(permissionRenderer);
 
     return (
         <AdminConfig>

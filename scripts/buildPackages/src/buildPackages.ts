@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import yargs from "yargs";
-import writeJson from "write-json-file";
+import { writeJsonFileSync } from "write-json-file";
 import { Listr, ListrTask } from "listr2";
 import { getBatches } from "./getBatches";
 import { META_FILE_PATH } from "./constants";
@@ -109,7 +109,7 @@ export const buildPackages = async () => {
                                             currentMeta.packages[pkg.packageJson.name] = {
                                                 sourceHash
                                             };
-                                            await writeJson(META_FILE_PATH, currentMeta);
+                                            return writeJsonFileSync(META_FILE_PATH, currentMeta);
                                         });
                                     } catch (err) {
                                         ctx.skip = true;

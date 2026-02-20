@@ -1,5 +1,5 @@
-import loadJsonFile from "load-json-file";
-import type { IBasicPackage, IPackageJson } from "./types";
+import { loadJsonFileSync } from "load-json-file";
+import type { IBasicPackage, PackageJson } from "./types";
 import path from "path";
 import fs from "fs";
 import semver from "semver";
@@ -11,7 +11,7 @@ export interface IBasicPackageParams {
 
 interface IFindPackagesParams {
     collection: IBasicPackage[];
-    json: IPackageJson;
+    json: PackageJson;
     matching: RegExp;
 }
 
@@ -32,7 +32,7 @@ export class BasicPackages {
                 console.log(`File not found: ${target}`);
                 return collection;
             }
-            const json = loadJsonFile.sync<IPackageJson>(target);
+            const json = loadJsonFileSync<PackageJson>(target);
             return BasicPackages.findPackages({
                 collection,
                 json,

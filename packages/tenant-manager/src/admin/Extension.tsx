@@ -3,6 +3,7 @@ import { AdminConfig, HasPermission, RegisterFeature } from "@webiny/app-admin";
 import { useRouter } from "@webiny/app-admin";
 import { Routes } from "@webiny/app-headless-cms";
 import { ReactComponent as TenantIcon } from "@webiny/icons/business.svg";
+
 import { TenantEntryList } from "./TenantEntryList.js";
 import { CurrentTenantProvider } from "./CurrentTenantProvider.js";
 import { CurrentTenantFeature } from "./CurrentTenant/feature.js";
@@ -10,8 +11,8 @@ import { DisableTenantFeature } from "./DisableTenant/index.js";
 import { EnableTenantFeature } from "./EnableTenant/index.js";
 import { TenantSelector } from "./TenantSelector.js";
 import { IsRootTenant } from "./IsRootTenant.js";
-import { LegacyPermissionRenderer } from "./Permissions/LegacyPermissionRenderer.js";
 import { TENANT_MODEL_ID } from "~/shared/constants.js";
+import { SecurityPermission } from "./SecurityPermission.js";
 
 const { Menu } = AdminConfig;
 
@@ -25,14 +26,14 @@ export const Extension = () => {
     return (
         <>
             <RegisterFeature feature={CurrentTenantFeature} />
-            <RegisterFeature feature={DisableTenantFeature} />
-            <RegisterFeature feature={EnableTenantFeature} />
             <CurrentTenantProvider />
             <TenantSelector />
             <TenantEntryList />
-            <LegacyPermissionRenderer />
+            <SecurityPermission />
             <AdminConfig>
                 <IsRootTenant>
+                    <RegisterFeature feature={DisableTenantFeature} />
+                    <RegisterFeature feature={EnableTenantFeature} />
                     <HasPermission name={"tm.tenant"}>
                         <Menu
                             name="tenantManager"

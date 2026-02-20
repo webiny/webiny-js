@@ -2,7 +2,6 @@ import React from "react";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { useCmsData } from "./useCmsData.js";
 import type { BindComponent } from "@webiny/form/types.js";
-import type { CmsSecurityPermission } from "~/types.js";
 import { CheckboxGroup, FormComponentNote, Grid, Select } from "@webiny/admin-ui";
 import { PermissionsGroup } from "@webiny/app-admin";
 
@@ -10,7 +9,7 @@ const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
 interface ContentModelGroupPermissionProps {
     Bind: BindComponent;
-    data: CmsSecurityPermission;
+    data: Record<string, any>;
     entity: string;
     title: string;
     disabled?: boolean;

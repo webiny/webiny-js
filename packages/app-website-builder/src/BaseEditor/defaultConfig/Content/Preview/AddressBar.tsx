@@ -22,7 +22,7 @@ export const AddressBar = () => {
     }, [path, previewDomain]);
 
     return (
-        <div className="w-full h-[49px] flex flex-row p-sm bg-neutral-base border-solid border-b-sm border-neutral-dimmed">
+        <div className="w-full h-[49px] flex flex-row p-sm bg-neutral-base border-solid border-b-sm border-neutral-dimmed gap-sm">
             <div className={"relative flex-auto"}>
                 <div
                     className={
