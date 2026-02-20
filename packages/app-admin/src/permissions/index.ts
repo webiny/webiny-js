@@ -1,4 +1,5 @@
 export { createPermissionSchema } from "./createPermissionSchema.js";
+export { usePermissions } from "./usePermissions.js";
 export {
     usePermissionForm,
     deserializePermissions,
@@ -11,9 +12,11 @@ export type {
     Permission,
     ActionDefinition,
     EntityDefinition,
+    OwnableItem,
     PermissionSchemaConfig,
     PermissionSchema,
     UsePermissionFormOptions,
     UsePermissionFormResult,
+    UsePermissionsResult,
     PermissionRendererConfig
 } from "./types.js";

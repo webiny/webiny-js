@@ -16,6 +16,7 @@ import { PagesWidget } from "~/modules/widgets/PagesWidget.js";
 import { PageListFeature } from "~/presentation/pages/PageList/feature.js";
 import { Extension as NavigationExtension } from "./presentation/navigation/Extension.js";
 import { NextjsConfigFeature } from "~/presentation/navigation/NextjsConfig/feature.js";
+import { WB_PERMISSIONS_SCHEMA } from "~/constants.js";
 
 const { Security, Menu, Route, Dashboard } = AdminConfig;
 
@@ -36,10 +37,7 @@ export const Extension = () => {
                     title="Website Builder"
                     description="Manage Website Builder permissions."
                     icon={<PermissionsIcon />}
-                    schema={{
-                        prefix: "wb",
-                        fullAccess: { name: "wb.*" }
-                    }}
+                    schema={WB_PERMISSIONS_SCHEMA}
                 />
                 <HasPermission any={["wb.page", "wb.redirect"]}>
                     <Menu
@@ -58,7 +56,7 @@ export const Extension = () => {
                     />
                 </HasPermission>
 
-                <HasPermission any={["wb.page"]}>
+                <HasPermission name={"wb.page"}>
                     <Menu
                         name="wb.pagesLabel"
                         parent="Wb"
