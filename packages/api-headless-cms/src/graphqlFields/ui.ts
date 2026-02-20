@@ -1,4 +1,5 @@
 import type { CmsModelFieldToGraphQLPlugin } from "~/types/index.js";
+import { createGraphQLInputField } from "~/graphqlFields/helpers.js";
 
 export const createUiField = (): CmsModelFieldToGraphQLPlugin => {
     return {
@@ -17,8 +18,8 @@ export const createUiField = (): CmsModelFieldToGraphQLPlugin => {
             createTypeField({ field }) {
                 return `${field.fieldId}: String`;
             },
-            createInputField() {
-                return "";
+            createInputField({ field }) {
+                return createGraphQLInputField(field, "String");
             }
         }
     };
