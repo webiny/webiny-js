@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import cloneDeep from "lodash/cloneDeep.js";
 import { Dialog, Tabs } from "@webiny/admin-ui";
 import type { FormOnSubmit } from "@webiny/form";
@@ -9,7 +9,7 @@ import GeneralTab from "./EditFieldDialog/GeneralTab.js";
 import AppearanceTab from "./EditFieldDialog/AppearanceTab.js";
 import PredefinedValues from "./EditFieldDialog/PredefinedValues.js";
 import { ValidationTab } from "./EditFieldDialog/ValidationTab/index.js";
-import { useModelField, useModelEditor } from "~/admin/hooks/index.js";
+import { useModelEditor, useModelField } from "~/admin/hooks/index.js";
 import { ModelFieldProvider } from "~/admin/components/ModelFieldProvider/index.js";
 import { useRendererPlugins } from "~/admin/components/FieldEditor/EditFieldDialog/useRendererPlugins.js";
 import { getFieldValidators } from "~/admin/components/FieldEditor/EditFieldDialog/getValidators.js";
@@ -67,6 +67,14 @@ const EditFieldDialog = (props: EditFieldDialogProps) => {
 
         props.onSubmit(data, form);
     };
+
+    const isSubtypeField = useMemo(() => {
+        if (!field.type) {
+            return false;
+        }
+        const value = field.type.split(":");
+        return value.length > 1;
+    }, [field.type]);
 
     return (
         /**
@@ -139,6 +147,7 @@ const EditFieldDialog = (props: EditFieldDialogProps) => {
                                         trigger={t`Appearance`}
                                         value={"Appearance"}
                                         content={<AppearanceTab />}
+                                        disabled={isSubtypeField}
                                     />
                                 ]}
                             />

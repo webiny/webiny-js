@@ -38,6 +38,9 @@ const Editor = () => {
         dropTarget,
         getFieldPlugin
     } = useModelFieldEditor();
+    console.log({
+        fieldEditorFields: fields
+    });
 
     const canDropIntoField = (field: CmsModelField, draggable: DragSource) => {
         const fieldPlugin = getFieldPlugin(field.type) as CmsModelFieldTypePlugin;
@@ -285,6 +288,10 @@ export interface FieldEditorProps {
 }
 
 export const FieldEditor = (props: FieldEditorProps) => {
+    console.log({
+        FieldEditor: props.fields,
+        FieldEditorLayout: props.layout
+    });
     return (
         <FieldEditorProvider {...props}>
             <Editor />
