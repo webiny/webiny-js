@@ -1,7 +1,7 @@
 import os from "os";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
-import readJson from "load-json-file";
+import { loadJsonFileSync } from "load-json-file";
 import { writeJsonFileSync } from "write-json-file";
 import { isCI } from "ci-info";
 
@@ -12,7 +12,7 @@ export const globalConfig = {
     get(key) {
         try {
             if (!this.__globalConfig) {
-                this.__globalConfig = readJson.sync(GLOBAL_CONFIG_PATH);
+                this.__globalConfig = loadJsonFileSync(GLOBAL_CONFIG_PATH);
                 if (!this.__globalConfig.id) {
                     throw Error("Invalid Webiny config!");
                 }
@@ -37,7 +37,7 @@ export const globalConfig = {
     set(key, value) {
         const globalConfig = this.get();
         globalConfig[key] = value;
-        writeJson.sync(GLOBAL_CONFIG_PATH, globalConfig);
+        writeJsonFileSync(GLOBAL_CONFIG_PATH, globalConfig);
         return globalConfig;
     }
 };

@@ -3,7 +3,7 @@ import { AbstractGenerator } from "./AbstractGenerator";
 import { writeJsonFileSync } from "write-json-file";
 import type { PackageJson } from "type-fest";
 import findUp from "find-up";
-import { sync } from "load-json-file";
+import { loadJsonFileSync } from "load-json-file";
 
 export class LockedDepsGenerator extends AbstractGenerator {
     static override displayName = "Locked Deps Generator";
@@ -72,7 +72,7 @@ export class LockedDepsGenerator extends AbstractGenerator {
         const searchPath = path.join("node_modules", packageName, "package.json");
         const packageJson = findUp.sync(searchPath, { cwd: this.webinyPackage.paths.rootFolder });
         if (packageJson) {
-            const json = sync<PackageJson>(packageJson);
+            const json = loadJsonFileSync<PackageJson>(packageJson);
             return json?.version;
         }
 

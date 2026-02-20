@@ -1,6 +1,6 @@
 import os from "os";
 import path from "path";
-import readJson from "load-json-file";
+import { loadJsonFileSync } from "load-json-file";
 import { writeJsonFileSync } from "write-json-file";
 import { v4 as uuidv4 } from "uuid";
 
@@ -10,7 +10,7 @@ export class EnsureSystemWebinyConfig {
     execute() {
         // Check user ID
         try {
-            const config = readJson.sync<Record<string, any>>(configPath);
+            const config = loadJsonFileSync<Record<string, any>>(configPath);
             if (!config.id) {
                 throw Error("Invalid Webiny config.");
             }

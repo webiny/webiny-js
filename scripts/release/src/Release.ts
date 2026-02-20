@@ -1,7 +1,7 @@
 import pRetry from "p-retry";
 import semver from "semver";
 import execa from "execa";
-import loadJSON from "load-json-file";
+import { loadJsonFileSync } from "load-json-file";
 import { writeJsonFileSync } from "write-json-file";
 import { Octokit } from "@octokit/rest";
 import { Changelog } from "./Changelog";
@@ -232,6 +232,6 @@ export class Release {
     }
 
     __loadLernaJson(filename: string) {
-        return loadJSON.sync<Record<string, any>>(filename);
+        return loadJsonFileSync<Record<string, any>>(filename);
     }
 }

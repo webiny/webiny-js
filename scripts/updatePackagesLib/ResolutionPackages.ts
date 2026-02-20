@@ -1,5 +1,5 @@
 import type { IVersionedPackage, PackageJson } from "./types";
-import loadJsonFile from "load-json-file";
+import { loadJsonFileSync } from "load-json-file";
 import { writeJsonFileSync } from "write-json-file";
 import execa from "execa";
 
@@ -32,7 +32,7 @@ export class ResolutionPackages {
             throw new Error(`Cannot execute addToPackageJson() twice.`);
         }
         this.addedToResolutions = [];
-        const rootPackageJson = loadJsonFile.sync<PackageJson>(this.path);
+        const rootPackageJson = loadJsonFileSync<PackageJson>(this.path);
         for (const pkg of this.packages) {
             if (!rootPackageJson.resolutions) {
                 rootPackageJson.resolutions = {};
@@ -57,7 +57,7 @@ export class ResolutionPackages {
         if (this.skip || !this.addedToResolutions?.length) {
             return;
         }
-        const rootPackageJsonUp = loadJsonFile.sync<PackageJson>(this.path);
+        const rootPackageJsonUp = loadJsonFileSync<PackageJson>(this.path);
         if (!rootPackageJsonUp.resolutions) {
             return;
         }

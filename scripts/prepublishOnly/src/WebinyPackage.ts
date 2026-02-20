@@ -1,4 +1,4 @@
-import loadJson from "load-json-file";
+import { loadJsonFileSync } from "load-json-file";
 import { PackageJson } from "type-fest";
 import path from "path";
 import fs from "fs-extra";
@@ -34,13 +34,13 @@ export class WebinyPackage {
     getName() {
         return this.getPackageJson().name || "unknown-package";
     }
-    getPackageJson() {
+    getPackageJson(): PackageJson {
         if (this.packageJson) {
             return this.packageJson;
         }
 
-        this.packageJson = loadJson.sync<PackageJson>(this.paths.packageJsonFile);
-        return this.packageJson;
+        this.packageJson = loadJsonFileSync<PackageJson>(this.paths.packageJsonFile);
+        return this.packageJson as PackageJson;
     }
 
     isBuildablePackage() {

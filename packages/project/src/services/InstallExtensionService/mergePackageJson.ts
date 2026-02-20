@@ -1,4 +1,4 @@
-import loadJson from "load-json-file";
+import { loadJsonFileSync } from "load-json-file";
 import { writeJsonFileSync } from "write-json-file";
 import deepmerge from "deepmerge";
 
@@ -16,7 +16,7 @@ export const mergePackageJson = async (params: MergePackageJsonParams): Promise<
     const packageJsonPath = `${projectRoot}/package.json`;
 
     // Load the current package.json
-    const currentPackageJson = await loadJson<Record<string, any>>(packageJsonPath);
+    const currentPackageJson = await loadJsonFileSync<Record<string, any>>(packageJsonPath);
 
     // Merge the extension's package.json into the current one
     // Use deepmerge to combine arrays and objects properly

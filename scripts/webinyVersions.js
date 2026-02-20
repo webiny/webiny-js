@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-const readJson = require("load-json-file");
-const writeJson = require("write-json-file");
+const { writeJsonFileSync } = require("write-json-file");
 const getWorkspaces = require("get-yarn-workspaces");
 const { yellow, blue, cyan } = require("chalk");
+const { loadJsonFileSync } = require("load-json-file");
 const argv = require("yargs").argv;
 
 /**
@@ -21,7 +21,7 @@ const getPackages = pattern => {
         .map(path => {
             const packageJsonPath = path + "/package.json";
             try {
-                return { packageJsonPath, packageJson: readJson.sync(packageJsonPath) };
+                return { packageJsonPath, packageJson: loadJsonFileSync(packageJsonPath) };
             } catch {
                 console.log(yellow(`Ignoring ${path}/package.json`));
                 return null;
@@ -71,7 +71,7 @@ const PREVIEW = argv.preview;
         });
 
         if (depsCount || devDepsCount) {
-            !PREVIEW && (await writeJson(packageJsonPath, packageJson));
+            !PREVIEW && writeJsonFileSync(packageJsonPath, packageJson);
         } else {
             console.log("All up-to-date.");
         }
