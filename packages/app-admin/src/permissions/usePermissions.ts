@@ -98,20 +98,15 @@ function buildResult<S extends PermissionSchemaConfig>(
         }
         return permissions.some(permission => {
             if (permission.own) {
-                // New unsaved item (no createdBy) — allow access.
                 if (!item?.createdBy) {
                     return true;
                 }
-                if (item.createdBy.id === identity.id) {
-                    return true;
-                }
+                return item.createdBy.id === identity.id;
             }
-            if (typeof permission.rwd === "string") {
-                if (permission.rwd.includes("w")) {
-                    return true;
-                }
+            if (typeof permission.rwd !== "string") {
+                return true;
             }
-            return false;
+            return permission.rwd.includes("w");
         });
     };
 
@@ -128,10 +123,10 @@ function buildResult<S extends PermissionSchemaConfig>(
             if (permission.own) {
                 return item?.createdBy?.id === identity.id;
             }
-            if (typeof permission.rwd === "string") {
-                return permission.rwd.includes("d");
+            if (typeof permission.rwd !== "string") {
+                return true;
             }
-            return false;
+            return permission.rwd.includes("d");
         });
     };
 
