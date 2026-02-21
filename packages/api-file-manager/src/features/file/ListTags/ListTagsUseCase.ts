@@ -6,17 +6,16 @@ import {
     ListTagsRepository
 } from "./abstractions.js";
 import { FileNotAuthorizedError } from "~/domain/file/errors.js";
-import { FilePermissions } from "~/features/shared/abstractions.js";
+import { FmPermissions } from "~/features/shared/abstractions.js";
 
 class ListTagsUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
-        private filePermissions: FilePermissions.Interface,
+        private permissions: FmPermissions.Interface,
         private repository: ListTagsRepository.Interface
     ) {}
 
     async execute(input: ListTagsInput): Promise<Result<TagItem[], UseCaseAbstraction.Error>> {
-        // Check permission (ensure() with no args checks basic access)
-        const hasPermission = await this.filePermissions.ensure();
+        const hasPermission = await this.permissions.canAccess("file");
         if (!hasPermission) {
             return Result.fail(new FileNotAuthorizedError());
         }
@@ -38,5 +37,5 @@ class ListTagsUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const ListTagsUseCase = UseCaseAbstraction.createImplementation({
     implementation: ListTagsUseCaseImpl,
-    dependencies: [FilePermissions, ListTagsRepository]
+    dependencies: [FmPermissions.Abstraction, ListTagsRepository]
 });

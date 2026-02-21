@@ -1,13 +1,9 @@
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { ContextPlugin } from "@webiny/api";
-import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import type { FilePermission, SettingsPermission } from "~/types.js";
 import { setupAssetDelivery } from "./delivery/setupAssetDelivery.js";
 import { createGraphQLSchemaPlugin } from "./graphql/index.js";
 import { FileManagerFeature } from "~/features/FileManagerFeature.js";
-import { FilesPermissions as FilePermissionsImpl } from "~/permissions/FilesPermissions.js";
-import { SettingsPermissions as SettingsPermissionsImpl } from "~/permissions/SettingsPermissions.js";
-import { FilePermissions, SettingsPermissions } from "~/features/shared/abstractions.js";
+import { FmPermissions } from "~/permissions/schema.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { FileModel as FileModelAbstraction } from "~/domain/file/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
@@ -32,22 +28,7 @@ export const createFileManagerContext = () => {
             context.container.registerInstance(FileModelAbstraction, fileModel.value);
         });
 
-        const identityContext = context.container.resolve(IdentityContext);
-
-        const filePermissions = new FilePermissionsImpl({
-            getIdentity: () => identityContext.getIdentity(),
-            getPermissions: () => identityContext.getPermissions<FilePermission>("fm.file"),
-            fullAccessPermissionName: "fm.*"
-        });
-
-        const settingsPermissions = new SettingsPermissionsImpl({
-            getIdentity: () => identityContext.getIdentity(),
-            getPermissions: () => identityContext.getPermissions<SettingsPermission>("fm.settings"),
-            fullAccessPermissionName: "fm.*"
-        });
-
-        context.container.registerInstance(FilePermissions, filePermissions);
-        context.container.registerInstance(SettingsPermissions, settingsPermissions);
+        context.container.register(FmPermissions.Implementation);
 
         FileManagerFeature.register(context.container);
     });

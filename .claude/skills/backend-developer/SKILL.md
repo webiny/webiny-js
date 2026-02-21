@@ -177,7 +177,7 @@ class CreateEntityUseCase implements UseCaseAbstraction.Interface {
   ) {}
 
   async execute(input: ICreateEntityInput): UseCaseAbstraction.Return {
-    // Authorization checks.
+    // Authorization checks (low-level approach; prefer createPermissions — see Schema-Based Permissions section).
     if (!this.identityContext.getPermission("mypackage.entity")) {
       return Result.fail(
         new NotAuthorizedError({
@@ -1140,6 +1140,114 @@ export default PermissionTransformer.createImplementation({
 
 ---
 
+## Schema-Based Permissions (`createPermissions`)
+
+Use `createPermissions` to define a typed permissions object from the same schema used by the admin UI. This replaces manual `identityContext.getPermission()` calls with high-level methods like `canRead`, `canCreate`, `canEdit`, `canDelete`, `canAccess`, `onlyOwnRecords`, `canPublish`, `canUnpublish`, and `canAction`.
+
+### Defining Permissions (`permissions/schema.ts`)
+
+```typescript
+import { createPermissions } from "@webiny/api-core/features/security/permissions/index.js";
+import type { Permissions } from "@webiny/api-core/features/security/permissions/index.js";
+
+const schema = {
+  prefix: "fm",
+  fullAccess: { name: "fm.*" },
+  entities: [
+    {
+      id: "file",
+      permission: "fm.file",
+      scopes: ["full", "own"],
+      actions: [{ name: "rwd" }]
+    },
+    {
+      id: "settings",
+      permission: "fm.settings",
+      scopes: ["full"]
+    }
+  ]
+} as const;
+
+type FmSchema = typeof schema;
+
+export const FmPermissions = createPermissions(schema);
+
+export namespace FmPermissions {
+  export type Interface = Permissions<FmSchema>;
+}
+```
+
+`createPermissions` returns `{ Abstraction, Implementation }`. The `Abstraction` is a DI token; the `Implementation` is the auto-registered class. The namespace re-exports `Permissions<FmSchema>` as `.Interface` for consumers.
+
+### Re-exporting from shared abstractions
+
+```typescript
+// features/shared/abstractions.ts
+export { FmPermissions } from "~/permissions/schema.js";
+```
+
+### Using in a Use Case
+
+Inject `FmPermissions.Abstraction` as a dependency. The resolved type is `FmPermissions.Interface`, which has typed entity IDs — only `"file"` and `"settings"` are accepted.
+
+```typescript
+import { FmPermissions } from "~/features/shared/abstractions.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+
+class ListFilesUseCaseImpl implements UseCaseAbstraction.Interface {
+  constructor(
+    private permissions: FmPermissions.Interface,
+    private identityContext: IdentityContext.Interface,
+    private repository: ListFilesRepository.Interface
+  ) {}
+
+  async execute(input: ListFilesInput) {
+    // Gate: does the identity have read access to files at all?
+    if (!(await this.permissions.canRead("file"))) {
+      return Result.fail(new FileNotAuthorizedError());
+    }
+
+    const where: ListFilesInput["where"] = { ...(input.where || {}) };
+
+    // Query filter: is this identity restricted to own records?
+    if (await this.permissions.onlyOwnRecords("file")) {
+      const identity = this.identityContext.getIdentity();
+      where.createdBy = identity.id;
+    }
+
+    return this.repository.execute({ ...input, where });
+  }
+}
+
+export const ListFilesUseCase = UseCaseAbstraction.createImplementation({
+  implementation: ListFilesUseCaseImpl,
+  dependencies: [FmPermissions.Abstraction, IdentityContext, ListFilesRepository]
+});
+```
+
+### Available Methods
+
+| Method | Signature | Purpose |
+|---|---|---|
+| `canAccess` | `(entityId, item?) → boolean` | Can the identity access this entity? If `item` is provided, checks ownership when scope is `own`. |
+| `onlyOwnRecords` | `(entityId) → boolean` | Is the identity restricted to own records? Use for query-level filtering. |
+| `canRead` | `(entityId) → boolean` | Has `r` in `rwd` (or full access). |
+| `canCreate` | `(entityId) → boolean` | Has `w` in `rwd` (or full access). |
+| `canEdit` | `(entityId, item?) → boolean` | Has `w` in `rwd`, respecting ownership. |
+| `canDelete` | `(entityId, item?) → boolean` | Has `d` in `rwd`, respecting ownership. |
+| `canPublish` | `(entityId) → boolean` | Has `p` in `pw`. |
+| `canUnpublish` | `(entityId) → boolean` | Has `u` in `pw`. |
+| `canAction` | `(action, entityId) → boolean` | Custom boolean action (e.g. `"import"`). |
+
+All methods return `Promise<boolean>` and short-circuit to `true`/`false` for full-access identities.
+
+### `canAccess` vs `onlyOwnRecords`
+
+- **`canAccess(entityId, item?)`** — gate check. "Can this identity access this entity/item?" Use for single-item operations (get, update, delete). When `item` is provided and all permissions require `own`, verifies `item.createdBy.id === identity.id`.
+- **`onlyOwnRecords(entityId)`** — query filter flag. "Is this identity restricted to own records?" Use for list operations to add a `createdBy` filter. Returns `false` for full access, schema full access, or no permissions; returns `true` only when every permission for the entity requires `own`.
+
+---
+
 ## Scoping Rules
 
 | Layer          | Scope                                 | Rationale                          |
@@ -1196,6 +1304,7 @@ To discover existing system features, read `ai-context/core-features-reference.m
 - [ ] Root Extension registers model, schemas, and features.
 - [ ] GraphQL schema implements `GraphQLSchemaFactory.Interface`.
 - [ ] Domain events have handler abstractions with `Interface` + `Event` namespace.
+- [ ] Permissions use `createPermissions` with a schema matching the admin UI, not raw `getPermission()`.
 - [ ] `index.ts` exports abstractions only -- no features, no event classes, no implementations.
 - [ ] All relative imports use `.js` extension.
 - [ ] One class per file, one import per line.

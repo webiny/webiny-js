@@ -9,27 +9,26 @@ import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
 import type { File } from "~/domain/file/types.js";
 import { FileNotAuthorizedError } from "~/domain/file/errors.js";
 import { FileBeforeUpdateEvent, FileAfterUpdateEvent } from "./events.js";
-import { FilePermissions } from "~/features/shared/abstractions.js";
-import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
+import { FmPermissions } from "~/features/shared/abstractions.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { Identity } from "~/domain/identity/Identity.js";
 
 class UpdateFileUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private identityContext: IdentityContext.Interface,
-        private filePermissions: FilePermissions.Interface,
+        private permissions: FmPermissions.Interface,
         private getFile: GetFileUseCase.Interface,
         private repository: UpdateFileRepository.Interface,
         private eventPublisher: EventPublisher.Interface
     ) {}
 
     async execute(input: UpdateFileInput): Promise<Result<File, UseCaseAbstraction.Error>> {
-        // Check write permission
-        const hasPermission = await this.filePermissions.ensure({ rwd: "w" });
+        const hasPermission = await this.permissions.canEdit("file");
         if (!hasPermission) {
             return Result.fail(new FileNotAuthorizedError());
         }
 
-        // Get the original file (includes ownership check)
+        // Get the original file (includes ownership check).
         const getResult = await this.getFile.execute(input.id);
 
         if (getResult.isFail()) {
@@ -38,8 +37,9 @@ class UpdateFileUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const original = getResult.value;
 
-        const isOwn = await this.filePermissions.ensure({ owns: original.createdBy });
-        if (!isOwn) {
+        // Check ownership-aware edit permission.
+        const canEditFile = await this.permissions.canEdit("file", original);
+        if (!canEditFile) {
             return Result.fail(new FileNotAuthorizedError());
         }
 
@@ -48,15 +48,15 @@ class UpdateFileUseCaseImpl implements UseCaseAbstraction.Interface {
         const file: File = {
             ...original,
             ...input,
-            // Preserve immutable fields
+            // Preserve immutable fields.
             id: original.id,
             key: original.key,
             size: original.size,
             type: original.type,
-            // Update mutable fields
+            // Update mutable fields.
             tags: input.tags !== undefined ? input.tags : original.tags,
             location: input.location !== undefined ? input.location : original.location,
-            // System fields
+            // System fields.
             createdOn: input.createdOn ?? original.createdOn,
             modifiedOn: input.modifiedOn ?? undefined,
             savedOn: input.savedOn ?? original.savedOn,
@@ -85,7 +85,7 @@ export const UpdateFileUseCase = UseCaseAbstraction.createImplementation({
     implementation: UpdateFileUseCaseImpl,
     dependencies: [
         IdentityContext,
-        FilePermissions,
+        FmPermissions.Abstraction,
         GetFileUseCase,
         UpdateFileRepository,
         EventPublisher
