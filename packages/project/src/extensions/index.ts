@@ -6,6 +6,8 @@ import { Telemetry } from "./Telemetry.js";
 import { EnvVar } from "./EnvVar.js";
 import { DatabaseSetup } from "./DatabaseSetup.js";
 import { Wcp, wcpDefinitions } from "./Wcp.js";
+import { BuildParam } from "./ApiBuildParam.js";
+import { AdminBuildParam } from "./AdminBuildParam.js";
 
 // Hooks.
 import {
@@ -52,6 +54,8 @@ export { ExtensionDefinitions };
 export { EnvVar };
 export { DatabaseSetup };
 export { Wcp };
+export { BuildParam };
+export { AdminBuildParam };
 
 // Hooks.
 export { BeforeBuild };
@@ -124,6 +128,8 @@ export const definitions = [
     ApiStackOutputValue.def,
     AdminStackOutputValue.def,
     DatabaseSetup.def,
+    BuildParam.def,
+    AdminBuildParam.def,
     ...wcpDefinitions
 ];
 
