@@ -64,7 +64,7 @@
     "sass": "^1.97.3",
     "storybook": "^9.1.19",
     "typescript": "5.9.3",
-    "vitest": "^3.2.4"
+    "vitest": "^4.0.18"
   },
   "publishConfig": {
     "access": "public",
