@@ -5,14 +5,22 @@ import {
 } from "@webiny/api-core/features/EventPublisher";
 import { CreatePageUseCase as UseCaseAbstraction, CreatePageRepository } from "./abstractions.js";
 import { PageBeforeCreateEvent, PageAfterCreateEvent } from "./events.js";
+import { WbPermissions } from "~/domain/permissions.js";
+import { PageNotAuthorizedError } from "~/domain/page/errors.js";
 
 class CreatePageUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
+        private permissions: WbPermissions.Interface,
         private eventPublisher: EventPublisherAbstraction.Interface,
         private repository: CreatePageRepository.Interface
     ) {}
 
     async execute(data: UseCaseAbstraction.Params): UseCaseAbstraction.Return {
+        const hasPermission = await this.permissions.canCreate("page");
+        if (!hasPermission) {
+            return Result.fail(new PageNotAuthorizedError());
+        }
+
         // Publish before create event
         const beforeCreateEvent = new PageBeforeCreateEvent({ input: data });
 
@@ -38,5 +46,5 @@ class CreatePageUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const CreatePageUseCase = UseCaseAbstraction.createImplementation({
     implementation: CreatePageUseCaseImpl,
-    dependencies: [EventPublisher, CreatePageRepository]
+    dependencies: [WbPermissions.Abstraction, EventPublisher, CreatePageRepository]
 });

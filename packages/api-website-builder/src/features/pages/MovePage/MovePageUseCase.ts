@@ -6,15 +6,23 @@ import {
 import { MovePageUseCase as UseCaseAbstraction, MovePageRepository } from "./abstractions.js";
 import { PageBeforeMoveEvent, PageAfterMoveEvent } from "./events.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
+import { WbPermissions } from "~/domain/permissions.js";
+import { PageNotAuthorizedError } from "~/domain/page/errors.js";
 
 class MovePageUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
+        private permissions: WbPermissions.Interface,
         private eventPublisher: EventPublisherAbstraction.Interface,
         private getPageById: GetPageByIdUseCase.Interface,
         private repository: MovePageRepository.Interface
     ) {}
 
     async execute(params: UseCaseAbstraction.Params): UseCaseAbstraction.Return {
+        const hasPermission = await this.permissions.canEdit("page");
+        if (!hasPermission) {
+            return Result.fail(new PageNotAuthorizedError());
+        }
+
         // Get the original page for events
         const getResult = await this.getPageById.execute(params.id);
 
@@ -23,6 +31,11 @@ class MovePageUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         const original = getResult.value;
+
+        const canEdit = await this.permissions.canEdit("page", original);
+        if (!canEdit) {
+            return Result.fail(new PageNotAuthorizedError());
+        }
 
         // Publish before move event
         const beforeEvent = new PageBeforeMoveEvent({
@@ -55,5 +68,10 @@ class MovePageUseCaseImpl implements UseCaseAbstraction.Interface {
 export const MovePageUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: MovePageUseCaseImpl,
-    dependencies: [EventPublisher, GetPageByIdUseCase, MovePageRepository]
+    dependencies: [
+        WbPermissions.Abstraction,
+        EventPublisher,
+        GetPageByIdUseCase,
+        MovePageRepository
+    ]
 });

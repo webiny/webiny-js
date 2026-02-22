@@ -23,6 +23,7 @@ import {
 } from "~/modules/pages/PagesList/components/BulkActions/index.js";
 import { FilterByStatus } from "~/modules/pages/PagesList/components/Filters/index.js";
 import { StaticPageForm } from "~/modules/pages/PagesList/components/Main/CreatePage/StaticPageForm.js";
+import { HasPermission } from "~/presentation/security/HasPermission.js";
 
 const { Browser } = InternalPageListConfig;
 
@@ -39,16 +40,26 @@ export const PagesListConfig = () => {
                 <Browser.Folder.Action name={"edit"} element={<EditFolder />} />
                 <Browser.Folder.Action name={"permissions"} element={<SetFolderPermissions />} />
                 <Browser.Folder.Action name={"delete"} element={<DeleteFolder />} />
-                <Browser.Page.Action name={"edit"} element={<Edit />} />
+                <HasPermission entity={"page"} action={"edit"}>
+                    <Browser.Page.Action name={"edit"} element={<Edit />} />
+                    <Browser.Page.Action name={"moveToFolder"} element={<Move />} />
+                    <Browser.BulkAction name={"movePages"} element={<BulkActionMovePage />} />
+                </HasPermission>
                 <Browser.Page.Action name={"changeStatus"} element={<ChangeStatus />} />
-                <Browser.Page.Action name={"duplicate"} element={<Duplicate />} />
-                <Browser.Page.Action name={"moveToFolder"} element={<Move />} />
-                <Browser.Page.Action name={"delete"} element={<Delete />} />
-                <Browser.BulkAction name={"publishPages"} element={<BulkActionPublish />} />
-                <Browser.BulkAction name={"unpublishPages"} element={<BulkActionUnpublish />} />
-                <Browser.BulkAction name={"duplicatePages"} element={<BulkActionDuplicate />} />
-                <Browser.BulkAction name={"movePages"} element={<BulkActionMovePage />} />
-                <Browser.BulkAction name={"deletePages"} element={<BulkActionDelete />} />
+                <HasPermission entity={"page"} action={"create"}>
+                    <Browser.Page.Action name={"duplicate"} element={<Duplicate />} />
+                    <Browser.BulkAction name={"duplicatePages"} element={<BulkActionDuplicate />} />
+                </HasPermission>
+                <HasPermission entity={"page"} action={"delete"}>
+                    <Browser.Page.Action name={"delete"} element={<Delete />} />
+                    <Browser.BulkAction name={"deletePages"} element={<BulkActionDelete />} />
+                </HasPermission>
+                <HasPermission entity={"page"} action={"publish"}>
+                    <Browser.BulkAction name={"publishPages"} element={<BulkActionPublish />} />
+                </HasPermission>
+                <HasPermission entity={"page"} action={"unpublish"}>
+                    <Browser.BulkAction name={"unpublishPages"} element={<BulkActionUnpublish />} />
+                </HasPermission>
                 <Browser.Table.Column
                     name={"name"}
                     header={"Name"}

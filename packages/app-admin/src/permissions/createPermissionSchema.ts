@@ -1,9 +1,8 @@
-import type { PermissionSchemaConfig, PermissionSchema } from "./types.js";
+import type { PermissionSchemaConfig } from "./types.js";
 
-export function createPermissionSchema(config: PermissionSchemaConfig): PermissionSchema {
+export function createPermissionSchema<const T extends PermissionSchemaConfig>(config: T): T {
     return {
-        prefix: config.prefix,
-        fullAccess: config.fullAccess,
+        ...config,
         entities: config.entities ?? []
     };
 }

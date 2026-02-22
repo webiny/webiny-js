@@ -9,15 +9,23 @@ import {
 } from "./abstractions.js";
 import { PageBeforeUnpublishEvent, PageAfterUnpublishEvent } from "./events.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
+import { WbPermissions } from "~/domain/permissions.js";
+import { PageNotAuthorizedError } from "~/domain/page/errors.js";
 
 class UnpublishPageUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
+        private permissions: WbPermissions.Interface,
         private eventPublisher: EventPublisherAbstraction.Interface,
         private getPageById: GetPageByIdUseCase.Interface,
         private repository: UnpublishPageRepository.Interface
     ) {}
 
     async execute(params: UseCaseAbstraction.Params): UseCaseAbstraction.Return {
+        const hasPermission = await this.permissions.canUnpublish("page");
+        if (!hasPermission) {
+            return Result.fail(new PageNotAuthorizedError());
+        }
+
         // Get the page first for the before event
         const getResult = await this.getPageById.execute(params.id);
 
@@ -26,6 +34,11 @@ class UnpublishPageUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         const page = getResult.value;
+
+        const canAccess = await this.permissions.canAccess("page", page);
+        if (!canAccess) {
+            return Result.fail(new PageNotAuthorizedError());
+        }
 
         // Publish before unpublish event
         const beforeEvent = new PageBeforeUnpublishEvent({
@@ -54,5 +67,10 @@ class UnpublishPageUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const UnpublishPageUseCase = UseCaseAbstraction.createImplementation({
     implementation: UnpublishPageUseCaseImpl,
-    dependencies: [EventPublisher, GetPageByIdUseCase, UnpublishPageRepository]
+    dependencies: [
+        WbPermissions.Abstraction,
+        EventPublisher,
+        GetPageByIdUseCase,
+        UnpublishPageRepository
+    ]
 });

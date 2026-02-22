@@ -2,7 +2,11 @@ import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { IEventHandler } from "@webiny/api-core/features/EventPublisher";
 import type { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import type { WbRedirect } from "~/domain/redirect/abstractions.js";
-import { RedirectPersistenceError, RedirectValidationError } from "~/domain/redirect/errors.js";
+import {
+    RedirectPersistenceError,
+    RedirectValidationError,
+    RedirectNotAuthorizedError
+} from "~/domain/redirect/errors.js";
 
 // ============================================================================
 // Type Definitions
@@ -49,6 +53,7 @@ export interface ICreateRedirectUseCase {
 }
 
 export interface ICreateRedirectUseCaseErrors {
+    notAuthorized: RedirectNotAuthorizedError;
     validation: RedirectValidationError;
     persistence: RedirectPersistenceError;
 }

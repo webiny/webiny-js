@@ -6,12 +6,12 @@ import {
     ListFilesRepository
 } from "./abstractions.js";
 import { FileNotAuthorizedError } from "~/domain/file/errors.js";
-import { FilePermissions } from "~/features/shared/abstractions.js";
-import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
+import { FmPermissions } from "~/features/shared/abstractions.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 class ListFilesUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
-        private filePermissions: FilePermissions.Interface,
+        private permissions: FmPermissions.Interface,
         private identityContext: IdentityContext.Interface,
         private repository: ListFilesRepository.Interface
     ) {}
@@ -19,19 +19,18 @@ class ListFilesUseCaseImpl implements UseCaseAbstraction.Interface {
     async execute(
         input: ListFilesInput
     ): Promise<Result<ListFilesOutput, UseCaseAbstraction.Error>> {
-        // Check read permission
-        const hasPermission = await this.filePermissions.ensure({ rwd: "r" });
+        const hasPermission = await this.permissions.canRead("file");
         if (!hasPermission) {
             return Result.fail(new FileNotAuthorizedError());
         }
 
-        // Build where clause
+        // Build where clause.
         const where: ListFilesInput["where"] = {
             ...(input.where || {})
         };
 
-        // Filter by createdBy if user can only access own records
-        if (await this.filePermissions.canAccessOnlyOwnRecords()) {
+        // Filter by createdBy if user can only access own records.
+        if (await this.permissions.onlyOwnRecords("file")) {
             const identity = this.identityContext.getIdentity();
             where.createdBy = identity.id;
         }
@@ -53,5 +52,5 @@ class ListFilesUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const ListFilesUseCase = UseCaseAbstraction.createImplementation({
     implementation: ListFilesUseCaseImpl,
-    dependencies: [FilePermissions, IdentityContext, ListFilesRepository]
+    dependencies: [FmPermissions.Abstraction, IdentityContext, ListFilesRepository]
 });

@@ -9,14 +9,14 @@ import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
 import type { File, FileInput } from "~/domain/file/types.js";
 import { FileNotAuthorizedError, InvalidFileSizeError } from "~/domain/file/errors.js";
 import { FileBeforeCreateEvent, FileAfterCreateEvent } from "./events.js";
-import { FilePermissions } from "~/features/shared/abstractions.js";
+import { FmPermissions } from "~/features/shared/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { Identity } from "~/domain/identity/Identity.js";
 
 class CreateFileUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private identityContext: IdentityContext.Interface,
-        private filePermissions: FilePermissions.Interface,
+        private permissions: FmPermissions.Interface,
         private repository: CreateFileRepository.Interface,
         private getSettings: GetSettingsUseCase.Interface,
         private eventPublisher: EventPublisher.Interface
@@ -26,7 +26,7 @@ class CreateFileUseCaseImpl implements UseCaseAbstraction.Interface {
         input: CreateFileInput,
         meta?: Record<string, any>
     ): Promise<Result<File, UseCaseAbstraction.Error>> {
-        const hasPermission = await this.filePermissions.ensure({ rwd: "w" });
+        const hasPermission = await this.permissions.canCreate("file");
         if (!hasPermission) {
             return Result.fail(new FileNotAuthorizedError());
         }
@@ -109,7 +109,7 @@ export const CreateFileUseCase = UseCaseAbstraction.createImplementation({
     implementation: CreateFileUseCaseImpl,
     dependencies: [
         IdentityContext,
-        FilePermissions,
+        FmPermissions.Abstraction,
         CreateFileRepository,
         GetSettingsUseCase,
         EventPublisher

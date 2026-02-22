@@ -6,16 +6,19 @@ import {
 import { DeletePageUseCase as UseCaseAbstraction, DeletePageRepository } from "./abstractions.js";
 import { PageBeforeDeleteEvent, PageAfterDeleteEvent } from "./events.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
+import { WbPermissions } from "~/domain/permissions.js";
+import { PageNotAuthorizedError } from "~/domain/page/errors.js";
 
 class DeletePageUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
+        private permissions: WbPermissions.Interface,
         private eventPublisher: EventPublisherAbstraction.Interface,
         private getPageById: GetPageByIdUseCase.Interface,
         private repository: DeletePageRepository.Interface
     ) {}
 
     async execute(params: UseCaseAbstraction.Params): UseCaseAbstraction.Return {
-        // Get the page first to include in events
+        // Get the page first to include in events and for item-level permission check
         const getResult = await this.getPageById.execute(params.id);
 
         if (getResult.isFail()) {
@@ -23,6 +26,11 @@ class DeletePageUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         const page = getResult.value;
+
+        const canDelete = await this.permissions.canDelete("page", page);
+        if (!canDelete) {
+            return Result.fail(new PageNotAuthorizedError());
+        }
 
         // Publish before delete event
         const beforeEvent = new PageBeforeDeleteEvent({
@@ -51,5 +59,10 @@ class DeletePageUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const DeletePageUseCase = UseCaseAbstraction.createImplementation({
     implementation: DeletePageUseCaseImpl,
-    dependencies: [EventPublisher, GetPageByIdUseCase, DeletePageRepository]
+    dependencies: [
+        WbPermissions.Abstraction,
+        EventPublisher,
+        GetPageByIdUseCase,
+        DeletePageRepository
+    ]
 });

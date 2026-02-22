@@ -13,6 +13,7 @@ export const PublishButton = () => {
     const { showSuccessToast } = useToast();
     const { publishPage } = usePublishPage();
     const { showDialog } = useDialogs();
+
     const folderId = useSelectFromDocument<string, EditorPage>(
         document => document.location.folderId
     );

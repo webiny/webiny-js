@@ -1,7 +1,11 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { DomainEvent, IEventHandler } from "@webiny/api-core/features/EventPublisher";
 import type { WbPage } from "~/domain/page/abstractions.js";
-import { PagePersistenceError, PageValidationError } from "~/domain/page/errors.js";
+import {
+    PagePersistenceError,
+    PageValidationError,
+    PageNotAuthorizedError
+} from "~/domain/page/errors.js";
 
 // ============================================================================
 // Type Definitions
@@ -46,6 +50,7 @@ export interface ICreatePageUseCase {
 }
 
 export interface ICreatePageUseCaseErrors {
+    notAuthorized: PageNotAuthorizedError;
     validation: PageValidationError;
     persistence: PagePersistenceError;
 }
