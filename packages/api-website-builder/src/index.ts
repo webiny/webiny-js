@@ -27,8 +27,7 @@ import { createRedirectModel, REDIRECT_MODEL_ID } from "~/domain/redirect/redire
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { PageModel } from "~/domain/page/abstractions.js";
 import { RedirectModel } from "~/domain/redirect/abstractions.js";
-import { PagePermissionsFeature } from "~/features/pages/PagePermissions/feature.js";
-import { RedirectPermissionsFeature } from "~/features/redirects/RedirectPermissions/feature.js";
+import { WbPermissions } from "~/domain/permissions.js";
 import { ApiKeyInstallerFeature } from "~/features/installer/feature.js";
 import { NextjsGraphQLSchema } from "~/graphql/nextjs/NextjsGraphQLSchema.js";
 import { NextjsFeature } from "~/features/nextjs/feature.js";
@@ -58,6 +57,9 @@ const createContext = () => {
                 container.registerInstance(RedirectModel, redirectModel.value);
             });
 
+            // Register permissions
+            container.register(WbPermissions.Implementation);
+
             // Register features
             GetRedirectByIdFeature.register(container);
             ListRedirectsFeature.register(container);
@@ -79,8 +81,6 @@ const createContext = () => {
             UnpublishPageFeature.register(container);
             DuplicatePageFeature.register(container);
             MovePageFeature.register(container);
-            PagePermissionsFeature.register(container);
-            RedirectPermissionsFeature.register(container);
             ApiKeyInstallerFeature.register(container);
             NextjsFeature.register(container);
             // TenantModelExtensionFeature.register(container);

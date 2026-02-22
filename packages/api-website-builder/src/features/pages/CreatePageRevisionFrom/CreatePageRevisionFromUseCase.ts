@@ -8,14 +8,30 @@ import {
     CreatePageRevisionFromRepository
 } from "./abstractions.js";
 import { PageBeforeCreateRevisionFromEvent, PageAfterCreateRevisionFromEvent } from "./events.js";
+import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
+import { WbPermissions } from "~/domain/permissions.js";
+import { PageNotAuthorizedError } from "~/domain/page/errors.js";
 
 class CreatePageRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
+        private permissions: WbPermissions.Interface,
         private eventPublisher: EventPublisherAbstraction.Interface,
+        private getPageById: GetPageByIdUseCase.Interface,
         private repository: CreatePageRevisionFromRepository.Interface
     ) {}
 
     async execute(params: UseCaseAbstraction.Params): UseCaseAbstraction.Return {
+        const hasPermission = await this.permissions.canCreate("page");
+        if (!hasPermission) {
+            return Result.fail(new PageNotAuthorizedError());
+        }
+
+        // Verify ownership of the source page
+        const getResult = await this.getPageById.execute(params.id);
+        if (getResult.isFail()) {
+            return getResult;
+        }
+
         // Publish before event
         const beforeEvent = new PageBeforeCreateRevisionFromEvent({
             params
@@ -45,5 +61,10 @@ class CreatePageRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface 
 
 export const CreatePageRevisionFromUseCase = UseCaseAbstraction.createImplementation({
     implementation: CreatePageRevisionFromUseCaseImpl,
-    dependencies: [EventPublisher, CreatePageRevisionFromRepository]
+    dependencies: [
+        WbPermissions.Abstraction,
+        EventPublisher,
+        GetPageByIdUseCase,
+        CreatePageRevisionFromRepository
+    ]
 });

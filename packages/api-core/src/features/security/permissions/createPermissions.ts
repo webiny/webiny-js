@@ -1,6 +1,5 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { IdentityContext } from "~/features/security/IdentityContext/index.js";
-import type { SecurityPermission } from "~/types/security.js";
 import type { PermissionSchemaConfig } from "./types.js";
 import type { OwnableItem } from "./types.js";
 import type { Permissions } from "./types.js";

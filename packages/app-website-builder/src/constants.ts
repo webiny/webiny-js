@@ -38,14 +38,14 @@ export const WB_PERMISSIONS_SCHEMA = createPermissionSchema({
         {
             id: "page",
             title: "Page",
-            scopes: ["full"],
+            scopes: ["full", "own"],
             actions: [{ name: "rwd" }, { name: "pw" }],
             permission: "wb.page"
         },
         {
             id: "redirect",
             title: "Redirect",
-            scopes: ["full"],
+            scopes: ["full", "own"],
             actions: [{ name: "rwd" }],
             permission: "wb.redirect"
         },

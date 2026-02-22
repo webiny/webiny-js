@@ -1,7 +1,11 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
 import type { WbPage } from "~/domain/page/abstractions.js";
-import type { PageNotFoundError, PagePersistenceError } from "~/domain/page/errors.js";
+import type {
+    PageNotFoundError,
+    PagePersistenceError,
+    PageNotAuthorizedError
+} from "~/domain/page/errors.js";
 
 /**
  * GetPageByPath repository interface
@@ -35,6 +39,7 @@ export interface IGetPageByPathUseCase {
 }
 
 export interface IGetPageByPathUseCaseErrors {
+    notAuthorized: PageNotAuthorizedError;
     notFound: PageNotFoundError;
     persistence: PagePersistenceError;
 }

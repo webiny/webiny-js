@@ -2,7 +2,10 @@ import type { Result } from "@webiny/feature/api";
 import { createAbstraction } from "@webiny/feature/api";
 import type { CmsEntryListSort } from "@webiny/api-headless-cms/types/index.js";
 import type { WbRedirect } from "~/domain/redirect/abstractions.js";
-import type { RedirectPersistenceError } from "~/domain/redirect/errors.js";
+import type {
+    RedirectPersistenceError,
+    RedirectNotAuthorizedError
+} from "~/domain/redirect/errors.js";
 
 // ============================================================================
 // Type Definitions
@@ -10,6 +13,7 @@ import type { RedirectPersistenceError } from "~/domain/redirect/errors.js";
 
 export interface IListWbRedirectsWhere {
     latest?: boolean;
+    createdBy?: string;
     redirectFrom?: string;
     redirectFrom_not?: string;
     redirectFrom_in?: string[];
@@ -79,6 +83,7 @@ export interface IListRedirectsUseCase {
 }
 
 export interface IListRedirectsUseCaseErrors {
+    notAuthorized: RedirectNotAuthorizedError;
     persistence: RedirectPersistenceError;
 }
 
