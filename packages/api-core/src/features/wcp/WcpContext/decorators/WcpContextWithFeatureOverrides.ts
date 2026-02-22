@@ -1,6 +1,6 @@
 import type { WCP_FEATURE_LABEL } from "@webiny/wcp";
 import { WcpContext } from "../abstractions.js";
-import { WcpFeatureOverrides } from "../../WcpFeatureOverride/abstractions.js";
+import { WcpFeatureOverrides } from "../../WcpFeatureFlags/abstractions.js";
 
 class WcpContextWithFeatureOverridesImpl implements WcpContext.Interface {
     constructor(
