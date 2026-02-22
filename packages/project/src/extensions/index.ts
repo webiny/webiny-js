@@ -8,6 +8,7 @@ import { DatabaseSetup } from "./DatabaseSetup.js";
 import { Wcp, wcpDefinitions } from "./Wcp.js";
 import { BuildParam } from "./ApiBuildParam.js";
 import { AdminBuildParam } from "./AdminBuildParam.js";
+import { AdminExtension } from "./AdminExtension.js";
 
 // Hooks.
 import {
@@ -56,6 +57,7 @@ export { DatabaseSetup };
 export { Wcp };
 export { BuildParam };
 export { AdminBuildParam };
+export { AdminExtension };
 
 // Hooks.
 export { BeforeBuild };
@@ -130,6 +132,7 @@ export const definitions = [
     DatabaseSetup.def,
     BuildParam.def,
     AdminBuildParam.def,
+    AdminExtension.def,
     ...wcpDefinitions
 ];
 
