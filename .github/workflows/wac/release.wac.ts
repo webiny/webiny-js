@@ -10,6 +10,7 @@ import {
 } from "./steps";
 
 const BRANCH_NAME = "${{ github.event.inputs.branch }}";
+const DIST_TAG = "${{ github.event.inputs.tag }}";
 
 const installBuildSteps = createInstallBuildSteps({ workingDirectory: BRANCH_NAME });
 const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: BRANCH_NAME });
@@ -27,6 +28,11 @@ export const release = createWorkflow({
                     default: "next",
                     type: "choice",
                     options: ["next", "dev", "v5-dev"]
+                },
+                tag: {
+                    description: "NPM tag",
+                    required: false,
+                    default: "beta"
                 }
             }
         }
@@ -65,7 +71,7 @@ export const release = createWorkflow({
         }),
         npmReleaseBeta: createJob({
             needs: ["constants", "build"],
-            name: 'NPM release ("beta" tag)',
+            name: `NPM release ("${DIST_TAG}" tag)`,
             env: {
                 GH_TOKEN: "${{ secrets.GH_TOKEN }}",
                 NPM_TOKEN: "${{ secrets.NPM_TOKEN }}",
@@ -93,7 +99,7 @@ export const release = createWorkflow({
                         {
                             name: 'Version and publish "beta" tag to NPM',
                             "working-directory": BRANCH_NAME,
-                            run: "yarn release --type=beta"
+                            run: `yarn release --type=beta --tag=${DIST_TAG}`
                         }
                     ],
                     { "working-directory": BRANCH_NAME }
@@ -135,7 +141,7 @@ export const release = createWorkflow({
                         {
                             name: 'Version and publish "latest" tag to NPM',
                             "working-directory": BRANCH_NAME,
-                            run: "yarn release --type=latest"
+                            run: `yarn release --type=latest --sourceTag=${DIST_TAG}`
                         }
                     ],
                     { "working-directory": BRANCH_NAME }

@@ -9,7 +9,7 @@ export class UnstableRelease extends Release {
         this.setTag("unstable");
         this.setVersion(() => {
             const { stdout: commitHash } = execa.sync("git", ["rev-parse", "--short", "HEAD"]);
-            return `0.0.0-${this.tag}.${commitHash}`;
+            return `0.0.0-${this.distTag}.${commitHash}`;
         });
         this.setCreateGithubRelease(false);
     }
