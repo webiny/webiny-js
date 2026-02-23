@@ -1,5 +1,4 @@
 import React from "react";
-import type { FileItemDto } from "@webiny/admin-ui";
 import { FilePicker } from "@webiny/admin-ui";
 import type { ElementInputRendererProps } from "~/BaseEditor/index.js";
 import { FileManager, type FileManagerFileItem } from "@webiny/app-admin";
@@ -17,27 +16,21 @@ export const FileInputRenderer = ({
     const input = props.input as FileInput;
     const { isBaseBreakpoint } = useBreakpoint();
     const onFileChange = (file: FileManagerFileItem) => {
-        onChange(({ value, metadata }) => {
+        onChange(({ value }) => {
             const newValue = fileManagerItemToValue(file);
             value.set(newValue);
-
-            metadata.set("image", newValue);
         });
     };
 
     const onRemove = () => {
-        onChange(({ value, metadata }) => {
+        onChange(({ value }) => {
             if (isBaseBreakpoint) {
                 value.set(undefined);
             } else {
                 value.set(null);
             }
-            metadata.unset("image");
         });
     };
-
-    const fileInfo = metadata.get<FileItemDto>("image");
-    const preview = value ? fileInfo : undefined;
 
     return (
         <FileManager
@@ -48,7 +41,7 @@ export const FileInputRenderer = ({
                     label={label}
                     description={input.description}
                     type="compact"
-                    value={preview}
+                    value={value}
                     onSelectItem={() => showFileManager()}
                     onRemoveItem={onRemove}
                     onEditItem={() => showFileManager()}
