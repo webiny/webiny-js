@@ -1,8 +1,11 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
-import { Compose, Decorator, makeDecoratable } from "@webiny/react-composition";
-import { GenericComponent } from "@webiny/react-composition/types";
-import { Property, Properties, toObject } from "~/index";
-import { useDebugConfig } from "./useDebugConfig";
+import type { Decorator } from "@webiny/react-composition";
+import { Compose, makeDecoratable } from "@webiny/react-composition";
+import type { GenericComponent } from "@webiny/react-composition/types.js";
+import type { Property } from "~/index.js";
+import { Properties, toObject } from "~/index.js";
+import { useDebugConfig } from "./useDebugConfig.js";
+import debounce from "lodash/debounce.js";
 
 const createHOC =
     (newChildren: React.ReactNode): Decorator<GenericComponent<{ children?: React.ReactNode }>> =>
@@ -86,8 +89,10 @@ export function createConfigurableComponent<TConfig>(name: string) {
             <ViewContext.Provider value={context}>
                 <Properties onChange={stateUpdater}>
                     <ConfigApplyPrimary />
-                    <ConfigApplySecondary />
-                    {children}
+                    <DebounceRenderer>
+                        <ConfigApplySecondary />
+                        <DebounceRenderer>{children}</DebounceRenderer>
+                    </DebounceRenderer>
                 </Properties>
             </ViewContext.Provider>
         );
@@ -97,6 +102,35 @@ export function createConfigurableComponent<TConfig>(name: string) {
         const { properties } = useContext(ViewContext);
         return useMemo(() => toObject<TConfig & TExtra>(properties), [properties]);
     }
+
+    interface Props {
+        children?: React.ReactNode;
+    }
+
+    const DebounceRenderer = ({ children }: Props) => {
+        const [render, setRender] = useState(false);
+        const editorConfig = useConfig();
+
+        const debouncedRender = useMemo(() => {
+            return debounce(() => {
+                setRender(true);
+            }, 10);
+        }, [setRender]);
+
+        useEffect(() => {
+            if (render) {
+                return;
+            }
+
+            debouncedRender();
+
+            return () => {
+                debouncedRender.cancel();
+            };
+        }, [editorConfig]);
+
+        return <>{render ? children : null}</>;
+    };
 
     return {
         WithConfig,
