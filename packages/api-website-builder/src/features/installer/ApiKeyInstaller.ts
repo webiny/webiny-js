@@ -2,6 +2,7 @@ import { AppInstaller } from "@webiny/api-core/features/InstallTenant";
 import { CreateApiKeyUseCase } from "@webiny/api-core/features/security/apiKeys/CreateApiKey/index.js";
 import { DeleteApiKeyUseCase } from "@webiny/api-core/features/security/apiKeys/DeleteApiKey/index.js";
 import type { ApiKey } from "@webiny/api-core/types/security.js";
+import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 
 class ApiKeyInstallerImpl implements AppInstaller.Interface {
     readonly alwaysRun = true;
@@ -10,16 +11,21 @@ class ApiKeyInstallerImpl implements AppInstaller.Interface {
     private apiKey: ApiKey | undefined = undefined;
 
     constructor(
+        private wcpContext: WcpContext.Interface,
         private createApiKey: CreateApiKeyUseCase.Interface,
         private deleteApiKey: DeleteApiKeyUseCase.Interface
     ) {}
 
     async install(): Promise<void> {
+        const aacl = this.wcpContext.canUseAacl();
+
+        const permissions = aacl ? [{ name: "wb.page", rwd: "r" }] : [{ name: "wb.*" }];
+
         const result = await this.createApiKey.execute({
             name: "Website Builder",
             description: "Integrate Next.js or custom frontend with Website Builder.",
             slug: "website-builder",
-            permissions: [{ name: "wb.*" }]
+            permissions
         });
 
         if (result.isOk()) {
@@ -36,5 +42,5 @@ class ApiKeyInstallerImpl implements AppInstaller.Interface {
 
 export const ApiKeyInstaller = AppInstaller.createImplementation({
     implementation: ApiKeyInstallerImpl,
-    dependencies: [CreateApiKeyUseCase, DeleteApiKeyUseCase]
+    dependencies: [WcpContext, CreateApiKeyUseCase, DeleteApiKeyUseCase]
 });
