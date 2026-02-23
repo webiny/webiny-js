@@ -36,11 +36,7 @@ import {
     SystemInstalled
 } from "./eventHandlers/index.js";
 
-// Generic extension that supports any API abstraction.
-import { GenericExtension } from "./GenericExtension.js";
-
 // Exports.
-export { GenericExtension };
 export { ApiKeyBeforeCreate };
 export { ApiKeyAfterCreate };
 export { ApiKeyBeforeUpdate };
@@ -84,7 +80,6 @@ export { SystemInstalled };
 
 // Definitions (used internally). 👇
 export const definitions = [
-    GenericExtension.def,
     ApiKeyBeforeCreate.def,
     ApiKeyAfterCreate.def,
     ApiKeyBeforeUpdate.def,

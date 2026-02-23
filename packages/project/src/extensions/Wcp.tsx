@@ -30,9 +30,9 @@ const featureFlagsSchema = z.object({
         .optional()
 });
 
-export type WcpFeatureFlagsInput = z.infer<typeof featureFlagsSchema>;
+export type FeatureFlagsInput = z.infer<typeof featureFlagsSchema>;
 
-const WcpFeatureFlagsExtension = defineExtension({
+const FeatureFlagsExtension = defineExtension({
     type: "Wcp/FeatureFlags",
     tags: { runtimeContext: "project" },
     description: "Enable or disable WCP features.",
@@ -50,8 +50,8 @@ const WcpFeatureFlagsExtension = defineExtension({
 });
 
 export const Wcp = {
-    FeatureFlags: WcpFeatureFlagsExtension
+    FeatureFlags: FeatureFlagsExtension
 };
 
-export const wcpDefinitions = [WcpFeatureFlagsExtension.def];
+export const wcpDefinitions = [FeatureFlagsExtension.def];
 

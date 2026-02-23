@@ -9,6 +9,7 @@ import { Wcp, wcpDefinitions } from "./Wcp.js";
 import { BuildParam } from "./ApiBuildParam.js";
 import { AdminBuildParam } from "./AdminBuildParam.js";
 import { AdminExtension } from "./AdminExtension.js";
+import { GenericExtension } from "./GenericExtension.js";
 
 // Hooks.
 import {
@@ -58,6 +59,7 @@ export { Wcp };
 export { BuildParam };
 export { AdminBuildParam };
 export { AdminExtension };
+export { GenericExtension };
 
 // Hooks.
 export { BeforeBuild };
@@ -133,6 +135,7 @@ export const definitions = [
     BuildParam.def,
     AdminBuildParam.def,
     AdminExtension.def,
+    GenericExtension.def,
     ...wcpDefinitions
 ];
 

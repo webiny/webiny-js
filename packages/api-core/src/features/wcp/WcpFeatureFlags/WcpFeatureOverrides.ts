@@ -2,7 +2,7 @@ import { WcpFeatureOverrides as WcpFeatureOverridesAbstraction } from "./abstrac
 import { BuildParams } from "../../buildParams/abstractions.js";
 import type { WcpFeatureFlags } from "@webiny/wcp/types.js";
 
-class WcpFeatureOverridesImpl implements WcpFeatureOverridesAbstraction.Interface {
+class WcpFeatureFlags implements WcpFeatureOverridesAbstraction.Interface {
     constructor(private buildParams: BuildParams.Interface) {}
 
     isEnabled(featureName: string): boolean {
@@ -38,6 +38,6 @@ class WcpFeatureOverridesImpl implements WcpFeatureOverridesAbstraction.Interfac
 }
 
 export const WcpFeatureOverrides = WcpFeatureOverridesAbstraction.createImplementation({
-    implementation: WcpFeatureOverridesImpl,
+    implementation: WcpFeatureFlags,
     dependencies: [BuildParams]
 });

@@ -2,7 +2,7 @@ import type { WCP_FEATURE_LABEL } from "@webiny/wcp";
 import { WcpContext } from "../abstractions.js";
 import { WcpFeatureOverrides } from "../../WcpFeatureFlags/abstractions.js";
 
-class WcpContextWithFeatureOverridesImpl implements WcpContext.Interface {
+class WcpContextWithFeatureFlagsImpl implements WcpContext.Interface {
     constructor(
         private overrides: WcpFeatureOverrides.Interface,
         private decoratee: WcpContext.Interface
@@ -91,7 +91,7 @@ class WcpContextWithFeatureOverridesImpl implements WcpContext.Interface {
     }
 }
 
-export const WcpContextWithFeatureOverrides = WcpContext.createDecorator({
-    decorator: WcpContextWithFeatureOverridesImpl,
+export const WcpContextWithFeatureFlags = WcpContext.createDecorator({
+    decorator: WcpContextWithFeatureFlagsImpl,
     dependencies: [WcpFeatureOverrides]
 });

@@ -1,4 +1,4 @@
-import { defineApiExtension } from "@webiny/project/defineExtension";
+import { defineApiExtension } from "~/defineExtension/index.js";
 
 export const GenericExtension = defineApiExtension({
     type: "Api/Extension",
