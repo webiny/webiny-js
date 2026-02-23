@@ -1,0 +1,273 @@
+[
+  {
+    "component": "Webiny/Hero",
+    "inputs": {
+      "title": "ProFlow X1 — The Ultimate Productivity Tool",
+      "description": {
+        "html": "<p>Designed for professionals who demand more. ProFlow X1 combines cutting-edge technology with an intuitive interface to help you accomplish more in less time.</p>"
+      },
+      "footerText": {
+        "html": "<p><strong>Free shipping</strong> on orders over $99 &nbsp;·&nbsp; <strong>30-day</strong> money-back guarantee &nbsp;·&nbsp; <strong>2-year</strong> warranty</p>"
+      }
+    }
+  },
+  {
+    "component": "Webiny/Grid",
+    "inputs": {
+      "gridLayout": "4-4-4",
+      "rowCount": 1,
+      "columnGap": 32,
+      "rowGap": 0,
+      "stackAtBreakpoint": "tablet",
+      "reverseWhenStacked": false,
+      "columns": [
+        {
+          "children": {
+            "action": "CreateElement",
+            "params": {
+              "component": "Webiny/GridColumn",
+              "inputs": {
+                "children": [
+                  {
+                    "action": "CreateElement",
+                    "params": {
+                      "component": "Webiny/Lexical",
+                      "inputs": {
+                        "content": {
+                          "html": "<h3>Lightning Fast</h3><p>Built on a next-generation engine that processes tasks up to 10x faster than competitors. No more waiting — just results.</p>"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "children": {
+            "action": "CreateElement",
+            "params": {
+              "component": "Webiny/GridColumn",
+              "inputs": {
+                "children": [
+                  {
+                    "action": "CreateElement",
+                    "params": {
+                      "component": "Webiny/Lexical",
+                      "inputs": {
+                        "content": {
+                          "html": "<h3>Smart Automation</h3><p>Let ProFlow X1 handle repetitive tasks automatically with AI-powered workflows that learn from your habits and preferences.</p>"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "children": {
+            "action": "CreateElement",
+            "params": {
+              "component": "Webiny/GridColumn",
+              "inputs": {
+                "children": [
+                  {
+                    "action": "CreateElement",
+                    "params": {
+                      "component": "Webiny/Lexical",
+                      "inputs": {
+                        "content": {
+                          "html": "<h3>Seamless Integration</h3><p>Connect with over 200 tools you already use. ProFlow X1 fits right into your existing workflow without disruption.</p>"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "component": "Webiny/Grid",
+    "inputs": {
+      "gridLayout": "6-6",
+      "rowCount": 1,
+      "columnGap": 48,
+      "rowGap": 0,
+      "stackAtBreakpoint": "mobile",
+      "reverseWhenStacked": false,
+      "columns": [
+        {
+          "children": {
+            "action": "CreateElement",
+            "params": {
+              "component": "Webiny/GridColumn",
+              "inputs": {
+                "children": [
+                  {
+                    "action": "CreateElement",
+                    "params": {
+                      "component": "Webiny/Lexical",
+                      "inputs": {
+                        "content": {
+                          "html": "<h2>Everything you need, nothing you don't</h2><p>ProFlow X1 was built after interviewing 5,000+ professionals across industries. Every feature earns its place.</p><ul><li>Unified dashboard for all your projects</li><li>Real-time collaboration with your team</li><li>Advanced analytics and reporting</li><li>Customizable workflows and templates</li><li>Enterprise-grade security and compliance</li></ul>"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "children": {
+            "action": "CreateElement",
+            "params": {
+              "component": "Webiny/GridColumn",
+              "inputs": {
+                "children": [
+                  {
+                    "action": "CreateElement",
+                    "params": {
+                      "component": "Webiny/Lexical",
+                      "inputs": {
+                        "content": {
+                          "html": "<h2>Pricing</h2><p><strong>Starter</strong> — $29/mo<br/>Up to 5 users, 10 projects, 5 GB storage</p><p><strong>Professional</strong> — $79/mo<br/>Up to 25 users, unlimited projects, 50 GB storage</p><p><strong>Enterprise</strong> — Contact us<br/>Unlimited users, SSO, dedicated support, SLA</p><p><a href=\"/get-started\">Start your free 14-day trial →</a></p>"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "component": "Webiny/Box",
+    "inputs": {
+      "children": [
+        {
+          "action": "CreateElement",
+          "params": {
+            "component": "Webiny/Lexical",
+            "inputs": {
+              "content": {
+                "html": "<h2>What our customers say</h2>"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "component": "Webiny/Grid",
+    "inputs": {
+      "gridLayout": "4-4-4",
+      "rowCount": 1,
+      "columnGap": 24,
+      "rowGap": 0,
+      "stackAtBreakpoint": "tablet",
+      "reverseWhenStacked": false,
+      "columns": [
+        {
+          "children": {
+            "action": "CreateElement",
+            "params": {
+              "component": "Webiny/GridColumn",
+              "inputs": {
+                "children": [
+                  {
+                    "action": "CreateElement",
+                    "params": {
+                      "component": "Webiny/Lexical",
+                      "inputs": {
+                        "content": {
+                          "html": "<blockquote><p>\"ProFlow X1 cut our project delivery time in half. I can't imagine going back.\"</p><footer>— Sarah K., Head of Engineering at Acme Corp</footer></blockquote>"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "children": {
+            "action": "CreateElement",
+            "params": {
+              "component": "Webiny/GridColumn",
+              "inputs": {
+                "children": [
+                  {
+                    "action": "CreateElement",
+                    "params": {
+                      "component": "Webiny/Lexical",
+                      "inputs": {
+                        "content": {
+                          "html": "<blockquote><p>\"The automation features alone saved us 20 hours a week. The ROI was immediate.\"</p><footer>— Marcus T., Operations Director at TechFlow Inc</footer></blockquote>"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "children": {
+            "action": "CreateElement",
+            "params": {
+              "component": "Webiny/GridColumn",
+              "inputs": {
+                "children": [
+                  {
+                    "action": "CreateElement",
+                    "params": {
+                      "component": "Webiny/Lexical",
+                      "inputs": {
+                        "content": {
+                          "html": "<blockquote><p>\"Best investment our team made this year. Setup took 10 minutes, value was immediate.\"</p><footer>— Priya N., Product Manager at Vertex Labs</footer></blockquote>"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "component": "Webiny/Box",
+    "inputs": {
+      "children": [
+        {
+          "action": "CreateElement",
+          "params": {
+            "component": "Webiny/Lexical",
+            "inputs": {
+              "content": {
+                "html": "<h2>Ready to transform the way you work?</h2><p>Join 50,000+ professionals already using ProFlow X1.</p><p><a href=\"/get-started\">Get started free</a> &nbsp; <a href=\"/demo\">Book a demo</a></p>"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+]
