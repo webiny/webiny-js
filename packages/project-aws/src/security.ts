@@ -33,7 +33,7 @@ import {
     TenantAfterDelete,
     TenantInstalled,
     SystemInstalled
-} from "@webiny/api-core/extensions/index.js";
+} from "@webiny/api-core/extensions/eventHandlers/index.js";
 
 export const Security = {
     ApiKey: {
