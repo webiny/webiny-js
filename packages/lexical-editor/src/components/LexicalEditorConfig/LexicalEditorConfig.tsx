@@ -1,58 +1,25 @@
-import React, { useContext, useMemo, useState } from "react";
-import { makeDecoratable, Compose, Decorator, GenericComponent } from "@webiny/react-composition";
-import { Property, Properties, toObject } from "@webiny/react-properties";
-import { ToolbarElement, ToolbarElementConfig } from "./components/ToolbarElement";
-import { Plugin, PluginConfig } from "./components/Plugin";
-import { Node, NodeConfig } from "./components/Node";
+import { useMemo } from "react";
+import { createConfigurableComponent } from "@webiny/react-properties";
+import type { ToolbarElementConfig } from "./components/ToolbarElement.js";
+import { ToolbarElement } from "./components/ToolbarElement.js";
+import type { PluginConfig } from "./components/Plugin.js";
+import { Plugin } from "./components/Plugin.js";
+import type { NodeConfig } from "./components/Node.js";
+import { Node } from "./components/Node.js";
 
-const LexicalEditorConfigApply = makeDecoratable("LexicalEditorConfigApply", ({ children }) => {
-    return <>{children}</>;
+export type { ToolbarElementConfig } from "./components/ToolbarElement.js";
+export type { PluginConfig } from "./components/Plugin.js";
+export type { NodeConfig } from "./components/Node.js";
+
+const base = createConfigurableComponent<LexicalEditorConfigData>("LexicalEditor");
+
+export const LexicalEditorConfig = Object.assign(base.Config, {
+    ToolbarElement,
+    Plugin,
+    Node
 });
 
-const createHOC =
-    (newChildren: React.ReactNode): Decorator<GenericComponent> =>
-    BaseComponent => {
-        return function ConfigHOC({ children }) {
-            return (
-                <BaseComponent>
-                    {newChildren}
-                    {children}
-                </BaseComponent>
-            );
-        };
-    };
-
-export const LexicalEditorConfig = ({ children }: { children: React.ReactNode }) => {
-    return <Compose component={LexicalEditorConfigApply} with={createHOC(children)} />;
-};
-
-LexicalEditorConfig.ToolbarElement = ToolbarElement;
-LexicalEditorConfig.Plugin = Plugin;
-LexicalEditorConfig.Node = Node;
-
-interface ViewContext {
-    properties: Property[];
-}
-
-const ViewContext = React.createContext<ViewContext>({ properties: [] });
-
-export const LexicalEditorWithConfig = ({ children }: { children: React.ReactNode }) => {
-    const [properties, setProperties] = useState<Property[]>([]);
-    const context = { properties };
-
-    const stateUpdater = (properties: Property[]) => {
-        setProperties(properties);
-    };
-
-    return (
-        <ViewContext.Provider value={context}>
-            <Properties onChange={stateUpdater}>
-                <LexicalEditorConfigApply />
-                {children}
-            </Properties>
-        </ViewContext.Provider>
-    );
-};
+export const LexicalEditorWithConfig = base.WithConfig;
 
 interface LexicalEditorConfigData {
     toolbarElements: ToolbarElementConfig[];
@@ -60,16 +27,18 @@ interface LexicalEditorConfigData {
     nodes: NodeConfig[];
 }
 
-export function useLexicalEditorConfig() {
-    const { properties } = useContext(ViewContext);
+export function useLexicalEditorConfig(): LexicalEditorConfigData {
+    const config = base.useConfig();
+    const toolbarElements = config.toolbarElements || [];
+    const plugins = config.plugins || [];
+    const nodes = config.nodes || [];
 
-    const config = useMemo(() => {
-        return toObject<LexicalEditorConfigData>(properties);
-    }, [properties]);
-
-    return {
-        toolbarElements: config.toolbarElements || [],
-        plugins: config.plugins || [],
-        nodes: config.nodes || []
-    };
+    return useMemo(
+        () => ({
+            toolbarElements: [...toolbarElements],
+            plugins: [...plugins],
+            nodes: [...nodes]
+        }),
+        [config]
+    );
 }
