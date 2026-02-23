@@ -1,13 +1,14 @@
 import React from "react";
-import { Admin, Api, Cli, Infra, Project, Security } from "webiny/extensions";
+import { Api, Cli, Infra, Project, Security } from "webiny/extensions";
 import { Cognito } from "@webiny/cognito";
 // import { MyIdpExtension } from "./extensions/idp/okta/MyIdpExtension.js";
 
 export const Extensions = () => {
     return (
         <>
-            <Admin.Extension src={"@/extensions/customPageTypes/index.tsx"} />
             {/* Admin 👇 */}
+            {/*<Admin.Extension src={"@/extensions/sampleEcommerce/index.tsx"} />*/}
+            {/*<Admin.Extension src={"@/extensions/customPageTypes/index.tsx"} />*/}
             {/*<Admin.Extension src={"@/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />*/}
             {/*<Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />*/}
             {/*<Admin.BuildParam paramName="ADMIN_CUSTOM_PARAM" value="adminValue" />*/}
