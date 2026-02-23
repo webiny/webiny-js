@@ -36,6 +36,9 @@ export const useCreatePageDialog = (folderId: string) => {
                     properties: {
                         ...(formData.properties ?? {})
                     },
+                    extensions: {
+                        ...(formData.extensions ?? {})
+                    },
                     metadata: {
                         documentType: "page",
                         pageType: type,

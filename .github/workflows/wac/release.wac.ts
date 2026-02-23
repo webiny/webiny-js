@@ -30,7 +30,7 @@ export const release = createWorkflow({
                     options: ["next", "dev", "v5-dev"]
                 },
                 tag: {
-                    description: "NPM tag",
+                    description: `NPM tag (in most cases, "beta" is what you need)`,
                     required: false,
                     default: "beta"
                 }

@@ -1,13 +1,12 @@
 import React from "react";
-import { Grid, Input, Select } from "@webiny/admin-ui";
-import { pagePathFromTitle } from "@webiny/app-website-builder";
-import type { FormAPI } from "@webiny/form";
-import { Bind, UnsetOnUnmount, useForm } from "@webiny/form";
-import { validation } from "@webiny/validation";
+import { Grid, Input, Select } from "webiny/admin/ui";
+import { pagePathFromTitle } from "webiny/admin/website-builder";
+import type { FormApi } from "webiny/admin/form";
+import { Bind, UnsetOnUnmount, useForm, validation } from "webiny/admin/form";
 
-const generatePath = (form: FormAPI) => () => {
+const generatePath = (form: FormApi) => () => {
     const title = form.getValue("properties.title");
-    const language = form.getValue("properties.language");
+    const language = form.getValue("extensions.language");
 
     const titlePath = pagePathFromTitle(title ?? "");
     const parts = [language, titlePath].filter(Boolean);
@@ -28,9 +27,9 @@ export const RetailPageForm = () => {
                 </UnsetOnUnmount>
             </Grid.Column>
             <Grid.Column span={12}>
-                <UnsetOnUnmount name={"properties.language"}>
+                <UnsetOnUnmount name={"extensions.language"}>
                     <Bind
-                        name={"properties.language"}
+                        name={"extensions.language"}
                         validators={[validation.create("required")]}
                         afterChange={generatePath(form)}
                     >

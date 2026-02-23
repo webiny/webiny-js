@@ -7,7 +7,13 @@ import { CreatePageRevisionFrom } from "~/features/pages/createPageRevisionFrom/
 
 export const useCreatePageRevisionFrom = () => {
     const client = useApolloClient();
-    const fields = useGetPageGraphQLFields(["properties", "metadata", "bindings", "elements"]);
+    const fields = useGetPageGraphQLFields([
+        "properties",
+        "metadata",
+        "bindings",
+        "elements",
+        "extensions"
+    ]);
     const gateway = new CreatePageRevisionFromGqlGateway(client, fields);
 
     const createPageRevisionFrom = useCallback(

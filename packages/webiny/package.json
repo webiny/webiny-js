@@ -81,6 +81,7 @@
     "./admin/aco": "./admin/aco.js",
     "./admin/buildParams": "./admin/buildParams.js",
     "./admin/configs": "./admin/configs.js",
+    "./admin/form": "./admin/form.js",
     "./admin/tenancy": "./admin/tenancy.js",
     "./admin/cms/entry/editor": "./admin/cms/entry/editor.js",
     "./admin/cms/entry/list": "./admin/cms/entry/list.js",
