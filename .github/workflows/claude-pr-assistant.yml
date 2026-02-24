@@ -1,0 +1,63 @@
+name: Claude PR Assistant
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  claude-pr:
+    # Trigger on PR comments (not plain issue comments) that mention @claude
+    # issue_comment on a PR has pull_request defined; pull_request_review* always qualify
+    if: |
+      (
+        (github.event_name == 'issue_comment' &&
+         github.event.issue.pull_request != null &&
+         contains(github.event.comment.body, '@claude'))
+        ||
+        (github.event_name == 'pull_request_review_comment' &&
+         contains(github.event.comment.body, '@claude'))
+        ||
+        (github.event_name == 'pull_request_review' &&
+         contains(github.event.review.body, '@claude'))
+      )
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git identity
+        run: |
+          git config user.name "claude-code[bot]"
+          git config user.email "claude-code[bot]@users.noreply.github.com"
+
+      - name: Run Claude – PR assistant
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # No direct_prompt here – Claude reads the @claude comment automatically
+          claude_args: >-
+            --max-turns 20
+          allowed_tools: >-
+            Bash(git checkout:*),
+            Bash(git add:*),
+            Bash(git commit:*),
+            Bash(git push:*),
+            Bash(git diff:*),
+            Bash(gh pr view:*),
+            Bash(gh pr comment:*),
+            Read,
+            Write,
+            Glob,
+            Grep
