@@ -34,7 +34,6 @@ import { ContentModelFeature } from "~/features/contentModel/ContentModelFeature
 import { ModelBuilderFeature } from "~/features/modelBuilder/index.js";
 import { CmsWhereMapperFeature } from "~/features/whereMapper/feature.js";
 import { CmsSortMapperFeature } from "~/features/sortMapper/feature.js";
-import Settings from "~/settingsModel.js";
 
 const getParameters = async (context: CmsContext): Promise<CmsParametersPluginResponse> => {
     const plugins = context.plugins.byType<CmsParametersPlugin>(CmsParametersPlugin.type);
@@ -171,8 +170,6 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
 
         CmsWhereMapperFeature.register(context.container);
         CmsSortMapperFeature.register(context.container);
-
-        context.container.register(Settings);
 
         if (!storageOperations.init) {
             return;
