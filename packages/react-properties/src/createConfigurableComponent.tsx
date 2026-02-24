@@ -1,11 +1,12 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
+import debounce from "lodash/debounce.js";
 import type { Decorator } from "@webiny/react-composition";
 import { Compose, makeDecoratable } from "@webiny/react-composition";
 import type { GenericComponent } from "@webiny/react-composition/types.js";
-import type { Property } from "~/index.js";
-import { Properties, toObject } from "~/index.js";
-import { useDebugConfig } from "./useDebugConfig.js";
-import debounce from "lodash/debounce.js";
+import type { Property } from "./Properties";
+import { Properties } from "./Properties";
+import { toObject } from "./utils";
+import { useDebugConfig } from "./useDebugConfig";
 
 const createHOC =
     (newChildren: React.ReactNode): Decorator<GenericComponent<{ children?: React.ReactNode }>> =>

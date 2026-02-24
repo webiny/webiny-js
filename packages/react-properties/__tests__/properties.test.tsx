@@ -40,7 +40,8 @@ const Field = ({ name, label, replace, after, before, remove = false }: FieldPro
     const placeBefore = before !== undefined ? `${id}:field:${before}` : undefined;
 
     const getId = useCallback(
-        (suffix = undefined) => [id, "field", name, suffix].filter(Boolean).join(":"),
+        (suffix: string | undefined = undefined) =>
+            [id, "field", name, suffix].filter(Boolean).join(":"),
         []
     );
     const toReplace = replace !== undefined ? `${id}:field:${replace}` : undefined;
