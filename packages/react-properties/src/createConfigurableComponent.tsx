@@ -5,6 +5,7 @@ import type { GenericComponent } from "@webiny/react-composition/types.js";
 import type { Property } from "~/index.js";
 import { Properties, toObject } from "~/index.js";
 import { useDebugConfig } from "./useDebugConfig.js";
+import { PropertyPriorityProvider } from "./PropertyPriority.js";
 
 const createHOC =
     (newChildren: React.ReactNode): Decorator<GenericComponent<{ children?: React.ReactNode }>> =>
@@ -82,7 +83,9 @@ export function createConfigurableComponent<TConfig>(name: string) {
             <ViewContext.Provider value={context}>
                 <Properties onChange={stateUpdater}>
                     <ConfigApplyPrimary />
-                    <ConfigApplySecondary />
+                    <PropertyPriorityProvider priority={1}>
+                        <ConfigApplySecondary />
+                    </PropertyPriorityProvider>
                     {children}
                 </Properties>
             </ViewContext.Provider>

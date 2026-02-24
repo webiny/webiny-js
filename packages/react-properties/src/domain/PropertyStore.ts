@@ -4,6 +4,7 @@ import type { Property } from "../Properties.js";
 interface AddPropertyOptions {
     after?: string;
     before?: string;
+    priority?: number;
 }
 
 type Operation =
@@ -94,6 +95,15 @@ export class PropertyStore {
         }
 
         const ops = this.queue.splice(0);
+
+        // Stable-sort operations so that "add" ops with lower priority numbers
+        // are processed first. Non-add operations and adds with default priority (0)
+        // keep their original order.
+        ops.sort((a, b) => {
+            const pa = a.type === "add" ? (a.options.priority ?? 0) : 0;
+            const pb = b.type === "add" ? (b.options.priority ?? 0) : 0;
+            return pa - pb;
+        });
 
         for (const op of ops) {
             switch (op.type) {

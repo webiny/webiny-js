@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef } from "react";
 import { getUniqueId, toObject } from "./utils.js";
 import { PropertyStore } from "./domain/index.js";
+import { usePropertyPriority } from "./PropertyPriority.js";
 
 const PropertiesTargetContext = createContext<string | undefined>(undefined);
 
@@ -28,6 +29,7 @@ export interface Property {
 interface AddPropertyOptions {
     after?: string;
     before?: string;
+    priority?: number;
 }
 
 interface PropertiesContext {
@@ -203,6 +205,7 @@ export const Property = ({
     const immediateProperties = useProperties();
     const ancestorByName = useAncestorByName(targetName);
     const previousValue = useRef(value);
+    const priority = usePropertyPriority();
 
     const properties = targetName && ancestorByName ? ancestorByName : immediateProperties;
 
@@ -233,7 +236,7 @@ export const Property = ({
         const $isFirst = before === "$first";
         const $isLast = after === "$last";
 
-        addProperty({ ...property, $isFirst, $isLast }, { after, before });
+        addProperty({ ...property, $isFirst, $isLast }, { after, before, priority });
 
         return () => {
             removeProperty(uniqueId);
