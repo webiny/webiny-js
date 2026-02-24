@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import Editor, { type OnMount, type BeforeMount } from "@monaco-editor/react";
 import type { editor } from "monaco-editor";
 import { Button, ButtonSecondary } from "@webiny/ui/Button";
@@ -26,8 +26,15 @@ interface ConsoleMessage {
     timestamp: string;
 }
 
+/* Minimum width for each pane as a percentage of total split width. */
+const MIN_PANE_PCT = 20;
+
 const Playground: React.FC = () => {
     const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+    const splitRef = useRef<HTMLDivElement | null>(null);
+    /* Editor pane width as a percentage of the split container. */
+    const [editorPct, setEditorPct] = useState(60);
+    const isDragging = useRef(false);
     const [code, setCode] = useState(defaultSdkCode);
     const [output, setOutput] = useState<ConsoleMessage[]>([]);
     const [isRunning, setIsRunning] = useState(false);
@@ -141,6 +148,40 @@ const Playground: React.FC = () => {
         );
     }, []);
 
+    const handleDividerMouseDown = useCallback((e: React.MouseEvent) => {
+        e.preventDefault();
+        isDragging.current = true;
+        document.body.style.cursor = "col-resize";
+        document.body.style.userSelect = "none";
+    }, []);
+
+    useEffect(() => {
+        const onMouseMove = (e: MouseEvent) => {
+            if (!isDragging.current || !splitRef.current) {
+                return;
+            }
+            const rect = splitRef.current.getBoundingClientRect();
+            const pct = ((e.clientX - rect.left) / rect.width) * 100;
+            setEditorPct(Math.min(100 - MIN_PANE_PCT, Math.max(MIN_PANE_PCT, pct)));
+        };
+
+        const onMouseUp = () => {
+            if (!isDragging.current) {
+                return;
+            }
+            isDragging.current = false;
+            document.body.style.cursor = "";
+            document.body.style.userSelect = "";
+        };
+
+        document.addEventListener("mousemove", onMouseMove);
+        document.addEventListener("mouseup", onMouseUp);
+        return () => {
+            document.removeEventListener("mousemove", onMouseMove);
+            document.removeEventListener("mouseup", onMouseUp);
+        };
+    }, []);
+
     const handleFormat = useCallback(() => {
         editorRef.current?.getAction("editor.action.formatDocument")?.run();
     }, []);
@@ -202,8 +243,24 @@ const Playground: React.FC = () => {
                     </Button>
                 </ToolbarActions>
             </Toolbar>
-            <SplitPane>
-                <EditorContainer>
+            <SplitPane ref={splitRef}>
+                <EditorContainer
+                    style={{ flex: "none", width: `${editorPct}%` }}
+                    onMouseMove={e => {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        e.currentTarget.style.cursor =
+                            e.clientX >= rect.right - 4 ? "col-resize" : "";
+                    }}
+                    onMouseLeave={e => {
+                        e.currentTarget.style.cursor = "";
+                    }}
+                    onMouseDown={e => {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        if (e.clientX >= rect.right - 4) {
+                            handleDividerMouseDown(e);
+                        }
+                    }}
+                >
                     {isRunning && <CircularProgress label="Running code..." />}
                     <Editor
                         height="100%"
@@ -214,6 +271,7 @@ const Playground: React.FC = () => {
                         onMount={handleEditorDidMount}
                         options={{
                             minimap: { enabled: false },
+                            renderLineHighlight: "none",
                             fontSize: 14,
                             automaticLayout: true,
                             scrollBeyondLastLine: false,
@@ -229,7 +287,7 @@ const Playground: React.FC = () => {
                         }}
                     />
                 </EditorContainer>
-                <OutputContainer>
+                <OutputContainer style={{ flex: 1, width: "auto", minWidth: `${MIN_PANE_PCT}%` }}>
                     <div
                         style={{
                             padding: 8,

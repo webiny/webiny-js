@@ -30,19 +30,14 @@ export const SplitPane = styled.div`
 `;
 
 export const EditorContainer = styled.div`
-    flex: 1;
     position: relative;
+    overflow: hidden;
     border-right: 1px solid #e0e0e0;
 `;
 
 export const OutputContainer = styled.div`
-    width: 40%;
-    min-width: 300px;
     background: #fff;
     display: flex;
     flex-direction: column;
-
-    @media (max-width: 900px) {
-        width: 50%;
-    }
+    overflow: hidden;
 `;
