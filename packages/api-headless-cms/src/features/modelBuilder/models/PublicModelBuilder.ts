@@ -110,7 +110,11 @@ export class PublicModelBuilder extends BaseModelBuilder {
             const fieldId = "alert";
             this.fields(builder => {
                 return {
-                    [fieldId]: builder.uiAlert().label("No fields defined in the code model.")
+                    [fieldId]: builder
+                        .uiAlert()
+                        .label(
+                            "No fields defined in the code content model. Please ensure you have the fields property correctly defined."
+                        )
                 };
             });
             this.titleFieldId(fieldId);

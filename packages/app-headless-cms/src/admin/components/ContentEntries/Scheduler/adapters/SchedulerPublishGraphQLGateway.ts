@@ -87,13 +87,7 @@ export class SchedulerPublishGraphQLGateway implements ISchedulerPublishGateway 
 
         const validated = await schema.safeParseAsync(result);
         if (!validated.success) {
-            const err = createZodError(validated.error);
-            console.error({
-                err,
-                errS: JSON.stringify(err),
-                error: JSON.stringify(validated.error)
-            });
-            throw err;
+            throw createZodError(validated.error);
         }
         return {
             item: validated.data.data
