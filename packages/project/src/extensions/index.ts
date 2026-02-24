@@ -5,7 +5,7 @@ import { ProjectId } from "./ProjectId.js";
 import { Telemetry } from "./Telemetry.js";
 import { EnvVar } from "./EnvVar.js";
 import { DatabaseSetup } from "./DatabaseSetup.js";
-import { Wcp, wcpDefinitions } from "./Wcp.js";
+import { Wcp } from "./FeatureFlags.js";
 import { BuildParam } from "./ApiBuildParam.js";
 import { AdminBuildParam } from "./AdminBuildParam.js";
 import { AdminExtension } from "./AdminExtension.js";
@@ -136,7 +136,7 @@ export const definitions = [
     AdminBuildParam.def,
     AdminExtension.def,
     ApiExtension.def,
-    ...wcpDefinitions
+    Wcp.FeatureFlags.def
 ];
 
 export { Project } from "./Project.js";

@@ -53,5 +53,3 @@ export const Wcp = {
     FeatureFlags: FeatureFlagsExtension
 };
 
-export const wcpDefinitions = [FeatureFlagsExtension.def];
-

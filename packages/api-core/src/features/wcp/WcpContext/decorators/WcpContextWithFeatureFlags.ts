@@ -91,7 +91,7 @@ class WcpContextWithFeatureFlagsImpl implements WcpContext.Interface {
     }
 }
 
-export const WcpContextWithFeatureFlags = WcpContext.createDecorator({
+export const WcpContextWithFeatureFlagsDecorator = WcpContext.createDecorator({
     decorator: WcpContextWithFeatureFlagsImpl,
     dependencies: [WcpFeatureOverrides]
 });
