@@ -16176,6 +16176,7 @@ __metadata:
     "@types/react": "npm:18.2.79"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/react-composition": "npm:0.0.0"
+    lodash: "npm:^4.17.21"
     nanoid: "npm:3.3.11"
     prettier: "npm:^2.8.8"
     react: "npm:18.2.0"
