@@ -24,6 +24,9 @@ import { createSchedulerClient } from "@webiny/aws-sdk/client-scheduler";
 import { createScheduler } from "@webiny/api-scheduler";
 import { createHeadlessCmsScheduler } from "@webiny/api-headless-cms-scheduler";
 import { createMailerContext, createMailerGraphQL } from "@webiny/api-mailer";
+import { createWorkflows } from "@webiny/api-workflows";
+import { createHeadlessCmsWorkflows } from "@webiny/api-headless-cms-workflows";
+import { createWebsiteBuilderWorkflows } from "@webiny/api-website-builder-workflows";
 
 import { extensions } from "./extensions";
 
@@ -66,9 +69,11 @@ export const handler = createHandler({
         createFileManagerGraphQL(),
         createAssetDelivery(),
         createFileManagerS3(),
-        createAco({
-            documentClient
-        }),
+        createAco({ documentClient }),
+        createWorkflows(),
+        createHeadlessCmsWorkflows(),
+        createWebsiteBuilderWorkflows(),
+        createAuditLogs(),
         createAcoHcmsContext(),
         createHcmsTasks(),
         createScheduler({
@@ -77,7 +82,6 @@ export const handler = createHandler({
             }
         }),
         createHeadlessCmsScheduler(),
-        createAuditLogs(),
         extensions()
     ],
     debug
