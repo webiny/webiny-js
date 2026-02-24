@@ -18,6 +18,7 @@ import {
     BulkActionMove
 } from "~/modules/redirects/RedirectsList/components/BulkActions/index.js";
 import { FilterByStatus } from "~/modules/redirects/RedirectsList/components/Filters/index.js";
+import { HasPermission } from "~/presentation/security/HasPermission.js";
 
 const { Browser } = RedirectListConfig;
 
@@ -29,11 +30,15 @@ export const RedirectsListConfig = () => {
                 <Browser.Folder.Action name={"edit"} element={<EditFolder />} />
                 <Browser.Folder.Action name={"permissions"} element={<SetFolderPermissions />} />
                 <Browser.Folder.Action name={"delete"} element={<DeleteFolder />} />
-                <Browser.Redirect.Action name={"edit"} element={<Edit />} />
-                <Browser.Redirect.Action name={"moveToFolder"} element={<Move />} />
-                <Browser.Redirect.Action name={"delete"} element={<Delete />} />
-                <Browser.BulkAction name={"moveRedirects"} element={<BulkActionMove />} />
-                <Browser.BulkAction name={"deleteRedirects"} element={<BulkActionDelete />} />
+                <HasPermission entity={"redirect"} action={"edit"}>
+                    <Browser.Redirect.Action name={"edit"} element={<Edit />} />
+                    <Browser.Redirect.Action name={"moveToFolder"} element={<Move />} />
+                    <Browser.BulkAction name={"moveRedirects"} element={<BulkActionMove />} />
+                </HasPermission>
+                <HasPermission entity={"redirect"} action={"delete"}>
+                    <Browser.Redirect.Action name={"delete"} element={<Delete />} />
+                    <Browser.BulkAction name={"deleteRedirects"} element={<BulkActionDelete />} />
+                </HasPermission>
                 <Browser.Table.Column
                     name={"title"}
                     header={"From / To"}

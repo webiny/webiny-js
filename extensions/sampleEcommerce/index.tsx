@@ -1,6 +1,5 @@
 import React from "react";
-import type { Resource } from "@webiny/app-website-builder/ecommerce";
-import { EcommercePlugin, type IEcommerceApi } from "@webiny/app-website-builder/ecommerce";
+import { EcommerceIntegration } from "webiny/admin/website-builder";
 import type { SampleProduct } from "./SampleApi";
 import { SampleApi } from "./SampleApi";
 
@@ -13,7 +12,7 @@ const productCache = new Map<string, any>();
 function initEcommerceApi(settings: SampleSettings) {
     const sampleClient = new SampleApi(settings.apiHost);
 
-    const transformProduct = (resource: SampleProduct): Resource => ({
+    const transformProduct = (resource: SampleProduct): EcommerceIntegration.Resource => ({
         ...resource,
         id: resource?.id,
         title: resource?.title,
@@ -22,7 +21,7 @@ function initEcommerceApi(settings: SampleSettings) {
         }
     });
 
-    const service: IEcommerceApi = {
+    const service: EcommerceIntegration.EcommerceApi = {
         product: {
             async findById(id: string) {
                 if (productCache.has(id)) {
@@ -51,10 +50,10 @@ function initEcommerceApi(settings: SampleSettings) {
     return service;
 }
 
-export const Extension = () => {
+export default () => {
     return (
         <>
-            <EcommercePlugin
+            <EcommerceIntegration
                 name={"SampleEcommerce"}
                 init={(settings: SampleSettings) => initEcommerceApi(settings)}
                 settings={[
@@ -66,13 +65,13 @@ export const Extension = () => {
                     }
                 ]}
             >
-                <EcommercePlugin.PageType
+                <EcommerceIntegration.PageType
                     name={"sampleProductPage"}
                     label={"Sample Product Page"}
                     resourceType="product"
                     previewPath={resource => `/product/${resource.id}`}
                 />
-            </EcommercePlugin>
+            </EcommerceIntegration>
         </>
     );
 };

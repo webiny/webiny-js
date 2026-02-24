@@ -9,16 +9,19 @@ import {
 } from "./abstractions.js";
 import { RedirectBeforeDeleteEvent, RedirectAfterDeleteEvent } from "./events.js";
 import { GetRedirectByIdUseCase } from "~/features/redirects/GetRedirectById/index.js";
+import { WbPermissions } from "~/domain/permissions.js";
+import { RedirectNotAuthorizedError } from "~/domain/redirect/errors.js";
 
 class DeleteRedirectUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
+        private permissions: WbPermissions.Interface,
         private eventPublisher: EventPublisherAbstraction.Interface,
         private getRedirectById: GetRedirectByIdUseCase.Interface,
         private repository: DeleteRedirectRepository.Interface
     ) {}
 
     async execute(params: UseCaseAbstraction.Params): UseCaseAbstraction.Return {
-        // Get the redirect first to include in events
+        // Get the redirect first to include in events and for item-level permission check
         const getResult = await this.getRedirectById.execute(params.id);
 
         if (getResult.isFail()) {
@@ -26,6 +29,11 @@ class DeleteRedirectUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         const redirect = getResult.value;
+
+        const canDelete = await this.permissions.canDelete("redirect", redirect);
+        if (!canDelete) {
+            return Result.fail(new RedirectNotAuthorizedError());
+        }
 
         // Publish before delete event
         const beforeEvent = new RedirectBeforeDeleteEvent({
@@ -55,5 +63,10 @@ class DeleteRedirectUseCaseImpl implements UseCaseAbstraction.Interface {
 export const DeleteRedirectUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: DeleteRedirectUseCaseImpl,
-    dependencies: [EventPublisher, GetRedirectByIdUseCase, DeleteRedirectRepository]
+    dependencies: [
+        WbPermissions.Abstraction,
+        EventPublisher,
+        GetRedirectByIdUseCase,
+        DeleteRedirectRepository
+    ]
 });

@@ -5,6 +5,7 @@ import { PageListConfig } from "~/modules/pages/configs/index.js";
 import { usePage } from "~/modules/pages/PagesList/hooks/usePage.js";
 import { usePublishPageConfirmationDialog } from "~/modules/pages/PagesList/hooks/usePublishPageConfirmationDialog.js";
 import { useUnpublishPageConfirmationDialog } from "~/modules/pages/PagesList/hooks/useUnpublishPageConfirmationDialog.js";
+import { HasPermission } from "~/presentation/security/HasPermission.js";
 
 export const ChangeStatus = () => {
     const { page } = usePage();
@@ -14,19 +15,23 @@ export const ChangeStatus = () => {
 
     if (page.status === "published") {
         return (
-            <OptionsMenuItem
-                icon={<Unpublish />}
-                label={"Unpublish"}
-                onAction={openUnpublishPageConfirmationDialog}
-            />
+            <HasPermission entity={"page"} action={"unpublish"}>
+                <OptionsMenuItem
+                    icon={<Unpublish />}
+                    label={"Unpublish"}
+                    onAction={openUnpublishPageConfirmationDialog}
+                />
+            </HasPermission>
         );
     }
 
     return (
-        <OptionsMenuItem
-            icon={<Publish />}
-            label={"Publish"}
-            onAction={openPublishPageConfirmationDialog}
-        />
+        <HasPermission entity={"page"} action={"publish"}>
+            <OptionsMenuItem
+                icon={<Publish />}
+                label={"Publish"}
+                onAction={openPublishPageConfirmationDialog}
+            />
+        </HasPermission>
     );
 };

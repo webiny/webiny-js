@@ -7,7 +7,8 @@ import type { IEntryState } from "@webiny/api-headless-cms/types/index.js";
 import {
     PageValidationError,
     PageNotFoundError,
-    PagePersistenceError
+    PagePersistenceError,
+    PageNotAuthorizedError
 } from "~/domain/page/errors.js";
 
 // ============================================================================
@@ -59,6 +60,7 @@ export interface IUpdatePageUseCase {
 }
 
 export interface IUpdatePageUseCaseErrors {
+    notAuthorized: PageNotAuthorizedError;
     validation: PageValidationError;
     notFound: PageNotFoundError;
     persistence: PagePersistenceError;

@@ -6,15 +6,23 @@ import {
 import { UpdatePageUseCase as UseCaseAbstraction, UpdatePageRepository } from "./abstractions.js";
 import { PageBeforeUpdateEvent, PageAfterUpdateEvent } from "./events.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
+import { WbPermissions } from "~/domain/permissions.js";
+import { PageNotAuthorizedError } from "~/domain/page/errors.js";
 
 class UpdatePageUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
+        private permissions: WbPermissions.Interface,
         private eventPublisher: EventPublisherAbstraction.Interface,
         private getPageById: GetPageByIdUseCase.Interface,
         private repository: UpdatePageRepository.Interface
     ) {}
 
     async execute(id: string, data: UseCaseAbstraction.UpdateData): UseCaseAbstraction.Return {
+        const hasPermission = await this.permissions.canEdit("page");
+        if (!hasPermission) {
+            return Result.fail(new PageNotAuthorizedError());
+        }
+
         // Get the original page for events
         const getResult = await this.getPageById.execute(id);
 
@@ -23,6 +31,11 @@ class UpdatePageUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         const original = getResult.value;
+
+        const canEdit = await this.permissions.canEdit("page", original);
+        if (!canEdit) {
+            return Result.fail(new PageNotAuthorizedError());
+        }
 
         // Publish before update event
         const beforeEvent = new PageBeforeUpdateEvent({
@@ -54,5 +67,10 @@ class UpdatePageUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const UpdatePageUseCase = UseCaseAbstraction.createImplementation({
     implementation: UpdatePageUseCaseImpl,
-    dependencies: [EventPublisher, GetPageByIdUseCase, UpdatePageRepository]
+    dependencies: [
+        WbPermissions.Abstraction,
+        EventPublisher,
+        GetPageByIdUseCase,
+        UpdatePageRepository
+    ]
 });

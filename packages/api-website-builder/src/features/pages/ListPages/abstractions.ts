@@ -1,7 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
 import type { WbPage } from "~/domain/page/abstractions.js";
-import type { PagePersistenceError } from "~/domain/page/errors.js";
+import type { PagePersistenceError, PageNotAuthorizedError } from "~/domain/page/errors.js";
 import type { CmsEntryListSort, CmsEntryListWhere } from "@webiny/api-headless-cms/types/index.js";
 
 export interface IListPagesParams {
@@ -51,6 +51,7 @@ export interface IListPagesUseCase {
 }
 
 export interface IListPagesUseCaseErrors {
+    notAuthorized: PageNotAuthorizedError;
     persistence: PagePersistenceError;
 }
 

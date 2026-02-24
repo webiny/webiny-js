@@ -7,6 +7,7 @@ export class LatestRelease extends Release {
     constructor(logger: any) {
         super(logger);
         this.setTag(this.defaultTag);
+        this.setSourceTag("beta");
 
         this.setVersion(mostRecentVersion => {
             // Check if specific version is enforced via an ENV variable.

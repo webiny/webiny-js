@@ -4,19 +4,18 @@ import { GetFileUseCase } from "../GetFile/abstractions.js";
 import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
 import { FileNotAuthorizedError } from "~/domain/file/errors.js";
 import { FileBeforeDeleteEvent, FileAfterDeleteEvent } from "./events.js";
-import { FilePermissions } from "~/features/shared/abstractions.js";
+import { FmPermissions } from "~/features/shared/abstractions.js";
 
 class DeleteFileUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
-        private filePermissions: FilePermissions.Interface,
+        private permissions: FmPermissions.Interface,
         private getFile: GetFileUseCase.Interface,
         private repository: DeleteFileRepository.Interface,
         private eventPublisher: EventPublisher.Interface
     ) {}
 
     async execute(id: string): Promise<Result<void, UseCaseAbstraction.Error>> {
-        // Check delete permission
-        const hasPermission = await this.filePermissions.ensure({ rwd: "d" });
+        const hasPermission = await this.permissions.canDelete("file");
         if (!hasPermission) {
             return Result.fail(new FileNotAuthorizedError());
         }
@@ -45,5 +44,5 @@ class DeleteFileUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const DeleteFileUseCase = UseCaseAbstraction.createImplementation({
     implementation: DeleteFileUseCaseImpl,
-    dependencies: [FilePermissions, GetFileUseCase, DeleteFileRepository, EventPublisher]
+    dependencies: [FmPermissions.Abstraction, GetFileUseCase, DeleteFileRepository, EventPublisher]
 });

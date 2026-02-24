@@ -1,8 +1,8 @@
 import React from "react";
-import { PageListConfig } from "@webiny/app-website-builder";
+import { PageListConfig } from "webiny/admin/website-builder/page/list";
 import { RetailPageForm } from "./RetailPageForm";
 
-export const Extension = () => {
+export default () => {
     return (
         <PageListConfig>
             {/*<PageListConfig.PageType name={"static"} remove={true} />*/}

@@ -9,15 +9,23 @@ import {
 } from "./abstractions.js";
 import { RedirectBeforeUpdateEvent, RedirectAfterUpdateEvent } from "./events.js";
 import { GetRedirectByIdUseCase } from "~/features/redirects/GetRedirectById/index.js";
+import { WbPermissions } from "~/domain/permissions.js";
+import { RedirectNotAuthorizedError } from "~/domain/redirect/errors.js";
 
 class UpdateRedirectUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
+        private permissions: WbPermissions.Interface,
         private eventPublisher: EventPublisherAbstraction.Interface,
         private getRedirectById: GetRedirectByIdUseCase.Interface,
         private repository: UpdateRedirectRepository.Interface
     ) {}
 
     async execute(id: string, data: UseCaseAbstraction.UpdateData): UseCaseAbstraction.Return {
+        const hasPermission = await this.permissions.canEdit("redirect");
+        if (!hasPermission) {
+            return Result.fail(new RedirectNotAuthorizedError());
+        }
+
         // Get the original redirect for events
         const getResult = await this.getRedirectById.execute(id);
 
@@ -26,6 +34,11 @@ class UpdateRedirectUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         const original = getResult.value;
+
+        const canEdit = await this.permissions.canEdit("redirect", original);
+        if (!canEdit) {
+            return Result.fail(new RedirectNotAuthorizedError());
+        }
 
         // Publish before update event
         const beforeEvent = new RedirectBeforeUpdateEvent({
@@ -57,5 +70,10 @@ class UpdateRedirectUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const UpdateRedirectUseCase = UseCaseAbstraction.createImplementation({
     implementation: UpdateRedirectUseCaseImpl,
-    dependencies: [EventPublisher, GetRedirectByIdUseCase, UpdateRedirectRepository]
+    dependencies: [
+        WbPermissions.Abstraction,
+        EventPublisher,
+        GetRedirectByIdUseCase,
+        UpdateRedirectRepository
+    ]
 });

@@ -29,11 +29,11 @@ export function Title() {
     }, []);
 
     return (
-        <div className={"flex flex-col"}>
+        <div className={"flex flex-col min-w-0"}>
             {!isEditing ? (
                 <Text
                     onClick={() => setIsEditing(true)}
-                    className={"cursor-pointer text-accent-primary font-bold mx-sm"}
+                    className={"cursor-pointer text-accent-primary font-bold mx-sm truncate"}
                     size={"lg"}
                 >
                     {title}
