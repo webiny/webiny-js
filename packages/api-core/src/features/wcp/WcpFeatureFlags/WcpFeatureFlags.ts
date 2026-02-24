@@ -1,12 +1,13 @@
-import { WcpFeatureOverrides as WcpFeatureFlagsAbstraction } from "./abstractions.js";
+import { FeatureFlags as FeatureFlagsAbstraction } from "./abstractions.js";
 import { BuildParams } from "../../buildParams/abstractions.js";
-import type { WcpFeatureFlags as WcpFeatureFlagsType } from "@webiny/wcp/types.js";
+import type { IFeatureFlags } from "@webiny/feature-flags";
 
-class WcpFeatureFlagsImpl implements WcpFeatureFlagsAbstraction.Interface {
+class FeatureFlagsImpl implements FeatureFlagsAbstraction.Interface {
     constructor(private buildParams: BuildParams.Interface) {}
 
     isEnabled(featureName: string): boolean {
-        const features = this.buildParams.get<WcpFeatureFlagsType>("Wcp/FeatureFlags");
+        const flags = this.buildParams.get<IFeatureFlags>("FeatureFlags");
+        const features = flags?.wcp;
         if (!features) {
             return true;
         }
@@ -37,7 +38,7 @@ class WcpFeatureFlagsImpl implements WcpFeatureFlagsAbstraction.Interface {
     }
 }
 
-export const WcpFeatureFlags = WcpFeatureFlagsAbstraction.createImplementation({
-    implementation: WcpFeatureFlagsImpl,
+export const WcpFeatureFlags = FeatureFlagsAbstraction.createImplementation({
+    implementation: FeatureFlagsImpl,
     dependencies: [BuildParams]
 });

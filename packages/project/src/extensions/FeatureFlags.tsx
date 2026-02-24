@@ -4,7 +4,7 @@ import { BuildParam } from "./ApiBuildParam.js";
 import { AdminBuildParam } from "./AdminBuildParam.js";
 import { defineExtension } from "~/defineExtension/index.js";
 
-// Zod schema mirrors WcpFeatureFlags from @webiny/wcp/types.ts.
+// Zod schema mirrors IFeatureFlags['wcp'] from @webiny/feature-flags.
 // Keep both in sync when adding new features.
 const featureFlagsSchema = z.object({
     multiTenancy: z.object({ enabled: z.boolean().optional() }).optional(),
@@ -33,7 +33,7 @@ const featureFlagsSchema = z.object({
 export type FeatureFlagsInput = z.infer<typeof featureFlagsSchema>;
 
 const FeatureFlagsExtension = defineExtension({
-    type: "Wcp/FeatureFlags",
+    type: "FeatureFlags",
     tags: { runtimeContext: "project" },
     description: "Enable or disable WCP features.",
     paramsSchema: z.object({
@@ -42,8 +42,8 @@ const FeatureFlagsExtension = defineExtension({
     render: ({ features = {} }) => {
         return (
             <>
-                <BuildParam paramName="Wcp/FeatureFlags" value={features} />
-                <AdminBuildParam paramName="Wcp/FeatureFlags" value={features} />
+                <BuildParam paramName="FeatureFlags" value={{ wcp: features }} />
+                <AdminBuildParam paramName="FeatureFlags" value={{ wcp: features }} />
             </>
         );
     }

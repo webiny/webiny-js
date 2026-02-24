@@ -2,7 +2,7 @@ import React from "react";
 import { useWcp } from "~/presentation/wcp/useWcp.js";
 import { useContainer } from "@webiny/app";
 import { BuildParams } from "~/features/buildParams/abstractions.js";
-import type { WcpFeatureFlags } from "@webiny/wcp/types.js";
+import type { IFeatureFlags } from "@webiny/feature-flags";
 
 interface ChildrenProps {
     children: React.ReactNode;
@@ -12,7 +12,8 @@ function useWcpFeatureEnabled(featureName: string): boolean {
     const container = useContainer();
     try {
         const buildParams = container.resolve(BuildParams);
-        const features = buildParams.get<WcpFeatureFlags>("Wcp/FeatureFlags");
+        const featureFlags = buildParams.get<IFeatureFlags>("FeatureFlags");
+        const features = featureFlags?.wcp;
         if (!features) {
             return true;
         }

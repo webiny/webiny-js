@@ -1,11 +1,11 @@
 import { createAbstraction } from "@webiny/feature/api";
 
-export interface IWcpFeatureOverrides {
+export interface IFeatureFlagsAbstraction {
     isEnabled(featureName: string): boolean;
 }
 
-export const WcpFeatureOverrides = createAbstraction<IWcpFeatureOverrides>("WcpFeatureOverrides");
+export const FeatureFlags = createAbstraction<IFeatureFlagsAbstraction>("FeatureFlags");
 
-export namespace WcpFeatureOverrides {
-    export type Interface = IWcpFeatureOverrides;
+export namespace FeatureFlags {
+    export type Interface = IFeatureFlagsAbstraction;
 }
