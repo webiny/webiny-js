@@ -168,18 +168,15 @@ export function useAncestor(params: AncestorMatch) {
         property: Property,
         params: AncestorMatch
     ): Property | undefined => {
-        const properties = store.allProperties;
-        const matchedProps = properties
-            .filter(prop => prop.parent === property.id)
+        const children = store.getChildrenOf(property.id);
+        const matchedProps = children
             .filter(prop => prop.name in params && prop.value === params[prop.name]);
 
         if (matchedProps.length === Object.keys(params).length) {
             return property;
         }
 
-        const newParent = property.parent
-            ? properties.find(prop => prop.id === property.parent)
-            : undefined;
+        const newParent = property.parent ? store.getById(property.parent) : undefined;
 
         return newParent ? matchOrGetAncestor(newParent, params) : undefined;
     };
@@ -213,9 +210,14 @@ export const Property = ({
         throw Error("<Properties> provider is missing higher in the hierarchy!");
     }
 
-    const { addProperty, removeProperty, replaceProperty } = properties;
+    const { addProperty, removeProperty, replaceProperty, store: propertyStore } = properties;
     const parentId = parent ? parent : root ? "" : parentProperty?.id || "";
     const property = { id: uniqueId, name, value, parent: parentId, array };
+
+    // Register in the synchronous lookup during render so useAncestor can find this property.
+    if (!remove) {
+        propertyStore.registerLookup(property);
+    }
 
     useEffect(() => {
         if (remove) {

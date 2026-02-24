@@ -19,6 +19,12 @@ export class PropertyStore {
     private queue: Operation[] = [];
     private listeners = new Set<Listener>();
 
+    /**
+     * Synchronous lookup map — written immediately on addProperty (before debounce),
+     * so useAncestor can find properties during render.
+     */
+    private lookup = new Map<string, Property>();
+
     private scheduleFlush = debounce(() => {
         this.processQueue();
     }, 0);
@@ -34,17 +40,50 @@ export class PropertyStore {
         };
     }
 
+    /**
+     * Returns properties that are children of the given parent ID.
+     * Reads from the synchronous lookup map, so it works during render
+     * before the debounced queue has flushed.
+     */
+    getChildrenOf(parentId: string): Property[] {
+        return Array.from(this.lookup.values()).filter(p => p.parent === parentId);
+    }
+
+    /**
+     * Find a property by ID from the synchronous lookup map.
+     */
+    getById(id: string): Property | undefined {
+        return this.lookup.get(id);
+    }
+
+    /**
+     * Register a property in the synchronous lookup map during render,
+     * so useAncestor can find it before the debounced queue flushes.
+     */
+    registerLookup(property: Property): void {
+        if (this.lookup.has(property.id)) {
+            const existing = this.lookup.get(property.id)!;
+            this.lookup.set(property.id, { ...existing, ...property });
+        } else {
+            this.lookup.set(property.id, property);
+        }
+    }
+
     addProperty(property: Property, options: AddPropertyOptions = {}): void {
+        this.registerLookup(property);
         this.queue.push({ type: "add", property, options });
         this.scheduleFlush();
     }
 
     removeProperty(id: string): void {
+        this.lookup.delete(id);
         this.queue.push({ type: "remove", id });
         this.scheduleFlush();
     }
 
     replaceProperty(oldId: string, newProperty: Property): void {
+        this.lookup.delete(oldId);
+        this.lookup.set(newProperty.id, newProperty);
         this.queue.push({ type: "replace", oldId, newProperty });
         this.scheduleFlush();
     }

@@ -72,7 +72,7 @@ const renderElement = async (element: JSX.Element): Promise<{ operations: Operat
     return toObject(properties);
 };
 
-describe.skip("GQL Query Builder", () => {
+describe("GQL Query Builder", () => {
     it("should generate a query definition", async () => {
         const data = await renderElement(
             <>
