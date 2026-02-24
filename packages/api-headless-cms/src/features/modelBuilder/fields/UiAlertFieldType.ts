@@ -2,10 +2,10 @@ import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
 import { IUiFieldBuilder, UiFieldBuilder } from "./UiFieldType.js";
 
 class UiAlertFieldTypeFactory implements IFieldTypeFactory {
-    public readonly type = "alert";
+    public readonly type = "ui:alert";
 
     public create(): IUiFieldBuilder {
-        const builder = new UiFieldBuilder();
+        const builder = new UiFieldBuilder("alert");
         return builder
             .renderer("uiAlert", {
                 type: "warning"
@@ -22,6 +22,6 @@ export const UiAlertFieldType = FieldType.createImplementation({
 // Module augmentation for TypeScript autocomplete
 declare module "../abstractions.js" {
     interface IFieldBuilderRegistry {
-        alert(): IUiFieldBuilder;
+        uiAlert(): IUiFieldBuilder;
     }
 }

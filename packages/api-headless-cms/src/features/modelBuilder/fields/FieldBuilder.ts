@@ -4,6 +4,7 @@ import type {
     CmsModelFieldPredefinedValues,
     CmsModelFieldValidation
 } from "~/types/index.js";
+import { getBaseFieldType } from "~/utils/getBaseFieldType.js";
 
 export interface FieldBuilderConfig
     extends Omit<CmsModelField, "id" | "fieldId" | "storageId" | "type"> {
@@ -399,7 +400,10 @@ export class FieldBuilder<TType extends string = string> {
      */
     build(): CmsModelField {
         const fieldId = this.config._fieldId || camelCase(this.config.label);
-        const storageId = `${this.type}@${this.config._storageId ?? fieldId}`;
+        const baseType = getBaseFieldType({
+            type: this.type
+        });
+        const storageId = `${baseType}@${this.config._storageId ?? fieldId}`;
 
         return {
             id: fieldId,

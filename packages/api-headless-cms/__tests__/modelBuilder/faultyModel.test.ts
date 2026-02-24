@@ -61,7 +61,7 @@ describe("Faulty model definition", () => {
             settings: {},
             storageId: "ui@alert",
             tags: [],
-            type: "ui",
+            type: "ui:alert",
             validation: []
         });
 

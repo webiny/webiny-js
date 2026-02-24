@@ -24,7 +24,6 @@ class SettingsImpl implements ModelFactory.Interface {
                     singularApiName: "Setting",
                     pluralApiName: "Settings"
                 })
-                .singleEntry()
                 .description("A model used to store settings.")
         ];
     }

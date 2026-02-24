@@ -171,7 +171,7 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
 
         CmsWhereMapperFeature.register(context.container);
         CmsSortMapperFeature.register(context.container);
-        
+
         context.container.register(Settings);
 
         if (!storageOperations.init) {

@@ -46,7 +46,7 @@ import {
     createAlertFieldRenderer,
     createSeparatorFieldRenderer
 } from "~/admin/plugins/fieldRenderers/ui/index.js";
-import { uiSeparatorField } from "~/admin/plugins/fields/ui/index.js";
+import { uiAlertField, uiSeparatorField } from "~/admin/plugins/fields/ui/index.js";
 import { passthroughFieldRenderer } from "~/admin/plugins/fieldRenderers/passthrough.js";
 
 export default [
@@ -69,6 +69,7 @@ export default [
     checkboxesFieldRenderer,
     refFieldRenderer,
     uiSeparatorField,
+    uiAlertField,
     createSeparatorFieldRenderer(),
     createAlertFieldRenderer(),
     editorGteFieldValidator,
