@@ -5,7 +5,6 @@ import type { GenericComponent } from "@webiny/react-composition/types.js";
 import type { Property } from "~/index.js";
 import { Properties, toObject } from "~/index.js";
 import { useDebugConfig } from "./useDebugConfig.js";
-import debounce from "lodash/debounce.js";
 
 const createHOC =
     (newChildren: React.ReactNode): Decorator<GenericComponent<{ children?: React.ReactNode }>> =>
@@ -35,9 +34,6 @@ export interface ConfigProps {
 }
 
 export function createConfigurableComponent<TConfig>(name: string) {
-    /**
-     * This component is used when we want to mount all composed configs.
-     */
     const ConfigApplyPrimary = makeDecoratable(
         `${name}ConfigApply<Primary>`,
         ({ children }: ConfigApplyProps) => {
@@ -52,9 +48,6 @@ export function createConfigurableComponent<TConfig>(name: string) {
         }
     );
 
-    /**
-     * This component is used to configure the component (it can be mounted many times).
-     */
     const Config = ({ priority = "primary", children }: ConfigProps) => {
         if (priority === "primary") {
             return <Compose component={ConfigApplyPrimary} with={createHOC(children)} />;
@@ -89,10 +82,8 @@ export function createConfigurableComponent<TConfig>(name: string) {
             <ViewContext.Provider value={context}>
                 <Properties onChange={stateUpdater}>
                     <ConfigApplyPrimary />
-                    <DebounceRenderer>
-                        <ConfigApplySecondary />
-                        <DebounceRenderer>{children}</DebounceRenderer>
-                    </DebounceRenderer>
+                    <ConfigApplySecondary />
+                    {children}
                 </Properties>
             </ViewContext.Provider>
         );
@@ -102,35 +93,6 @@ export function createConfigurableComponent<TConfig>(name: string) {
         const { properties } = useContext(ViewContext);
         return useMemo(() => toObject<TConfig & TExtra>(properties), [properties]);
     }
-
-    interface Props {
-        children?: React.ReactNode;
-    }
-
-    const DebounceRenderer = ({ children }: Props) => {
-        const [render, setRender] = useState(false);
-        const editorConfig = useConfig();
-
-        const debouncedRender = useMemo(() => {
-            return debounce(() => {
-                setRender(true);
-            }, 10);
-        }, [setRender]);
-
-        useEffect(() => {
-            if (render) {
-                return;
-            }
-
-            debouncedRender();
-
-            return () => {
-                debouncedRender.cancel();
-            };
-        }, [editorConfig]);
-
-        return <>{render ? children : null}</>;
-    };
 
     return {
         WithConfig,

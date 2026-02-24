@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useRef } from "react";
 import { getUniqueId, toObject } from "./utils.js";
+import { PropertyStore } from "./domain/index.js";
 
 const PropertiesTargetContext = createContext<string | undefined>(undefined);
 
@@ -24,17 +25,6 @@ export interface Property {
     $isLast?: boolean;
 }
 
-function removeByParent(id: string, properties: Property[]): Property[] {
-    return properties
-        .filter(prop => prop.parent === id)
-        .reduce((acc, item) => {
-            return removeByParent(
-                item.id,
-                acc.filter(prop => prop.id !== item.id)
-            );
-        }, properties);
-}
-
 interface AddPropertyOptions {
     after?: string;
     before?: string;
@@ -42,68 +32,12 @@ interface AddPropertyOptions {
 
 interface PropertiesContext {
     name?: string;
-    properties: Property[];
+    store: PropertyStore;
     getAncestor(name: string): PropertiesContext | undefined;
     getObject<T = unknown>(): T;
     addProperty(property: Property, options?: AddPropertyOptions): void;
     removeProperty(id: string): void;
     replaceProperty(id: string, property: Property): void;
-}
-
-function putPropertyBefore(properties: Property[], property: Property, before: string) {
-    const existingIndex = properties.findIndex(prop => prop.id === property.id);
-    if (existingIndex > -1) {
-        const existingProperty = properties[existingIndex];
-        const newProperties = properties.filter(p => p.id !== property.id);
-        const targetIndex = before.endsWith("$first")
-            ? 0
-            : newProperties.findIndex(prop => prop.id === before);
-        return [
-            ...newProperties.slice(0, targetIndex),
-            existingProperty,
-            ...newProperties.slice(targetIndex)
-        ];
-    }
-
-    const targetIndex = properties.findIndex(prop => prop.id === before);
-
-    return [...properties.slice(0, targetIndex), property, ...properties.slice(targetIndex)];
-}
-
-function putPropertyAfter(properties: Property[], property: Property, after: string) {
-    const existingIndex = properties.findIndex(prop => prop.id === property.id);
-
-    if (existingIndex > -1) {
-        const [removedProperty] = properties.splice(existingIndex, 1);
-        const targetIndex = after.endsWith("$last")
-            ? properties.length - 1
-            : properties.findIndex(prop => prop.id === after);
-        return [
-            ...properties.slice(0, targetIndex + 1),
-            removedProperty,
-            ...properties.slice(targetIndex + 1)
-        ];
-    }
-
-    const targetIndex = properties.findIndex(prop => prop.id === after);
-
-    return [
-        ...properties.slice(0, targetIndex + 1),
-        property,
-        ...properties.slice(targetIndex + 1)
-    ];
-}
-
-function mergeProperty(properties: Property[], property: Property) {
-    const index = properties.findIndex(prop => prop.id === property.id);
-    if (index > -1) {
-        return [
-            ...properties.slice(0, index),
-            { ...properties[index], ...property },
-            ...properties.slice(index + 1)
-        ];
-    }
-    return properties;
 }
 
 const PropertiesContext = createContext<PropertiesContext | undefined>(undefined);
@@ -115,7 +49,12 @@ interface PropertiesProps {
 }
 
 export const Properties = ({ name, onChange, children }: PropertiesProps) => {
-    const [properties, setProperties] = useState<Property[]>([]);
+    const storeRef = useRef<PropertyStore | null>(null);
+    if (!storeRef.current) {
+        storeRef.current = new PropertyStore();
+    }
+    const store = storeRef.current;
+
     let parent: PropertiesContext;
 
     try {
@@ -125,15 +64,21 @@ export const Properties = ({ name, onChange, children }: PropertiesProps) => {
     }
 
     useEffect(() => {
-        if (onChange) {
-            onChange(properties);
+        if (!onChange) {
+            return;
         }
-    }, [properties]);
 
+        return store.subscribe(properties => {
+            onChange(properties);
+        });
+    }, [store, onChange]);
+
+    // Context value is stable — it never changes after mount.
+    // Children never re-render due to context changes.
     const context: PropertiesContext = useMemo(
         () => ({
             name,
-            properties,
+            store,
             getAncestor(ancestorName: string) {
                 if (!parent) {
                     return undefined;
@@ -144,81 +89,35 @@ export const Properties = ({ name, onChange, children }: PropertiesProps) => {
                     : parent.getAncestor(ancestorName);
             },
             getObject<T>() {
-                return toObject(properties) as T;
+                return toObject(store.allProperties) as T;
             },
             addProperty(property, options = {}) {
-                setProperties(properties => {
-                    const index = properties.findIndex(prop => prop.id === property.id);
-
-                    if (index > -1) {
-                        const newProperties = mergeProperty(properties, property);
-                        if (options.after) {
-                            return putPropertyAfter(newProperties, property, options.after);
-                        }
-                        if (options.before) {
-                            return putPropertyBefore(newProperties, property, options.before);
-                        }
-
-                        return newProperties;
-                    }
-
-                    if (options.after) {
-                        return putPropertyAfter(properties, property, options.after);
-                    }
-
-                    if (options.before) {
-                        return putPropertyBefore(properties, property, options.before);
-                    }
-
-                    return [...properties, property];
-                });
+                store.addProperty(property, options);
             },
             removeProperty(id) {
-                setProperties(properties => {
-                    return removeByParent(
-                        id,
-                        properties.filter(prop => prop.id !== id)
-                    );
-                });
+                store.removeProperty(id);
             },
             replaceProperty(id, property) {
-                setProperties(properties => {
-                    const toReplace = properties.findIndex(prop => prop.id === id);
-
-                    if (toReplace > -1) {
-                        // Replace the property and remove all remaining child properties.
-                        return removeByParent(id, [
-                            ...properties.slice(0, toReplace),
-                            property,
-                            ...properties.slice(toReplace + 1)
-                        ]);
-                    }
-                    return properties;
-                });
+                store.replaceProperty(id, property);
             }
         }),
-        [properties]
+        [store]
     );
 
     return <PropertiesContext.Provider value={context}>{children}</PropertiesContext.Provider>;
 };
 
 export function useProperties() {
-    const properties = useContext(PropertiesContext);
-    if (!properties) {
+    const context = useContext(PropertiesContext);
+    if (!context) {
         throw Error("Properties context provider is missing!");
     }
 
-    return properties;
+    return context;
 }
 
 export function useMaybeProperties() {
-    const properties = useContext(PropertiesContext);
-    if (!properties) {
-        return undefined;
-    }
-
-    return properties;
+    return useContext(PropertiesContext);
 }
 
 export function useAncestorByName(name: string | undefined) {
@@ -263,12 +162,13 @@ interface AncestorMatch {
 
 export function useAncestor(params: AncestorMatch) {
     const property = useParentProperty();
-    const { properties } = useProperties();
+    const { store } = useProperties();
 
     const matchOrGetAncestor = (
         property: Property,
         params: AncestorMatch
     ): Property | undefined => {
+        const properties = store.allProperties;
         const matchedProps = properties
             .filter(prop => prop.parent === property.id)
             .filter(prop => prop.name in params && prop.value === params[prop.name]);
