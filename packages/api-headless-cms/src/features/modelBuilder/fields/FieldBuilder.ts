@@ -176,6 +176,12 @@ export interface FieldRendererRegistry {
         fieldType: "ui";
         settings: undefined;
     };
+    uiAlert: {
+        fieldType: "ui";
+        settings: {
+            type: "info" | "success" | "warning" | "danger";
+        };
+    };
 }
 
 /**
@@ -211,7 +217,8 @@ const rendererNameMap: Record<keyof FieldRendererRegistry, string> = {
     textInputs: "text-inputs",
     file: "file-input",
     files: "file-inputs",
-    uiSeparator: "uiSeparator"
+    uiSeparator: "uiSeparator",
+    uiAlert: "uiAlert"
 };
 
 /**

@@ -21,7 +21,7 @@ const getFieldById = (fields: CmsModelField[], id: string): CmsModelField | null
     return fields.find(field => field.id === id) || null;
 };
 
-const FieldsNotDefined = () => {
+const LayoutNotDefined = () => {
     return (
         <Alert type={"warning"}>
             You are missing the layout definition in your code content model. Please ensure you have
@@ -32,7 +32,7 @@ const FieldsNotDefined = () => {
 
 export const Fields = ({ Bind, fields, layout, contentModel, gridClassName }: FieldsProps) => {
     if (!layout?.length) {
-        return <FieldsNotDefined />;
+        return <LayoutNotDefined />;
     }
 
     return (

@@ -2,7 +2,7 @@ import { createPrivateModelPlugin } from "~/plugins/CmsModelPlugin.js";
 import { BaseModelBuilder } from "./BaseModelBuilder.js";
 
 export class PrivateModelBuilder extends BaseModelBuilder {
-    build() {
+    public build() {
         if (!this.config.modelId) {
             throw new Error("modelId is required");
         }

@@ -1,5 +1,5 @@
 import { FieldBuilder } from "~/features/modelBuilder/index.js";
-import { CmsModelPlugin } from "~/plugins/index.js";
+import { CmsModelPlugin } from "~/plugins/CmsModelPlugin.js";
 import { FieldBuilderRegistry } from "../abstractions.js";
 
 /**
