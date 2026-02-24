@@ -8,7 +8,6 @@ import { fileManagerItemToValue } from "~/shared/fileManagerItemToValue.js";
 
 export const FileInputRenderer = ({
     value,
-    metadata,
     onChange,
     label,
     ...props
