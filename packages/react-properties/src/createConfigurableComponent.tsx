@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { Decorator } from "@webiny/react-composition";
 import { Compose, makeDecoratable } from "@webiny/react-composition";
 import type { GenericComponent } from "@webiny/react-composition/types.js";
@@ -64,6 +64,24 @@ export function createConfigurableComponent<TConfig>(name: string) {
 
     const ViewContext = React.createContext<ViewContext>(defaultContext);
 
+    /**
+     * Memoized config subtree — ConfigApply components don't depend on WithConfig
+     * props, so they must not remount when the parent re-renders. Without this,
+     * every parent re-render causes Property components inside HOCs to unmount
+     * and remount, corrupting the config object.
+     */
+    const ConfigApplyTree = React.memo(function ConfigApplyTree() {
+        console.log("ConfigApplyTree render");
+        return (
+            <>
+                <ConfigApplyPrimary />
+                <PropertyPriorityProvider priority={1}>
+                    <ConfigApplySecondary />
+                </PropertyPriorityProvider>
+            </>
+        );
+    });
+
     const WithConfig = ({ onProperties, children }: WithConfigProps) => {
         const [properties, setProperties] = useState<Property[]>([]);
         useDebugConfig(name, properties);
@@ -75,17 +93,14 @@ export function createConfigurableComponent<TConfig>(name: string) {
             }
         }, [properties]);
 
-        const stateUpdater = (properties: Property[]) => {
+        const stateUpdater = useCallback((properties: Property[]) => {
             setProperties(properties);
-        };
+        }, []);
 
         return (
             <ViewContext.Provider value={context}>
                 <Properties onChange={stateUpdater}>
-                    <ConfigApplyPrimary />
-                    <PropertyPriorityProvider priority={1}>
-                        <ConfigApplySecondary />
-                    </PropertyPriorityProvider>
+                    <ConfigApplyTree />
                     {children}
                 </Properties>
             </ViewContext.Provider>
