@@ -43,7 +43,7 @@ describe("Faulty model definition", () => {
             fieldId: "alert",
             help: null,
             id: "alert",
-            label: "No fields defined in the code model.",
+            label: "No fields defined in the code content model. Please ensure you have the fields property correctly defined.",
             list: false,
             listValidation: [],
             note: null,
