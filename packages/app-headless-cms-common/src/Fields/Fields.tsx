@@ -24,8 +24,8 @@ const getFieldById = (fields: CmsModelField[], id: string): CmsModelField | null
 const FieldsNotDefined = () => {
     return (
         <Alert type={"warning"}>
-            <strong className={"block"}>No fields defined!</strong>
-            <span className={"block"}>Please define the layout for this content model.</span>
+            You are missing the layout definition in your code content model. Please ensure you have
+            the layout property correctly defined.
         </Alert>
     );
 };
