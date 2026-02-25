@@ -284,7 +284,7 @@ export interface CmsModelFieldSettings {
     /**
      * Object field has child fields - so it needs to have a layout.
      */
-    layout?: string[][];
+    layout?: CmsModelLayout;
     /**
      * Ref field.
      */

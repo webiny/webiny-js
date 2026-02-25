@@ -298,10 +298,9 @@ describe("All Field Types Model", () => {
             customSetting1: "value1",
             customSetting2: "value2"
         });
-        // ui separator field
+        // ui separator field — layout-only, not in model.fields
         const separatorField = model!.fields.find(f => f.fieldId === "separator");
-        expect(separatorField?.type).toBe("ui:separator");
-        expect(separatorField?.label).toBe("UI Separator");
+        expect(separatorField).toBeUndefined();
     });
 
     it("should support all public-model-specific methods", async () => {

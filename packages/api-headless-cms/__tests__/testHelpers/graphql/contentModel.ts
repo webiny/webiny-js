@@ -1,4 +1,4 @@
-import type { CmsIcon, CmsModel, CmsModelField } from "~/types";
+import type { CmsIcon, CmsModel, CmsModelField, CmsModelLayout } from "~/types";
 
 const DATA_FIELD = /* GraphQL*/ `
     {
@@ -91,7 +91,7 @@ export interface CreateContentModelMutationVariables {
         pluralApiName: string;
         description?: string;
         fields?: Omit<CmsModelField, "storageId">[];
-        layout?: string[][];
+        layout?: CmsModelLayout;
         titleFieldId?: string;
         defaultFields?: boolean;
         icon?: CmsIcon;

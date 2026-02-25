@@ -17,7 +17,22 @@ export interface CmsTabLayoutDescriptor {
     tabs: CmsTabLayoutTab[];
 }
 
-export type CmsModelLayoutCell = string | CmsTabLayoutDescriptor;
+export interface CmsSeparatorLayoutDescriptor {
+    type: "separator";
+    label: string;
+}
+
+export interface CmsAlertLayoutDescriptor {
+    type: "alert";
+    label: string;
+    alertType: "info" | "success" | "warning" | "danger";
+}
+
+export type CmsModelLayoutCell =
+    | string
+    | CmsTabLayoutDescriptor
+    | CmsSeparatorLayoutDescriptor
+    | CmsAlertLayoutDescriptor;
 export type CmsModelLayout = CmsModelLayoutCell[][];
 
 /**

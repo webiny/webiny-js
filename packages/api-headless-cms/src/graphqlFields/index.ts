@@ -11,7 +11,6 @@ import { createDynamicZoneField } from "./dynamicZone/index.js";
 import type { CmsModelFieldToGraphQLPlugin } from "~/types/index.js";
 import { createJsonField } from "./json.js";
 import { createSearchableJsonField } from "./searchableJson.js";
-import { createUiField } from "./ui.js";
 
 export const createGraphQLFields = (): CmsModelFieldToGraphQLPlugin<any>[] => [
     createTextField(),
@@ -25,6 +24,5 @@ export const createGraphQLFields = (): CmsModelFieldToGraphQLPlugin<any>[] => [
     createSearchableJsonField(),
     createFileField(),
     createObjectField(),
-    createDynamicZoneField(),
-    createUiField()
+    createDynamicZoneField()
 ];
