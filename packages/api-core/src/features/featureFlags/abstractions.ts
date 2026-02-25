@@ -1,7 +1,8 @@
 import { createAbstraction } from "@webiny/feature/api";
+import type { IFeatureFlags } from "@webiny/feature-flags";
 
 export interface IFeatureFlagsAbstraction {
-    isEnabled(featureName: string): boolean;
+    get(): IFeatureFlags;
 }
 
 export const FeatureFlags = createAbstraction<IFeatureFlagsAbstraction>("FeatureFlags");

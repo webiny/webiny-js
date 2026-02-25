@@ -1,10 +1,10 @@
 import type { WCP_FEATURE_LABEL } from "@webiny/wcp";
 import { WcpContext } from "../abstractions.js";
-import { FeatureFlags } from "../../WcpFeatureFlags/abstractions.js";
+import { FeatureFlags } from "../../../featureFlags/abstractions.js";
 
 class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
     constructor(
-        private overrides: FeatureFlags.Interface,
+        private featureFlags: FeatureFlags.Interface,
         private decoratee: WcpContext.Interface
     ) {}
 
@@ -29,41 +29,57 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
     }
 
     canUseAacl() {
-        return this.decoratee.canUseAacl() && this.overrides.isEnabled("aacl");
+        const wcp = this.featureFlags.get().wcp;
+        return this.decoratee.canUseAacl() && wcp?.advancedAccessControlLayer?.enabled !== false;
     }
 
     canUseTeams() {
-        return this.decoratee.canUseTeams() && this.overrides.isEnabled("teams");
+        const wcp = this.featureFlags.get().wcp;
+        return (
+            this.decoratee.canUseTeams() &&
+            wcp?.advancedAccessControlLayer?.options?.teams !== false
+        );
     }
 
     canUseFolderLevelPermissions() {
+        const wcp = this.featureFlags.get().wcp;
         return (
             this.decoratee.canUseFolderLevelPermissions() &&
-            this.overrides.isEnabled("folderLevelPermissions")
+            wcp?.advancedAccessControlLayer?.options?.folderLevelPermissions !== false
         );
     }
 
     canUsePrivateFiles() {
-        return this.decoratee.canUsePrivateFiles() && this.overrides.isEnabled("privateFiles");
+        const wcp = this.featureFlags.get().wcp;
+        return (
+            this.decoratee.canUsePrivateFiles() &&
+            wcp?.advancedAccessControlLayer?.options?.privateFiles !== false
+        );
     }
 
     canUseAuditLogs() {
-        return this.decoratee.canUseAuditLogs() && this.overrides.isEnabled("auditLogs");
+        const wcp = this.featureFlags.get().wcp;
+        return this.decoratee.canUseAuditLogs() && wcp?.auditLogs?.enabled !== false;
     }
 
     canUseRecordLocking() {
-        return this.decoratee.canUseRecordLocking() && this.overrides.isEnabled("recordLocking");
+        const wcp = this.featureFlags.get().wcp;
+        return this.decoratee.canUseRecordLocking() && wcp?.recordLocking?.enabled !== false;
     }
 
     canUseFileManagerThreatDetection() {
+        const wcp = this.featureFlags.get().wcp;
         return (
             this.decoratee.canUseFileManagerThreatDetection() &&
-            this.overrides.isEnabled("fileManagerThreatDetection")
+            wcp?.fileManager?.options?.threatDetection !== false
         );
     }
 
     canUseWorkflows() {
-        return this.decoratee.canUseWorkflows() && this.overrides.isEnabled("workflows");
+        const wcp = this.featureFlags.get().wcp;
+        return (
+            this.decoratee.canUseWorkflows() && wcp?.advancedPublishingWorkflow?.enabled !== false
+        );
     }
 
     ensureCanUseFeature(featureId: keyof typeof WCP_FEATURE_LABEL) {
