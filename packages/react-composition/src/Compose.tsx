@@ -2,7 +2,13 @@ import React, { useEffect, useRef } from "react";
 import type { DecoratableTypes } from "./Context.js";
 import { useCompositionStore } from "./Context.js";
 import { useCompositionScope } from "~/CompositionScope.js";
-import type { ComposeWith, Decoratable, Decorator, GenericComponent, GenericHook } from "./types.js";
+import type {
+    ComposeWith,
+    Decoratable,
+    Decorator,
+    GenericComponent,
+    GenericHook
+} from "./types.js";
 
 export interface ComposeProps {
     function?: DecoratableTypes;
@@ -30,9 +36,9 @@ export const Compose = (props: ComposeProps) => {
         return null;
     }
 
-    const decorators = (
-        Array.isArray(props.with) ? props.with : [props.with]
-    ) as Decorator<GenericComponent | GenericHook>[];
+    const decorators = (Array.isArray(props.with) ? props.with : [props.with]) as Decorator<
+        GenericComponent | GenericHook
+    >[];
     const currentScope = scope[scope.length - 1] ?? "*";
 
     // Register synchronously during render so decorators are available immediately.
@@ -40,7 +46,14 @@ export const Compose = (props: ComposeProps) => {
     // setState in other components and cause React warnings).
     store.register(targetFn.original, decorators, currentScope, inherit, true);
 
-    return <ComposeEffects store={store} target={targetFn.original} decorators={decorators} scope={currentScope} />;
+    return (
+        <ComposeEffects
+            store={store}
+            target={targetFn.original}
+            decorators={decorators}
+            scope={currentScope}
+        />
+    );
 };
 
 /**

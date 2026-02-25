@@ -171,8 +171,9 @@ export function useAncestor(params: AncestorMatch) {
         params: AncestorMatch
     ): Property | undefined => {
         const children = store.getChildrenOf(property.id);
-        const matchedProps = children
-            .filter(prop => prop.name in params && prop.value === params[prop.name]);
+        const matchedProps = children.filter(
+            prop => prop.name in params && prop.value === params[prop.name]
+        );
 
         if (matchedProps.length === Object.keys(params).length) {
             return property;

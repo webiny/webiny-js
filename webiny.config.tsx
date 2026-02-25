@@ -1,11 +1,12 @@
 import React from "react";
-import { Api, Cli, Infra, Project, Security } from "webiny/extensions";
+import { Admin, Api, Cli, Infra, Project, Security } from "webiny/extensions";
 import { Cognito } from "@webiny/cognito";
 // import { MyIdpExtension } from "./extensions/idp/okta/MyIdpExtension.js";
 
 export const Extensions = () => {
     return (
         <>
+            <Admin.Extension src={"@/extensions/LexicalPlugin.tsx"} />
             {/* Admin 👇 */}
             {/*<Admin.Extension src={"@/extensions/sampleEcommerce/index.tsx"} />*/}
             {/*<Admin.Extension src={"@/extensions/customPageTypes/index.tsx"} />*/}
