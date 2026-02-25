@@ -26,11 +26,40 @@ import { WorkflowStateNotFoundError } from "~/domain/workflowState/errors.js";
 export const createWorkflowStateSchema = () => {
     return new GraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
-            enum WorkflowStateStateValue {
+            enum CmsEntryStateValue {
                 pending
                 inReview
                 approved
                 rejected
+            }
+
+            type CmsEntrySystemWorkflow {
+                workflowId: String
+                stepId: ID
+                stepName: String
+                state: CmsEntryStateValue
+            }
+
+            extend type CmsEntrySystem {
+                workflow: CmsEntrySystemWorkflow
+            }
+
+            input ListWhereInputCmsEntrySystemWorkflowStateInput {
+                workflowId: String
+                stepId: ID
+                stepName: String
+                state: CmsEntryStateValue
+            }
+
+            input ListWhereInputCmsEntrySystemWorkflowInput {
+                workflowId: String
+                stepId: ID
+                state: ListWhereInputCmsEntrySystemWorkflowStateInput
+                stepName: String
+            }
+
+            extend input ListWhereInputCmsEntrySystem {
+                workflow: ListWhereInputCmsEntrySystemWorkflowInput
             }
 
             type WorkflowStateIdentity {
@@ -56,7 +85,7 @@ export const createWorkflowStateSchema = () => {
                 teams: [WorkflowStateStepTeam!]!
                 notifications: [WorkflowStateStepNotification!]
                 # state related
-                state: WorkflowStateStateValue!
+                state: CmsEntryStateValue!
                 comment: String
                 savedBy: WorkflowStateIdentity
                 # current user can take action on this step?
@@ -77,7 +106,7 @@ export const createWorkflowStateSchema = () => {
                 targetId: String!
                 targetRevisionId: String!
                 comment: String
-                state: WorkflowStateStateValue!
+                state: CmsEntryStateValue!
                 steps: [WorkflowStateStep!]
                 createdOn: DateTime!
                 savedOn: DateTime!
@@ -104,8 +133,8 @@ export const createWorkflowStateSchema = () => {
             input ListWorkflowStatesWhereStepsInput {
                 id: String
                 id_in: [String!]
-                state: WorkflowStateStateValue
-                state_in: [WorkflowStateStateValue!]
+                state: CmsEntryStateValue
+                state_in: [CmsEntryStateValue!]
                 savedBy: String
                 savedBy_in: [String!]
             }
@@ -129,8 +158,8 @@ export const createWorkflowStateSchema = () => {
                 targetId_in: [String!]
                 targetRevisionId: String
                 targetRevisionId_in: [String!]
-                state: WorkflowStateStateValue
-                state_in: [WorkflowStateStateValue!]
+                state: CmsEntryStateValue
+                state_in: [CmsEntryStateValue!]
                 createdOn_gte: DateTime
                 createdOn_lte: DateTime
                 savedOn_gte: DateTime

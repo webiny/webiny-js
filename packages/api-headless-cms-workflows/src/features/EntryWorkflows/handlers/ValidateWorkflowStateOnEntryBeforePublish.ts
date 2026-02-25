@@ -28,7 +28,10 @@ class ValidateWorkflowStateOnEntryBeforePublishImpl
         const state = stateResult.value;
 
         if (state?.done) {
-            entry.state = undefined;
+            entry.system = {
+                ...entry.system,
+                workflow: undefined
+            };
             return;
         }
 

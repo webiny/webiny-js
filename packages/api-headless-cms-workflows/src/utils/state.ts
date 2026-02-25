@@ -1,7 +1,7 @@
-import type { IEntryState } from "@webiny/api-headless-cms/types/index.js";
+import type { ICmsEntryWorkflowState } from "@webiny/api-workflows/types.js";
 import type { WorkflowState } from "@webiny/api-workflows/domain/workflowState/WorkflowState.js";
 
-export const getStateValues = (state: WorkflowState): IEntryState => {
+export const getStateValues = (state: WorkflowState): ICmsEntryWorkflowState => {
     const activeStep = state.currentStep;
 
     return {
