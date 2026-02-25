@@ -107,27 +107,3 @@ export interface DecryptedWcpProjectLicense {
         features: ProjectPackageFeatures;
     };
 }
-
-/**
- * A partial, user-facing representation of WCP project features.
- * Used with `Wcp.FeatureFlags` to override individual feature flags
- * (e.g. to disable a licensed feature in a specific environment).
- * Users can only disable features; they cannot enable features not permitted by the license.
- */
-export interface WcpFeatureFlags {
-    multiTenancy?: { enabled?: boolean };
-    advancedPublishingWorkflow?: { enabled?: boolean };
-    advancedAccessControlLayer?: {
-        enabled?: boolean;
-        options?: {
-            teams?: boolean;
-            privateFiles?: boolean;
-            folderLevelPermissions?: boolean;
-        };
-    };
-    auditLogs?: { enabled?: boolean };
-    recordLocking?: { enabled?: boolean };
-    fileManager?: {
-        options?: { threatDetection?: boolean };
-    };
-}

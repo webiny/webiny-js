@@ -9,6 +9,7 @@ export const FeatureFlags = defineExtension({
     tags: { runtimeContext: "project" },
     description: "Enable or disable WCP features.",
     paramsSchema: z.object({
+        // Follows `IFeatureFlags` from `packages/feature-flags/src/index.ts`.
         features: z.object({
             wcp: z.object({
                 multiTenancy: z.object({ enabled: z.boolean().optional() }).optional(),
@@ -40,8 +41,8 @@ export const FeatureFlags = defineExtension({
     render: ({ features = {} }) => {
         return (
             <>
-                <BuildParam paramName="FeatureFlags" value={{ wcp: features }} />
-                <AdminBuildParam paramName="FeatureFlags" value={{ wcp: features }} />
+                <BuildParam paramName="FeatureFlags" value={features} />
+                <AdminBuildParam paramName="FeatureFlags" value={features} />
             </>
         );
     }
