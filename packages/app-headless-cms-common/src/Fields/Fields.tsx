@@ -1,12 +1,12 @@
 import React from "react";
-import { Grid, type ColumnProps } from "@webiny/admin-ui";
+import { Alert, type ColumnProps, Grid } from "@webiny/admin-ui";
 import { FieldElement } from "./FieldElement.js";
 import { FieldElementError } from "./FieldElementError.js";
 import type {
+    BindComponent,
     CmsEditorContentModel,
-    CmsModelField,
     CmsEditorFieldsLayout,
-    BindComponent
+    CmsModelField
 } from "~/types/index.js";
 
 interface FieldsProps {
@@ -21,7 +21,20 @@ const getFieldById = (fields: CmsModelField[], id: string): CmsModelField | null
     return fields.find(field => field.id === id) || null;
 };
 
+const LayoutNotDefined = () => {
+    return (
+        <Alert type={"warning"}>
+            You are missing the layout definition in your code content model. Please ensure you have
+            the layout property correctly defined.
+        </Alert>
+    );
+};
+
 export const Fields = ({ Bind, fields, layout, contentModel, gridClassName }: FieldsProps) => {
+    if (fields.length > 0 && layout.length === 0) {
+        return <LayoutNotDefined />;
+    }
+
     return (
         <Grid className={gridClassName}>
             {layout.map((row, rowIndex) => (
