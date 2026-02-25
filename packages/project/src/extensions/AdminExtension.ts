@@ -1,4 +1,4 @@
-import { defineExtension, zodSrcPath } from "@webiny/project/extensions/index.js";
+import { defineExtension, zodSrcPath } from "~/extensions/index.js";
 import { ExtensionSrcResolver } from "@webiny/project";
 import { z } from "zod";
 import path from "path";

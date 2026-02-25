@@ -3,7 +3,6 @@ export { Admin } from "~/admin.js";
 export { Cli } from "~/cli.js";
 export { Infra } from "~/infra.js";
 export { Project } from "~/project.js";
-export { Wcp } from "@webiny/project/exports/extensions.js";
 export {
     ApiStackOutputService,
     CoreStackOutputService,
