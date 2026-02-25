@@ -43,15 +43,6 @@ class EmojiNode extends lexical.TextNode {
         node.setStyle(serializedNode.style);
         return node;
     }
-
-    // override exportJSON(): SerializedEmojiNode {
-    //   return {
-    //     ...super.exportJSON(),
-    //     type: "emoji",
-    //     version: 1,
-    //     className: this.__className
-    //   };
-    // }
 }
 
 const INSERT_EMOJI_COMMAND = lexical.createCommand<string>();
@@ -102,7 +93,7 @@ export default () => {
                 <WbLexical.ExpandedEditorConfig.ToolbarAction
                     name="insertEmoji"
                     element={<InsertEmojiButton />}
-                    after="image"
+                    after="link"
                 />
                 <WbLexical.ExpandedEditorConfig.Plugin
                     name="emojiPlugin"
@@ -110,6 +101,10 @@ export default () => {
                 />
                 <WbLexical.ExpandedEditorConfig.Node name={"emojiNode"} node={EmojiNode} />
             </WbLexical.ExpandedEditorConfig>
+
+            <WbLexical.CompactEditorConfig>
+                <WbLexical.CompactEditorConfig.Node name={"emojiNode"} node={EmojiNode} />
+            </WbLexical.CompactEditorConfig>
 
             <CmsLexical.LexicalEditorConfig>
                 <CmsLexical.LexicalEditorConfig.ToolbarAction

@@ -51,8 +51,8 @@ export const DefaultLexicalConfig = () => {
                 </LexicalEditorConfig>
             </CompositionScope>
             <CompositionScope name={"expanded"}>
+                <TypographyAction.TypographyDropDown element={<TypographyDropDown />} />
                 <LexicalEditorConfig priority={"primary"}>
-                    <TypographyAction.TypographyDropDown element={<TypographyDropDown />} />
                     {sharedPlugins}
                     <Plugin
                         name={"floatingLinkEditor"}

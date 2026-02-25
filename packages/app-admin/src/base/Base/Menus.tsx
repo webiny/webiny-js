@@ -17,6 +17,17 @@ import { Menu } from "~/config/AdminConfig/Menu.js";
 export const Menus = React.memo(() => {
     return (
         <AdminConfig>
+            <Menu
+                name={"home"}
+                pin={"start"}
+                element={
+                    <Menu.Link
+                        to={"/"}
+                        text={"Home"}
+                        icon={<Menu.Link.Icon label="Home" element={<DashboardIcon />} />}
+                    />
+                }
+            />
             <HasPermission name={"fm.file"}>
                 <Menu
                     name={"fileManager"}
@@ -35,17 +46,6 @@ export const Menus = React.memo(() => {
                     }
                 />
             </HasPermission>
-            <Menu
-                name={"home"}
-                pin={"start"}
-                element={
-                    <Menu.Link
-                        to={"/"}
-                        text={"Home"}
-                        icon={<Menu.Link.Icon label="Home" element={<DashboardIcon />} />}
-                    />
-                }
-            />
             <Menu
                 name={"settings"}
                 hideIfEmpty={true}
