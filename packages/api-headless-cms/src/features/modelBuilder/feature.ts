@@ -20,6 +20,7 @@ import { ModelsProvider } from "./models/ModelsProvider.js";
 import { UiFieldType } from "./fields/UiFieldType.js";
 import { UiSeparatorFieldType } from "./fields/UiSeparatorFieldType.js";
 import { UiAlertFieldType } from "./fields/UiAlertFieldType.js";
+import { UiTabsFieldType } from "./fields/UiTabsFieldType.js";
 
 export const ModelBuilderFeature = createFeature({
     name: "ModelBuilder",
@@ -40,6 +41,7 @@ export const ModelBuilderFeature = createFeature({
         container.register(UiFieldType);
         container.register(UiSeparatorFieldType);
         container.register(UiAlertFieldType);
+        container.register(UiTabsFieldType);
         // container.register(LocationFieldType);
 
         // Register field builder registry (will automatically get all FieldType implementations)
