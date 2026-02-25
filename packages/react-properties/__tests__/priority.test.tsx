@@ -12,7 +12,6 @@ interface ToolbarConfig {
 const base = createConfigurableComponent<ToolbarConfig>("TestToolbar");
 const ToolbarConfig = base.Config;
 const ToolbarWithConfig = base.WithConfig;
-const useToolbarConfig = base.useConfig;
 
 const ToolbarAction = ({ name, after }: { name: string; after?: string }) => {
     const placeAfter = after ? `action:${after}` : undefined;
