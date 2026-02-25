@@ -44,10 +44,6 @@ export const pagesTypeDefs = /* GraphQL */ `
         extensions: JSON
     }
 
-    input WbPagesListWhereSystemInput {
-        workflow: ListWhereInputCmsEntrySystemWorkflowInput
-    }
-
     input WbPagesListWhereInput {
         location: WbLocationWhereInput
         latest: Boolean
@@ -142,7 +138,7 @@ export const pagesTypeDefs = /* GraphQL */ `
         status_in: [String!]
         status_not_in: [String!]
 
-        system: WbPagesListWhereSystemInput
+        system: ListWhereInputCmsEntrySystem
 
         AND: [WbPagesListWhereInput!]
         OR: [WbPagesListWhereInput!]
