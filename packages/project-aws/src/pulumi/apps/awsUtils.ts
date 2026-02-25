@@ -9,7 +9,7 @@ import { AwsTags as awsTagsExt } from "~/pulumi/extensions/AwsTags.js";
 
 export function getAwsAccountId(app: PulumiApp) {
     return app.addHandler(() => {
-        return aws.getCallerIdentity({}).then(x => x.accountId);
+        return `aws.getCallerIdentity({}).then(x => x.accountId);`;
     });
 }
 
