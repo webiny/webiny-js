@@ -71,7 +71,6 @@ export function createConfigurableComponent<TConfig>(name: string) {
      * and remount, corrupting the config object.
      */
     const ConfigApplyTree = React.memo(function ConfigApplyTree() {
-        console.log("ConfigApplyTree render");
         return (
             <>
                 <ConfigApplyPrimary />
@@ -83,12 +82,18 @@ export function createConfigurableComponent<TConfig>(name: string) {
     });
 
     const WithConfig = ({ onProperties, children }: WithConfigProps) => {
-        const [properties, setProperties] = useState<Property[]>([]);
-        useDebugConfig(name, properties);
-        const context = { properties };
+        // `null` = config not yet collected; `[]` = collected but empty.
+        // This distinction is critical: children must NOT render until the
+        // PropertyStore debounce has flushed and delivered the initial config.
+        // Rendering children with partial/empty config causes errors in
+        // consumers like LexicalEditor that require a complete config on mount.
+        const [properties, setProperties] = useState<Property[] | null>(null);
+        const resolvedProperties = properties ?? [];
+        useDebugConfig(name, resolvedProperties);
+        const context = { properties: resolvedProperties };
 
         useEffect(() => {
-            if (typeof onProperties === "function") {
+            if (properties !== null && typeof onProperties === "function") {
                 onProperties(properties);
             }
         }, [properties]);
@@ -99,10 +104,16 @@ export function createConfigurableComponent<TConfig>(name: string) {
 
         return (
             <ViewContext.Provider value={context}>
+                {/* ConfigApplyTree always renders so Property components inside
+                    composed HOCs can mount and register with the PropertyStore.
+                    It lives outside the children gate below. */}
                 <Properties onChange={stateUpdater}>
                     <ConfigApplyTree />
-                    {children}
                 </Properties>
+                {/* Gate: only render children once the PropertyStore has flushed
+                    its first batch (properties !== null). This guarantees that
+                    useConfig() returns a complete config object on first render. */}
+                {properties !== null ? children : null}
             </ViewContext.Provider>
         );
     };
