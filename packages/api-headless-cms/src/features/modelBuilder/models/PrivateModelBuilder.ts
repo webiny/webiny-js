@@ -13,8 +13,8 @@ export class PrivateModelBuilder extends BaseModelBuilder {
             throw new Error("fields are required");
         }
 
-        // Build all fields from field builders
-        const fields = Array.from(this.fieldBuildersMap.values()).map(builder => builder.build());
+        // Build all fields from field builders (layout replacements ignored for private models)
+        const { fields } = this.buildFields();
 
         return createPrivateModelPlugin({
             modelId: this.config.modelId,

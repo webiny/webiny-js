@@ -158,7 +158,7 @@ export const createModelsSchema = ({
                 icon: Icon
                 singleEntry: Boolean
                 description: String
-                layout: [[ID!]!]
+                layout: JSON
                 fields: [CmsContentModelFieldInput!]
                 titleFieldId: String
                 descriptionFieldId: String
@@ -184,7 +184,7 @@ export const createModelsSchema = ({
                 group: String
                 icon: Icon
                 description: String
-                layout: [[ID!]!]!
+                layout: JSON!
                 fields: [CmsContentModelFieldInput!]!
                 titleFieldId: String
                 descriptionFieldId: String
@@ -267,7 +267,7 @@ export const createModelsSchema = ({
                 savedOn: DateTime
                 createdBy: CmsIdentity
                 fields: [CmsContentModelField!]!
-                layout: [[String!]!]!
+                layout: JSON!
                 titleFieldId: String
                 descriptionFieldId: String
                 imageFieldId: String

@@ -6,6 +6,11 @@ import { createIcon } from "~tests/__helpers/icon.js";
 const SINGULAR_API_NAME = "StoreSettings";
 const PLURAL_API_NAME = "StoreSettingsPlural";
 
+/**
+ * After tabs field hoisting, the model structure is flat:
+ * child fields live directly in model.fields[], and the layout
+ * contains rich descriptor objects instead of the tabs field ID.
+ */
 const createStoreSettingsModel = () => {
     return [
         new CmsModelPlugin({
@@ -17,76 +22,92 @@ const createStoreSettingsModel = () => {
             group: "ungrouped",
             icon: createIcon(),
             titleFieldId: "title",
-            layout: [["tabsField"]],
-            tags: ["type:model"],
-            fields: [
-                // The tabs UI field itself
-                createModelField({
-                    id: "tabsField",
-                    fieldId: "tabsField",
-                    type: "ui:tabs",
-                    storageId: "ui@tabsField",
-                    label: "My Tabs",
-                    renderer: { name: "uiTabs" },
-                    settings: {
+            layout: [
+                [
+                    {
+                        type: "tabs",
+                        label: "My Tabs",
                         tabs: [
                             {
                                 id: "general",
-                                name: "General",
-                                description: "",
-                                fields: [
-                                    {
-                                        id: "title",
-                                        fieldId: "title",
-                                        type: "text",
-                                        label: "Title",
-                                        renderer: { name: "text-input" },
-                                        validation: [
-                                            {
-                                                name: "required",
-                                                message: "Title is required."
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        id: "slug",
-                                        fieldId: "slug",
-                                        type: "text",
-                                        label: "Slug",
-                                        renderer: { name: "text-input" }
-                                    },
-                                    {
-                                        id: "price",
-                                        fieldId: "price",
-                                        type: "number",
-                                        label: "Price",
-                                        renderer: { name: "number-input" }
-                                    }
-                                ],
+                                label: "General",
                                 layout: [["title"], ["slug"], ["price"]]
                             },
                             {
                                 id: "seo",
-                                name: "SEO",
-                                description: "Search engine optimization settings",
-                                fields: [
-                                    {
-                                        id: "metaTitle",
-                                        fieldId: "metaTitle",
-                                        type: "text",
-                                        label: "Meta Title",
-                                        renderer: { name: "text-input" }
-                                    },
-                                    {
-                                        id: "metaDescription",
-                                        fieldId: "metaDescription",
-                                        type: "long-text",
-                                        label: "Meta Description",
-                                        renderer: { name: "long-text-text-area" }
-                                    }
-                                ],
+                                label: "SEO",
                                 layout: [["metaTitle"], ["metaDescription"]]
                             }
+                        ]
+                    }
+                ],
+                ["details"]
+            ],
+            tags: ["type:model"],
+            fields: [
+                createModelField({
+                    id: "title",
+                    fieldId: "title",
+                    type: "text",
+                    label: "Title",
+                    renderer: { name: "text-input" },
+                    validation: [
+                        {
+                            name: "required",
+                            message: "Title is required."
+                        }
+                    ]
+                }),
+                createModelField({
+                    id: "slug",
+                    fieldId: "slug",
+                    type: "text",
+                    label: "Slug",
+                    renderer: { name: "text-input" }
+                }),
+                createModelField({
+                    id: "price",
+                    fieldId: "price",
+                    type: "number",
+                    label: "Price",
+                    renderer: { name: "number-input" }
+                }),
+                createModelField({
+                    id: "metaTitle",
+                    fieldId: "metaTitle",
+                    type: "text",
+                    label: "Meta Title",
+                    renderer: { name: "text-input" }
+                }),
+                createModelField({
+                    id: "metaDescription",
+                    fieldId: "metaDescription",
+                    type: "long-text",
+                    label: "Meta Description",
+                    renderer: { name: "long-text-text-area" }
+                }),
+                createModelField({
+                    id: "details",
+                    fieldId: "details",
+                    type: "object",
+                    label: "Details",
+                    renderer: { name: "object" },
+                    settings: {
+                        fields: [
+                            createModelField({
+                                id: "brand",
+                                fieldId: "brand",
+                                type: "text",
+                                label: "Brand",
+                                renderer: { name: "text-input" }
+                            }),
+                            createModelField({
+                                id: "color",
+                                fieldId: "color",
+                                type: "text",
+                                label: "Color",
+                                renderer: { name: "text-input" }
+                            })
                         ]
                     }
                 })
@@ -95,17 +116,28 @@ const createStoreSettingsModel = () => {
     ];
 };
 
+const VALUES_FRAGMENT = /* GraphQL */ `
+    fragment StoreValues on ${SINGULAR_API_NAME}Values {
+        title
+        slug
+        price
+        metaTitle
+        metaDescription
+        details {
+            brand
+            color
+        }
+    }
+`;
+
 const CREATE_MUTATION = /* GraphQL */ `
+    ${VALUES_FRAGMENT}
     mutation CreateStoreSettings($data: ${SINGULAR_API_NAME}Input!) {
         createStoreSettings: create${SINGULAR_API_NAME}(data: $data) {
             data {
                 id
                 values {
-                    title
-                    slug
-                    price
-                    metaTitle
-                    metaDescription
+                    ...StoreValues
                 }
             }
             error {
@@ -118,16 +150,13 @@ const CREATE_MUTATION = /* GraphQL */ `
 `;
 
 const GET_QUERY = /* GraphQL */ `
+    ${VALUES_FRAGMENT}
     query GetStoreSettings($revision: ID!) {
         getStoreSettings: get${SINGULAR_API_NAME}(revision: $revision) {
             data {
                 id
                 values {
-                    title
-                    slug
-                    price
-                    metaTitle
-                    metaDescription
+                    ...StoreValues
                 }
             }
             error {
@@ -140,6 +169,7 @@ const GET_QUERY = /* GraphQL */ `
 `;
 
 const LIST_QUERY = /* GraphQL */ `
+    ${VALUES_FRAGMENT}
     query ListStoreSettings(
         $where: ${SINGULAR_API_NAME}ListWhereInput
         $sort: [${SINGULAR_API_NAME}ListSorter]
@@ -155,11 +185,7 @@ const LIST_QUERY = /* GraphQL */ `
             data {
                 id
                 values {
-                    title
-                    slug
-                    price
-                    metaTitle
-                    metaDescription
+                    ...StoreValues
                 }
             }
             error {
@@ -205,7 +231,11 @@ describe("Tabs Field - Content API", () => {
             slug: "my-store",
             price: 99.99,
             metaTitle: "My Store - Best Prices",
-            metaDescription: "Welcome to my store with the best prices."
+            metaDescription: "Welcome to my store with the best prices.",
+            details: {
+                brand: "My Brand",
+                color: "Red"
+            }
         };
 
         // Create
@@ -339,7 +369,8 @@ describe("Tabs Field - Content API", () => {
                                 slug: "store-alpha",
                                 price: 49.99,
                                 metaTitle: "Alpha Store",
-                                metaDescription: "First store"
+                                metaDescription: "First store",
+                                details: null
                             }
                         }
                     ],

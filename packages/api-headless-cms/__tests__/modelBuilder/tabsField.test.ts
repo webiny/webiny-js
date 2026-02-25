@@ -13,7 +13,7 @@ describe("Tabs Field Type", () => {
         ModelBuilderFeature.register(container);
     });
 
-    it("should build a model with a tabs field containing nested fields", async () => {
+    it("should hoist child fields and inject layout descriptor for public model", async () => {
         class SettingsModelImpl implements ModelFactory.Interface {
             async execute(builder: ModelFactory.Builder) {
                 return [
@@ -26,20 +26,22 @@ describe("Tabs Field Type", () => {
                         .description("Settings for our e-commerce store")
                         .fields(fields => ({
                             settings: fields
-                                .tabs()
+                                .uiTabs()
                                 .label("My Tabs")
                                 .tab("general", {
                                     name: "General",
                                     fields: f => ({
                                         title: f.text().label("Title"),
                                         slug: f.text().label("Slug")
-                                    })
+                                    }),
+                                    layout: [["title"], ["slug"]]
                                 })
                                 .tab("seo", {
                                     name: "SEO",
                                     fields: f => ({
                                         metaTitle: f.text().label("Meta Title")
-                                    })
+                                    }),
+                                    layout: [["metaTitle"]]
                                 })
                         }))
                         .layout([["settings"]])
@@ -60,46 +62,51 @@ describe("Tabs Field Type", () => {
         expect(model!.name).toBe("Store Settings");
         expect(model!.description).toBe("Settings for our e-commerce store");
 
-        // Find the tabs field
-        const settingsField = model!.fields.find(f => f.fieldId === "settings");
-        expect(settingsField).toBeDefined();
-        expect(settingsField!.type).toBe("ui");
-        expect(settingsField!.label).toBe("My Tabs");
-        expect(settingsField!.renderer?.name).toBe("tabs");
-        expect(settingsField!.list).toBe(false);
+        // Tabs field itself should NOT be in model.fields
+        const tabsField = model!.fields.find(f => f.fieldId === "settings");
+        expect(tabsField).toBeUndefined();
 
-        // Verify tabs in settings
-        const tabs = settingsField!.settings?.tabs;
-        expect(tabs).toBeDefined();
-        expect(tabs).toHaveLength(2);
-
-        // Verify "general" tab
-        const generalTab = tabs[0];
-        expect(generalTab.id).toBe("general");
-        expect(generalTab.name).toBe("General");
-        expect(generalTab.description).toBe("");
-        expect(generalTab.fields).toHaveLength(2);
-
-        const titleField = generalTab.fields.find((f: any) => f.fieldId === "title");
+        // Child fields should be hoisted to model.fields
+        const titleField = model!.fields.find(f => f.fieldId === "title");
         expect(titleField).toBeDefined();
-        expect(titleField.type).toBe("text");
-        expect(titleField.label).toBe("Title");
+        expect(titleField!.type).toBe("text");
+        expect(titleField!.label).toBe("Title");
 
-        const slugField = generalTab.fields.find((f: any) => f.fieldId === "slug");
+        const slugField = model!.fields.find(f => f.fieldId === "slug");
         expect(slugField).toBeDefined();
-        expect(slugField.type).toBe("text");
-        expect(slugField.label).toBe("Slug");
+        expect(slugField!.type).toBe("text");
+        expect(slugField!.label).toBe("Slug");
 
-        // Verify "seo" tab
-        const seoTab = tabs[1];
-        expect(seoTab.id).toBe("seo");
-        expect(seoTab.name).toBe("SEO");
-        expect(seoTab.fields).toHaveLength(1);
-
-        const metaTitleField = seoTab.fields.find((f: any) => f.fieldId === "metaTitle");
+        const metaTitleField = model!.fields.find(f => f.fieldId === "metaTitle");
         expect(metaTitleField).toBeDefined();
-        expect(metaTitleField.type).toBe("text");
-        expect(metaTitleField.label).toBe("Meta Title");
+        expect(metaTitleField!.type).toBe("text");
+        expect(metaTitleField!.label).toBe("Meta Title");
+
+        // Layout should contain a rich descriptor instead of the "settings" string
+        expect(model!.layout).toEqual([
+            [
+                {
+                    type: "tabs",
+                    label: "My Tabs",
+                    description: null,
+                    help: null,
+                    tabs: [
+                        {
+                            id: "general",
+                            label: "General",
+                            icon: null,
+                            layout: [["title"], ["slug"]]
+                        },
+                        {
+                            id: "seo",
+                            label: "SEO",
+                            icon: null,
+                            layout: [["metaTitle"]]
+                        }
+                    ]
+                }
+            ]
+        ]);
     });
 
     it("should support tabs with icons and descriptions", async () => {
@@ -113,7 +120,7 @@ describe("Tabs Field Type", () => {
                         })
                         .fields(fields => ({
                             content: fields
-                                .tabs()
+                                .uiTabs()
                                 .label("Content Tabs")
                                 .tab("info", {
                                     name: "Info",
@@ -134,11 +141,15 @@ describe("Tabs Field Type", () => {
         const models = await modelsProvider.list("root");
         const model = models.find(m => m.modelId === "tabsWithMetadata");
 
-        const contentField = model!.fields.find(f => f.fieldId === "content");
-        const tabs = contentField!.settings?.tabs;
+        // Child fields should be hoisted
+        const nameField = model!.fields.find(f => f.fieldId === "name");
+        expect(nameField).toBeDefined();
+        expect(nameField!.type).toBe("text");
+        expect(nameField!.label).toBe("Name");
 
-        expect(tabs[0].icon).toEqual({ type: "icon", name: "fas/info-circle" });
-        expect(tabs[0].description).toBe("General information tab");
+        // Tabs field itself should NOT be in fields
+        const contentField = model!.fields.find(f => f.fieldId === "content");
+        expect(contentField).toBeUndefined();
     });
 
     it("should make list() a no-op for tabs field", async () => {
@@ -152,7 +163,7 @@ describe("Tabs Field Type", () => {
                         })
                         .fields(fields => ({
                             myTabs: fields
-                                .tabs()
+                                .uiTabs()
                                 .label("My Tabs")
                                 .list() // should be a no-op
                                 .tab("tab1", {
@@ -172,8 +183,13 @@ describe("Tabs Field Type", () => {
         const models = await modelsProvider.list("root");
         const model = models.find(m => m.modelId === "tabsList");
 
+        // Child field should be hoisted
+        const valueField = model!.fields.find(f => f.fieldId === "value");
+        expect(valueField).toBeDefined();
+
+        // Tabs field should NOT be in fields
         const tabsField = model!.fields.find(f => f.fieldId === "myTabs");
-        expect(tabsField!.list).toBe(false);
+        expect(tabsField).toBeUndefined();
     });
 
     it("should support tabs with nested object fields", async () => {
@@ -187,7 +203,7 @@ describe("Tabs Field Type", () => {
                         })
                         .fields(fields => ({
                             page: fields
-                                .tabs()
+                                .uiTabs()
                                 .label("Page Settings")
                                 .tab("content", {
                                     name: "Content",
@@ -223,16 +239,24 @@ describe("Tabs Field Type", () => {
         const models = await modelsProvider.list("root");
         const model = models.find(m => m.modelId === "tabsWithObject");
 
+        // All child fields should be hoisted
+        const titleField = model!.fields.find(f => f.fieldId === "title");
+        expect(titleField).toBeDefined();
+        expect(titleField!.type).toBe("text");
+
+        const bodyField = model!.fields.find(f => f.fieldId === "body");
+        expect(bodyField).toBeDefined();
+        expect(bodyField!.type).toBe("rich-text");
+
+        // Object field should be hoisted with its nested structure intact
+        const seoField = model!.fields.find(f => f.fieldId === "seo");
+        expect(seoField).toBeDefined();
+        expect(seoField!.type).toBe("object");
+        expect(seoField!.settings.fields).toHaveLength(2);
+        expect(seoField!.settings.layout).toEqual([["metaTitle"], ["metaDescription"]]);
+
+        // Tabs field itself should NOT be in fields
         const pageField = model!.fields.find(f => f.fieldId === "page");
-        const tabs = pageField!.settings?.tabs;
-
-        // Verify content tab has layout
-        expect(tabs[0].layout).toEqual([["title"], ["body"]]);
-
-        // Verify meta tab has nested object
-        const seoField = tabs[1].fields.find((f: any) => f.fieldId === "seo");
-        expect(seoField.type).toBe("object");
-        expect(seoField.settings.fields).toHaveLength(2);
-        expect(seoField.settings.layout).toEqual([["metaTitle"], ["metaDescription"]]);
+        expect(pageField).toBeUndefined();
     });
 });

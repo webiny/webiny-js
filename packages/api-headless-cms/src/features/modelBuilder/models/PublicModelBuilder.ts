@@ -124,8 +124,12 @@ export class PublicModelBuilder extends BaseModelBuilder {
             throw new Error("group is required");
         }
 
-        // Build all fields from field builders
-        const fields = Array.from(this.fieldBuildersMap.values()).map(builder => builder.build());
+        // Build all fields from field builders, separating data and layout results
+        const { fields, layoutReplacements } = this.buildFields();
+
+        // Build and apply layout replacements (tabs → rich descriptors)
+        const rawLayout = this.layoutBuilder.build();
+        const layout = rawLayout.map(row => row.map(cell => layoutReplacements.get(cell) ?? cell));
 
         return createModelPlugin(
             {
@@ -142,7 +146,7 @@ export class PublicModelBuilder extends BaseModelBuilder {
                     this.publicConfig.titleFieldId ?? this.findFirstFieldId(fields, "text"),
                 descriptionFieldId: this.publicConfig.descriptionFieldId,
                 imageFieldId: this.publicConfig.imageFieldId,
-                layout: this.layoutBuilder.build(),
+                layout,
                 fields,
                 tags: this.getTags()
             },

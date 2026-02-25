@@ -2,6 +2,7 @@ import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
 import { FieldBuilder } from "./FieldBuilder.js";
 import { FieldBuilderRegistry } from "../abstractions.js";
 import { LayoutBuilder } from "../LayoutBuilder.js";
+import type { CmsModelField, CmsModelLayoutCell } from "~/types/index.js";
 
 export interface IObjectFieldBuilder extends FieldBuilder<"object"> {
     required(message?: string): this;
@@ -60,14 +61,31 @@ export class ObjectFieldBuilder extends FieldBuilder<"object"> implements IObjec
     }
 
     override build() {
-        // Build all nested fields from field builders
         this.config.settings = this.config.settings || {};
-        this.config.settings.fields = Array.from(this.fieldBuildersMap.values()).map(builder =>
-            builder.build()
-        );
 
-        // Build layout
-        this.config.settings.layout = this.layoutBuilder.build();
+        // Build nested fields, separating data fields from layout fields
+        const fields: CmsModelField[] = [];
+        const layoutReplacements = new Map<string, CmsModelLayoutCell>();
+
+        for (const [fieldId, builder] of this.fieldBuildersMap) {
+            const result = builder.build();
+            if (result.type === "layout") {
+                layoutReplacements.set(fieldId, result.layoutCell);
+                if (result.fields) {
+                    fields.push(...result.fields);
+                }
+            } else {
+                fields.push(result.field);
+            }
+        }
+
+        this.config.settings.fields = fields;
+
+        // Build layout and apply replacements
+        const rawLayout = this.layoutBuilder.build();
+        this.config.settings.layout = rawLayout.map(row =>
+            row.map(cell => layoutReplacements.get(cell) ?? cell)
+        );
 
         return super.build();
     }

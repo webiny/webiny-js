@@ -16,18 +16,23 @@ class SettingsModelImpl implements ModelFactory.Interface {
                     settings: fields
                         .uiTabs()
                         .label("My Tabs")
+                        .description("My tabs description")
                         .tab("general", {
                             name: "General",
+                            icon: { type: "icon", name: "fa-cog" },
                             fields: f => ({
                                 title: f.text().label("Title"),
                                 slug: f.text().label("Slug")
-                            })
+                            }),
+                            layout: [["title"], ["slug"]]
                         })
                         .tab("seo", {
                             name: "SEO",
+                            icon: { type: "icon", name: "fa-cog" },
                             fields: f => ({
                                 metaTitle: f.text().label("Meta Title")
-                            })
+                            }),
+                            layout: [["metaTitle"]]
                         })
                 }))
                 .layout([["settings"]])
@@ -41,3 +46,22 @@ export default ModelFactory.createImplementation({
     implementation: SettingsModelImpl,
     dependencies: []
 });
+
+const layout = [
+    [
+        {
+            type: "tabs",
+            label: "My Tabs",
+            description: "My tabs description",
+            help: "My tabs help",
+            tabs: [
+                {
+                    id: "general",
+                    label: "General",
+                    icon: { type: "icon", name: "fa-cog" },
+                    layout: [["title"], ["slug"]]
+                }
+            ]
+        }
+    ]
+];

@@ -720,7 +720,7 @@
               "type": {
                 "kind": "NON_NULL",
                 "name": null,
-                "ofType": { "kind": "LIST", "name": null }
+                "ofType": { "kind": "SCALAR", "name": "JSON" }
               }
             },
             {

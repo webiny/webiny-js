@@ -1,4 +1,4 @@
-import type { CmsModel } from "./model.js";
+import type { CmsModel, CmsModelLayout } from "./model.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { CmsDynamicZoneTemplate } from "~/types/fields/dynamicZoneField.js";
 
@@ -231,7 +231,7 @@ export interface CmsModelUpdateInput {
      * ]
      * ```
      */
-    layout: string[][];
+    layout: CmsModelLayout;
     /**
      * Tags for the content model.
      */

@@ -1,7 +1,11 @@
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
-import { FieldBuilder } from "./FieldBuilder.js";
+import {
+    FieldBuilder,
+    type FieldBuildResult,
+    type LayoutFieldBuildResult
+} from "./FieldBuilder.js";
 import { type IFieldBuilderRegistry } from "../abstractions.js";
-import type { CmsIcon } from "~/types/index.js";
+import type { CmsIcon, CmsModelField, CmsModelLayout, CmsModelLayoutCell } from "~/types/index.js";
 import { UiFieldBuilder } from "./UiFieldType.js";
 
 interface ITab {
@@ -9,8 +13,8 @@ interface ITab {
     name: string;
     icon: CmsIcon | undefined;
     description: string;
-    fields: any[];
-    layout: string[][];
+    fields: CmsModelField[];
+    layout: CmsModelLayout;
 }
 
 interface ITabConfig {
@@ -35,12 +39,26 @@ class TabsFieldBuilder extends UiFieldBuilder implements IUiTabsFieldBuilder {
 
     public tab(id: string, config: ITabConfig): this {
         const fieldBuilders = config.fields(this.registry);
-        const fields: any[] = [];
+        const fields: CmsModelField[] = [];
+        const layoutReplacements = new Map<string, CmsModelLayoutCell>();
 
         for (const [key, fieldBuilder] of Object.entries(fieldBuilders)) {
             fieldBuilder.fieldId(key);
-            fields.push((fieldBuilder as any).build());
+            const result: FieldBuildResult = (fieldBuilder as any).build();
+            if (result.type === "layout") {
+                layoutReplacements.set(key, result.layoutCell);
+                if (result.fields) {
+                    fields.push(...result.fields);
+                }
+            } else {
+                fields.push(result.field);
+            }
         }
+
+        const rawLayout: string[][] = config.layout || [];
+        const layout: CmsModelLayout = rawLayout.map(row =>
+            row.map(cell => layoutReplacements.get(cell) ?? cell)
+        );
 
         this.tabs.push({
             id,
@@ -48,7 +66,7 @@ class TabsFieldBuilder extends UiFieldBuilder implements IUiTabsFieldBuilder {
             icon: config.icon,
             description: config.description || "",
             fields,
-            layout: config.layout || []
+            layout
         });
 
         return this;
@@ -59,11 +77,31 @@ class TabsFieldBuilder extends UiFieldBuilder implements IUiTabsFieldBuilder {
         return this;
     }
 
-    public override build() {
-        this.config.settings = this.config.settings || {};
-        this.config.settings.tabs = this.tabs;
-        this.renderer("uiTabs");
-        return super.build();
+    public override build(): LayoutFieldBuildResult {
+        const hoistedFields: CmsModelField[] = [];
+        const layoutTabs = [];
+
+        for (const tab of this.tabs) {
+            hoistedFields.push(...tab.fields);
+            layoutTabs.push({
+                id: tab.id,
+                label: tab.name,
+                icon: tab.icon || null,
+                layout: tab.layout
+            });
+        }
+
+        return {
+            type: "layout",
+            layoutCell: {
+                type: "tabs",
+                label: this.config.label,
+                description: this.config.description || null,
+                help: this.config.help || null,
+                tabs: layoutTabs
+            },
+            fields: hoistedFields
+        };
     }
 }
 

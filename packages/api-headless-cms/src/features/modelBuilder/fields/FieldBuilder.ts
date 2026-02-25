@@ -2,9 +2,23 @@ import camelCase from "lodash/camelCase.js";
 import type {
     CmsModelField,
     CmsModelFieldPredefinedValues,
-    CmsModelFieldValidation
+    CmsModelFieldValidation,
+    CmsModelLayoutCell
 } from "~/types/index.js";
 import { getBaseFieldType } from "~/utils/getBaseFieldType.js";
+
+export interface DataFieldBuildResult {
+    type: "data";
+    field: CmsModelField;
+}
+
+export interface LayoutFieldBuildResult {
+    type: "layout";
+    layoutCell: CmsModelLayoutCell;
+    fields?: CmsModelField[];
+}
+
+export type FieldBuildResult = DataFieldBuildResult | LayoutFieldBuildResult;
 
 export interface FieldBuilderConfig
     extends Omit<CmsModelField, "id" | "fieldId" | "storageId" | "type"> {
@@ -403,7 +417,7 @@ export class FieldBuilder<TType extends string = string> {
      * Build the final CmsModelField
      * @internal
      */
-    build(): CmsModelField {
+    build(): FieldBuildResult {
         const fieldId = this.config._fieldId || camelCase(this.config.label);
         const baseType = getBaseFieldType({
             type: this.type
@@ -411,25 +425,28 @@ export class FieldBuilder<TType extends string = string> {
         const storageId = `${baseType}@${this.config._storageId ?? fieldId}`;
 
         return {
-            id: fieldId,
-            fieldId,
-            storageId,
-            type: this.type,
-            label: this.config.label,
-            validation: this.config.validation || [],
-            listValidation: this.config.listValidation || [],
-            list: this.config.list || false,
-            predefinedValues: this.config.predefinedValues || {
-                enabled: false,
-                values: []
-            },
-            help: this.config.help || null,
-            placeholder: this.config.placeholder || null,
-            description: this.config.description || null,
-            note: this.config.note || null,
-            renderer: this.config.renderer || null,
-            settings: this.config.settings || {},
-            tags: this.config.tags || []
+            type: "data",
+            field: {
+                id: fieldId,
+                fieldId,
+                storageId,
+                type: this.type,
+                label: this.config.label,
+                validation: this.config.validation || [],
+                listValidation: this.config.listValidation || [],
+                list: this.config.list || false,
+                predefinedValues: this.config.predefinedValues || {
+                    enabled: false,
+                    values: []
+                },
+                help: this.config.help || null,
+                placeholder: this.config.placeholder || null,
+                description: this.config.description || null,
+                note: this.config.note || null,
+                renderer: this.config.renderer || null,
+                settings: this.config.settings || {},
+                tags: this.config.tags || []
+            }
         };
     }
 }

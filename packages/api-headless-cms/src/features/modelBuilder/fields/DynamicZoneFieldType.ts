@@ -1,7 +1,7 @@
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
-import { FieldBuilder } from "./FieldBuilder.js";
+import { FieldBuilder, type FieldBuildResult } from "./FieldBuilder.js";
 import { type IFieldBuilderRegistry } from "../abstractions.js";
-import type { CmsIcon, CmsModelFieldValidation } from "~/types/index.js";
+import type { CmsIcon, CmsModelField, CmsModelFieldValidation } from "~/types/index.js";
 
 interface IDynamicZoneTemplate {
     id: string;
@@ -58,13 +58,16 @@ class DynamicZoneFieldBuilder
 
     public template(id: string, config: IDynamicZoneFieldBuilderTemplateConfig): this {
         const fieldBuilders = config.fields(this.registry);
-        const fields: any[] = [];
+        const fields: CmsModelField[] = [];
 
         for (const [key, fieldBuilder] of Object.entries(fieldBuilders)) {
-            // Automatically set the fieldId from the object key
-            // This ensures the key and fieldId are always in sync
             fieldBuilder.fieldId(key);
-            fields.push((fieldBuilder as any).build());
+            const result: FieldBuildResult = (fieldBuilder as any).build();
+            if (result.type === "data") {
+                fields.push(result.field);
+            } else if (result.fields) {
+                fields.push(...result.fields);
+            }
         }
 
         this.templates.push({

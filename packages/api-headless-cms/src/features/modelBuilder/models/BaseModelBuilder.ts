@@ -1,6 +1,7 @@
 import { FieldBuilder } from "~/features/modelBuilder/index.js";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin.js";
 import { FieldBuilderRegistry } from "../abstractions.js";
+import type { CmsModelField, CmsModelLayoutCell } from "~/types/index.js";
 
 /**
  * Base class for all model builders, containing shared logic.
@@ -128,6 +129,28 @@ export abstract class BaseModelBuilder<TBuild = CmsModelPlugin> {
                 }
             }
         }
+    }
+
+    protected buildFields(): {
+        fields: CmsModelField[];
+        layoutReplacements: Map<string, CmsModelLayoutCell>;
+    } {
+        const fields: CmsModelField[] = [];
+        const layoutReplacements = new Map<string, CmsModelLayoutCell>();
+
+        for (const [fieldId, builder] of this.fieldBuildersMap) {
+            const result = builder.build();
+            if (result.type === "layout") {
+                layoutReplacements.set(fieldId, result.layoutCell);
+                if (result.fields) {
+                    fields.push(...result.fields);
+                }
+            } else {
+                fields.push(result.field);
+            }
+        }
+
+        return { fields, layoutReplacements };
     }
 
     /**

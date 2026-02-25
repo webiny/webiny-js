@@ -2,6 +2,24 @@ import type { CmsIdentity } from "./identity.js";
 import type { CmsModelField, CmsModelFieldInput } from "./modelField.js";
 import type { CmsIcon } from "~/types/types.js";
 
+export interface CmsTabLayoutTab {
+    id: string;
+    label: string;
+    icon?: CmsIcon | null;
+    layout: CmsModelLayout;
+}
+
+export interface CmsTabLayoutDescriptor {
+    type: "tabs";
+    label: string;
+    description?: string | null;
+    help?: string | null;
+    tabs: CmsTabLayoutTab[];
+}
+
+export type CmsModelLayoutCell = string | CmsTabLayoutDescriptor;
+export type CmsModelLayout = CmsModelLayoutCell[][];
+
 /**
  * Base CMS Model. Should not be exported and used outside of this package.
  *
@@ -77,7 +95,7 @@ export interface CmsModel {
      * ]
      * ```
      */
-    layout: string[][];
+    layout: CmsModelLayout;
     /**
      * Models can be tagged to give them contextual meaning.
      */
@@ -168,7 +186,7 @@ export interface CmsModelCreateInput {
      * ]
      * ```
      */
-    layout?: string[][];
+    layout?: CmsModelLayout;
     /**
      * Models can be tagged to give them contextual meaning.
      */
