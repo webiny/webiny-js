@@ -1,4 +1,8 @@
-// @ts-nocheck This class operates via a Proxy, so it's difficult to type check.
+/**
+ * This file has multiple @ts-expect-error comments because the dynamic nature of the registry makes it difficult to type correctly.
+ * The registry is designed to allow dynamic method access for field types, which is not easily expressed in TypeScript.
+ * The @ts-expect-error comments are used to suppress type errors in places where we know the code is correct but TypeScript cannot verify it.
+ */
 import camelCase from "lodash/camelCase.js";
 import {
     FieldBuilderRegistry as RegistryAbstraction,
@@ -18,6 +22,10 @@ class FieldBuilderRegistryImpl implements IFieldBuilderRegistry {
             this.fieldTypes.set(factory.type, factory);
             // Also register camelCase aliases for hyphenated types
             if (factory.type.includes("-")) {
+                this.fieldTypes.set(camelCase(factory.type), factory);
+            }
+            // also register camelCase aliases for subtypes.
+            if (factory.type.includes(":")) {
                 this.fieldTypes.set(camelCase(factory.type), factory);
             }
         }
@@ -51,7 +59,7 @@ class FieldBuilderRegistryImpl implements IFieldBuilderRegistry {
                 }
 
                 // Otherwise return the actual property
-                return (target as any)[prop];
+                return target[prop as keyof typeof target];
             }
         }) as any;
 
@@ -60,6 +68,8 @@ class FieldBuilderRegistryImpl implements IFieldBuilderRegistry {
 }
 
 export const FieldBuilderRegistry = RegistryAbstraction.createImplementation({
+    // @ts-expect-error
     implementation: FieldBuilderRegistryImpl,
+    // @ts-expect-error
     dependencies: [[FieldType, { multiple: true }]]
 });

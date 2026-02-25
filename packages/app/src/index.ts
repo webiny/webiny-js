@@ -16,7 +16,6 @@ export type { AppProps } from "./App.js";
 export * from "./core/Plugins.js";
 export * from "./core/Plugin.js";
 export * from "./core/Provider.js";
-export * from "./core/DebounceRender.js";
 export * from "./core/createProvider.js";
 export * from "./core/createProviderPlugin.js";
 export * from "./renderApp.js";

@@ -185,7 +185,7 @@ describe("All Field Types Model", () => {
                                     customSetting1: "value1",
                                     customSetting2: "value2"
                                 }),
-                            separator: fields.separator().label("UI Separator")
+                            separator: fields.uiSeparator().label("UI Separator")
                         }))
                 ];
             }
@@ -300,7 +300,7 @@ describe("All Field Types Model", () => {
         });
         // ui separator field
         const separatorField = model!.fields.find(f => f.fieldId === "separator");
-        expect(separatorField?.type).toBe("ui");
+        expect(separatorField?.type).toBe("ui:separator");
         expect(separatorField?.label).toBe("UI Separator");
     });
 

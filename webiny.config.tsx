@@ -1,5 +1,5 @@
 import React from "react";
-import { Api, Cli, Infra, Project } from "webiny/extensions";
+import { Admin, Api, Cli, Infra, Project } from "webiny/extensions";
 import { Cognito } from "@webiny/cognito";
 // import { MyIdpExtension } from "./extensions/idp/okta/MyIdpExtension.js";
 
@@ -11,6 +11,7 @@ export const Extensions = () => {
             {/*<Admin.Extension src={"@/extensions/customPageTypes/index.tsx"} />*/}
             {/*<Admin.Extension src={"@/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />*/}
             {/*<Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />*/}
+            <Admin.Extension src={"@/extensions/LexicalPlugin.tsx"} />
 
             {/* Infra 👇 */}
             <Infra.PulumiResourceNamePrefix prefix={"myproj-"} />
