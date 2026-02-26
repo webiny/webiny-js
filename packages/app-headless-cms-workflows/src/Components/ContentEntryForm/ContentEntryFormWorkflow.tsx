@@ -43,7 +43,7 @@ const shouldShowOriginal = (params: IShouldShowOriginalParams): boolean => {
     /**
      * In case of new entry or no model, show original.
      * Also, for singleton models, show original.
-     */ ƒ;
+     */
     if (!entry?.id || !model?.tags) {
         return true;
     }
