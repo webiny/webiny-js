@@ -1,5 +1,14 @@
 import React from "react";
-import { Alert, type ColumnProps, Grid, Heading, Separator, Tabs, Text } from "@webiny/admin-ui";
+import {
+    Alert,
+    type ColumnProps,
+    Grid,
+    FormComponentLabel,
+    FormComponentDescription,
+    Separator,
+    Tabs,
+    Text
+} from "@webiny/admin-ui";
 import { FieldElement } from "./FieldElement.js";
 import { FieldElementError } from "./FieldElementError.js";
 import type {
@@ -88,16 +97,17 @@ const LayoutDescriptorCell = ({
             return (
                 <Grid.Column span={12}>
                     {tabsDescriptor.label ? (
-                        <Heading level={6}>{tabsDescriptor.label}</Heading>
+                        <FormComponentLabel
+                            text={tabsDescriptor.label}
+                            hint={tabsDescriptor.help}
+                        />
                     ) : null}
                     {tabsDescriptor.description ? (
-                        <Text className={"text-sm text-neutral-strong text-left"}>
-                            {tabsDescriptor.description}
-                        </Text>
+                        <FormComponentDescription text={tabsDescriptor.description} />
                     ) : null}
                     <Tabs
                         size="md"
-                        spacing="lg"
+                        spacing="md"
                         separator={true}
                         tabs={tabsDescriptor.tabs.map(tab => (
                             <Tabs.Tab
@@ -133,7 +143,7 @@ export const Fields = ({ Bind, fields, layout, contentModel, gridClassName }: Fi
         <Grid className={gridClassName}>
             {layout.map((row, rowIndex) => (
                 <React.Fragment key={rowIndex}>
-                    {row.map((cell, cellIndex) => {
+                    {row.map(cell => {
                         // Handle layout descriptors (separator, alert, tabs)
                         if (isLayoutDescriptor(cell)) {
                             return (
