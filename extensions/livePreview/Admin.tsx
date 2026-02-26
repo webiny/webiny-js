@@ -6,7 +6,7 @@ export default function Admin() {
     return (
         <>
             <AddPreviewPane />
-            {/*<LivePreviewEditor />*/}
+            <LivePreviewEditor />
         </>
     );
 }

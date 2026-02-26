@@ -12,7 +12,7 @@ export const DefaultLayout = makeDecoratable(
     "DefaultLayout",
     ({ model, ...props }: DefaultLayoutProps) => {
         return (
-            <div {...props}>
+            <div {...props} id={"cms-content-form-default-layout"}>
                 <Fields
                     contentModel={model}
                     fields={model.fields || []}

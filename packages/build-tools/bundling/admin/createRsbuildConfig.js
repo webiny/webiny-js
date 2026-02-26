@@ -35,7 +35,7 @@ export const createRsbuildConfig = ({ cwd }) => {
             postcss: (_, { addPlugins }) => {
                 addPlugins(
                     tailwindcss({
-                        base: getTailwindBasePath(paths.projectRootFolder)
+                        base: paths.projectRootFolder
                     })
                 );
             }

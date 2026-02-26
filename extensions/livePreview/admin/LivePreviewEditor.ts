@@ -1,8 +1,6 @@
 import { useEffect } from "react";
-import { ContentEntryEditorConfig } from "@webiny/app-headless-cms";
+import { useContentEntryForm } from "webiny/admin/cms/entry/editor";
 import { useLivePreview } from "./useLivePreview";
-
-const { ContentEntry } = ContentEntryEditorConfig;
 
 const getWindowObject = () => {
     const iframe = document.getElementById("live-preview-iframe") as HTMLIFrameElement | null;
@@ -17,22 +15,20 @@ const getWindowObject = () => {
 /**
  * Decorate `useContentEntryForm` hook, and notify the Live Preview when changes happen.
  */
-export const LivePreviewEditor = ContentEntry.ContentEntryForm.useContentEntryForm.createDecorator(
-    baseHook => {
-        return () => {
-            const { updateLivePreview, onPreviewReady } = useLivePreview(getWindowObject);
+export const LivePreviewEditor = useContentEntryForm.createDecorator(baseHook => {
+    return () => {
+        const { updateLivePreview, onPreviewReady } = useLivePreview(getWindowObject);
 
-            const hook = baseHook();
+        const hook = baseHook();
 
-            useEffect(() => {
-                onPreviewReady(() => updateLivePreview(hook.entry));
-            }, [hook.entry]);
+        useEffect(() => {
+            onPreviewReady(() => updateLivePreview(hook.entry));
+        }, [hook.entry]);
 
-            useEffect(() => {
-                updateLivePreview(hook.entry);
-            }, [hook.entry]);
+        useEffect(() => {
+            updateLivePreview(hook.entry);
+        }, [hook.entry]);
 
-            return hook;
-        };
-    }
-);
+        return hook;
+    };
+});
