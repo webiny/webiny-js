@@ -113,6 +113,7 @@ export interface FieldEditorContext {
     editField: (field: CmsModelField | null) => void;
     field: CmsModelField | null;
     parent?: CmsModelField;
+    parentEditorContext?: FieldEditorContext;
     depth: number;
     dropTarget: DropTarget;
     onFieldDrop: OnFieldDropCallable;
@@ -176,9 +177,11 @@ export const FieldEditorProvider = ({
 }: FieldEditorProviderProps) => {
     // We need to determine depth of this provider so we can render drop zones with correct z-indexes.
     let depth = 0;
+    let parentEditorContext: FieldEditorContext | undefined;
     try {
         const editor = useModelFieldEditor();
         depth = editor.depth + 1;
+        parentEditorContext = editor;
     } catch {
         // There's no parent provider, so this is the top-level one.
     }
@@ -639,6 +642,7 @@ export const FieldEditorProvider = ({
 
     const value: FieldEditorContext = {
         parent,
+        parentEditorContext,
         depth,
         getFieldsInLayout,
         getFieldPlugin,

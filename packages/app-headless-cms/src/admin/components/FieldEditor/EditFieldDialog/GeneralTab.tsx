@@ -13,7 +13,8 @@ const GeneralTab = () => {
     const { field, fieldPlugin } = useModelField();
     const inputRef = useRef<HTMLInputElement | null>(null);
     const { data: contentModel } = useModelEditor();
-    const { getField } = useModelFieldEditor();
+    const editorContext = useModelFieldEditor();
+    const { getField } = editorContext;
 
     // Had problems with autofocusing the "label" field. A couple of comments on this.
     // 1. It's probably caused by the Tabs component which wraps this component.
@@ -50,15 +51,24 @@ const GeneralTab = () => {
     }, []);
 
     const uniqueFieldIdValidator = useCallback((fieldId: string) => {
+        // Check the current context.
         const existingField = getField({ fieldId });
-        if (!existingField) {
-            return false;
+        if (existingField && existingField.id !== field.id) {
+            throw new Error("Please enter a unique Field ID.");
         }
 
-        if (existingField.id === field.id) {
-            return true;
+        // If we're inside a layout field (e.g. a tab), also check the parent context
+        // where hoisted fields live. A layout field context has a parent with no
+        // registered field type plugin (synthetic parent).
+        const parent = editorContext.parentEditorContext;
+        if (parent && editorContext.parent && !editorContext.getFieldPlugin(editorContext.parent.type)) {
+            const parentField = parent.getField({ fieldId });
+            if (parentField && parentField.id !== field.id) {
+                throw new Error("Please enter a unique Field ID.");
+            }
         }
-        throw new Error("Please enter a unique Field ID.");
+
+        return true;
     }, []);
 
     let additionalSettings: React.ReactNode | null = null;
