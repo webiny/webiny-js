@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { Container } from "@webiny/di";
 import { ModelBuilderFeature } from "~/features/modelBuilder/feature.js";
 import { ModelFactory, ModelsProvider } from "~/features/modelBuilder/index.js";
+import type { CmsModelObjectField } from "~/types/index.js";
 
 const SETTINGS_MODEL_ID = "storeSettings";
 
@@ -29,7 +30,7 @@ describe("Tabs Field Type", () => {
                                 .uiTabs()
                                 .label("My Tabs")
                                 .tab("general", {
-                                    name: "General",
+                                    label: "General",
                                     fields: f => ({
                                         title: f.text().label("Title"),
                                         slug: f.text().label("Slug")
@@ -37,7 +38,7 @@ describe("Tabs Field Type", () => {
                                     layout: [["title"], ["slug"]]
                                 })
                                 .tab("seo", {
-                                    name: "SEO",
+                                    label: "SEO",
                                     fields: f => ({
                                         metaTitle: f.text().label("Meta Title")
                                     }),
@@ -123,7 +124,7 @@ describe("Tabs Field Type", () => {
                                 .uiTabs()
                                 .label("Content Tabs")
                                 .tab("info", {
-                                    name: "Info",
+                                    label: "Info",
                                     icon: { type: "icon", name: "fas/info-circle" },
                                     description: "General information tab",
                                     fields: f => ({
@@ -167,7 +168,7 @@ describe("Tabs Field Type", () => {
                                 .label("My Tabs")
                                 .list() // should be a no-op
                                 .tab("tab1", {
-                                    name: "Tab 1",
+                                    label: "Tab 1",
                                     fields: f => ({
                                         value: f.text().label("Value")
                                     })
@@ -206,7 +207,7 @@ describe("Tabs Field Type", () => {
                                 .uiTabs()
                                 .label("Page Settings")
                                 .tab("content", {
-                                    name: "Content",
+                                    label: "Content",
                                     fields: f => ({
                                         title: f.text().label("Title"),
                                         body: f.richText().label("Body")
@@ -214,7 +215,7 @@ describe("Tabs Field Type", () => {
                                     layout: [["title"], ["body"]]
                                 })
                                 .tab("meta", {
-                                    name: "Meta",
+                                    label: "Meta",
                                     fields: f => ({
                                         seo: f
                                             .object()
@@ -249,11 +250,11 @@ describe("Tabs Field Type", () => {
         expect(bodyField!.type).toBe("rich-text");
 
         // Object field should be hoisted with its nested structure intact
-        const seoField = model!.fields.find(f => f.fieldId === "seo");
+        const seoField = model!.fields.find(f => f.fieldId === "seo") as CmsModelObjectField;
         expect(seoField).toBeDefined();
-        expect(seoField!.type).toBe("object");
-        expect(seoField!.settings.fields).toHaveLength(2);
-        expect(seoField!.settings.layout).toEqual([["metaTitle"], ["metaDescription"]]);
+        expect(seoField.type).toBe("object");
+        expect(seoField.settings.fields).toHaveLength(2);
+        expect(seoField.settings.layout).toEqual([["metaTitle"], ["metaDescription"]]);
 
         // Tabs field itself should NOT be in fields
         const pageField = model!.fields.find(f => f.fieldId === "page");

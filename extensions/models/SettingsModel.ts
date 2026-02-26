@@ -18,7 +18,7 @@ class SettingsModelImpl implements ModelFactory.Interface {
                         .label("My Tabs")
                         .description("My tabs description")
                         .tab("general", {
-                            name: "General",
+                            label: "General",
                             icon: { type: "icon", name: "fa-cog" },
                             fields: f => ({
                                 title: f.text().label("Title"),
@@ -27,7 +27,7 @@ class SettingsModelImpl implements ModelFactory.Interface {
                             layout: [["title"], ["slug"]]
                         })
                         .tab("seo", {
-                            name: "SEO",
+                            label: "SEO",
                             icon: { type: "icon", name: "fa-cog" },
                             fields: f => ({
                                 metaTitle: f.text().label("Meta Title")

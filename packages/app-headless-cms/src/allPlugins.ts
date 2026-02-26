@@ -42,10 +42,6 @@ import editorUpperCaseSpaceFieldValidator from "~/admin/plugins/fieldValidators/
 import { dynamicZoneField } from "~/admin/plugins/fields/dynamicZone.js";
 import { dynamicZoneFieldRenderer } from "~/admin/plugins/fieldRenderers/dynamicZone/dynamicZoneRenderer.js";
 import { dynamicZoneFieldValidator } from "~/admin/plugins/fieldValidators/dynamicZone.js";
-import {
-    createAlertFieldRenderer,
-    createSeparatorFieldRenderer
-} from "~/admin/plugins/fieldRenderers/ui/index.js";
 import { uiAlertField, uiSeparatorField, uiTabsField } from "~/admin/plugins/fields/ui/index.js";
 import { passthroughFieldRenderer } from "~/admin/plugins/fieldRenderers/passthrough.js";
 
@@ -71,8 +67,6 @@ export default [
     uiSeparatorField,
     uiAlertField,
     uiTabsField,
-    createSeparatorFieldRenderer(),
-    createAlertFieldRenderer(),
     editorGteFieldValidator,
     editorDateGteFieldValidator(),
     editorDateLteFieldValidator(),

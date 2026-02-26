@@ -223,6 +223,8 @@ const TabItem = ({
     return (
         <Accordion.Item
             title={tab.label}
+            /* This ensures drop zones are not affected by `overflow-hidden` on the accordion content. */
+            className={"[&>[data-state='open']]:!overflow-visible"}
             description={`${tabFields.length} field${tabFields.length !== 1 ? "s" : ""}`}
             actions={
                 <>

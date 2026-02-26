@@ -10,7 +10,7 @@ import { UiFieldBuilder } from "./UiFieldType.js";
 
 interface ITab {
     id: string;
-    name: string;
+    label: string;
     icon: CmsIcon | undefined;
     description: string;
     fields: CmsModelField[];
@@ -18,7 +18,7 @@ interface ITab {
 }
 
 interface ITabConfig {
-    name: string;
+    label: string;
     icon?: CmsIcon;
     description?: string;
     fields: (registry: IFieldBuilderRegistry) => Record<string, FieldBuilder<any>>;
@@ -62,7 +62,7 @@ class TabsFieldBuilder extends UiFieldBuilder implements IUiTabsFieldBuilder {
 
         this.tabs.push({
             id,
-            name: config.name,
+            label: config.label,
             icon: config.icon,
             description: config.description || "",
             fields,
@@ -85,7 +85,7 @@ class TabsFieldBuilder extends UiFieldBuilder implements IUiTabsFieldBuilder {
             hoistedFields.push(...tab.fields);
             layoutTabs.push({
                 id: tab.id,
-                label: tab.name,
+                label: tab.label,
                 icon: tab.icon || null,
                 layout: tab.layout
             });

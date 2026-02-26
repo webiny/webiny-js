@@ -20,6 +20,7 @@ export interface CmsTabLayoutDescriptor {
 export interface CmsSeparatorLayoutDescriptor {
     type: "separator";
     label: string;
+    description: string | null | undefined;
 }
 
 export interface CmsAlertLayoutDescriptor {

@@ -20,7 +20,8 @@ class SeparatorFieldBuilder extends UiFieldBuilder implements IUiSeparatorFieldB
             type: "layout",
             layoutCell: {
                 type: "separator",
-                label: this.config.label
+                label: this.config.label,
+                description: this.config.description
             }
         };
     }

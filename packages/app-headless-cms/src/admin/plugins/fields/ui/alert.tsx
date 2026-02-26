@@ -23,8 +23,9 @@ const AlertSettings = () => {
                 </Bind>
             </Grid.Column>
             <Grid.Column span={12}>
-                <Bind name={"alertType"}>
+                <Bind name={"alertType"} defaultValue={"info"}>
                     <Select
+                        displayResetAction={false}
                         label={"Alert type"}
                         options={[
                             { value: "info", label: "Info" },
