@@ -65,9 +65,11 @@ export const ContentEntryFormWorkflow = ContentEntryForm.createDecorator(Origina
 
         return (
             <Grid>
-                <Grid.Column span={12}>
-                    <WorkflowStateBar />
-                </Grid.Column>
+                <WorkflowStateBar>
+                    {({ stateBar }) => {
+                        return <Grid.Column span={12}>{stateBar}</Grid.Column>;
+                    }}
+                </WorkflowStateBar>
                 <Grid.Column span={12}>
                     <WorkflowStateOverlay>
                         {({ state }) => {
