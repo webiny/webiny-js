@@ -1,8 +1,10 @@
 import React from "react";
 import { Grid, FormComponentLabel, FormComponentDescription, Tabs } from "@webiny/admin-ui";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { CmsTabLayoutDescriptor } from "~/types/model.js";
 import type { BindComponent, CmsEditorContentModel, CmsModelField } from "~/types/index.js";
 import type { CmsEditorFieldsLayout } from "~/types/model.js";
+import { normalizeIcon } from "~/normalizeIcon.js";
 
 interface TabsFieldRendererProps {
     descriptor: CmsTabLayoutDescriptor;
@@ -39,22 +41,26 @@ export const TabsFieldRenderer = ({
                 size="md"
                 spacing="md"
                 separator={true}
-                tabs={descriptor.tabs.map(tab => (
-                    <Tabs.Tab
-                        key={tab.id}
-                        value={tab.id}
-                        trigger={tab.label}
-                        content={
-                            <FieldsComponent
-                                Bind={Bind}
-                                fields={fields}
-                                layout={tab.layout}
-                                contentModel={contentModel}
-                                gridClassName={gridClassName}
-                            />
-                        }
-                    />
-                ))}
+                tabs={descriptor.tabs.map(tab => {
+                    const icon = normalizeIcon(tab.icon);
+                    return (
+                        <Tabs.Tab
+                            key={tab.id}
+                            value={tab.id}
+                            trigger={tab.label}
+                            icon={icon ? <FontAwesomeIcon icon={icon} size={"sm"} /> : undefined}
+                            content={
+                                <FieldsComponent
+                                    Bind={Bind}
+                                    fields={fields}
+                                    layout={tab.layout}
+                                    contentModel={contentModel}
+                                    gridClassName={gridClassName}
+                                />
+                            }
+                        />
+                    );
+                })}
             />
         </Grid.Column>
     );

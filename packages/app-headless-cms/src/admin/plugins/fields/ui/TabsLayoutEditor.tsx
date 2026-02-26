@@ -12,12 +12,19 @@ import type {
     CmsLayoutDescriptor,
     CmsEditorFieldsLayout
 } from "@webiny/app-headless-cms-common/types/model.js";
+import { useConfirmationDialog, useDialogs } from "@webiny/app-admin";
+import { Grid } from "@webiny/admin-ui";
+import { IconButton } from "@webiny/admin-ui";
+import { Button } from "@webiny/admin-ui";
+import { Input } from "@webiny/admin-ui";
+import { Textarea } from "@webiny/admin-ui";
+import { Heading } from "@webiny/admin-ui";
+import { Text } from "@webiny/admin-ui";
+import { Bind } from "@webiny/form";
 import type { CmsModelField } from "~/types.js";
 import { FieldEditor } from "~/admin/components/FieldEditor/index.js";
+import { IconPicker } from "~/admin/components/IconPicker.js";
 import { useModelFieldEditor } from "~/admin/hooks/index.js";
-import { useConfirmationDialog, useDialogs } from "@webiny/app-admin";
-import { Grid, IconButton, Button, Input, Textarea, Heading, Text } from "@webiny/admin-ui";
-import { Bind } from "@webiny/form";
 
 interface TabsLayoutEditorProps {
     descriptor: CmsTabLayoutDescriptor;
@@ -68,7 +75,7 @@ const TabSettings = () => {
             </Grid.Column>
             <Grid.Column span={12}>
                 <Bind name={"icon"}>
-                    <Input label={"Icon"} description={"Icon name or emoji."} />
+                    <IconPicker label={"Icon"} />
                 </Bind>
             </Grid.Column>
         </Grid>
