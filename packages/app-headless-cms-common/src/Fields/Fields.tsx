@@ -1,14 +1,5 @@
 import React from "react";
-import {
-    Alert,
-    type ColumnProps,
-    Grid,
-    FormComponentLabel,
-    FormComponentDescription,
-    Separator,
-    Tabs,
-    Text
-} from "@webiny/admin-ui";
+import { Alert, type ColumnProps, Grid } from "@webiny/admin-ui";
 import { FieldElement } from "./FieldElement.js";
 import { FieldElementError } from "./FieldElementError.js";
 import type {
@@ -17,13 +8,8 @@ import type {
     CmsEditorFieldsLayout,
     CmsModelField
 } from "~/types/index.js";
-import type {
-    CmsEditorLayoutCell,
-    CmsAlertLayoutDescriptor,
-    CmsSeparatorLayoutDescriptor,
-    CmsTabLayoutDescriptor
-} from "~/types/model.js";
 import { isLayoutDescriptor } from "~/types/model.js";
+import { LayoutDescriptorCell } from "./LayoutDescriptorCell.js";
 
 interface FieldsProps {
     Bind: BindComponent;
@@ -46,94 +32,6 @@ const LayoutNotDefined = () => {
     );
 };
 
-/**
- * Render a layout descriptor cell in the content form.
- */
-const LayoutDescriptorCell = ({
-    cell,
-    Bind,
-    fields,
-    contentModel,
-    gridClassName
-}: {
-    cell: CmsEditorLayoutCell;
-    Bind: BindComponent;
-    fields: CmsModelField[];
-    contentModel: CmsEditorContentModel;
-    gridClassName?: string;
-}) => {
-    if (!isLayoutDescriptor(cell)) {
-        return null;
-    }
-
-    switch (cell.type) {
-        case "separator": {
-            const separatorDescriptor = cell as CmsSeparatorLayoutDescriptor;
-            return (
-                <Grid.Column span={12}>
-                    <Separator variant={"accent"}>{separatorDescriptor.label}</Separator>
-                    {separatorDescriptor.description && (
-                        <Text
-                            as={"div"}
-                            size={"sm"}
-                            className={"text-neutral-strong text-center mt-sm"}
-                        >
-                            {separatorDescriptor.description}
-                        </Text>
-                    )}
-                </Grid.Column>
-            );
-        }
-        case "alert": {
-            const alertDescriptor = cell as CmsAlertLayoutDescriptor;
-            return (
-                <Grid.Column span={12}>
-                    <Alert type={alertDescriptor.alertType}>{alertDescriptor.label}</Alert>
-                </Grid.Column>
-            );
-        }
-        case "tabs": {
-            const tabsDescriptor = cell as CmsTabLayoutDescriptor;
-            return (
-                <Grid.Column span={12}>
-                    {tabsDescriptor.label ? (
-                        <FormComponentLabel
-                            text={tabsDescriptor.label}
-                            hint={tabsDescriptor.help}
-                        />
-                    ) : null}
-                    {tabsDescriptor.description ? (
-                        <FormComponentDescription text={tabsDescriptor.description} />
-                    ) : null}
-                    <Tabs
-                        size="md"
-                        spacing="md"
-                        separator={true}
-                        tabs={tabsDescriptor.tabs.map(tab => (
-                            <Tabs.Tab
-                                key={tab.id}
-                                value={tab.id}
-                                trigger={tab.label}
-                                content={
-                                    <Fields
-                                        Bind={Bind}
-                                        fields={fields}
-                                        layout={tab.layout}
-                                        contentModel={contentModel}
-                                        gridClassName={gridClassName}
-                                    />
-                                }
-                            />
-                        ))}
-                    />
-                </Grid.Column>
-            );
-        }
-        default:
-            return null;
-    }
-};
-
 export const Fields = ({ Bind, fields, layout, contentModel, gridClassName }: FieldsProps) => {
     if (contentModel.plugin && fields.length > 0 && layout.length === 0) {
         return <LayoutNotDefined />;
@@ -144,16 +42,16 @@ export const Fields = ({ Bind, fields, layout, contentModel, gridClassName }: Fi
             {layout.map((row, rowIndex) => (
                 <React.Fragment key={rowIndex}>
                     {row.map(cell => {
-                        // Handle layout descriptors (separator, alert, tabs)
                         if (isLayoutDescriptor(cell)) {
                             return (
                                 <LayoutDescriptorCell
                                     key={cell.id}
-                                    cell={cell}
+                                    descriptor={cell}
                                     Bind={Bind}
                                     fields={fields}
                                     contentModel={contentModel}
                                     gridClassName={gridClassName}
+                                    FieldsComponent={Fields}
                                 />
                             );
                         }
