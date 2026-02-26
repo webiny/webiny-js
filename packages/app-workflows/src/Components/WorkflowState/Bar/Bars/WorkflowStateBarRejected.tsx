@@ -3,6 +3,7 @@
  */
 import React from "react";
 import { Alert } from "@webiny/admin-ui";
+import { DeveloperMode } from "@webiny/app-admin";
 import { WorkflowStateBarComponent } from "../WorkflowStateBarComponent.js";
 import { observer } from "mobx-react-lite";
 
@@ -29,7 +30,12 @@ export const WorkflowStateBarRejected = WorkflowStateBarComponent.createDecorato
                                 presenter.showCommentDialog(step.id);
                             }}
                         />
-                        <Alert.Action text={"Remove Review Request"} onClick={presenter.cancel} />
+                        <DeveloperMode>
+                            <Alert.Action
+                                text={"Remove Review Request"}
+                                onClick={presenter.cancel}
+                            />
+                        </DeveloperMode>
                     </>
                 }
                 type="warning"
