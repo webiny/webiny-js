@@ -18,7 +18,7 @@ export interface CmsModelFieldSettings<T = unknown> {
     defaultSetValue?: string;
     type?: string;
     fields?: CmsModelField<T>[];
-    layout?: string[][];
+    layout?: CmsEditorFieldsLayout;
     models?: Pick<CmsModel, "modelId">[];
     templates?: CmsDynamicZoneTemplate[];
     imagesOnly?: boolean;
@@ -54,7 +54,58 @@ export type CmsModelField<T = unknown> = T & {
 };
 
 export type CmsEditorFieldId = string;
-export type CmsEditorFieldsLayout = CmsEditorFieldId[][];
+
+export interface CmsBaseLayoutDescriptor {
+    id: string;
+    type: string;
+}
+
+export interface CmsSeparatorLayoutDescriptor extends CmsBaseLayoutDescriptor {
+    type: "separator";
+    label: string;
+    description?: string;
+}
+
+export interface CmsAlertLayoutDescriptor extends CmsBaseLayoutDescriptor {
+    type: "alert";
+    label: string;
+    alertType: "info" | "success" | "warning" | "danger";
+}
+
+export interface CmsTabLayoutTab {
+    id: string;
+    label: string;
+    layout: CmsEditorFieldsLayout;
+}
+
+export interface CmsTabLayoutDescriptor extends CmsBaseLayoutDescriptor {
+    type: "tabs";
+    label: string;
+    description?: string | null;
+    help?: string | null;
+    tabs: CmsTabLayoutTab[];
+}
+
+export type CmsLayoutDescriptor =
+    | CmsSeparatorLayoutDescriptor
+    | CmsAlertLayoutDescriptor
+    | CmsTabLayoutDescriptor;
+
+export type CmsEditorLayoutCell = CmsEditorFieldId | CmsLayoutDescriptor;
+export type CmsEditorFieldsLayout = CmsEditorLayoutCell[][];
+
+const LAYOUT_DESCRIPTOR_TYPES = new Set(["separator", "alert", "tabs"]);
+
+export function isLayoutDescriptor(cell: unknown): cell is CmsLayoutDescriptor {
+    return (
+        typeof cell === "object" &&
+        cell !== null &&
+        "type" in cell &&
+        typeof (cell as any).type === "string" &&
+        LAYOUT_DESCRIPTOR_TYPES.has((cell as any).type) &&
+        !("id" in cell && "fieldId" in cell)
+    );
+}
 
 /**
  * @category GraphQL

@@ -6,6 +6,7 @@ import { Center, Horizontal, Vertical } from "../DropZone/index.js";
 import Draggable from "../Draggable.js";
 import EditFieldDialog from "./EditFieldDialog.js";
 import Field from "./Field.js";
+import { LayoutCell } from "./LayoutCell.js";
 import { useModelFieldEditor } from "./useModelFieldEditor.js";
 import type { IsVisibleCallable } from "./FieldEditorContext.js";
 import { FieldEditorProvider } from "./FieldEditorContext.js";
@@ -15,6 +16,7 @@ import type {
     CmsModelFieldTypePlugin,
     DragSource
 } from "~/types.js";
+import { isLayoutDescriptor } from "@webiny/app-headless-cms-common/types/model.js";
 import { ModelFieldProvider } from "~/admin/components/ModelFieldProvider/index.js";
 import { cn, Icon } from "@webiny/admin-ui";
 
@@ -51,6 +53,11 @@ const Editor = () => {
 
     const isVerticalDropzoneVisible = (cb: IsVisibleCallable) => {
         return (item: DragSource) => {
+            // Layout fields always occupy full row — no side-by-side layout
+            if (item.type === "newLayoutField" || item.type === "layoutField") {
+                return false;
+            }
+
             if (!parent) {
                 return cb(item);
             }
@@ -99,16 +106,28 @@ const Editor = () => {
                 </Center>
             )}
 
-            {fields.map((row, index) => (
+            {fields.map((row, index) => {
+                // Check if this row contains a layout descriptor
+                const hasLayoutDescriptor = row.some(cell => isLayoutDescriptor(cell));
+                // Build a stable key for the row
+                const rowKey = row
+                    .map(cell =>
+                        isLayoutDescriptor(cell)
+                            ? cell.id
+                            : (cell as CmsModelField).fieldId
+                    )
+                    .join(".");
+
+                return (
                 <Draggable
                     beginDrag={{
                         parent: parent ? parent.fieldId : null,
                         type: "row",
-                        fields: row,
+                        fields: row.filter(cell => !isLayoutDescriptor(cell)) as CmsModelField[],
                         pos: { row: index }
                     }}
                     endDrag={onEndDrag}
-                    key={row.map(f => f.fieldId).join(".")}
+                    key={rowKey}
                 >
                     {(
                         {
@@ -149,7 +168,41 @@ const Editor = () => {
                                 className={cn(["w-full flex justify-between", "pl-xl pr-sm py-sm"])}
                                 data-testid={"cms.editor.field-row"}
                             >
-                                {row.map((field, fieldIndex) => (
+                                {row.map((cell, fieldIndex) => {
+                                    if (isLayoutDescriptor(cell)) {
+                                        return (
+                                            <Draggable
+                                                key={cell.id}
+                                                beginDrag={{
+                                                    parent: parent ? parent.fieldId : null,
+                                                    type: "layoutField",
+                                                    descriptor: cell
+                                                }}
+                                            >
+                                                {({ drag }) => (
+                                                    <div
+                                                        ref={drag}
+                                                        className={cn([
+                                                            "relative",
+                                                            "flex-1 basis-full",
+                                                            "mx-sm"
+                                                        ])}
+                                                    >
+                                                        <div className={"cursor-grab bg-neutral-base p-md shadow-sm rounded-xs"}>
+                                                            <LayoutCell
+                                                                descriptor={cell}
+                                                                rowIndex={index}
+                                                                cellIndex={fieldIndex}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </Draggable>
+                                        );
+                                    }
+
+                                    const field = cell as CmsModelField;
+                                    return (
                                     <ModelFieldProvider field={field} key={field.fieldId}>
                                         <Draggable
                                             beginDrag={{
@@ -235,7 +288,8 @@ const Editor = () => {
                                             )}
                                         </Draggable>
                                     </ModelFieldProvider>
-                                ))}
+                                    );
+                                })}
                             </div>
                             {/* Row end */}
                             {index === fields.length - 1 ? (
@@ -254,7 +308,8 @@ const Editor = () => {
                         </div>
                     )}
                 </Draggable>
-            ))}
+                );
+            })}
 
             {field ? (
                 <ModelFieldProvider field={field}>

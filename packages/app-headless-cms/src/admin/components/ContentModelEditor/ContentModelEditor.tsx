@@ -62,15 +62,6 @@ export const ContentModelEditor = makeDecoratable("ContentModelEditor", () => {
             <div className={"w-full overflow-y-auto h-main-content"}>
                 <SplitView>
                     <LeftPanel span={4} className={"bg-neutral-light"}>
-                        <div className={"px-lg py-md"}>
-                            <Text
-                                as={"div"}
-                                className={"uppercase font-semibold text-neutral-xstrong"}
-                            >
-                                {"Fields"}
-                            </Text>
-                        </div>
-                        <Separator />
                         <div className={"px-lg py-md h-[calc(100vh-98px)] overflow-y-scroll"}>
                             <FieldsSidebar
                                 onFieldDragStart={() => {

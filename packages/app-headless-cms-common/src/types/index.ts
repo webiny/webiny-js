@@ -13,7 +13,12 @@ import type {
     CmsModelFieldValidatorsFactory,
     CmsModelFieldValidatorsGroup
 } from "./validation.js";
-import type { CmsModel, CmsModelField } from "./model.js";
+import type {
+    CmsEditorFieldsLayout,
+    CmsLayoutDescriptor,
+    CmsModel,
+    CmsModelField
+} from "./model.js";
 import type { CmsIdentity } from "~/types/shared.js";
 import type { SourceType } from "dnd-core";
 import type { IconPickerIconDto } from "@webiny/admin-ui";
@@ -26,6 +31,7 @@ export type DragObjectWithType = {
 
 export type * from "./validation.js";
 export type * from "./model.js";
+export { isLayoutDescriptor } from "./model.js";
 export type * from "./shared.js";
 
 interface QueryFieldParams {
@@ -46,10 +52,12 @@ interface Location {
 export interface DragSource extends DragObjectWithType {
     parent?: string;
     pos?: Partial<Position>;
-    type: "row" | "field" | "newField";
+    type: "row" | "field" | "newField" | "newLayoutField" | "layoutField";
     fieldType?: string;
+    layoutFieldType?: string;
     field?: CmsModelField | null;
     fields?: CmsModelField[];
+    descriptor?: CmsLayoutDescriptor;
 }
 
 /**
@@ -234,6 +242,28 @@ export interface CmsModelFieldTypePlugin extends Plugin {
     };
 }
 
+export interface CmsLayoutFieldTypePlugin extends Plugin {
+    type: "cms-editor-layout-field-type";
+    field: {
+        type: CmsLayoutDescriptor["type"];
+        label: string;
+        description: string;
+        icon: React.ReactElement;
+        createDescriptor(): Omit<CmsLayoutDescriptor, "id">;
+        canEditSettings?: boolean;
+        renderSettings?(): React.ReactNode;
+        /**
+         * Controls how this layout field looks on the model editor canvas.
+         * Each plugin fully owns its visual representation.
+         */
+        render(params: {
+            descriptor: CmsLayoutDescriptor;
+            onUpdate: (d: CmsLayoutDescriptor) => void;
+            onDelete: () => void;
+        }): React.ReactElement;
+    };
+}
+
 export interface CmsModelFieldRendererSettingsProps {
     field: CmsModelField;
 }
@@ -346,7 +376,7 @@ export interface CmsDynamicZoneTemplate {
     description: string;
     icon: string;
     fields: CmsModelField[];
-    layout: string[][];
+    layout: CmsEditorFieldsLayout;
     validation: CmsModelFieldValidator[];
     tags?: string[];
 }
