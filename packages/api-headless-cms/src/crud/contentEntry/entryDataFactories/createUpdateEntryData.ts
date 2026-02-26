@@ -14,7 +14,7 @@ import { referenceFieldsMapping } from "../referenceFieldsMapping.js";
 import { mapAndCleanUpdatedInputData } from "./mapAndCleanUpdatedInputData.js";
 import lodashMerge from "lodash/merge.js";
 import { removeNullValues, removeUndefinedValues } from "@webiny/utils";
-import { getState } from "./state.js";
+import { getSystem } from "./system.js";
 import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 
@@ -147,7 +147,7 @@ export const createUpdateEntryData = async <TValues extends CmsEntryValues = Cms
         values,
         meta,
         status: transformEntryStatus(originalEntry.status),
-        state: getState({
+        system: getSystem({
             input: rawInput,
             original: originalEntry
         })

@@ -1,10 +1,10 @@
-import { Context } from "@webiny/handler";
 import type { LambdaContext } from "@webiny/handler-aws/types.js";
 import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
 import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/index.js";
 import type { CreateHandlerCoreParams } from "./plugins.js";
 import { createHandlerCore } from "./plugins.js";
 import { defaultIdentity } from "./tenancySecurity.js";
+import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 
 export interface HandlerEvent {
     path: string;
@@ -17,7 +17,7 @@ export interface HandlerEvent {
 export interface UseContextHandlerParams extends CreateHandlerCoreParams {
     debug?: boolean;
 }
-export const useContextHandler = <C extends Context = Context>(
+export const useContextHandler = <C extends CmsContext = CmsContext>(
     params: UseContextHandlerParams = {}
 ) => {
     const debug = params.debug || process.env.DEBUG === "true";

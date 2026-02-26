@@ -16,7 +16,7 @@ import { createIdentifier, mdbid } from "@webiny/utils";
 import { STATUS_DRAFT, STATUS_PUBLISHED, STATUS_UNPUBLISHED } from "./statuses.js";
 import { getIdentity } from "~/utils/identity.js";
 import type { AccessControl } from "~/crud/AccessControl/AccessControl.js";
-import { getState } from "./state.js";
+import { getSystem } from "./system.js";
 import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 
@@ -269,7 +269,7 @@ export const createEntryData = async <TValues extends CmsEntryValues = CmsEntryV
             folderId:
                 rawInput.location?.folderId || rawInput.wbyAco_location?.folderId || ROOT_FOLDER
         },
-        state: getState({
+        system: getSystem({
             input: rawInput
         })
     };

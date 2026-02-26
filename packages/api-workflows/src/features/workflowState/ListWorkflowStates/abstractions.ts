@@ -1,13 +1,32 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
-import type { CmsEntryListSort, CmsEntryListWhere } from "@webiny/api-headless-cms/types";
-import type { IWorkflowStateRecord } from "~/domain/workflowState/abstractions.js";
+import type { CmsEntryListSort, CmsEntryListWhere } from "@webiny/api-headless-cms/types/index.js";
+import {
+    type IWorkflowStateRecord,
+    WorkflowStateRecordState
+} from "~/domain/workflowState/abstractions.js";
 import type { WorkflowStatePersistenceError } from "~/domain/workflowState/errors.js";
 import type { WorkflowState } from "~/domain/workflowState/WorkflowState.js";
 import type { IMeta } from "~/types.js";
 
+export interface IListWorkflowStatesParamsWhere extends CmsEntryListWhere {
+    app?: string;
+    app_in?: string[];
+    targetRevisionId?: string;
+    targetRevisionId_in?: string[];
+    state?: WorkflowStateRecordState;
+    state_in?: WorkflowStateRecordState[];
+    workflowId?: string;
+    workflowId_in?: string[];
+    targetId?: string;
+    targetId_in?: string[];
+    savedBy?: string;
+    createdBy?: string;
+    isActive?: boolean;
+}
+
 export interface IListWorkflowStatesParams {
-    where?: CmsEntryListWhere;
+    where?: IListWorkflowStatesParamsWhere;
     sort?: CmsEntryListSort;
     limit?: number;
     after?: string;

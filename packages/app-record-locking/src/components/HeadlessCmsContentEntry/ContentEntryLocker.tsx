@@ -23,18 +23,6 @@ export interface IKickOutWebsocketsMessage extends IncomingGenericData {
         user: IRecordLockingIdentity;
     };
 }
-interface IForceUnlockedProps {
-    user: IRecordLockingIdentity;
-}
-const ForceUnlocked = ({ user }: IForceUnlockedProps) => {
-    return (
-        <>
-            The entry you were editing was forcefully unlocked by{" "}
-            <strong>{user.displayName || "Unknown user"}</strong>. Unfortunately, this means you
-            lost the unsaved changes.
-        </>
-    );
-};
 
 export const ContentEntryLocker = ({
     onEntryUnlocked,
@@ -66,10 +54,16 @@ export const ContentEntryLocker = ({
                 });
                 showDialog({
                     title: "Entry was forcefully unlocked!",
-                    content: <ForceUnlocked user={user} />,
+                    content: (
+                        <>
+                            The entry you were editing was forcefully unlocked by{" "}
+                            <strong>{user.displayName || "Unknown user"}</strong>. Unfortunately,
+                            this means you lost the unsaved changes.
+                        </>
+                    ),
                     acceptLabel: "Ok",
                     onClose: undefined,
-                    cancelLabel: undefined
+                    cancelLabel: null
                 });
                 onEntryUnlocked();
             }
@@ -105,7 +99,7 @@ export const ContentEntryLocker = ({
                     content: result.error.message,
                     acceptLabel: "Ok",
                     onClose: undefined,
-                    cancelLabel: undefined
+                    cancelLabel: null
                 });
                 onEntryUnlocked();
                 return;

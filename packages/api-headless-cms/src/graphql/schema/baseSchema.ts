@@ -132,25 +132,12 @@ const createSchema = (plugins: PluginsContainer): IGraphQLSchemaPlugin<CmsContex
                 error: CmsError
             }
 
-            enum CmsEntryStateType {
-                pending
-                inReview
-                rejected
-                approved
+            type CmsEntrySystem {
+                _empty: String
             }
 
-            type CmsEntryState {
-                workflowId: String
-                stepId: ID
-                stepName: String
-                state: CmsEntryStateType
-            }
-
-            input ListWhereInputCmsEntryState {
-                workflowId: String
-                stepId: ID
-                state: CmsEntryStateType
-                stepName: String
+            input ListWhereInputCmsEntrySystem {
+                _empty: String
             }
         `,
         resolvers: {}

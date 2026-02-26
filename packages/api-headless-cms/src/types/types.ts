@@ -312,11 +312,8 @@ export interface ICmsEntryLocation {
     folderId?: string;
 }
 
-export interface IEntryState {
-    state: string;
-    workflowId: string;
-    stepId: string;
-    stepName: string;
+export interface IEntrySystem {
+    // to be extended
 }
 /**
  * A content entry definition for and from the database.
@@ -505,7 +502,7 @@ export interface CmsEntry<TValues extends CmsEntryValues = CmsEntryValues> {
      */
     binOriginalFolderId?: string;
 
-    state?: IEntryState;
+    system?: IEntrySystem;
 }
 
 export interface CmsStorageEntry<T extends CmsEntryValues = CmsEntryValues> extends CmsEntry<T> {
@@ -788,7 +785,7 @@ export interface CreateCmsEntryInput<TValues extends CmsEntryValues = CmsEntryVa
         folderId?: string | null;
     };
 
-    state?: Partial<IEntryState>;
+    system?: Partial<IEntrySystem>;
 
     values: TValues | undefined;
 }
@@ -830,7 +827,7 @@ export interface CreateFromCmsEntryInput<TValues extends CmsEntryValues = CmsEnt
     firstPublishedBy?: CmsIdentity;
     lastPublishedBy?: CmsIdentity;
 
-    state?: Partial<IEntryState>;
+    system?: Partial<IEntrySystem>;
 
     values: TValues;
 }
@@ -888,7 +885,7 @@ export interface UpdateCmsEntryInput<TValues extends CmsEntryValues = CmsEntryVa
         folderId?: string | null;
     };
 
-    state?: Partial<IEntryState>;
+    system?: Partial<IEntrySystem>;
 
     values?: Partial<TValues>;
 }

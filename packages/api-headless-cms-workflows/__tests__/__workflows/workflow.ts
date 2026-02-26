@@ -1,9 +1,9 @@
-import type { Context } from "@webiny/api";
 import { StoreWorkflowUseCase } from "@webiny/api-workflows/features/workflow/StoreWorkflow/index.js";
 import { FULL_ACCESS_TEAM_ID } from "@webiny/testing";
 import { model } from "~tests/__cms/models.js";
+import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 
-export const createWorkflow = async (context: Context) => {
+export const createWorkflow = async (context: CmsContext) => {
     const id = `workflow-1`;
 
     const storeWorkflow = context.container.resolve(StoreWorkflowUseCase);
