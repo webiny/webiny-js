@@ -51,7 +51,7 @@ interface GetFieldsInLayoutCallable {
     (): (CmsModelField | CmsLayoutDescriptor)[][];
 }
 interface InsertLayoutCellCallable {
-    (descriptor: Omit<CmsLayoutDescriptor, "id">, position: FieldLayoutPosition): void;
+    (descriptor: Omit<CmsLayoutDescriptor, "id"> | CmsLayoutDescriptor, position: FieldLayoutPosition): void;
 }
 interface UpdateLayoutCellCallable {
     (descriptorId: string, descriptor: CmsLayoutDescriptor): void;
@@ -243,8 +243,20 @@ export const FieldEditorProvider = ({
 
         // Handle moving an existing layout field to a new position
         if (type === "layoutField") {
-            if (source.descriptor?.id) {
-                moveLayoutCell(source.descriptor.id, dropTarget);
+            if (source.descriptor) {
+                if (parentId !== source.parent) {
+                    // Cross-parent: insert a copy of the descriptor into this context
+                    insertLayoutCell(source.descriptor, dropTarget);
+                    // Also add any fields carried by this descriptor (e.g. fields inside tabs)
+                    if (fields.length > 0) {
+                        for (const f of fields) {
+                            addField(f);
+                        }
+                    }
+                } else {
+                    // Same parent: move within this context
+                    moveLayoutCell(source.descriptor.id, dropTarget);
+                }
             }
             return onDropTarget;
         }
@@ -287,17 +299,22 @@ export const FieldEditorProvider = ({
     }, []);
 
     const onEndDrag: OnEndDragCallable<DragObject, DropResult> = (
-        { type, field, fields },
+        { type, field, fields, descriptor },
         monitor
     ) => {
         if (!monitor.didDrop()) {
             return;
         }
 
-        // Check if we dropped outside of the source fieldset, and if yes, remove the field from the original parent.
+        // Check if we dropped outside of the source fieldset, and if yes, remove the item from the original parent.
         const monitorResult = monitor.getDropResult();
         const parentId = parent ? parent.fieldId : null;
         if (monitorResult?.dropTarget === parentId) {
+            return;
+        }
+
+        if (type === "layoutField" && descriptor?.id) {
+            deleteLayoutCell(descriptor.id);
             return;
         }
 

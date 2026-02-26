@@ -1,5 +1,5 @@
 import React from "react";
-import { Alert, type ColumnProps, Grid, Separator, Text } from "@webiny/admin-ui";
+import { Alert, type ColumnProps, Grid, Heading, Separator, Tabs, Text } from "@webiny/admin-ui";
 import { FieldElement } from "./FieldElement.js";
 import { FieldElementError } from "./FieldElementError.js";
 import type {
@@ -87,18 +87,35 @@ const LayoutDescriptorCell = ({
             const tabsDescriptor = cell as CmsTabLayoutDescriptor;
             return (
                 <Grid.Column span={12}>
-                    {/* Render tabs content inline for now — a proper Tabs UI can be added later */}
-                    {tabsDescriptor.tabs.map(tab => (
-                        <div key={tab.id}>
-                            <Fields
-                                Bind={Bind}
-                                fields={fields}
-                                layout={tab.layout}
-                                contentModel={contentModel}
-                                gridClassName={gridClassName}
+                    {tabsDescriptor.label ? (
+                        <Heading level={6}>{tabsDescriptor.label}</Heading>
+                    ) : null}
+                    {tabsDescriptor.description ? (
+                        <Text className={"text-sm text-neutral-strong text-left"}>
+                            {tabsDescriptor.description}
+                        </Text>
+                    ) : null}
+                    <Tabs
+                        size="md"
+                        spacing="lg"
+                        separator={true}
+                        tabs={tabsDescriptor.tabs.map(tab => (
+                            <Tabs.Tab
+                                key={tab.id}
+                                value={tab.id}
+                                trigger={tab.label}
+                                content={
+                                    <Fields
+                                        Bind={Bind}
+                                        fields={fields}
+                                        layout={tab.layout}
+                                        contentModel={contentModel}
+                                        gridClassName={gridClassName}
+                                    />
+                                }
                             />
-                        </div>
-                    ))}
+                        ))}
+                    />
                 </Grid.Column>
             );
         }
@@ -108,7 +125,7 @@ const LayoutDescriptorCell = ({
 };
 
 export const Fields = ({ Bind, fields, layout, contentModel, gridClassName }: FieldsProps) => {
-    if (fields.length > 0 && layout.length === 0) {
+    if (contentModel.plugin && fields.length > 0 && layout.length === 0) {
         return <LayoutNotDefined />;
     }
 
@@ -121,7 +138,7 @@ export const Fields = ({ Bind, fields, layout, contentModel, gridClassName }: Fi
                         if (isLayoutDescriptor(cell)) {
                             return (
                                 <LayoutDescriptorCell
-                                    key={`layout-${cell.type}-${rowIndex}-${cellIndex}`}
+                                    key={cell.id}
                                     cell={cell}
                                     Bind={Bind}
                                     fields={fields}

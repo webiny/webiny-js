@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import type { CmsLayoutFieldTypePlugin } from "@webiny/app-headless-cms-common/types/index.js";
 import type {
     CmsAlertLayoutDescriptor,
@@ -8,9 +8,36 @@ import { ReactComponent as AlertIcon } from "@webiny/icons/warning.svg";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { Alert, IconButton, Input, Select, Text } from "@webiny/admin-ui";
+import { Alert, Grid, IconButton, Textarea, Select, Text } from "@webiny/admin-ui";
+import { useDialogs } from "@webiny/app-admin";
+import { Bind } from "@webiny/form";
 
 const t = i18n.ns("app-headless-cms/admin/fields");
+
+const AlertSettings = () => {
+    return (
+        <Grid>
+            <Grid.Column span={12}>
+                <Bind name={"label"}>
+                    <Textarea label={"Message"} />
+                </Bind>
+            </Grid.Column>
+            <Grid.Column span={12}>
+                <Bind name={"alertType"}>
+                    <Select
+                        label={"Alert type"}
+                        options={[
+                            { value: "info", label: "Info" },
+                            { value: "success", label: "Success" },
+                            { value: "warning", label: "Warning" },
+                            { value: "danger", label: "Danger" }
+                        ]}
+                    />
+                </Bind>
+            </Grid.Column>
+        </Grid>
+    );
+};
 
 interface AlertLayoutCellProps {
     descriptor: CmsAlertLayoutDescriptor;
@@ -19,45 +46,24 @@ interface AlertLayoutCellProps {
 }
 
 const AlertLayoutCell = ({ descriptor, onUpdate, onDelete }: AlertLayoutCellProps) => {
-    const [isEditing, setIsEditing] = useState(false);
+    const dialogs = useDialogs();
 
-    if (isEditing) {
-        return (
-            <div className={"flex flex-column gap-sm"}>
-                <Input
-                    label={"Label"}
-                    value={descriptor.label}
-                    onChange={value =>
-                        onUpdate({ ...descriptor, label: value ?? "" })
-                    }
-                />
-                <Select
-                    label={"Alert type"}
-                    value={descriptor.alertType}
-                    onChange={value =>
-                        onUpdate({
-                            ...descriptor,
-                            alertType: value as CmsAlertLayoutDescriptor["alertType"]
-                        })
-                    }
-                    options={[
-                        { value: "info", label: "Info" },
-                        { value: "success", label: "Success" },
-                        { value: "warning", label: "Warning" },
-                        { value: "danger", label: "Danger" }
-                    ]}
-                />
-                <div className={"flex justify-end"}>
-                    <IconButton
-                        icon={<EditIcon />}
-                        onClick={() => setIsEditing(false)}
-                        variant={"ghost"}
-                        size={"sm"}
-                    />
-                </div>
-            </div>
-        );
-    }
+    const openSettings = () => {
+        dialogs.showDialog({
+            title: "Alert Settings",
+            acceptLabel: "Save",
+            cancelLabel: "Cancel",
+            formData: { label: descriptor.label, alertType: descriptor.alertType },
+            content: <AlertSettings />,
+            onAccept: data => {
+                onUpdate({
+                    ...descriptor,
+                    label: data.label ?? "",
+                    alertType: (data.alertType as CmsAlertLayoutDescriptor["alertType"]) ?? "info"
+                });
+            }
+        });
+    };
 
     return (
         <div className={"flex items-center justify-between"}>
@@ -73,7 +79,7 @@ const AlertLayoutCell = ({ descriptor, onUpdate, onDelete }: AlertLayoutCellProp
             <div className={"flex items-center gap-xs ml-sm"}>
                 <IconButton
                     icon={<EditIcon />}
-                    onClick={() => setIsEditing(true)}
+                    onClick={openSettings}
                     variant={"ghost"}
                     size={"sm"}
                 />

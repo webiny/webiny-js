@@ -46,22 +46,3 @@ export default ModelFactory.createImplementation({
     implementation: SettingsModelImpl,
     dependencies: []
 });
-
-const layout = [
-    [
-        {
-            type: "tabs",
-            label: "My Tabs",
-            description: "My tabs description",
-            help: "My tabs help",
-            tabs: [
-                {
-                    id: "general",
-                    label: "General",
-                    icon: { type: "icon", name: "fa-cog" },
-                    layout: [["title"], ["slug"]]
-                }
-            ]
-        }
-    ]
-];

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import type { CmsLayoutFieldTypePlugin } from "@webiny/app-headless-cms-common/types/index.js";
 import type {
     CmsSeparatorLayoutDescriptor,
@@ -8,9 +8,28 @@ import { ReactComponent as SeparatorIcon } from "@webiny/icons/line_style.svg";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { IconButton, Input, Separator, Text } from "@webiny/admin-ui";
+import { Grid, IconButton, Input, Separator, Text } from "@webiny/admin-ui";
+import { useDialogs } from "@webiny/app-admin";
+import { Bind } from "@webiny/form";
 
 const t = i18n.ns("app-headless-cms/admin/fields");
+
+const SeparatorSettings = () => {
+    return (
+        <Grid>
+            <Grid.Column span={12}>
+                <Bind name={"label"}>
+                    <Input label={"Label"} />
+                </Bind>
+            </Grid.Column>
+            <Grid.Column span={12}>
+                <Bind name={"description"}>
+                    <Input label={"Description"} />
+                </Bind>
+            </Grid.Column>
+        </Grid>
+    );
+};
 
 interface SeparatorLayoutCellProps {
     descriptor: CmsSeparatorLayoutDescriptor;
@@ -19,32 +38,24 @@ interface SeparatorLayoutCellProps {
 }
 
 const SeparatorLayoutCell = ({ descriptor, onUpdate, onDelete }: SeparatorLayoutCellProps) => {
-    const [isEditing, setIsEditing] = useState(false);
+    const dialogs = useDialogs();
 
-    if (isEditing) {
-        return (
-            <div className={"flex flex-column gap-sm"}>
-                <Input
-                    label={"Label"}
-                    value={descriptor.label}
-                    onChange={value => onUpdate({ ...descriptor, label: value ?? "" })}
-                />
-                <Input
-                    label={"Description"}
-                    value={descriptor.description ?? ""}
-                    onChange={value => onUpdate({ ...descriptor, description: value ?? "" })}
-                />
-                <div className={"flex justify-end"}>
-                    <IconButton
-                        icon={<EditIcon />}
-                        onClick={() => setIsEditing(false)}
-                        variant={"ghost"}
-                        size={"sm"}
-                    />
-                </div>
-            </div>
-        );
-    }
+    const openSettings = () => {
+        dialogs.showDialog({
+            title: "Separator Settings",
+            acceptLabel: "Save",
+            cancelLabel: "Cancel",
+            formData: { label: descriptor.label, description: descriptor.description ?? "" },
+            content: <SeparatorSettings />,
+            onAccept: data => {
+                onUpdate({
+                    ...descriptor,
+                    label: data.label ?? "",
+                    description: data.description ?? ""
+                });
+            }
+        });
+    };
 
     return (
         <div className={"flex items-center gap-sm"}>
@@ -59,7 +70,7 @@ const SeparatorLayoutCell = ({ descriptor, onUpdate, onDelete }: SeparatorLayout
             <div className={"flex items-center gap-xs"}>
                 <IconButton
                     icon={<EditIcon />}
-                    onClick={() => setIsEditing(true)}
+                    onClick={openSettings}
                     variant={"ghost"}
                     size={"sm"}
                 />

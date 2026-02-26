@@ -16,6 +16,7 @@ import type {
     CmsModelFieldTypePlugin,
     DragSource
 } from "~/types.js";
+import type { CmsLayoutDescriptor } from "@webiny/app-headless-cms-common/types/model.js";
 import { isLayoutDescriptor } from "@webiny/app-headless-cms-common/types/model.js";
 import { ModelFieldProvider } from "~/admin/components/ModelFieldProvider/index.js";
 import { cn, Icon } from "@webiny/admin-ui";
@@ -38,11 +39,38 @@ const Editor = () => {
         onEndDrag,
         field,
         dropTarget,
-        getFieldPlugin
+        getFieldPlugin,
+        getField
     } = useModelFieldEditor();
 
+    /**
+     * Collect all data fields referenced inside a layout descriptor (e.g. fields inside tabs).
+     */
+    const collectDescriptorFields = (descriptor: CmsLayoutDescriptor): CmsModelField[] => {
+        if (descriptor.type !== "tabs") {
+            return [];
+        }
+        const result: CmsModelField[] = [];
+        for (const tab of descriptor.tabs) {
+            for (const row of tab.layout) {
+                for (const cell of row) {
+                    if (typeof cell === "string") {
+                        const f = getField({ id: cell });
+                        if (f) {
+                            result.push(f);
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    };
+
     const canDropIntoField = (field: CmsModelField, draggable: DragSource) => {
-        const fieldPlugin = getFieldPlugin(field.type) as CmsModelFieldTypePlugin;
+        const fieldPlugin = getFieldPlugin(field.type);
+        if (!fieldPlugin) {
+            return true;
+        }
         const canAccept = fieldPlugin.field.canAccept;
         if (typeof canAccept === "function" && !canAccept(field, draggable)) {
             return false;
@@ -62,10 +90,12 @@ const Editor = () => {
                 return cb(item);
             }
 
-            const fieldPlugin = getFieldPlugin(parent.type) as CmsModelFieldTypePlugin;
-            const allowLayout = fieldPlugin.field.allowLayout ?? true;
-            if (!allowLayout) {
-                return false;
+            const fieldPlugin = getFieldPlugin(parent.type);
+            if (fieldPlugin) {
+                const allowLayout = fieldPlugin.field.allowLayout ?? true;
+                if (!allowLayout) {
+                    return false;
+                }
             }
 
             if (!canDropIntoField(parent, item)) {
@@ -176,8 +206,10 @@ const Editor = () => {
                                                 beginDrag={{
                                                     parent: parent ? parent.fieldId : null,
                                                     type: "layoutField",
-                                                    descriptor: cell
+                                                    descriptor: cell,
+                                                    fields: collectDescriptorFields(cell)
                                                 }}
+                                                endDrag={onEndDrag}
                                             >
                                                 {({ drag }) => (
                                                     <div

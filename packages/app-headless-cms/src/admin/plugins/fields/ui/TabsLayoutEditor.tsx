@@ -1,6 +1,5 @@
 import React, { useCallback, useRef, useEffect } from "react";
-import { Accordion } from "@webiny/ui/Accordion/index.js";
-import { AccordionItem } from "@webiny/ui/Accordion/index.js";
+import { Accordion } from "@webiny/admin-ui";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { ReactComponent as ArrowUpIcon } from "@webiny/icons/expand_less.svg";
@@ -16,8 +15,9 @@ import type {
 import type { CmsModelField } from "~/types.js";
 import { FieldEditor } from "~/admin/components/FieldEditor/index.js";
 import { useModelFieldEditor } from "~/admin/hooks/index.js";
-import { useConfirmationDialog } from "@webiny/app-admin";
-import { IconButton, Button } from "@webiny/admin-ui";
+import { useConfirmationDialog, useDialogs } from "@webiny/app-admin";
+import { Grid, IconButton, Button, Input, Textarea, Heading, Text } from "@webiny/admin-ui";
+import { Bind } from "@webiny/form";
 
 interface TabsLayoutEditorProps {
     descriptor: CmsTabLayoutDescriptor;
@@ -34,7 +34,59 @@ interface TabItemProps {
     onUpdate: (d: CmsLayoutDescriptor) => void;
     onInsertField: (field: CmsModelField) => void;
     onRemoveField: (fieldId: string) => void;
-    open: boolean;
+}
+
+const TabsSettings = () => {
+    return (
+        <Grid>
+            <Grid.Column span={12}>
+                <Bind name={"label"}>
+                    <Input label={"Label"} />
+                </Bind>
+            </Grid.Column>
+            <Grid.Column span={12}>
+                <Bind name={"description"}>
+                    <Input label={"Description"} />
+                </Bind>
+            </Grid.Column>
+            <Grid.Column span={12}>
+                <Bind name={"help"}>
+                    <Textarea label={"Help"} />
+                </Bind>
+            </Grid.Column>
+        </Grid>
+    );
+};
+
+const TabSettings = () => {
+    return (
+        <Grid>
+            <Grid.Column span={12}>
+                <Bind name={"label"}>
+                    <Input label={"Label"} />
+                </Bind>
+            </Grid.Column>
+            <Grid.Column span={12}>
+                <Bind name={"icon"}>
+                    <Input label={"Icon"} description={"Icon name or emoji."} />
+                </Bind>
+            </Grid.Column>
+        </Grid>
+    );
+};
+
+/**
+ * Create a synthetic parent field for a tab so that each tab's FieldEditor
+ * has a unique identity for cross-parent drag & drop detection.
+ */
+function createTabParent(tab: CmsTabLayoutTab): CmsModelField {
+    return {
+        id: tab.id,
+        fieldId: `tab:${tab.id}`,
+        type: "tab",
+        label: tab.label,
+        renderer: { name: "" }
+    } as CmsModelField;
 }
 
 /**
@@ -60,9 +112,10 @@ const TabItem = ({
     parentFields,
     onUpdate,
     onInsertField,
-    onRemoveField,
-    open
+    onRemoveField
 }: TabItemProps) => {
+    const dialogs = useDialogs();
+
     const { showConfirmation } = useConfirmationDialog({
         title: "Delete tab",
         message: `Are you sure you want to delete the tab "${tab.label}"? Fields inside this tab will be removed.`,
@@ -75,7 +128,13 @@ const TabItem = ({
     const tabFields = resolveTabFields(tab, parentFields);
 
     const handleFieldsChange = useCallback(
-        ({ fields: newFields, layout: newLayout }: { fields: CmsModelField[]; layout: CmsEditorFieldsLayout }) => {
+        ({
+            fields: newFields,
+            layout: newLayout
+        }: {
+            fields: CmsModelField[];
+            layout: CmsEditorFieldsLayout;
+        }) => {
             const oldFieldIds = new Set(tabFields.map(f => f.id));
             const newFieldIds = new Set(newFields.map(f => f.id));
 
@@ -102,14 +161,18 @@ const TabItem = ({
     );
 
     const moveTabUp = useCallback(() => {
-        if (isFirst) return;
+        if (isFirst) {
+            return;
+        }
         const tabs = [...descriptor.tabs];
         [tabs[index - 1], tabs[index]] = [tabs[index], tabs[index - 1]];
         onUpdate({ ...descriptor, tabs });
     }, [descriptor, index, isFirst, onUpdate]);
 
     const moveTabDown = useCallback(() => {
-        if (isLast) return;
+        if (isLast) {
+            return;
+        }
         const tabs = [...descriptor.tabs];
         [tabs[index + 1], tabs[index]] = [tabs[index], tabs[index + 1]];
         onUpdate({ ...descriptor, tabs });
@@ -131,58 +194,70 @@ const TabItem = ({
         });
     }, [descriptor, index, tab, onUpdate, onRemoveField, showConfirmation]);
 
-    const renameTab = useCallback(() => {
-        const newLabel = window.prompt("Tab label:", tab.label);
-        if (newLabel !== null && newLabel !== tab.label) {
-            const updatedTabs = [...descriptor.tabs];
-            updatedTabs[index] = { ...tab, label: newLabel };
-            onUpdate({ ...descriptor, tabs: updatedTabs });
-        }
-    }, [descriptor, index, tab, onUpdate]);
+    const editTab = useCallback(() => {
+        dialogs.showDialog({
+            title: "Tab Settings",
+            acceptLabel: "Save",
+            cancelLabel: "Cancel",
+            formData: { label: tab.label, icon: tab.icon ?? "" },
+            content: <TabSettings />,
+            onAccept: data => {
+                const updatedTabs = [...descriptor.tabs];
+                updatedTabs[index] = {
+                    ...tab,
+                    label: data.label ?? tab.label,
+                    icon: data.icon || undefined
+                };
+                onUpdate({ ...descriptor, tabs: updatedTabs });
+            }
+        });
+    }, [dialogs, descriptor, index, tab, onUpdate]);
 
     return (
-        <AccordionItem
+        <Accordion.Item
             title={tab.label}
             description={`${tabFields.length} field${tabFields.length !== 1 ? "s" : ""}`}
-            open={open}
             actions={
-                <AccordionItem.Actions>
-                    <AccordionItem.Action
+                <>
+                    <Accordion.Item.Action
                         icon={<ArrowUpIcon />}
                         onClick={moveTabUp}
                         disabled={isFirst}
                     />
-                    <AccordionItem.Action
+                    <Accordion.Item.Action
                         icon={<ArrowDownIcon />}
                         onClick={moveTabDown}
                         disabled={isLast}
                     />
-                    <AccordionItem.Divider />
-                    <AccordionItem.Action icon={<EditIcon />} onClick={renameTab} />
-                    <AccordionItem.Action
+                    <Accordion.Item.Action.Separator />
+                    <Accordion.Item.Action icon={<EditIcon />} onClick={editTab} />
+                    <Accordion.Item.Action
                         icon={<DeleteIcon />}
                         onClick={deleteTab}
                         disabled={totalTabs <= 1}
                     />
-                </AccordionItem.Actions>
+                </>
             }
         >
             <FieldEditor
+                parent={createTabParent(tab)}
                 fields={tabFields}
                 layout={tab.layout}
                 onChange={handleFieldsChange}
             />
-        </AccordionItem>
+        </Accordion.Item>
     );
 };
 
 export const TabsLayoutEditor = ({ descriptor, onUpdate, onDelete }: TabsLayoutEditorProps) => {
     const parentEditor = useModelFieldEditor();
+    const { showDialog } = useDialogs();
     const newTabId = useRef<string | undefined>(undefined);
 
     const { showConfirmation: showDeleteConfirmation } = useConfirmationDialog({
         title: "Delete tabs",
-        message: "Are you sure you want to delete this tabs element? All fields inside the tabs will be removed.",
+        message:
+            "Are you sure you want to delete this tabs element? All fields inside the tabs will be removed.",
         acceptLabel: "Yes, delete"
     });
 
@@ -251,20 +326,50 @@ export const TabsLayoutEditor = ({ descriptor, onUpdate, onDelete }: TabsLayoutE
         });
     }, [onDelete, showDeleteConfirmation]);
 
+    const editTabsSettings = useCallback(() => {
+        showDialog({
+            title: "Tabs Settings",
+            acceptLabel: "Save",
+            cancelLabel: "Cancel",
+            formData: {
+                label: descriptor.label ?? "",
+                description: descriptor.description ?? "",
+                help: descriptor.help ?? ""
+            },
+            content: <TabsSettings />,
+            onAccept: data => {
+                onUpdate({
+                    ...descriptor,
+                    label: data.label ?? "",
+                    description: data.description || null,
+                    help: data.help || null
+                });
+            }
+        });
+    }, [descriptor, onUpdate]);
+
     const resolvedParentFields = getAllParentFields();
 
     return (
         <div>
-            <div className={"flex items-center justify-between mb-sm"}>
-                <div className={"flex items-center gap-sm"}>
-                    <span className={"font-semibold text-sm"}>Tabs</span>
-                    {descriptor.label && (
-                        <span className={"text-neutral-strong text-sm"}>
-                            — {descriptor.label}
-                        </span>
-                    )}
+            <div className={"flex justify-between"}>
+                <div className={"flex flex-col"}>
+                    <div className={"flex flex-row items-center"}>
+                        <Heading level={6} className={"text-nowrap"}>
+                            {descriptor.label || "No label"}
+                        </Heading>
+                    </div>
+                    <Text size="sm" className={"flex w-full text-neutral-strong"}>
+                        Tabs
+                    </Text>
                 </div>
                 <div className={"flex items-center gap-xs"}>
+                    <IconButton
+                        icon={<EditIcon />}
+                        onClick={editTabsSettings}
+                        variant={"ghost"}
+                        size={"sm"}
+                    />
                     <IconButton
                         icon={<DeleteIcon />}
                         onClick={handleDeleteTabs}
@@ -286,7 +391,6 @@ export const TabsLayoutEditor = ({ descriptor, onUpdate, onDelete }: TabsLayoutE
                             onUpdate={onUpdate}
                             onInsertField={handleInsertField}
                             onRemoveField={handleRemoveField}
-                            open={tab.id === newTabId.current}
                         />
                     ))}
                 </Accordion>

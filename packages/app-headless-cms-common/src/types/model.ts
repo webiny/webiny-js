@@ -75,6 +75,7 @@ export interface CmsAlertLayoutDescriptor extends CmsBaseLayoutDescriptor {
 export interface CmsTabLayoutTab {
     id: string;
     label: string;
+    icon?: string;
     layout: CmsEditorFieldsLayout;
 }
 
