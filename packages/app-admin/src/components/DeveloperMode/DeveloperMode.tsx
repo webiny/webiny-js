@@ -11,7 +11,7 @@ export interface IDeveloperModeProps {
 }
 
 export const DeveloperMode = ({ children }: IDeveloperModeProps) => {
-    if (process.env.DEVELOPER_MODE !== "true") {
+    if (process.env.WEBINY_ADMIN_DEV_MODE !== "true") {
         return null;
     }
     return <>{children}</>;
