@@ -1,27 +1,22 @@
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
-import { type LayoutFieldBuildResult } from "./FieldBuilder.js";
-import { UiFieldBuilder } from "./UiFieldType.js";
+import { type LayoutFieldBuildResult } from "./BaseFieldBuilder.js";
+import { LayoutFieldBuilder } from "./LayoutFieldBuilder.js";
 
 type AlertType = "info" | "success" | "warning" | "danger";
 
-export interface IUiAlertFieldBuilder extends UiFieldBuilder {
+export interface IUiAlertFieldBuilder extends LayoutFieldBuilder<"uiAlert"> {
     alertType(type: AlertType): this;
-    list(): this;
 }
 
-class AlertFieldBuilder extends UiFieldBuilder implements IUiAlertFieldBuilder {
+class AlertFieldBuilder extends LayoutFieldBuilder<"uiAlert"> implements IUiAlertFieldBuilder {
     private _alertType: AlertType = "warning";
 
     public constructor() {
-        super("alert");
+        super("uiAlert");
     }
 
     public alertType(type: AlertType): this {
         this._alertType = type;
-        return this;
-    }
-
-    public override list(): this {
         return this;
     }
 
@@ -38,7 +33,7 @@ class AlertFieldBuilder extends UiFieldBuilder implements IUiAlertFieldBuilder {
 }
 
 class UiAlertFieldTypeFactory implements IFieldTypeFactory {
-    public readonly type = "ui:alert";
+    public readonly type = "uiAlert";
 
     public create(): IUiAlertFieldBuilder {
         return new AlertFieldBuilder();

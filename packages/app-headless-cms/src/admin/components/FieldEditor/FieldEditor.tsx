@@ -10,12 +10,7 @@ import { LayoutCell } from "./LayoutCell.js";
 import { useModelFieldEditor } from "./useModelFieldEditor.js";
 import type { IsVisibleCallable } from "./FieldEditorContext.js";
 import { FieldEditorProvider } from "./FieldEditorContext.js";
-import type {
-    CmsEditorFieldsLayout,
-    CmsModelField,
-    CmsModelFieldTypePlugin,
-    DragSource
-} from "~/types.js";
+import type { CmsEditorFieldsLayout, CmsModelField, DragSource } from "~/types.js";
 import type { CmsLayoutDescriptor } from "@webiny/app-headless-cms-common/types/model.js";
 import { isLayoutDescriptor } from "@webiny/app-headless-cms-common/types/model.js";
 import { ModelFieldProvider } from "~/admin/components/ModelFieldProvider/index.js";
@@ -137,209 +132,218 @@ const Editor = () => {
             )}
 
             {fields.map((row, index) => {
-                // Check if this row contains a layout descriptor
-                const hasLayoutDescriptor = row.some(cell => isLayoutDescriptor(cell));
                 // Build a stable key for the row
                 const rowKey = row
                     .map(cell =>
-                        isLayoutDescriptor(cell)
-                            ? cell.id
-                            : (cell as CmsModelField).fieldId
+                        isLayoutDescriptor(cell) ? cell.id : (cell as CmsModelField).fieldId
                     )
                     .join(".");
 
                 return (
-                <Draggable
-                    beginDrag={{
-                        parent: parent ? parent.fieldId : null,
-                        type: "row",
-                        fields: row.filter(cell => !isLayoutDescriptor(cell)) as CmsModelField[],
-                        pos: { row: index }
-                    }}
-                    endDrag={onEndDrag}
-                    key={rowKey}
-                >
-                    {(
-                        {
-                            drag,
-                            isDragging
-                        } /* RowContainer start - includes drag handle, drop zones and the Row itself. */
-                    ) => (
-                        <div
-                            className={cn([
-                                "flex flex-column",
-                                "relative",
-                                "mb-md last-of-type:mb-none",
-                                "bg-neutral-dimmed",
-                                isDragging ? "opacity-30" : "opacity-100"
-                            ])}
-                        >
+                    <Draggable
+                        beginDrag={{
+                            parent: parent ? parent.fieldId : null,
+                            type: "row",
+                            fields: row.filter(
+                                cell => !isLayoutDescriptor(cell)
+                            ) as CmsModelField[],
+                            pos: { row: index }
+                        }}
+                        endDrag={onEndDrag}
+                        key={rowKey}
+                    >
+                        {(
+                            {
+                                drag,
+                                isDragging
+                            } /* RowContainer start - includes drag handle, drop zones and the Row itself. */
+                        ) => (
                             <div
                                 className={cn([
-                                    "cursor-grab",
-                                    "absolute left-sm-plus top-sm-plus z-10"
+                                    "flex flex-column",
+                                    "relative",
+                                    "mb-md last-of-type:mb-none",
+                                    "bg-neutral-dimmed",
+                                    isDragging ? "opacity-30" : "opacity-100"
                                 ])}
-                                ref={drag}
                             >
-                                <Icon
-                                    icon={<DragIcon />}
-                                    label={"Drag to move this row"}
-                                    color={"neutral-light"}
-                                    size={"sm"}
-                                />
-                            </div>
-                            <Horizontal
-                                isVisible={isHorizontalDropzoneVisible(noConflict())}
-                                data-testid={`cms-editor-row-droppable-top-${index}`}
-                                onDrop={item => onFieldDrop(item, { row: index, index: null })}
-                            />
-                            {/* Row start - includes field drop zones and fields */}
-                            <div
-                                className={cn(["w-full flex justify-between", "pl-xl pr-sm py-sm"])}
-                                data-testid={"cms.editor.field-row"}
-                            >
-                                {row.map((cell, fieldIndex) => {
-                                    if (isLayoutDescriptor(cell)) {
-                                        return (
-                                            <Draggable
-                                                key={cell.id}
-                                                beginDrag={{
-                                                    parent: parent ? parent.fieldId : null,
-                                                    type: "layoutField",
-                                                    descriptor: cell,
-                                                    fields: collectDescriptorFields(cell)
-                                                }}
-                                                endDrag={onEndDrag}
-                                            >
-                                                {({ drag }) => (
-                                                    <div
-                                                        ref={drag}
-                                                        className={cn([
-                                                            "relative",
-                                                            "flex-1 basis-full",
-                                                            "mx-sm"
-                                                        ])}
-                                                    >
-                                                        <div className={"cursor-grab bg-neutral-base p-md shadow-sm rounded-xs"}>
-                                                            <LayoutCell
-                                                                descriptor={cell}
-                                                                rowIndex={index}
-                                                                cellIndex={fieldIndex}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            </Draggable>
-                                        );
-                                    }
-
-                                    const field = cell as CmsModelField;
-                                    return (
-                                    <ModelFieldProvider field={field} key={field.fieldId}>
-                                        <Draggable
-                                            beginDrag={{
-                                                parent: parent ? parent.fieldId : null,
-                                                type: "field",
-                                                field,
-                                                pos: {
-                                                    row: index,
-                                                    index: fieldIndex
-                                                }
-                                            }}
-                                            endDrag={onEndDrag}
-                                        >
-                                            {({ drag }) => (
-                                                <div
-                                                    className={cn([
-                                                        "relative",
-                                                        "flex-1 basis-full",
-                                                        "mx-sm"
-                                                    ])}
-                                                    ref={drag}
-                                                >
-                                                    <Vertical
-                                                        depth={depth}
-                                                        onDrop={item =>
-                                                            onFieldDrop(item, {
-                                                                row: index,
-                                                                index: fieldIndex
-                                                            })
-                                                        }
-                                                        isVisible={isVerticalDropzoneVisible(
-                                                            noConflict(
-                                                                item =>
-                                                                    fieldTypes.includes(
-                                                                        item.type
-                                                                    ) &&
-                                                                    (row.length < 4 ||
-                                                                        get(item, "pos.row") ===
-                                                                            index)
-                                                            )
-                                                        )}
-                                                    />
-
-                                                    <div
-                                                        className={
-                                                            "cursor-grab bg-neutral-base p-md shadow-sm rounded-xs"
-                                                        }
-                                                    >
-                                                        <Field
-                                                            parent={parent}
-                                                            field={field}
-                                                            onEdit={editField}
-                                                            onDelete={deleteField}
-                                                        />
-                                                    </div>
-
-                                                    {/* Field end */}
-                                                    {fieldIndex === row.length - 1 && (
-                                                        <Vertical
-                                                            last
-                                                            depth={depth}
-                                                            isVisible={isVerticalDropzoneVisible(
-                                                                noConflict(item => {
-                                                                    return (
-                                                                        fieldTypes.includes(
-                                                                            item.type
-                                                                        ) &&
-                                                                        (row.length < 4 ||
-                                                                            get(item, "pos.row") ===
-                                                                                index)
-                                                                    );
-                                                                })
-                                                            )}
-                                                            onDrop={item =>
-                                                                onFieldDrop(item, {
-                                                                    row: index,
-                                                                    index: fieldIndex + 1
-                                                                })
-                                                            }
-                                                        />
-                                                    )}
-                                                </div>
-                                            )}
-                                        </Draggable>
-                                    </ModelFieldProvider>
-                                    );
-                                })}
-                            </div>
-                            {/* Row end */}
-                            {index === fields.length - 1 ? (
+                                <div
+                                    className={cn([
+                                        "cursor-grab",
+                                        "absolute left-sm-plus top-sm-plus z-10"
+                                    ])}
+                                    ref={drag}
+                                >
+                                    <Icon
+                                        icon={<DragIcon />}
+                                        label={"Drag to move this row"}
+                                        color={"neutral-light"}
+                                        size={"sm"}
+                                    />
+                                </div>
                                 <Horizontal
-                                    data-testid={`cms-editor-row-droppable-bottom-${index}`}
-                                    last
                                     isVisible={isHorizontalDropzoneVisible(noConflict())}
-                                    onDrop={item =>
-                                        onFieldDrop(item, {
-                                            row: index + 1,
-                                            index: null
-                                        })
-                                    }
+                                    data-testid={`cms-editor-row-droppable-top-${index}`}
+                                    onDrop={item => onFieldDrop(item, { row: index, index: null })}
                                 />
-                            ) : null}
-                        </div>
-                    )}
-                </Draggable>
+                                {/* Row start - includes field drop zones and fields */}
+                                <div
+                                    className={cn([
+                                        "w-full flex justify-between",
+                                        "pl-xl pr-sm py-sm"
+                                    ])}
+                                    data-testid={"cms.editor.field-row"}
+                                >
+                                    {row.map((cell, fieldIndex) => {
+                                        if (isLayoutDescriptor(cell)) {
+                                            return (
+                                                <Draggable
+                                                    key={cell.id}
+                                                    beginDrag={{
+                                                        parent: parent ? parent.fieldId : null,
+                                                        type: "layoutField",
+                                                        descriptor: cell,
+                                                        fields: collectDescriptorFields(cell)
+                                                    }}
+                                                    endDrag={onEndDrag}
+                                                >
+                                                    {({ drag }) => (
+                                                        <div
+                                                            ref={drag}
+                                                            className={cn([
+                                                                "relative",
+                                                                "flex-1 basis-full",
+                                                                "mx-sm"
+                                                            ])}
+                                                        >
+                                                            <div
+                                                                className={
+                                                                    "cursor-grab bg-neutral-base p-md shadow-sm rounded-xs"
+                                                                }
+                                                            >
+                                                                <LayoutCell
+                                                                    descriptor={cell}
+                                                                    rowIndex={index}
+                                                                    cellIndex={fieldIndex}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </Draggable>
+                                            );
+                                        }
+
+                                        const field = cell as CmsModelField;
+                                        return (
+                                            <ModelFieldProvider field={field} key={field.fieldId}>
+                                                <Draggable
+                                                    beginDrag={{
+                                                        parent: parent ? parent.fieldId : null,
+                                                        type: "field",
+                                                        field,
+                                                        pos: {
+                                                            row: index,
+                                                            index: fieldIndex
+                                                        }
+                                                    }}
+                                                    endDrag={onEndDrag}
+                                                >
+                                                    {({ drag }) => (
+                                                        <div
+                                                            className={cn([
+                                                                "relative",
+                                                                "flex-1 basis-full",
+                                                                "mx-sm"
+                                                            ])}
+                                                            ref={drag}
+                                                        >
+                                                            <Vertical
+                                                                depth={depth}
+                                                                onDrop={item =>
+                                                                    onFieldDrop(item, {
+                                                                        row: index,
+                                                                        index: fieldIndex
+                                                                    })
+                                                                }
+                                                                isVisible={isVerticalDropzoneVisible(
+                                                                    noConflict(
+                                                                        item =>
+                                                                            fieldTypes.includes(
+                                                                                item.type
+                                                                            ) &&
+                                                                            (row.length < 4 ||
+                                                                                get(
+                                                                                    item,
+                                                                                    "pos.row"
+                                                                                ) === index)
+                                                                    )
+                                                                )}
+                                                            />
+
+                                                            <div
+                                                                className={
+                                                                    "cursor-grab bg-neutral-base p-md shadow-sm rounded-xs"
+                                                                }
+                                                            >
+                                                                <Field
+                                                                    parent={parent}
+                                                                    field={field}
+                                                                    onEdit={editField}
+                                                                    onDelete={deleteField}
+                                                                />
+                                                            </div>
+
+                                                            {/* Field end */}
+                                                            {fieldIndex === row.length - 1 && (
+                                                                <Vertical
+                                                                    last
+                                                                    depth={depth}
+                                                                    isVisible={isVerticalDropzoneVisible(
+                                                                        noConflict(item => {
+                                                                            return (
+                                                                                fieldTypes.includes(
+                                                                                    item.type
+                                                                                ) &&
+                                                                                (row.length < 4 ||
+                                                                                    get(
+                                                                                        item,
+                                                                                        "pos.row"
+                                                                                    ) === index)
+                                                                            );
+                                                                        })
+                                                                    )}
+                                                                    onDrop={item =>
+                                                                        onFieldDrop(item, {
+                                                                            row: index,
+                                                                            index: fieldIndex + 1
+                                                                        })
+                                                                    }
+                                                                />
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </Draggable>
+                                            </ModelFieldProvider>
+                                        );
+                                    })}
+                                </div>
+                                {/* Row end */}
+                                {index === fields.length - 1 ? (
+                                    <Horizontal
+                                        data-testid={`cms-editor-row-droppable-bottom-${index}`}
+                                        last
+                                        isVisible={isHorizontalDropzoneVisible(noConflict())}
+                                        onDrop={item =>
+                                            onFieldDrop(item, {
+                                                row: index + 1,
+                                                index: null
+                                            })
+                                        }
+                                    />
+                                ) : null}
+                            </div>
+                        )}
+                    </Draggable>
                 );
             })}
 

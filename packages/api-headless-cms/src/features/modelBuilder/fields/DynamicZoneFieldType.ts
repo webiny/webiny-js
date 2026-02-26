@@ -1,5 +1,6 @@
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
-import { FieldBuilder, type FieldBuildResult } from "./FieldBuilder.js";
+import { type FieldBuildResult } from "./BaseFieldBuilder.js";
+import { FieldBuilder, type BaseFieldBuilder } from "./FieldBuilder.js";
 import { type IFieldBuilderRegistry } from "../abstractions.js";
 import type { CmsIcon, CmsModelField, CmsModelFieldValidation } from "~/types/index.js";
 
@@ -23,7 +24,7 @@ export interface IDynamicZoneFieldBuilder extends FieldBuilder<"dynamicZone"> {
             gqlTypeName: string;
             icon?: CmsIcon;
             description?: string;
-            fields: (registry: IFieldBuilderRegistry) => Record<string, FieldBuilder<any>>;
+            fields: (registry: IFieldBuilderRegistry) => Record<string, BaseFieldBuilder<any>>;
             layout?: string[][];
         }
     ): this;
@@ -34,7 +35,7 @@ interface IDynamicZoneFieldBuilderTemplateConfig {
     gqlTypeName: string;
     icon?: CmsIcon;
     description?: string;
-    fields: (registry: IFieldBuilderRegistry) => Record<string, FieldBuilder<any>>;
+    fields: (registry: IFieldBuilderRegistry) => Record<string, BaseFieldBuilder<any>>;
     layout?: string[][];
 }
 

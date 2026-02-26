@@ -7,7 +7,7 @@ import {
     SplitView
 } from "@webiny/app-admin";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { Heading, OverlayLoader, Separator, Tabs, Text, TimeAgo } from "@webiny/admin-ui";
+import { Heading, OverlayLoader, Tabs, Text, TimeAgo } from "@webiny/admin-ui";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
 import { ReactComponent as PreviewIcon } from "@webiny/icons/fullscreen.svg";
 import { FieldsSidebar } from "./FieldsSidebar.js";

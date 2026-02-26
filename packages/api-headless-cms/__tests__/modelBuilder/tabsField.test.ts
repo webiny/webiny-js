@@ -153,46 +153,6 @@ describe("Tabs Field Type", () => {
         expect(contentField).toBeUndefined();
     });
 
-    it("should make list() a no-op for tabs field", async () => {
-        class TabsListModel implements ModelFactory.Interface {
-            async execute(builder: ModelFactory.Builder) {
-                return [
-                    builder
-                        .private({
-                            modelId: "tabsList",
-                            name: "Tabs List"
-                        })
-                        .fields(fields => ({
-                            myTabs: fields
-                                .uiTabs()
-                                .label("My Tabs")
-                                .list() // should be a no-op
-                                .tab("tab1", {
-                                    label: "Tab 1",
-                                    fields: f => ({
-                                        value: f.text().label("Value")
-                                    })
-                                })
-                        }))
-                ];
-            }
-        }
-
-        container.registerInstance(ModelFactory, new TabsListModel());
-
-        const modelsProvider = container.resolve(ModelsProvider);
-        const models = await modelsProvider.list("root");
-        const model = models.find(m => m.modelId === "tabsList");
-
-        // Child field should be hoisted
-        const valueField = model!.fields.find(f => f.fieldId === "value");
-        expect(valueField).toBeDefined();
-
-        // Tabs field should NOT be in fields
-        const tabsField = model!.fields.find(f => f.fieldId === "myTabs");
-        expect(tabsField).toBeUndefined();
-    });
-
     it("should support tabs with nested object fields", async () => {
         class TabsWithObjectModel implements ModelFactory.Interface {
             async execute(builder: ModelFactory.Builder) {

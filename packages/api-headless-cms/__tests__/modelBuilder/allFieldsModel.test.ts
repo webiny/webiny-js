@@ -177,14 +177,6 @@ describe("All Field Types Model", () => {
                                     }),
                                     layout: [["stats"]]
                                 }),
-                            ui: fields
-                                .ui()
-                                .label("UI Configuration")
-                                .renderer("passthrough")
-                                .settings({
-                                    customSetting1: "value1",
-                                    customSetting2: "value2"
-                                }),
                             separator: fields.uiSeparator().label("UI Separator")
                         }))
                 ];
@@ -216,7 +208,6 @@ describe("All Field Types Model", () => {
         expect(fieldTypes).toContain("ref");
         expect(fieldTypes).toContain("object");
         expect(fieldTypes).toContain("dynamicZone");
-        expect(fieldTypes).toContain("ui");
 
         // Verify specific fields
         // const locationField = model!.fields.find(f => f.fieldId === "location");
@@ -290,14 +281,6 @@ describe("All Field Types Model", () => {
         expect(trendField!.predefinedValues!.enabled).toBe(true);
         expect(trendField!.predefinedValues!.values).toHaveLength(3);
 
-        // ui field
-        const uiField = model!.fields.find(f => f.fieldId === "ui");
-        expect(uiField?.type).toBe("ui");
-        expect(uiField?.renderer?.name).toBe("passthrough");
-        expect(uiField?.settings).toEqual({
-            customSetting1: "value1",
-            customSetting2: "value2"
-        });
         // ui separator field — layout-only, not in model.fields
         const separatorField = model!.fields.find(f => f.fieldId === "separator");
         expect(separatorField).toBeUndefined();

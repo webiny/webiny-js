@@ -1,12 +1,12 @@
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
 import {
-    FieldBuilder,
+    BaseFieldBuilder,
     type FieldBuildResult,
     type LayoutFieldBuildResult
-} from "./FieldBuilder.js";
+} from "./BaseFieldBuilder.js";
+import { LayoutFieldBuilder } from "./LayoutFieldBuilder.js";
 import { type IFieldBuilderRegistry } from "../abstractions.js";
 import type { CmsIcon, CmsModelField, CmsModelLayout, CmsModelLayoutCell } from "~/types/index.js";
-import { UiFieldBuilder } from "./UiFieldType.js";
 
 interface ITab {
     id: string;
@@ -21,20 +21,19 @@ interface ITabConfig {
     label: string;
     icon?: CmsIcon;
     description?: string;
-    fields: (registry: IFieldBuilderRegistry) => Record<string, FieldBuilder<any>>;
+    fields: (registry: IFieldBuilderRegistry) => Record<string, BaseFieldBuilder<any>>;
     layout?: string[][];
 }
 
-export interface IUiTabsFieldBuilder extends UiFieldBuilder {
+export interface IUiTabsFieldBuilder extends LayoutFieldBuilder<"uiTabs"> {
     tab(id: string, config: ITabConfig): this;
-    list(): this;
 }
 
-class TabsFieldBuilder extends UiFieldBuilder implements IUiTabsFieldBuilder {
+class TabsFieldBuilder extends LayoutFieldBuilder<"uiTabs"> implements IUiTabsFieldBuilder {
     private readonly tabs: ITab[] = [];
 
     public constructor(private registry: IFieldBuilderRegistry) {
-        super();
+        super("uiTabs");
     }
 
     public tab(id: string, config: ITabConfig): this {
@@ -72,11 +71,6 @@ class TabsFieldBuilder extends UiFieldBuilder implements IUiTabsFieldBuilder {
         return this;
     }
 
-    public override list(): this {
-        // No-op: tabs is a layout-only field and cannot be a list.
-        return this;
-    }
-
     public override build(): LayoutFieldBuildResult {
         const hoistedFields: CmsModelField[] = [];
         const layoutTabs = [];
@@ -106,7 +100,7 @@ class TabsFieldBuilder extends UiFieldBuilder implements IUiTabsFieldBuilder {
 }
 
 class TabsFieldTypeFactory implements IFieldTypeFactory {
-    public readonly type = "ui:tabs";
+    public readonly type = "uiTabs";
 
     public create(registry: IFieldBuilderRegistry): IUiTabsFieldBuilder {
         return new TabsFieldBuilder(registry);

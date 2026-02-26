@@ -1,4 +1,5 @@
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
+import { BaseFieldBuilder } from "./BaseFieldBuilder.js";
 import { FieldBuilder } from "./FieldBuilder.js";
 import { FieldBuilderRegistry } from "../abstractions.js";
 import { LayoutBuilder } from "../LayoutBuilder.js";
@@ -7,14 +8,14 @@ import type { CmsModelField, CmsModelLayoutCell } from "~/types/index.js";
 export interface IObjectFieldBuilder extends FieldBuilder<"object"> {
     required(message?: string): this;
     fields(
-        builder: (registry: FieldBuilderRegistry.Interface) => Record<string, FieldBuilder<any>>
+        builder: (registry: FieldBuilderRegistry.Interface) => Record<string, BaseFieldBuilder<any>>
     ): this;
     layout(layoutOrBuilder: string[][] | ((builder: LayoutBuilder) => void)): this;
 }
 
 export class ObjectFieldBuilder extends FieldBuilder<"object"> implements IObjectFieldBuilder {
     private layoutBuilder: LayoutBuilder;
-    private fieldBuildersMap = new Map<string, FieldBuilder<any>>();
+    private fieldBuildersMap = new Map<string, BaseFieldBuilder<any>>();
 
     public constructor(private registry: FieldBuilderRegistry.Interface) {
         super("object");
@@ -32,7 +33,7 @@ export class ObjectFieldBuilder extends FieldBuilder<"object"> implements IObjec
     }
 
     fields(
-        builder: (registry: FieldBuilderRegistry.Interface) => Record<string, FieldBuilder<any>>
+        builder: (registry: FieldBuilderRegistry.Interface) => Record<string, BaseFieldBuilder<any>>
     ): this {
         // Pass existing fields to registry so it can return them when extending
         (this.registry as any).existingFields = this.fieldBuildersMap;

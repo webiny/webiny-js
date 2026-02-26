@@ -1,18 +1,15 @@
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
-import { type LayoutFieldBuildResult } from "./FieldBuilder.js";
-import { UiFieldBuilder } from "./UiFieldType.js";
+import { type LayoutFieldBuildResult } from "./BaseFieldBuilder.js";
+import { LayoutFieldBuilder } from "./LayoutFieldBuilder.js";
 
-export interface IUiSeparatorFieldBuilder extends UiFieldBuilder {
-    list(): this;
-}
+export interface IUiSeparatorFieldBuilder extends LayoutFieldBuilder<"uiSeparator"> {}
 
-class SeparatorFieldBuilder extends UiFieldBuilder implements IUiSeparatorFieldBuilder {
+class SeparatorFieldBuilder
+    extends LayoutFieldBuilder<"uiSeparator">
+    implements IUiSeparatorFieldBuilder
+{
     public constructor() {
-        super("separator");
-    }
-
-    public override list(): this {
-        return this;
+        super("uiSeparator");
     }
 
     public override build(): LayoutFieldBuildResult {
@@ -28,7 +25,7 @@ class SeparatorFieldBuilder extends UiFieldBuilder implements IUiSeparatorFieldB
 }
 
 class UiSeparatorFieldTypeFactory implements IFieldTypeFactory {
-    public readonly type = "ui:separator";
+    public readonly type = "uiSeparator";
 
     public create(): IUiSeparatorFieldBuilder {
         return new SeparatorFieldBuilder();

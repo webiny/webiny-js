@@ -1,4 +1,4 @@
-import { FieldBuilder } from "~/features/modelBuilder/index.js";
+import { BaseFieldBuilder } from "~/features/modelBuilder/index.js";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin.js";
 import { FieldBuilderRegistry } from "../abstractions.js";
 import type { CmsModelField, CmsModelLayoutCell } from "~/types/index.js";
@@ -15,7 +15,7 @@ export abstract class BaseModelBuilder<TBuild = CmsModelPlugin> {
     } = {};
 
     protected isSingleEntry = false;
-    protected fieldBuildersMap = new Map<string, FieldBuilder<any>>();
+    protected fieldBuildersMap = new Map<string, BaseFieldBuilder<any>>();
 
     public constructor(protected registry: FieldBuilderRegistry.Interface) {}
 
@@ -40,7 +40,7 @@ export abstract class BaseModelBuilder<TBuild = CmsModelPlugin> {
     }
 
     fields(
-        builder: (registry: FieldBuilderRegistry.Interface) => Record<string, FieldBuilder<any>>
+        builder: (registry: FieldBuilderRegistry.Interface) => Record<string, BaseFieldBuilder<any>>
     ): this {
         // Pass existing fields to registry so it can return them when extending
         (this.registry as any).existingFields = this.fieldBuildersMap;
@@ -95,8 +95,8 @@ export abstract class BaseModelBuilder<TBuild = CmsModelPlugin> {
      */
     private mergeFieldOperations(
         fieldId: string,
-        existing: FieldBuilder<any>,
-        extension: FieldBuilder<any>
+        existing: BaseFieldBuilder<any>,
+        extension: BaseFieldBuilder<any>
     ): void {
         // For object fields, merge nested fields and layout operations
         if (existing.type === "object" && extension.type === "object") {

@@ -11,7 +11,10 @@ import type {
     DragSource,
     FieldLayoutPosition
 } from "~/types.js";
-import type { CmsLayoutDescriptor, CmsEditorLayoutCell } from "@webiny/app-headless-cms-common/types/model.js";
+import type {
+    CmsLayoutDescriptor,
+    CmsEditorLayoutCell
+} from "@webiny/app-headless-cms-common/types/model.js";
 import { isLayoutDescriptor } from "@webiny/app-headless-cms-common/types/model.js";
 import { plugins } from "@webiny/plugins";
 import * as utils from "./utils/index.js";
@@ -51,7 +54,10 @@ interface GetFieldsInLayoutCallable {
     (): (CmsModelField | CmsLayoutDescriptor)[][];
 }
 interface InsertLayoutCellCallable {
-    (descriptor: Omit<CmsLayoutDescriptor, "id"> | CmsLayoutDescriptor, position: FieldLayoutPosition): void;
+    (
+        descriptor: Omit<CmsLayoutDescriptor, "id"> | CmsLayoutDescriptor,
+        position: FieldLayoutPosition
+    ): void;
 }
 interface UpdateLayoutCellCallable {
     (descriptorId: string, descriptor: CmsLayoutDescriptor): void;
@@ -383,7 +389,9 @@ export const FieldEditorProvider = ({
      */
     const insertField: InsertFieldCallable = ({ field, position }) => {
         if (!field.id) {
-            field.id = generateFieldId(layout.flat().filter((c): c is string => typeof c === "string"));
+            field.id = generateFieldId(
+                layout.flat().filter((c): c is string => typeof c === "string")
+            );
         }
 
         if (!field.type) {
@@ -486,7 +494,10 @@ export const FieldEditorProvider = ({
      */
     const insertLayoutCell: InsertLayoutCellCallable = (descriptor, position) => {
         // Auto-assign a unique ID to the descriptor.
-        const cell = { ...descriptor, id: generateAlphaNumericLowerCaseId(8) } as CmsLayoutDescriptor;
+        const cell = {
+            ...descriptor,
+            id: generateAlphaNumericLowerCaseId(8)
+        } as CmsLayoutDescriptor;
 
         setState(prev => {
             const newLayout = [...prev.layout.map(row => [...row])];
@@ -520,15 +531,20 @@ export const FieldEditorProvider = ({
      * Delete a layout descriptor found by its ID.
      * If it's a tabs descriptor, also remove all hoisted fields from the fields array.
      */
-    const deleteLayoutCell: DeleteLayoutCellCallable = (descriptorId) => {
+    const deleteLayoutCell: DeleteLayoutCellCallable = descriptorId => {
         setState(prev => {
             let fields = prev.fields;
 
             // Find the descriptor to check if it's tabs (need to clean up hoisted fields)
             for (const row of prev.layout) {
                 for (const cell of row) {
-                    if (isLayoutDescriptor(cell) && cell.id === descriptorId && cell.type === "tabs") {
-                        const tabsDescriptor = cell as import("@webiny/app-headless-cms-common/types/model.js").CmsTabLayoutDescriptor;
+                    if (
+                        isLayoutDescriptor(cell) &&
+                        cell.id === descriptorId &&
+                        cell.type === "tabs"
+                    ) {
+                        const tabsDescriptor =
+                            cell as import("@webiny/app-headless-cms-common/types/model.js").CmsTabLayoutDescriptor;
                         const fieldIdsInTabs = new Set<string>();
                         tabsDescriptor.tabs.forEach(tab => {
                             tab.layout.forEach(r => {
@@ -575,7 +591,9 @@ export const FieldEditorProvider = ({
                         break;
                     }
                 }
-                if (descriptor) break;
+                if (descriptor) {
+                    break;
+                }
             }
 
             if (!descriptor || sourceRow === -1) {

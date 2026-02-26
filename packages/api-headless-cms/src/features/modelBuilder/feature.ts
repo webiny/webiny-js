@@ -17,7 +17,6 @@ import { FieldBuilderRegistry as FieldsRegistryAbstraction, ModelFactory } from 
 import { AccessControl } from "~/features/shared/abstractions.js";
 import { ModelsProvider as ModelsProviderAbstraction } from "./models/abstractions.js";
 import { ModelsProvider } from "./models/ModelsProvider.js";
-import { UiFieldType } from "./fields/UiFieldType.js";
 import { UiSeparatorFieldType } from "./fields/UiSeparatorFieldType.js";
 import { UiAlertFieldType } from "./fields/UiAlertFieldType.js";
 import { UiTabsFieldType } from "./fields/UiTabsFieldType.js";
@@ -38,7 +37,6 @@ export const ModelBuilderFeature = createFeature({
         container.register(DateTimeFieldType);
         container.register(JsonFieldType);
         container.register(SearchableJsonFieldType);
-        container.register(UiFieldType);
         container.register(UiSeparatorFieldType);
         container.register(UiAlertFieldType);
         container.register(UiTabsFieldType);
