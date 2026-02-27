@@ -9,14 +9,8 @@ import { CoreOutput, VpcConfig } from "~/pulumi/apps/index.js";
 import { getAwsAccountId, getAwsRegion } from "../awsUtils.js";
 import { LAMBDA_RUNTIME } from "~/pulumi/constants.js";
 
-export interface GraphqlLambdaFunctionConfig {
-    timeout?: number;
-    memorySize?: number;
-}
-
 interface GraphqlParams {
     env: Record<string, any>;
-    lambdaFunctionConfig?: GraphqlLambdaFunctionConfig;
 }
 
 export interface AddRouteParams {
@@ -50,8 +44,8 @@ export const ApiGraphql = createAppModule({
                 runtime: LAMBDA_RUNTIME,
                 handler: "handler.handler",
                 role: role.output.arn,
-                timeout: params.lambdaFunctionConfig?.timeout ?? 30,
-                memorySize: params.lambdaFunctionConfig?.memorySize ?? 1024,
+                timeout: 30,
+                memorySize: 1024,
                 code: new pulumi.asset.AssetArchive({
                     ".": new pulumi.asset.FileArchive(
                         path.join(app.paths.workspace, "graphql/build")
