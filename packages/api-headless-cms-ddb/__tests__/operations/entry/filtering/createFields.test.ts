@@ -31,6 +31,20 @@ describe("create system and model fields", () => {
             fields: testModel.fields
         });
 
+        for (const expectedKey in expectedSystemFields) {
+            expect(result).toHaveProperty(expectedKey);
+            const value = result[expectedKey];
+            const expectedValue = expectedSystemFields[expectedKey];
+            expect(value).toMatchObject(expectedValue);
+        }
+
+        for (const resultKey in result) {
+            expect(expectedSystemFields).toHaveProperty(resultKey);
+            const value = result[resultKey];
+            const expectedValue = expectedSystemFields[resultKey];
+            expect(value).toMatchObject(expectedValue);
+        }
+
         expect(result).toMatchObject(expectedSystemFields);
     });
 

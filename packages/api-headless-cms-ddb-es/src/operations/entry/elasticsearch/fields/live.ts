@@ -9,7 +9,7 @@ export const liveFields: ModelFields = {
         searchable: true,
         sortable: false,
         field: createSystemField({
-            storageId: "object@live",
+            storageId: "live",
             fieldId: "live",
             type: "object",
             settings: {
@@ -17,7 +17,7 @@ export const liveFields: ModelFields = {
                     createModelField({
                         id: "version",
                         fieldId: "version",
-                        storageId: "number@version",
+                        storageId: "version",
                         type: "number",
                         label: "Version"
                     })
@@ -35,13 +35,13 @@ export const liveFields: ModelFields = {
             {
                 fieldId: "live",
                 type: "object",
-                storageId: "object@live"
+                storageId: "live"
             }
         ],
         field: createSystemField({
             id: "version",
             fieldId: "version",
-            storageId: "number@version",
+            storageId: "version",
             type: "number",
             label: "Version"
         })
