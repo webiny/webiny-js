@@ -503,6 +503,10 @@ export interface CmsEntry<TValues extends CmsEntryValues = CmsEntryValues> {
     binOriginalFolderId?: string;
 
     system?: IEntrySystem;
+    /**
+     * Is this CMS Entry live (no matter the revision).
+     */
+    live: boolean;
 }
 
 export interface CmsStorageEntry<T extends CmsEntryValues = CmsEntryValues> extends CmsEntry<T> {

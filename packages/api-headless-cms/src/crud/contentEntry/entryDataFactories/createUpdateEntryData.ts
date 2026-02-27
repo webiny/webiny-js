@@ -150,7 +150,8 @@ export const createUpdateEntryData = async <TValues extends CmsEntryValues = Cms
         system: getSystem({
             input: rawInput,
             original: originalEntry
-        })
+        }),
+        live: originalEntry.live
     };
 
     const folderId = rawInput.wbyAco_location?.folderId;

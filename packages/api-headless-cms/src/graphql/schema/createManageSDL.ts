@@ -90,6 +90,8 @@ export const createManageSDL: CreateManageSDL = ({
             wbyAco_location: WbyAcoLocation
             
             values: ${singularName}Values
+            
+            live: Boolean
         }
 
         type ${singularName}Meta {
