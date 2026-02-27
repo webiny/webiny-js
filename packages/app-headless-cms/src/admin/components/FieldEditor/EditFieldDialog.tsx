@@ -1,19 +1,15 @@
 import React, { useMemo, useState } from "react";
 import cloneDeep from "lodash/cloneDeep.js";
-import { Dialog, Tabs } from "@webiny/admin-ui";
 import type { FormOnSubmit } from "@webiny/form";
 import { Form } from "@webiny/form";
 import { i18n } from "@webiny/app/i18n/index.js";
 import type { CmsEditorContentModel, CmsModelField } from "~/types.js";
-import GeneralTab from "./EditFieldDialog/GeneralTab.js";
-import AppearanceTab from "./EditFieldDialog/AppearanceTab.js";
-import PredefinedValues from "./EditFieldDialog/PredefinedValues.js";
-import { ValidationTab } from "./EditFieldDialog/ValidationTab/index.js";
 import { useModelEditor, useModelField } from "~/admin/hooks/index.js";
-import { ModelFieldProvider } from "~/admin/components/ModelFieldProvider/index.js";
 import { useRendererPlugins } from "~/admin/components/FieldEditor/EditFieldDialog/useRendererPlugins.js";
 import { getFieldValidators } from "~/admin/components/FieldEditor/EditFieldDialog/getValidators.js";
-import { PermissionsTab } from "./EditFieldDialog/PermissionsTab/PermissionsTab.js";
+import { EditFieldDrawerContainer } from "./EditFieldDrawerContainer.js";
+// To A/B test, swap the import above with the one below:
+// import { EditFieldDialogContainer } from "./EditFieldDialogContainer.js";
 
 const t = i18n.namespace("app-headless-cms/admin/components/editor");
 
@@ -84,82 +80,26 @@ const EditFieldDialog = (props: EditFieldDialogProps) => {
          */
         <Form<CmsModelField> data={shadowField} onSubmit={onSubmit}>
             {({ data: shadowField, submit }) => {
-                const predefinedValuesTabEnabled =
+                const predefinedValuesTabEnabled = !!(
                     fieldPlugin.field.allowPredefinedValues &&
                     shadowField.predefinedValues &&
-                    shadowField.predefinedValues.enabled;
+                    shadowField.predefinedValues.enabled
+                );
 
                 const individualValidation = getFieldValidators(shadowField, fieldPlugin);
                 const showValidatorsTab =
                     shadowField.list || individualValidation.validators.length > 0;
 
                 return (
-                    <Dialog
-                        size={"full"}
-                        title={headerTitle}
-                        open={true}
-                        modal={true}
+                    <EditFieldDrawerContainer
+                        headerTitle={headerTitle}
+                        shadowField={shadowField}
+                        predefinedValuesTabEnabled={predefinedValuesTabEnabled}
+                        showValidatorsTab={showValidatorsTab}
+                        isSubtypeField={isSubtypeField}
                         onClose={props.onClose}
-                        bodyPadding={false}
-                        actions={
-                            <>
-                                <Dialog.CancelAction
-                                    text={t`Cancel`}
-                                    onClick={props.onClose}
-                                    data-testid="cms.editor.field.settings.cancel"
-                                />
-                                <Dialog.ConfirmAction
-                                    text={t`Save Field`}
-                                    onClick={submit}
-                                    data-testid="cms.editor.field.settings.save"
-                                />
-                            </>
-                        }
-                        data-testid={"cms-editor-edit-fields-dialog"}
-                    >
-                        <ModelFieldProvider field={shadowField}>
-                            <Tabs
-                                spacing={"lg"}
-                                size={"md"}
-                                separator
-                                tabs={[
-                                    <Tabs.Tab
-                                        key={"general"}
-                                        trigger={t`General`}
-                                        value={"general"}
-                                        content={<GeneralTab />}
-                                    />,
-                                    <Tabs.Tab
-                                        key={"predefined"}
-                                        trigger={t`Predefined values`}
-                                        value={"predefined"}
-                                        disabled={!predefinedValuesTabEnabled}
-                                        content={<PredefinedValues />}
-                                    />,
-                                    <Tabs.Tab
-                                        key={"validations"}
-                                        trigger={t`Validations`}
-                                        value={"validations"}
-                                        content={<ValidationTab field={shadowField} />}
-                                        visible={showValidatorsTab}
-                                    />,
-                                    <Tabs.Tab
-                                        key={"appearance"}
-                                        trigger={t`Appearance`}
-                                        value={"Appearance"}
-                                        content={<AppearanceTab />}
-                                        disabled={isSubtypeField}
-                                    />,
-                                    <Tabs.Tab
-                                        key={"permissions"}
-                                        trigger={t`Permissions`}
-                                        value={"permissions"}
-                                        content={<PermissionsTab />}
-                                    />
-                                ]}
-                            />
-                        </ModelFieldProvider>
-                    </Dialog>
+                        onSubmit={submit}
+                    />
                 );
             }}
         </Form>
