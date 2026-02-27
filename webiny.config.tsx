@@ -7,7 +7,6 @@ export const Extensions = () => {
     return (
         <>
             <Admin.Extension src={"@/extensions/LexicalPlugin.tsx"} />
-            <Admin.Extension src={"@/extensions/livePreview/Admin.tsx"} />
             {/* Admin 👇 */}
             {/*<Admin.Extension src={"@/extensions/sampleEcommerce/index.tsx"} />*/}
             {/*<Admin.Extension src={"@/extensions/customPageTypes/index.tsx"} />*/}
