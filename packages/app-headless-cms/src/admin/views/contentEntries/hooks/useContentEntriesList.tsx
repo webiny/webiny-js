@@ -44,6 +44,7 @@ export interface ContentEntriesListProviderContext {
     setFilters: (data: Record<string, any>) => void;
     selectAll: () => void;
     unselectAll: () => void;
+    refresh: () => Promise<void>;
     isSelectedAll: boolean;
     getWhere: () => Record<string, any>;
     searchQuery: string;
@@ -86,7 +87,8 @@ export const ContentEntriesListProvider = ({ children }: ContentEntriesListProvi
         isSelectedAll,
         selectAll,
         unselectAll,
-        getWhere
+        getWhere,
+        refresh
     } = useAcoList<CmsContentEntry>();
 
     const [sorting, setSorting] = useState<Sorting>([]);
@@ -212,7 +214,8 @@ export const ContentEntriesListProvider = ({ children }: ContentEntriesListProvi
         selectAll,
         unselectAll,
         getWhere,
-        searchQuery
+        searchQuery,
+        refresh
     };
 
     return (
