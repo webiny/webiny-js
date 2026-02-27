@@ -41,6 +41,10 @@ export const FIELDS_FIELDS = `
         message
     }
     settings
+    permissions {
+        target
+        accessLevel
+    }
 `;
 
 export const MODEL_FIELDS = `

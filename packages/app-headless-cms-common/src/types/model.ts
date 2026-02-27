@@ -25,6 +25,13 @@ export interface CmsModelFieldSettings<T = unknown> {
     [key: string]: any;
 }
 
+export type FieldAccessLevel = "viewer" | "no-access";
+
+export interface FieldPermission {
+    target: `admin:${string}` | `team:${string}`;
+    accessLevel: FieldAccessLevel;
+}
+
 export type CmsModelField<T = unknown> = T & {
     id: string;
     type: string;
@@ -51,6 +58,7 @@ export type CmsModelField<T = unknown> = T & {
          */
         | CmsModelFieldRendererPlugin["renderer"]["render"];
     tags?: string[];
+    permissions?: FieldPermission[];
 };
 
 export type CmsEditorFieldId = string;

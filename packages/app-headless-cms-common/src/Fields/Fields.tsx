@@ -60,6 +60,8 @@ export const Fields = ({ Bind, fields, layout, contentModel, gridClassName }: Fi
                         const id = cell;
                         const field = getFieldById(fields, id) as CmsModelField;
 
+                        // TODO: const isVisible = userCanSeeField(identity, field);
+
                         // Count only string cells for column span calculation
                         const stringCellCount = row.filter(c => typeof c === "string").length;
 

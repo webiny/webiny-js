@@ -13,6 +13,7 @@ import { useModelEditor, useModelField } from "~/admin/hooks/index.js";
 import { ModelFieldProvider } from "~/admin/components/ModelFieldProvider/index.js";
 import { useRendererPlugins } from "~/admin/components/FieldEditor/EditFieldDialog/useRendererPlugins.js";
 import { getFieldValidators } from "~/admin/components/FieldEditor/EditFieldDialog/getValidators.js";
+import { PermissionsTab } from "./EditFieldDialog/PermissionsTab/PermissionsTab.js";
 
 const t = i18n.namespace("app-headless-cms/admin/components/editor");
 
@@ -148,6 +149,12 @@ const EditFieldDialog = (props: EditFieldDialogProps) => {
                                         value={"Appearance"}
                                         content={<AppearanceTab />}
                                         disabled={isSubtypeField}
+                                    />,
+                                    <Tabs.Tab
+                                        key={"permissions"}
+                                        trigger={t`Permissions`}
+                                        value={"permissions"}
+                                        content={<PermissionsTab />}
                                     />
                                 ]}
                             />

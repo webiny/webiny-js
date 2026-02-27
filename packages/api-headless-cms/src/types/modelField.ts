@@ -5,7 +5,7 @@ import type { CmsDynamicZoneTemplate } from "~/types/fields/dynamicZoneField.js"
 export type FieldAccessLevel = "viewer" | "no-access";
 
 export interface FieldPermission {
-    target: `admin:${string}` | `team:${string}`;
+    target: string;
     accessLevel: FieldAccessLevel;
 }
 
