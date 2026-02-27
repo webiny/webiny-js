@@ -11,31 +11,21 @@ export const FeatureFlags = defineExtension({
     paramsSchema: z.object({
         // Follows `IFeatureFlags` from `packages/feature-flags/src/index.ts`.
         features: z.object({
-            wcp: z.object({
-                multiTenancy: z.object({ enabled: z.boolean().optional() }).optional(),
-                advancedPublishingWorkflow: z
-                    .object({ enabled: z.boolean().optional() })
-                    .optional(),
-                advancedAccessControlLayer: z
-                    .object({
-                        enabled: z.boolean().optional(),
-                        options: z
-                            .object({
-                                teams: z.boolean().optional(),
-                                privateFiles: z.boolean().optional(),
-                                folderLevelPermissions: z.boolean().optional()
-                            })
-                            .optional()
+            multiTenancy: z.boolean().optional(),
+            workflows: z.boolean().optional(),
+            aacl: z
+                .union([
+                    z.boolean(),
+                    z.object({
+                        teams: z.boolean().optional(),
+                        privateFiles: z.boolean().optional(),
+                        folderLevelPermissions: z.boolean().optional()
                     })
-                    .optional(),
-                auditLogs: z.object({ enabled: z.boolean().optional() }).optional(),
-                recordLocking: z.object({ enabled: z.boolean().optional() }).optional(),
-                fileManager: z
-                    .object({
-                        options: z.object({ threatDetection: z.boolean().optional() }).optional()
-                    })
-                    .optional()
-            })
+                ])
+                .optional(),
+            auditLogs: z.boolean().optional(),
+            recordLocking: z.boolean().optional(),
+            fileManagerThreatDetection: z.boolean().optional()
         })
     }),
     render: ({ features = {} }) => {

@@ -29,57 +29,45 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
     }
 
     canUseAacl() {
-        const wcp = this.featureFlags.get().wcp;
-        return this.decoratee.canUseAacl() && wcp?.advancedAccessControlLayer?.enabled !== false;
+        return this.decoratee.canUseAacl() && this.featureFlags.get().isAaclEnabled();
     }
 
     canUseTeams() {
-        const wcp = this.featureFlags.get().wcp;
-        return (
-            this.decoratee.canUseTeams() &&
-            wcp?.advancedAccessControlLayer?.options?.teams !== false
-        );
+        return this.decoratee.canUseTeams() && this.featureFlags.get().isTeamsEnabled();
     }
 
     canUseFolderLevelPermissions() {
-        const wcp = this.featureFlags.get().wcp;
         return (
             this.decoratee.canUseFolderLevelPermissions() &&
-            wcp?.advancedAccessControlLayer?.options?.folderLevelPermissions !== false
+            this.featureFlags.get().isFolderLevelPermissionsEnabled()
         );
     }
 
     canUsePrivateFiles() {
-        const wcp = this.featureFlags.get().wcp;
         return (
-            this.decoratee.canUsePrivateFiles() &&
-            wcp?.advancedAccessControlLayer?.options?.privateFiles !== false
+            this.decoratee.canUsePrivateFiles() && this.featureFlags.get().isPrivateFilesEnabled()
         );
     }
 
     canUseAuditLogs() {
-        const wcp = this.featureFlags.get().wcp;
-        return this.decoratee.canUseAuditLogs() && wcp?.auditLogs?.enabled !== false;
+        return this.decoratee.canUseAuditLogs() && this.featureFlags.get().isAuditLogsEnabled();
     }
 
     canUseRecordLocking() {
-        const wcp = this.featureFlags.get().wcp;
-        return this.decoratee.canUseRecordLocking() && wcp?.recordLocking?.enabled !== false;
+        return (
+            this.decoratee.canUseRecordLocking() && this.featureFlags.get().isRecordLockingEnabled()
+        );
     }
 
     canUseFileManagerThreatDetection() {
-        const wcp = this.featureFlags.get().wcp;
         return (
             this.decoratee.canUseFileManagerThreatDetection() &&
-            wcp?.fileManager?.options?.threatDetection !== false
+            this.featureFlags.get().isFileManagerThreatDetectionEnabled()
         );
     }
 
     canUseWorkflows() {
-        const wcp = this.featureFlags.get().wcp;
-        return (
-            this.decoratee.canUseWorkflows() && wcp?.advancedPublishingWorkflow?.enabled !== false
-        );
+        return this.decoratee.canUseWorkflows() && this.featureFlags.get().isWorkflowsEnabled();
     }
 
     ensureCanUseFeature(featureId: keyof typeof WCP_FEATURE_LABEL) {

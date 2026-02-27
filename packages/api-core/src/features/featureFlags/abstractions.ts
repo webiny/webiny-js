@@ -1,8 +1,8 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { IFeatureFlags } from "@webiny/feature-flags";
+import { FeatureFlags as FeatureFlagsClass } from "@webiny/feature-flags";
 
 export interface IFeatureFlagsAbstraction {
-    get(): IFeatureFlags;
+    get(): FeatureFlagsClass;
 }
 
 export const FeatureFlags = createAbstraction<IFeatureFlagsAbstraction>("FeatureFlags");

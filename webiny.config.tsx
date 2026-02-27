@@ -87,16 +87,12 @@ export const Extensions = () => {
             <Project.Telemetry enabled={false} />
             <Project.FeatureFlags
                 features={{
-                    wcp: {
-                        advancedAccessControlLayer: {
-                            enabled: true,
-                            options: {
-                                teams: true,
-                                privateFiles: true,
-                                folderLevelPermissions: true
-                            }
-                        }
-                    }
+                    advancedAccessControlLayer: {
+                        teams: false,
+                        privateFiles: false,
+                        folderLevelPermissions: false
+                    },
+                    advancedPublishingWorkflow: true
                 }}
             />
 
