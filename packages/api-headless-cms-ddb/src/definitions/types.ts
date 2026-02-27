@@ -63,6 +63,7 @@ export interface IEntryEntityAttributesData {
     values: GenericRecord;
     meta?: GenericRecord;
     system?: IEntrySystem;
+    live: boolean;
 }
 
 export type IEntryEntityAttributes = IStandardEntityAttributes<IEntryEntityAttributesData>;

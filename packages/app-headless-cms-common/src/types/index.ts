@@ -391,6 +391,7 @@ export interface CmsContentEntry<TValues extends GenericRecord = GenericRecord> 
     revisionLastPublishedOn: string | null;
     revisionLastPublishedBy: CmsIdentity | null;
     wbyAco_location: Location;
+    live: boolean;
     meta: {
         title: string;
         description?: string;
