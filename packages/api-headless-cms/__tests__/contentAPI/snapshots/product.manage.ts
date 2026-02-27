@@ -51,6 +51,7 @@ export default /* GraphQL */ `
         revisionLastPublishedBy: CmsIdentity
         meta: ProductApiSingularMeta
         wbyAco_location: WbyAcoLocation
+        live: Boolean
 
         values: ProductApiSingularValues
     }
@@ -501,6 +502,7 @@ export default /* GraphQL */ `
 
         system: ListWhereInputCmsEntrySystem
         wbyAco_location: WbyAcoLocationWhereInput
+        live: Boolean
 
         values: ProductApiSingularListWhereInputValues
         AND: [ProductApiSingularListWhereInput!]

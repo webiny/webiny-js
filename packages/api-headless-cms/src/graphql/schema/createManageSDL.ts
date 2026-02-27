@@ -88,10 +88,9 @@ export const createManageSDL: CreateManageSDL = ({
             ${onByMetaGqlFields}
             meta: ${singularName}Meta
             wbyAco_location: WbyAcoLocation
+            live: Boolean
             
             values: ${singularName}Values
-            
-            live: Boolean
         }
 
         type ${singularName}Meta {
@@ -154,6 +153,7 @@ export const createManageSDL: CreateManageSDL = ({
 
             system: ListWhereInputCmsEntrySystem
             wbyAco_location: WbyAcoLocationWhereInput
+            live: Boolean
             
             values: ${singularName}ListWhereInputValues
             AND: [${singularName}ListWhereInput!]

@@ -162,6 +162,7 @@ export const fields = /* GraphQL */ `{
         title
         slug
     }
+    live
 }`;
 
 export interface IManageGetTestEntryVariables {

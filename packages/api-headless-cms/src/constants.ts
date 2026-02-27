@@ -72,6 +72,7 @@ export interface RecordWithEntryMetaFields {
     restoredBy: CmsIdentity | null;
     firstPublishedBy: CmsIdentity | null;
     lastPublishedBy: CmsIdentity | null;
+    live: boolean;
 }
 
 export const pickEntryMetaFields = (
@@ -92,6 +93,10 @@ export const pickEntryMetaFields = (
             });
         }
     }
+    /**
+     * Also add live field, as it's not part of entry meta fields, but it's required to be transfered.
+     */
+    pickedEntryMetaFields.live = object.live;
 
     return pickedEntryMetaFields;
 };

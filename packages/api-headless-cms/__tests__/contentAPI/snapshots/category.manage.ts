@@ -42,6 +42,7 @@ export default /* GraphQL */ `
         revisionLastPublishedBy: CmsIdentity
         meta: CategoryApiNameWhichIsABitDifferentThanModelIdMeta
         wbyAco_location: WbyAcoLocation
+        live: Boolean
 
         values: CategoryApiNameWhichIsABitDifferentThanModelIdValues
     }
@@ -324,6 +325,7 @@ export default /* GraphQL */ `
 
         system: ListWhereInputCmsEntrySystem
         wbyAco_location: WbyAcoLocationWhereInput
+        live: Boolean
 
         values: CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInputValues
         AND: [CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInput!]
