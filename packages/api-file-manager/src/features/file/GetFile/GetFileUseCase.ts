@@ -2,17 +2,16 @@ import { Result } from "@webiny/feature/api";
 import { GetFileUseCase as UseCaseAbstraction, GetFileRepository } from "./abstractions.js";
 import type { File } from "~/domain/file/types.js";
 import { FileNotAuthorizedError } from "~/domain/file/errors.js";
-import { FilePermissions } from "~/features/shared/abstractions.js";
+import { FmPermissions } from "~/features/shared/abstractions.js";
 
 class GetFileUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
-        private filePermissions: FilePermissions.Interface,
+        private permissions: FmPermissions.Interface,
         private repository: GetFileRepository.Interface
     ) {}
 
     async execute(id: string): Promise<Result<File, UseCaseAbstraction.Error>> {
-        // Check read permission
-        const hasPermission = await this.filePermissions.ensure({ rwd: "r" });
+        const hasPermission = await this.permissions.canRead("file");
         if (!hasPermission) {
             return Result.fail(new FileNotAuthorizedError());
         }
@@ -25,9 +24,7 @@ class GetFileUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const file = result.value;
 
-        // Check ownership permission
-        const hasOwnershipPermission = await this.filePermissions.ensure({ owns: file.createdBy });
-        if (!hasOwnershipPermission) {
+        if (!(await this.permissions.canAccess("file", file))) {
             return Result.fail(new FileNotAuthorizedError());
         }
 
@@ -37,5 +34,5 @@ class GetFileUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const GetFileUseCase = UseCaseAbstraction.createImplementation({
     implementation: GetFileUseCaseImpl,
-    dependencies: [FilePermissions, GetFileRepository]
+    dependencies: [FmPermissions.Abstraction, GetFileRepository]
 });

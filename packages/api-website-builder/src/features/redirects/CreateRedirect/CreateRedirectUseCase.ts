@@ -8,14 +8,22 @@ import {
     CreateRedirectRepository
 } from "./abstractions.js";
 import { RedirectBeforeCreateEvent, RedirectAfterCreateEvent } from "./events.js";
+import { WbPermissions } from "~/domain/permissions.js";
+import { RedirectNotAuthorizedError } from "~/domain/redirect/errors.js";
 
 class CreateRedirectUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
+        private permissions: WbPermissions.Interface,
         private eventPublisher: EventPublisherAbstraction.Interface,
         private repository: CreateRedirectRepository.Interface
     ) {}
 
     async execute(data: UseCaseAbstraction.Params): UseCaseAbstraction.Return {
+        const hasPermission = await this.permissions.canCreate("redirect");
+        if (!hasPermission) {
+            return Result.fail(new RedirectNotAuthorizedError());
+        }
+
         // Publish before create event
         const beforeCreateEvent = new RedirectBeforeCreateEvent({ input: data });
         await this.eventPublisher.publish(beforeCreateEvent);
@@ -38,5 +46,5 @@ class CreateRedirectUseCaseImpl implements UseCaseAbstraction.Interface {
 export const CreateRedirectUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: CreateRedirectUseCaseImpl,
-    dependencies: [EventPublisher, CreateRedirectRepository]
+    dependencies: [WbPermissions.Abstraction, EventPublisher, CreateRedirectRepository]
 });

@@ -9,12 +9,12 @@ import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
 import type { File, FileInput } from "~/domain/file/types.js";
 import { FileNotAuthorizedError, InvalidFileSizeError } from "~/domain/file/errors.js";
 import { FileBeforeBatchCreateEvent, FileAfterBatchCreateEvent } from "./events.js";
-import { FilePermissions } from "~/features/shared/abstractions.js";
+import { FmPermissions } from "~/features/shared/abstractions.js";
 import { CreateFileInput } from "~/features/file/CreateFile/abstractions.js";
 
 class CreateFilesInBatchUseCaseImpl implements UseCaseAbstraction.Interface {
     public constructor(
-        private filePermissions: FilePermissions.Interface,
+        private permissions: FmPermissions.Interface,
         private repository: CreateFilesInBatchRepository.Interface,
         private getSettings: GetSettingsUseCase.Interface,
         private eventPublisher: EventPublisher.Interface
@@ -23,8 +23,7 @@ class CreateFilesInBatchUseCaseImpl implements UseCaseAbstraction.Interface {
     public async execute(
         input: CreateFilesInBatchInput
     ): Promise<Result<File[], UseCaseAbstraction.Error>> {
-        // Check write permission
-        const hasPermission = await this.filePermissions.ensure({ rwd: "w" });
+        const hasPermission = await this.permissions.canCreate("file");
         if (!hasPermission) {
             return Result.fail(new FileNotAuthorizedError());
         }
@@ -104,7 +103,7 @@ class CreateFilesInBatchUseCaseImpl implements UseCaseAbstraction.Interface {
 export const CreateFilesInBatchUseCase = UseCaseAbstraction.createImplementation({
     implementation: CreateFilesInBatchUseCaseImpl,
     dependencies: [
-        FilePermissions,
+        FmPermissions.Abstraction,
         CreateFilesInBatchRepository,
         GetSettingsUseCase,
         EventPublisher

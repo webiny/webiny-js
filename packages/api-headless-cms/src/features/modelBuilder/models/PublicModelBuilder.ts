@@ -107,7 +107,18 @@ export class PublicModelBuilder extends BaseModelBuilder {
             throw new Error("name is required");
         }
         if (this.fieldBuildersMap.size === 0) {
-            throw new Error("fields are required");
+            const fieldId = "alert";
+            this.fields(builder => {
+                return {
+                    [fieldId]: builder
+                        .uiAlert()
+                        .label(
+                            "No fields defined in the code content model. Please ensure you have the fields property correctly defined."
+                        )
+                };
+            });
+            this.titleFieldId(fieldId);
+            this.layoutBuilder.setLayout([[fieldId]]);
         }
         if (!this.publicConfig.group) {
             throw new Error("group is required");

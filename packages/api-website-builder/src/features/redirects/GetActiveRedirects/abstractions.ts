@@ -1,7 +1,10 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
 import type { WbRedirect } from "~/domain/redirect/abstractions.js";
-import type { RedirectPersistenceError } from "~/domain/redirect/errors.js";
+import type {
+    RedirectPersistenceError,
+    RedirectNotAuthorizedError
+} from "~/domain/redirect/errors.js";
 
 /**
  * GetActiveRedirects repository interface
@@ -36,6 +39,7 @@ export interface IGetActiveRedirectsUseCase {
 }
 
 export interface IGetActiveRedirectsUseCaseErrors {
+    notAuthorized: RedirectNotAuthorizedError;
     persistence: RedirectPersistenceError;
 }
 

@@ -7,7 +7,13 @@ import { useGetPageGraphQLFields } from "~/features/pages/index.js";
 
 export const useCreatePage = () => {
     const client = useApolloClient();
-    const fields = useGetPageGraphQLFields(["properties", "metadata", "bindings", "elements"]);
+    const fields = useGetPageGraphQLFields([
+        "properties",
+        "metadata",
+        "bindings",
+        "elements",
+        "extensions"
+    ]);
     const gateway = new CreatePageGqlGateway(client, fields);
 
     const createPage = useCallback(

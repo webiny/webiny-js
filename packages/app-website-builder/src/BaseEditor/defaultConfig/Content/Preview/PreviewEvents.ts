@@ -12,6 +12,14 @@ import { Commands } from "~/BaseEditor/index.js";
 import type { Editor } from "~/editorSdk/Editor.js";
 import { $createElement } from "~/editorSdk/utils/index.js";
 
+type FragmentConfig =
+    | {
+          type: "fixed";
+          name: string;
+          element: React.ReactNode;
+      }
+    | { type: "component"; component: string; inputs: Record<string, any> };
+
 export class PreviewEvents {
     private editor: Editor;
     private editorEventsRegistered = false;
@@ -79,7 +87,7 @@ export class PreviewEvents {
         });
 
         messenger.on("document.fragments", payload => {
-            const fragments: string[] = payload.fragments;
+            const fragments: FragmentConfig[] = payload.fragments;
             this.editor.updateEditor(state => {
                 state.fragments = fragments;
             });
@@ -88,20 +96,31 @@ export class PreviewEvents {
 
             if (Object.keys(document.elements).length === 1) {
                 // We only have the default "root" element, create fragment elements.
-                let index = 0;
-                fragments.forEach(fragment => {
+                fragments.forEach((fragment, index) => {
+                    if (fragment.type === "fixed") {
+                        $createElement(this.editor, {
+                            componentName: "Webiny/Fragment",
+                            parentId: "root",
+                            slot: "children",
+                            index,
+                            bindings: {
+                                inputs: {
+                                    name: fragment.name
+                                }
+                            }
+                        });
+                        return;
+                    }
+
                     $createElement(this.editor, {
-                        componentName: "Webiny/Fragment",
+                        componentName: fragment.component,
                         parentId: "root",
                         slot: "children",
                         index,
                         bindings: {
-                            inputs: {
-                                name: fragment
-                            }
+                            inputs: fragment.inputs
                         }
                     });
-                    index++;
                 });
             }
         });

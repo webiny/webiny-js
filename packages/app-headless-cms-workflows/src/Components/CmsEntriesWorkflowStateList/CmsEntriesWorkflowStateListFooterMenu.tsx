@@ -30,11 +30,11 @@ export const CmsEntriesWorkflowStateListFooterMenu = Footer.createDecorator(Orig
                                 <div className={"list-none"}>
                                     <Sidebar.Item
                                         onClick={showOverlay}
-                                        text={"Workflow States"}
+                                        text={"Content Reviews"}
                                         icon={
                                             <Sidebar.Item.Icon
                                                 element={<WorkflowStateListIcon />}
-                                                label={"Workflow States"}
+                                                label={"Content Reviews"}
                                             />
                                         }
                                     />

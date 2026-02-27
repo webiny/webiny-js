@@ -1,13 +1,23 @@
-import { createImplementation } from "@webiny/feature/api";
+import { Result, createImplementation } from "@webiny/feature/api";
 import {
     GetActiveRedirectsUseCase as UseCaseAbstraction,
     GetActiveRedirectsRepository
 } from "./abstractions.js";
+import { WbPermissions } from "~/domain/permissions.js";
+import { RedirectNotAuthorizedError } from "~/domain/redirect/errors.js";
 
 class GetActiveRedirectsUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(private repository: GetActiveRedirectsRepository.Interface) {}
+    constructor(
+        private permissions: WbPermissions.Interface,
+        private repository: GetActiveRedirectsRepository.Interface
+    ) {}
 
     async execute(): UseCaseAbstraction.Return {
+        const hasPermission = await this.permissions.canRead("redirect");
+        if (!hasPermission) {
+            return Result.fail(new RedirectNotAuthorizedError());
+        }
+
         return await this.repository.execute();
     }
 }
@@ -15,5 +25,5 @@ class GetActiveRedirectsUseCaseImpl implements UseCaseAbstraction.Interface {
 export const GetActiveRedirectsUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: GetActiveRedirectsUseCaseImpl,
-    dependencies: [GetActiveRedirectsRepository]
+    dependencies: [WbPermissions.Abstraction, GetActiveRedirectsRepository]
 });

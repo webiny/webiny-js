@@ -5,11 +5,12 @@ import type {
     CmsGroup,
     CmsIdentity,
     CmsModel,
+    ICmsEntryLive,
     ICmsEntryLocation,
-    IEntryState
+    IEntrySystem
 } from "@webiny/api-headless-cms/types/index.js";
 
-export interface IEntryEntityAttirbutesData {
+export interface IEntryEntityAttributesData {
     id: string;
     entryId: string;
     modelId: string;
@@ -62,10 +63,11 @@ export interface IEntryEntityAttirbutesData {
     binOriginalFolderId?: string;
     values: GenericRecord;
     meta?: GenericRecord;
-    state?: IEntryState;
+    system?: IEntrySystem;
+    live: ICmsEntryLive | null;
 }
 
-export type IEntryEntityAttributes = IStandardEntityAttributes<IEntryEntityAttirbutesData>;
+export type IEntryEntityAttributes = IStandardEntityAttributes<IEntryEntityAttributesData>;
 
 export type IModelEntity = IEntity<IStandardEntityAttributes<CmsModel>>;
 export type IGroupEntity = IEntity<IStandardEntityAttributes<CmsGroup>>;

@@ -18,7 +18,8 @@ import { AccessControl } from "~/features/shared/abstractions.js";
 import { ModelsProvider as ModelsProviderAbstraction } from "./models/abstractions.js";
 import { ModelsProvider } from "./models/ModelsProvider.js";
 import { UiFieldType } from "./fields/UiFieldType.js";
-import { UiSeparatorFieldType } from "~/features/modelBuilder/fields/UiSeparatorFieldType.js";
+import { UiSeparatorFieldType } from "./fields/UiSeparatorFieldType.js";
+import { UiAlertFieldType } from "./fields/UiAlertFieldType.js";
 
 export const ModelBuilderFeature = createFeature({
     name: "ModelBuilder",
@@ -38,6 +39,7 @@ export const ModelBuilderFeature = createFeature({
         container.register(SearchableJsonFieldType);
         container.register(UiFieldType);
         container.register(UiSeparatorFieldType);
+        container.register(UiAlertFieldType);
         // container.register(LocationFieldType);
 
         // Register field builder registry (will automatically get all FieldType implementations)

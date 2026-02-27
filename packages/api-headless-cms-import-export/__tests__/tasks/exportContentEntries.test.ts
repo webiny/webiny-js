@@ -7,16 +7,17 @@ import { EXPORT_CONTENT_ENTRIES_TASK } from "~/tasks/constants.js";
 
 vi.mock("~/features/ExportContentEntriesTask/ExportContentEntries.js", () => {
     return {
-        ExportContentEntries: vi.fn().mockImplementation(() => ({
-            run: async ({ input }: TaskDefinition.RunParams<any, any>) => {
+        ExportContentEntries: vi.fn().mockImplementation(function () {
+            // @ts-expect-error
+            this.run = async ({ input }: TaskDefinition.RunParams<any, any>) => {
                 if (input.kill) {
                     throw new Error("An error happened!");
                 }
                 return {
                     executed: true
                 };
-            }
-        }))
+            };
+        })
     };
 });
 

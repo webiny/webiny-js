@@ -42,6 +42,7 @@ export default /* GraphQL */ `
         revisionLastPublishedBy: CmsIdentity
         meta: CategoryApiNameWhichIsABitDifferentThanModelIdMeta
         wbyAco_location: WbyAcoLocation
+        live: CmsEntryLive
 
         values: CategoryApiNameWhichIsABitDifferentThanModelIdValues
     }
@@ -52,7 +53,7 @@ export default /* GraphQL */ `
         locked: Boolean
 
         status: String
-        state: CmsEntryState
+        system: CmsEntrySystem
         """
         CAUTION: this field is resolved by making an extra query to DB.
         RECOMMENDATION: Use it only with "get" queries (avoid in "list")
@@ -322,8 +323,9 @@ export default /* GraphQL */ `
         status_in: [String!]
         status_not_in: [String!]
 
-        state: ListWhereInputCmsEntryState
+        system: ListWhereInputCmsEntrySystem
         wbyAco_location: WbyAcoLocationWhereInput
+        live: CmsEntryLiveWhereInput
 
         values: CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInputValues
         AND: [CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInput!]

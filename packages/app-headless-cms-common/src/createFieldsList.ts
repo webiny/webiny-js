@@ -7,6 +7,10 @@ interface CreateFieldsListParams {
     graphQLTypePrefix?: string;
 }
 
+/**
+ * When used in ACO, this method receives a filtered list of field types.
+ * Find `createListRecords` in app-aco to find out more.
+ */
 export function createFieldsList({
     model,
     fields: inputFields,

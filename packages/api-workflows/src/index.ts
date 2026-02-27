@@ -4,12 +4,12 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
 import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import {
-    WorkflowModel as WorkflowPrivateModel,
-    WORKFLOW_MODEL_ID
+    WORKFLOW_MODEL_ID,
+    WorkflowModel as WorkflowPrivateModel
 } from "./domain/workflow/workflowModel.js";
 import {
-    WorkflowStateModel as WorkflowStatePrivateModel,
-    WORKFLOW_STATE_MODEL_ID
+    WORKFLOW_STATE_MODEL_ID,
+    WorkflowStateModel as WorkflowStatePrivateModel
 } from "./domain/workflowState/stateModel.js";
 import { createWorkflowsSchema } from "~/graphql/workflows.js";
 import { createWorkflowStateSchema } from "~/graphql/workflowState.js";
@@ -48,11 +48,13 @@ export const createWorkflows = () => {
         const identityContext = context.container.resolve(IdentityContext);
         const wcpContext = context.container.resolve(WcpContext);
 
-        if (!tenantContext.getTenant()) {
+        const hasTenant = tenantContext.getTenant();
+        const canUseWorkflows = wcpContext.canUseWorkflows();
+        if (!hasTenant) {
             return;
         }
 
-        if (!wcpContext.canUseWorkflows()) {
+        if (!canUseWorkflows) {
             return;
         }
 

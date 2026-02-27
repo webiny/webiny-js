@@ -5,7 +5,8 @@ import type { WbPage } from "~/domain/page/abstractions.js";
 import {
     PageValidationError,
     PageNotFoundError,
-    PagePersistenceError
+    PagePersistenceError,
+    PageNotAuthorizedError
 } from "~/domain/page/errors.js";
 
 // ============================================================================
@@ -52,6 +53,7 @@ export interface IDuplicatePageUseCase {
 }
 
 export interface IDuplicatePageUseCaseErrors {
+    notAuthorized: PageNotAuthorizedError;
     validation: PageValidationError;
     notFound: PageNotFoundError;
     persistence: PagePersistenceError;

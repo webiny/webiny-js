@@ -72,7 +72,7 @@
     "jose": "^5.10.0",
     "jsonwebtoken": "^9.0.3",
     "lodash": "^4.17.23",
-    "minimatch": "^10.2.2",
+    "minimatch": "^10.2.4",
     "pino": "^9.14.0",
     "pino-lambda": "^4.4.1",
     "ts-morph": "^27.0.2",
@@ -88,7 +88,7 @@
     "jest-dynalite": "^3.6.1",
     "rimraf": "^6.1.3",
     "typescript": "5.9.3",
-    "vitest": "^3.2.4"
+    "vitest": "^4.0.18"
   },
   "publishConfig": {
     "access": "public",

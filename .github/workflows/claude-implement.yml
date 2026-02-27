@@ -1,0 +1,112 @@
+name: Claude Implement
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  claude-implement:
+    # Trigger only on issue comments (not PR comments) containing "@claude implement"
+    if: |
+      github.event.issue.pull_request == null &&
+      contains(github.event.comment.body, '@claude implement')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Check if commenter is authorized
+        id: auth
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: perm } = await github.rest.repos.getCollaboratorPermissionLevel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              username: context.payload.comment.user.login,
+            });
+            const allowed = ['admin', 'maintain', 'write'].includes(perm.permission);
+            if (!allowed) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: `@${context.payload.comment.user.login} Sorry, only authorized contributors can trigger Claude.`,
+              });
+              core.setFailed('Unauthorized user');
+            }
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Fetch full history so Claude can branch off main cleanly
+          fetch-depth: 0
+          # Use a token that allows pushing branches and opening PRs
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git identity
+        run: |
+          git config user.name "claude-code[bot]"
+          git config user.email "claude-code[bot]@users.noreply.github.com"
+
+      - name: Run Claude – Implementation
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          direct_prompt: |
+            You are a senior engineer implementing a GitHub issue end-to-end.
+
+            Issue: #${{ github.event.issue.number }} – "${{ github.event.issue.title }}"
+
+            Your task:
+            1. Read the issue body and all its comments to understand both the original 
+               request and the approved plan (look for the planning comment).
+            2. Create a new branch named `claude/issue-${{ github.event.issue.number }}` 
+               from the latest `main` (or `master`) branch.
+            3. Implement the changes described in the plan. Follow the conventions in 
+               CLAUDE.md if present. Write clean, well-tested code.
+            4. Commit your work with clear, conventional commit messages.
+            5. Push the branch and open a Pull Request that:
+               - References the issue with "Closes #${{ github.event.issue.number }}"
+               - Has a descriptive title
+               - Includes a summary of what was changed and why, plus a testing checklist
+            6. Post a comment on the original issue linking to the new PR.
+
+            Be methodical: read before you write, implement incrementally, and verify 
+            your changes make sense in context of the existing codebase.
+
+            IMPORTANT – token hygiene:
+            - Suppress noisy command output to avoid wasting context.
+              Use these patterns consistently:
+                yarn               → yarn > /dev/null 2>&1
+                yarn build         → yarn build 2>&1 | tail -30
+                yarn test          → yarn test packages/{packageName} 2>&1 | tail -50
+            - Never run a command and let its full output flood back unfiltered
+              unless you specifically need to read every line.
+          claude_args: >-
+            --max-turns 30
+          # Expand allowed tools so Claude can do real file work and use git/gh
+          allowed_tools: >-
+            Bash(git checkout:*),
+            Bash(git branch:*),
+            Bash(git add:*),
+            Bash(git commit:*),
+            Bash(git push:*),
+            Bash(git log:*),
+            Bash(git diff:*),
+            Bash(gh issue view:*),
+            Bash(gh issue comment:*),
+            Bash(gh pr create:*),
+            Bash(gh pr view:*),
+            Bash(node scripts/generateTsConfigsInPackages.js:*),
+            Bash(yarn test:*),
+            Bash(yarn build:*),
+            Bash(yarn tsc:*),
+            Bash(yarn adio:*),
+            Bash(yarn webiny:*),
+            Read,
+            Write,
+            Glob,
+            Grep
