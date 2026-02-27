@@ -423,6 +423,31 @@
           ]
         },
         {
+          "name": "CmsEntryLive",
+          "kind": "OBJECT",
+          "description": null,
+          "fields": [
+            {
+              "name": "version",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "CmsEntryLiveWhereInput",
+          "kind": "INPUT_OBJECT",
+          "description": null,
+          "fields": null
+        },
+        {
           "name": "ListWhereInputCmsEntrySystem",
           "kind": "INPUT_OBJECT",
           "description": null,

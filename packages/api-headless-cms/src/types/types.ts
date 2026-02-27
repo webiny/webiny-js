@@ -312,6 +312,10 @@ export interface ICmsEntryLocation {
     folderId?: string;
 }
 
+export interface ICmsEntryLive {
+    version: number;
+}
+
 export interface IEntrySystem {
     // to be extended
 }
@@ -503,6 +507,10 @@ export interface CmsEntry<TValues extends CmsEntryValues = CmsEntryValues> {
     binOriginalFolderId?: string;
 
     system?: IEntrySystem;
+    /**
+     * Is this CMS Entry live (no matter the revision).
+     */
+    live: ICmsEntryLive | null;
 }
 
 export interface CmsStorageEntry<T extends CmsEntryValues = CmsEntryValues> extends CmsEntry<T> {

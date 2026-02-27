@@ -182,7 +182,8 @@ export const createEntryRevisionFromData = async <TValues extends CmsEntryValues
         system: getSystem({
             input: rawInput,
             original: originalEntry
-        })
+        }),
+        live: originalEntry.live
     };
 
     return {
