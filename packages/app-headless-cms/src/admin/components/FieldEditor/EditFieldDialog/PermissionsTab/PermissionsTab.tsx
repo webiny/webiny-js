@@ -10,7 +10,7 @@ import type { FolderLevelPermissionsTarget } from "@webiny/app-aco";
 import type { FieldPermission } from "~/types.js";
 import { FieldPermissionsSelection } from "./FieldPermissionsSelection.js";
 
-export const PermissionsTab = () => {
+export const PermissionsTab = ({ gridClassName }: { gridClassName?: string }) => {
     const bind = useBind({ name: "permissions" });
     const permissions: FieldPermission[] = bind.value || [];
     const listTargetsQuery = useQuery(LIST_FOLDER_LEVEL_PERMISSIONS_TARGETS);
@@ -49,7 +49,7 @@ export const PermissionsTab = () => {
     };
 
     return (
-        <Grid>
+        <Grid className={gridClassName}>
             <Grid.Column span={12}>
                 <UsersTeamsMultiAutocomplete
                     options={targetsList}

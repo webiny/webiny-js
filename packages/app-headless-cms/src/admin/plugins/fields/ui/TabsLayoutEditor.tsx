@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useEffect } from "react";
-import { Accordion } from "@webiny/admin-ui";
+import { Accordion, Tabs } from "@webiny/admin-ui";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { ReactComponent as ArrowUpIcon } from "@webiny/icons/expand_less.svg";
@@ -25,6 +25,7 @@ import type { CmsModelField } from "~/types.js";
 import { FieldEditor } from "~/admin/components/FieldEditor/index.js";
 import { IconPicker } from "~/admin/components/IconPicker.js";
 import { useModelFieldEditor } from "~/admin/hooks/index.js";
+import { PermissionsTab } from "~/admin/components/FieldEditor/EditFieldDialog/PermissionsTab/PermissionsTab.js";
 
 interface TabsLayoutEditorProps {
     descriptor: CmsTabLayoutDescriptor;
@@ -46,7 +47,7 @@ interface TabItemProps {
 
 const TabsSettings = () => {
     return (
-        <Grid>
+        <Grid className={"mt-md"}>
             <Grid.Column span={12}>
                 <Bind name={"label"}>
                     <Input label={"Label"} />
@@ -63,6 +64,29 @@ const TabsSettings = () => {
                 </Bind>
             </Grid.Column>
         </Grid>
+    );
+};
+
+const TabsDialogContent = () => {
+    return (
+        <Tabs
+            size={"md"}
+            separator
+            tabs={[
+                <Tabs.Tab
+                    key={"tabs"}
+                    trigger={"Tabs"}
+                    value={"tabs"}
+                    content={<TabsSettings />}
+                />,
+                <Tabs.Tab
+                    key={"permissions"}
+                    trigger={"Permissions"}
+                    value={"permissions"}
+                    content={<PermissionsTab gridClassName={"mt-md"} />}
+                />
+            ]}
+        />
     );
 };
 
@@ -355,20 +379,23 @@ export const TabsLayoutEditor = ({ descriptor, onUpdate, onDelete }: TabsLayoutE
     const editTabsSettings = useCallback(() => {
         showDialog({
             title: "Tabs Settings",
+            description: "Configure the tabs and access permissions",
             acceptLabel: "Save",
             cancelLabel: "Cancel",
             formData: {
                 label: descriptor.label ?? "",
                 description: descriptor.description ?? "",
-                help: descriptor.help ?? ""
+                help: descriptor.help ?? "",
+                permissions: descriptor.permissions ?? []
             },
-            content: <TabsSettings />,
+            content: <TabsDialogContent />,
             onAccept: data => {
                 onUpdate({
                     ...descriptor,
                     label: data.label ?? "",
                     description: data.description || null,
-                    help: data.help || null
+                    help: data.help || null,
+                    permissions: data.permissions ?? []
                 });
             }
         });

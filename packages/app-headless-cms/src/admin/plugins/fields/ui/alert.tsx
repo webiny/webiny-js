@@ -8,15 +8,16 @@ import { ReactComponent as AlertIcon } from "@webiny/icons/warning.svg";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { Alert, Grid, IconButton, Textarea, Select, Text } from "@webiny/admin-ui";
+import { Alert, Grid, IconButton, Tabs, Textarea, Select, Text } from "@webiny/admin-ui";
 import { useDialogs } from "@webiny/app-admin";
 import { Bind } from "@webiny/form";
+import { PermissionsTab } from "~/admin/components/FieldEditor/EditFieldDialog/PermissionsTab/PermissionsTab.js";
 
 const t = i18n.ns("app-headless-cms/admin/fields");
 
 const AlertSettings = () => {
     return (
-        <Grid>
+        <Grid className={"mt-md"}>
             <Grid.Column span={12}>
                 <Bind name={"label"}>
                     <Textarea label={"Message"} />
@@ -40,6 +41,29 @@ const AlertSettings = () => {
     );
 };
 
+const AlertDialogContent = () => {
+    return (
+        <Tabs
+            size={"md"}
+            separator
+            tabs={[
+                <Tabs.Tab
+                    key={"alert"}
+                    trigger={"Alert"}
+                    value={"alert"}
+                    content={<AlertSettings />}
+                />,
+                <Tabs.Tab
+                    key={"permissions"}
+                    trigger={"Permissions"}
+                    value={"permissions"}
+                    content={<PermissionsTab gridClassName={"mt-md"} />}
+                />
+            ]}
+        />
+    );
+};
+
 interface AlertLayoutCellProps {
     descriptor: CmsAlertLayoutDescriptor;
     onUpdate: (d: CmsLayoutDescriptor) => void;
@@ -52,15 +76,21 @@ const AlertLayoutCell = ({ descriptor, onUpdate, onDelete }: AlertLayoutCellProp
     const openSettings = () => {
         dialogs.showDialog({
             title: "Alert Settings",
+            description: "Configure the alert and access permissions",
             acceptLabel: "Save",
             cancelLabel: "Cancel",
-            formData: { label: descriptor.label, alertType: descriptor.alertType },
-            content: <AlertSettings />,
+            formData: {
+                label: descriptor.label,
+                alertType: descriptor.alertType,
+                permissions: descriptor.permissions ?? []
+            },
+            content: <AlertDialogContent />,
             onAccept: data => {
                 onUpdate({
                     ...descriptor,
                     label: data.label ?? "",
-                    alertType: (data.alertType as CmsAlertLayoutDescriptor["alertType"]) ?? "info"
+                    alertType: (data.alertType as CmsAlertLayoutDescriptor["alertType"]) ?? "info",
+                    permissions: data.permissions ?? []
                 });
             }
         });

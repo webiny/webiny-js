@@ -8,15 +8,16 @@ import { ReactComponent as SeparatorIcon } from "@webiny/icons/line_style.svg";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { Grid, IconButton, Input, Separator, Text } from "@webiny/admin-ui";
+import { Grid, IconButton, Input, Separator, Tabs, Text } from "@webiny/admin-ui";
 import { useDialogs } from "@webiny/app-admin";
 import { Bind } from "@webiny/form";
+import { PermissionsTab } from "~/admin/components/FieldEditor/EditFieldDialog/PermissionsTab/PermissionsTab.js";
 
 const t = i18n.ns("app-headless-cms/admin/fields");
 
 const SeparatorSettings = () => {
     return (
-        <Grid>
+        <Grid className={"mt-md"}>
             <Grid.Column span={12}>
                 <Bind name={"label"}>
                     <Input label={"Label"} />
@@ -28,6 +29,29 @@ const SeparatorSettings = () => {
                 </Bind>
             </Grid.Column>
         </Grid>
+    );
+};
+
+const SeparatorDialogContent = () => {
+    return (
+        <Tabs
+            size={"md"}
+            separator
+            tabs={[
+                <Tabs.Tab
+                    key={"separator"}
+                    trigger={"Separator"}
+                    value={"separator"}
+                    content={<SeparatorSettings />}
+                />,
+                <Tabs.Tab
+                    key={"permissions"}
+                    trigger={"Permissions"}
+                    value={"permissions"}
+                    content={<PermissionsTab gridClassName={"mt-md"} />}
+                />
+            ]}
+        />
     );
 };
 
@@ -43,15 +67,21 @@ const SeparatorLayoutCell = ({ descriptor, onUpdate, onDelete }: SeparatorLayout
     const openSettings = () => {
         dialogs.showDialog({
             title: "Separator Settings",
+            description: "Configure the separator and access permissions",
             acceptLabel: "Save",
             cancelLabel: "Cancel",
-            formData: { label: descriptor.label, description: descriptor.description ?? "" },
-            content: <SeparatorSettings />,
+            formData: {
+                label: descriptor.label,
+                description: descriptor.description ?? "",
+                permissions: descriptor.permissions ?? []
+            },
+            content: <SeparatorDialogContent />,
             onAccept: data => {
                 onUpdate({
                     ...descriptor,
                     label: data.label ?? "",
-                    description: data.description ?? ""
+                    description: data.description ?? "",
+                    permissions: data.permissions ?? []
                 });
             }
         });
@@ -95,7 +125,11 @@ export const uiSeparatorField: CmsLayoutFieldTypePlugin = {
         icon: <SeparatorIcon />,
         canEditSettings: true,
         createDescriptor() {
-            return { type: "separator", label: "Section", description: "Your description goes here" };
+            return {
+                type: "separator",
+                label: "Section",
+                description: "Your description goes here"
+            };
         },
         render({ descriptor, onUpdate, onDelete }) {
             return (
