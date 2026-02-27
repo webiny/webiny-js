@@ -45,6 +45,10 @@ const DATA_FIELD = /* GraphQL*/ `
                 settings
             }
             settings
+            permissions {
+                target
+                accessLevel
+            }
         }
         plugin
         createdOn

@@ -128,6 +128,11 @@ export const createModelsSchema = ({
                 settings: JSON
             }
 
+            input CmsFieldPermissionInput {
+                target: String!
+                accessLevel: String!
+            }
+
             input CmsContentModelFieldInput {
                 id: ID!
                 label: String!
@@ -147,6 +152,7 @@ export const createModelsSchema = ({
                 validation: [CmsFieldValidationInput]
                 listValidation: [CmsFieldValidationInput]
                 settings: JSON
+                permissions: [CmsFieldPermissionInput!]
             }
 
             input CmsContentModelCreateInput {
@@ -234,6 +240,11 @@ export const createModelsSchema = ({
                 values: [CmsPredefinedValue]
             }
 
+            type CmsFieldPermission {
+                target: String!
+                accessLevel: String!
+            }
+
             type CmsContentModelField {
                 id: ID!
                 # auto-generated value
@@ -253,6 +264,7 @@ export const createModelsSchema = ({
                 validation: [CmsFieldValidation!]
                 listValidation: [CmsFieldValidation!]
                 settings: JSON
+                permissions: [CmsFieldPermission!]
             }
 
             type CmsContentModel {

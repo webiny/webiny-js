@@ -516,6 +516,31 @@
           ]
         },
         {
+          "name": "CmsFieldPermission",
+          "kind": "OBJECT",
+          "description": null,
+          "fields": [
+            {
+              "name": "target",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": { "kind": "SCALAR", "name": "String" }
+              }
+            },
+            {
+              "name": "accessLevel",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": { "kind": "SCALAR", "name": "String" }
+              }
+            }
+          ]
+        },
+        {
           "name": "CmsContentModelField",
           "kind": "OBJECT",
           "description": null,
@@ -627,6 +652,15 @@
               "name": "settings",
               "description": null,
               "type": { "kind": "SCALAR", "name": "JSON", "ofType": null }
+            },
+            {
+              "name": "permissions",
+              "description": null,
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": { "kind": "NON_NULL", "name": null }
+              }
             }
           ]
         },

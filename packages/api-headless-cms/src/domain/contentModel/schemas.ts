@@ -139,7 +139,18 @@ const fieldSchema = zod.object({
         .transform(value => {
             return value || {};
         })
-        .default({})
+        .default({}),
+    permissions: zod
+        .array(
+            zod.object({
+                target: shortString,
+                accessLevel: zod.enum(["viewer", "no-access"])
+            })
+        )
+        .optional()
+        .nullish()
+        .default([])
+        .transform(value => value || [])
 });
 
 const apiNameRefinementValidation = (value: string): boolean => {

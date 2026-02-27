@@ -2,6 +2,13 @@ import type { CmsModel, CmsModelLayout } from "./model.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { CmsDynamicZoneTemplate } from "~/types/fields/dynamicZoneField.js";
 
+export type FieldAccessLevel = "viewer" | "no-access";
+
+export interface FieldPermission {
+    target: `admin:${string}` | `team:${string}`;
+    accessLevel: FieldAccessLevel;
+}
+
 export type CmsModelFieldType =
     | "boolean"
     | "datetime"
@@ -113,6 +120,12 @@ export interface CmsModelField {
      * @default {}
      */
     settings?: CmsModelFieldSettings;
+    /**
+     * Field-level permissions controlling which users/teams can access this field.
+     *
+     * @default []
+     */
+    permissions?: FieldPermission[];
 }
 
 /**
@@ -188,6 +201,10 @@ export interface CmsModelFieldInput {
     settings?: {
         [key: string]: any;
     };
+    /**
+     * Field-level permissions controlling which users/teams can access this field.
+     */
+    permissions?: FieldPermission[];
 }
 
 /**

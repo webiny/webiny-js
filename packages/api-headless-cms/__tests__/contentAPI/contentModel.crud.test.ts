@@ -646,11 +646,13 @@ describe("content model test", () => {
                         fields: [
                             {
                                 ...textField,
-                                storageId: `${textField.type}@${textField.id}`
+                                storageId: `${textField.type}@${textField.id}`,
+                                permissions: []
                             },
                             {
                                 ...numberField,
-                                storageId: `${numberField.type}@${numberField.id}`
+                                storageId: `${numberField.type}@${numberField.id}`,
+                                permissions: []
                             }
                         ],
                         group: contentModelGroup.slug,
@@ -660,6 +662,119 @@ describe("content model test", () => {
                         plugin: false,
                         icon: null,
                         tenant: "root"
+                    },
+                    error: null
+                }
+            }
+        });
+    });
+
+    it("should create and update a model with field permissions", async () => {
+        const { createContentModelMutation, updateContentModelMutation } =
+            useGraphQLHandler(manageHandlerOpts);
+
+        const fieldWithPermissions: CmsModelFieldInput = {
+            id: "permFieldId",
+            fieldId: "permField",
+            label: "Permission field",
+            type: "text",
+            validation: [],
+            listValidation: [],
+            permissions: [
+                { target: "admin:user-1", accessLevel: "viewer" },
+                { target: "team:team-1", accessLevel: "no-access" }
+            ]
+        };
+
+        const [createResponse] = await createContentModelMutation({
+            data: {
+                name: "Permissions Test Model",
+                modelId: "permissionsTestModel",
+                singularApiName: "PermissionsTestModel",
+                pluralApiName: "PermissionsTestModels",
+                group: contentModelGroup.slug,
+                fields: [fieldWithPermissions],
+                layout: [[fieldWithPermissions.id]]
+            }
+        });
+
+        expect(createResponse).toMatchObject({
+            data: {
+                createContentModel: {
+                    data: {
+                        fields: [
+                            {
+                                fieldId: "permField",
+                                permissions: [
+                                    { target: "admin:user-1", accessLevel: "viewer" },
+                                    { target: "team:team-1", accessLevel: "no-access" }
+                                ]
+                            }
+                        ]
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const contentModel = createResponse.data.createContentModel.data;
+
+        // Update permissions
+        const updatedField: CmsModelFieldInput = {
+            ...fieldWithPermissions,
+            permissions: [{ target: "admin:user-2", accessLevel: "no-access" }]
+        };
+
+        const [updateResponse] = await updateContentModelMutation({
+            modelId: contentModel.modelId,
+            data: {
+                name: contentModel.name,
+                fields: [updatedField],
+                layout: [[updatedField.id]]
+            }
+        });
+
+        expect(updateResponse).toMatchObject({
+            data: {
+                updateContentModel: {
+                    data: {
+                        fields: [
+                            {
+                                fieldId: "permField",
+                                permissions: [{ target: "admin:user-2", accessLevel: "no-access" }]
+                            }
+                        ]
+                    },
+                    error: null
+                }
+            }
+        });
+
+        // Remove permissions
+        const fieldNoPermissions: CmsModelFieldInput = {
+            ...fieldWithPermissions,
+            permissions: []
+        };
+
+        const [removeResponse] = await updateContentModelMutation({
+            modelId: contentModel.modelId,
+            data: {
+                name: contentModel.name,
+                fields: [fieldNoPermissions],
+                layout: [[fieldNoPermissions.id]]
+            }
+        });
+
+        expect(removeResponse).toMatchObject({
+            data: {
+                updateContentModel: {
+                    data: {
+                        fields: [
+                            {
+                                fieldId: "permField",
+                                permissions: []
+                            }
+                        ]
                     },
                     error: null
                 }
