@@ -2,42 +2,6 @@ import zod from "zod";
 import upperFirst from "lodash/upperFirst.js";
 import camelCase from "lodash/camelCase.js";
 
-const fieldSystemFields: string[] = [
-    "id",
-    "entryId",
-    "createdOn",
-    "modifiedOn",
-    "publishedOn",
-    "savedOn",
-    "deletedOn",
-    "restoredOn",
-    "firstPublishedOn",
-    "lastPublishedOn",
-    "createdBy",
-    "modifiedBy",
-    "savedBy",
-    "deletedBy",
-    "restoredBy",
-    "firstPublishedBy",
-    "lastPublishedBy",
-    "revisionCreatedOn",
-    "revisionModifiedOn",
-    "revisionSavedOn",
-    "revisionDeletedOn",
-    "revisionRestoredOn",
-    "revisionFirstPublishedOn",
-    "revisionLastPublishedOn",
-    "revisionCreatedBy",
-    "revisionModifiedBy",
-    "revisionSavedBy",
-    "revisionDeletedBy",
-    "revisionRestoredBy",
-    "revisionFirstPublishedBy",
-    "revisionLastPublishedBy",
-    "meta",
-    "wbyAco_location"
-];
-
 const str = zod.string().trim();
 const shortString = str.max(255);
 const longString = str;
@@ -77,18 +41,10 @@ const fieldSchema = zod.object({
     fieldId: shortString
         .max(100)
         .regex(/^!?[a-zA-Z]/, {
-            message: `Provided value is not valid - must not start with a number.`
+            message: `Must not start with a number.`
         })
         .regex(/^(^[a-zA-Z0-9]+)$/, {
-            message: `Provided value is not valid - must be alphanumeric string.`
-        })
-        .superRefine((value, ctx) => {
-            if (fieldSystemFields.includes(value)) {
-                return ctx.addIssue({
-                    code: zod.ZodIssueCode.custom,
-                    message: `Field ID "${value}" is a reserved keyword, and is not allowed.`
-                });
-            }
+            message: `Must be alphanumeric string.`
         }),
     label: shortString,
     help: optionalNullishLongString,
