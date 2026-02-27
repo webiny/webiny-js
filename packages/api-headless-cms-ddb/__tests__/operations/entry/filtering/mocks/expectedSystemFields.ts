@@ -1024,7 +1024,7 @@ export const expectedSystemFields: Record<string, Field> = {
             fields: [
                 {
                     id: "version",
-                    storageId: "number@version",
+                    storageId: "version",
                     fieldId: "version",
                     label: "Version",
                     type: "number",
@@ -1057,7 +1057,7 @@ export const expectedSystemFields: Record<string, Field> = {
     },
     "live.version": {
         id: "version",
-        storageId: "number@version",
+        storageId: "version",
         createPath: expect.any(Function),
         transform: expect.any(Function),
         fieldId: "version",
