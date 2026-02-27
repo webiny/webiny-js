@@ -24,6 +24,7 @@ import { ApiScheduler } from "~/pulumi/apps/api/ApiScheduler.js";
 import { getProjectSdk } from "@webiny/project";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
+import { getApiLambdaFunctionConfigFromExtension } from "~/pulumi/apps/extensions/getApiLambdaFunctionConfigFromExtension.js";
 import { License } from "@webiny/wcp";
 import { handleGuardDutyEvents } from "./handleGuardDutyEvents.js";
 import { ApiPulumi } from "@webiny/project/abstractions/index.js";
@@ -41,6 +42,7 @@ export const createApiPulumiApp = () => {
             const pulumiResourceNamePrefix = await sdk.getPulumiResourceNamePrefix();
             const vpcExtensionsConfig = getVpcConfigFromExtension(projectConfig);
             const openSearchExtensionConfig = getOsConfigFromExtension(projectConfig);
+            const apiLambdaFunctionConfig = getApiLambdaFunctionConfigFromExtension(projectConfig);
 
             let searchEngineParams: typeof openSearchExtensionConfig | null = null;
 
@@ -148,6 +150,7 @@ export const createApiPulumiApp = () => {
             app.addModule(VpcConfig, { enabled: vpcEnabled });
 
             const graphql = app.addModule(ApiGraphql, {
+                lambdaFunctionConfig: apiLambdaFunctionConfig?.graphql,
                 env: {
                     COGNITO_REGION: getEnvVariableAwsRegion(),
                     COGNITO_USER_POOL_ID: core.cognitoUserPoolId,
