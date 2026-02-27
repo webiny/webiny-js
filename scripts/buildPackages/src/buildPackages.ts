@@ -150,6 +150,8 @@ export const buildPackages = async () => {
                 const pkgBuildError = listrError.error as PackageBuildError;
                 console.log(red("✖ " + pkgBuildError.getPackage().name));
                 console.log(pkgBuildError.getBuildError().message);
+                // TODO remove
+                console.log(pkgBuildError.getBuildError());
                 console.log();
             });
 
