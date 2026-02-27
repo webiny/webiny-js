@@ -90,9 +90,9 @@ const TabsDialogContent = () => {
     );
 };
 
-const TabSettings = () => {
+const TabSettingsFields = () => {
     return (
-        <Grid>
+        <Grid className={"mt-md"}>
             <Grid.Column span={12}>
                 <Bind name={"label"}>
                     <Input label={"Label"} />
@@ -104,6 +104,29 @@ const TabSettings = () => {
                 </Bind>
             </Grid.Column>
         </Grid>
+    );
+};
+
+const TabDialogContent = () => {
+    return (
+        <Tabs
+            size={"md"}
+            separator
+            tabs={[
+                <Tabs.Tab
+                    key={"tab"}
+                    trigger={"Tab"}
+                    value={"tab"}
+                    content={<TabSettingsFields />}
+                />,
+                <Tabs.Tab
+                    key={"permissions"}
+                    trigger={"Permissions"}
+                    value={"permissions"}
+                    content={<PermissionsTab gridClassName={"mt-md"} />}
+                />
+            ]}
+        />
     );
 };
 
@@ -238,16 +261,22 @@ const TabItem = ({
     const editTab = useCallback(() => {
         dialogs.showDialog({
             title: "Tab Settings",
+            description: "Configure the tab and access permissions",
             acceptLabel: "Save",
             cancelLabel: "Cancel",
-            formData: { label: tab.label, icon: tab.icon ?? "" },
-            content: <TabSettings />,
+            formData: {
+                label: tab.label,
+                icon: tab.icon ?? "",
+                permissions: tab.permissions ?? []
+            },
+            content: <TabDialogContent />,
             onAccept: data => {
                 const updatedTabs = [...descriptor.tabs];
                 updatedTabs[index] = {
                     ...tab,
                     label: data.label ?? tab.label,
-                    icon: data.icon || undefined
+                    icon: data.icon || undefined,
+                    permissions: data.permissions ?? []
                 };
                 onUpdate({ ...descriptor, tabs: updatedTabs });
             }

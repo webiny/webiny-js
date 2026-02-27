@@ -86,6 +86,7 @@ export interface CmsTabLayoutTab {
     label: string;
     icon?: string;
     layout: CmsEditorFieldsLayout;
+    permissions?: FieldPermission[];
 }
 
 export interface CmsTabLayoutDescriptor extends CmsBaseLayoutDescriptor {

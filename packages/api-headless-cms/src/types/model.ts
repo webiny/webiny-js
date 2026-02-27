@@ -1,5 +1,5 @@
 import type { CmsIdentity } from "./identity.js";
-import type { CmsModelField, CmsModelFieldInput } from "./modelField.js";
+import type { CmsModelField, CmsModelFieldInput, FieldPermission } from "./modelField.js";
 import type { CmsIcon } from "~/types/types.js";
 
 export interface CmsTabLayoutTab {
@@ -7,6 +7,7 @@ export interface CmsTabLayoutTab {
     label: string;
     icon?: CmsIcon | null;
     layout: CmsModelLayout;
+    permissions?: FieldPermission[];
 }
 
 export interface CmsTabLayoutDescriptor {
@@ -15,18 +16,21 @@ export interface CmsTabLayoutDescriptor {
     description?: string | null;
     help?: string | null;
     tabs: CmsTabLayoutTab[];
+    permissions?: FieldPermission[];
 }
 
 export interface CmsSeparatorLayoutDescriptor {
     type: "separator";
     label: string;
     description: string | null | undefined;
+    permissions?: FieldPermission[];
 }
 
 export interface CmsAlertLayoutDescriptor {
     type: "alert";
     label: string;
     alertType: "info" | "success" | "warning" | "danger";
+    permissions?: FieldPermission[];
 }
 
 export type CmsModelLayoutCell =
