@@ -33,7 +33,7 @@ export const MultiValueContainer = (props: MultiValueContainerProps) => {
     const [itemState, setItemState] = useState<{ [key: number]: boolean }>({});
 
     const { model } = useModel();
-    const { field } = useModelField();
+    const { field, permissions } = useModelField();
 
     const { showConfirmation } = useConfirmationDialog({
         message: `Are you sure you want to delete this item? This action is not reversible.`,
@@ -61,6 +61,7 @@ export const MultiValueContainer = (props: MultiValueContainerProps) => {
     return (
         <DynamicSection
             {...props}
+            disabled={!permissions.canEdit}
             showLabel={props.showTitle}
             field={field}
             emptyValue={{}}
@@ -112,6 +113,7 @@ export const MultiValueContainer = (props: MultiValueContainerProps) => {
                     <ObjectItem>
                         {highlightMap[index] ? <ItemHighLight key={highlightMap[index]} /> : null}
                         <MultiValueItemContainer
+                            disabled={!permissions.canEdit}
                             value={bind.index.value}
                             title={`${field.label} #${index + 1}`}
                             isFirst={index === 0}

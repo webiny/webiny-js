@@ -3,6 +3,7 @@ import get from "lodash/get.js";
 import type { CmsModelField, CmsModelFieldRendererPlugin } from "~/types.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { CheckboxGroup } from "@webiny/admin-ui";
+import { useModelField } from "@webiny/app-headless-cms-common";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -20,7 +21,8 @@ const plugin: CmsModelFieldRendererPlugin = {
         canUse({ field }) {
             return !!field.list && !!get(field, "predefinedValues.enabled");
         },
-        render({ field, getBind }) {
+        render({ getBind }) {
+            const { field, permissions } = useModelField();
             const Bind = getBind();
 
             const { values: predefinedOptions = [] } = field.predefinedValues || {
@@ -42,6 +44,7 @@ const plugin: CmsModelFieldRendererPlugin = {
                         <Bind.ValidationContainer>
                             <CheckboxGroup
                                 {...bind}
+                                disabled={!permissions.canEdit}
                                 label={field.label}
                                 description={field.description}
                                 note={field.note}

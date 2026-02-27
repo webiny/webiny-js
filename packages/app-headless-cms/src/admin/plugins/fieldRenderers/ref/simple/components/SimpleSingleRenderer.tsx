@@ -5,6 +5,7 @@ import { useContentModels } from "./useContentModels.js";
 import { useReferences } from "./useReferences.js";
 import { Loader } from "~/admin/plugins/fieldRenderers/ref/simple/components/Loader.js";
 import { RadioGroup } from "@webiny/admin-ui";
+import { useModelField } from "@webiny/app-headless-cms-common";
 
 interface SimpleSingleRendererProps {
     bind: BindComponentRenderProp<CmsReferenceValue | undefined | null>;
@@ -12,7 +13,9 @@ interface SimpleSingleRendererProps {
 }
 
 export const SimpleSingleRenderer = (props: SimpleSingleRendererProps) => {
-    const { field, bind } = props;
+    const { bind } = props;
+
+    const { field, permissions } = useModelField();
 
     const value = useMemo(() => {
         return bind.value?.id;
@@ -44,6 +47,7 @@ export const SimpleSingleRenderer = (props: SimpleSingleRendererProps) => {
     return (
         <RadioGroup
             {...bind}
+            disabled={!permissions.canEdit}
             label={field.label}
             description={field.description}
             note={field.note}

@@ -3,6 +3,7 @@ import get from "lodash/get.js";
 import type { CmsModelFieldRendererPlugin } from "~/types.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { DelayedOnChange, Input } from "@webiny/admin-ui";
+import { useModelField } from "@webiny/app-headless-cms-common";
 
 const t = i18n.ns("app-headless-cms/admin/fields/number");
 
@@ -18,7 +19,8 @@ const plugin: CmsModelFieldRendererPlugin = {
                 field.type === "number" && !field.list && !get(field, "predefinedValues.enabled")
             );
         },
-        render({ field, getBind }) {
+        render({ getBind }) {
+            const { field, permissions } = useModelField();
             const Bind = getBind();
 
             return (
@@ -31,6 +33,7 @@ const plugin: CmsModelFieldRendererPlugin = {
                                 onBlur={bind.validate}
                             >
                                 <Input
+                                    disabled={!permissions.canEdit}
                                     label={field.label}
                                     placeholder={field.placeholder}
                                     description={field.description}

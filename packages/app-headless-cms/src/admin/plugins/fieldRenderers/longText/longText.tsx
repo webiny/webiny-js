@@ -3,6 +3,7 @@ import get from "lodash/get.js";
 import type { CmsModelFieldRendererPlugin } from "~/types.js";
 import { DelayedOnChange, Textarea } from "@webiny/admin-ui";
 import { i18n } from "@webiny/app/i18n/index.js";
+import { useModelField } from "@webiny/app-headless-cms-common";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -18,7 +19,8 @@ const plugin: CmsModelFieldRendererPlugin = {
                 field.type === "long-text" && !field.list && !get(field, "predefinedValues.enabled")
             );
         },
-        render({ field, getBind }) {
+        render({ getBind }) {
+            const { field, permissions } = useModelField();
             const Bind = getBind();
 
             return (
@@ -31,6 +33,7 @@ const plugin: CmsModelFieldRendererPlugin = {
                                 onBlur={bind.validate}
                             >
                                 <Textarea
+                                    disabled={!permissions.canEdit}
                                     rows={5}
                                     label={field.label}
                                     placeholder={field.placeholder}

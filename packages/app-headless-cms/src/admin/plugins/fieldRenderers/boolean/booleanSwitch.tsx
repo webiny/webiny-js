@@ -3,6 +3,7 @@ import get from "lodash/get.js";
 import type { CmsModelFieldRendererPlugin } from "~/types.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { Switch } from "@webiny/admin-ui";
+import { useModelField } from "@webiny/app-headless-cms-common";
 
 const t = i18n.ns("app-headless-cms/admin/fields/boolean");
 
@@ -18,7 +19,8 @@ const plugin: CmsModelFieldRendererPlugin = {
                 field.type === "boolean" && !field.list && !get(field, "predefinedValues.enabled")
             );
         },
-        render({ field, getBind }) {
+        render({ getBind }) {
+            const { field, permissions } = useModelField();
             const Bind = getBind();
 
             return (
@@ -26,6 +28,7 @@ const plugin: CmsModelFieldRendererPlugin = {
                     {bindProps => (
                         <Switch
                             {...bindProps}
+                            disabled={!permissions.canEdit}
                             label={field.label}
                             description={field.description}
                             note={field.note}

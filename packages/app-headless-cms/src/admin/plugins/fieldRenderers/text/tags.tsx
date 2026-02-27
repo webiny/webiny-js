@@ -1,6 +1,7 @@
 import React from "react";
 import { Tags } from "@webiny/admin-ui";
 import type { CmsModelFieldRendererPlugin } from "~/types.js";
+import { useModelField } from "@webiny/app-headless-cms-common";
 
 export const tags: CmsModelFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
@@ -12,7 +13,8 @@ export const tags: CmsModelFieldRendererPlugin = {
         canUse({ field }) {
             return field.type === "text" && field.list === true && !field.predefinedValues?.enabled;
         },
-        render({ field, getBind }) {
+        render({ getBind }) {
+            const { field, permissions } = useModelField();
             const Bind = getBind();
 
             return (
@@ -21,6 +23,7 @@ export const tags: CmsModelFieldRendererPlugin = {
                         return (
                             <Bind.ValidationContainer>
                                 <Tags
+                                    disabled={!permissions.canEdit}
                                     label={field.label}
                                     placeholder={field.placeholder || "Add values"}
                                     description={field.description}

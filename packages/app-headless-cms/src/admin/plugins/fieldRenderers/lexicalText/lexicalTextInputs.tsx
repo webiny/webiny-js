@@ -8,6 +8,7 @@ import { LexicalCmsEditor } from "~/admin/components/LexicalCmsEditor/LexicalCms
 import { useForm } from "@webiny/form";
 import { MultiValueRendererSettings } from "~/admin/plugins/fieldRenderers/MultiValueRendererSettings.js";
 import { IconButton } from "@webiny/admin-ui";
+import { CanEditField, useModelField } from "@webiny/app-headless-cms-common";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
@@ -31,27 +32,32 @@ const plugin: CmsModelFieldRendererPlugin = {
             ].every(Boolean);
         },
         render(props) {
-            const { field } = props;
+            const { field, permissions } = useModelField();
             const form = useForm();
 
+            const disabled = !permissions.canEdit;
+
             return (
-                <DynamicSection {...props}>
+                <DynamicSection {...props} disabled={disabled}>
                     {({ bind, index }) => (
                         <div className={"relative"}>
                             <LexicalCmsEditor
+                                disabled={disabled}
                                 value={bind.index.value}
                                 onChange={bind.index.onChange}
                                 key={getKey(form.data.id, field, index)}
                                 placeholder={field.placeholder}
                             />
-                            <div className={"absolute top-sm right-sm z-10"}>
-                                <IconButton
-                                    variant={"ghost"}
-                                    size={"md"}
-                                    icon={<DeleteIcon />}
-                                    onClick={() => bind.field.removeValue(index)}
-                                />
-                            </div>
+                            <CanEditField>
+                                <div className={"absolute top-sm right-sm z-10"}>
+                                    <IconButton
+                                        variant={"ghost"}
+                                        size={"md"}
+                                        icon={<DeleteIcon />}
+                                        onClick={() => bind.field.removeValue(index)}
+                                    />
+                                </div>
+                            </CanEditField>
                         </div>
                     )}
                 </DynamicSection>
