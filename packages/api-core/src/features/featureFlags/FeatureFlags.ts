@@ -8,7 +8,7 @@ class FeatureFlagsImpl implements FeatureFlagsAbstraction.Interface {
 
     get(): FeatureFlagsClass {
         const raw = this.buildParams.get<IFeatureFlagsDto>("FeatureFlags") ?? {};
-        return new FeatureFlagsClass(raw);
+        return FeatureFlagsClass.fromDto(raw);
     }
 }
 

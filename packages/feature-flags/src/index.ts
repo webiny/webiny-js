@@ -20,6 +20,10 @@ export interface IFeatureFlagsDto {
 }
 
 export class FeatureFlags {
+    static fromDto(dto: IFeatureFlagsDto): FeatureFlags {
+        return new FeatureFlags(dto);
+    }
+
     constructor(private readonly flags: IFeatureFlagsDto = {}) {}
 
     isMultiTenancyEnabled(): boolean {
