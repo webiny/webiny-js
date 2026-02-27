@@ -66,6 +66,7 @@ export type CmsEditorFieldId = string;
 export interface CmsBaseLayoutDescriptor {
     id: string;
     type: string;
+    permissions?: FieldPermission[];
 }
 
 export interface CmsSeparatorLayoutDescriptor extends CmsBaseLayoutDescriptor {

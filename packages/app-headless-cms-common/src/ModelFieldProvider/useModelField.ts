@@ -3,6 +3,8 @@ import { plugins } from "@webiny/plugins";
 import { makeDecoratable } from "@webiny/react-composition";
 import { ModelFieldContext, useParentValueIndex } from "./ModelFieldContext.js";
 import type { CmsModelField, CmsModelFieldTypePlugin } from "~/types/index.js";
+import { useFieldPermissions } from "~/Fields/index.js";
+import type { FieldPermissions } from "~/Fields/index.js";
 
 interface GetFieldPlugin {
     (type: string): CmsModelFieldTypePlugin;
@@ -23,6 +25,7 @@ const getFieldPlugin: GetFieldPlugin = type => {
 export interface UseModelField {
     field: CmsModelField;
     parentValueIndex: number;
+    permissions: FieldPermissions;
     fieldPlugin: CmsModelFieldTypePlugin;
 }
 
@@ -31,6 +34,7 @@ export interface UseModelField {
  */
 export const useModelField = makeDecoratable((): UseModelField => {
     const field = useContext(ModelFieldContext);
+    const permissions = useFieldPermissions();
     const parentValueIndex = useParentValueIndex();
 
     if (!field) {
@@ -41,5 +45,5 @@ export const useModelField = makeDecoratable((): UseModelField => {
 
     const fieldPlugin = getFieldPlugin(field.type);
 
-    return { field, fieldPlugin, parentValueIndex };
+    return { field, fieldPlugin, permissions, parentValueIndex };
 });

@@ -3,8 +3,7 @@ import type {
     CmsAlertLayoutDescriptor,
     CmsLayoutDescriptor,
     CmsSeparatorLayoutDescriptor,
-    CmsTabLayoutDescriptor,
-    CmsEditorFieldsLayout
+    CmsTabLayoutDescriptor
 } from "~/types/model.js";
 import type { BindComponent, CmsEditorContentModel, CmsModelField } from "~/types/index.js";
 import { SeparatorFieldRenderer } from "./layoutFieldRenderers/SeparatorFieldRenderer.js";
@@ -17,13 +16,6 @@ interface LayoutDescriptorCellProps {
     fields: CmsModelField[];
     contentModel: CmsEditorContentModel;
     gridClassName?: string;
-    FieldsComponent: React.ComponentType<{
-        Bind: BindComponent;
-        fields: CmsModelField[];
-        layout: CmsEditorFieldsLayout;
-        contentModel: CmsEditorContentModel;
-        gridClassName?: string;
-    }>;
 }
 
 export const LayoutDescriptorCell = ({
@@ -31,8 +23,7 @@ export const LayoutDescriptorCell = ({
     Bind,
     fields,
     contentModel,
-    gridClassName,
-    FieldsComponent
+    gridClassName
 }: LayoutDescriptorCellProps) => {
     switch (descriptor.type) {
         case "separator":
@@ -49,7 +40,6 @@ export const LayoutDescriptorCell = ({
                     fields={fields}
                     contentModel={contentModel}
                     gridClassName={gridClassName}
-                    FieldsComponent={FieldsComponent}
                 />
             );
         default:

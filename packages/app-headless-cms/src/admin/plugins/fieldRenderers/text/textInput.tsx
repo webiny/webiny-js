@@ -19,10 +19,8 @@ const plugin: CmsModelFieldRendererPlugin = {
             return field.type === "text" && !field.list && !get(field, "predefinedValues.enabled");
         },
         render({ getBind }) {
-            const { field } = useModelField();
+            const { field, permissions } = useModelField();
             const Bind = getBind();
-            
-            console.log(field);
 
             return (
                 <Bind>
@@ -34,6 +32,7 @@ const plugin: CmsModelFieldRendererPlugin = {
                                 onBlur={bind.validate}
                             >
                                 <Input
+                                    disabled={!permissions.canEdit}
                                     label={field.label}
                                     placeholder={field.placeholder}
                                     description={field.description}

@@ -10,6 +10,9 @@ import type {
 } from "~/types/index.js";
 import { isLayoutDescriptor } from "~/types/model.js";
 import { LayoutDescriptorCell } from "./LayoutDescriptorCell.js";
+import { useAuthentication } from "@webiny/app-admin";
+import { getFieldPermissions, type FieldPermissions } from "./getFieldPermissions.js";
+import { FieldPermissionProvider, useFieldPermissions } from "./FieldPermissionProvider.js";
 
 interface FieldsProps {
     Bind: BindComponent;
@@ -23,6 +26,19 @@ const getFieldById = (fields: CmsModelField[], id: string): CmsModelField | null
     return fields.find(field => field.id === id) || null;
 };
 
+/**
+ * A child can never have more access than its parent.
+ */
+const intersectPermissions = (
+    parent: FieldPermissions,
+    child: FieldPermissions
+): FieldPermissions => {
+    return {
+        canView: parent.canView && child.canView,
+        canEdit: parent.canEdit && child.canEdit
+    };
+};
+
 const LayoutNotDefined = () => {
     return (
         <Alert type={"warning"}>
@@ -33,6 +49,9 @@ const LayoutNotDefined = () => {
 };
 
 export const Fields = ({ Bind, fields, layout, contentModel, gridClassName }: FieldsProps) => {
+    const { identity } = useAuthentication();
+    const parentPermissions = useFieldPermissions();
+
     if (contentModel.plugin && fields.length > 0 && layout.length === 0) {
         return <LayoutNotDefined />;
     }
@@ -41,52 +60,89 @@ export const Fields = ({ Bind, fields, layout, contentModel, gridClassName }: Fi
         <Grid className={gridClassName}>
             {layout.map((row, rowIndex) => (
                 <React.Fragment key={rowIndex}>
-                    {row.map(cell => {
-                        if (isLayoutDescriptor(cell)) {
-                            return (
-                                <LayoutDescriptorCell
-                                    key={cell.id}
-                                    descriptor={cell}
-                                    Bind={Bind}
-                                    fields={fields}
-                                    contentModel={contentModel}
-                                    gridClassName={gridClassName}
-                                    FieldsComponent={Fields}
-                                />
+                    {(() => {
+                        // Count visible string cells for column span calculation.
+                        const visibleStringCells = row.filter(c => {
+                            if (typeof c !== "string") {
+                                return false;
+                            }
+                            const f = getFieldById(fields, c);
+                            if (!f) {
+                                return true;
+                            }
+                            return intersectPermissions(
+                                parentPermissions,
+                                getFieldPermissions(identity, f)
+                            ).canView;
+                        });
+                        const span =
+                            visibleStringCells.length > 0
+                                ? (Math.floor(
+                                      12 / visibleStringCells.length
+                                  ) as ColumnProps["span"])
+                                : (12 as ColumnProps["span"]);
+
+                        return row.map(cell => {
+                            if (isLayoutDescriptor(cell)) {
+                                const permissions = intersectPermissions(
+                                    parentPermissions,
+                                    getFieldPermissions(identity, cell)
+                                );
+                                if (!permissions.canView) {
+                                    return null;
+                                }
+                                return (
+                                    <FieldPermissionProvider
+                                        key={cell.id}
+                                        permissions={permissions}
+                                    >
+                                        <LayoutDescriptorCell
+                                            descriptor={cell}
+                                            Bind={Bind}
+                                            fields={fields}
+                                            contentModel={contentModel}
+                                            gridClassName={gridClassName}
+                                        />
+                                    </FieldPermissionProvider>
+                                );
+                            }
+
+                            // String field ID
+                            const id = cell;
+                            const field = getFieldById(fields, id) as CmsModelField;
+                            const permissions = intersectPermissions(
+                                parentPermissions,
+                                field
+                                    ? getFieldPermissions(identity, field)
+                                    : { canView: true, canEdit: true }
                             );
-                        }
 
-                        // String field ID
-                        const id = cell;
-                        const field = getFieldById(fields, id) as CmsModelField;
+                            if (!permissions.canView) {
+                                return null;
+                            }
 
-                        // TODO: const isVisible = userCanSeeField(identity, field);
-
-                        // Count only string cells for column span calculation
-                        const stringCellCount = row.filter(c => typeof c === "string").length;
-
-                        return (
-                            <Grid.Column
-                                span={Math.floor(12 / stringCellCount) as ColumnProps["span"]}
-                                key={id}
-                            >
-                                {field ? (
-                                    <FieldElement
-                                        field={field}
-                                        Bind={Bind}
-                                        contentModel={contentModel}
-                                    />
-                                ) : (
-                                    <FieldElementError
-                                        title={`Missing field with id "${id}"!`}
-                                        description={
-                                            "Make sure field layout contains the correct field ids (hint: check for typos)."
-                                        }
-                                    />
-                                )}
-                            </Grid.Column>
-                        );
-                    })}
+                            return (
+                                <Grid.Column span={span} key={id}>
+                                    {field ? (
+                                        <FieldPermissionProvider permissions={permissions}>
+                                            <FieldElement
+                                                field={field}
+                                                Bind={Bind}
+                                                contentModel={contentModel}
+                                            />
+                                        </FieldPermissionProvider>
+                                    ) : (
+                                        <FieldElementError
+                                            title={`Missing field with id "${id}"!`}
+                                            description={
+                                                "Make sure field layout contains the correct field ids (hint: check for typos)."
+                                            }
+                                        />
+                                    )}
+                                </Grid.Column>
+                            );
+                        });
+                    })()}
                 </React.Fragment>
             ))}
         </Grid>

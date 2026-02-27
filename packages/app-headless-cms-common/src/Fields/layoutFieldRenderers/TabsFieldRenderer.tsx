@@ -3,8 +3,8 @@ import { Grid, FormComponentLabel, FormComponentDescription, Tabs } from "@webin
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { CmsTabLayoutDescriptor } from "~/types/model.js";
 import type { BindComponent, CmsEditorContentModel, CmsModelField } from "~/types/index.js";
-import type { CmsEditorFieldsLayout } from "~/types/model.js";
 import { normalizeIcon } from "~/normalizeIcon.js";
+import { Fields } from "~/Fields/index.js";
 
 interface TabsFieldRendererProps {
     descriptor: CmsTabLayoutDescriptor;
@@ -12,13 +12,6 @@ interface TabsFieldRendererProps {
     fields: CmsModelField[];
     contentModel: CmsEditorContentModel;
     gridClassName?: string;
-    FieldsComponent: React.ComponentType<{
-        Bind: BindComponent;
-        fields: CmsModelField[];
-        layout: CmsEditorFieldsLayout;
-        contentModel: CmsEditorContentModel;
-        gridClassName?: string;
-    }>;
 }
 
 export const TabsFieldRenderer = ({
@@ -26,8 +19,7 @@ export const TabsFieldRenderer = ({
     Bind,
     fields,
     contentModel,
-    gridClassName,
-    FieldsComponent
+    gridClassName
 }: TabsFieldRendererProps) => {
     return (
         <Grid.Column span={12}>
@@ -50,7 +42,7 @@ export const TabsFieldRenderer = ({
                             trigger={tab.label}
                             icon={icon ? <FontAwesomeIcon icon={icon} size={"sm"} /> : undefined}
                             content={
-                                <FieldsComponent
+                                <Fields
                                     Bind={Bind}
                                     fields={fields}
                                     layout={tab.layout}

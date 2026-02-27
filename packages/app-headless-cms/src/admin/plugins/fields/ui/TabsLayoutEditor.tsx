@@ -41,6 +41,7 @@ interface TabItemProps {
     onUpdate: (d: CmsLayoutDescriptor) => void;
     onInsertField: (field: CmsModelField) => void;
     onRemoveField: (fieldId: string) => void;
+    onUpdateField: (field: CmsModelField) => void;
 }
 
 const TabsSettings = () => {
@@ -119,7 +120,8 @@ const TabItem = ({
     parentFields,
     onUpdate,
     onInsertField,
-    onRemoveField
+    onRemoveField,
+    onUpdateField
 }: TabItemProps) => {
     const dialogs = useDialogs();
 
@@ -159,12 +161,20 @@ const TabItem = ({
                 }
             }
 
+            // Propagate field updates (e.g. permissions changes) to the parent
+            const oldFieldMap = new Map(tabFields.map(f => [f.id, f]));
+            for (const f of newFields) {
+                if (oldFieldMap.has(f.id) && oldFieldMap.get(f.id) !== f) {
+                    onUpdateField(f);
+                }
+            }
+
             // Update the tab's layout in the descriptor
             const updatedTabs = [...descriptor.tabs];
             updatedTabs[index] = { ...tab, layout: newLayout };
             onUpdate({ ...descriptor, tabs: updatedTabs });
         },
-        [tab, index, descriptor, tabFields, onUpdate, onInsertField, onRemoveField]
+        [tab, index, descriptor, tabFields, onUpdate, onInsertField, onRemoveField, onUpdateField]
     );
 
     const moveTabUp = useCallback(() => {
@@ -318,6 +328,13 @@ export const TabsLayoutEditor = ({ descriptor, onUpdate, onDelete }: TabsLayoutE
         [parentEditor]
     );
 
+    const handleUpdateField = useCallback(
+        (field: CmsModelField) => {
+            parentEditor.updateField(field);
+        },
+        [parentEditor]
+    );
+
     const addTab = useCallback(() => {
         const id = generateAlphaNumericLowerCaseId(8);
         newTabId.current = id;
@@ -400,6 +417,7 @@ export const TabsLayoutEditor = ({ descriptor, onUpdate, onDelete }: TabsLayoutE
                             onUpdate={onUpdate}
                             onInsertField={handleInsertField}
                             onRemoveField={handleRemoveField}
+                            onUpdateField={handleUpdateField}
                         />
                     ))}
                 </Accordion>
