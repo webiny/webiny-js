@@ -1,4 +1,4 @@
-import type { CmsIdentity } from "~/types/index.js";
+import type { CmsIdentity, ICmsEntryLive } from "~/types/index.js";
 
 export const ROOT_FOLDER = "root";
 
@@ -72,7 +72,7 @@ export interface RecordWithEntryMetaFields {
     restoredBy: CmsIdentity | null;
     firstPublishedBy: CmsIdentity | null;
     lastPublishedBy: CmsIdentity | null;
-    live: boolean;
+    live: ICmsEntryLive | null;
 }
 
 export const pickEntryMetaFields = (

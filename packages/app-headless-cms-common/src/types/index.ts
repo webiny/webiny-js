@@ -362,6 +362,10 @@ export type CmsContentEntryStatusType = "draft" | "published" | "unpublished";
  */
 export type CmsEditorContentEntry = CmsContentEntry;
 
+export interface CmsContentEntryLive {
+    version: number;
+}
+
 export interface CmsContentEntry<TValues extends GenericRecord = GenericRecord> {
     id: string;
     entryId: string;
@@ -391,7 +395,7 @@ export interface CmsContentEntry<TValues extends GenericRecord = GenericRecord> 
     revisionLastPublishedOn: string | null;
     revisionLastPublishedBy: CmsIdentity | null;
     wbyAco_location: Location;
-    live: boolean;
+    live: CmsContentEntryLive | null;
     meta: {
         title: string;
         description?: string;

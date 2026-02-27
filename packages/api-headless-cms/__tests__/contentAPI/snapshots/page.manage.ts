@@ -46,7 +46,7 @@ export default /* GraphQL */ `
         revisionLastPublishedBy: CmsIdentity
         meta: PageModelApiNameMeta
         wbyAco_location: WbyAcoLocation
-        live: Boolean
+        live: CmsEntryLive
 
         values: PageModelApiNameValues
     }
@@ -691,7 +691,7 @@ export default /* GraphQL */ `
 
         system: ListWhereInputCmsEntrySystem
         wbyAco_location: WbyAcoLocationWhereInput
-        live: Boolean
+        live: CmsEntryLiveWhereInput
 
         values: PageModelApiNameListWhereInputValues
         AND: [PageModelApiNameListWhereInput!]

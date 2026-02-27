@@ -70,7 +70,9 @@ export const createPublishEntryData = async <T extends CmsEntryValues = CmsEntry
         ),
         revisionLastPublishedBy: getIdentity(currentIdentity),
 
-        live: true
+        live: {
+            version: originalEntry.version
+        }
     };
 
     return { entry };

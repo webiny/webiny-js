@@ -43,7 +43,7 @@ export default /* GraphQL */ `
         revisionLastPublishedBy: CmsIdentity
         meta: ReviewApiModelMeta
         wbyAco_location: WbyAcoLocation
-        live: Boolean
+        live: CmsEntryLive
 
         values: ReviewApiModelValues
     }
@@ -325,7 +325,7 @@ export default /* GraphQL */ `
 
         system: ListWhereInputCmsEntrySystem
         wbyAco_location: WbyAcoLocationWhereInput
-        live: Boolean
+        live: CmsEntryLiveWhereInput
 
         values: ReviewApiModelListWhereInputValues
         AND: [ReviewApiModelListWhereInput!]

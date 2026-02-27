@@ -11,9 +11,15 @@ export const CellLive = () => {
     }
 
     const entry = row.data;
-    if (!entry.live) {
+    if (!entry.live?.version) {
         return <>No</>;
     }
 
-    return <Tag swatchColor={"#5AC84C"} variant={"success-light"} content={`Live`} />;
+    return (
+        <Tag
+            swatchColor={"#5AC84C"}
+            variant={"success-light"}
+            content={`Live (v${entry.live.version})`}
+        />
+    );
 };

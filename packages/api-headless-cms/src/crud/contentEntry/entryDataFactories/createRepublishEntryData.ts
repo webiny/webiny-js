@@ -65,7 +65,9 @@ export const createRepublishEntryData = async <TValues extends CmsEntryValues = 
         revisionLastPublishedBy: getIdentity(currentIdentity),
         values,
 
-        live: true
+        live: {
+            version: originalEntry.version
+        }
     };
 
     return {

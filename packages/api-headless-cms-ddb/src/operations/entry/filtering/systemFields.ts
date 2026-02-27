@@ -142,6 +142,24 @@ export const createSystemFields = (): CmsModelField[] => {
             storageId: "values",
             fieldId: "values",
             label: "Values"
+        }),
+        createModelField({
+            id: "live",
+            type: "object",
+            storageId: "object@live",
+            fieldId: "live",
+            label: "Live",
+            settings: {
+                fields: [
+                    createModelField({
+                        id: "version",
+                        type: "number",
+                        fieldId: "version",
+                        label: "Version",
+                        storageId: "number@version"
+                    })
+                ]
+            }
         })
     ];
 };
