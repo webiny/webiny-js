@@ -26,6 +26,26 @@ export const uiTabsField: CmsLayoutFieldTypePlugin = {
                 tabs: [{ id: generateAlphaNumericLowerCaseId(8), label: "Tab 1", layout: [] }]
             };
         },
+        collectFields({ descriptor, getField }) {
+            const tabs = (descriptor as CmsTabLayoutDescriptor).tabs;
+            if (!tabs) {
+                return [];
+            }
+            const result = [];
+            for (const tab of tabs) {
+                for (const row of tab.layout) {
+                    for (const cell of row) {
+                        if (typeof cell === "string") {
+                            const f = getField(cell);
+                            if (f) {
+                                result.push(f);
+                            }
+                        }
+                    }
+                }
+            }
+            return result;
+        },
         render({ descriptor, onUpdate, onDelete }) {
             return (
                 <TabsLayoutEditor

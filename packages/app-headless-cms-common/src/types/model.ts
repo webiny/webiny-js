@@ -100,21 +100,29 @@ export interface CmsTabLayoutDescriptor extends CmsBaseLayoutDescriptor {
 export type CmsLayoutDescriptor =
     | CmsSeparatorLayoutDescriptor
     | CmsAlertLayoutDescriptor
-    | CmsTabLayoutDescriptor;
+    | CmsTabLayoutDescriptor
+    | CmsBaseLayoutDescriptor;
 
 export type CmsEditorLayoutCell = CmsEditorFieldId | CmsLayoutDescriptor;
 export type CmsEditorFieldsLayout = CmsEditorLayoutCell[][];
 
-const LAYOUT_DESCRIPTOR_TYPES = new Set(["separator", "alert", "tabs"]);
-
+/**
+ * Distinguish layout descriptors from field IDs (strings) and CmsModelField objects.
+ *
+ * In raw layout data (`CmsEditorFieldsLayout`), cells are either strings (field IDs)
+ * or layout descriptor objects — the `typeof` check handles that.
+ *
+ * In resolved layout data (after `getFieldsInLayout`), cells are either `CmsModelField`
+ * or layout descriptor objects — both have `{ id, type }`, but only `CmsModelField`
+ * has `fieldId`, so we use its absence as the discriminator.
+ */
 export function isLayoutDescriptor(cell: unknown): cell is CmsLayoutDescriptor {
     return (
         typeof cell === "object" &&
         cell !== null &&
         "type" in cell &&
         typeof (cell as any).type === "string" &&
-        LAYOUT_DESCRIPTOR_TYPES.has((cell as any).type) &&
-        !("id" in cell && "fieldId" in cell)
+        !("fieldId" in cell)
     );
 }
 

@@ -63,6 +63,7 @@
     "@types/fs-extra": "^11.0.4",
     "@types/inquirer": "^8.2.12",
     "@types/node": "^24.10.13",
+    "@types/pannellum": "^2",
     "@types/react": "18.2.79",
     "@types/react-dom": "18.2.25",
     "@typescript-eslint/eslint-plugin": "^8.56.0",

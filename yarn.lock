@@ -11839,6 +11839,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/pannellum@npm:^2":
+  version: 2.5.0
+  resolution: "@types/pannellum@npm:2.5.0"
+  checksum: 10/617ed3fbc5435db69e062cd93ac10f753120e2058449fbfabbcd26716aa1dd85cac1beb42499299d23993486db6347dbb6afef9f82d5a231cd5357a7f437da6b
+  languageName: node
+  linkType: hard
+
 "@types/parse-json@npm:^4.0.0":
   version: 4.0.2
   resolution: "@types/parse-json@npm:4.0.2"
@@ -30614,6 +30621,7 @@ __metadata:
     "@types/hoist-non-react-statics": "npm:^3.3.7"
     "@types/inquirer": "npm:^8.2.12"
     "@types/node": "npm:^24.10.13"
+    "@types/pannellum": "npm:^2"
     "@types/react": "npm:18.2.79"
     "@types/react-dom": "npm:18.2.25"
     "@typescript-eslint/eslint-plugin": "npm:^8.56.0"

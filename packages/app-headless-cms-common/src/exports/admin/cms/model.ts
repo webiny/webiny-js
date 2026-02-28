@@ -1,8 +1,4 @@
 export type {
-    CmsContentEntry,
-    CmsModel,
-    CmsModelField,
-    CmsIdentity,
     CmsLayoutFieldTypePlugin,
     CmsLayoutDescriptorRendererPlugin,
     CmsBaseLayoutDescriptor,

@@ -35,30 +35,23 @@ const Editor = () => {
         field,
         dropTarget,
         getFieldPlugin,
+        getLayoutFieldPlugin,
         getField
     } = useModelFieldEditor();
 
     /**
      * Collect all data fields referenced inside a layout descriptor (e.g. fields inside tabs).
+     * Delegates to the layout field plugin's `collectFields` method if available.
      */
     const collectDescriptorFields = (descriptor: CmsLayoutDescriptor): CmsModelField[] => {
-        if (descriptor.type !== "tabs") {
+        const plugin = getLayoutFieldPlugin(descriptor.type);
+        if (!plugin?.field.collectFields) {
             return [];
         }
-        const result: CmsModelField[] = [];
-        for (const tab of descriptor.tabs) {
-            for (const row of tab.layout) {
-                for (const cell of row) {
-                    if (typeof cell === "string") {
-                        const f = getField({ id: cell });
-                        if (f) {
-                            result.push(f);
-                        }
-                    }
-                }
-            }
-        }
-        return result;
+        return plugin.field.collectFields({
+            descriptor,
+            getField: (id: string) => getField({ id })
+        });
     };
 
     const canDropIntoField = (field: CmsModelField, draggable: DragSource) => {

@@ -14,6 +14,7 @@ import type {
     CmsModelFieldValidatorsGroup
 } from "./validation.js";
 import type {
+    CmsBaseLayoutDescriptor,
     CmsEditorFieldsLayout,
     CmsLayoutDescriptor,
     CmsModel,
@@ -253,6 +254,15 @@ export interface CmsLayoutFieldTypePlugin extends Plugin {
         canEditSettings?: boolean;
         renderSettings?(): React.ReactNode;
         /**
+         * Collect all model fields embedded inside a layout descriptor's nested layout.
+         * Used during drag-and-drop to move embedded fields along with the descriptor
+         * across parent boundaries. Return `[]` or omit for descriptors with no nested fields.
+         */
+        collectFields?(params: {
+            descriptor: CmsLayoutDescriptor;
+            getField: (id: string) => CmsModelField | undefined;
+        }): CmsModelField[];
+        /**
          * Controls how this layout field looks on the model editor canvas.
          * Each plugin fully owns its visual representation.
          */
@@ -262,6 +272,18 @@ export interface CmsLayoutFieldTypePlugin extends Plugin {
             onDelete: () => void;
         }): React.ReactElement;
     };
+}
+
+export interface CmsLayoutDescriptorRendererPlugin extends Plugin {
+    type: "cms-layout-descriptor-renderer";
+    descriptorType: string;
+    render(props: {
+        descriptor: CmsBaseLayoutDescriptor;
+        Bind: BindComponent;
+        fields: CmsModelField[];
+        contentModel: CmsModel;
+        gridClassName?: string;
+    }): React.ReactElement | null;
 }
 
 export interface CmsModelFieldRendererSettingsProps {

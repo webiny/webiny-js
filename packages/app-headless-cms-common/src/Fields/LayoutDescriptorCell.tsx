@@ -5,7 +5,13 @@ import type {
     CmsSeparatorLayoutDescriptor,
     CmsTabLayoutDescriptor
 } from "~/types/model.js";
-import type { BindComponent, CmsEditorContentModel, CmsModelField } from "~/types/index.js";
+import type {
+    BindComponent,
+    CmsEditorContentModel,
+    CmsLayoutDescriptorRendererPlugin,
+    CmsModelField
+} from "~/types/index.js";
+import { plugins } from "@webiny/plugins";
 import { SeparatorFieldRenderer } from "./layoutFieldRenderers/SeparatorFieldRenderer.js";
 import { AlertFieldRenderer } from "./layoutFieldRenderers/AlertFieldRenderer.js";
 import { TabsFieldRenderer } from "./layoutFieldRenderers/TabsFieldRenderer.js";
@@ -42,7 +48,20 @@ export const LayoutDescriptorCell = ({
                     gridClassName={gridClassName}
                 />
             );
-        default:
+        default: {
+            const rendererPlugin = plugins
+                .byType<CmsLayoutDescriptorRendererPlugin>("cms-layout-descriptor-renderer")
+                .find(p => p.descriptorType === descriptor.type);
+            if (rendererPlugin) {
+                return rendererPlugin.render({
+                    descriptor,
+                    Bind,
+                    fields,
+                    contentModel,
+                    gridClassName
+                });
+            }
             return null;
+        }
     }
 };
