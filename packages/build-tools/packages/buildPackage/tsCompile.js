@@ -34,12 +34,16 @@ export const tsCompile = async ({ cwd = "", overrides, debug }) => {
         configFileParsingDiagnostics: errors
     });
 
+    const normalizedCwd = cwd.replace(/\\/g, "/");
+
     const { diagnostics, emitSkipped } = program.emit(
         undefined, // targetSourceFile
         (fileName, data, writeByteOrderMark, onError, sourceFiles) => {
-            // Only emit files within the current package directory
-            const relativePath = fileName.replace(cwd, "");
-            if (fileName.startsWith(cwd) && !relativePath.includes("../")) {
+            // Only emit files within the current package directory.i delete
+            // Normalize path separators to handle Windows backslashes vs forward slashes.
+            const normalizedFileName = fileName.replace(/\\/g, "/");
+            const relativePath = normalizedFileName.replace(normalizedCwd, "");
+            if (normalizedFileName.startsWith(normalizedCwd) && !relativePath.includes("../")) {
                 ts.sys.writeFile(fileName, data, writeByteOrderMark);
             }
         }
