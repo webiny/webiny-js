@@ -4,6 +4,9 @@ import merge from "lodash/merge.js";
 import { replaceTscAliases } from "./tsAliasReplacer.js";
 
 export const tsCompile = async ({ cwd = "", overrides, debug }) => {
+    // Normalize path separators to forward slashes for consistent behavior on Windows.
+    cwd = cwd.replace(/\\/g, "/");
+
     const tsConfigPath = join(cwd, "tsconfig.build.json");
 
     let { config: readTsConfig } = ts.readConfigFile(tsConfigPath, ts.sys.readFile);
@@ -34,12 +37,12 @@ export const tsCompile = async ({ cwd = "", overrides, debug }) => {
         configFileParsingDiagnostics: errors
     });
 
-    const normalizedCwd = cwd.replace(/\\/g, "/");
+    const normalizedCwd = cwd;
 
     const { diagnostics, emitSkipped } = program.emit(
         undefined, // targetSourceFile
         (fileName, data, writeByteOrderMark, onError, sourceFiles) => {
-            // Only emit files within the current package directory.i delete
+            // Only emit files within the current package directory.
             // Normalize path separators to handle Windows backslashes vs forward slashes.
             const normalizedFileName = fileName.replace(/\\/g, "/");
             const relativePath = normalizedFileName.replace(normalizedCwd, "");
