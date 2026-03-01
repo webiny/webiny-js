@@ -26,6 +26,7 @@ import { FieldEditor } from "~/admin/components/FieldEditor/index.js";
 import { IconPicker } from "~/admin/components/IconPicker.js";
 import { useModelFieldEditor } from "~/admin/hooks/index.js";
 import { PermissionsTab } from "~/admin/components/FieldEditor/EditFieldDialog/PermissionsTab/PermissionsTab.js";
+import { RulesTab } from "~/admin/components/FieldEditor/EditFieldDialog/RulesTab/RulesTab.js";
 
 interface TabsLayoutEditorProps {
     descriptor: CmsTabLayoutDescriptor;
@@ -84,6 +85,12 @@ const TabsDialogContent = () => {
                     trigger={"Permissions"}
                     value={"permissions"}
                     content={<PermissionsTab gridClassName={"mt-md"} />}
+                />,
+                <Tabs.Tab
+                    key={"rules"}
+                    trigger={"Rules"}
+                    value={"rules"}
+                    content={<RulesTab gridClassName={"mt-md"} />}
                 />
             ]}
         />
@@ -124,6 +131,12 @@ const TabDialogContent = () => {
                     trigger={"Permissions"}
                     value={"permissions"}
                     content={<PermissionsTab gridClassName={"mt-md"} />}
+                />,
+                <Tabs.Tab
+                    key={"rules"}
+                    trigger={"Rules"}
+                    value={"rules"}
+                    content={<RulesTab gridClassName={"mt-md"} />}
                 />
             ]}
         />
@@ -267,7 +280,8 @@ const TabItem = ({
             formData: {
                 label: tab.label,
                 icon: tab.icon ?? "",
-                permissions: tab.permissions ?? []
+                permissions: tab.permissions ?? [],
+                rules: tab.rules ?? []
             },
             content: <TabDialogContent />,
             onAccept: data => {
@@ -276,7 +290,8 @@ const TabItem = ({
                     ...tab,
                     label: data.label ?? tab.label,
                     icon: data.icon || undefined,
-                    permissions: data.permissions ?? []
+                    permissions: data.permissions ?? [],
+                    rules: data.rules ?? []
                 };
                 onUpdate({ ...descriptor, tabs: updatedTabs });
             }
@@ -415,7 +430,8 @@ export const TabsLayoutEditor = ({ descriptor, onUpdate, onDelete }: TabsLayoutE
                 label: descriptor.label ?? "",
                 description: descriptor.description ?? "",
                 help: descriptor.help ?? "",
-                permissions: descriptor.permissions ?? []
+                permissions: descriptor.permissions ?? [],
+                rules: descriptor.rules ?? []
             },
             content: <TabsDialogContent />,
             onAccept: data => {
@@ -424,7 +440,8 @@ export const TabsLayoutEditor = ({ descriptor, onUpdate, onDelete }: TabsLayoutE
                     label: data.label ?? "",
                     description: data.description || null,
                     help: data.help || null,
-                    permissions: data.permissions ?? []
+                    permissions: data.permissions ?? [],
+                    rules: data.rules ?? []
                 });
             }
         });

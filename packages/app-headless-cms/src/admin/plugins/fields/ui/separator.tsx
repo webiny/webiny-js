@@ -12,6 +12,7 @@ import { Grid, IconButton, Input, Separator, Tabs, Text } from "@webiny/admin-ui
 import { useDialogs } from "@webiny/app-admin";
 import { Bind } from "@webiny/form";
 import { PermissionsTab } from "~/admin/components/FieldEditor/EditFieldDialog/PermissionsTab/PermissionsTab.js";
+import { RulesTab } from "~/admin/components/FieldEditor/EditFieldDialog/RulesTab/RulesTab.js";
 
 const t = i18n.ns("app-headless-cms/admin/fields");
 
@@ -49,6 +50,12 @@ const SeparatorDialogContent = () => {
                     trigger={"Permissions"}
                     value={"permissions"}
                     content={<PermissionsTab gridClassName={"mt-md"} />}
+                />,
+                <Tabs.Tab
+                    key={"rules"}
+                    trigger={"Rules"}
+                    value={"rules"}
+                    content={<RulesTab gridClassName={"mt-md"} />}
                 />
             ]}
         />
@@ -73,7 +80,8 @@ const SeparatorLayoutCell = ({ descriptor, onUpdate, onDelete }: SeparatorLayout
             formData: {
                 label: descriptor.label,
                 description: descriptor.description ?? "",
-                permissions: descriptor.permissions ?? []
+                permissions: descriptor.permissions ?? [],
+                rules: descriptor.rules ?? []
             },
             content: <SeparatorDialogContent />,
             onAccept: data => {
@@ -81,7 +89,8 @@ const SeparatorLayoutCell = ({ descriptor, onUpdate, onDelete }: SeparatorLayout
                     ...descriptor,
                     label: data.label ?? "",
                     description: data.description ?? "",
-                    permissions: data.permissions ?? []
+                    permissions: data.permissions ?? [],
+                    rules: data.rules ?? []
                 });
             }
         });

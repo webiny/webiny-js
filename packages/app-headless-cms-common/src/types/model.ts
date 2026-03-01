@@ -32,6 +32,13 @@ export interface FieldPermission {
     accessLevel: FieldAccessLevel;
 }
 
+export type FieldRuleAction = "hide" | "disable";
+
+export interface FieldRule {
+    action: FieldRuleAction;
+    expression: string;
+}
+
 export type CmsModelField<T = unknown> = T & {
     id: string;
     type: string;
@@ -59,6 +66,7 @@ export type CmsModelField<T = unknown> = T & {
         | CmsModelFieldRendererPlugin["renderer"]["render"];
     tags?: string[];
     permissions?: FieldPermission[];
+    rules?: FieldRule[];
 };
 
 export type CmsEditorFieldId = string;
@@ -67,6 +75,7 @@ export interface CmsBaseLayoutDescriptor {
     id: string;
     type: string;
     permissions?: FieldPermission[];
+    rules?: FieldRule[];
 }
 
 export interface CmsSeparatorLayoutDescriptor extends CmsBaseLayoutDescriptor {
@@ -87,6 +96,7 @@ export interface CmsTabLayoutTab {
     icon?: string;
     layout: CmsEditorFieldsLayout;
     permissions?: FieldPermission[];
+    rules?: FieldRule[];
 }
 
 export interface CmsTabLayoutDescriptor extends CmsBaseLayoutDescriptor {

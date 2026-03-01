@@ -7,6 +7,7 @@ import AppearanceTab from "./AppearanceTab.js";
 import PredefinedValues from "./PredefinedValues.js";
 import { ValidationTab } from "./ValidationTab/index.js";
 import { PermissionsTab } from "./PermissionsTab/PermissionsTab.js";
+import { RulesTab } from "./RulesTab/RulesTab.js";
 import { ModelFieldProvider } from "~/admin/components/ModelFieldProvider/index.js";
 
 const t = i18n.namespace("app-headless-cms/admin/components/editor");
@@ -63,6 +64,12 @@ export const FieldSettingsTabs = ({
                         trigger={t`Permissions`}
                         value={"permissions"}
                         content={<PermissionsTab />}
+                    />,
+                    <Tabs.Tab
+                        key={"rules"}
+                        trigger={t`Rules`}
+                        value={"rules"}
+                        content={<RulesTab />}
                     />
                 ]}
             />

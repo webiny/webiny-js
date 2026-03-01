@@ -12,6 +12,7 @@ import { Alert, Grid, IconButton, Tabs, Textarea, Select, Text } from "@webiny/a
 import { useDialogs } from "@webiny/app-admin";
 import { Bind } from "@webiny/form";
 import { PermissionsTab } from "~/admin/components/FieldEditor/EditFieldDialog/PermissionsTab/PermissionsTab.js";
+import { RulesTab } from "~/admin/components/FieldEditor/EditFieldDialog/RulesTab/RulesTab.js";
 
 const t = i18n.ns("app-headless-cms/admin/fields");
 
@@ -58,6 +59,12 @@ const AlertDialogContent = () => {
                     trigger={"Permissions"}
                     value={"permissions"}
                     content={<PermissionsTab gridClassName={"mt-md"} />}
+                />,
+                <Tabs.Tab
+                    key={"rules"}
+                    trigger={"Rules"}
+                    value={"rules"}
+                    content={<RulesTab gridClassName={"mt-md"} />}
                 />
             ]}
         />
@@ -82,7 +89,8 @@ const AlertLayoutCell = ({ descriptor, onUpdate, onDelete }: AlertLayoutCellProp
             formData: {
                 label: descriptor.label,
                 alertType: descriptor.alertType,
-                permissions: descriptor.permissions ?? []
+                permissions: descriptor.permissions ?? [],
+                rules: descriptor.rules ?? []
             },
             content: <AlertDialogContent />,
             onAccept: data => {
@@ -90,7 +98,8 @@ const AlertLayoutCell = ({ descriptor, onUpdate, onDelete }: AlertLayoutCellProp
                     ...descriptor,
                     label: data.label ?? "",
                     alertType: (data.alertType as CmsAlertLayoutDescriptor["alertType"]) ?? "info",
-                    permissions: data.permissions ?? []
+                    permissions: data.permissions ?? [],
+                    rules: data.rules ?? []
                 });
             }
         });

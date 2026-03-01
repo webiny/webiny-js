@@ -9,6 +9,13 @@ export interface FieldPermission {
     accessLevel: FieldAccessLevel;
 }
 
+export type FieldRuleAction = "hide" | "disable";
+
+export interface FieldRule {
+    action: FieldRuleAction;
+    expression: string;
+}
+
 export type CmsModelFieldType =
     | "boolean"
     | "datetime"
@@ -126,6 +133,10 @@ export interface CmsModelField {
      * @default []
      */
     permissions?: FieldPermission[];
+    /**
+     * Data-driven conditional rules that hide or disable this field based on live form values.
+     */
+    rules?: FieldRule[];
 }
 
 /**
@@ -205,6 +216,10 @@ export interface CmsModelFieldInput {
      * Field-level permissions controlling which users/teams can access this field.
      */
     permissions?: FieldPermission[];
+    /**
+     * Data-driven conditional rules that hide or disable this field based on live form values.
+     */
+    rules?: FieldRule[];
 }
 
 /**
