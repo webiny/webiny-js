@@ -1,9 +1,12 @@
 import React from "react";
 import { defineExtension } from "@webiny/project/defineExtension/index.js";
 import { OpenSearch as PulumiOpenSearch } from "~/pulumi/extensions/index.js";
-import { Infra } from "~/index.js";
 import { createPathResolver } from "@webiny/project";
-import { ProjectDecorator, DatabaseSetup } from "@webiny/project/extensions/index.js";
+import {
+    CoreBeforeDeploy,
+    ProjectDecorator,
+    DatabaseSetup
+} from "@webiny/project/extensions/index.js";
 import { z } from "zod";
 
 const p = createPathResolver(import.meta.dirname, "OpenSearch");
@@ -37,10 +40,8 @@ export const OpenSearch = defineExtension({
                         <DatabaseSetup setupName="ddb+os" />
                         <ProjectDecorator src={p("InjectDdbEsLambdaFnHandler.js")} />
                         <ProjectDecorator src={p("ReplaceApiLambdaFnHandlers.js")} />
-                        <Infra.Core.BeforeDeploy
-                            src={p("EnsureOsServiceRoleBeforeCoreDeploy.js")}
-                        />
-                        <Infra.Core.BeforeDeploy src={p("EnsureOsWasDeployed.js")} />
+                        <CoreBeforeDeploy src={p("EnsureOsServiceRoleBeforeCoreDeploy.js")} />
+                        <CoreBeforeDeploy src={p("EnsureOsWasDeployed.js")} />
                     </>
                 )}
             </>

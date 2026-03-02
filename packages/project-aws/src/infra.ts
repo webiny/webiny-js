@@ -31,7 +31,9 @@ import {
     Vpc
 } from "./pulumi/extensions/index.js";
 
-import { OpenSearch, AwsDefaultRegion } from "./extensions/index.js";
+import { OpenSearch } from "./extensions/OpenSearch.js";
+import { AwsDefaultRegion } from "./extensions/AwsDefaultRegion.js";
+import { ApiLambdaFunction } from "./extensions/ApiLambdaFunction.js";
 import { EnvIs, EnvIsNot } from "@webiny/project/extensions/infra/index.js";
 
 export const Infra = {
@@ -65,7 +67,8 @@ export const Infra = {
         AfterBuild: ApiAfterBuild,
         AfterDeploy: ApiAfterDeploy,
         Pulumi: ApiPulumi,
-        StackOutputValue: ApiStackOutputValue
+        StackOutputValue: ApiStackOutputValue,
+        LambdaFunction: ApiLambdaFunction
     },
     Core: {
         BeforeBuild: CoreBeforeBuild,
