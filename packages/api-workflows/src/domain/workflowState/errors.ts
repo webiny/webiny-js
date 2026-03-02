@@ -79,7 +79,7 @@ export class WorkflowStateStepCannotReviewError extends BaseError<{
 
     constructor(step: IWorkflowStateRecordStep) {
         super({
-            message: "You do not have permissions to review this workflow state step.",
+            message: "You do not have permissions to review this content review step.",
             data: { step }
         });
     }

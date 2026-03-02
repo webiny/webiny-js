@@ -81,7 +81,7 @@ export class WorkflowsPresenter implements IWorkflowsPresenter {
         this.workflowsRepository.save(workflow);
     };
 
-    deleteWorkflow(workflow: IWorkflow) {
+    deleteWorkflow(workflow: Pick<IWorkflow, "id">) {
         this.workflowsRepository.remove(workflow.id);
     }
 
@@ -103,6 +103,10 @@ export class WorkflowsPresenter implements IWorkflowsPresenter {
 
     removeStep = ({ id }: Pick<IWorkflowStep, "id">): void => {
         const workflow = this.getWorkflow();
+        if (workflow.steps.length === 1) {
+            workflow.removeStep(id);
+            return this.deleteWorkflow(workflow);
+        }
         workflow.removeStep(id);
         this.updateWorkflow(workflow.toJS());
     };

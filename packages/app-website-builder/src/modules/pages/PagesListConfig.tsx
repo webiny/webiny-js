@@ -5,6 +5,7 @@ import {
     CellActions,
     CellAuthor,
     CellCreated,
+    CellLive,
     CellModified,
     CellName,
     CellStatus,
@@ -82,6 +83,7 @@ export const PagesListConfig = () => {
                     sortable={true}
                 />
                 <Browser.Table.Column name={"status"} header={"Status"} cell={<CellStatus />} />
+                <Browser.Table.Column name={"live"} header={"Live"} cell={<CellLive />} />
                 <Browser.Table.Column
                     name={"actions"}
                     header={""}

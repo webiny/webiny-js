@@ -16,8 +16,8 @@ export const WorkflowStatesOwnWidget = (props: IWorkflowStatesOwnWidgetProps) =>
     const canUseWorkflows = useCanUseWorkflows();
     if (!canUseWorkflows) {
         return (
-            <Alert type={"danger"} title={"You don't have access to Workflows."}>
-                You do not have access to Workflows. Please contact your system administrator.
+            <Alert type={"danger"} title={"You don't have access to Content Reviews."}>
+                You do not have access to Content Reviews. Please contact your system administrator.
             </Alert>
         );
     }
@@ -33,7 +33,14 @@ export const WorkflowStatesOwnWidget = (props: IWorkflowStatesOwnWidgetProps) =>
                 WorkflowStateValue.rejected
             ]}
         >
-            <WorkflowStateWidgetCard title={<>Workflow States requested by current user</>} />
+            <WorkflowStateWidgetCard
+                title={
+                    <>
+                        <span className={"text-accent-primary"}>Content Reviews</span> assigned by
+                        me
+                    </>
+                }
+            />
         </WorkflowStatesProvider>
     );
 };

@@ -18,7 +18,9 @@ class UpdatePageOnWorkflowStateAfterCreateImpl
         const values = getStateValues(state);
 
         await this.updatePage.execute(state.targetRevisionId, {
-            state: values
+            system: {
+                workflow: values
+            }
         });
     }
 }

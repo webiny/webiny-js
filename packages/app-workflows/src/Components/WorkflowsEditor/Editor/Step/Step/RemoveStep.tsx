@@ -26,7 +26,7 @@ export const RemoveStep = (props: IRemoveStepProps) => {
                 actions={
                     <>
                         <Dialog.CancelAction onClick={close} />
-                        <Dialog.ConfirmAction onClick={onRemove} />
+                        <Dialog.ConfirmAction text={"Ok, delete"} onClick={onRemove} />
                     </>
                 }
                 showCloseButton={false}

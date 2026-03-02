@@ -165,7 +165,8 @@ export const ContentEntriesListProvider = ({ children }: ContentEntriesListProvi
         (input?: string) => {
             const folderId = input || currentFolderId || ROOT_FOLDER;
 
-            goToRoute(Routes.ContentEntries.List, { ...route.params, folderId });
+            const params = { ...route.params, id: undefined, folderId };
+            goToRoute(Routes.ContentEntries.List, params);
         },
         [currentFolderId, route]
     );

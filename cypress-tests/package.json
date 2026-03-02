@@ -12,7 +12,7 @@
     "@webiny/project-utils": "0.0.0",
     "@webiny/utils": "0.0.0",
     "amazon-cognito-identity-js": "^6.3.16",
-    "cypress": "^15.10.0",
+    "cypress": "^15.11.0",
     "cypress-image-snapshot": "^4.0.1",
     "cypress-mailosaur": "^4.0.0",
     "cypress-wait-until": "^3.0.2",

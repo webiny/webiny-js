@@ -1,4 +1,4 @@
-import type { WbIdentity, WbLocation } from "~/types.js";
+import type { WbIdentity, WbLive, WbLocation, WbSystem } from "~/types.js";
 import type { WbStatus } from "~/constants.js";
 import type { Page } from "~/domain/Page/index.js";
 
@@ -19,12 +19,13 @@ export interface PageDto {
     savedOn: string;
     modifiedBy: WbIdentity;
     modifiedOn: string;
+    system: WbSystem | null;
+    live: WbLive | null;
 }
 
 export class PageDtoMapper {
     static toDTO(page: Page): PageDto {
         return {
-            ...page,
             id: page.id,
             entryId: page.entryId,
             status: page.status,
@@ -40,7 +41,9 @@ export class PageDtoMapper {
             savedBy: page.savedBy,
             savedOn: page.savedOn,
             modifiedBy: page.modifiedBy,
-            modifiedOn: page.modifiedOn
+            modifiedOn: page.modifiedOn,
+            live: page.live,
+            system: page.system
         };
     }
 }

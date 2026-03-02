@@ -17,7 +17,7 @@ import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import { STATUS_DRAFT, STATUS_PUBLISHED, STATUS_UNPUBLISHED } from "./statuses.js";
 import type { AccessControl } from "~/crud/AccessControl/AccessControl.js";
-import { getState } from "./state.js";
+import { getSystem } from "./system.js";
 
 interface CreateEntryRevisionFromDataParams<TValues extends CmsEntryValues = CmsEntryValues> {
     sourceId: string;
@@ -179,10 +179,11 @@ export const createEntryRevisionFromData = async <TValues extends CmsEntryValues
         locked,
         status,
         values,
-        state: getState({
+        system: getSystem({
             input: rawInput,
             original: originalEntry
-        })
+        }),
+        live: originalEntry.live
     };
 
     return {
