@@ -5,10 +5,8 @@ import type { CmsTabLayoutDescriptor, CmsTabLayoutTab } from "~/types/model.js";
 import type { BindComponent, CmsEditorContentModel, CmsModelField } from "~/types/index.js";
 import { normalizeIcon } from "~/normalizeIcon.js";
 import { Fields } from "~/Fields/index.js";
-import { useAuthentication } from "@webiny/app-admin";
-import { getFieldPermissions, type FieldPermissions } from "~/Fields/getFieldPermissions.js";
-import { FieldPermissionProvider, useFieldPermissions } from "~/Fields/FieldPermissionProvider.js";
-import { useFieldRules } from "~/Fields/useFieldRules.js";
+import { FieldRulesProvider } from "~/Fields/FieldRulesProvider.js";
+import { useEffectiveRules } from "~/Fields/useFieldRules.js";
 
 interface TabsFieldRendererProps {
     descriptor: CmsTabLayoutDescriptor;
@@ -20,42 +18,26 @@ interface TabsFieldRendererProps {
 
 interface TabPanelProps {
     tab: CmsTabLayoutTab;
-    parentPermissions: FieldPermissions;
-    identity: { id: string; teams: { id: string }[] };
     Bind: BindComponent;
     fields: CmsModelField[];
     contentModel: CmsEditorContentModel;
     gridClassName?: string;
 }
 
-const TabPanel = ({
-    tab,
-    parentPermissions,
-    identity,
-    Bind,
-    fields,
-    contentModel,
-    gridClassName
-}: TabPanelProps) => {
-    const rulePermissions = useFieldRules(tab, Bind.parentName);
-    const identityPermissions = getFieldPermissions(identity, tab);
-    const effectivePermissions: FieldPermissions = {
-        canView:
-            parentPermissions.canView && identityPermissions.canView && rulePermissions.canView,
-        canEdit: parentPermissions.canEdit && identityPermissions.canEdit && rulePermissions.canEdit
-    };
+const TabPanel = ({ tab, Bind, fields, contentModel, gridClassName }: TabPanelProps) => {
+    const rules = useEffectiveRules(tab, Bind.parentName);
 
     const icon = normalizeIcon(tab.icon);
 
     return (
         <Tabs.Tab
-            disabled={!effectivePermissions.canEdit}
-            visible={effectivePermissions.canView}
+            disabled={rules.disabled}
+            visible={rules.canView && !rules.hidden}
             value={tab.id}
             trigger={tab.label}
             icon={icon ? <FontAwesomeIcon icon={icon} size={"sm"} /> : undefined}
             content={
-                <FieldPermissionProvider permissions={effectivePermissions}>
+                <FieldRulesProvider rules={rules}>
                     <Fields
                         Bind={Bind}
                         fields={fields}
@@ -63,7 +45,7 @@ const TabPanel = ({
                         contentModel={contentModel}
                         gridClassName={gridClassName}
                     />
-                </FieldPermissionProvider>
+                </FieldRulesProvider>
             }
         />
     );
@@ -76,15 +58,10 @@ export const TabsFieldRenderer = ({
     contentModel,
     gridClassName
 }: TabsFieldRendererProps) => {
-    const { identity } = useAuthentication();
-    const parentPermissions = useFieldPermissions();
-
     const tabElements = descriptor.tabs.map(tab => (
         <TabPanel
             key={tab.id}
             tab={tab}
-            parentPermissions={parentPermissions}
-            identity={identity}
             Bind={Bind}
             fields={fields}
             contentModel={contentModel}

@@ -1,14 +1,14 @@
 import React from "react";
-import { useModelField } from "~/ModelFieldProvider/useModelField.js";
+import { useParentRules } from "~/Fields/index.js";
 
 export interface CanEditFieldProps {
     children: React.ReactNode;
 }
 
 export const CanEditField = ({ children }: CanEditFieldProps) => {
-    const { permissions } = useModelField();
+    const rules = useParentRules();
 
-    if (!permissions.canEdit) {
+    if (!rules.canEdit || rules.disabled) {
         return null;
     }
 

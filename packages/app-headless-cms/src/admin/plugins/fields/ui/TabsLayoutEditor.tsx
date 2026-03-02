@@ -294,7 +294,6 @@ const TabItem = ({
             formData: {
                 label: tab.label,
                 icon: tab.icon ?? "",
-                permissions: tab.permissions ?? [],
                 rules: tab.rules ?? []
             },
             content: <TabDialogContent contentModel={contentModel} />,
@@ -304,7 +303,6 @@ const TabItem = ({
                     ...tab,
                     label: data.label ?? tab.label,
                     icon: data.icon || undefined,
-                    permissions: data.permissions ?? [],
                     rules: data.rules ?? []
                 };
                 onUpdate({ ...descriptor, tabs: updatedTabs });
@@ -445,7 +443,6 @@ export const TabsLayoutEditor = ({ descriptor, onUpdate, onDelete }: TabsLayoutE
                 label: descriptor.label ?? "",
                 description: descriptor.description ?? "",
                 help: descriptor.help ?? "",
-                permissions: descriptor.permissions ?? [],
                 rules: descriptor.rules ?? []
             },
             content: <TabsDialogContent contentModel={contentModel} />,
@@ -455,7 +452,6 @@ export const TabsLayoutEditor = ({ descriptor, onUpdate, onDelete }: TabsLayoutE
                     label: data.label ?? "",
                     description: data.description || null,
                     help: data.help || null,
-                    permissions: data.permissions ?? [],
                     rules: data.rules ?? []
                 });
             }

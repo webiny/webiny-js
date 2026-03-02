@@ -25,17 +25,11 @@ export interface CmsModelFieldSettings<T = unknown> {
     [key: string]: any;
 }
 
-export type FieldAccessLevel = "viewer" | "no-access";
-
-export interface FieldPermission {
-    target: `admin:${string}` | `team:${string}`;
-    accessLevel: FieldAccessLevel;
-}
-
 export type FieldRuleAction = "hide" | "disable" | string;
 
 export interface FieldRule {
-    fieldPath: string;
+    type: "accessControl" | "entryValue";
+    target: string;
     operator: string;
     value: string | number | boolean | null;
     action: FieldRuleAction;
@@ -67,7 +61,6 @@ export type CmsModelField<T = unknown> = T & {
          */
         | CmsModelFieldRendererPlugin["renderer"]["render"];
     tags?: string[];
-    permissions?: FieldPermission[];
     rules?: FieldRule[];
 };
 
@@ -76,7 +69,6 @@ export type CmsEditorFieldId = string;
 export interface CmsBaseLayoutDescriptor {
     id: string;
     type: string;
-    permissions?: FieldPermission[];
     rules?: FieldRule[];
 }
 
@@ -97,7 +89,6 @@ export interface CmsTabLayoutTab {
     label: string;
     icon?: string;
     layout: CmsEditorFieldsLayout;
-    permissions?: FieldPermission[];
     rules?: FieldRule[];
 }
 

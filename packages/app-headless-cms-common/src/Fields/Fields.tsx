@@ -12,9 +12,8 @@ import type { CmsEditorLayoutCell } from "~/types/model.js";
 import { isLayoutDescriptor } from "~/types/model.js";
 import { LayoutDescriptorCell } from "./LayoutDescriptorCell.js";
 import { useAuthentication } from "@webiny/app-admin";
-import { getFieldPermissions, type FieldPermissions } from "./getFieldPermissions.js";
-import { FieldPermissionProvider, useFieldPermissions } from "./FieldPermissionProvider.js";
-import { useFieldRules } from "./useFieldRules.js";
+import { FieldRulesProvider, useParentRules } from "./FieldRulesProvider.js";
+import { evaluateAccessControlRules, useEffectiveRules } from "./useFieldRules.js";
 
 interface FieldsProps {
     Bind: BindComponent;
@@ -26,19 +25,6 @@ interface FieldsProps {
 
 const getFieldById = (fields: CmsModelField[], id: string): CmsModelField | null => {
     return fields.find(field => field.id === id) || null;
-};
-
-/**
- * A child can never have more access than its parent.
- */
-const intersectPermissions = (
-    parent: FieldPermissions,
-    child: FieldPermissions
-): FieldPermissions => {
-    return {
-        canView: parent.canView && child.canView,
-        canEdit: parent.canEdit && child.canEdit
-    };
 };
 
 const LayoutNotDefined = () => {
@@ -59,36 +45,22 @@ interface LayoutCellProps {
     fields: CmsModelField[];
     contentModel: CmsEditorContentModel;
     gridClassName?: string;
-    parentPermissions: FieldPermissions;
-    identity: { id: string; teams: { id: string }[] };
 }
 
-const LayoutCell = ({
-    cell,
-    Bind,
-    fields,
-    contentModel,
-    gridClassName,
-    parentPermissions,
-    identity
-}: LayoutCellProps) => {
-    if (!isLayoutDescriptor(cell)) {
+const LayoutCell = ({ cell, Bind, fields, contentModel, gridClassName }: LayoutCellProps) => {
+    const isLayout = isLayoutDescriptor(cell);
+    const rules = useEffectiveRules(isLayout ? cell : {}, Bind.parentName);
+
+    if (!isLayout) {
         return null;
     }
 
-    const rulePermissions = useFieldRules(cell, Bind.parentName);
-    const identityPermissions = getFieldPermissions(identity, cell);
-    const permissions = intersectPermissions(
-        parentPermissions,
-        intersectPermissions(identityPermissions, rulePermissions)
-    );
-
-    if (!permissions.canView) {
+    if (!rules.canView || rules.hidden) {
         return null;
     }
 
     return (
-        <FieldPermissionProvider permissions={permissions}>
+        <FieldRulesProvider rules={rules}>
             <LayoutDescriptorCell
                 descriptor={cell}
                 Bind={Bind}
@@ -96,7 +68,7 @@ const LayoutCell = ({
                 contentModel={contentModel}
                 gridClassName={gridClassName}
             />
-        </FieldPermissionProvider>
+        </FieldRulesProvider>
     );
 };
 
@@ -107,40 +79,23 @@ interface FieldCellProps {
     id: string;
     field: CmsModelField | null;
     span: ColumnProps["span"];
-    parentPermissions: FieldPermissions;
-    identity: { id: string; teams: { id: string }[] };
     Bind: BindComponent;
     contentModel: CmsEditorContentModel;
 }
 
-const FieldCell = ({
-    id,
-    field,
-    span,
-    parentPermissions,
-    identity,
-    Bind,
-    contentModel
-}: FieldCellProps) => {
-    const rulePermissions = useFieldRules(field ?? {}, Bind.parentName);
-    const identityPermissions = field
-        ? getFieldPermissions(identity, field)
-        : { canView: true, canEdit: true };
-    const permissions = intersectPermissions(
-        parentPermissions,
-        intersectPermissions(identityPermissions, rulePermissions)
-    );
+const FieldCell = ({ id, field, span, Bind, contentModel }: FieldCellProps) => {
+    const rules = useEffectiveRules(field ?? {}, Bind.parentName);
 
-    if (!permissions.canView) {
+    if (!rules.canView || rules.hidden) {
         return null;
     }
 
     return (
         <Grid.Column span={span}>
             {field ? (
-                <FieldPermissionProvider permissions={permissions}>
+                <FieldRulesProvider rules={rules}>
                     <FieldElement field={field} Bind={Bind} contentModel={contentModel} />
-                </FieldPermissionProvider>
+                </FieldRulesProvider>
             ) : (
                 <FieldElementError
                     title={`Missing field with id "${id}"!`}
@@ -162,22 +117,15 @@ interface RowRendererProps {
     Bind: BindComponent;
     contentModel: CmsEditorContentModel;
     gridClassName?: string;
-    parentPermissions: FieldPermissions;
-    identity: { id: string; teams: { id: string }[] };
 }
 
-const RowRenderer = ({
-    row,
-    fields,
-    Bind,
-    contentModel,
-    gridClassName,
-    parentPermissions,
-    identity
-}: RowRendererProps) => {
+const RowRenderer = ({ row, fields, Bind, contentModel, gridClassName }: RowRendererProps) => {
+    const { identity } = useAuthentication();
+    const parentRules = useParentRules();
+
     // Count visible string cells for column span calculation.
-    // This count is approximate based on identity permissions only (not rules),
-    // because rules require per-field hooks and we can't call them in a filter.
+    // This count is approximate based on access control rules only (not entry value rules),
+    // because entry value rules require per-field hooks and we can't call them in a filter.
     // The actual visibility is enforced in FieldCell.
     const visibleStringCells = row.filter(c => {
         if (typeof c !== "string") {
@@ -187,7 +135,8 @@ const RowRenderer = ({
         if (!f) {
             return true;
         }
-        return intersectPermissions(parentPermissions, getFieldPermissions(identity, f)).canView;
+        const acPerms = evaluateAccessControlRules(f, identity);
+        return parentRules.canView && acPerms.canView;
     });
 
     const span =
@@ -207,8 +156,6 @@ const RowRenderer = ({
                             fields={fields}
                             contentModel={contentModel}
                             gridClassName={gridClassName}
-                            parentPermissions={parentPermissions}
-                            identity={identity}
                         />
                     );
                 }
@@ -222,8 +169,6 @@ const RowRenderer = ({
                         id={id}
                         field={field}
                         span={span}
-                        parentPermissions={parentPermissions}
-                        identity={identity}
                         Bind={Bind}
                         contentModel={contentModel}
                     />
@@ -234,9 +179,6 @@ const RowRenderer = ({
 };
 
 export const Fields = ({ Bind, fields, layout, contentModel, gridClassName }: FieldsProps) => {
-    const { identity } = useAuthentication();
-    const parentPermissions = useFieldPermissions();
-
     if (contentModel.plugin && fields.length > 0 && layout.length === 0) {
         return <LayoutNotDefined />;
     }
@@ -251,8 +193,6 @@ export const Fields = ({ Bind, fields, layout, contentModel, gridClassName }: Fi
                         Bind={Bind}
                         contentModel={contentModel}
                         gridClassName={gridClassName}
-                        parentPermissions={parentPermissions}
-                        identity={identity}
                     />
                 </React.Fragment>
             ))}

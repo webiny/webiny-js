@@ -32,7 +32,7 @@ const plugin: CmsModelFieldRendererPlugin = {
                                 onBlur={bind.validate}
                             >
                                 <Input
-                                    disabled={!permissions.canEdit}
+                                    disabled={!permissions.canEdit || permissions.disabled}
                                     label={field.label}
                                     placeholder={field.placeholder}
                                     description={field.description}

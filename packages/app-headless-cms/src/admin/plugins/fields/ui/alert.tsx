@@ -98,7 +98,6 @@ const AlertLayoutCell = ({ descriptor, onUpdate, onDelete }: AlertLayoutCellProp
             formData: {
                 label: descriptor.label,
                 alertType: descriptor.alertType,
-                permissions: descriptor.permissions ?? [],
                 rules: descriptor.rules ?? []
             },
             content: <AlertDialogContent contentModel={contentModel} />,
@@ -107,7 +106,6 @@ const AlertLayoutCell = ({ descriptor, onUpdate, onDelete }: AlertLayoutCellProp
                     ...descriptor,
                     label: data.label ?? "",
                     alertType: (data.alertType as CmsAlertLayoutDescriptor["alertType"]) ?? "info",
-                    permissions: data.permissions ?? [],
                     rules: data.rules ?? []
                 });
             }

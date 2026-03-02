@@ -31,7 +31,7 @@ export const createModelField = (params: CreateModelFieldParams): CmsModelField 
         help = null,
         placeholder = null,
         renderer = null,
-        permissions = []
+        rules = []
     } = params;
 
     // TODO: ideally, initialFieldId should also be passed through `camelCase` but currently this would break `wbyAco_location` field.
@@ -53,6 +53,6 @@ export const createModelField = (params: CreateModelFieldParams): CmsModelField 
         help,
         placeholder,
         renderer,
-        permissions
+        rules
     };
 };

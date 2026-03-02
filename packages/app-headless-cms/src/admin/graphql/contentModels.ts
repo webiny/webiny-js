@@ -41,9 +41,12 @@ export const FIELDS_FIELDS = `
         message
     }
     settings
-    permissions {
-        target
-        accessLevel
+    rules {
+     type
+     target
+     operator
+     value
+     action
     }
 `;
 

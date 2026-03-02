@@ -11,7 +11,7 @@ export type Operator =
     | "isEmpty";
 
 export interface ParsedExpression {
-    fieldPath: string;
+    target: string;
     operator: Operator;
     value: string | number | boolean | null;
 }
@@ -112,15 +112,15 @@ export function evaluateExpression(
     parsed: ParsedExpression,
     getFormValue: (path: string) => unknown
 ): boolean {
-    const { fieldPath, operator, value: rhs } = parsed;
+    const { target, operator, value: rhs } = parsed;
 
     let val: unknown;
-    if (fieldPath.endsWith(".length")) {
-        const arrayPath = fieldPath.slice(0, -".length".length);
+    if (target.endsWith(".length")) {
+        const arrayPath = target.slice(0, -".length".length);
         const arr = getFormValue(arrayPath);
         val = Array.isArray(arr) ? arr.length : 0;
     } else {
-        val = getFormValue(fieldPath);
+        val = getFormValue(target);
     }
 
     return compareValues(operator, val, rhs);

@@ -647,12 +647,12 @@ describe("content model test", () => {
                             {
                                 ...textField,
                                 storageId: `${textField.type}@${textField.id}`,
-                                permissions: []
+                                rules: []
                             },
                             {
                                 ...numberField,
                                 storageId: `${numberField.type}@${numberField.id}`,
-                                permissions: []
+                                rules: []
                             }
                         ],
                         group: contentModelGroup.slug,
@@ -669,20 +669,32 @@ describe("content model test", () => {
         });
     });
 
-    it("should create and update a model with field permissions", async () => {
+    it("should create and update a model with field rules", async () => {
         const { createContentModelMutation, updateContentModelMutation } =
             useGraphQLHandler(manageHandlerOpts);
 
-        const fieldWithPermissions: CmsModelFieldInput = {
+        const fieldWithRules: CmsModelFieldInput = {
             id: "permFieldId",
             fieldId: "permField",
             label: "Permission field",
             type: "text",
             validation: [],
             listValidation: [],
-            permissions: [
-                { target: "admin:user-1", accessLevel: "viewer" },
-                { target: "team:team-1", accessLevel: "no-access" }
+            rules: [
+                {
+                    type: "accessControl",
+                    target: "identity",
+                    operator: "matches",
+                    value: "admin:user-1",
+                    action: "disable"
+                },
+                {
+                    type: "accessControl",
+                    target: "identity",
+                    operator: "matches",
+                    value: "team:team-1",
+                    action: "hide"
+                }
             ]
         };
 
@@ -693,8 +705,8 @@ describe("content model test", () => {
                 singularApiName: "PermissionsTestModel",
                 pluralApiName: "PermissionsTestModels",
                 group: contentModelGroup.slug,
-                fields: [fieldWithPermissions],
-                layout: [[fieldWithPermissions.id]]
+                fields: [fieldWithRules],
+                layout: [[fieldWithRules.id]]
             }
         });
 
@@ -705,9 +717,21 @@ describe("content model test", () => {
                         fields: [
                             {
                                 fieldId: "permField",
-                                permissions: [
-                                    { target: "admin:user-1", accessLevel: "viewer" },
-                                    { target: "team:team-1", accessLevel: "no-access" }
+                                rules: [
+                                    {
+                                        type: "accessControl",
+                                        target: "identity",
+                                        operator: "matches",
+                                        value: "admin:user-1",
+                                        action: "disable"
+                                    },
+                                    {
+                                        type: "accessControl",
+                                        target: "identity",
+                                        operator: "matches",
+                                        value: "team:team-1",
+                                        action: "hide"
+                                    }
                                 ]
                             }
                         ]
@@ -719,10 +743,18 @@ describe("content model test", () => {
 
         const contentModel = createResponse.data.createContentModel.data;
 
-        // Update permissions
+        // Update rules
         const updatedField: CmsModelFieldInput = {
-            ...fieldWithPermissions,
-            permissions: [{ target: "admin:user-2", accessLevel: "no-access" }]
+            ...fieldWithRules,
+            rules: [
+                {
+                    type: "accessControl",
+                    target: "identity",
+                    operator: "matches",
+                    value: "admin:user-2",
+                    action: "hide"
+                }
+            ]
         };
 
         const [updateResponse] = await updateContentModelMutation({
@@ -741,7 +773,15 @@ describe("content model test", () => {
                         fields: [
                             {
                                 fieldId: "permField",
-                                permissions: [{ target: "admin:user-2", accessLevel: "no-access" }]
+                                rules: [
+                                    {
+                                        type: "accessControl",
+                                        target: "identity",
+                                        operator: "matches",
+                                        value: "admin:user-2",
+                                        action: "hide"
+                                    }
+                                ]
                             }
                         ]
                     },
@@ -750,18 +790,18 @@ describe("content model test", () => {
             }
         });
 
-        // Remove permissions
-        const fieldNoPermissions: CmsModelFieldInput = {
-            ...fieldWithPermissions,
-            permissions: []
+        // Remove rules
+        const fieldNoRules: CmsModelFieldInput = {
+            ...fieldWithRules,
+            rules: []
         };
 
         const [removeResponse] = await updateContentModelMutation({
             modelId: contentModel.modelId,
             data: {
                 name: contentModel.name,
-                fields: [fieldNoPermissions],
-                layout: [[fieldNoPermissions.id]]
+                fields: [fieldNoRules],
+                layout: [[fieldNoRules.id]]
             }
         });
 
@@ -772,7 +812,7 @@ describe("content model test", () => {
                         fields: [
                             {
                                 fieldId: "permField",
-                                permissions: []
+                                rules: []
                             }
                         ]
                     },

@@ -128,13 +128,9 @@ export const createModelsSchema = ({
                 settings: JSON
             }
 
-            input CmsFieldPermissionInput {
-                target: String!
-                accessLevel: String!
-            }
-
             input CmsFieldRuleInput {
-                fieldPath: String!
+                type: String!
+                target: String!
                 operator: String!
                 value: JSON
                 action: String!
@@ -159,7 +155,6 @@ export const createModelsSchema = ({
                 validation: [CmsFieldValidationInput]
                 listValidation: [CmsFieldValidationInput]
                 settings: JSON
-                permissions: [CmsFieldPermissionInput!]
                 rules: [CmsFieldRuleInput!]
             }
 
@@ -248,13 +243,9 @@ export const createModelsSchema = ({
                 values: [CmsPredefinedValue]
             }
 
-            type CmsFieldPermission {
-                target: String!
-                accessLevel: String!
-            }
-
             type CmsFieldRule {
-                fieldPath: String!
+                type: String!
+                target: String!
                 operator: String!
                 value: JSON
                 action: String!
@@ -279,7 +270,6 @@ export const createModelsSchema = ({
                 validation: [CmsFieldValidation!]
                 listValidation: [CmsFieldValidation!]
                 settings: JSON
-                permissions: [CmsFieldPermission!]
                 rules: [CmsFieldRule!]
             }
 

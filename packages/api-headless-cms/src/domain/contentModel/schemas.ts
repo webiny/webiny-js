@@ -140,11 +140,14 @@ const fieldSchema = zod.object({
             return value || {};
         })
         .default({}),
-    permissions: zod
+    rules: zod
         .array(
             zod.object({
+                type: zod.enum(["accessControl", "entryValue"]),
                 target: shortString,
-                accessLevel: zod.enum(["viewer", "no-access"])
+                operator: shortString,
+                value: zod.union([zod.string(), zod.number(), zod.boolean(), zod.null()]),
+                action: shortString
             })
         )
         .optional()

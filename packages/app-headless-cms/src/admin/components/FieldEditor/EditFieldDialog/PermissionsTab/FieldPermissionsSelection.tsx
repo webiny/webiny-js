@@ -2,16 +2,16 @@ import React, { useMemo } from "react";
 import { ReactComponent as More } from "@webiny/icons/arrow_drop_down.svg";
 import { Button, DropdownMenu, List, Scrollbar, Text, Avatar } from "@webiny/admin-ui";
 import type { FolderLevelPermissionsTarget } from "@webiny/app-aco";
-import type { FieldAccessLevel, FieldPermission } from "~/types.js";
+import type { FieldRule } from "~/types.js";
 
 const FIELD_ACCESS_LEVELS = [
     {
-        id: "no-access",
+        id: "hide",
         label: "No Access",
         description: "Hide this field from the user."
     },
     {
-        id: "viewer",
+        id: "disable",
         label: "Viewer (Read-only)",
         description: "Allow the user to read, but not edit, this field."
     }
@@ -19,12 +19,12 @@ const FIELD_ACCESS_LEVELS = [
 
 interface FieldPermissionsSelectionProps {
     targetsList: FolderLevelPermissionsTarget[];
-    permissions: FieldPermission[];
-    onRemoveAccess: (params: { permission: FieldPermission }) => void;
-    onUpdatePermission: (params: { permission: FieldPermission }) => void;
+    rules: FieldRule[];
+    onRemoveAccess: (params: { rule: FieldRule }) => void;
+    onUpdatePermission: (params: { rule: FieldRule }) => void;
 }
 
-type Selection = Array<{ permission: FieldPermission; target: FolderLevelPermissionsTarget }>;
+type Selection = Array<{ rule: FieldRule; target: FolderLevelPermissionsTarget }>;
 
 interface ListItemGraphicProps {
     target: FolderLevelPermissionsTarget;
@@ -69,15 +69,15 @@ const ListItemText = ({ target }: ListItemTextProps) => {
 };
 
 interface ListItemMetaProps {
-    permission: FieldPermission;
-    onRemoveAccess: (params: { permission: FieldPermission }) => void;
-    onUpdatePermission: (params: { permission: FieldPermission }) => void;
+    rule: FieldRule;
+    onRemoveAccess: (params: { rule: FieldRule }) => void;
+    onUpdatePermission: (params: { rule: FieldRule }) => void;
 }
 
-const ListItemMeta = ({ permission, onRemoveAccess, onUpdatePermission }: ListItemMetaProps) => {
+const ListItemMeta = ({ rule, onRemoveAccess, onUpdatePermission }: ListItemMetaProps) => {
     const currentLevel = useMemo(() => {
-        return FIELD_ACCESS_LEVELS.find(level => level.id === permission.accessLevel)!;
-    }, [permission.accessLevel]);
+        return FIELD_ACCESS_LEVELS.find(level => level.id === rule.action)!;
+    }, [rule.action]);
 
     const handle = (
         <Button variant={"ghost"} text={currentLevel.label} icon={<More />} iconPosition={"end"} />
@@ -100,9 +100,9 @@ const ListItemMeta = ({ permission, onRemoveAccess, onUpdatePermission }: ListIt
                     onClick={() => {
                         setTimeout(() => {
                             onUpdatePermission({
-                                permission: {
-                                    ...permission,
-                                    accessLevel: level.id as FieldAccessLevel
+                                rule: {
+                                    ...rule,
+                                    action: level.id
                                 }
                             });
                         }, 75);
@@ -111,7 +111,7 @@ const ListItemMeta = ({ permission, onRemoveAccess, onUpdatePermission }: ListIt
             ))}
             <DropdownMenu.Separator />
             <DropdownMenu.Item
-                onClick={() => onRemoveAccess({ permission })}
+                onClick={() => onRemoveAccess({ rule })}
                 text={"Remove permission"}
             />
         </DropdownMenu>
@@ -119,16 +119,16 @@ const ListItemMeta = ({ permission, onRemoveAccess, onUpdatePermission }: ListIt
 };
 
 export const FieldPermissionsSelection = ({
-    permissions = [],
+    rules = [],
     targetsList,
     onRemoveAccess,
     onUpdatePermission
 }: FieldPermissionsSelectionProps) => {
-    const selection = permissions
-        .map(permission => {
-            const target = targetsList.find(u => u.target === permission.target);
+    const selection = rules
+        .map(rule => {
+            const target = targetsList.find(u => u.target === String(rule.value));
             if (target) {
-                return { permission, target };
+                return { rule, target };
             }
 
             return null;
@@ -144,12 +144,12 @@ export const FieldPermissionsSelection = ({
                 <List>
                     {selection?.map(item => (
                         <List.Item
-                            key={item.permission.target}
+                            key={String(item.rule.value)}
                             title={<ListItemText target={item.target} />}
                             icon={<ListItemGraphic target={item.target} />}
                             actions={
                                 <ListItemMeta
-                                    permission={item.permission}
+                                    rule={item.rule}
                                     onRemoveAccess={onRemoveAccess}
                                     onUpdatePermission={onUpdatePermission}
                                 />

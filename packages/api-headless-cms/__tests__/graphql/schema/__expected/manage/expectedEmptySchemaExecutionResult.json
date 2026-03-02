@@ -516,12 +516,12 @@
           ]
         },
         {
-          "name": "CmsFieldPermission",
+          "name": "CmsFieldRule",
           "kind": "OBJECT",
           "description": null,
           "fields": [
             {
-              "name": "target",
+              "name": "type",
               "description": null,
               "type": {
                 "kind": "NON_NULL",
@@ -530,23 +530,7 @@
               }
             },
             {
-              "name": "accessLevel",
-              "description": null,
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": { "kind": "SCALAR", "name": "String" }
-              }
-            }
-          ]
-        },
-        {
-          "name": "CmsFieldRule",
-          "kind": "OBJECT",
-          "description": null,
-          "fields": [
-            {
-              "name": "fieldPath",
+              "name": "target",
               "description": null,
               "type": {
                 "kind": "NON_NULL",
@@ -691,15 +675,6 @@
               "name": "settings",
               "description": null,
               "type": { "kind": "SCALAR", "name": "JSON", "ofType": null }
-            },
-            {
-              "name": "permissions",
-              "description": null,
-              "type": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": { "kind": "NON_NULL", "name": null }
-              }
             },
             {
               "name": "rules",

@@ -81,7 +81,7 @@ export const PanoramaLayoutEditor = ({
             formData: {
                 label: descriptor.label,
                 imageFieldPath: descriptor.imageFieldPath ?? "",
-                permissions: descriptor.permissions ?? []
+                rules: descriptor.rules ?? []
             },
             content: <PanoramaDialogContent />,
             onAccept: data => {
@@ -89,7 +89,7 @@ export const PanoramaLayoutEditor = ({
                     ...descriptor,
                     label: data.label ?? "",
                     imageFieldPath: data.imageFieldPath ?? "",
-                    permissions: data.permissions ?? []
+                    rules: data.rules ?? []
                 } as unknown as CmsLayoutDescriptor);
             }
         });

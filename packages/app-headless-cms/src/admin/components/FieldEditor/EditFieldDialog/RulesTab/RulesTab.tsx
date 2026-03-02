@@ -39,8 +39,8 @@ const RuleRow = ({
     onRemove
 }: RuleRowProps) => {
     const selectedFieldOption = useMemo(
-        () => fieldOptions.find(o => o.value === rule.fieldPath),
-        [fieldOptions, rule.fieldPath]
+        () => fieldOptions.find(o => o.value === rule.target),
+        [fieldOptions, rule.target]
     );
 
     const operatorOptions = useMemo(
@@ -62,14 +62,14 @@ const RuleRow = ({
 
     const handleFieldChange = useCallback(
         (value: string | null) => {
-            const newFieldPath = value ?? "";
-            const newFieldOption = fieldOptions.find(o => o.value === newFieldPath);
+            const newTarget = value ?? "";
+            const newFieldOption = fieldOptions.find(o => o.value === newTarget);
             // Reset operator and value when field changes
             const newOps = newFieldOption ? getOperatorOptions(newFieldOption.fieldType) : [];
             const currentOpValid = newOps.some(o => o.value === rule.operator);
             onChange(index, {
                 ...rule,
-                fieldPath: newFieldPath,
+                target: newTarget,
                 operator: currentOpValid ? rule.operator : "",
                 value: currentOpValid ? rule.value : null
             });
@@ -142,7 +142,7 @@ const RuleRow = ({
                     <Select
                         displayResetAction={false}
                         label={"Field"}
-                        value={rule.fieldPath}
+                        value={rule.target}
                         options={fieldSelectOptions}
                         onChange={handleFieldChange}
                     />
@@ -154,7 +154,7 @@ const RuleRow = ({
                         value={rule.operator}
                         options={operatorSelectOptions}
                         onChange={handleOperatorChange}
-                        disabled={!rule.fieldPath}
+                        disabled={!rule.target}
                     />
                 </Grid.Column>
                 <Grid.Column span={4}>
@@ -215,34 +215,35 @@ export const RulesTab = ({
     actionOptions = DEFAULT_ACTION_OPTIONS
 }: RulesTabProps) => {
     const bind = useBind({ name: "rules" });
-    const rules: FieldRule[] = bind.value || [];
+    const allRules: FieldRule[] = bind.value || [];
+    const entryRules = allRules.filter(r => r.type === "entryValue");
+    const otherRules = allRules.filter(r => r.type !== "entryValue");
 
     const addRule = () => {
-        bind.onChange([
-            ...rules,
-            {
-                fieldPath: "",
-                operator: "",
-                value: null,
-                action: (actionOptions[0]?.value ?? "hide") as FieldRuleAction
-            }
-        ]);
+        const newRule: FieldRule = {
+            type: "entryValue",
+            target: "",
+            operator: "",
+            value: null,
+            action: (actionOptions[0]?.value ?? "hide") as FieldRuleAction
+        };
+        bind.onChange([...otherRules, ...entryRules, newRule]);
     };
 
     const updateRule = (index: number, updated: FieldRule) => {
-        const next = [...rules];
+        const next = [...entryRules];
         next[index] = updated;
-        bind.onChange(next);
+        bind.onChange([...otherRules, ...next]);
     };
 
     const removeRule = (index: number) => {
-        bind.onChange(rules.filter((_, i) => i !== index));
+        bind.onChange([...otherRules, ...entryRules.filter((_, i) => i !== index)]);
     };
 
     return (
         <Grid className={gridClassName}>
             <Grid.Column span={12}>
-                {rules.map((rule, index) => (
+                {entryRules.map((rule, index) => (
                     <RuleRow
                         key={index}
                         rule={rule}
@@ -253,7 +254,9 @@ export const RulesTab = ({
                         onRemove={removeRule}
                     />
                 ))}
-                {rules.length > 0 ? <Separator variant={"accent"} className={"mt-lg"} /> : null}
+                {entryRules.length > 0 ? (
+                    <Separator variant={"accent"} className={"mt-lg"} />
+                ) : null}
                 <div className={"flex justify-center mt-md"}>
                     <Button onClick={addRule} text={"Add Rule"} icon={<AddIcon />} size={"sm"} />
                 </div>

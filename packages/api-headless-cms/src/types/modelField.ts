@@ -2,17 +2,11 @@ import type { CmsModel, CmsModelLayout } from "./model.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { CmsDynamicZoneTemplate } from "~/types/fields/dynamicZoneField.js";
 
-export type FieldAccessLevel = "viewer" | "no-access";
-
-export interface FieldPermission {
-    target: string;
-    accessLevel: FieldAccessLevel;
-}
-
 export type FieldRuleAction = "hide" | "disable" | string;
 
 export interface FieldRule {
-    fieldPath: string;
+    type: "accessControl" | "entryValue";
+    target: string;
     operator: string;
     value: string | number | boolean | null;
     action: FieldRuleAction;
@@ -130,13 +124,7 @@ export interface CmsModelField {
      */
     settings?: CmsModelFieldSettings;
     /**
-     * Field-level permissions controlling which users/teams can access this field.
-     *
-     * @default []
-     */
-    permissions?: FieldPermission[];
-    /**
-     * Data-driven conditional rules that hide or disable this field based on live form values.
+     * Rules that control field visibility and editability (access control and entry value conditions).
      */
     rules?: FieldRule[];
 }
@@ -215,11 +203,7 @@ export interface CmsModelFieldInput {
         [key: string]: any;
     };
     /**
-     * Field-level permissions controlling which users/teams can access this field.
-     */
-    permissions?: FieldPermission[];
-    /**
-     * Data-driven conditional rules that hide or disable this field based on live form values.
+     * Rules that control field visibility and editability (access control and entry value conditions).
      */
     rules?: FieldRule[];
 }

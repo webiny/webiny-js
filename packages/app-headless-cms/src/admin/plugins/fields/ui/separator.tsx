@@ -89,7 +89,6 @@ const SeparatorLayoutCell = ({ descriptor, onUpdate, onDelete }: SeparatorLayout
             formData: {
                 label: descriptor.label,
                 description: descriptor.description ?? "",
-                permissions: descriptor.permissions ?? [],
                 rules: descriptor.rules ?? []
             },
             content: <SeparatorDialogContent contentModel={contentModel} />,
@@ -98,7 +97,6 @@ const SeparatorLayoutCell = ({ descriptor, onUpdate, onDelete }: SeparatorLayout
                     ...descriptor,
                     label: data.label ?? "",
                     description: data.description ?? "",
-                    permissions: data.permissions ?? [],
                     rules: data.rules ?? []
                 });
             }
