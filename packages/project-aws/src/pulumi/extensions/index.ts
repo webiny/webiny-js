@@ -3,6 +3,7 @@ import { OpenSearch } from "./OpenSearch.js";
 import { Vpc } from "./Vpc.js";
 import { AdminCustomDomains } from "./AdminCustomDomains.js";
 import { BlueGreenDeployments } from "~/pulumi/extensions/BlueGreenDeployments.js";
+import { ApiLambdaFunction } from "~/extensions/ApiLambdaFunction.js";
 
 export { AwsTags };
 export { Vpc };
@@ -15,5 +16,6 @@ export const definitions = [
     Vpc.def,
     OpenSearch.def,
     AdminCustomDomains.def,
-    BlueGreenDeployments.def
+    BlueGreenDeployments.def,
+    ApiLambdaFunction.def
 ];

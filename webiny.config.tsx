@@ -113,6 +113,11 @@ export const Extensions = () => {
             <Api.Extension src={"/extensions/MyApiKey.ts"} />
             <Security.ApiKey.AfterUpdate src={"/extensions/MyApiKeyAfterUpdate.ts"} />
 
+            <Api.LambdaFunction
+                functionSrc="/extensions/myFunction/handler.ts"
+                pulumiSrc="/extensions/myFunction/pulumi.ts"
+            />
+
             {/* 🚧 WIP 👇 */}
             {/*<Security.ApiKeyBeforeCreate src={"/extensions/ApiKeyBeforeCreate.ts"} />*/}
             {/*<AuditLogs.RetentionPeriod days={90} />*/}
