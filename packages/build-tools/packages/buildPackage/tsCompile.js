@@ -5,9 +5,9 @@ import { replaceTscAliases } from "./tsAliasReplacer.js";
 
 export const tsCompile = async ({ cwd = "", overrides, debug }) => {
     // Normalize path separators to forward slashes for consistent behavior on Windows.
-    cwd = cwd.replace(/\\/g, "/");
+    const normalizedCwd = cwd.replace(/\\/g, "/");
 
-    const tsConfigPath = join(cwd, "tsconfig.build.json");
+    const tsConfigPath = join(normalizedCwd, "tsconfig.build.json");
 
     let { config: readTsConfig } = ts.readConfigFile(tsConfigPath, ts.sys.readFile);
 
@@ -23,11 +23,10 @@ export const tsCompile = async ({ cwd = "", overrides, debug }) => {
             console.log(readTsConfig);
         }
     }
-    const parsedJsonConfigFile = ts.parseJsonConfigFileContent(readTsConfig, ts.sys, cwd);
+    const parsedJsonConfigFile = ts.parseJsonConfigFileContent(readTsConfig, ts.sys, normalizedCwd);
 
     const { projectReferences, options, fileNames, errors } = parsedJsonConfigFile;
 
-    // Exclude .d.ts files from TypeScript compilation
     const filteredFileNames = fileNames.filter(fileName => !fileName.endsWith(".d.ts"));
 
     const program = ts.createProgram({
@@ -37,11 +36,9 @@ export const tsCompile = async ({ cwd = "", overrides, debug }) => {
         configFileParsingDiagnostics: errors
     });
 
-    const normalizedCwd = cwd;
-
     const { diagnostics, emitSkipped } = program.emit(
         undefined, // targetSourceFile
-        (fileName, data, writeByteOrderMark, onError, sourceFiles) => {
+        (fileName, data, writeByteOrderMark) => {
             // Only emit files within the current package directory.
             // Normalize path separators to handle Windows backslashes vs forward slashes.
             const normalizedFileName = fileName.replace(/\\/g, "/");
@@ -57,7 +54,7 @@ export const tsCompile = async ({ cwd = "", overrides, debug }) => {
     if (allDiagnostics.length) {
         const formatHost = {
             getCanonicalFileName: path => path,
-            getCurrentDirectory: () => cwd,
+            getCurrentDirectory: () => normalizedCwd,
             getNewLine: () => ts.sys.newLine
         };
         const message = ts.formatDiagnostics(allDiagnostics, formatHost);
@@ -71,6 +68,6 @@ export const tsCompile = async ({ cwd = "", overrides, debug }) => {
     }
 
     // Resolve ~ path aliases in .d.ts files
-    const distDir = options.outDir || join(cwd, "dist");
-    await replaceTscAliases({ distDir, cwd, debug });
+    const distDir = options.outDir || join(normalizedCwd, "dist");
+    await replaceTscAliases({ distDir, cwd: normalizedCwd, debug });
 };
