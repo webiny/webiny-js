@@ -541,6 +541,45 @@
           ]
         },
         {
+          "name": "CmsFieldRule",
+          "kind": "OBJECT",
+          "description": null,
+          "fields": [
+            {
+              "name": "fieldPath",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": { "kind": "SCALAR", "name": "String" }
+              }
+            },
+            {
+              "name": "operator",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": { "kind": "SCALAR", "name": "String" }
+              }
+            },
+            {
+              "name": "value",
+              "description": null,
+              "type": { "kind": "SCALAR", "name": "JSON", "ofType": null }
+            },
+            {
+              "name": "action",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": { "kind": "SCALAR", "name": "String" }
+              }
+            }
+          ]
+        },
+        {
           "name": "CmsContentModelField",
           "kind": "OBJECT",
           "description": null,
@@ -655,6 +694,15 @@
             },
             {
               "name": "permissions",
+              "description": null,
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": { "kind": "NON_NULL", "name": null }
+              }
+            },
+            {
+              "name": "rules",
               "description": null,
               "type": {
                 "kind": "LIST",
