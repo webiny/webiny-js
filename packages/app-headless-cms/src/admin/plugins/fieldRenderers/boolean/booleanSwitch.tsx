@@ -3,7 +3,7 @@ import get from "lodash/get.js";
 import type { CmsModelFieldRendererPlugin } from "~/types.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { Switch } from "@webiny/admin-ui";
-import { useModelField } from "@webiny/app-headless-cms-common";
+import { useEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
 
 const t = i18n.ns("app-headless-cms/admin/fields/boolean");
 
@@ -20,15 +20,18 @@ const plugin: CmsModelFieldRendererPlugin = {
             );
         },
         render({ getBind }) {
-            const { field, permissions } = useModelField();
+            const { field } = useModelField();
+            const rules = useEffectiveRules(field);
             const Bind = getBind();
+
+            const disabled = !rules.canEdit || rules.disabled;
 
             return (
                 <Bind>
                     {bindProps => (
                         <Switch
                             {...bindProps}
-                            disabled={!permissions.canEdit}
+                            disabled={disabled}
                             label={field.label}
                             description={field.description}
                             note={field.note}

@@ -28,7 +28,7 @@ export interface CmsModelFieldSettings<T = unknown> {
 export type FieldRuleAction = "hide" | "disable" | string;
 
 export interface FieldRule {
-    type: "accessControl" | "entryValue";
+    type: "accessControl" | "condition";
     target: string;
     operator: string;
     value: string | number | boolean | null;

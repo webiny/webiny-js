@@ -2,7 +2,7 @@ import * as React from "react";
 import type { CmsModelField } from "~/types.js";
 import type { BindComponentRenderProp } from "@webiny/form";
 import { Input as UiInput, Icon } from "@webiny/admin-ui";
-import { useModelField } from "@webiny/app-headless-cms-common";
+import { useEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
 
 export interface TrailingIcon {
     icon: React.ReactNode;
@@ -18,7 +18,9 @@ export interface InputProps {
 }
 
 export const Input = ({ bind, trailingIcon, ...props }: InputProps) => {
-    const { field, permissions } = useModelField();
+    const { field } = useModelField();
+    const rules = useEffectiveRules(field);
+    const disabled = !rules.canEdit || rules.disabled;
 
     const endIcon = React.useMemo(() => {
         if (!trailingIcon) {
@@ -39,7 +41,7 @@ export const Input = ({ bind, trailingIcon, ...props }: InputProps) => {
         <UiInput
             {...props}
             {...bind}
-            disabled={!permissions.canEdit}
+            disabled={disabled}
             onChange={value => {
                 if (props.type === "number") {
                     value = parseFloat(value);

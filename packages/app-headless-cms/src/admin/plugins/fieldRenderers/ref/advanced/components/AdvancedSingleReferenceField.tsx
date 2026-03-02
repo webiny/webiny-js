@@ -16,7 +16,7 @@ import { useSnackbar } from "@webiny/app-admin";
 import type { CmsReferenceValue } from "~/admin/plugins/fieldRenderers/ref/components/types.js";
 import { NewReferencedEntryDialog } from "~/admin/plugins/fieldRenderers/ref/components/NewReferencedEntryDialog.js";
 import { FormComponentErrorMessage, FormComponentLabel, OverlayLoader } from "@webiny/admin-ui";
-import { CanEditField } from "@webiny/app-headless-cms-common";
+import { CanEditField, useEffectiveRules } from "@webiny/app-headless-cms-common";
 
 interface AdvancedSingleReferenceFieldProps extends CmsModelFieldRendererProps {
     bind: BindComponentRenderProp<CmsReferenceValue | null>;
@@ -25,7 +25,8 @@ interface AdvancedSingleReferenceFieldProps extends CmsModelFieldRendererProps {
 export const AdvancedSingleReferenceField = (props: AdvancedSingleReferenceFieldProps) => {
     const { bind } = props;
     const { showSnackbar } = useSnackbar();
-    const { field, permissions } = useModelField();
+    const { field } = useModelField();
+    const rules = useEffectiveRules(field);
 
     const [linkEntryDialogModel, setLinkEntryDialogModel] = useState<CmsModel | null>(null);
     const [newEntryDialogModel, setNewEntryDialogModel] = useState<CmsModel | null>(null);
@@ -169,7 +170,7 @@ export const AdvancedSingleReferenceField = (props: AdvancedSingleReferenceField
     const { isValid: validationIsValid, message: validationMessage } = validation || {};
     const invalid = useMemo(() => validationIsValid === false, [validationIsValid]);
 
-    const disabled = !permissions.canEdit;
+    const disabled = !rules.canEdit || rules.disabled;
 
     return (
         <>

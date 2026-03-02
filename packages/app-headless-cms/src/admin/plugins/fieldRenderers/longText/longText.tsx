@@ -3,7 +3,7 @@ import get from "lodash/get.js";
 import type { CmsModelFieldRendererPlugin } from "~/types.js";
 import { DelayedOnChange, Textarea } from "@webiny/admin-ui";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { useModelField } from "@webiny/app-headless-cms-common";
+import { useEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -20,8 +20,11 @@ const plugin: CmsModelFieldRendererPlugin = {
             );
         },
         render({ getBind }) {
-            const { field, permissions } = useModelField();
+            const { field } = useModelField();
+            const rules = useEffectiveRules(field);
             const Bind = getBind();
+
+            const disabled = !rules.canEdit || rules.disabled;
 
             return (
                 <Bind>
@@ -33,7 +36,7 @@ const plugin: CmsModelFieldRendererPlugin = {
                                 onBlur={bind.validate}
                             >
                                 <Textarea
-                                    disabled={!permissions.canEdit}
+                                    disabled={disabled}
                                     rows={5}
                                     label={field.label}
                                     placeholder={field.placeholder}

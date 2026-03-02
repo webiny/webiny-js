@@ -23,9 +23,8 @@ const plugin: CmsModelFieldRendererPlugin = {
             );
         },
         render(props) {
-            const Bind = props.getBind();
             const { field } = useModelField();
-            const rules = useEffectiveRules(field, Bind.parentName);
+            const rules = useEffectiveRules(field);
 
             return (
                 <DynamicSection {...props} disabled={!rules.canEdit}>

@@ -4,7 +4,7 @@ import { i18n } from "@webiny/app/i18n/index.js";
 import { DelayedOnChange } from "@webiny/ui/DelayedOnChange/index.js";
 import type { CmsModelFieldRendererPlugin } from "~/types.js";
 import { Input } from "@webiny/admin-ui";
-import { useModelField } from "@webiny/app-headless-cms-common";
+import { useEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -19,7 +19,9 @@ const plugin: CmsModelFieldRendererPlugin = {
             return field.type === "text" && !field.list && !get(field, "predefinedValues.enabled");
         },
         render({ getBind }) {
-            const { field, permissions } = useModelField();
+            const { field } = useModelField();
+            const rules = useEffectiveRules(field);
+            const disabled = !rules.canEdit || rules.disabled;
             const Bind = getBind();
 
             return (
@@ -32,7 +34,7 @@ const plugin: CmsModelFieldRendererPlugin = {
                                 onBlur={bind.validate}
                             >
                                 <Input
-                                    disabled={!permissions.canEdit || permissions.disabled}
+                                    disabled={disabled}
                                     label={field.label}
                                     placeholder={field.placeholder}
                                     description={field.description}

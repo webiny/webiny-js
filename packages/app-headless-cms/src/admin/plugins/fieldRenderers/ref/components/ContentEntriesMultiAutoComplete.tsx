@@ -10,6 +10,7 @@ import { useNewRefEntry } from "../hooks/useNewRefEntry.js";
 import type { CmsModelField } from "~/types.js";
 import type { BindComponentRenderProp } from "@webiny/form";
 import type { OptionItem } from "./types.js";
+import { useEffectiveRules } from "@webiny/app-headless-cms-common";
 import { useModelField, useModels } from "~/admin/hooks/index.js";
 import { NewReferencedEntryDialog } from "~/admin/plugins/fieldRenderers/ref/components/NewReferencedEntryDialog.js";
 import { Routes } from "~/routes.js";
@@ -23,10 +24,12 @@ interface ContentEntriesMultiAutocompleteProps {
     field: CmsModelField;
 }
 const ContentEntriesMultiAutocomplete = ({ bind }: ContentEntriesMultiAutocompleteProps) => {
-    const { field, permissions } = useModelField();
+    const { field } = useModelField();
+    const rules = useEffectiveRules(field);
     const { models } = useModels();
     const [showNewEntryModal, setShowNewEntryModal] = useState(false);
     const { options, setSearch, entries, loading, onChange } = useReferences({ bind, field });
+    const disabled = !rules.canEdit || rules.disabled;
 
     const { renderNewEntryModal, refModelId, help } = useNewRefEntry({ field });
 
@@ -100,7 +103,7 @@ const ContentEntriesMultiAutocomplete = ({ bind }: ContentEntriesMultiAutocomple
     return (
         <MultiAutoComplete
             {...bind}
-            disabled={!permissions.canEdit}
+            disabled={disabled}
             renderItem={renderItem}
             renderListItemLabel={renderItem}
             renderListItemOptions={renderListItemOptions}

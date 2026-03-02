@@ -6,6 +6,7 @@ import { ReactComponent as ArrowUpIcon } from "@webiny/icons/expand_less.svg";
 import { ReactComponent as ArrowDownIcon } from "@webiny/icons/expand_more.svg";
 import { AddTemplateButton } from "./AddTemplate.js";
 import { TemplateIcon } from "./TemplateIcon.js";
+import { useEffectiveRules } from "@webiny/app-headless-cms-common";
 import { ParentFieldProvider, useModelField } from "~/admin/hooks/index.js";
 import { Fields } from "~/admin/components/ContentEntryForm/Fields.js";
 import type {
@@ -139,7 +140,9 @@ const TemplateValueForm = ({
     onDelete,
     onClone
 }: TemplateValueFormProps) => {
-    const { field, permissions } = useModelField();
+    const { field } = useModelField();
+    const rules = useEffectiveRules(field);
+    const disabled = !rules.canEdit || rules.disabled;
     const templates = field.settings?.templates || [];
 
     const template: CmsDynamicZoneTemplate | undefined = templates.find(
@@ -164,7 +167,7 @@ const TemplateValueForm = ({
             description={template.description}
             icon={<TemplateIcon icon={template.icon} />}
             template={template}
-            disabled={!permissions.canEdit}
+            disabled={disabled}
         >
             <MultiValueItem template={template} contentModel={contentModel} Bind={Bind} />
         </MultiValueItemContainer>

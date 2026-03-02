@@ -49,7 +49,7 @@ interface LayoutCellProps {
 
 const LayoutCell = ({ cell, Bind, fields, contentModel, gridClassName }: LayoutCellProps) => {
     const isLayout = isLayoutDescriptor(cell);
-    const rules = useEffectiveRules(isLayout ? cell : {}, Bind.parentName);
+    const rules = useEffectiveRules(isLayout ? cell : {});
 
     if (!isLayout) {
         return null;
@@ -84,7 +84,7 @@ interface FieldCellProps {
 }
 
 const FieldCell = ({ id, field, span, Bind, contentModel }: FieldCellProps) => {
-    const rules = useEffectiveRules(field ?? {}, Bind.parentName);
+    const rules = useEffectiveRules(field ?? {});
 
     if (!rules.canView || rules.hidden) {
         return null;

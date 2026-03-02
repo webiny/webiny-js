@@ -4,14 +4,16 @@ import type {
     CmsModelFieldRendererProps
 } from "@webiny/app-headless-cms/types.js";
 import { FileManager } from "@webiny/app-admin";
-import { EditFileUsingUrl } from "~/components/EditFileUsingUrl/index.js";
+import { useEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
 import { FilePicker } from "@webiny/admin-ui";
+import { EditFileUsingUrl } from "~/components/EditFileUsingUrl/index.js";
 import { getSupportedExtensionsLabelHint } from "~/modules/HeadlessCms/fileRenderer/utils.js";
-import { useEffectivePermissions } from "@webiny/app-headless-cms-common";
 
-const FieldRenderer = ({ field, getBind }: CmsModelFieldRendererProps) => {
+const FieldRenderer = ({ getBind }: CmsModelFieldRendererProps) => {
+    const { field } = useModelField();
+    const rules = useEffectiveRules(field);
+    const disabled = !rules.canEdit || rules.disabled;
     const Bind = getBind();
-    const { canEdit } = useEffectivePermissions(field, Bind.parentName);
 
     const imagesOnly = field.settings && field.settings.imagesOnly;
 
@@ -30,7 +32,7 @@ const FieldRenderer = ({ field, getBind }: CmsModelFieldRendererProps) => {
                                         return (
                                             <FilePicker
                                                 {...bind}
-                                                disabled={!canEdit}
+                                                disabled={disabled}
                                                 label={field.label}
                                                 validation={validation}
                                                 description={field.description}

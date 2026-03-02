@@ -15,6 +15,7 @@ import type {
 } from "~/types.js";
 import { Fields } from "~/admin/components/ContentEntryForm/Fields.js";
 import { ParentFieldProvider } from "~/admin/components/ContentEntryForm/ParentValue.js";
+import { useEffectiveRules } from "@webiny/app-headless-cms-common";
 import {
     ParentValueIndexProvider,
     ModelFieldProvider,
@@ -81,7 +82,10 @@ export const SingleValueDynamicZone = ({
     contentModel,
     getBind
 }: SingleValueDynamicZoneProps) => {
-    const { field, permissions } = useModelField();
+    const { field } = useModelField();
+    const rules = useEffectiveRules(field);
+    const disabled = !rules.canEdit || rules.disabled;
+
     const { showConfirmation } = useConfirmationDialog({
         message: `Are you sure you want to remove this item? This action is not reversible.`,
         acceptLabel: `Yes, I'm sure!`,
@@ -114,7 +118,7 @@ export const SingleValueDynamicZone = ({
                         <ModelFieldProvider field={field}>
                             <Accordion background={"base"} variant={"container"}>
                                 <SingleValueItemContainer
-                                    disabled={!permissions.canEdit}
+                                    disabled={!disabled}
                                     template={template}
                                     value={bind.value}
                                     contentModel={contentModel}

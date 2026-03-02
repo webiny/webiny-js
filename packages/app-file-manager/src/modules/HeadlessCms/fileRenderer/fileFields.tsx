@@ -11,6 +11,7 @@ import { getSupportedExtensionsLabelHint } from "./utils.js";
 import { EditFileUsingUrl } from "~/components/EditFileUsingUrl/index.js";
 import type { FileItem } from "~/types.js";
 import { MultiFilePicker } from "@webiny/admin-ui";
+import { useEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
 
 const t = i18n.ns("app-headless-cms/admin/fields/file");
 
@@ -19,7 +20,10 @@ interface EditFileRef {
     url: string;
 }
 
-const FieldRenderer = ({ getBind, field }: CmsModelFieldRendererProps) => {
+const FieldRenderer = ({ getBind }: CmsModelFieldRendererProps) => {
+    const { field } = useModelField();
+    const rules = useEffectiveRules(field);
+    const disabled = !rules.canEdit || rules.disabled;
     const Bind = getBind();
     const editFileRef = useRef<EditFileRef | null>(null);
 
@@ -77,6 +81,7 @@ const FieldRenderer = ({ getBind, field }: CmsModelFieldRendererProps) => {
                                         return (
                                             <MultiFilePicker
                                                 {...bind}
+                                                disabled={disabled}
                                                 label={field.label}
                                                 validation={validation}
                                                 description={field.description}

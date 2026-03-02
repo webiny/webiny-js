@@ -8,7 +8,7 @@ import { LexicalCmsEditor } from "~/admin/components/LexicalCmsEditor/LexicalCms
 import { useForm } from "@webiny/form";
 import { MultiValueRendererSettings } from "~/admin/plugins/fieldRenderers/MultiValueRendererSettings.js";
 import { IconButton } from "@webiny/admin-ui";
-import { CanEditField, useModelField } from "@webiny/app-headless-cms-common";
+import { CanEditField, useEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
@@ -32,10 +32,11 @@ const plugin: CmsModelFieldRendererPlugin = {
             ].every(Boolean);
         },
         render(props) {
-            const { field, permissions } = useModelField();
+            const { field } = useModelField();
+            const rules = useEffectiveRules(field);
             const form = useForm();
 
-            const disabled = !permissions.canEdit;
+            const disabled = !rules.canEdit || rules.disabled;
 
             return (
                 <DynamicSection {...props} disabled={disabled}>

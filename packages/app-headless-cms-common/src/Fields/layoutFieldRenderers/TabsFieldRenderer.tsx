@@ -25,7 +25,7 @@ interface TabPanelProps {
 }
 
 const TabPanel = ({ tab, Bind, fields, contentModel, gridClassName }: TabPanelProps) => {
-    const rules = useEffectiveRules(tab, Bind.parentName);
+    const rules = useEffectiveRules(tab);
 
     const icon = normalizeIcon(tab.icon);
 

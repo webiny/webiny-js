@@ -10,6 +10,7 @@ import { renderItem } from "./renderItem.js";
 import { createEntryUrl } from "./createEntryUrl.js";
 import type { CmsModelField } from "~/types.js";
 import type { BindComponentRenderProp } from "@webiny/form";
+import { useEffectiveRules } from "@webiny/app-headless-cms-common";
 import { useModelField, useModels } from "~/admin/hooks/index.js";
 import { NewReferencedEntryDialog } from "~/admin/plugins/fieldRenderers/ref/components/NewReferencedEntryDialog.js";
 
@@ -23,13 +24,16 @@ interface ContentEntriesAutocompleteProps {
     field: CmsModelField;
 }
 const ContentEntriesAutocomplete = ({ bind }: ContentEntriesAutocompleteProps) => {
-    const { field, permissions } = useModelField();
+    const { field } = useModelField();
+    const rules = useEffectiveRules(field);
     const { models } = useModels();
     const [showNewEntryModal, setShowNewEntryModal] = useState(false);
     const { options, setSearch, value, loading, onChange } = useReference({
         bind,
         field
     });
+
+    const disabled = !rules.canEdit || rules.disabled;
 
     let entryInfo: string | null = null;
     if (value && !value.published) {
@@ -83,7 +87,7 @@ const ContentEntriesAutocomplete = ({ bind }: ContentEntriesAutocompleteProps) =
     return (
         <AutoComplete
             {...bind}
-            disabled={!permissions.canEdit}
+            disabled={disabled}
             renderItem={renderItem}
             onChange={onChange}
             loading={loading}

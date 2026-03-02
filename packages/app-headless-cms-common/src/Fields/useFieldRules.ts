@@ -3,6 +3,7 @@ import { useAuthentication } from "@webiny/app-admin";
 import type { FieldRule } from "~/types/model.js";
 import { evaluateExpression, resolveFieldPath } from "./evaluateExpression.js";
 import { useParentRules } from "./FieldRulesProvider.js";
+import { useBindParentName } from "./useBind.js";
 
 export interface EffectiveFieldRules {
     canView: boolean;
@@ -94,9 +95,10 @@ export function evaluateAccessControlRules(
 /**
  * Internal hook that evaluates all rules (access control + entry value).
  */
-function useFieldRules(item: HasRules, bindParentName?: string): EffectiveFieldRules {
+function useFieldRules(item: HasRules): EffectiveFieldRules {
     const { identity } = useAuthentication();
     const form = useForm();
+    const bindParentName = useBindParentName();
 
     const rules = item.rules;
     if (!rules || rules.length === 0) {
@@ -109,7 +111,7 @@ function useFieldRules(item: HasRules, bindParentName?: string): EffectiveFieldR
     let disabled = false;
 
     for (const rule of rules) {
-        if (rule.type !== "entryValue") {
+        if (rule.type !== "condition") {
             continue;
         }
         if (!rule.target || !rule.operator) {
@@ -137,9 +139,9 @@ function useFieldRules(item: HasRules, bindParentName?: string): EffectiveFieldR
  * Composes useParentRules and useFieldRules into a single hook
  * that returns the effective (intersected) rules.
  */
-export function useEffectiveRules(item: HasRules, bindParentName?: string): EffectiveFieldRules {
+export function useEffectiveRules(item: HasRules): EffectiveFieldRules {
     const parentRules = useParentRules();
-    const itemRules = useFieldRules(item, bindParentName);
+    const itemRules = useFieldRules(item);
     return {
         canView: parentRules.canView && itemRules.canView,
         canEdit: parentRules.canEdit && itemRules.canEdit,

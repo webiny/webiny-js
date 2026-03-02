@@ -3,7 +3,7 @@ import get from "lodash/get.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import type { CmsModelFieldRendererPlugin } from "~/types.js";
 import { Select } from "@webiny/admin-ui";
-import { useModelField } from "@webiny/app-headless-cms-common";
+import { useEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -18,7 +18,9 @@ const plugin: CmsModelFieldRendererPlugin = {
             return !field.list && !!get(field, "predefinedValues.enabled");
         },
         render({ getBind }) {
-            const { field, permissions } = useModelField();
+            const { field } = useModelField();
+            const rules = useEffectiveRules(field);
+            const disabled = !rules.canEdit || rules.disabled;
             const Bind = getBind();
 
             const { values: options = [] } = field.predefinedValues || {};
@@ -30,7 +32,7 @@ const plugin: CmsModelFieldRendererPlugin = {
                         <Bind.ValidationContainer>
                             <Select
                                 {...bind}
-                                disabled={!permissions.canEdit}
+                                disabled={disabled}
                                 label={field.label}
                                 description={field.description}
                                 note={field.note}

@@ -6,7 +6,7 @@ import { ReactComponent as DeleteIcon } from "@webiny/icons/delete_outline.svg";
 import DynamicSection from "../DynamicSection.js";
 import { MultiValueRendererSettings } from "~/admin/plugins/fieldRenderers/MultiValueRendererSettings.js";
 import { DelayedOnChange, IconButton, Textarea } from "@webiny/admin-ui";
-import { CanEditField, useModelField } from "@webiny/app-headless-cms-common";
+import { CanEditField, useEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -25,10 +25,12 @@ const plugin: CmsModelFieldRendererPlugin = {
             );
         },
         render(props) {
-            const { permissions } = useModelField();
+            const { field } = useModelField();
+            const rules = useEffectiveRules(field);
+            const disabled = !rules.canEdit || rules.disabled;
 
             return (
-                <DynamicSection {...props} disabled={!permissions.canEdit}>
+                <DynamicSection {...props} disabled={disabled}>
                     {({ bind, index }) => (
                         <div className={"relative"}>
                             <DelayedOnChange
@@ -37,7 +39,7 @@ const plugin: CmsModelFieldRendererPlugin = {
                                 onBlur={bind.index.validate}
                             >
                                 <Textarea
-                                    disabled={!permissions.canEdit}
+                                    disabled={disabled}
                                     validation={bind.index.validation}
                                     rows={5}
                                     label={t`Value {number}`({ number: index + 1 })}

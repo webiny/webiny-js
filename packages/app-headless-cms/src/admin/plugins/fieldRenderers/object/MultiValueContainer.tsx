@@ -17,6 +17,7 @@ import {
     ObjectItem
 } from "~/admin/plugins/fieldRenderers/object/StyledComponents.js";
 import { FieldSettings } from "~/admin/plugins/fieldRenderers/object/FieldSettings.js";
+import { useEffectiveRules } from "@webiny/app-headless-cms-common";
 import { useModelField } from "~/admin/components/ModelFieldProvider/index.js";
 import { useModel } from "~/admin/components/ModelProvider/index.js";
 
@@ -33,7 +34,9 @@ export const MultiValueContainer = (props: MultiValueContainerProps) => {
     const [itemState, setItemState] = useState<{ [key: number]: boolean }>({});
 
     const { model } = useModel();
-    const { field, permissions } = useModelField();
+    const { field } = useModelField();
+    const rules = useEffectiveRules(field);
+    const disabled = !rules.canEdit || rules.disabled;
 
     const { showConfirmation } = useConfirmationDialog({
         message: `Are you sure you want to delete this item? This action is not reversible.`,
@@ -61,7 +64,7 @@ export const MultiValueContainer = (props: MultiValueContainerProps) => {
     return (
         <DynamicSection
             {...props}
-            disabled={!permissions.canEdit}
+            disabled={disabled}
             showLabel={props.showTitle}
             field={field}
             emptyValue={{}}
@@ -113,7 +116,7 @@ export const MultiValueContainer = (props: MultiValueContainerProps) => {
                     <ObjectItem>
                         {highlightMap[index] ? <ItemHighLight key={highlightMap[index]} /> : null}
                         <MultiValueItemContainer
-                            disabled={!permissions.canEdit}
+                            disabled={disabled}
                             value={bind.index.value}
                             title={`${field.label} #${index + 1}`}
                             isFirst={index === 0}

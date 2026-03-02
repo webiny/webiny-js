@@ -216,12 +216,12 @@ export const RulesTab = ({
 }: RulesTabProps) => {
     const bind = useBind({ name: "rules" });
     const allRules: FieldRule[] = bind.value || [];
-    const entryRules = allRules.filter(r => r.type === "entryValue");
-    const otherRules = allRules.filter(r => r.type !== "entryValue");
+    const entryRules = allRules.filter(r => r.type === "condition");
+    const otherRules = allRules.filter(r => r.type !== "condition");
 
     const addRule = () => {
         const newRule: FieldRule = {
-            type: "entryValue",
+            type: "condition",
             target: "",
             operator: "",
             value: null,
