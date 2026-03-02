@@ -316,7 +316,7 @@ export interface ICmsEntryLive {
     version: number;
 }
 
-export interface IEntrySystem {
+export interface ICmsEntrySystem {
     // to be extended
 }
 /**
@@ -506,7 +506,7 @@ export interface CmsEntry<TValues extends CmsEntryValues = CmsEntryValues> {
      */
     binOriginalFolderId?: string;
 
-    system?: IEntrySystem;
+    system?: ICmsEntrySystem;
     /**
      * Is this CMS Entry live (no matter the revision).
      */
@@ -793,7 +793,7 @@ export interface CreateCmsEntryInput<TValues extends CmsEntryValues = CmsEntryVa
         folderId?: string | null;
     };
 
-    system?: Partial<IEntrySystem>;
+    system?: Partial<ICmsEntrySystem>;
 
     values: TValues | undefined;
 }
@@ -835,7 +835,7 @@ export interface CreateFromCmsEntryInput<TValues extends CmsEntryValues = CmsEnt
     firstPublishedBy?: CmsIdentity;
     lastPublishedBy?: CmsIdentity;
 
-    system?: Partial<IEntrySystem>;
+    system?: Partial<ICmsEntrySystem>;
 
     values: TValues;
 }
@@ -893,7 +893,7 @@ export interface UpdateCmsEntryInput<TValues extends CmsEntryValues = CmsEntryVa
         folderId?: string | null;
     };
 
-    system?: Partial<IEntrySystem>;
+    system?: Partial<ICmsEntrySystem>;
 
     values?: Partial<TValues>;
 }

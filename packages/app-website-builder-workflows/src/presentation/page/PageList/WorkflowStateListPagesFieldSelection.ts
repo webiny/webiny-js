@@ -5,8 +5,8 @@ class WorkflowStatesListPagesGraphQLFieldSelection
 {
     getSelection(): string[] {
         return [
-            `workflows {
-                state {
+            `system {
+                workflow {
                     workflowId
                     stepId
                     stepName

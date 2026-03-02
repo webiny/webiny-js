@@ -2,7 +2,7 @@ import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { DomainEvent, IEventHandler } from "@webiny/api-core/features/EventPublisher";
 import type { WbPage } from "~/domain/page/abstractions.js";
 import type { WbLocation } from "~/domain/shared/abstractions.js";
-import type { IEntrySystem } from "@webiny/api-headless-cms/types/index.js";
+import type { ICmsEntrySystem } from "@webiny/api-headless-cms/types/index.js";
 import {
     PageNotAuthorizedError,
     PageNotFoundError,
@@ -20,7 +20,7 @@ export interface IUpdateWbPageData {
     metadata?: Record<string, any>;
     bindings?: Record<string, any>;
     elements?: Record<string, any>;
-    system?: IEntrySystem;
+    system?: ICmsEntrySystem;
 }
 
 // ============================================================================

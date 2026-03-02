@@ -17,7 +17,9 @@ export class CreatePageUseCase implements ICreatePageUseCase {
                 metadata: params.metadata,
                 elements: params.elements,
                 bindings: params.bindings,
-                extensions: params.extensions
+                extensions: params.extensions,
+                live: null,
+                system: null
             })
         );
     }
