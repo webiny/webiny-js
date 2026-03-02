@@ -5,6 +5,6 @@ import { FeatureFlags } from "./FeatureFlags.js";
 export const FeatureFlagsFeature = createFeature({
     name: "FeatureFlags",
     register(container: Container) {
-        container.register(FeatureFlags).inSingletonScope();
+        container.register(FeatureFlags);
     }
 });

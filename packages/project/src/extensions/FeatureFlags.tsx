@@ -12,7 +12,7 @@ export const FeatureFlags = defineExtension({
         // Follows `IFeatureFlagsDto` from `packages/feature-flags/src/index.ts`.
         features: z.object({
             multiTenancy: z.boolean().optional(),
-            workflows: z.boolean().optional(),
+            advancedPublishingWorkflow: z.boolean().optional(),
             advancedAccessControlLayer: z
                 .union([
                     z.boolean(),

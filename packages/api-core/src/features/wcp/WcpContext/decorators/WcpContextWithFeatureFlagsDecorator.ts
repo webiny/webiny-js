@@ -24,6 +24,7 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
 
         const flags = this.featureFlags.get();
 
+        console.log("flags", flags);
         return {
             ...project,
             package: {

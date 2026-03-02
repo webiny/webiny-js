@@ -88,7 +88,8 @@ export const Extensions = () => {
             <Project.FeatureFlags
                 features={{
                     advancedAccessControlLayer: false,
-                    advancedPublishingWorkflow: true
+                    advancedPublishingWorkflow: true,
+                    fileManager: { threatDetection: false }
                 }}
             />
 

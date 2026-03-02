@@ -16,7 +16,7 @@ export interface IFileManagerFeatureFlags {
  */
 export interface IFeatureFlagsDto {
     multiTenancy?: boolean;
-    workflows?: boolean;
+    advancedPublishingWorkflow?: boolean;
     advancedAccessControlLayer?: boolean | IAaclFeatureFlags;
     auditLogs?: boolean;
     recordLocking?: boolean;
@@ -35,7 +35,7 @@ export class FeatureFlags {
     }
 
     isWorkflowsEnabled(): boolean {
-        return this.flags.workflows !== false;
+        return this.flags.advancedPublishingWorkflow !== false;
     }
 
     isAaclEnabled(): boolean {
