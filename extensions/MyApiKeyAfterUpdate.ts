@@ -9,7 +9,7 @@ class MyApiKeyAfterUpdateImpl implements ApiKeyAfterUpdateHandler.Interface {
     ) {}
 
     async handle() {
-        this.logger.warn("An API key was updated!");
+        this.logger.debug("An API key was updated!");
 
         // Read build params
         const param1 = this.buildParams.get<string>("MY_CUSTOM_BUILD_PARAM");

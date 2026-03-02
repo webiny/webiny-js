@@ -9,11 +9,11 @@ export const FeatureFlags = defineExtension({
     tags: { runtimeContext: "project" },
     description: "Enable or disable WCP features.",
     paramsSchema: z.object({
-        // Follows `IFeatureFlags` from `packages/feature-flags/src/index.ts`.
+        // Follows `IFeatureFlagsDto` from `packages/feature-flags/src/index.ts`.
         features: z.object({
             multiTenancy: z.boolean().optional(),
             workflows: z.boolean().optional(),
-            aacl: z
+            advancedAccessControlLayer: z
                 .union([
                     z.boolean(),
                     z.object({
@@ -25,7 +25,14 @@ export const FeatureFlags = defineExtension({
                 .optional(),
             auditLogs: z.boolean().optional(),
             recordLocking: z.boolean().optional(),
-            fileManagerThreatDetection: z.boolean().optional()
+            fileManager: z
+                .union([
+                    z.boolean(),
+                    z.object({
+                        threatDetection: z.boolean().optional()
+                    })
+                ])
+                .optional()
         })
     }),
     render: ({ features = {} }) => {

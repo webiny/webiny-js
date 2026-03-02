@@ -4,6 +4,10 @@ export interface IAaclFeatureFlags {
     folderLevelPermissions?: boolean;
 }
 
+export interface IFileManagerFeatureFlags {
+    threatDetection?: boolean;
+}
+
 /**
  * Top-level feature flags interface. Add new flags here as needed.
  * A boolean value controls whether the feature is enabled.
@@ -13,10 +17,10 @@ export interface IAaclFeatureFlags {
 export interface IFeatureFlagsDto {
     multiTenancy?: boolean;
     workflows?: boolean;
-    aacl?: boolean | IAaclFeatureFlags;
+    advancedAccessControlLayer?: boolean | IAaclFeatureFlags;
     auditLogs?: boolean;
     recordLocking?: boolean;
-    fileManagerThreatDetection?: boolean;
+    fileManager?: boolean | IFileManagerFeatureFlags;
 }
 
 export class FeatureFlags {
@@ -35,35 +39,35 @@ export class FeatureFlags {
     }
 
     isAaclEnabled(): boolean {
-        return this.flags.aacl !== false;
+        return this.flags.advancedAccessControlLayer !== false;
     }
 
     isTeamsEnabled(): boolean {
-        if (this.flags.aacl === false) {
+        if (this.flags.advancedAccessControlLayer === false) {
             return false;
         }
-        if (typeof this.flags.aacl === "object") {
-            return this.flags.aacl.teams !== false;
+        if (typeof this.flags.advancedAccessControlLayer === "object") {
+            return this.flags.advancedAccessControlLayer.teams !== false;
         }
         return true;
     }
 
     isPrivateFilesEnabled(): boolean {
-        if (this.flags.aacl === false) {
+        if (this.flags.advancedAccessControlLayer === false) {
             return false;
         }
-        if (typeof this.flags.aacl === "object") {
-            return this.flags.aacl.privateFiles !== false;
+        if (typeof this.flags.advancedAccessControlLayer === "object") {
+            return this.flags.advancedAccessControlLayer.privateFiles !== false;
         }
         return true;
     }
 
     isFolderLevelPermissionsEnabled(): boolean {
-        if (this.flags.aacl === false) {
+        if (this.flags.advancedAccessControlLayer === false) {
             return false;
         }
-        if (typeof this.flags.aacl === "object") {
-            return this.flags.aacl.folderLevelPermissions !== false;
+        if (typeof this.flags.advancedAccessControlLayer === "object") {
+            return this.flags.advancedAccessControlLayer.folderLevelPermissions !== false;
         }
         return true;
     }
@@ -77,6 +81,12 @@ export class FeatureFlags {
     }
 
     isFileManagerThreatDetectionEnabled(): boolean {
-        return this.flags.fileManagerThreatDetection !== false;
+        if (this.flags.fileManager === false) {
+            return false;
+        }
+        if (typeof this.flags.fileManager === "object") {
+            return this.flags.fileManager.threatDetection !== false;
+        }
+        return true;
     }
 }
