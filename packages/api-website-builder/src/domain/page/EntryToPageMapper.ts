@@ -21,6 +21,7 @@ export class EntryToPageMapper {
             modifiedBy: entry.modifiedBy ?? null,
             tenant: entry.tenant,
             system: entry.system,
+            live: entry.live,
             properties: entry.values.properties,
             metadata: entry.values.metadata,
             bindings: entry.values.bindings,

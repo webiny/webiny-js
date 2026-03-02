@@ -12,10 +12,6 @@ export const createWebsiteBuilderPageGraphQLExtension = () => {
             extend type WbPage {
                 system: CmsEntrySystem
             }
-
-            extend input WbPagesListWhereInput {
-                workflow: ListWhereInputCmsEntrySystemWorkflowInput
-            }
         `,
         resolvers: {
             WbPage: {

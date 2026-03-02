@@ -20,6 +20,8 @@ export const pagesTypeDefs = /* GraphQL */ `
         restoredBy: WbIdentity
         firstPublishedBy: WbIdentity
         lastPublishedBy: WbIdentity
+        system: CmsEntrySystem
+        live: CmsEntryLive
         properties: JSON
         metadata: JSON
         bindings: JSON
@@ -138,6 +140,7 @@ export const pagesTypeDefs = /* GraphQL */ `
         status_in: [String!]
         status_not_in: [String!]
 
+        live: CmsEntryLiveWhereInput
         system: ListWhereInputCmsEntrySystem
 
         AND: [WbPagesListWhereInput!]

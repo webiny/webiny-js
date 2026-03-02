@@ -1,14 +1,14 @@
-import type { CmsEntry, IEntrySystem } from "~/types/index.js";
+import type { CmsEntry, ICmsEntrySystem } from "~/types/index.js";
 
 interface IInputWithPossibleSystem {
-    system: Partial<IEntrySystem>;
+    system: Partial<ICmsEntrySystem>;
 }
 interface IParams {
     input: Partial<IInputWithPossibleSystem>;
     original?: CmsEntry | null;
 }
 
-export const getSystem = ({ input, original }: IParams): IEntrySystem | undefined => {
+export const getSystem = ({ input, original }: IParams): ICmsEntrySystem | undefined => {
     if (!input.system) {
         return original?.system;
     }
