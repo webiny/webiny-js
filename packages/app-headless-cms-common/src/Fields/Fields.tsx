@@ -76,7 +76,7 @@ const LayoutCell = ({
         return null;
     }
 
-    const rulePermissions = useFieldRules(cell);
+    const rulePermissions = useFieldRules(cell, Bind.parentName);
     const identityPermissions = getFieldPermissions(identity, cell);
     const permissions = intersectPermissions(
         parentPermissions,
@@ -122,7 +122,7 @@ const FieldCell = ({
     Bind,
     contentModel
 }: FieldCellProps) => {
-    const rulePermissions = useFieldRules(field ?? {});
+    const rulePermissions = useFieldRules(field ?? {}, Bind.parentName);
     const identityPermissions = field
         ? getFieldPermissions(identity, field)
         : { canView: true, canEdit: true };

@@ -134,8 +134,10 @@ export const createModelsSchema = ({
             }
 
             input CmsFieldRuleInput {
+                fieldPath: String!
+                operator: String!
+                value: JSON
                 action: String!
-                expression: String!
             }
 
             input CmsContentModelFieldInput {
@@ -252,8 +254,10 @@ export const createModelsSchema = ({
             }
 
             type CmsFieldRule {
+                fieldPath: String!
+                operator: String!
+                value: JSON
                 action: String!
-                expression: String!
             }
 
             type CmsContentModelField {

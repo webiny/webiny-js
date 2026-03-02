@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Tabs } from "@webiny/admin-ui";
 import { i18n } from "@webiny/app/i18n/index.js";
 import type { CmsModelField } from "~/types.js";
@@ -9,6 +9,8 @@ import { ValidationTab } from "./ValidationTab/index.js";
 import { PermissionsTab } from "./PermissionsTab/PermissionsTab.js";
 import { RulesTab } from "./RulesTab/RulesTab.js";
 import { ModelFieldProvider } from "~/admin/components/ModelFieldProvider/index.js";
+import { useModelEditor } from "~/admin/components/ContentModelEditor/useModelEditor.js";
+import { buildFieldOptions } from "@webiny/app-headless-cms-common/Fields/fieldOptions.js";
 
 const t = i18n.namespace("app-headless-cms/admin/components/editor");
 
@@ -25,6 +27,12 @@ export const FieldSettingsTabs = ({
     showValidatorsTab,
     isSubtypeField
 }: FieldSettingsTabsProps) => {
+    const { contentModel } = useModelEditor();
+    const fieldOptions = useMemo(
+        () => buildFieldOptions(contentModel?.fields ?? []),
+        [contentModel?.fields]
+    );
+
     return (
         <ModelFieldProvider field={shadowField}>
             <Tabs
@@ -69,7 +77,7 @@ export const FieldSettingsTabs = ({
                         key={"rules"}
                         trigger={t`Rules`}
                         value={"rules"}
-                        content={<RulesTab />}
+                        content={<RulesTab fieldOptions={fieldOptions} />}
                     />
                 ]}
             />

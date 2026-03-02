@@ -155,7 +155,7 @@ export const PanoramaViewer = forwardRef<PanoramaViewerHandle, PanoramaViewerPro
                 showControls: false,
                 pitch: config?.pitch ?? 0,
                 yaw: config?.yaw ?? 0,
-                hfov: config?.hfov ?? 100,
+                hfov: config?.hfov ?? 120,
                 minPitch: config?.minPitch ?? -90,
                 maxPitch: config?.maxPitch ?? 90,
                 minYaw: config?.minYaw ?? -180,

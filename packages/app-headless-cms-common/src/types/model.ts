@@ -32,11 +32,13 @@ export interface FieldPermission {
     accessLevel: FieldAccessLevel;
 }
 
-export type FieldRuleAction = "hide" | "disable";
+export type FieldRuleAction = "hide" | "disable" | string;
 
 export interface FieldRule {
+    fieldPath: string;
+    operator: string;
+    value: string | number | boolean | null;
     action: FieldRuleAction;
-    expression: string;
 }
 
 export type CmsModelField<T = unknown> = T & {

@@ -1,4 +1,4 @@
-type Operator =
+export type Operator =
     | "=="
     | "!="
     | ">"
@@ -16,95 +16,65 @@ export interface ParsedExpression {
     value: string | number | boolean | null;
 }
 
-const OPERATORS: Operator[] = [
-    ">=",
-    "<=",
-    "!=",
-    "==",
-    ">",
-    "<",
-    "contains",
-    "startsWith",
-    "endsWith",
-    "isEmpty"
-];
-
-function parseLiteral(raw: string): string | number | boolean | null {
-    const trimmed = raw.trim();
-
-    if (trimmed === "null") {
-        return null;
-    }
-    if (trimmed === "true") {
-        return true;
-    }
-    if (trimmed === "false") {
-        return false;
+/**
+ * Resolve a fieldPath that may contain `$` placeholders using the bindParentName.
+ *
+ * The bindParentName gives us the concrete indices for the current list context.
+ * For example, if fieldPath is `panorama.hotspots.$.title` and bindParentName
+ * is `panorama.hotspots.2`, the result is `panorama.hotspots.2.title`.
+ *
+ * Supports multiple nested `$` segments for deeply nested list objects.
+ */
+export function resolveFieldPath(fieldPath: string, bindParentName?: string): string {
+    if (!fieldPath.includes("$")) {
+        return fieldPath;
     }
 
-    // Quoted string
-    if (
-        (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
-        (trimmed.startsWith("'") && trimmed.endsWith("'"))
-    ) {
-        return trimmed.slice(1, -1);
+    if (!bindParentName) {
+        // No parent context, replace $ with 0 as fallback
+        return fieldPath.replace(/\$/g, "0");
     }
 
-    const num = Number(trimmed);
-    if (!isNaN(num) && trimmed !== "") {
-        return num;
+    const pathParts = fieldPath.split(".");
+    const parentParts = bindParentName.split(".");
+
+    // Build a map of prefix -> index from the parent path.
+    // E.g., parentName "panorama.hotspots.2.items.1" gives us:
+    //   "panorama.hotspots" -> "2"
+    //   "panorama.hotspots.2.items" -> "1"
+    const indexMap = new Map<string, string>();
+    const prefixParts: string[] = [];
+    for (const part of parentParts) {
+        if (/^\d+$/.test(part)) {
+            indexMap.set(prefixParts.join("."), part);
+        } else {
+            prefixParts.push(part);
+        }
     }
 
-    // Return as-is string
-    return trimmed;
+    // Walk through pathParts and replace each `$` with the corresponding index
+    const resolved: string[] = [];
+    const currentPrefix: string[] = [];
+    for (const part of pathParts) {
+        if (part === "$") {
+            const key = currentPrefix.join(".");
+            const index = indexMap.get(key) ?? "0";
+            resolved.push(index);
+        } else {
+            currentPrefix.push(part);
+            resolved.push(part);
+        }
+    }
+
+    return resolved.join(".");
 }
 
-export function parseExpression(expression: string): ParsedExpression | null {
-    const trimmed = expression.trim();
-    if (!trimmed) {
-        return null;
-    }
-
-    // Strip the "entry." prefix from the left-hand side.
-    const expr = trimmed.startsWith("entry.") ? trimmed.slice(6) : trimmed;
-
-    for (const op of OPERATORS) {
-        const idx = expr.indexOf(` ${op}` + (op === "isEmpty" ? "" : " "));
-        if (idx === -1) {
-            // Special case: isEmpty at the end with no right-hand side
-            if (op === "isEmpty" && expr.endsWith(` ${op}`)) {
-                const fieldPath = expr.slice(0, expr.length - op.length - 1).trim();
-                if (fieldPath) {
-                    return { fieldPath, operator: op, value: null };
-                }
-            }
-            continue;
-        }
-
-        const fieldPath = expr.slice(0, idx).trim();
-        if (!fieldPath) {
-            continue;
-        }
-
-        if (op === "isEmpty") {
-            return { fieldPath, operator: op, value: null };
-        }
-
-        const valueStr = expr.slice(idx + op.length + 2);
-        return { fieldPath, operator: op, value: parseLiteral(valueStr) };
-    }
-
-    return null;
-}
-
-export function evaluateExpression(
-    parsed: ParsedExpression,
-    getFormValue: (path: string) => unknown
+function compareValues(
+    operator: string,
+    val: unknown,
+    rhs: string | number | boolean | null
 ): boolean {
-    const val = getFormValue(parsed.fieldPath);
-    const rhs = parsed.value;
-
-    switch (parsed.operator) {
+    switch (operator) {
         case "==":
             // eslint-disable-next-line eqeqeq
             return val == rhs;
@@ -130,4 +100,28 @@ export function evaluateExpression(
         default:
             return false;
     }
+}
+
+/**
+ * Evaluate a parsed expression against form values.
+ *
+ * If the resolved fieldPath ends with `.length`, it reads the array at the parent
+ * path and uses its length as the left-hand value.
+ */
+export function evaluateExpression(
+    parsed: ParsedExpression,
+    getFormValue: (path: string) => unknown
+): boolean {
+    const { fieldPath, operator, value: rhs } = parsed;
+
+    let val: unknown;
+    if (fieldPath.endsWith(".length")) {
+        const arrayPath = fieldPath.slice(0, -".length".length);
+        const arr = getFormValue(arrayPath);
+        val = Array.isArray(arr) ? arr.length : 0;
+    } else {
+        val = getFormValue(fieldPath);
+    }
+
+    return compareValues(operator, val, rhs);
 }

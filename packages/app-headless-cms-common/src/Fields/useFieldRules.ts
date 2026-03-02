@@ -1,13 +1,13 @@
 import { useForm } from "@webiny/form";
 import type { FieldRule } from "~/types/model.js";
 import type { FieldPermissions } from "./getFieldPermissions.js";
-import { parseExpression, evaluateExpression } from "./evaluateExpression.js";
+import { evaluateExpression, resolveFieldPath } from "./evaluateExpression.js";
 
 interface HasRules {
     rules?: FieldRule[];
 }
 
-export function useFieldRules(item: HasRules): FieldPermissions {
+export function useFieldRules(item: HasRules, bindParentName?: string): FieldPermissions {
     const form = useForm();
 
     const rules = item.rules;
@@ -19,13 +19,16 @@ export function useFieldRules(item: HasRules): FieldPermissions {
     let canEdit = true;
 
     for (const rule of rules) {
-        const parsed = parseExpression(rule.expression);
-        if (!parsed) {
+        if (!rule.fieldPath || !rule.operator) {
             continue;
         }
 
-        console.log("form", form);
-        const matches = evaluateExpression(parsed, name => form.getValue(name));
+        const resolvedPath = resolveFieldPath(rule.fieldPath, bindParentName);
+
+        const matches = evaluateExpression(
+            { fieldPath: resolvedPath, operator: rule.operator as any, value: rule.value },
+            name => form.getValue(name)
+        );
         if (!matches) {
             continue;
         }

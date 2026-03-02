@@ -5,3 +5,5 @@ export * from "./FieldPermissionProvider.js";
 export * from "./getFieldPermissions.js";
 export * from "./evaluateExpression.js";
 export * from "./useFieldRules.js";
+export * from "./fieldOptions.js";
+export * from "./operatorOptions.js";

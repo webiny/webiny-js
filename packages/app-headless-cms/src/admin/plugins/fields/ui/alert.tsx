@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useMemo } from "react";
 import type { CmsLayoutFieldTypePlugin } from "@webiny/app-headless-cms-common/types/index.js";
 import type {
     CmsAlertLayoutDescriptor,
-    CmsLayoutDescriptor
+    CmsLayoutDescriptor,
+    CmsModel
 } from "@webiny/app-headless-cms-common/types/model.js";
 import { ReactComponent as AlertIcon } from "@webiny/icons/warning.svg";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
@@ -13,6 +14,8 @@ import { useDialogs } from "@webiny/app-admin";
 import { Bind } from "@webiny/form";
 import { PermissionsTab } from "~/admin/components/FieldEditor/EditFieldDialog/PermissionsTab/PermissionsTab.js";
 import { RulesTab } from "~/admin/components/FieldEditor/EditFieldDialog/RulesTab/RulesTab.js";
+import { useModelEditor } from "~/admin/components/ContentModelEditor/useModelEditor.js";
+import { buildFieldOptions } from "@webiny/app-headless-cms-common/Fields/fieldOptions.js";
 
 const t = i18n.ns("app-headless-cms/admin/fields");
 
@@ -42,7 +45,12 @@ const AlertSettings = () => {
     );
 };
 
-const AlertDialogContent = () => {
+const AlertDialogContent = ({ contentModel }: { contentModel: CmsModel }) => {
+    const fieldOptions = useMemo(
+        () => buildFieldOptions(contentModel?.fields ?? []),
+        [contentModel?.fields]
+    );
+
     return (
         <Tabs
             size={"md"}
@@ -64,7 +72,7 @@ const AlertDialogContent = () => {
                     key={"rules"}
                     trigger={"Rules"}
                     value={"rules"}
-                    content={<RulesTab gridClassName={"mt-md"} />}
+                    content={<RulesTab gridClassName={"mt-md"} fieldOptions={fieldOptions} />}
                 />
             ]}
         />
@@ -78,6 +86,7 @@ interface AlertLayoutCellProps {
 }
 
 const AlertLayoutCell = ({ descriptor, onUpdate, onDelete }: AlertLayoutCellProps) => {
+    const { contentModel } = useModelEditor();
     const dialogs = useDialogs();
 
     const openSettings = () => {
@@ -92,7 +101,7 @@ const AlertLayoutCell = ({ descriptor, onUpdate, onDelete }: AlertLayoutCellProp
                 permissions: descriptor.permissions ?? [],
                 rules: descriptor.rules ?? []
             },
-            content: <AlertDialogContent />,
+            content: <AlertDialogContent contentModel={contentModel} />,
             onAccept: data => {
                 onUpdate({
                     ...descriptor,

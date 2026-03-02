@@ -9,7 +9,9 @@ interface SeparatorFieldRendererProps {
 export const SeparatorFieldRenderer = ({ descriptor }: SeparatorFieldRendererProps) => {
     return (
         <Grid.Column span={12}>
-            <Separator variant={"accent"}>{descriptor.label}</Separator>
+            <Separator variant={"accent"} labelPosition={"start"}>
+                {descriptor.label}
+            </Separator>
             {descriptor.description && (
                 <Text as={"div"} size={"sm"} className={"text-neutral-strong text-center mt-sm"}>
                     {descriptor.description}

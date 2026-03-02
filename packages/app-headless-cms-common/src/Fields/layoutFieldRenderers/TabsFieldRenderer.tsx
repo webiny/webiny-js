@@ -37,21 +37,19 @@ const TabPanel = ({
     contentModel,
     gridClassName
 }: TabPanelProps) => {
-    const rulePermissions = useFieldRules(tab);
+    const rulePermissions = useFieldRules(tab, Bind.parentName);
     const identityPermissions = getFieldPermissions(identity, tab);
     const effectivePermissions: FieldPermissions = {
-        canView: parentPermissions.canView && identityPermissions.canView && rulePermissions.canView,
+        canView:
+            parentPermissions.canView && identityPermissions.canView && rulePermissions.canView,
         canEdit: parentPermissions.canEdit && identityPermissions.canEdit && rulePermissions.canEdit
     };
-
-    if (!effectivePermissions.canView) {
-        return null;
-    }
 
     const icon = normalizeIcon(tab.icon);
 
     return (
         <Tabs.Tab
+            disabled={!effectivePermissions.canEdit}
             visible={effectivePermissions.canView}
             value={tab.id}
             trigger={tab.label}
@@ -94,12 +92,7 @@ export const TabsFieldRenderer = ({
         />
     ));
 
-    // Filter out null tabs (hidden by rules/permissions)
-    const visibleTabs = tabElements.filter(Boolean);
-
-    if (visibleTabs.length === 0) {
-        return null;
-    }
+    const firstTab = descriptor.tabs[0];
 
     return (
         <Grid.Column span={12}>
@@ -109,7 +102,13 @@ export const TabsFieldRenderer = ({
             {descriptor.description ? (
                 <FormComponentDescription text={descriptor.description} />
             ) : null}
-            <Tabs size="md" spacing="md" separator={true} tabs={visibleTabs} />
+            <Tabs
+                size="md"
+                spacing="md"
+                separator={true}
+                tabs={tabElements}
+                defaultValue={firstTab?.id}
+            />
         </Grid.Column>
     );
 };

@@ -1,69 +1,232 @@
-import React from "react";
-import { Grid, Select, Input, Button, IconButton } from "@webiny/admin-ui";
+import React, { useCallback, useMemo } from "react";
+import { Grid, Select, Input, Button, Separator } from "@webiny/admin-ui";
 import { useBind } from "@webiny/form";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import type { FieldRule, FieldRuleAction } from "~/types.js";
+import type { FieldOption } from "@webiny/app-headless-cms-common/Fields/fieldOptions.js";
+import {
+    getOperatorOptions,
+    VALUE_HIDDEN_OPERATORS
+} from "@webiny/app-headless-cms-common/Fields/operatorOptions.js";
+import type { Operator } from "@webiny/app-headless-cms-common/Fields/evaluateExpression.js";
 
-const ACTION_OPTIONS = [
+const DEFAULT_ACTION_OPTIONS = [
     { value: "hide", label: "Hide" },
     { value: "disable", label: "Disable" }
 ];
 
+interface ActionOption {
+    value: string;
+    label: string;
+}
+
 interface RuleRowProps {
     rule: FieldRule;
     index: number;
+    fieldOptions: FieldOption[];
+    actionOptions: ActionOption[];
     onChange: (index: number, updated: FieldRule) => void;
     onRemove: (index: number) => void;
 }
 
-const RuleRow = ({ rule, index, onChange, onRemove }: RuleRowProps) => {
+const RuleRow = ({
+    rule,
+    index,
+    fieldOptions,
+    actionOptions,
+    onChange,
+    onRemove
+}: RuleRowProps) => {
+    const selectedFieldOption = useMemo(
+        () => fieldOptions.find(o => o.value === rule.fieldPath),
+        [fieldOptions, rule.fieldPath]
+    );
+
+    const operatorOptions = useMemo(
+        () => (selectedFieldOption ? getOperatorOptions(selectedFieldOption.fieldType) : []),
+        [selectedFieldOption]
+    );
+
+    const operatorSelectOptions = useMemo(
+        () => operatorOptions.map(o => ({ value: o.value, label: o.label })),
+        [operatorOptions]
+    );
+
+    const fieldSelectOptions = useMemo(
+        () => fieldOptions.map(o => ({ value: o.value, label: o.label })),
+        [fieldOptions]
+    );
+
+    const showValue = rule.operator && !VALUE_HIDDEN_OPERATORS.has(rule.operator as Operator);
+
+    const handleFieldChange = useCallback(
+        (value: string | null) => {
+            const newFieldPath = value ?? "";
+            const newFieldOption = fieldOptions.find(o => o.value === newFieldPath);
+            // Reset operator and value when field changes
+            const newOps = newFieldOption ? getOperatorOptions(newFieldOption.fieldType) : [];
+            const currentOpValid = newOps.some(o => o.value === rule.operator);
+            onChange(index, {
+                ...rule,
+                fieldPath: newFieldPath,
+                operator: currentOpValid ? rule.operator : "",
+                value: currentOpValid ? rule.value : null
+            });
+        },
+        [fieldOptions, rule, index, onChange]
+    );
+
+    const handleOperatorChange = useCallback(
+        (value: string | null) => {
+            const op = value ?? "";
+            onChange(index, {
+                ...rule,
+                operator: op,
+                value: VALUE_HIDDEN_OPERATORS.has(op as Operator) ? null : rule.value
+            });
+        },
+        [rule, index, onChange]
+    );
+
+    const handleValueChange = useCallback(
+        (value: string | null) => {
+            let parsed: string | number | boolean | null = value ?? "";
+
+            // Auto-parse numbers for numeric field types
+            if (selectedFieldOption?.fieldType === "number" && parsed !== "") {
+                const num = Number(parsed);
+                if (!isNaN(num)) {
+                    parsed = num;
+                }
+            }
+
+            // Auto-parse booleans
+            if (selectedFieldOption?.fieldType === "boolean") {
+                if (parsed === "true") {
+                    parsed = true;
+                } else if (parsed === "false") {
+                    parsed = false;
+                }
+            }
+
+            onChange(index, { ...rule, value: parsed });
+        },
+        [rule, index, onChange, selectedFieldOption]
+    );
+
+    const handleActionChange = useCallback(
+        (value: string | null) => {
+            onChange(index, {
+                ...rule,
+                action: (value ?? actionOptions[0]?.value ?? "hide") as FieldRuleAction
+            });
+        },
+        [rule, index, onChange, actionOptions]
+    );
+
+    // For boolean fields, show a dropdown for value
+    const isBooleanField = selectedFieldOption?.fieldType === "boolean";
+
     return (
-        <Grid>
-            <Grid.Column span={3}>
-                <Select
-                    displayResetAction={false}
-                    label={"Action"}
-                    value={rule.action}
-                    options={ACTION_OPTIONS}
-                    onChange={value => {
-                        onChange(index, {
-                            ...rule,
-                            action: (value ?? "hide") as FieldRuleAction
-                        });
-                    }}
-                />
-            </Grid.Column>
-            <Grid.Column span={8}>
-                <Input
-                    label={"Expression"}
-                    placeholder={"entry.fieldId > 200"}
-                    value={rule.expression}
-                    onChange={value => {
-                        onChange(index, { ...rule, expression: value ?? "" });
-                    }}
-                />
-            </Grid.Column>
-            <Grid.Column span={1}>
-                <div className={"flex items-center h-full pt-xs"}>
-                    <IconButton
+        <>
+            <Separator
+                className={index === 0 ? "mb-lg" : "my-lg"}
+                variant={"accent"}
+                labelPosition={"start"}
+            >
+                Rule #{index + 1}
+            </Separator>
+            <Grid>
+                <Grid.Column span={4}>
+                    <Select
+                        displayResetAction={false}
+                        label={"Field"}
+                        value={rule.fieldPath}
+                        options={fieldSelectOptions}
+                        onChange={handleFieldChange}
+                    />
+                </Grid.Column>
+                <Grid.Column span={4}>
+                    <Select
+                        displayResetAction={false}
+                        label={"Operator"}
+                        value={rule.operator}
+                        options={operatorSelectOptions}
+                        onChange={handleOperatorChange}
+                        disabled={!rule.fieldPath}
+                    />
+                </Grid.Column>
+                <Grid.Column span={4}>
+                    {isBooleanField ? (
+                        <Select
+                            disabled={!showValue}
+                            displayResetAction={false}
+                            label={"Value"}
+                            value={String(rule.value ?? "")}
+                            options={[
+                                { value: "true", label: "True" },
+                                { value: "false", label: "False" }
+                            ]}
+                            onChange={handleValueChange}
+                        />
+                    ) : (
+                        <Input
+                            disabled={!showValue}
+                            label={"Value"}
+                            value={rule.value != null ? String(rule.value) : ""}
+                            type={selectedFieldOption?.fieldType === "number" ? "number" : "text"}
+                            onChange={handleValueChange}
+                        />
+                    )}
+                </Grid.Column>
+                <Grid.Column span={12}>
+                    <Select
+                        displayResetAction={false}
+                        value={rule.action}
+                        options={actionOptions}
+                        onChange={handleActionChange}
+                    />
+                </Grid.Column>
+                <Grid.Column span={12} className={"flex justify-between"}>
+                    <Button
+                        className={"[&_svg]:fill-destructive text-destructive-primary"}
+                        containerClassName={"flex ml-auto"}
+                        text={"Remove rule"}
                         icon={<DeleteIcon />}
                         onClick={() => onRemove(index)}
                         variant={"ghost"}
-                        size={"sm"}
                     />
-                </div>
-            </Grid.Column>
-        </Grid>
+                </Grid.Column>
+            </Grid>
+        </>
     );
 };
 
-export const RulesTab = ({ gridClassName }: { gridClassName?: string }) => {
+interface RulesTabProps {
+    gridClassName?: string;
+    fieldOptions: FieldOption[];
+    actionOptions?: ActionOption[];
+}
+
+export const RulesTab = ({
+    gridClassName,
+    fieldOptions,
+    actionOptions = DEFAULT_ACTION_OPTIONS
+}: RulesTabProps) => {
     const bind = useBind({ name: "rules" });
     const rules: FieldRule[] = bind.value || [];
 
     const addRule = () => {
-        bind.onChange([...rules, { action: "hide" as FieldRuleAction, expression: "" }]);
+        bind.onChange([
+            ...rules,
+            {
+                fieldPath: "",
+                operator: "",
+                value: null,
+                action: (actionOptions[0]?.value ?? "hide") as FieldRuleAction
+            }
+        ]);
     };
 
     const updateRule = (index: number, updated: FieldRule) => {
@@ -84,17 +247,15 @@ export const RulesTab = ({ gridClassName }: { gridClassName?: string }) => {
                         key={index}
                         rule={rule}
                         index={index}
+                        fieldOptions={fieldOptions}
+                        actionOptions={actionOptions}
                         onChange={updateRule}
                         onRemove={removeRule}
                     />
                 ))}
-                <div className={"flex justify-center mt-sm"}>
-                    <Button
-                        onClick={addRule}
-                        text={"Add Rule"}
-                        icon={<AddIcon />}
-                        size={"sm"}
-                    />
+                {rules.length > 0 ? <Separator variant={"accent"} className={"mt-lg"} /> : null}
+                <div className={"flex justify-center mt-md"}>
+                    <Button onClick={addRule} text={"Add Rule"} icon={<AddIcon />} size={"sm"} />
                 </div>
             </Grid.Column>
         </Grid>
