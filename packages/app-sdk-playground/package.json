@@ -15,7 +15,6 @@
     "@webiny/app": "0.0.0",
     "@webiny/app-admin": "0.0.0",
     "@webiny/icons": "0.0.0",
-    "@webiny/plugins": "0.0.0",
     "@webiny/sdk": "0.0.0",
     "@webiny/ui": "0.0.0",
     "monaco-editor": "^0.52.0",

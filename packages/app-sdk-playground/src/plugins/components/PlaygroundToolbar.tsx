@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, ButtonSecondary } from "@webiny/ui/Button";
+import { Button } from "@webiny/admin-ui";
 import { ReactComponent as PlayArrowIcon } from "@webiny/icons/play_arrow.svg";
 import { ReactComponent as AutoFixHighIcon } from "@webiny/icons/auto_fix_high.svg";
 import { Loader } from "@webiny/admin-ui";
@@ -24,9 +24,9 @@ export const PlaygroundToolbar: React.FC<PlaygroundToolbarProps> = ({
                 </span>
             </div>
             <div className="flex gap-2 items-center">
-                <ButtonSecondary onClick={onFormat} icon={<AutoFixHighIcon />}>
+                <Button onClick={onFormat} icon={<AutoFixHighIcon />} variant={"secondary"}>
                     Format
-                </ButtonSecondary>
+                </Button>
                 <Button
                     onClick={onRun}
                     disabled={isRunning}

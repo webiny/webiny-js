@@ -10,7 +10,6 @@
     { "path": "../admin-ui/tsconfig.build.json" },
     { "path": "../app/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
-    { "path": "../plugins/tsconfig.build.json" },
     { "path": "../sdk/tsconfig.build.json" },
     { "path": "../ui/tsconfig.build.json" }
   ]
