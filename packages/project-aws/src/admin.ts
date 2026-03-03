@@ -1,4 +1,4 @@
-import { AdminExtension, AdminBuildParam } from "@webiny/app-admin/extensions/index.js";
+import { AdminExtension, AdminBuildParam } from "@webiny/project/extensions/index.js";
 
 export const Admin = {
     Extension: AdminExtension,

@@ -5,6 +5,11 @@ import { ProjectId } from "./ProjectId.js";
 import { Telemetry } from "./Telemetry.js";
 import { EnvVar } from "./EnvVar.js";
 import { DatabaseSetup } from "./DatabaseSetup.js";
+import { FeatureFlags } from "./FeatureFlags.js";
+import { BuildParam } from "./ApiBuildParam.js";
+import { AdminBuildParam } from "./AdminBuildParam.js";
+import { AdminExtension } from "./AdminExtension.js";
+import { ApiExtension } from "./ApiExtension.js";
 
 // Hooks.
 import {
@@ -49,7 +54,12 @@ export { ProjectDecorator };
 export { ProjectImplementation };
 export { ExtensionDefinitions };
 export { EnvVar };
+export { FeatureFlags };
 export { DatabaseSetup };
+export { BuildParam };
+export { AdminBuildParam };
+export { AdminExtension };
+export { ApiExtension };
 
 // Hooks.
 export { BeforeBuild };
@@ -91,6 +101,7 @@ export const definitions = [
     ProjectImplementation.def,
     ExtensionDefinitions.def,
     EnvVar.def,
+    FeatureFlags.def,
 
     // Hooks.
     AdminAfterBuild.def,
@@ -121,7 +132,11 @@ export const definitions = [
     CoreStackOutputValue.def,
     ApiStackOutputValue.def,
     AdminStackOutputValue.def,
-    DatabaseSetup.def
+    DatabaseSetup.def,
+    BuildParam.def,
+    AdminBuildParam.def,
+    AdminExtension.def,
+    ApiExtension.def
 ];
 
 export { Project } from "./Project.js";

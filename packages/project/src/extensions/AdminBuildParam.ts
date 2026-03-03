@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { defineExtension } from "@webiny/project/defineExtension";
+import { defineExtension } from "~/defineExtension/index.js";
 import crypto from "crypto";
 import path from "path";
 import fs from "fs";

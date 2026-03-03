@@ -1,4 +1,4 @@
-import { defineExtension, zodSrcPath } from "@webiny/project/extensions/index.js";
+import { defineExtension, zodSrcPath } from "~/extensions/index.js";
 import { ExtensionSrcResolver } from "@webiny/project";
 import { z } from "zod";
 import path from "path";
@@ -53,7 +53,7 @@ export const AdminExtension = defineExtension({
             return;
         }
 
-        // Check if the extension file has a default export or named export
+        // Check if the extension file has a default export or named export.
         const extensionProject = new Project();
         extensionProject.addSourceFileAtPath(absoluteExtensionFilePath);
         const extensionSource = extensionProject.getSourceFileOrThrow(absoluteExtensionFilePath);
@@ -67,7 +67,7 @@ export const AdminExtension = defineExtension({
             index = last.getChildIndex() + 1;
         }
 
-        // Import as default export if available, otherwise import named export
+        // Import as default export if available, otherwise import named export.
         if (hasDefaultExport) {
             source.insertImportDeclaration(index, {
                 defaultImport: componentName,
