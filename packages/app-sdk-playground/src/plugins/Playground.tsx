@@ -9,14 +9,6 @@ import { Loader } from "@webiny/admin-ui";
 import { useSnackbar, useIdentity, useTenantContext } from "@webiny/app-admin";
 import { config as appConfig } from "@webiny/app/config.js";
 import { Webiny } from "@webiny/sdk";
-import {
-    Container,
-    EditorContainer,
-    OutputContainer,
-    SplitPane,
-    Toolbar,
-    ToolbarActions
-} from "./Playground.styles.js";
 import { defaultSdkCode } from "./defaultCode.js";
 import { SDK_GLOBAL_DECLARATION } from "./constants.js";
 
@@ -215,16 +207,16 @@ const Playground: React.FC = () => {
     );
 
     return (
-        <Container>
-            <Toolbar>
+        <div className="flex flex-col bg-gray-100" style={{ height: "calc(100vh - 45px)" }}>
+            <div className="flex justify-between items-center px-4 py-2 bg-white border-b border-gray-200 shadow-sm">
                 <div>
                     <strong>SDK Playground</strong>
-                    <span style={{ marginLeft: 16, fontSize: 12, color: "#666" }}>
+                    <span className="ml-4 text-xs text-gray-600">
                         Use {navigator.platform.startsWith("Mac") ? "Cmd" : "Ctrl"}+Enter to run
                         code
                     </span>
                 </div>
-                <ToolbarActions>
+                <div className="flex gap-2 items-center">
                     <ButtonSecondary onClick={handleFormat} icon={<AutoFixHighIcon />}>
                         Format
                     </ButtonSecondary>
@@ -241,10 +233,11 @@ const Playground: React.FC = () => {
                     >
                         {isRunning ? "Running..." : "Run Code"}
                     </Button>
-                </ToolbarActions>
-            </Toolbar>
-            <SplitPane ref={splitRef}>
-                <EditorContainer
+                </div>
+            </div>
+            <div className="flex flex-1 overflow-hidden" ref={splitRef}>
+                <div
+                    className="relative overflow-hidden border-r border-gray-200"
                     style={{ flex: "none", width: `${editorPct}%` }}
                     onMouseMove={e => {
                         const rect = e.currentTarget.getBoundingClientRect();
@@ -286,52 +279,40 @@ const Playground: React.FC = () => {
                             }
                         }}
                     />
-                </EditorContainer>
-                <OutputContainer style={{ flex: 1, width: "auto", minWidth: `${MIN_PANE_PCT}%` }}>
-                    <div
-                        style={{
-                            padding: 8,
-                            borderBottom: "1px solid #e0e0e0",
-                            fontWeight: "bold"
-                        }}
-                    >
-                        Output
-                    </div>
-                    <div style={{ padding: 8, overflow: "auto", flex: 1 }}>
+                </div>
+                <div
+                    className="bg-white flex flex-col overflow-hidden"
+                    style={{ flex: 1, width: "auto", minWidth: `${MIN_PANE_PCT}%` }}
+                >
+                    <div className="p-2 border-b border-gray-200 font-bold">Output</div>
+                    <div className="p-2 overflow-auto flex-1">
                         {output.length === 0 ? (
-                            <div style={{ color: "#999", fontStyle: "italic" }}>
+                            <div className="text-gray-400 italic">
                                 Click &quot;Run Code&quot; to see output here...
                             </div>
                         ) : (
                             output.map((msg, index) => <OutputLine key={index} message={msg} />)
                         )}
                     </div>
-                </OutputContainer>
-            </SplitPane>
-        </Container>
+                </div>
+            </div>
+        </div>
     );
 };
 
 const OutputLine: React.FC<{ message: ConsoleMessage }> = ({ message }) => {
-    const colors: Record<ConsoleMessage["type"], string> = {
-        log: "#333",
-        error: "#d32f2f",
-        warn: "#f57c00",
-        info: "#1976d2"
+    const colorClasses: Record<ConsoleMessage["type"], string> = {
+        log: "text-gray-800",
+        error: "text-red-700",
+        warn: "text-orange-600",
+        info: "text-blue-600"
     };
 
     return (
         <div
-            style={{
-                color: colors[message.type],
-                fontFamily: "monospace",
-                fontSize: 13,
-                marginBottom: 4,
-                whiteSpace: "pre-wrap",
-                wordBreak: "break-word"
-            }}
+            className={`font-mono text-[13px] mb-1 whitespace-pre-wrap break-words ${colorClasses[message.type]}`}
         >
-            <span style={{ color: "#999", fontSize: 11 }}>
+            <span className="text-gray-400 text-[11px]">
                 [{new Date(message.timestamp).toLocaleTimeString()}]
             </span>{" "}
             {message.message}
