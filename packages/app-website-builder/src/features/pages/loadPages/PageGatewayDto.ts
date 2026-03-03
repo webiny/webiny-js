@@ -1,4 +1,4 @@
-import type { WbIdentity, WbLocation } from "~/types.js";
+import type { WbIdentity, WbLocation, WbLive } from "~/types.js";
 import type { WbStatus } from "~/constants.js";
 
 export interface PageGatewayDto {
@@ -14,6 +14,7 @@ export interface PageGatewayDto {
     createdBy: WbIdentity;
     createdOn: string;
     savedBy: WbIdentity;
+    live: WbLive | null;
     savedOn: string;
     modifiedBy: WbIdentity | null;
     modifiedOn: string | null;

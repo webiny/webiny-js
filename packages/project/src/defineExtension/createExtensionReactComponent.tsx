@@ -23,11 +23,6 @@ export function createExtensionReactComponent<TParamsSchema extends z.ZodTypeAny
     const ExtensionReactComponent: React.FC<
         ExtensionReactComponentProps<TParamsSchema>
     > = props => {
-        // If custom render function is provided, use it.
-        if (extensionParams.render) {
-            return <>{extensionParams.render(props)}</>;
-        }
-
         const { name, remove, before, after, ...keyValues } = props;
 
         const getId = useIdGenerator(extensionParams.type);
@@ -50,16 +45,19 @@ export function createExtensionReactComponent<TParamsSchema extends z.ZodTypeAny
         const KeyValuesComponent = parentProps => <KeyValues {...parentProps} {...keyValues} />;
 
         return (
-            <Property
-                id={propertyId}
-                name={propertyName}
-                array={extensionParams.multiple}
-                remove={remove}
-                before={placeBefore}
-                after={placeAfter}
-            >
-                <KeyValuesComponent />
-            </Property>
+            <>
+                <Property
+                    id={propertyId}
+                    name={propertyName}
+                    array={extensionParams.multiple}
+                    remove={remove}
+                    before={placeBefore}
+                    after={placeAfter}
+                >
+                    <KeyValuesComponent />
+                </Property>
+                {extensionParams.render && extensionParams.render(props)}
+            </>
         );
     };
 

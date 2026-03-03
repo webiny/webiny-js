@@ -26,7 +26,9 @@ class ClearEntryStateOnWorkflowStateAfterDeleteImpl
 
         const model = modelResult.value;
         await this.updateEntry.execute(model, state.targetRevisionId, {
-            state: undefined
+            system: {
+                workflow: undefined
+            }
         });
     }
 }

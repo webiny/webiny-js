@@ -1,6 +1,6 @@
-import { GenericExtension, BuildParam } from "@webiny/api-core/extensions/index.js";
+import { ApiExtension, BuildParam } from "@webiny/project/extensions/index.js";
 
 export const Api = {
-    Extension: GenericExtension,
+    Extension: ApiExtension,
     BuildParam: BuildParam
 };

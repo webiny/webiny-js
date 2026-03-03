@@ -312,11 +312,12 @@ export interface ICmsEntryLocation {
     folderId?: string;
 }
 
-export interface IEntryState {
-    state: string;
-    workflowId: string;
-    stepId: string;
-    stepName: string;
+export interface ICmsEntryLive {
+    version: number;
+}
+
+export interface ICmsEntrySystem {
+    // to be extended
 }
 /**
  * A content entry definition for and from the database.
@@ -505,7 +506,11 @@ export interface CmsEntry<TValues extends CmsEntryValues = CmsEntryValues> {
      */
     binOriginalFolderId?: string;
 
-    state?: IEntryState;
+    system?: ICmsEntrySystem;
+    /**
+     * Is this CMS Entry live (no matter the revision).
+     */
+    live: ICmsEntryLive | null;
 }
 
 export interface CmsStorageEntry<T extends CmsEntryValues = CmsEntryValues> extends CmsEntry<T> {
@@ -788,7 +793,7 @@ export interface CreateCmsEntryInput<TValues extends CmsEntryValues = CmsEntryVa
         folderId?: string | null;
     };
 
-    state?: Partial<IEntryState>;
+    system?: Partial<ICmsEntrySystem>;
 
     values: TValues | undefined;
 }
@@ -830,7 +835,7 @@ export interface CreateFromCmsEntryInput<TValues extends CmsEntryValues = CmsEnt
     firstPublishedBy?: CmsIdentity;
     lastPublishedBy?: CmsIdentity;
 
-    state?: Partial<IEntryState>;
+    system?: Partial<ICmsEntrySystem>;
 
     values: TValues;
 }
@@ -888,7 +893,7 @@ export interface UpdateCmsEntryInput<TValues extends CmsEntryValues = CmsEntryVa
         folderId?: string | null;
     };
 
-    state?: Partial<IEntryState>;
+    system?: Partial<ICmsEntrySystem>;
 
     values?: Partial<TValues>;
 }

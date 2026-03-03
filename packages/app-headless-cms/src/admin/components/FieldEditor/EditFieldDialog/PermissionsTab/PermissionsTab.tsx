@@ -53,7 +53,9 @@ export const PermissionsTab = ({ gridClassName }: { gridClassName?: string }) =>
             <Grid.Column span={12}>
                 <UsersTeamsMultiAutocomplete
                     options={targetsList}
-                    value={accessRules.map(rule => String(rule.value) as `admin:${string}` | `team:${string}`)}
+                    value={accessRules.map(
+                        rule => String(rule.value) as `admin:${string}` | `team:${string}`
+                    )}
                     onChange={addPermission}
                 />
             </Grid.Column>

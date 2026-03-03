@@ -33,7 +33,7 @@ export class SetupAwsWebinyProject {
         const { templateOptions: templateOptionsString } = cliArgs;
         if (templateOptionsString) {
             try {
-                Object.assign(JSON.parse(templateOptionsString));
+                Object.assign(awsArgs, JSON.parse(templateOptionsString));
             } catch {
                 // Do nothing.
             }

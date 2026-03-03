@@ -1,14 +1,13 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
-import type { IEventHandler } from "@webiny/api-core/features/EventPublisher";
-import type { DomainEvent } from "@webiny/api-core/features/EventPublisher";
+import type { DomainEvent, IEventHandler } from "@webiny/api-core/features/EventPublisher";
 import type { WbPage } from "~/domain/page/abstractions.js";
 import type { WbLocation } from "~/domain/shared/abstractions.js";
-import type { IEntryState } from "@webiny/api-headless-cms/types/index.js";
+import type { ICmsEntrySystem } from "@webiny/api-headless-cms/types/index.js";
 import {
-    PageValidationError,
+    PageNotAuthorizedError,
     PageNotFoundError,
     PagePersistenceError,
-    PageNotAuthorizedError
+    PageValidationError
 } from "~/domain/page/errors.js";
 
 // ============================================================================
@@ -21,8 +20,7 @@ export interface IUpdateWbPageData {
     metadata?: Record<string, any>;
     bindings?: Record<string, any>;
     elements?: Record<string, any>;
-    // Workflows - remove when workflows are more generic
-    state?: Partial<IEntryState>;
+    system?: ICmsEntrySystem;
 }
 
 // ============================================================================

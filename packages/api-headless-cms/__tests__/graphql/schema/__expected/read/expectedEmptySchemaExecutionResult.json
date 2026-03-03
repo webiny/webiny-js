@@ -299,36 +299,42 @@
             }
           ]
         },
-        { "name": "CmsEntryStateType", "kind": "ENUM", "description": null, "fields": null },
         {
-          "name": "CmsEntryState",
+          "name": "CmsEntrySystem",
           "kind": "OBJECT",
           "description": null,
           "fields": [
             {
-              "name": "workflowId",
+              "name": "_empty",
               "description": null,
               "type": { "kind": "SCALAR", "name": "String", "ofType": null }
-            },
-            {
-              "name": "stepId",
-              "description": null,
-              "type": { "kind": "SCALAR", "name": "ID", "ofType": null }
-            },
-            {
-              "name": "stepName",
-              "description": null,
-              "type": { "kind": "SCALAR", "name": "String", "ofType": null }
-            },
-            {
-              "name": "state",
-              "description": null,
-              "type": { "kind": "ENUM", "name": "CmsEntryStateType", "ofType": null }
             }
           ]
         },
         {
-          "name": "ListWhereInputCmsEntryState",
+          "name": "CmsEntryLive",
+          "kind": "OBJECT",
+          "description": null,
+          "fields": [
+            {
+              "name": "version",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": { "kind": "SCALAR", "name": "Int" }
+              }
+            }
+          ]
+        },
+        {
+          "name": "CmsEntryLiveWhereInput",
+          "kind": "INPUT_OBJECT",
+          "description": null,
+          "fields": null
+        },
+        {
+          "name": "ListWhereInputCmsEntrySystem",
           "kind": "INPUT_OBJECT",
           "description": null,
           "fields": null

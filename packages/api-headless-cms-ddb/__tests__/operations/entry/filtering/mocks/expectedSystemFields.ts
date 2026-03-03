@@ -1011,5 +1011,97 @@ export const expectedSystemFields: Record<string, Field> = {
             }
         ],
         system: true
+    },
+    live: {
+        id: "live",
+        storageId: "live",
+        createPath: expect.any(Function),
+        transform: expect.any(Function),
+        fieldId: "live",
+        label: "Live",
+        type: "object",
+        settings: {
+            fields: [
+                {
+                    id: "version",
+                    storageId: "version",
+                    fieldId: "version",
+                    label: "Version",
+                    type: "number",
+                    settings: {},
+                    listValidation: [],
+                    validation: [],
+                    list: false,
+                    predefinedValues: {
+                        values: [],
+                        enabled: false
+                    },
+                    help: null,
+                    placeholder: null,
+                    renderer: null
+                }
+            ]
+        },
+        listValidation: [],
+        validation: [],
+        list: false,
+        predefinedValues: {
+            values: [],
+            enabled: false
+        },
+        help: null,
+        placeholder: null,
+        renderer: null,
+        parents: [],
+        system: true
+    },
+    "live.version": {
+        id: "version",
+        storageId: "version",
+        createPath: expect.any(Function),
+        transform: expect.any(Function),
+        fieldId: "version",
+        label: "Version",
+        type: "number",
+        settings: {},
+        listValidation: [],
+        validation: [],
+        list: false,
+        predefinedValues: {
+            values: [],
+            enabled: false
+        },
+        help: null,
+        placeholder: null,
+        renderer: null,
+        parents: [
+            {
+                fieldId: "live",
+                list: false
+            }
+        ],
+        system: true
+    },
+    values: {
+        id: "values",
+        storageId: "values",
+        createPath: expect.any(Function),
+        transform: expect.any(Function),
+        fieldId: "values",
+        label: "Values",
+        type: "object",
+        settings: {},
+        listValidation: [],
+        validation: [],
+        list: false,
+        predefinedValues: {
+            values: [],
+            enabled: false
+        },
+        help: null,
+        placeholder: null,
+        renderer: null,
+        parents: [],
+        system: true
     }
 };

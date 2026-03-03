@@ -3,8 +3,8 @@ import { GetPageGraphQLFieldSelection } from "@webiny/app-website-builder/featur
 class WorkflowStatesGetPageGraphQLFieldSelection implements GetPageGraphQLFieldSelection.Interface {
     getSelection(): string[] {
         return [
-            `workflows {
-                state {
+            `system {
+                workflow {
                     workflowId
                     stepId
                     stepName

@@ -199,7 +199,7 @@ describe("workflow states graphql", () => {
                         data: null,
                         error: {
                             message:
-                                "You do not have permissions to review this workflow state step.",
+                                "You do not have permissions to review this content review step.",
                             code: "Workflows/State/Step/CannotReview"
                         }
                     }
