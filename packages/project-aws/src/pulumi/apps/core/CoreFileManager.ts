@@ -11,12 +11,19 @@ export const CoreFileManger = createAppModule({
         const bucket = app.addResource(aws.s3.Bucket, {
             name,
             config: {
-                acl: aws.s3.CannedAcl.Private,
                 // We definitely don't want to force-destroy if "protected" flag is true.
                 forceDestroy: !params.protect
             },
             opts: {
                 protect: params.protect
+            }
+        });
+
+        const bucketAcl = app.addResource(aws.s3.BucketAclV2, {
+            name: `${name}-acl`,
+            config: {
+                bucket: bucket.output.id,
+                acl: aws.s3.CannedAcl.Private
             }
         });
 
@@ -50,6 +57,7 @@ export const CoreFileManger = createAppModule({
 
         return {
             bucket,
+            bucketAcl,
             blockPublicAccessBlock,
             bucketCorsConfiguration
         };
