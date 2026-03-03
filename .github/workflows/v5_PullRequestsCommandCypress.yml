@@ -241,7 +241,7 @@ jobs:
           --no-interactive --assign-to-yarnrc
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"${{ env.AWS_REGION
-          }}","storageOperations":"ddb"}'
+          }}","storageOps":"ddb"}'
       - name: Print CLI version
         working-directory: new-webiny-project
         run: yarn webiny --version
@@ -470,7 +470,7 @@ jobs:
           --no-interactive --assign-to-yarnrc
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"${{ env.AWS_REGION
-          }}","storageOperations":"ddb-os"}'
+          }}","storageOps":"ddb-os"}'
       - name: Print CLI version
         working-directory: new-webiny-project
         run: yarn webiny --version
