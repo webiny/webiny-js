@@ -60,7 +60,7 @@ class GetFeatureFlagsWithLicenseDecorator implements GetFeatureFlags.Interface {
                 featureFlagsDto.advancedAccessControlLayer = false;
             } else if (typeof featureFlagsDto.advancedAccessControlLayer === "object") {
                 // License allows AACL; constrain sub-options.
-                const aacl = featureFlagsDto.advancedAccessControlLayer as IAaclFeatureFlags;
+                const aacl = (featureFla - gsDto.advancedAccessControlLayer) as IAaclFeatureFlags;
                 aacl.teams = applyLicenseFlag(aacl.teams, license.canUseTeams());
                 aacl.privateFiles = applyLicenseFlag(
                     aacl.privateFiles,
