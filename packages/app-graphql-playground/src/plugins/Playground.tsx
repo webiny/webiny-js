@@ -1,6 +1,7 @@
-import React, { Fragment, useEffect, useRef, useCallback, useState } from "react";
-import { ApolloLink } from "apollo-link";
-import { setContext } from "apollo-link-context";
+import React, { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import type { ApolloClient } from "@apollo/client";
+import { ApolloLink } from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
 /**
  * Package load-script does not have types.
  */
@@ -11,10 +12,9 @@ import { plugins } from "@webiny/plugins";
 import { useIdentity } from "@webiny/app-admin";
 import type { Identity } from "@webiny/app-admin/domain/Identity.js";
 import { CircularProgress } from "@webiny/ui/Progress/index.js";
-import { playgroundDialog, PlaygroundContainer } from "./Playground.styles.js";
+import { PlaygroundContainer, playgroundDialog } from "./Playground.styles.js";
 import { settings } from "./settings.js";
 import { config as appConfig } from "@webiny/app/config.js";
-import type { ApolloClient } from "@apollo/client";
 import type { GraphQLPlaygroundTabPlugin } from "~/types.js";
 import { ORIGINAL_GQL_PLAYGROUND_URL, PATCHED_GQL_PLAYGROUND_URL } from "./constants.js";
 

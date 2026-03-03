@@ -1,5 +1,5 @@
 import type { Dispatch, SetStateAction } from "react";
-import type { ApolloQueryResult } from "apollo-client/core/types.js";
+import type { useQuery } from "@apollo/client/react";
 import type { FetchResult } from "apollo-link";
 import type { Loading, LoadingActions } from "~/types.js";
 
@@ -12,7 +12,7 @@ import type { Loading, LoadingActions } from "~/types.js";
 export const apolloFetchingHandler = async <ListSearchRecordsResponse = any,>(
     loadingHandler: (flag: boolean) => void,
     apolloQuery: () => Promise<
-        ApolloQueryResult<ListSearchRecordsResponse> | FetchResult<ListSearchRecordsResponse>
+        useQuery.Result<ListSearchRecordsResponse> | FetchResult<ListSearchRecordsResponse>
     >
 ) => {
     loadingHandler(true);

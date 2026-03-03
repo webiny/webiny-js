@@ -1,7 +1,9 @@
-import type { ApolloQueryResult, QueryOptions, MutationOptions } from "apollo-client";
-import type { FetchResult } from "apollo-link";
+import type { useMutation, useQuery } from "@apollo/client/react";
+import type { OperationVariables } from "@apollo/client/core/types.js";
 
 export interface IRecordLockingClient {
-    query<T, R>(params: QueryOptions<R>): Promise<ApolloQueryResult<T>>;
-    mutation<T, R>(options: MutationOptions<T, R>): Promise<FetchResult<T>>;
+    query<T, R>(params: useQuery.Options<R>): Promise<useQuery.Result<T>>;
+    mutation<T, R extends OperationVariables>(
+        options: useMutation.Options<T, R>
+    ): Promise<useMutation.Result<T>>;
 }

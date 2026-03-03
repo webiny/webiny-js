@@ -55,7 +55,7 @@ export class GetSettingsGqlGateway implements IGetSettings {
             fetchPolicy: "no-cache"
         });
 
-        const { data, error } = query.data.websiteBuilder.getSettings || {};
+        const { data, error } = query.data?.websiteBuilder.getSettings || {};
 
         if (error) {
             throw new WebinyError(error);
