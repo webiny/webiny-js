@@ -491,8 +491,7 @@ jobs:
           npx create-webiny-project@local-npm new-webiny-project --tag local-npm
           --no-interactive --assign-to-yarnrc
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
-          --template-options
-          '{"region":"eu-central-1","storageOperations":"ddb"}'
+          --template-options '{"region":"eu-central-1","storageOps":"ddb"}'
       - name: Print CLI version
         working-directory: new-webiny-project
         run: yarn webiny --version
@@ -640,8 +639,7 @@ jobs:
           npx create-webiny-project@local-npm new-webiny-project --tag local-npm
           --no-interactive --assign-to-yarnrc
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
-          --template-options
-          '{"region":"eu-central-1","storageOperations":"ddb-os"}'
+          --template-options '{"region":"eu-central-1","storageOps":"ddb-os"}'
       - name: Print CLI version
         working-directory: new-webiny-project
         run: yarn webiny --version
