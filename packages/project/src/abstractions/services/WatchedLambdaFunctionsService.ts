@@ -1,26 +1,31 @@
 import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { type AppName } from "~/abstractions/types.js";
 
+export interface IWatchedLambdaFunctionsServiceApp {
+    name: AppName;
+    deploymentId?: string;
+}
+
 export interface IWatchedLambdaFunctionsService {
     /**
      * Mark Lambda functions as needing replacement on next deployment
      */
-    markDirty(app: AppName, functionUrns: string[]): Promise<void>;
+    markDirty(app: IWatchedLambdaFunctionsServiceApp, functionUrns: string[]): void;
 
     /**
      * Get list of Lambda function URNs that need replacement for an app
      */
-    getDirty(app: AppName): Promise<string[]>;
+    getDirty(app: IWatchedLambdaFunctionsServiceApp): string[];
 
     /**
      * Clear Lambda functions that need replacement for an app
      */
-    clearDirty(app: AppName): Promise<void>;
+    clearDirty(app: IWatchedLambdaFunctionsServiceApp): void;
 
     /**
      * Clear all Lambda functions that need replacement across all apps
      */
-    clearAll(): Promise<void>;
+    clearAll(): void;
 }
 
 export const WatchedLambdaFunctionsService = createAbstraction<IWatchedLambdaFunctionsService>(
@@ -29,4 +34,5 @@ export const WatchedLambdaFunctionsService = createAbstraction<IWatchedLambdaFun
 
 export namespace WatchedLambdaFunctionsService {
     export type Interface = IWatchedLambdaFunctionsService;
+    export type App = IWatchedLambdaFunctionsServiceApp;
 }

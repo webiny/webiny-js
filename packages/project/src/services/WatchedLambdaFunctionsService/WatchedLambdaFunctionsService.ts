@@ -1,12 +1,5 @@
 import { createImplementation } from "@webiny/di";
-import {
-    WatchedLambdaFunctionsService,
-    LocalStorageService,
-    GetApp,
-    PulumiGetStackOutputService
-} from "~/abstractions/index.js";
-import { type AppName } from "~/abstractions/types.js";
-import { type ICoreStackOutput } from "~/abstractions/features/GetAppStackOutput.js";
+import { WatchedLambdaFunctionsService, LocalStorageService } from "~/abstractions/index.js";
 
 const WATCHED_LAMBDA_FUNCTIONS_KEY = "watchedLambdaFunctions";
 
@@ -17,66 +10,46 @@ interface WatchedLambdaFunctionsData {
 export class DefaultWatchedLambdaFunctionsService
     implements WatchedLambdaFunctionsService.Interface
 {
-    private cacheKey: Promise<string> | undefined;
+    constructor(private localStorageService: LocalStorageService.Interface) {}
 
-    constructor(
-        private localStorageService: LocalStorageService.Interface,
-        private getApp: GetApp.Interface,
-        private pulumiGetStackOutputService: PulumiGetStackOutputService.Interface
-    ) {}
-
-    async markDirty(app: AppName, functionUrns: string[]): Promise<void> {
-        const key = await this.getCacheKey();
+    markDirty(app: WatchedLambdaFunctionsService.App, functionUrns: string[]): void {
+        const key = this.getCacheKey(app);
         const data = this.getData(key);
 
-        if (!data[app]) {
-            data[app] = [];
+        if (!data[app.name]) {
+            data[app.name] = [];
         }
 
         // Add new URNs, avoiding duplicates
         for (const urn of functionUrns) {
-            if (!data[app].includes(urn)) {
-                data[app].push(urn);
+            if (!data[app.name].includes(urn)) {
+                data[app.name].push(urn);
             }
         }
 
         this.setData(key, data);
     }
 
-    async getDirty(app: AppName): Promise<string[]> {
-        const key = await this.getCacheKey();
+    getDirty(app: WatchedLambdaFunctionsService.App): string[] {
+        const key = this.getCacheKey(app);
         const data = this.getData(key);
-        return data[app] || [];
+        return data[app.name] || [];
     }
 
-    async clearDirty(app: AppName): Promise<void> {
-        const key = await this.getCacheKey();
+    clearDirty(app: WatchedLambdaFunctionsService.App): void {
+        const key = this.getCacheKey(app);
         const data = this.getData(key);
-        delete data[app];
+        delete data[app.name];
         this.setData(key, data);
     }
 
-    async clearAll(): Promise<void> {
-        const key = await this.getCacheKey();
-        this.setData(key, {});
+    clearAll(): void {
+        this.setData(WATCHED_LAMBDA_FUNCTIONS_KEY, {});
     }
 
-    private getCacheKey(): Promise<string> {
-        if (!this.cacheKey) {
-            this.cacheKey = this.resolveCacheKey();
-        }
-
-        return this.cacheKey;
-    }
-
-    private async resolveCacheKey(): Promise<string> {
-        const coreApp = this.getApp.execute("core");
-        const coreStackOutput =
-            await this.pulumiGetStackOutputService.execute<ICoreStackOutput>(coreApp);
-        const deploymentId = coreStackOutput?.deploymentId;
-
-        return deploymentId
-            ? `${WATCHED_LAMBDA_FUNCTIONS_KEY}-${deploymentId}`
+    private getCacheKey(app: WatchedLambdaFunctionsService.App): string {
+        return app.deploymentId
+            ? `${WATCHED_LAMBDA_FUNCTIONS_KEY}-${app.deploymentId}`
             : WATCHED_LAMBDA_FUNCTIONS_KEY;
     }
 
@@ -101,5 +74,5 @@ export class DefaultWatchedLambdaFunctionsService
 export const watchedLambdaFunctionsService = createImplementation({
     abstraction: WatchedLambdaFunctionsService,
     implementation: DefaultWatchedLambdaFunctionsService,
-    dependencies: [LocalStorageService, GetApp, PulumiGetStackOutputService]
+    dependencies: [LocalStorageService]
 });
