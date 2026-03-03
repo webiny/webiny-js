@@ -1,8 +1,7 @@
 import React from "react";
 import Editor from "@monaco-editor/react";
 import type { OnMount, BeforeMount } from "@monaco-editor/react";
-import { CircularProgress } from "@webiny/ui/Progress";
-import { MIN_PANE_PCT } from "../types.js";
+import { OverlayLoader } from "@webiny/admin-ui";
 
 interface CodeEditorProps {
     code: string;
@@ -41,7 +40,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
                 }
             }}
         >
-            {isRunning && <CircularProgress label="Running code..." />}
+            {isRunning && <OverlayLoader text="Running code..." />}
             <Editor
                 height="100%"
                 defaultLanguage="typescript"

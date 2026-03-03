@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { MutableRefObject } from "react";
 import { MIN_PANE_PCT } from "./types.js";
 
 export function useResizableSplit() {
