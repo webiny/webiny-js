@@ -19,7 +19,7 @@ export const CoreFileManger = createAppModule({
             }
         });
 
-        const bucketAcl = app.addResource(aws.s3.BucketAclV2, {
+        const bucketAcl = app.addResource(aws.s3.BucketAcl, {
             name: `${name}-acl`,
             config: {
                 bucket: bucket.output.id,

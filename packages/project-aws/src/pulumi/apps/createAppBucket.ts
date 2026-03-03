@@ -7,12 +7,19 @@ export function createPublicAppBucket(app: PulumiApp, name: string) {
     const bucket = app.addResource(aws.s3.Bucket, {
         name: name,
         config: {
-            acl: aws.s3.CannedAcl.PublicRead,
             forceDestroy: true,
             website: {
                 indexDocument: "index.html",
                 errorDocument: "_NOT_FOUND_PAGE_/index.html"
             }
+        }
+    });
+
+    const bucketAcl = app.addResource(aws.s3.BucketAcl, {
+        name: `${name}-acl`,
+        config: {
+            bucket: bucket.output.id,
+            acl: aws.s3.CannedAcl.PublicRead
         }
     });
 
@@ -29,6 +36,7 @@ export function createPublicAppBucket(app: PulumiApp, name: string) {
 
     return {
         bucket,
+        bucketAcl,
         origin
     };
 }
@@ -41,8 +49,15 @@ export function createPrivateAppBucket(app: PulumiApp, name: string) {
     const bucket = app.addResource(aws.s3.Bucket, {
         name: name,
         config: {
-            acl: aws.s3.CannedAcl.Private,
             forceDestroy: true
+        }
+    });
+
+    const bucketAcl = app.addResource(aws.s3.BucketAcl, {
+        name: `${name}-acl`,
+        config: {
+            bucket: bucket.output.id,
+            acl: aws.s3.CannedAcl.Private
         }
     });
 
@@ -119,6 +134,7 @@ export function createPrivateAppBucket(app: PulumiApp, name: string) {
 
     return {
         bucket,
+        bucketAcl,
         originIdentity,
         origin,
         bucketPublicAccessBlock,
