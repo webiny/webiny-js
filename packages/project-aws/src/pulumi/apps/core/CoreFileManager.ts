@@ -19,11 +19,24 @@ export const CoreFileManger = createAppModule({
             }
         });
 
+        const bucketOwnershipControls = app.addResource(aws.s3.BucketOwnershipControls, {
+            name: `${name}-ownership-controls`,
+            config: {
+                bucket: bucket.output.id,
+                rule: {
+                    objectOwnership: "BucketOwnerPreferred"
+                }
+            }
+        });
+
         const bucketAcl = app.addResource(aws.s3.BucketAcl, {
             name: `${name}-acl`,
             config: {
                 bucket: bucket.output.id,
                 acl: aws.s3.CannedAcl.Private
+            },
+            opts: {
+                dependsOn: [bucketOwnershipControls.output]
             }
         });
 
@@ -57,6 +70,7 @@ export const CoreFileManger = createAppModule({
 
         return {
             bucket,
+            bucketOwnershipControls,
             bucketAcl,
             blockPublicAccessBlock,
             bucketCorsConfiguration
