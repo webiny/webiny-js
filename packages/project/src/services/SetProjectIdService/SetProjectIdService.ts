@@ -50,10 +50,14 @@ class DefaultSetProjectIdService implements SetProjectIdService.Interface {
             return;
         }
 
-        /* Determine the insertion point — after the last <Project.*> sibling element.
+        /* Determine the insertion point — after the last <Project.*> element that is a
+           direct child of the outermost JSX fragment (i.e. not inside a conditional expression).
            Fall back to inserting after the opening tag of the outermost JSX fragment. */
-        const projectEls = jsxElements.filter(el =>
-            el.getTagNameNode().getText().startsWith("Project.")
+        const fragment = sourceFile.getFirstDescendantByKind(SyntaxKind.JsxFragment);
+        const projectEls = jsxElements.filter(
+            el =>
+                el.getTagNameNode().getText().startsWith("Project.") &&
+                el.getParent()?.getParent() === fragment
         );
 
         if (projectEls.length > 0) {
@@ -64,7 +68,6 @@ class DefaultSetProjectIdService implements SetProjectIdService.Interface {
             );
         } else {
             // Fallback: insert as first child of the outermost JSX fragment.
-            const fragment = sourceFile.getFirstDescendantByKind(SyntaxKind.JsxFragment);
             if (!fragment) {
                 throw new Error(
                     `Could not find a JSX fragment or <Project.*> element to anchor <Project.Id /> in ${webinyConfigFileTsx}`

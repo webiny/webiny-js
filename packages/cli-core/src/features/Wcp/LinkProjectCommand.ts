@@ -147,7 +147,9 @@ export class LinkProjectCommand implements CliCommandFactory.Interface<void> {
                 await sleep();
 
                 // Assign the necessary IDs into root `webiny.project.ts` project file.
-                await projectSdk.setProjectId(selectedProject.id, { force: true });
+                await projectSdk.setProjectId(`${selectedOrg.id}/${selectedProject.id}`, {
+                    force: true
+                });
 
                 ui.success(`%s Project %s linked successfully.`, "✔", selectedProject.name);
 
