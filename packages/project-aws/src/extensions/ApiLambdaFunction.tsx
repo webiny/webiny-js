@@ -51,10 +51,10 @@ export const ApiLambdaFunction = defineExtension({
             });
         }
 
-        // 2. Copy user's handler file → <functionName>/src/handler.ts.
+        // 2. Copy user's handler file → <functionName>/src/index.ts.
         const srcDir = path.join(fnWorkspacePath, "src");
         fs.mkdirSync(srcDir, { recursive: true });
-        fs.copyFileSync(absoluteFunctionSrc, path.join(srcDir, "handler.ts"));
+        fs.copyFileSync(absoluteFunctionSrc, path.join(srcDir, "index.ts"));
     },
     render(props) {
         return <ApiPulumi src={props.pulumiSrc} />;
