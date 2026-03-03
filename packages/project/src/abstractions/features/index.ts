@@ -23,3 +23,4 @@ export { RefreshApp } from "./RefreshApp.js";
 export { RunPulumiCommand } from "./RunPulumiCommand.js";
 export { ValidateProjectConfig } from "./ValidateProjectConfig.js";
 export { Watch } from "./Watch.js";
+export { GetFeatureFlags } from "./GetFeatureFlags.js";

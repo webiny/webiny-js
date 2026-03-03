@@ -30,6 +30,10 @@ export class FeatureFlags {
 
     constructor(private readonly flags: IFeatureFlagsDto = {}) {}
 
+    toDto(): IFeatureFlagsDto {
+        return { ...this.flags };
+    }
+
     isMultiTenancyEnabled(): boolean {
         return this.flags.multiTenancy !== false;
     }

@@ -5,3 +5,4 @@ export * from "./DeployAppWithHooks.js";
 export * from "./DeployAppWithWatchedLambdaReplacement.js";
 export * from "./WatchWithHooks.js";
 export * from "./GetPulumiServiceWithDownloadInfo.js";
+export * from "./GetFeatureFlagsWithLicense.js";
