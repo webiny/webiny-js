@@ -13,8 +13,18 @@ export const CoreFileManger = createAppModule({
             config: {
                 acl: aws.s3.CannedAcl.Private,
                 // We definitely don't want to force-destroy if "protected" flag is true.
-                forceDestroy: !params.protect,
-                // We need these rules to be able to upload to this bucket from the browser.
+                forceDestroy: !params.protect
+            },
+            opts: {
+                protect: params.protect
+            }
+        });
+
+        // We need these rules to be able to upload to this bucket from the browser.
+        const bucketCorsConfiguration = app.addResource(aws.s3.BucketCorsConfigurationV2, {
+            name: `${name}-cors`,
+            config: {
+                bucket: bucket.output.id,
                 corsRules: [
                     {
                         allowedHeaders: ["*"],
@@ -23,9 +33,6 @@ export const CoreFileManger = createAppModule({
                         maxAgeSeconds: 3000
                     }
                 ]
-            },
-            opts: {
-                protect: params.protect
             }
         });
 
@@ -43,7 +50,8 @@ export const CoreFileManger = createAppModule({
 
         return {
             bucket,
-            blockPublicAccessBlock
+            blockPublicAccessBlock,
+            bucketCorsConfiguration
         };
     }
 });
