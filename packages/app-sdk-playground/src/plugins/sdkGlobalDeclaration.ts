@@ -185,7 +185,7 @@ interface SdkCms {
     /** Get a single entry by ID or field values. */
     getEntry<TValues extends SdkEntryValues = SdkEntryValues>(
         params: SdkGetEntryParams
-    ): Promise<SdkResult<SdkEntryData<TValues> | null, SdkCmsError>>;
+    ): Promise<SdkResult<SdkEntryData<TValues>, SdkCmsError>>;
 
     /** List entries with optional filtering, sorting, and pagination. */
     listEntries<TValues extends SdkEntryValues = SdkEntryValues>(
