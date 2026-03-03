@@ -15239,6 +15239,7 @@ __metadata:
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^0.2.3"
+    "@webiny/feature-flags": "npm:0.0.0"
     "@webiny/global-config": "npm:0.0.0"
     "@webiny/pulumi-sdk": "npm:0.0.0"
     "@webiny/react-properties": "npm:0.0.0"
