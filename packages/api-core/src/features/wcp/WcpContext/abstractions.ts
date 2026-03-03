@@ -7,6 +7,7 @@ import type { WCP_FEATURE_LABEL } from "@webiny/wcp";
  */
 export interface IWcpContext extends ILicense {
     getProject(): WcpProject | null;
+    getProjectWithFeatureFlags(): WcpProject | null;
     getProjectLicense(): ILicense;
     getProjectEnvironment(): WcpProjectEnvironment | null;
     ensureCanUseFeature(featureId: keyof typeof WCP_FEATURE_LABEL): void;

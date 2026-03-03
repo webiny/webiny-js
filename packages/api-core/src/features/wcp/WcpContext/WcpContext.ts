@@ -84,6 +84,10 @@ export class WcpContextImpl implements WcpContext.Interface {
         return this.license.getProject();
     }
 
+    getProjectWithFeatureFlags(): WcpProject | null {
+        return this.getProject();
+    }
+
     getProjectEnvironment(): WcpProjectEnvironment | null {
         return wcpProjectEnvironment;
     }

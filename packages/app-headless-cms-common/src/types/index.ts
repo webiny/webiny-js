@@ -366,6 +366,10 @@ export interface CmsContentEntryLive {
     version: number;
 }
 
+export interface CmsContentEntrySystem {
+    // to be extended
+}
+
 export interface CmsContentEntry<TValues extends GenericRecord = GenericRecord> {
     id: string;
     entryId: string;
@@ -396,6 +400,7 @@ export interface CmsContentEntry<TValues extends GenericRecord = GenericRecord> 
     revisionLastPublishedBy: CmsIdentity | null;
     wbyAco_location: Location;
     live: CmsContentEntryLive | null;
+    system: CmsContentEntrySystem | null;
     meta: {
         title: string;
         description?: string;
