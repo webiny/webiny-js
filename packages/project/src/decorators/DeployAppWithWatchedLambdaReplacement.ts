@@ -1,4 +1,9 @@
-import { DeployApp, GetApp, PulumiGetStackOutputService, WatchedLambdaFunctionsService } from "~/abstractions/index.js";
+import {
+    DeployApp,
+    GetApp,
+    PulumiGetStackOutputService,
+    WatchedLambdaFunctionsService
+} from "~/abstractions/index.js";
 import { type ICoreStackOutput } from "~/abstractions/features/GetAppStackOutput.js";
 
 /**

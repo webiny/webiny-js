@@ -78,7 +78,10 @@ export const replaceLambdaFunctions = async ({
 
     // Mark these functions as needing replacement on next deployment
     if (replacedFunctionUrns.length > 0) {
-        watchedLambdaFunctionsService.markDirty({ name: app.name, deploymentId }, replacedFunctionUrns);
+        watchedLambdaFunctionsService.markDirty(
+            { name: app.name, deploymentId },
+            replacedFunctionUrns
+        );
         logger.info(
             `Marked ${replacedFunctionUrns.length} Lambda function(s) for replacement on next deployment.`
         );
