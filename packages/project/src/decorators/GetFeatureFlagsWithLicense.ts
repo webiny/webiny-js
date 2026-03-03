@@ -14,10 +14,8 @@ class GetFeatureFlagsWithLicenseDecorator implements GetFeatureFlags.Interface {
     async execute(): Promise<FeatureFlags> {
         const userFlags = await this.decoratee.execute();
         const license = this.getLicenseFromEnv();
-
-        const overriddenFlagsDto = this.applyLicense(userFlags.toDto(), license);
-
-        return FeatureFlags.fromDto(overriddenFlagsDto);
+        // toDto() returns a structuredClone, so we can safely mutate it in applyLicense.
+        return FeatureFlags.fromDto(this.applyLicense(userFlags.toDto(), license));
     }
 
     private getLicenseFromEnv(): ILicense {
@@ -38,31 +36,32 @@ class GetFeatureFlagsWithLicenseDecorator implements GetFeatureFlags.Interface {
      * If the user disables a feature they have access to, we respect false.
      * If the user enables a feature the license doesn't allow, we force false.
      * fileManager (base) is always allowed; only threatDetection is restricted. */
-    private applyLicense(dto: IFeatureFlagsDto, license: ILicense): IFeatureFlagsDto {
-        const merged: IFeatureFlagsDto = { ...dto };
-
+    private applyLicense(
+        baseFeatureFlagsDto: IFeatureFlagsDto,
+        license: ILicense
+    ): IFeatureFlagsDto {
         // multiTenancy.
-        if (merged.multiTenancy !== false) {
-            merged.multiTenancy = license.canUseFeature("multiTenancy")
-                ? merged.multiTenancy
+        if (baseFeatureFlagsDto.multiTenancy !== false) {
+            baseFeatureFlagsDto.multiTenancy = license.canUseFeature("multiTenancy")
+                ? baseFeatureFlagsDto.multiTenancy
                 : false;
         }
 
         // advancedPublishingWorkflow.
-        if (merged.advancedPublishingWorkflow !== false) {
-            merged.advancedPublishingWorkflow = license.canUseWorkflows()
-                ? merged.advancedPublishingWorkflow
+        if (baseFeatureFlagsDto.advancedPublishingWorkflow !== false) {
+            baseFeatureFlagsDto.advancedPublishingWorkflow = license.canUseWorkflows()
+                ? baseFeatureFlagsDto.advancedPublishingWorkflow
                 : false;
         }
 
         // advancedAccessControlLayer.
-        if (merged.advancedAccessControlLayer !== false) {
+        if (baseFeatureFlagsDto.advancedAccessControlLayer !== false) {
             if (!license.canUseAacl()) {
                 // License doesn't allow AACL at all.
-                merged.advancedAccessControlLayer = false;
-            } else if (typeof merged.advancedAccessControlLayer === "object") {
+                baseFeatureFlagsDto.advancedAccessControlLayer = false;
+            } else if (typeof baseFeatureFlagsDto.advancedAccessControlLayer === "object") {
                 // License allows AACL; constrain sub-options.
-                const aacl: IAaclFeatureFlags = { ...merged.advancedAccessControlLayer };
+                const aacl = baseFeatureFlagsDto.advancedAccessControlLayer as IAaclFeatureFlags;
 
                 if (aacl.teams !== false) {
                     aacl.teams = license.canUseTeams() ? aacl.teams : false;
@@ -75,35 +74,38 @@ class GetFeatureFlagsWithLicenseDecorator implements GetFeatureFlags.Interface {
                         ? aacl.folderLevelPermissions
                         : false;
                 }
-
-                merged.advancedAccessControlLayer = aacl;
             }
         }
 
         // auditLogs.
-        if (merged.auditLogs !== false) {
-            merged.auditLogs = license.canUseAuditLogs() ? merged.auditLogs : false;
+        if (baseFeatureFlagsDto.auditLogs !== false) {
+            baseFeatureFlagsDto.auditLogs = license.canUseAuditLogs()
+                ? baseFeatureFlagsDto.auditLogs
+                : false;
         }
 
         // recordLocking.
-        if (merged.recordLocking !== false) {
-            merged.recordLocking = license.canUseRecordLocking() ? merged.recordLocking : false;
+        if (baseFeatureFlagsDto.recordLocking !== false) {
+            baseFeatureFlagsDto.recordLocking = license.canUseRecordLocking()
+                ? baseFeatureFlagsDto.recordLocking
+                : false;
         }
 
         // fileManager — base is always allowed; only restrict threatDetection.
-        if (merged.fileManager !== false && typeof merged.fileManager === "object") {
-            const fm: IFileManagerFeatureFlags = { ...merged.fileManager };
+        if (
+            baseFeatureFlagsDto.fileManager !== false &&
+            typeof baseFeatureFlagsDto.fileManager === "object"
+        ) {
+            const fm = baseFeatureFlagsDto.fileManager as IFileManagerFeatureFlags;
 
             if (fm.threatDetection !== false) {
                 fm.threatDetection = license.canUseFileManagerThreatDetection()
                     ? fm.threatDetection
                     : false;
             }
-
-            merged.fileManager = fm;
         }
 
-        return merged;
+        return baseFeatureFlagsDto;
     }
 }
 
