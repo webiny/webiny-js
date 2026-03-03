@@ -15,6 +15,7 @@
     { "path": "../app-headless-cms-workflows/tsconfig.build.json" },
     { "path": "../app-mailer/tsconfig.build.json" },
     { "path": "../app-record-locking/tsconfig.build.json" },
+    { "path": "../app-sdk-playground/tsconfig.build.json" },
     { "path": "../app-security-access-management/tsconfig.build.json" },
     { "path": "../app-trash-bin/tsconfig.build.json" },
     { "path": "../app-website-builder/tsconfig.build.json" },
