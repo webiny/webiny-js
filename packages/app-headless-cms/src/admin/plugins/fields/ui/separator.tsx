@@ -1,9 +1,8 @@
-import React, { useMemo } from "react";
+import React from "react";
 import type { CmsLayoutFieldTypePlugin } from "@webiny/app-headless-cms-common/types/index.js";
 import type {
     CmsSeparatorLayoutDescriptor,
-    CmsLayoutDescriptor,
-    CmsModel
+    CmsLayoutDescriptor
 } from "@webiny/app-headless-cms-common/types/model.js";
 import { ReactComponent as SeparatorIcon } from "@webiny/icons/line_style.svg";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
@@ -15,7 +14,7 @@ import { Bind } from "@webiny/form";
 import { PermissionsTab } from "~/admin/components/FieldEditor/EditFieldDialog/PermissionsTab/PermissionsTab.js";
 import { RulesTab } from "~/admin/components/FieldEditor/EditFieldDialog/RulesTab/RulesTab.js";
 import { useModelEditor } from "~/admin/components/ContentModelEditor/useModelEditor.js";
-import { buildFieldOptions } from "@webiny/app-headless-cms-common/Fields/fieldOptions.js";
+import type { FieldOption } from "@webiny/app-headless-cms-common/Fields/fieldOptions.js";
 
 const t = i18n.ns("app-headless-cms/admin/fields");
 
@@ -36,12 +35,7 @@ const SeparatorSettings = () => {
     );
 };
 
-const SeparatorDialogContent = ({ contentModel }: { contentModel: CmsModel }) => {
-    const fieldOptions = useMemo(
-        () => buildFieldOptions(contentModel?.fields ?? []),
-        [contentModel?.fields]
-    );
-
+const SeparatorDialogContent = ({ fieldOptions }: { fieldOptions: FieldOption[] }) => {
     return (
         <Tabs
             size={"md"}
@@ -63,7 +57,9 @@ const SeparatorDialogContent = ({ contentModel }: { contentModel: CmsModel }) =>
                     key={"rules"}
                     trigger={"Rules"}
                     value={"rules"}
-                    content={<RulesTab gridClassName={"mt-md"} fieldOptions={fieldOptions} />}
+                    content={
+                        <RulesTab gridClassName={"mt-md"} fieldOptions={fieldOptions} />
+                    }
                 />
             ]}
         />
@@ -77,7 +73,7 @@ interface SeparatorLayoutCellProps {
 }
 
 const SeparatorLayoutCell = ({ descriptor, onUpdate, onDelete }: SeparatorLayoutCellProps) => {
-    const { contentModel } = useModelEditor();
+    const { fieldOptions } = useModelEditor();
     const dialogs = useDialogs();
 
     const openSettings = () => {
@@ -91,7 +87,7 @@ const SeparatorLayoutCell = ({ descriptor, onUpdate, onDelete }: SeparatorLayout
                 description: descriptor.description ?? "",
                 rules: descriptor.rules ?? []
             },
-            content: <SeparatorDialogContent contentModel={contentModel} />,
+            content: <SeparatorDialogContent fieldOptions={fieldOptions} />,
             onAccept: data => {
                 onUpdate({
                     ...descriptor,

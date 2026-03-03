@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useEffect } from "react";
+import React, { useCallback, useRef, useEffect } from "react";
 import { Accordion, Tabs } from "@webiny/admin-ui";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
@@ -10,8 +10,7 @@ import type {
     CmsTabLayoutDescriptor,
     CmsTabLayoutTab,
     CmsLayoutDescriptor,
-    CmsEditorFieldsLayout,
-    CmsModel
+    CmsEditorFieldsLayout
 } from "@webiny/app-headless-cms-common/types/model.js";
 import { useConfirmationDialog, useDialogs } from "@webiny/app-admin";
 import { Grid } from "@webiny/admin-ui";
@@ -29,7 +28,7 @@ import { useModelFieldEditor } from "~/admin/hooks/index.js";
 import { PermissionsTab } from "~/admin/components/FieldEditor/EditFieldDialog/PermissionsTab/PermissionsTab.js";
 import { RulesTab } from "~/admin/components/FieldEditor/EditFieldDialog/RulesTab/RulesTab.js";
 import { useModelEditor } from "~/admin/components/ContentModelEditor/useModelEditor.js";
-import { buildFieldOptions } from "@webiny/app-headless-cms-common/Fields/fieldOptions.js";
+import type { FieldOption } from "@webiny/app-headless-cms-common/Fields/fieldOptions.js";
 
 interface TabsLayoutEditorProps {
     descriptor: CmsTabLayoutDescriptor;
@@ -71,12 +70,7 @@ const TabsSettings = () => {
     );
 };
 
-const TabsDialogContent = ({ contentModel }: { contentModel: CmsModel }) => {
-    const fieldOptions = useMemo(
-        () => buildFieldOptions(contentModel?.fields ?? []),
-        [contentModel?.fields]
-    );
-
+const TabsDialogContent = ({ fieldOptions }: { fieldOptions: FieldOption[] }) => {
     return (
         <Tabs
             size={"md"}
@@ -98,7 +92,9 @@ const TabsDialogContent = ({ contentModel }: { contentModel: CmsModel }) => {
                     key={"rules"}
                     trigger={"Rules"}
                     value={"rules"}
-                    content={<RulesTab gridClassName={"mt-md"} fieldOptions={fieldOptions} />}
+                    content={
+                        <RulesTab gridClassName={"mt-md"} fieldOptions={fieldOptions} />
+                    }
                 />
             ]}
         />
@@ -122,12 +118,7 @@ const TabSettingsFields = () => {
     );
 };
 
-const TabDialogContent = ({ contentModel }: { contentModel: CmsModel }) => {
-    const fieldOptions = useMemo(
-        () => buildFieldOptions(contentModel?.fields ?? []),
-        [contentModel?.fields]
-    );
-
+const TabDialogContent = ({ fieldOptions }: { fieldOptions: FieldOption[] }) => {
     return (
         <Tabs
             size={"md"}
@@ -149,7 +140,9 @@ const TabDialogContent = ({ contentModel }: { contentModel: CmsModel }) => {
                     key={"rules"}
                     trigger={"Rules"}
                     value={"rules"}
-                    content={<RulesTab gridClassName={"mt-md"} fieldOptions={fieldOptions} />}
+                    content={
+                        <RulesTab gridClassName={"mt-md"} fieldOptions={fieldOptions} />
+                    }
                 />
             ]}
         />
@@ -196,7 +189,7 @@ const TabItem = ({
     onRemoveField,
     onUpdateField
 }: TabItemProps) => {
-    const { contentModel } = useModelEditor();
+    const { fieldOptions } = useModelEditor();
     const dialogs = useDialogs();
 
     const { showConfirmation } = useConfirmationDialog({
@@ -296,7 +289,7 @@ const TabItem = ({
                 icon: tab.icon ?? "",
                 rules: tab.rules ?? []
             },
-            content: <TabDialogContent contentModel={contentModel} />,
+            content: <TabDialogContent fieldOptions={fieldOptions} />,
             onAccept: data => {
                 const updatedTabs = [...descriptor.tabs];
                 updatedTabs[index] = {
@@ -350,7 +343,7 @@ const TabItem = ({
 
 export const TabsLayoutEditor = ({ descriptor, onUpdate, onDelete }: TabsLayoutEditorProps) => {
     const parentEditor = useModelFieldEditor();
-    const { contentModel } = useModelEditor();
+    const { fieldOptions } = useModelEditor();
     const { showDialog } = useDialogs();
     const newTabId = useRef<string | undefined>(undefined);
 
@@ -445,7 +438,7 @@ export const TabsLayoutEditor = ({ descriptor, onUpdate, onDelete }: TabsLayoutE
                 help: descriptor.help ?? "",
                 rules: descriptor.rules ?? []
             },
-            content: <TabsDialogContent contentModel={contentModel} />,
+            content: <TabsDialogContent fieldOptions={fieldOptions} />,
             onAccept: data => {
                 onUpdate({
                     ...descriptor,

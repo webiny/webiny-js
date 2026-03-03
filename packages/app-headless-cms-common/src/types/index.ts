@@ -263,6 +263,16 @@ export interface CmsLayoutFieldTypePlugin extends Plugin {
             getField: (id: string) => CmsModelField | undefined;
         }): CmsModelField[];
         /**
+         * Return a label prefix for each field ID nested inside this layout descriptor.
+         * Used by `buildFieldOptions` to include layout hierarchy in field labels.
+         *
+         * For example, a tabs descriptor with label "My Tabs" containing a tab "SEO"
+         * with field "metaTitle" would return: `{ "metaTitle": "My Tabs › SEO" }`.
+         *
+         * Omit or return `{}` for descriptors that don't group fields.
+         */
+        getFieldLabelPrefixes?(params: { descriptor: CmsLayoutDescriptor }): Record<string, string>;
+        /**
          * Controls how this layout field looks on the model editor canvas.
          * Each plugin fully owns its visual representation.
          */

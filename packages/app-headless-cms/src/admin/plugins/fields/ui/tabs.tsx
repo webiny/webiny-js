@@ -46,6 +46,27 @@ export const uiTabsField: CmsLayoutFieldTypePlugin = {
             }
             return result;
         },
+        getFieldLabelPrefixes({ descriptor }) {
+            const tabsDescriptor = descriptor as CmsTabLayoutDescriptor;
+            const tabs = tabsDescriptor.tabs;
+            if (!tabs) {
+                return {};
+            }
+            const descriptorLabel = tabsDescriptor.label || "Tabs";
+            const prefixes: Record<string, string> = {};
+            for (const tab of tabs) {
+                const tabLabel = tab.label || "Tab";
+                const prefix = `${descriptorLabel} › ${tabLabel}`;
+                for (const row of tab.layout) {
+                    for (const cell of row) {
+                        if (typeof cell === "string") {
+                            prefixes[cell] = prefix;
+                        }
+                    }
+                }
+            }
+            return prefixes;
+        },
         render({ descriptor, onUpdate, onDelete }) {
             return (
                 <TabsLayoutEditor
