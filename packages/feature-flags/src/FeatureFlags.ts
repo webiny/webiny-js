@@ -62,12 +62,6 @@ export class FeatureFlags {
     }
 
     isFileManagerThreatDetectionEnabled(): boolean {
-        if (this.flags.fileManager === false) {
-            return false;
-        }
-        if (typeof this.flags.fileManager === "object") {
-            return this.flags.fileManager.threatDetection !== false;
-        }
-        return true;
+        return this.flags.fileManager?.threatDetection !== false;
     }
 }

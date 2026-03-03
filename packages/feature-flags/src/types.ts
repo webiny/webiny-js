@@ -20,5 +20,5 @@ export interface IFeatureFlagsDto {
     advancedAccessControlLayer?: boolean | IAaclFeatureFlags;
     auditLogs?: boolean;
     recordLocking?: boolean;
-    fileManager?: boolean | IFileManagerFeatureFlags;
+    fileManager?: IFileManagerFeatureFlags;
 }

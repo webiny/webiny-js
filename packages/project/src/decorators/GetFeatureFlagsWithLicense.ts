@@ -1,12 +1,18 @@
 import { License } from "@webiny/wcp";
 import type { ILicense, DecryptedWcpProjectLicense } from "@webiny/wcp/types.js";
 import { FeatureFlags } from "@webiny/feature-flags";
-import type {
-    IFeatureFlagsDto,
-    IAaclFeatureFlags,
-    IFileManagerFeatureFlags
-} from "@webiny/feature-flags";
+import type { IFeatureFlagsDto, IAaclFeatureFlags } from "@webiny/feature-flags";
 import { GetFeatureFlags } from "~/abstractions/index.js";
+
+/* Returns the user's value when the license permits it, otherwise false.
+ * This preserves an explicit user false (opt-out), while blocking features
+ * the license doesn't cover. */
+function applyLicenseFlag<T extends boolean | undefined>(
+    userValue: T,
+    licenseAllows: boolean
+): T | false {
+    return licenseAllows ? userValue : false;
+}
 
 class GetFeatureFlagsWithLicenseDecorator implements GetFeatureFlags.Interface {
     constructor(private decoratee: GetFeatureFlags.Interface) {}
@@ -36,76 +42,56 @@ class GetFeatureFlagsWithLicenseDecorator implements GetFeatureFlags.Interface {
      * If the user disables a feature they have access to, we respect false.
      * If the user enables a feature the license doesn't allow, we force false.
      * fileManager (base) is always allowed; only threatDetection is restricted. */
-    private applyLicense(
-        baseFeatureFlagsDto: IFeatureFlagsDto,
-        license: ILicense
-    ): IFeatureFlagsDto {
-        // multiTenancy.
-        if (baseFeatureFlagsDto.multiTenancy !== false) {
-            baseFeatureFlagsDto.multiTenancy = license.canUseFeature("multiTenancy")
-                ? baseFeatureFlagsDto.multiTenancy
-                : false;
-        }
+    private applyLicense(featureFlagsDto: IFeatureFlagsDto, license: ILicense): IFeatureFlagsDto {
+        featureFlagsDto.multiTenancy = applyLicenseFlag(
+            featureFlagsDto.multiTenancy,
+            license.canUseFeature("multiTenancy")
+        );
 
-        // advancedPublishingWorkflow.
-        if (baseFeatureFlagsDto.advancedPublishingWorkflow !== false) {
-            baseFeatureFlagsDto.advancedPublishingWorkflow = license.canUseWorkflows()
-                ? baseFeatureFlagsDto.advancedPublishingWorkflow
-                : false;
-        }
+        featureFlagsDto.advancedPublishingWorkflow = applyLicenseFlag(
+            featureFlagsDto.advancedPublishingWorkflow,
+            license.canUseWorkflows()
+        );
 
         // advancedAccessControlLayer.
-        if (baseFeatureFlagsDto.advancedAccessControlLayer !== false) {
+        if (featureFlagsDto.advancedAccessControlLayer !== false) {
             if (!license.canUseAacl()) {
                 // License doesn't allow AACL at all.
-                baseFeatureFlagsDto.advancedAccessControlLayer = false;
-            } else if (typeof baseFeatureFlagsDto.advancedAccessControlLayer === "object") {
+                featureFlagsDto.advancedAccessControlLayer = false;
+            } else if (typeof featureFlagsDto.advancedAccessControlLayer === "object") {
                 // License allows AACL; constrain sub-options.
-                const aacl = baseFeatureFlagsDto.advancedAccessControlLayer as IAaclFeatureFlags;
-
-                if (aacl.teams !== false) {
-                    aacl.teams = license.canUseTeams() ? aacl.teams : false;
-                }
-                if (aacl.privateFiles !== false) {
-                    aacl.privateFiles = license.canUsePrivateFiles() ? aacl.privateFiles : false;
-                }
-                if (aacl.folderLevelPermissions !== false) {
-                    aacl.folderLevelPermissions = license.canUseFolderLevelPermissions()
-                        ? aacl.folderLevelPermissions
-                        : false;
-                }
+                const aacl = featureFlagsDto.advancedAccessControlLayer as IAaclFeatureFlags;
+                aacl.teams = applyLicenseFlag(aacl.teams, license.canUseTeams());
+                aacl.privateFiles = applyLicenseFlag(
+                    aacl.privateFiles,
+                    license.canUsePrivateFiles()
+                );
+                aacl.folderLevelPermissions = applyLicenseFlag(
+                    aacl.folderLevelPermissions,
+                    license.canUseFolderLevelPermissions()
+                );
             }
         }
 
-        // auditLogs.
-        if (baseFeatureFlagsDto.auditLogs !== false) {
-            baseFeatureFlagsDto.auditLogs = license.canUseAuditLogs()
-                ? baseFeatureFlagsDto.auditLogs
-                : false;
+        featureFlagsDto.auditLogs = applyLicenseFlag(
+            featureFlagsDto.auditLogs,
+            license.canUseAuditLogs()
+        );
+        featureFlagsDto.recordLocking = applyLicenseFlag(
+            featureFlagsDto.recordLocking,
+            license.canUseRecordLocking()
+        );
+
+        // fileManager is always enabled; only restrict threatDetection via license.
+        if (!featureFlagsDto.fileManager) {
+            featureFlagsDto.fileManager = {};
         }
+        featureFlagsDto.fileManager.threatDetection = applyLicenseFlag(
+            featureFlagsDto.fileManager.threatDetection,
+            license.canUseFileManagerThreatDetection()
+        );
 
-        // recordLocking.
-        if (baseFeatureFlagsDto.recordLocking !== false) {
-            baseFeatureFlagsDto.recordLocking = license.canUseRecordLocking()
-                ? baseFeatureFlagsDto.recordLocking
-                : false;
-        }
-
-        // fileManager — base is always allowed; only restrict threatDetection.
-        if (
-            baseFeatureFlagsDto.fileManager !== false &&
-            typeof baseFeatureFlagsDto.fileManager === "object"
-        ) {
-            const fm = baseFeatureFlagsDto.fileManager as IFileManagerFeatureFlags;
-
-            if (fm.threatDetection !== false) {
-                fm.threatDetection = license.canUseFileManagerThreatDetection()
-                    ? fm.threatDetection
-                    : false;
-            }
-        }
-
-        return baseFeatureFlagsDto;
+        return featureFlagsDto;
     }
 }
 
