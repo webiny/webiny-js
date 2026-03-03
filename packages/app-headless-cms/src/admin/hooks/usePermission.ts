@@ -8,8 +8,8 @@ export interface CreatableItem {
 }
 
 interface CanReadEntriesCallableParams {
-    contentModelGroup: CmsGroup;
-    contentModel: CmsModel;
+    contentModelGroup: Pick<CmsGroup, "id">;
+    contentModel: Pick<CmsModel, "modelId">;
 }
 
 export const usePermission = makeDecoratable(() => {

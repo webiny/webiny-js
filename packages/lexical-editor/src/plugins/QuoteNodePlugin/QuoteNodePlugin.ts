@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { formatToQuote, QuoteNode } from "@webiny/lexical-nodes";
-import { COMMAND_PRIORITY_LOW } from "lexical";
-import { mergeRegister } from "@lexical/utils";
+import { COMMAND_PRIORITY_LOW, mergeRegister } from "lexical";
 import { useRichTextEditor } from "~/hooks/index.js";
 import { INSERT_QUOTE_COMMAND } from "~/commands/index.js";
 

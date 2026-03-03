@@ -23,9 +23,9 @@
     "@webiny/handler-aws": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/project-utils": "0.0.0",
-    "graphql": "^16.12.0",
+    "graphql": "^16.13.0",
     "typescript": "5.9.3",
-    "vitest": "^3.2.4"
+    "vitest": "^4.0.18"
   },
   "dependencies": {
     "@webiny/api": "0.0.0",

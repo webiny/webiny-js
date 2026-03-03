@@ -24,6 +24,10 @@ export class LegacyWcpContext implements WcpContextObject {
         return this.getWcpContext().getProject();
     }
 
+    getProjectWithFeatureFlags(): WcpProject | null {
+        return this.getWcpContext().getProjectWithFeatureFlags();
+    }
+
     getProjectLicense(): ILicense {
         return this.getWcpContext().getProjectLicense();
     }

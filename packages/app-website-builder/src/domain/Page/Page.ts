@@ -1,4 +1,4 @@
-import type { WbIdentity, WbLocation } from "~/types.js";
+import type { WbIdentity, WbLive, WbLocation, WbSystem } from "~/types.js";
 import { ROOT_FOLDER, WbPageStatus, type WbStatus } from "~/constants.js";
 
 export interface PageData {
@@ -18,6 +18,8 @@ export interface PageData {
     savedOn?: string;
     modifiedBy?: WbIdentity | null;
     modifiedOn?: string | null;
+    system?: WbSystem | null;
+    live?: WbLive | null;
 }
 
 export class Page {
@@ -37,6 +39,8 @@ export class Page {
     public savedOn: string;
     public modifiedBy: WbIdentity;
     public modifiedOn: string;
+    public system: WbSystem | null;
+    public live: WbLive | null = null;
 
     protected constructor(data: PageData) {
         this.id = data.id ?? "";
@@ -55,9 +59,8 @@ export class Page {
         this.savedOn = data.savedOn ?? "";
         this.modifiedBy = this.createIdentity(data.modifiedBy);
         this.modifiedOn = data.modifiedOn ?? "";
-        // TODO remove when implemented in a proper way
-        // @ts-expect-error
-        this.workflows = data.workflows || null;
+        this.system = data.system || null;
+        this.live = data.live || null;
     }
 
     static create(data: PageData) {

@@ -4,9 +4,9 @@ const { hashElement } = require("folder-hash");
 const fs = require("fs-extra");
 const execa = require("execa");
 const path = require("path");
-const loadJson = require("load-json-file");
-const writeJson = require("write-json-file");
+const { writeJsonFileSync } = require("write-json-file");
 const { green, red } = require("chalk");
+const { loadJsonFileSync } = require("load-json-file");
 require("@webiny/cli");
 const argv = require("yargs").argv;
 
@@ -46,7 +46,7 @@ function getBuildOutputFolder({ packageJson, packageFolder }) {
 async function build() {
     let metaJson = { packages: {} };
     try {
-        metaJson = loadJson.sync(META_FILE_PATH);
+        metaJson = loadJsonFileSync(META_FILE_PATH);
     } catch {}
 
     const packagesNoCache = [];
@@ -245,7 +245,7 @@ async function build() {
                     const sourceHash = await getPackageSourceHash(currentPackage);
                     metaJson.packages[currentPackage.packageJson.name] = { sourceHash };
 
-                    writeJson.sync(META_FILE_PATH, metaJson);
+                    writeJsonFileSync(META_FILE_PATH, metaJson);
                     resolve();
                 })
             );

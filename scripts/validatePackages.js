@@ -1,7 +1,7 @@
 const path = require("path");
-const readJson = require("load-json-file");
 const getPackages = require("get-yarn-workspaces");
 const { blue, red } = require("chalk");
+const { loadJsonFileSync } = require("load-json-file");
 
 /**
  * This script checks every package of the monorepo to see if it is configured correctly for publishing.
@@ -14,7 +14,7 @@ const { blue, red } = require("chalk");
     for (let i = 0; i < packages.length; i++) {
         const package = packages[i];
         try {
-            const json = await readJson(path.join(package, "package.json"));
+            const json = loadJsonFileSync(path.join(package, "package.json"));
             if (!json.private) {
                 // Check publishConfig
                 if (!json.publishConfig) {

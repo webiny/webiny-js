@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import React from "react";
-import { render } from "@testing-library/react";
+import { render, act } from "@testing-library/react";
 import { AdminConfig } from "~/config/AdminConfig.js";
 import { Properties, toObject } from "@webiny/react-properties";
 
@@ -9,10 +9,16 @@ const getLastCall = (fn: any) => {
     return calls[calls.length - 1][0];
 };
 
+async function flush() {
+    await act(async () => {
+        await new Promise(resolve => setTimeout(resolve, 10));
+    });
+}
+
 const { LexicalTheme } = AdminConfig;
 
 describe("LexicalTheme Config", () => {
-    it("should create colors configuration", () => {
+    it("should create colors configuration", async () => {
         const onChange = vi.fn();
 
         render(
@@ -21,6 +27,7 @@ describe("LexicalTheme Config", () => {
                 <LexicalTheme.Color id="color2" label={"Color 2"} value="#666666" />
             </Properties>
         );
+        await flush();
 
         const properties = getLastCall(onChange);
 
@@ -42,7 +49,7 @@ describe("LexicalTheme Config", () => {
         });
     });
 
-    it("should create typography configuration with headings", () => {
+    it("should create typography configuration with headings", async () => {
         const onChange = vi.fn();
 
         render(
@@ -61,6 +68,7 @@ describe("LexicalTheme Config", () => {
                 />
             </Properties>
         );
+        await flush();
 
         const properties = getLastCall(onChange);
 
@@ -86,7 +94,7 @@ describe("LexicalTheme Config", () => {
         });
     });
 
-    it("should create complete theme configuration", () => {
+    it("should create complete theme configuration", async () => {
         const onChange = vi.fn();
 
         render(
@@ -134,6 +142,7 @@ describe("LexicalTheme Config", () => {
                 />
             </Properties>
         );
+        await flush();
 
         const properties = getLastCall(onChange);
 
@@ -195,7 +204,7 @@ describe("LexicalTheme Config", () => {
         });
     });
 
-    it("should support removing colors", () => {
+    it("should support removing colors", async () => {
         const onChange = vi.fn();
 
         render(
@@ -205,6 +214,7 @@ describe("LexicalTheme Config", () => {
                 <LexicalTheme.Color id="color1" remove />
             </Properties>
         );
+        await flush();
 
         const properties = getLastCall(onChange);
 
@@ -221,7 +231,7 @@ describe("LexicalTheme Config", () => {
         });
     });
 
-    it("should support reordering typography items", () => {
+    it("should support reordering typography items", async () => {
         const onChange = vi.fn();
 
         render(
@@ -248,6 +258,7 @@ describe("LexicalTheme Config", () => {
                 />
             </Properties>
         );
+        await flush();
 
         const properties = getLastCall(onChange);
         const result = toObject(properties);

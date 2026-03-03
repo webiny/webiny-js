@@ -2,7 +2,7 @@ import type { IdentityContext } from "@webiny/api-core/features/IdentityContext"
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 
 interface RecordLockingSecurityPermission extends SecurityPermission {
-    canForceUnlock?: string;
+    canForceUnlock?: boolean;
 }
 
 export const hasFullAccessPermission = async (
@@ -15,5 +15,5 @@ export const hasFullAccessPermission = async (
 
     const permission =
         await identityContext.getPermission<RecordLockingSecurityPermission>("recordLocking");
-    return permission?.canForceUnlock === "yes";
+    return permission?.canForceUnlock === true;
 };

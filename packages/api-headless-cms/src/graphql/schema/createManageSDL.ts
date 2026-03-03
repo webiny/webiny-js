@@ -88,6 +88,7 @@ export const createManageSDL: CreateManageSDL = ({
             ${onByMetaGqlFields}
             meta: ${singularName}Meta
             wbyAco_location: WbyAcoLocation
+            live: CmsEntryLive
             
             values: ${singularName}Values
         }
@@ -98,7 +99,7 @@ export const createManageSDL: CreateManageSDL = ({
             locked: Boolean
             
             status: String
-            state: CmsEntryState
+            system: CmsEntrySystem
             """
             CAUTION: this field is resolved by making an extra query to DB.
             RECOMMENDATION: Use it only with "get" queries (avoid in "list")
@@ -150,8 +151,9 @@ export const createManageSDL: CreateManageSDL = ({
         input ${singularName}ListWhereInput {
             ${listFilterFieldsRender.baseFiltersAsString()}
 
-            state: ListWhereInputCmsEntryState
+            system: ListWhereInputCmsEntrySystem
             wbyAco_location: WbyAcoLocationWhereInput
+            live: CmsEntryLiveWhereInput
             
             values: ${singularName}ListWhereInputValues
             AND: [${singularName}ListWhereInput!]

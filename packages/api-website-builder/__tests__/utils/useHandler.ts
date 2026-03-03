@@ -5,6 +5,7 @@ import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import { SecurityPermission } from "@webiny/api-core/types/security.js";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import type { ApiCoreContext, ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import { createContextPlugin } from "@webiny/api";
@@ -18,11 +19,12 @@ import { createBackgroundTasks } from "~tests/mocks/mockBackgroundTasks.js";
 
 export interface UseHandlerParams {
     permissions?: SecurityPermission[];
+    identity?: IdentityData | null;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
 }
 
 export const useHandler = (params: UseHandlerParams = {}) => {
-    const { permissions, plugins = [] } = params;
+    const { permissions, identity, plugins = [] } = params;
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
@@ -37,7 +39,10 @@ export const useHandler = (params: UseHandlerParams = {}) => {
             }),
             ...cmsStorage.plugins,
             createGraphQLHandler(),
-            ...createTenancyAndSecurity({ permissions, identity: createIdentity() }),
+            ...createTenancyAndSecurity({
+                permissions,
+                identity: identity === undefined ? createIdentity() : identity
+            }),
             createHeadlessCmsContext({
                 storageOperations: cmsStorage.storageOperations
             }),

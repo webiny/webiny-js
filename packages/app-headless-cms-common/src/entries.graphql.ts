@@ -113,6 +113,9 @@ const createEntrySystemFields = (model: CmsModel) => {
             displayName
         }
         ${optionalFields}
+        live {
+            version
+        }
     `;
 };
 

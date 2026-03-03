@@ -5,7 +5,8 @@ import type { WbPage } from "~/domain/page/abstractions.js";
 import {
     PageNotFoundError,
     PagePersistenceError,
-    PageValidationError
+    PageValidationError,
+    PageNotAuthorizedError
 } from "~/domain/page/errors.js";
 
 // ============================================================================
@@ -52,6 +53,7 @@ export interface ICreatePageRevisionFromUseCase {
 }
 
 export interface ICreatePageRevisionFromUseCaseErrors {
+    notAuthorized: PageNotAuthorizedError;
     validation: PageValidationError;
     notFound: PageNotFoundError;
     persistence: PagePersistenceError;

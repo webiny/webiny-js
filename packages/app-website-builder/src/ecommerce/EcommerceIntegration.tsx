@@ -3,7 +3,8 @@ import { Editor } from "~/index.js";
 import type {
     IEcommerceApi,
     IEcommerceApiFactory,
-    SettingsInput as ISettingsInput
+    SettingsInput as ISettingsInput,
+    Resource as IResource
 } from "./types.js";
 import { CreateInputRenderers } from "./CreateInputRenderers.js";
 import type { ResourcePageProps } from "./components/ResourcePage.js";
@@ -66,4 +67,5 @@ export namespace EcommerceIntegration {
     export type EcommerceApi = IEcommerceApi;
     export type EcommerceApiFactory = IEcommerceApiFactory;
     export type SettingsInput = ISettingsInput;
+    export type Resource = IResource;
 }

@@ -9,7 +9,7 @@
   "author": "Webiny Ltd.",
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
-    "@aws-amplify/auth": "^5.6.17",
+    "@aws-amplify/auth": "^5.6.18",
     "@webiny/admin-ui": "*",
     "@webiny/api-core": "*",
     "@webiny/app": "*",
@@ -20,12 +20,11 @@
     "@webiny/form": "*",
     "@webiny/handler-graphql": "*",
     "@webiny/icons": "*",
-    "@webiny/plugins": "*",
     "@webiny/project": "*",
     "@webiny/project-aws": "*",
     "@webiny/ui": "*",
     "@webiny/validation": "*",
-    "graphql": "^16.12.0",
+    "graphql": "^16.13.0",
     "graphql-tag": "^2.12.6",
     "jsonwebtoken": "^9.0.3",
     "lodash": "^4.17.23",
@@ -39,7 +38,7 @@
     "@webiny/build-tools": "*",
     "@webiny/project-utils": "*",
     "@webiny/wcp": "*",
-    "vitest": "^3.2.4"
+    "vitest": "^4.0.18"
   },
   "publishConfig": {
     "access": "public",

@@ -5,7 +5,3 @@ export interface FilePermission extends SecurityPermission {
     rwd?: string;
     own?: boolean;
 }
-
-export interface SettingsPermission extends SecurityPermission {
-    name: "fm.setting";
-}

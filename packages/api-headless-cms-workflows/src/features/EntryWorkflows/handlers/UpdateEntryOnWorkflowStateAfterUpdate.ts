@@ -29,7 +29,9 @@ class UpdateEntryOnWorkflowStateAfterUpdateImpl
 
         const model = modelResult.value;
         await this.updateEntry.execute(model, state.targetRevisionId, {
-            state: values
+            system: {
+                workflow: values
+            }
         });
     }
 }

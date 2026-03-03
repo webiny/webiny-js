@@ -40,7 +40,8 @@ export const createUnpublishEntryData = async <TValues extends CmsEntryValues = 
         revisionSavedOn: getDate(currentDateTime),
         revisionModifiedOn: getDate(currentDateTime),
         revisionSavedBy: getIdentity(currentIdentity),
-        revisionModifiedBy: getIdentity(currentIdentity)
+        revisionModifiedBy: getIdentity(currentIdentity),
+        live: null
     };
 
     return {

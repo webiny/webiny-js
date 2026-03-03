@@ -1,14 +1,13 @@
 #!/usr/bin/env node
-import writeJson from "write-json-file";
+import { writeJsonFileSync } from "write-json-file";
 import chalk from "chalk";
 import path from "path";
 import { getPackages } from "./utils/getPackages.js";
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
 
 const { cyan, green, gray } = chalk;
 const { join, relative } = path;
-
-import yargs from "yargs";
-import { hideBin } from "yargs/helpers";
 
 const argv = yargs(hideBin(process.argv)).parse();
 
@@ -71,18 +70,18 @@ for (let i = 0; i < dependencyPackages.length; i++) {
 
 console.log(cyan(`Updating ("${targetPackage.packageJson.name}") package dependencies...`));
 
-await writeJson(targetPackage.packageJsonPath, targetPackage.packageJson);
+writeJsonFileSync(targetPackage.packageJsonPath, targetPackage.packageJson);
 console.log(`${green("✔ package.json")} updated ${gray(`(${targetPackage.packageJsonPath})`)}`);
 
 if (targetPackage.tsConfigJson) {
-    await writeJson(targetPackage.tsConfigJsonPath, targetPackage.tsConfigJson);
+    writeJsonFileSync(targetPackage.tsConfigJsonPath, targetPackage.tsConfigJson);
     console.log(
         `${green("✔ tsconfig.json")} updated ${gray(`(${targetPackage.tsConfigJsonPath})`)}`
     );
 }
 
 if (targetPackage.tsConfigBuildJson) {
-    await writeJson(targetPackage.tsConfigBuildJsonPath, targetPackage.tsConfigBuildJson);
+    writeJsonFileSync(targetPackage.tsConfigBuildJsonPath, targetPackage.tsConfigBuildJson);
     console.log(
         `${green("✔ tsconfig.build.json")} updated ${gray(
             `(${targetPackage.tsConfigBuildJsonPath})`

@@ -1,15 +1,23 @@
 import pRetry from "p-retry";
-import semver, { SemVer } from "semver";
+import semver from "semver";
 import execa from "execa";
-import loadJSON from "load-json-file";
-import writeJSON from "write-json-file";
+import { loadJsonFileSync } from "load-json-file";
+import { writeJsonFileSync } from "write-json-file";
 import { Octokit } from "@octokit/rest";
 import { Changelog } from "./Changelog";
 
 export type MostRecentVersionFunction = (mostRecentVersion: string) => string | string[];
 
 export class Release {
-    tag: string | undefined = undefined;
+    /**
+     * NPM dist-tag to publish.
+     */
+    distTag: string | undefined = undefined;
+    /**
+     * NPM dist-tag to publish from.
+     * This tag will be used to detect the version that needs to be published.
+     */
+    sourceTag: string = "beta";
     version: string | string[] | MostRecentVersionFunction | null | undefined = undefined;
     resetAllChanges = true;
     mostRecentVersion: undefined | string = undefined;
@@ -30,7 +38,15 @@ export class Release {
      * @param tag
      */
     setTag(tag: string) {
-        this.tag = tag;
+        this.distTag = tag;
+    }
+
+    setSourceTag(tag: string) {
+        if (typeof tag !== "string" || tag === "") {
+            return;
+        }
+
+        this.sourceTag = tag;
     }
 
     /**
@@ -59,7 +75,7 @@ export class Release {
     async versionPackages() {
         this.__validateConfig();
 
-        this.logger.info("Attempting to release tag %s", this.tag);
+        this.logger.info("Attempting to release tag %s", this.distTag);
 
         // Generate `lerna.json` using `example.lerna.json`.
         {
@@ -68,7 +84,7 @@ export class Release {
             this.mostRecentVersion = this.__getMostRecentVersion(
                 [
                     this.npmTags["latest"],
-                    this.npmTags[this.tag === "latest" ? "beta" : this.tag!]
+                    this.npmTags[this.distTag === "latest" ? this.sourceTag : this.distTag!]
                 ].filter(Boolean)
             );
 
@@ -76,7 +92,7 @@ export class Release {
             const lernaJSON = this.__loadLernaJson("example.lerna.json");
             lernaJSON.version = this.mostRecentVersion;
 
-            await writeJSON("lerna.json", lernaJSON);
+            writeJsonFileSync("lerna.json", lernaJSON);
             this.logger.info("Lerna config was written to %s", "lerna.json");
         }
 
@@ -118,7 +134,7 @@ export class Release {
 
         // Read the new version
         const lernaJSON = this.__loadLernaJson("lerna.json");
-        return { version: lernaJSON.version, tag: this.tag };
+        return { version: lernaJSON.version, tag: this.distTag };
     }
 
     async execute() {
@@ -130,7 +146,7 @@ export class Release {
             "publish",
             "from-package",
             "--dist-tag",
-            this.tag!,
+            this.distTag!,
             "--yes"
         ];
 
@@ -144,7 +160,7 @@ export class Release {
             await execa("yarn", [...lernaPublishArgs, "--ignore-scripts"], { stdio: "inherit" });
         }
 
-        this.logger.info(`Packages were published to NPM under %s dist-tag`, this.tag);
+        this.logger.info(`Packages were published to NPM under %s dist-tag`, this.distTag);
 
         if (this.createGithubRelease !== false) {
             // Generate changelog, tag commit, and create Github release.
@@ -179,7 +195,7 @@ export class Release {
 
     __validateConfig() {
         if (this.createGithubRelease && !process.env.GH_TOKEN) {
-            throw Error("GH_TOKEN environment variable is not set.");
+            // throw Error("GH_TOKEN environment variable is not set.");
         }
 
         if (!this.version) {
@@ -232,6 +248,6 @@ export class Release {
     }
 
     __loadLernaJson(filename: string) {
-        return loadJSON.sync<Record<string, any>>(filename);
+        return loadJsonFileSync<Record<string, any>>(filename);
     }
 }

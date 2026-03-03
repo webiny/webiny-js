@@ -1,6 +1,6 @@
 const path = require("path");
 const execa = require("execa");
-const writeJson = require("write-json-file");
+const { writeJsonFileSync } = require("write-json-file");
 const { green, blue } = require("chalk");
 const regions = require("./regions");
 
@@ -43,6 +43,6 @@ const LAYER_NAME = "webiny-v5-sharp";
             delete layers[LAYER_NAME];
         }
         console.log("Layers", JSON.stringify(layers, null, 2));
-        await writeJson(layersPath, layers);
+        writeJsonFileSync(layersPath, layers);
     }
 })();

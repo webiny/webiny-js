@@ -6,7 +6,8 @@ import type { WbLocation } from "~/domain/shared/abstractions.js";
 import {
     RedirectNotFoundError,
     RedirectPersistenceError,
-    RedirectValidationError
+    RedirectValidationError,
+    RedirectNotAuthorizedError
 } from "~/domain/redirect/errors.js";
 
 // ============================================================================
@@ -58,6 +59,7 @@ export interface IUpdateRedirectUseCase {
 }
 
 export interface IUpdateRedirectUseCaseErrors {
+    notAuthorized: RedirectNotAuthorizedError;
     notFound: RedirectNotFoundError;
     validation: RedirectValidationError;
     persistence: RedirectPersistenceError;

@@ -9,8 +9,6 @@
     { "path": "../app-headless-cms/tsconfig.build.json" },
     { "path": "../app-websockets/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
-    { "path": "../form/tsconfig.build.json" },
-    { "path": "../plugins/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -34,10 +32,6 @@
       "@webiny/app-websockets": ["../app-websockets/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
-      "@webiny/form/*": ["../form/src/*"],
-      "@webiny/form": ["../form/src"],
-      "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"]
     },

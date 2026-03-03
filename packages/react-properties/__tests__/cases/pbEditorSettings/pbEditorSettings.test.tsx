@@ -4,7 +4,7 @@ import { render } from "@testing-library/react";
 import { CompositionProvider } from "@webiny/react-composition";
 import { Property, toObject } from "~/index";
 import { PageSettingsView, PageSettingsConfig } from "./PbEditorSettingsView";
-import { getLastCall } from "~tests/utils";
+import { getLastCall, flush } from "~tests/utils";
 
 const { SettingsGroup, FormField } = PageSettingsConfig;
 
@@ -34,6 +34,7 @@ describe("PB Editor", () => {
         );
 
         render(view);
+        await flush();
 
         const properties = getLastCall(onChange);
         const data = toObject(properties);
@@ -82,6 +83,7 @@ describe("PB Editor", () => {
         );
 
         render(view);
+        await flush();
 
         const properties = getLastCall(onChange);
         const data = toObject(properties);
@@ -140,6 +142,7 @@ describe("PB Editor", () => {
         );
 
         render(view);
+        await flush();
 
         const properties = getLastCall(onChange);
         const data = toObject(properties);
@@ -186,6 +189,7 @@ describe("PB Editor", () => {
         );
 
         render(view);
+        await flush();
 
         const properties = getLastCall(onChange);
         const data = toObject<{ groups?: Array<unknown> }>(properties);
@@ -214,6 +218,7 @@ describe("PB Editor", () => {
         );
 
         render(view);
+        await flush();
 
         const properties = getLastCall(onChange);
         const data = toObject(properties);
@@ -269,6 +274,7 @@ describe("PB Editor", () => {
         );
 
         render(view);
+        await flush();
 
         const properties = getLastCall(onChange);
         const data = toObject(properties);
@@ -327,6 +333,7 @@ describe("PB Editor", () => {
         );
 
         render(view);
+        await flush();
 
         const properties = getLastCall(onChange);
         const data = toObject(properties);
@@ -380,6 +387,7 @@ describe("PB Editor", () => {
         );
 
         render(view);
+        await flush();
 
         const properties = getLastCall(onChange);
         const data = toObject(properties);
@@ -428,6 +436,7 @@ describe("PB Editor", () => {
         );
 
         render(view);
+        await flush();
 
         const properties = getLastCall(onChange);
         const data = toObject(properties);

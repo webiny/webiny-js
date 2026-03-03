@@ -20,7 +20,6 @@ export { TypographyAction } from "~/components/ToolbarActions/TypographyAction.j
 export { TextAlignmentAction } from "~/components/ToolbarActions/TextAlignmentAction.js";
 export { ImageAction } from "~/components/ToolbarActions/ImageAction.js";
 // toolbars
-export { Toolbar } from "~/components/Toolbar/Toolbar.js";
 export { StaticToolbar } from "~/components/Toolbar/StaticToolbar.js";
 // editor
 export { RichTextEditor } from "~/components/Editor/RichTextEditor.js";

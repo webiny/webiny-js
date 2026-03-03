@@ -1,4 +1,4 @@
-import type { CmsIdentity } from "~/types/index.js";
+import type { CmsIdentity, ICmsEntryLive } from "~/types/index.js";
 
 export const ROOT_FOLDER = "root";
 
@@ -72,6 +72,7 @@ export interface RecordWithEntryMetaFields {
     restoredBy: CmsIdentity | null;
     firstPublishedBy: CmsIdentity | null;
     lastPublishedBy: CmsIdentity | null;
+    live: ICmsEntryLive | null;
 }
 
 export const pickEntryMetaFields = (
@@ -92,6 +93,10 @@ export const pickEntryMetaFields = (
             });
         }
     }
+    /**
+     * Also add live field, as it's not part of entry meta fields, but it's required to be transfered.
+     */
+    pickedEntryMetaFields.live = object.live;
 
     return pickedEntryMetaFields;
 };

@@ -1,5 +1,5 @@
 import { createStandardEntity, type ITable } from "@webiny/db-dynamodb";
-import type { IEntryEntity, IEntryEntityAttirbutesData } from "./types.js";
+import type { IEntryEntity, IEntryEntityAttributesData } from "./types.js";
 
 interface Params {
     table: ITable;
@@ -8,7 +8,7 @@ interface Params {
 
 export const createEntryEntity = (params: Params): IEntryEntity => {
     const { table, entityName } = params;
-    return createStandardEntity<IEntryEntityAttirbutesData>({
+    return createStandardEntity<IEntryEntityAttributesData>({
         name: entityName,
         table: table.table
     });

@@ -1,9 +1,10 @@
 import camelCase from "lodash/camelCase.js";
 import type {
     CmsModelField,
-    CmsModelFieldValidation,
-    CmsModelFieldPredefinedValues
+    CmsModelFieldPredefinedValues,
+    CmsModelFieldValidation
 } from "~/types/index.js";
+import { getBaseFieldType } from "~/utils/getBaseFieldType.js";
 
 export interface FieldBuilderConfig
     extends Omit<CmsModelField, "id" | "fieldId" | "storageId" | "type"> {
@@ -12,6 +13,238 @@ export interface FieldBuilderConfig
     description?: string | null;
     note?: string | null;
 }
+
+/**
+ * Augmentable renderer registry.
+ * Each entry maps a renderer name to its applicable field type(s) and settings.
+ *
+ * Example:
+ *   declare module "@webiny/api-headless-cms/features/modelBuilder/fields/FieldBuilder" {
+ *       interface FieldRendererRegistry {
+ *           "my-renderer": { fieldType: "text" | "long-text"; settings: { color: string } };
+ *       }
+ *   }
+ */
+export interface FieldRendererRegistry {
+    switch: {
+        fieldType: "boolean";
+        settings: undefined;
+    };
+    checkboxes: {
+        fieldType: "text" | "number";
+        settings: undefined;
+    };
+    dateTimeInput: {
+        fieldType: "datetime";
+        settings: undefined;
+    };
+    dateTimeInputs: {
+        fieldType: "datetime";
+        settings?: {
+            multiValue?: {
+                addValueButtonLabel?: string;
+            };
+        };
+    };
+    dynamicZone: {
+        fieldType: "dynamicZone";
+        settings?: {
+            open?: boolean;
+        };
+    };
+    hidden: {
+        fieldType: string;
+        settings: undefined;
+    };
+    lexicalEditor: {
+        fieldType: "rich-text";
+        settings: undefined;
+    };
+    lexicalEditors: {
+        fieldType: "rich-text";
+        settings?: {
+            multiValue?: {
+                addValueButtonLabel?: string;
+            };
+        };
+    };
+    textarea: {
+        fieldType: "long-text";
+        settings: undefined;
+    };
+    textareas: {
+        fieldType: "long-text";
+        settings: {
+            multiValue?: {
+                addValueButtonLabel?: string;
+            };
+        };
+    };
+    numberInput: {
+        fieldType: "number";
+        settings: undefined;
+    };
+    numberInputs: {
+        fieldType: "number";
+        settings?: {
+            multiValue?: {
+                addValueButtonLabel?: string;
+            };
+        };
+    };
+    objectAccordionSingle: {
+        fieldType: "object";
+        settings?: {
+            open?: boolean;
+        };
+    };
+    objectAccordionMultiple: {
+        fieldType: "object";
+        settings?: {
+            open?: boolean;
+            multiValue?: {
+                addValueButtonLabel?: string;
+            };
+        };
+    };
+    passthrough: {
+        fieldType: string;
+        settings: undefined;
+    };
+    radioButtons: {
+        fieldType: "text" | "number";
+        settings: undefined;
+    };
+    refDialogSingle: {
+        fieldType: "ref";
+        settings: undefined;
+    };
+    refDialogMultiple: {
+        fieldType: "ref";
+        settings?: {
+            newItemPosition?: "first" | "last";
+        };
+    };
+    refAutocompleteSingle: {
+        fieldType: "ref";
+        settings: undefined;
+    };
+    refAutocompleteMultiple: {
+        fieldType: "ref";
+        settings: undefined;
+    };
+    refCheckboxes: {
+        fieldType: "ref";
+        settings: undefined;
+    };
+    refRadioButtons: {
+        fieldType: "ref";
+        settings: undefined;
+    };
+    dropdown: {
+        fieldType: "text" | "number";
+        settings: undefined;
+    };
+    tags: {
+        fieldType: "text";
+        settings: undefined;
+    };
+    textInput: {
+        fieldType: "text";
+        settings: undefined;
+    };
+    textInputs: {
+        fieldType: "text";
+        settings?: {
+            multiValue?: {
+                addValueButtonLabel?: string;
+            };
+        };
+    };
+    file: {
+        fieldType: "file";
+        settings?: {
+            imagesOnly?: boolean;
+        };
+    };
+    files: {
+        fieldType: "file";
+        settings?: {
+            imagesOnly?: boolean;
+        };
+    };
+    uiSeparator: {
+        fieldType: "ui";
+        settings: undefined;
+    };
+    uiAlert: {
+        fieldType: "ui";
+        settings: {
+            type: "info" | "success" | "warning" | "danger";
+        };
+    };
+}
+
+/**
+ * Maps camelCase renderer names (used in the builder API) to the
+ * kebab-case names expected by the frontend renderer registry.
+ */
+const rendererNameMap: Record<keyof FieldRendererRegistry, string> = {
+    switch: "boolean-input",
+    checkboxes: "checkboxes",
+    dateTimeInput: "date-time-input",
+    dateTimeInputs: "date-time-inputs",
+    dynamicZone: "dynamicZone",
+    hidden: "hidden",
+    lexicalEditor: "lexical-text-input",
+    lexicalEditors: "lexical-text-inputs",
+    textarea: "long-text-text-area",
+    textareas: "long-text-inputs",
+    numberInput: "number-input",
+    numberInputs: "number-inputs",
+    objectAccordionSingle: "object-accordion",
+    objectAccordionMultiple: "objects-accordion",
+    passthrough: "passthrough",
+    radioButtons: "radio-buttons",
+    refDialogSingle: "ref-advanced-single",
+    refDialogMultiple: "ref-advanced-multiple",
+    refAutocompleteSingle: "ref-input",
+    refAutocompleteMultiple: "ref-inputs",
+    refCheckboxes: "ref-simple-multiple",
+    refRadioButtons: "ref-simple-single",
+    dropdown: "select-box",
+    tags: "tags",
+    textInput: "text-input",
+    textInputs: "text-inputs",
+    file: "file-input",
+    files: "file-inputs",
+    uiSeparator: "uiSeparator",
+    uiAlert: "uiAlert"
+};
+
+/**
+ * Resolves a camelCase renderer name to the kebab-case name used by the frontend.
+ */
+function resolveRendererName(name: string): string {
+    return rendererNameMap[name as keyof FieldRendererRegistry] ?? name;
+}
+
+/**
+ * Extracts renderer names valid for the given field type.
+ * When TType is a broad `string`, all renderer names are returned.
+ */
+export type FieldRendererName<TType extends string = string> = string extends TType
+    ? keyof FieldRendererRegistry & string
+    : {
+          [K in keyof FieldRendererRegistry]: TType extends FieldRendererRegistry[K]["fieldType"]
+              ? K
+              : never;
+      }[keyof FieldRendererRegistry] &
+          string;
+
+export type FieldRendererSettings<TName extends string> = TName extends keyof FieldRendererRegistry
+    ? FieldRendererRegistry[TName]["settings"]
+    : Record<string, any> | undefined;
 
 /**
  * Base FieldBuilder class providing common field configuration methods
@@ -141,10 +374,17 @@ export class FieldBuilder<TType extends string = string> {
         return this;
     }
 
-    renderer(name: string, settings?: Record<string, any>): this {
+    renderer<TName extends FieldRendererName<TType>>(
+        name: TName,
+        ...args: undefined extends FieldRendererSettings<TName>
+            ? [settings?: FieldRendererSettings<TName>]
+            : FieldRendererSettings<TName> extends undefined
+              ? []
+              : [settings: FieldRendererSettings<TName>]
+    ): this {
         this.config.renderer = {
-            name,
-            settings: settings || null
+            name: resolveRendererName(name),
+            settings: args[0] ?? null
         };
         return this;
     }
@@ -160,7 +400,10 @@ export class FieldBuilder<TType extends string = string> {
      */
     build(): CmsModelField {
         const fieldId = this.config._fieldId || camelCase(this.config.label);
-        const storageId = `${this.type}@${this.config._storageId ?? fieldId}`;
+        const baseType = getBaseFieldType({
+            type: this.type
+        });
+        const storageId = `${baseType}@${this.config._storageId ?? fieldId}`;
 
         return {
             id: fieldId,

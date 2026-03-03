@@ -10,7 +10,7 @@ export const usePermission = () => {
             return true;
         }
         const permission = identity.getPermission("recordLocking");
-        return permission?.canForceUnlock === "yes";
+        return permission?.canForceUnlock === true;
     }, [identity]);
 
     return {

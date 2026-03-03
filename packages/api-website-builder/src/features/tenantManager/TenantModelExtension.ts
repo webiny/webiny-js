@@ -8,18 +8,18 @@ class TenantModelExtension implements ModelExtension.Interface {
                     .object()
                     .label("Website Theme")
                     .description("Configure a Website Builder theme for this tenant.")
-                    .renderer("object-accordion", { open: false })
+                    .renderer("objectAccordionSingle", { open: false })
                     .fields(fields => ({
                         websiteTitle: fields
                             .text()
                             .label("Website Title")
                             .description("Enter a website title")
-                            .renderer("text-input"),
+                            .renderer("textInput"),
                         primaryColor: fields
                             .text()
                             .label("Primary Color")
                             .description("Enter a color code (e.g., #000000)")
-                            .renderer("text-input")
+                            .renderer("textInput")
                             .defaultValue(""),
                         additionalColors: fields
                             .text()
@@ -27,7 +27,7 @@ class TenantModelExtension implements ModelExtension.Interface {
                             .label("Additional Colors")
                             .description("Enter a color code (e.g., #000000)")
                             .defaultValue([])
-                            .renderer("text-inputs", {
+                            .renderer("textInputs", {
                                 multiValue: {
                                     addValueButtonLabel: "Add Color"
                                 }
@@ -36,7 +36,7 @@ class TenantModelExtension implements ModelExtension.Interface {
                             .text()
                             .label("Font")
                             .description("Select a font")
-                            .renderer("radio-buttons")
+                            .renderer("radioButtons")
                             .predefinedValues([
                                 {
                                     value: "InterVariable, sans-serif",

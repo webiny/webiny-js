@@ -7,6 +7,8 @@
     { "path": "../api-headless-cms" },
     { "path": "../api-website-builder" },
     { "path": "../app" },
+    { "path": "../form" },
+    { "path": "../validation" },
     { "path": "../app-aco" },
     { "path": "../app-admin" },
     { "path": "../app-headless-cms" },
@@ -14,12 +16,14 @@
     { "path": "../app-website-builder" },
     { "path": "../cli-core" },
     { "path": "../feature" },
+    { "path": "../form" },
     { "path": "../handler-graphql" },
     { "path": "../lexical-editor" },
     { "path": "../project" },
     { "path": "../project-aws" },
     { "path": "../tasks" },
-    { "path": "../tenant-manager" }
+    { "path": "../tenant-manager" },
+    { "path": "../validation" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -156,6 +160,10 @@
       "@webiny/api-website-builder": ["../api-website-builder/src"],
       "@webiny/app/*": ["../app/src/*"],
       "@webiny/app": ["../app/src"],
+      "@webiny/form/*": ["../form/src/*"],
+      "@webiny/form": ["../form/src"],
+      "@webiny/validation/*": ["../validation/src/*"],
+      "@webiny/validation": ["../validation/src"],
       "@webiny/app-aco/*": ["../app-aco/src/*"],
       "@webiny/app-aco": ["../app-aco/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
@@ -172,6 +180,8 @@
       "@webiny/feature/admin": ["../feature/src/admin/index.js"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
+      "@webiny/form/*": ["../form/src/*"],
+      "@webiny/form": ["../form/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/lexical-editor/*": ["../lexical-editor/src/*"],
@@ -183,7 +193,9 @@
       "@webiny/tasks/*": ["../tasks/src/*"],
       "@webiny/tasks": ["../tasks/src"],
       "@webiny/tenant-manager/*": ["../tenant-manager/src/*"],
-      "@webiny/tenant-manager": ["../tenant-manager/src"]
+      "@webiny/tenant-manager": ["../tenant-manager/src"],
+      "@webiny/validation/*": ["../validation/src/*"],
+      "@webiny/validation": ["../validation/src"]
     },
     "baseUrl": "."
   }

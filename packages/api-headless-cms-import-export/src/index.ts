@@ -12,9 +12,10 @@ import { ImportFromUrlControllerTaskFeature } from "~/features/ImportFromUrlCont
 import { ImportFromUrlDownloadTaskFeature } from "~/features/ImportFromUrlDownloadTask/feature.js";
 import { ImportFromUrlProcessEntriesTaskFeature } from "~/features/ImportFromUrlProcessEntriesTask/feature.js";
 import { ImportFromUrlProcessAssetsTaskFeature } from "~/features/ImportFromUrlProcessAssetsTask/feature.js";
+import { createBeforeHandlerPlugin } from "@webiny/handler";
 
 export const createHeadlessCmsImportExport = (): Plugin[] => {
-    const plugin = new ContextPlugin<Context>(async context => {
+    const contextPlugin = new ContextPlugin<Context>(async context => {
         const installed = await isHeadlessCmsReady(context);
         if (!installed) {
             return;
@@ -30,8 +31,13 @@ export const createHeadlessCmsImportExport = (): Plugin[] => {
         ImportFromUrlProcessAssetsTaskFeature.register(context.container);
 
         context.cmsImportExport = await createHeadlessCmsImportExportCrud(context);
+    });
+    contextPlugin.name = "headlessCms.context.importExport";
+
+    const beforeHandlerPlugin = createBeforeHandlerPlugin<Context>(async context => {
         await attachHeadlessCmsImportExportGraphQL(context);
     });
-    plugin.name = "headlessCms.context.importExport";
-    return [plugin];
+    beforeHandlerPlugin.name = "headlessCms.beforeHandler.importExport";
+
+    return [contextPlugin, beforeHandlerPlugin];
 };

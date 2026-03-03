@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import get from "lodash/get.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import type { BindComponent } from "@webiny/form/types.js";
-import type { CmsSecurityPermission } from "~/types.js";
 import { CheckboxGroup, FormComponentNote, Grid, Select } from "@webiny/admin-ui";
 import { PermissionsGroup } from "@webiny/app-admin";
 
@@ -19,7 +18,7 @@ const pwOptions: PermissionOption[] = [
 
 interface ContentEntryPermissionProps {
     Bind: BindComponent;
-    data: CmsSecurityPermission;
+    data: Record<string, any>;
     entity: string;
     setValue: (name: string, value: string) => void;
     title: string;

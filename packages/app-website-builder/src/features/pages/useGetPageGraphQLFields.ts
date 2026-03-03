@@ -22,6 +22,10 @@ export const useGetPageGraphQLFields = (fields: string[]): string[] => {
             id
             displayName
         }`,
+        `live {
+            version
+        }
+        `,
         ...fields
     ];
 };

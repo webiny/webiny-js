@@ -9,6 +9,8 @@ import { Route } from "./AdminConfig/Route.js";
 import { Theme } from "./AdminConfig/Theme.js";
 import { Dashboard } from "./AdminConfig/Dashboard.js";
 import { type WidgetConfig } from "./AdminConfig/Widget.js";
+import { Security } from "./AdminConfig/Security.js";
+import type { PermissionRendererConfig } from "../permissions/types.js";
 import { LexicalTheme } from "./AdminConfig/LexicalTheme.js";
 import { Title } from "./AdminConfig/Title.js";
 import { Logo } from "./AdminConfig/Logo.js";
@@ -31,6 +33,7 @@ interface AdminConfig {
     squareLogo: React.ReactNode;
     horizontalLogo: React.ReactNode;
     widgets: WidgetConfig[];
+    permissionRenderers: PermissionRendererConfig[];
     lexicalTheme: EditorTheme;
 }
 
@@ -75,6 +78,7 @@ export const useAdminConfig = () => {
             horizontalLogo: baseConfig.horizontalLogo
         },
         widgets: baseConfig.widgets ?? [],
+        permissionRenderers: baseConfig.permissionRenderers ?? [],
         lexicalTheme
     };
 };
@@ -104,6 +108,7 @@ export const AdminConfig = Object.assign(Private, {
     Title,
     Logo,
     Dashboard,
+    Security,
     LexicalTheme,
     useAdminConfig
 });

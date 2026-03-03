@@ -20,13 +20,13 @@
     "@webiny/react-composition": "0.0.0",
     "@webiny/react-properties": "0.0.0",
     "@webiny/ui": "0.0.0",
-    "graphql": "^16.12.0",
+    "graphql": "^16.13.0",
     "lodash": "^4.17.23",
     "mobx": "^6.15.0",
     "mobx-react-lite": "^3.4.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "vitest": "^3.2.4"
+    "vitest": "^4.0.18"
   },
   "devDependencies": {
     "@types/react": "18.2.79",

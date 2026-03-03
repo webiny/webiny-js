@@ -6,7 +6,6 @@
     { "path": "../app" },
     { "path": "../app-admin" },
     { "path": "../form" },
-    { "path": "../plugins" },
     { "path": "../ui" },
     { "path": "../validation" }
   ],
@@ -25,8 +24,6 @@
       "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/form/*": ["../form/src/*"],
       "@webiny/form": ["../form/src"],
-      "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"],
       "@webiny/ui/*": ["../ui/src/*"],
       "@webiny/ui": ["../ui/src"],
       "@webiny/validation/*": ["../validation/src/*"],

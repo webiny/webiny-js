@@ -291,7 +291,7 @@ export const createModelImportValidation = () => {
         group: shortString,
         icon,
         fields: zod.array(fieldSchema).min(1),
-        layout: zod.array(zod.array(shortString)).min(1),
+        layout: zod.array(zod.array(shortString)),
         tags: zod.array(shortString).optional(),
         titleFieldId: shortString.nullish(),
         descriptionFieldId: optionalShortString.nullish(),

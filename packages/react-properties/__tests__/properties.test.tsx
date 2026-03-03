@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import React, { useCallback } from "react";
 import { render } from "@testing-library/react";
 import { Properties, Property, useParentProperty, toObject } from "~/index";
-import { getLastCall } from "./utils";
+import { getLastCall, flush } from "./utils";
 import { Filter } from "./Filter";
 
 interface GroupProps {
@@ -71,6 +71,7 @@ describe("Test Properties", () => {
         );
 
         render(view);
+        await flush();
 
         expect(onChange).toHaveBeenLastCalledWith([
             {
@@ -109,6 +110,7 @@ describe("Test Properties", () => {
         );
 
         render(view);
+        await flush();
 
         expect(onChange).toHaveBeenLastCalledWith([
             {
@@ -174,6 +176,7 @@ describe("Test Properties", () => {
         );
 
         render(view);
+        await flush();
 
         const properties = getLastCall(onChange);
 
@@ -203,6 +206,7 @@ describe("Test Properties", () => {
         );
 
         render(view);
+        await flush();
 
         const properties = getLastCall(onChange);
 
@@ -241,6 +245,7 @@ describe("Test Properties", () => {
         );
 
         render(view);
+        await flush();
 
         const properties = getLastCall(onChange);
 
@@ -307,6 +312,7 @@ describe("Test Properties", () => {
         );
 
         render(view);
+        await flush();
 
         const properties = getLastCall(onChange);
 
@@ -351,6 +357,7 @@ describe("Test Properties", () => {
         );
 
         render(view);
+        await flush();
 
         const properties = getLastCall(onChange);
 
@@ -407,6 +414,7 @@ describe("Test Properties", () => {
         );
 
         render(view);
+        await flush();
 
         const properties = getLastCall(onChange);
 
@@ -451,6 +459,7 @@ describe("Test Properties", () => {
         );
 
         render(view);
+        await flush();
 
         const properties = getLastCall(onChange);
 
@@ -483,6 +492,7 @@ describe("Test Properties", () => {
         );
 
         render(view);
+        await flush();
 
         const properties = getLastCall(onChange);
 
@@ -519,6 +529,7 @@ describe("Test Properties", () => {
         );
 
         render(view);
+        await flush();
 
         const properties = getLastCall(onChange);
 
@@ -556,6 +567,7 @@ describe("Test Properties", () => {
         );
 
         render(view);
+        await flush();
 
         const properties = getLastCall(onChange);
 
@@ -593,6 +605,7 @@ describe("Test Properties", () => {
         );
 
         render(view);
+        await flush();
 
         const properties = getLastCall(onChange);
 
@@ -624,6 +637,7 @@ describe("Custom Properties", () => {
         );
 
         render(view);
+        await flush();
 
         const properties = getLastCall(onChange);
 

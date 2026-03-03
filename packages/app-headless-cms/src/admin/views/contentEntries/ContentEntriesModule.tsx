@@ -29,7 +29,8 @@ import {
     CellCreated,
     CellModified,
     CellName,
-    CellStatus
+    CellStatus,
+    CellLive
 } from "~/admin/components/ContentEntries/Table/Cells/index.js";
 import { Ref } from "~/admin/components/ContentEntries/Filters/RefFieldRenderer/index.js";
 import { ShowConfirmationOnDelete } from "~/admin/components/Decorators/ShowConfirmationOnDelete.js";
@@ -101,6 +102,12 @@ export const ContentEntriesModule = () => {
                         header={"Status"}
                         cell={<CellStatus />}
                         className={"cms-aco-list-status"}
+                    />
+                    <Browser.Table.Column
+                        name={"live"}
+                        header={"Live"}
+                        cell={<CellLive />}
+                        className={"cms-aco-list-live"}
                     />
                 </IsModelPublishable>
                 <Browser.Table.Column

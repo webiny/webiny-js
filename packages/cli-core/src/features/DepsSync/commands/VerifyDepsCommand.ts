@@ -1,6 +1,6 @@
 import { createImplementation } from "@webiny/di";
 import { CliCommandFactory, GetProjectSdkService, UiService } from "~/abstractions/index.js";
-import loadJsonFile from "load-json-file";
+import { loadJsonFileSync } from "load-json-file";
 import { getDuplicatesFilePath, getReferencesFilePath } from "../paths.js";
 import fs from "fs";
 import { createDependencyTree } from "../createDependencyTree.js";
@@ -37,7 +37,7 @@ export class VerifyDepsCommand implements CliCommandFactory.Interface<unknown> {
                 ui.info("Checking references file...");
 
                 if (fs.existsSync(referencesFile)) {
-                    const json = loadJsonFile.sync<IDependencyCollection>(referencesFile)!;
+                    const json = loadJsonFileSync<IDependencyCollection>(referencesFile)!;
                     if (JSON.stringify(references) !== JSON.stringify(json)) {
                         for (const type in references) {
                             const refDependencies = references[type as keyof typeof references];
@@ -71,7 +71,7 @@ export class VerifyDepsCommand implements CliCommandFactory.Interface<unknown> {
                 ui.info("Checking duplicates file...");
 
                 if (fs.existsSync(duplicatesFile)) {
-                    const json = loadJsonFile.sync(duplicatesFile);
+                    const json = loadJsonFileSync(duplicatesFile);
                     if (JSON.stringify(tree.duplicates) !== JSON.stringify(json)) {
                         throw new Error(
                             "Duplicates are not in sync. Please run `yarn webiny sync-dependencies` command."

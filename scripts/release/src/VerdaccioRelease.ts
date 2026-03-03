@@ -7,7 +7,7 @@ export class VerdaccioRelease extends Release {
         super(logger);
         this.setTag(this.defaultTag);
         this.setVersion(() => {
-            return ["--conventional-prerelease", "--preid", this.tag!];
+            return ["--conventional-prerelease", "--preid", this.distTag!];
         });
         this.setCreateGithubRelease(false);
     }

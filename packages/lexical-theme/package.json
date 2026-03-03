@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "type": "module",
   "dependencies": {
-    "lexical": "^0.39.0"
+    "lexical": "^0.40.0"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0"

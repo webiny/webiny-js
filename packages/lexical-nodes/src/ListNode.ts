@@ -10,9 +10,8 @@ import type {
     SerializedElementNode,
     Spread
 } from "lexical";
-import { ElementNode } from "lexical";
+import { ElementNode, addClassNamesToElement, removeClassNamesFromElement } from "lexical";
 import { Theme } from "@webiny/lexical-theme";
-import { addClassNamesToElement, removeClassNamesFromElement } from "@lexical/utils";
 import type { ListNodeTagType } from "@lexical/list";
 import { $getListDepth, wrapInListItem } from "~/utils/listNode.js";
 import type { ListItemNode } from "./ListItemNode.js";

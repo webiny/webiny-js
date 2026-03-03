@@ -13,6 +13,7 @@ cli.version(false);
 interface ReleaseArgs {
     type?: string;
     tag?: string;
+    sourceTag?: string;
     gitReset?: boolean;
     version?: string;
     createGithubRelease?: boolean | string;
@@ -23,6 +24,7 @@ async function runRelease() {
     const {
         type,
         tag,
+        sourceTag,
         gitReset = true,
         version,
         createGithubRelease,
@@ -43,6 +45,10 @@ async function runRelease() {
         release.setTag(tag);
     }
 
+    if (typeof sourceTag === "string" && sourceTag !== "") {
+        release.setSourceTag(sourceTag);
+    }
+
     if (version) {
         release.setVersion(version);
     }
@@ -58,6 +64,7 @@ async function runRelease() {
 
         console.log(version);
     } else {
+        console.log(release);
         await release.execute();
     }
 }

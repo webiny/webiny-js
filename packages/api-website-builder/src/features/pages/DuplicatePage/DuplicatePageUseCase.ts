@@ -9,15 +9,23 @@ import {
 } from "./abstractions.js";
 import { PageBeforeDuplicateEvent, PageAfterDuplicateEvent } from "./events.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
+import { WbPermissions } from "~/domain/permissions.js";
+import { PageNotAuthorizedError } from "~/domain/page/errors.js";
 
 class DuplicatePageUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
+        private permissions: WbPermissions.Interface,
         private eventPublisher: EventPublisherAbstraction.Interface,
         private getPageById: GetPageByIdUseCase.Interface,
         private repository: DuplicatePageRepository.Interface
     ) {}
 
     async execute(params: UseCaseAbstraction.Params): UseCaseAbstraction.Return {
+        const hasPermission = await this.permissions.canCreate("page");
+        if (!hasPermission) {
+            return Result.fail(new PageNotAuthorizedError());
+        }
+
         // Get the original page for events
         const getResult = await this.getPageById.execute(params.id);
 
@@ -56,5 +64,10 @@ class DuplicatePageUseCaseImpl implements UseCaseAbstraction.Interface {
 export const DuplicatePageUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: DuplicatePageUseCaseImpl,
-    dependencies: [EventPublisher, GetPageByIdUseCase, DuplicatePageRepository]
+    dependencies: [
+        WbPermissions.Abstraction,
+        EventPublisher,
+        GetPageByIdUseCase,
+        DuplicatePageRepository
+    ]
 });

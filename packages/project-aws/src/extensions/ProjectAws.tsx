@@ -14,8 +14,8 @@ import {
 } from "@webiny/project/extensions/index.js";
 import { createPathResolver } from "@webiny/project";
 import { CliCommand } from "@webiny/cli-core/extensions/index.js";
+import { CorePulumi } from "@webiny/project/extensions/index.js";
 // import { TenantManager } from "@webiny/tenant-manager";
-import { Infra } from "~/index.js";
 
 const p = createPathResolver(import.meta.dirname);
 
@@ -29,7 +29,7 @@ export const ProjectAws = () => {
             <DatabaseSetup setupName="ddb" />
 
             {/* Set database setup output value in Core stack */}
-            <Infra.Core.Pulumi src={p("ProjectAws/SetDatabaseSetupOutput.js")} />
+            <CorePulumi src={p("ProjectAws/SetDatabaseSetupOutput.js")} />
 
             {/* Stack Output Services */}
             <ProjectImplementation src={p("ProjectAws/CoreStackOutputService.js")} singleton />
@@ -45,6 +45,7 @@ export const ProjectAws = () => {
             {/* <ApiAfterDeploy src={p("ProjectAws/ExecuteDataMigrations.js")} /> */}
 
             <ApiAfterDeploy src={p("ProjectAws/AutoInstall/AutoInstallAfterApiDeploy.js")} />
+            <ExtensionDefinitions src={p("definitions.js")} />
             <ExtensionDefinitions src={p("ProjectAws/definitions.js")} />
 
             {/* Admin env vars */}

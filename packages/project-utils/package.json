@@ -22,10 +22,10 @@
     "@webiny/build-tools": "0.0.0",
     "jest-dynalite": "^3.6.1",
     "listr2": "^5.0.8",
-    "load-json-file": "6.2.0",
+    "load-json-file": "^7.0.1",
     "pino": "^9.14.0",
     "pino-pretty": "^9.4.1",
-    "vitest": "^3.2.4",
+    "vitest": "^4.0.18",
     "yargs": "^17.7.2"
   },
   "peerDependencies": {
