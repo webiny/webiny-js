@@ -31,12 +31,16 @@ export class DeployAppWithWatchedLambdaReplacement implements DeployApp.Interfac
             deploymentId
         });
 
-        // Inject replace URNs into pulumiArgs if any exist
+        if (lambdaUrnsToReplace.length === 0) {
+            return this.decoratee.execute(params);
+        }
+
+        // Inject replace URNs into pulumiArgs.
         const enhancedParams = {
             ...params,
             pulumiArgs: {
                 ...params.pulumiArgs,
-                replace: lambdaUrnsToReplace.length > 0 ? lambdaUrnsToReplace : undefined
+                replace: lambdaUrnsToReplace
             }
         };
 
