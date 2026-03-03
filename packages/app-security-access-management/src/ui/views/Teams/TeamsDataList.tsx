@@ -17,8 +17,8 @@ import {
 } from "@webiny/ui/List/index.js";
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons/index.js";
 import { useRouter, useSnackbar, useConfirmationDialog, SearchUI } from "@webiny/app-admin";
-import { useQuery, useMutation } from "@apollo/react-hooks";
-import type { ListTeamsResponse } from "./graphql.js";
+import { useQuery, useMutation } from "@apollo/client/react";
+import type { IDeleteTeamResponse, ListTeamsResponse } from "./graphql.js";
 import { LIST_TEAMS, DELETE_TEAM } from "./graphql.js";
 import { deserializeSorters } from "../utils.js";
 import type { Team } from "~/types.js";
@@ -60,7 +60,7 @@ export const TeamsDataList = ({ activeId }: TeamsDataListProps) => {
 
     const { data: listResponse, loading: listLoading } = useQuery<ListTeamsResponse>(LIST_TEAMS);
 
-    const [deleteIt, { loading: deleteLoading }] = useMutation(DELETE_TEAM, {
+    const [deleteIt, { loading: deleteLoading }] = useMutation<IDeleteTeamResponse>(DELETE_TEAM, {
         refetchQueries: [{ query: LIST_TEAMS }]
     });
 
@@ -95,7 +95,7 @@ export const TeamsDataList = ({ activeId }: TeamsDataListProps) => {
                     variables: item
                 });
 
-                const { error } = data.security.deleteTeam;
+                const { error } = data!.security.deleteTeam;
                 if (error) {
                     return showSnackbar(error.message);
                 }

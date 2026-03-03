@@ -5,22 +5,23 @@ import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { i18n } from "@webiny/app/i18n/index.js";
 import {
     DataList,
-    ScrollList,
-    ListItem,
-    ListItemText,
-    ListItemTextSecondary,
-    ListItemMeta,
-    ListActions,
-    DataListModalOverlayAction,
     DataListModalOverlay,
-    ListItemTextPrimary
+    DataListModalOverlayAction,
+    ListActions,
+    ListItem,
+    ListItemMeta,
+    ListItemText,
+    ListItemTextPrimary,
+    ListItemTextSecondary,
+    ScrollList
 } from "@webiny/ui/List/index.js";
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons/index.js";
-import { useQuery, useMutation } from "@apollo/react-hooks";
+import { useMutation, useQuery } from "@apollo/client/react";
+import type { IDeleteApiKeyResponse } from "./graphql.js";
 import * as GQL from "./graphql.js";
 import { deserializeSorters } from "../utils.js";
 import type { ApiKey } from "~/types.js";
-import { useConfirmationDialog, useRouter, SearchUI } from "@webiny/app-admin";
+import { SearchUI, useConfirmationDialog, useRouter } from "@webiny/app-admin";
 import { Routes } from "~/routes.js";
 
 const t = i18n.ns("app-security/admin/roles/data-list");
@@ -81,9 +82,12 @@ export const ApiKeysDataList = ({ activeId }: ApiKeysDataListProps) => {
         GQL.LIST_API_KEYS
     );
 
-    const [deleteIt, { loading: deleteLoading }] = useMutation(GQL.DELETE_API_KEY, {
-        refetchQueries: [{ query: GQL.LIST_API_KEYS }]
-    });
+    const [deleteIt, { loading: deleteLoading }] = useMutation<IDeleteApiKeyResponse>(
+        GQL.DELETE_API_KEY,
+        {
+            refetchQueries: [{ query: GQL.LIST_API_KEYS }]
+        }
+    );
 
     const data = listLoading && !listResponse ? [] : listResponse?.security.apiKeys.data || [];
 
@@ -94,7 +98,7 @@ export const ApiKeysDataList = ({ activeId }: ApiKeysDataListProps) => {
                     variables: item
                 });
 
-                const { error } = data.security.deleteApiKey;
+                const { error } = data!.security.deleteApiKey;
                 if (error) {
                     toast.showWarningToast({
                         title: error.message

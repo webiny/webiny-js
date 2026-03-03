@@ -32,6 +32,15 @@ export const LIST_ROLES = gql`
     }
 `;
 
+export interface IReadRoleResponse {
+    security: {
+        role: {
+            data: Role | null;
+            error: Error | null;
+        };
+    };
+}
+
 export const READ_ROLE = gql`
     query getRole($id: ID!) {
         security {
@@ -47,6 +56,15 @@ export const READ_ROLE = gql`
         }
     }
 `;
+
+export interface ICreateRoleResponse {
+    security: {
+        role: {
+            data: Role | null;
+            error: Error | null;
+        };
+    };
+}
 
 export const CREATE_ROLE = gql`
     mutation createRole($data: SecurityRoleCreateInput!){
@@ -65,6 +83,15 @@ export const CREATE_ROLE = gql`
     }
 `;
 
+export interface IUpdateRoleResponse {
+    security: {
+        role: {
+            data: Role | null;
+            error: Error | null;
+        };
+    };
+}
+
 export const UPDATE_ROLE = gql`
     mutation updateRole($id: ID!, $data: SecurityRoleUpdateInput!){
         security {
@@ -81,6 +108,15 @@ export const UPDATE_ROLE = gql`
         }
     }
 `;
+
+export interface IDeleteRoleResponse {
+    security: {
+        deleteRole: {
+            data: boolean;
+            error: Error | null;
+        };
+    };
+}
 
 export const DELETE_ROLE = gql`
     mutation deleteRole($id: ID!) {

@@ -20,7 +20,9 @@ export const markdownComponents = {
         return (
             <pre
                 className={"p-md bg-neutral-dimmed rounded mt-2 relative"}
-                ref={element => (codeRef.current = element)}
+                ref={element => {
+                    codeRef.current = element;
+                }}
             >
                 <IconButton
                     variant={"secondary"}

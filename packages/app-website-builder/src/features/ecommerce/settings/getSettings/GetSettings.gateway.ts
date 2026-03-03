@@ -51,7 +51,7 @@ export class GetSettingsGateway implements IGetSettings {
             fetchPolicy: "no-cache"
         });
 
-        const { data, error } = query.data.websiteBuilder.getIntegrations;
+        const { data, error } = query.data!.websiteBuilder.getIntegrations;
 
         if (error) {
             throw new WebinyError(error);

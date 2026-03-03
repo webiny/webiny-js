@@ -109,6 +109,16 @@ export const UPDATE_API_KEY = gql`
     }
 `;
 
+
+export interface IDeleteApiKeyResponse {
+    security: {
+        deleteApiKey: {
+            data: boolean;
+            error: Error | null;
+        };
+    };
+}
+
 export const DELETE_API_KEY = gql`
     mutation DeleteApiKey($id: ID!) {
         security {

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import omit from "lodash/omit.js";
-import { useQuery, useMutation } from "@apollo/react-hooks";
+import { useQuery, useMutation } from "@apollo/client/react";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { Form } from "@webiny/form";
 import { validation } from "@webiny/validation";

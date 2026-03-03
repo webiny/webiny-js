@@ -36,6 +36,15 @@ export const LIST_TEAMS = gql`
     }
 `;
 
+export interface IReadTeamResponse {
+    security: {
+        team: {
+            data: Team | null;
+            error: Error | null;
+        };
+    };
+}
+
 export const READ_TEAM = gql`
     query getTeam($id: ID!) {
         security {
@@ -51,6 +60,15 @@ export const READ_TEAM = gql`
         }
     }
 `;
+
+export interface ICreateTeamResponse {
+    security: {
+        team: {
+            data: Team | null;
+            error: Error | null;
+        };
+    };
+}
 
 export const CREATE_TEAM = gql`
     mutation createTeam($data: SecurityTeamCreateInput!){
@@ -69,6 +87,15 @@ export const CREATE_TEAM = gql`
     }
 `;
 
+export interface IUpdateTeamResponse {
+    security: {
+        team: {
+            data: Team | null;
+            error: Error | null;
+        };
+    };
+}
+
 export const UPDATE_TEAM = gql`
     mutation updateTeam($id: ID!, $data: SecurityTeamUpdateInput!){
         security {
@@ -85,6 +112,15 @@ export const UPDATE_TEAM = gql`
         }
     }
 `;
+
+export interface IDeleteTeamResponse {
+    security: {
+        deleteTeam: {
+            data: boolean;
+            error: Error | null;
+        };
+    };
+}
 
 export const DELETE_TEAM = gql`
     mutation deleteTeam($id: ID!) {

@@ -15,8 +15,8 @@ import {
 } from "@webiny/ui/List/index.js";
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons/index.js";
 import { useRouter, SearchUI, useSnackbar, useConfirmationDialog } from "@webiny/app-admin";
-import { useQuery, useMutation } from "@apollo/react-hooks";
-import type { ListRolesResponse } from "./graphql.js";
+import { useQuery, useMutation } from "@apollo/client/react";
+import type { IDeleteRoleResponse, ListRolesResponse } from "./graphql.js";
 import { LIST_ROLES, DELETE_ROLE } from "./graphql.js";
 import { deserializeSorters } from "../utils.js";
 import type { Role } from "~/types.js";
@@ -60,7 +60,7 @@ export const RolesDataList = ({ activeId }: RolesDataListProps) => {
 
     const { data: listResponse, loading: listLoading } = useQuery<ListRolesResponse>(LIST_ROLES);
 
-    const [deleteIt, { loading: deleteLoading }] = useMutation(DELETE_ROLE, {
+    const [deleteIt, { loading: deleteLoading }] = useMutation<IDeleteRoleResponse>(DELETE_ROLE, {
         refetchQueries: [{ query: LIST_ROLES }]
     });
 
@@ -95,7 +95,7 @@ export const RolesDataList = ({ activeId }: RolesDataListProps) => {
                     variables: item
                 });
 
-                const { error } = data.security.deleteRole;
+                const { error } = data!.security.deleteRole;
                 if (error) {
                     return showSnackbar(error.message);
                 }

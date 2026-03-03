@@ -1,20 +1,28 @@
-import React, { useCallback } from "react";
-import { useMutation, useQuery } from "@apollo/react-hooks";
+import React, { useCallback, useEffect } from "react";
+import { useMutation, useQuery } from "@apollo/client/react";
 import get from "lodash/get.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { Bind, Form, useForm, useGenerateSlug } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import {
-    SimpleForm,
-    SimpleFormFooter,
-    SimpleFormContent,
-    SimpleFormHeader,
-    Permissions,
     EmptyView,
+    Permissions,
+    SimpleForm,
+    SimpleFormContent,
+    SimpleFormFooter,
+    SimpleFormHeader,
     useRouter,
     useSnackbar
 } from "@webiny/app-admin";
-import { CREATE_ROLE, LIST_ROLES, READ_ROLE, UPDATE_ROLE } from "./graphql.js";
+import {
+    CREATE_ROLE,
+    type ICreateRoleResponse,
+    type IReadRoleResponse,
+    type IUpdateRoleResponse,
+    LIST_ROLES,
+    READ_ROLE,
+    UPDATE_ROLE
+} from "./graphql.js";
 import isEmpty from "lodash/isEmpty.js";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { ReactComponent as CopyIcon } from "@webiny/icons/content_copy.svg";
@@ -43,27 +51,43 @@ export const RolesForm = ({ id, newEntry }: RolesFormProps) => {
     const { goToRoute } = useRouter();
     const { showSnackbar } = useSnackbar();
 
-    const getQuery = useQuery(READ_ROLE, {
+    const getQuery = useQuery<IReadRoleResponse>(READ_ROLE, {
         variables: { id },
         skip: !id,
-        onCompleted: data => {
-            if (!data) {
-                return;
-            }
-
-            const { error } = data.security.role;
-            if (error) {
-                goToRoute(Routes.Roles.List);
-                showSnackbar(error.message);
-            }
-        }
+        // onCompleted: data => {
+        //     if (!data) {
+        //         return;
+        //     }
+        //
+        //     const { error } = data.security.role;
+        //     if (!error) {
+        //         return;
+        //     }
+        //     goToRoute(Routes.Roles.List);
+        //     showSnackbar(error.message);
+        // }
     });
+    /**
+     * Replaces the onCompleted callback of the useQuery hook
+     */
+    useEffect(() => {
+        if (!getQuery.data) {
+            return;
+        }
+        
+        const { error } = getQuery.data.security.role;
+        if (!error) {
+            return;
+        }
+        goToRoute(Routes.Roles.List);
+        showSnackbar(error.message);
+    }, [getQuery.data, goToRoute, showSnackbar]);
 
-    const [create, createMutation] = useMutation(CREATE_ROLE, {
+    const [create, createMutation] = useMutation<ICreateRoleResponse>(CREATE_ROLE, {
         refetchQueries: [{ query: LIST_ROLES }]
     });
 
-    const [update, updateMutation] = useMutation(UPDATE_ROLE, {
+    const [update, updateMutation] = useMutation<IUpdateRoleResponse>(UPDATE_ROLE, {
         refetchQueries: [{ query: LIST_ROLES }]
     });
 
@@ -110,20 +134,20 @@ export const RolesForm = ({ id, newEntry }: RolesFormProps) => {
 
             const response = await operation(args);
 
-            const { data: role, error } = response.data.security.role;
+            const { data: role, error } = response.data!.security.role;
             if (error) {
                 return showSnackbar(error.message);
             }
 
             if (!isUpdate) {
-                goToRoute(Routes.Roles.List, { id: role.id });
+                goToRoute(Routes.Roles.List, { id: role!.id });
             }
             showSnackbar(t`Role saved successfully!`);
         },
         [id]
     );
 
-    const data: Role = loading ? {} : get(getQuery, "data.security.role.data", {});
+    const data: Partial<Role> = loading ? {} : get(getQuery, "data.security.role.data", {});
 
     const systemRole = data.slug === "full-access" || data.system;
     const pluginRole = data.plugin ?? false;

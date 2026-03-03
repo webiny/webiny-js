@@ -1,26 +1,34 @@
-import React, { useCallback } from "react";
-import { useMutation, useQuery } from "@apollo/react-hooks";
+import React, { useCallback, useEffect } from "react";
+import { useMutation, useQuery } from "@apollo/client/react";
 import pick from "lodash/pick.js";
 import get from "lodash/get.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { Bind, Form, useForm, useGenerateSlug } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import {
-    SimpleForm,
-    SimpleFormFooter,
-    SimpleFormContent,
-    SimpleFormHeader,
     EmptyView,
-    useSnackbar,
-    useRouter
+    RolesMultiAutocomplete,
+    SimpleForm,
+    SimpleFormContent,
+    SimpleFormFooter,
+    SimpleFormHeader,
+    useRouter,
+    useSnackbar
 } from "@webiny/app-admin";
-import { CREATE_TEAM, LIST_TEAMS, READ_TEAM, UPDATE_TEAM } from "./graphql.js";
+import {
+    CREATE_TEAM,
+    type ICreateTeamResponse,
+    type IReadTeamResponse,
+    type IUpdateTeamResponse,
+    LIST_TEAMS,
+    READ_TEAM,
+    UPDATE_TEAM
+} from "./graphql.js";
 import isEmpty from "lodash/isEmpty.js";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import type { Team } from "~/types.js";
 import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
 import { Alert, Button, Grid, Input, OverlayLoader, Textarea } from "@webiny/admin-ui";
-import { RolesMultiAutocomplete } from "@webiny/app-admin";
 import { Routes } from "~/routes.js";
 
 const t = i18n.ns("app-security/admin/teams/form");
@@ -34,27 +42,43 @@ export const TeamsForm = ({ newEntry, id }: TeamsFormProps) => {
     const { goToRoute } = useRouter();
     const { showSnackbar } = useSnackbar();
 
-    const getQuery = useQuery(READ_TEAM, {
+    const getQuery = useQuery<IReadTeamResponse>(READ_TEAM, {
         variables: { id },
         skip: !id,
-        onCompleted: data => {
-            if (!data) {
-                return;
-            }
-
-            const { error } = data.security.team;
-            if (error) {
-                goToRoute(Routes.Teams.List);
-                showSnackbar(error.message);
-            }
-        }
+        // onCompleted: data => {
+        //     if (!data) {
+        //         return;
+        //     }
+        //
+        //     const { error } = data.security.team;
+        //     if (!error) {
+        //         return;
+        //     }
+        //     goToRoute(Routes.Teams.List);
+        //     showSnackbar(error.message);
+        // }
     });
+    /**
+     * Replaces onCompleted callback because it does not exist anymore.
+     */
+    useEffect(() => {
+        if (!getQuery.data) {
+            return;
+        }
+        
+        const { error } = getQuery.data.security.team;
+        if (!error) {
+            return;
+        }
+        goToRoute(Routes.Teams.List);
+        showSnackbar(error.message);
+    }, [getQuery, goToRoute, showSnackbar]);
 
-    const [create, createMutation] = useMutation(CREATE_TEAM, {
+    const [create, createMutation] = useMutation<ICreateTeamResponse>(CREATE_TEAM, {
         refetchQueries: [{ query: LIST_TEAMS }]
     });
 
-    const [update, updateMutation] = useMutation(UPDATE_TEAM, {
+    const [update, updateMutation] = useMutation<IUpdateTeamResponse>(UPDATE_TEAM, {
         refetchQueries: [{ query: LIST_TEAMS }]
     });
 
@@ -84,22 +108,22 @@ export const TeamsForm = ({ newEntry, id }: TeamsFormProps) => {
 
             const response = await operation(args);
 
-            const { data: team, error } = response.data.security.team;
+            const { data: team, error } = response.data!.security.team;
             if (error) {
                 return showSnackbar(error.message);
             }
 
             if (!isUpdate) {
-                goToRoute(Routes.Teams.List, { id: team.id });
+                goToRoute(Routes.Teams.List, { id: team!.id });
             }
             showSnackbar(t`Team saved successfully!`);
         },
         [id]
     );
 
-    const data = loading ? {} : get(getQuery, "data.security.team.data", {});
+    const data: Partial<Team> = loading ? {} : get(getQuery, "data.security.team.data", {});
 
-    const systemTeam = data.system;
+    const systemTeam = data.system ?? false;
     const pluginTeam = data.plugin ?? false;
     const canModifyTeam = !systemTeam && !pluginTeam;
 

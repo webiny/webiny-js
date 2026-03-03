@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useMutation, useQuery } from "@apollo/react-hooks";
+import { useQuery, useMutation } from "@apollo/client/react";
 import isEmpty from "lodash/isEmpty.js";
 import { useRoute, useRouter, useWcp } from "@webiny/app-admin";
 import { CREATE_USER, LIST_USERS, READ_USER, UPDATE_USER } from "~/admin/ui/views/Users/graphql.js";

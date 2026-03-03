@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useMutation } from "@apollo/react-hooks";
+import { useMutation } from "@apollo/client/react";
 import { useToast } from "@webiny/admin-ui";
 import { useRecords } from "@webiny/app-aco";
 import { TenantEntry } from "../../types.js";

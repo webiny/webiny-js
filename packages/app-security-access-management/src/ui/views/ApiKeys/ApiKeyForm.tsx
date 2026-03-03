@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useMutation, useQuery } from "@apollo/client/react";
 import get from "lodash/get.js";
 import isEmpty from "lodash/isEmpty.js";
@@ -56,7 +56,8 @@ export const ApiKeyForm = ({ id, newEntry }: ApiKeyFormProps) => {
 
     const getQuery = useQuery<IReadApiKeyResponse>(GQL.READ_API_KEY, {
         variables: { id },
-        skip: !id,
+        skip: !id
+        /*
         onCompleted: data => {
             if (!data) {
                 return;
@@ -69,7 +70,23 @@ export const ApiKeyForm = ({ id, newEntry }: ApiKeyFormProps) => {
             goToRoute(Routes.ApiKeys.List);
             toast.showWarningToast({ title: error.message });
         }
+        */
     });
+    /**
+     * Replaces the toast part above - commented out because there is no onCompleted callback anymore.
+     */
+    useEffect(() => {
+        if (!getQuery.data) {
+            return;
+        }
+
+        const { error } = getQuery.data.security.apiKey;
+        if (!error) {
+            return;
+        }
+        goToRoute(Routes.ApiKeys.List);
+        toast.showWarningToast({ title: error.message });
+    }, [getQuery.data, goToRoute, toast]);
 
     const [create, createMutation] = useMutation<ICreateApiKeyResponse>(GQL.CREATE_API_KEY, {
         refetchQueries: [{ query: GQL.LIST_API_KEYS }]

@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { useMutation, useQuery } from "@apollo/react-hooks";
+import { useQuery, useMutation } from "@apollo/client/react";
 import orderBy from "lodash/orderBy.js";
 import { Avatar, Button, Grid, Select, Tooltip } from "@webiny/admin-ui";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
