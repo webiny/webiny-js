@@ -273,12 +273,30 @@ export type PreviewViewportData = {
 export type ApiOptions = Record<string, any>;
 
 export type GetPageOptions = ApiOptions;
-export type ListPagesOptions = ApiOptions;
+
+export interface ListPagesOptions {
+    where?: Record<string, any>;
+    limit?: number;
+    after?: string;
+    sort?: string[];
+    search?: string;
+}
+
+export interface ListPagesMeta {
+    hasMoreItems: boolean;
+    totalCount: number;
+    cursor: string | null;
+}
+
+export interface ListPagesResult {
+    data: PublicPage[];
+    meta: ListPagesMeta;
+}
 
 export interface IDataProvider {
     getPageByPath(path: string, options?: GetPageOptions): Promise<PublicPage | null>;
     getPageById(id: string, options?: GetPageOptions): Promise<PublicPage | null>;
-    listPages(options?: ListPagesOptions): Promise<PublicPage[]>;
+    listPages(options?: ListPagesOptions): Promise<ListPagesResult>;
 }
 
 export interface IEnvironment {
@@ -289,7 +307,7 @@ export interface IEnvironment {
 
 export interface IContentSdk {
     getPage(path: string): Promise<PublicPage | null>;
-    listPages(options?: ListPagesOptions): Promise<PublicPage[]>;
+    listPages(options?: ListPagesOptions): Promise<ListPagesResult>;
 }
 
 // Input types

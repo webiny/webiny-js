@@ -1,4 +1,10 @@
-import type { IContentSdk, IDataProvider, PublicPage } from "~/types.js";
+import type {
+    IContentSdk,
+    IDataProvider,
+    ListPagesOptions,
+    ListPagesResult,
+    PublicPage
+} from "~/types.js";
 import { PreviewDocument } from "~/PreviewDocument.js";
 
 export class PreviewSdk implements IContentSdk {
@@ -18,7 +24,7 @@ export class PreviewSdk implements IContentSdk {
         return this.dataProvider.getPageById(previewDocument.getId());
     }
 
-    async listPages(): Promise<PublicPage[]> {
-        return this.liveSdk.listPages();
+    async listPages(options?: ListPagesOptions): Promise<ListPagesResult> {
+        return this.liveSdk.listPages(options);
     }
 }

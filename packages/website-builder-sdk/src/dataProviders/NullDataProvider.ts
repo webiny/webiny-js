@@ -10,7 +10,7 @@ export class NullDataProvider implements IDataProvider {
     }
 
     public async listPages() {
-        return [];
+        return { data: [], meta: { hasMoreItems: false, totalCount: 0, cursor: null } };
     }
 
     listRedirects(): Promise<PublicRedirect[]> {
