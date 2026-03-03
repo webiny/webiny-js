@@ -14,7 +14,10 @@ class GetFeatureFlagsWithLicenseDecorator implements GetFeatureFlags.Interface {
     async execute(): Promise<FeatureFlags> {
         const userFlags = await this.decoratee.execute();
         const license = this.getLicenseFromEnv();
-        return FeatureFlags.fromDto(this.applyLicense(userFlags.toDto(), license));
+
+        const overriddenFlagsDto = this.applyLicense(userFlags.toDto(), license);
+
+        return FeatureFlags.fromDto(overriddenFlagsDto);
     }
 
     private getLicenseFromEnv(): ILicense {
