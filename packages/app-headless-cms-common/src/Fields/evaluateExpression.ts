@@ -8,7 +8,8 @@ export type Operator =
     | "contains"
     | "startsWith"
     | "endsWith"
-    | "isEmpty";
+    | "isEmpty"
+    | "isNotEmpty";
 
 export interface ParsedExpression {
     target: string;
@@ -95,6 +96,8 @@ function compareValues(
             return String(val ?? "").endsWith(String(rhs ?? ""));
         case "isEmpty":
             return val == null || val === "" || (Array.isArray(val) && val.length === 0);
+        case "isNotEmpty":
+            return val != null && val !== "" && !(Array.isArray(val) && val.length === 0);
         default:
             return false;
     }
