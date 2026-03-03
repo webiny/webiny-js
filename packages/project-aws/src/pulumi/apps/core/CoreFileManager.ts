@@ -21,7 +21,7 @@ export const CoreFileManger = createAppModule({
         });
 
         // We need these rules to be able to upload to this bucket from the browser.
-        const bucketCorsConfiguration = app.addResource(aws.s3.BucketCorsConfigurationV2, {
+        const bucketCorsConfiguration = app.addResource(aws.s3.BucketCorsConfiguration, {
             name: `${name}-cors`,
             config: {
                 bucket: bucket.output.id,
