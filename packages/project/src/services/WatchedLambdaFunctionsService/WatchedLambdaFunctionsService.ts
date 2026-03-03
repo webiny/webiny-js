@@ -12,34 +12,34 @@ export class DefaultWatchedLambdaFunctionsService
 {
     constructor(private localStorageService: LocalStorageService.Interface) {}
 
-    markDirty(app: WatchedLambdaFunctionsService.App, functionUrns: string[]): void {
-        const key = this.getCacheKey(app);
+    markDirty(params: WatchedLambdaFunctionsService.Params, functionUrns: string[]): void {
+        const key = this.getCacheKey(params);
         const data = this.getData(key);
 
-        if (!data[app.name]) {
-            data[app.name] = [];
+        if (!data[params.name]) {
+            data[params.name] = [];
         }
 
-        // Add new URNs, avoiding duplicates
+        // Add new URNs, avoiding duplicates.
         for (const urn of functionUrns) {
-            if (!data[app.name].includes(urn)) {
-                data[app.name].push(urn);
+            if (!data[params.name].includes(urn)) {
+                data[params.name].push(urn);
             }
         }
 
         this.setData(key, data);
     }
 
-    getDirty(app: WatchedLambdaFunctionsService.App): string[] {
-        const key = this.getCacheKey(app);
+    getDirty(params: WatchedLambdaFunctionsService.Params): string[] {
+        const key = this.getCacheKey(params);
         const data = this.getData(key);
-        return data[app.name] || [];
+        return data[params.name] || [];
     }
 
-    clearDirty(app: WatchedLambdaFunctionsService.App): void {
-        const key = this.getCacheKey(app);
+    clearDirty(params: WatchedLambdaFunctionsService.Params): void {
+        const key = this.getCacheKey(params);
         const data = this.getData(key);
-        delete data[app.name];
+        delete data[params.name];
         this.setData(key, data);
     }
 
@@ -47,9 +47,9 @@ export class DefaultWatchedLambdaFunctionsService
         this.setData(WATCHED_LAMBDA_FUNCTIONS_KEY, {});
     }
 
-    private getCacheKey(app: WatchedLambdaFunctionsService.App): string {
-        return app.deploymentId
-            ? `${WATCHED_LAMBDA_FUNCTIONS_KEY}-${app.deploymentId}`
+    private getCacheKey(params: WatchedLambdaFunctionsService.Params): string {
+        return params.deploymentId
+            ? `${WATCHED_LAMBDA_FUNCTIONS_KEY}-${params.deploymentId}`
             : WATCHED_LAMBDA_FUNCTIONS_KEY;
     }
 
