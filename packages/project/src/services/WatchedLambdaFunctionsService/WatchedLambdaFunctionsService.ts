@@ -1,6 +1,5 @@
 import { createImplementation } from "@webiny/di";
 import { WatchedLambdaFunctionsService, LocalStorageService } from "~/abstractions/index.js";
-import { type AppName } from "~/abstractions/types.js";
 
 const WATCHED_LAMBDA_FUNCTIONS_KEY = "watchedLambdaFunctions";
 
@@ -13,40 +12,49 @@ export class DefaultWatchedLambdaFunctionsService
 {
     constructor(private localStorageService: LocalStorageService.Interface) {}
 
-    markDirty(app: AppName, functionUrns: string[]): void {
-        const data = this.getData();
+    markDirty(params: WatchedLambdaFunctionsService.Params, functionUrns: string[]): void {
+        const key = this.getCacheKey(params);
+        const data = this.getData(key);
 
-        if (!data[app]) {
-            data[app] = [];
+        if (!data[params.name]) {
+            data[params.name] = [];
         }
 
-        // Add new URNs, avoiding duplicates
+        // Add new URNs, avoiding duplicates.
         for (const urn of functionUrns) {
-            if (!data[app].includes(urn)) {
-                data[app].push(urn);
+            if (!data[params.name].includes(urn)) {
+                data[params.name].push(urn);
             }
         }
 
-        this.setData(data);
+        this.setData(key, data);
     }
 
-    getDirty(app: AppName): string[] {
-        const data = this.getData();
-        return data[app] || [];
+    getDirty(params: WatchedLambdaFunctionsService.Params): string[] {
+        const key = this.getCacheKey(params);
+        const data = this.getData(key);
+        return data[params.name] || [];
     }
 
-    clearDirty(app: AppName): void {
-        const data = this.getData();
-        delete data[app];
-        this.setData(data);
+    clearDirty(params: WatchedLambdaFunctionsService.Params): void {
+        const key = this.getCacheKey(params);
+        const data = this.getData(key);
+        delete data[params.name];
+        this.setData(key, data);
     }
 
     clearAll(): void {
-        this.setData({});
+        this.setData(WATCHED_LAMBDA_FUNCTIONS_KEY, {});
     }
 
-    private getData(): WatchedLambdaFunctionsData {
-        const data = this.localStorageService.get(WATCHED_LAMBDA_FUNCTIONS_KEY);
+    private getCacheKey(params: WatchedLambdaFunctionsService.Params): string {
+        return params.deploymentId
+            ? `${WATCHED_LAMBDA_FUNCTIONS_KEY}-${params.deploymentId}`
+            : WATCHED_LAMBDA_FUNCTIONS_KEY;
+    }
+
+    private getData(key: string): WatchedLambdaFunctionsData {
+        const data = this.localStorageService.get(key);
         if (!data) {
             return {};
         }
@@ -58,8 +66,8 @@ export class DefaultWatchedLambdaFunctionsService
         }
     }
 
-    private setData(data: WatchedLambdaFunctionsData): void {
-        this.localStorageService.set(WATCHED_LAMBDA_FUNCTIONS_KEY, data);
+    private setData(key: string, data: WatchedLambdaFunctionsData): void {
+        this.localStorageService.set(key, data);
     }
 }
 

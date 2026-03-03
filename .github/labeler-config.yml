@@ -1,7 +1,0 @@
-# Used by `.github/workflows/labeler.yml` to configure the `actions/labeler` GitHub Action.
-# This file cannot be also placed in `.github/workflows` because it is not a workflow file,
-# and we do not want GitHub Actions to try to run it as a workflow.
-
-new-admin-ui:
-  - changed-files:
-      - any-glob-to-any-file: "packages/admin-ui/**"
