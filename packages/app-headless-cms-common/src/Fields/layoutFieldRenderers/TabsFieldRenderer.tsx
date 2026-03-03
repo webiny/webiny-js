@@ -51,6 +51,17 @@ const TabPanel = ({ tab, Bind, fields, contentModel, gridClassName }: TabPanelPr
     );
 };
 
+const tabsWrapperClassName = [
+    "bg-white!",
+    "opacity-100!",
+    "border-neutral-muted",
+    "text-neutral-strong",
+    "fill-neutral-xstrong",
+    "w-full",
+    "border-sm",
+    "rounded-md"
+].join(" ");
+
 export const TabsFieldRenderer = ({
     descriptor,
     Bind,
@@ -79,13 +90,15 @@ export const TabsFieldRenderer = ({
             {descriptor.description ? (
                 <FormComponentDescription text={descriptor.description} />
             ) : null}
-            <Tabs
-                size="md"
-                spacing="md"
-                separator={true}
-                tabs={tabElements}
-                defaultValue={firstTab?.id}
-            />
+            <div className={tabsWrapperClassName}>
+                <Tabs
+                    size="md"
+                    spacing="md"
+                    separator={true}
+                    tabs={tabElements}
+                    defaultValue={firstTab?.id}
+                />
+            </div>
         </Grid.Column>
     );
 };
