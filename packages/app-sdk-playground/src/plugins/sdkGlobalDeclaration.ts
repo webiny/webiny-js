@@ -1,8 +1,7 @@
-// CDN URLs for Monaco editor.
-export const MONACO_LOADER_URL =
-    "https://cdn.jsdelivr.net/npm/monaco-editor@0.52.0/min/vs/loader.js";
-
 // Global ambient declaration injected into Monaco's TypeScript language service.
+//
+// NOTE: This file contains TypeScript type declarations as a string literal.
+// In the future, this can be auto-generated from a real .d.ts file.
 //
 // RULES (do not break these):
 //   1. This string must contain NO top-level `import` or `export` statements.
