@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelectFromDocument } from "@webiny/app-website-builder/BaseEditor/hooks/useSelectFromDocument.js";
-import { useApolloClient } from "@apollo/react-hooks";
+import { useApolloClient } from "@apollo/client/react";
 import { useAuthentication } from "@webiny/app-admin";
 import { Components } from "@webiny/app-workflows";
 import { WB_PAGE_APP } from "~/constants.js";

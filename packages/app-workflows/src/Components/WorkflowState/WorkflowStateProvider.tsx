@@ -4,13 +4,13 @@ import { WorkflowsRepository, WorkflowStateRepository } from "~/Repositories/ind
 import type { IWorkflowStatePresenter } from "~/Presenters/index.js";
 import { WorkflowStatePresenter } from "~/Presenters/index.js";
 import type { IIdentity } from "~/types.js";
-import type ApolloClient from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 
 export interface IWorkflowStateProps {
     id: string;
     app: string;
     identity: IIdentity;
-    client: ApolloClient<object>;
+    client: ApolloClient;
     children: React.ReactElement | React.ReactElement[];
     title: string;
 }

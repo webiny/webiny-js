@@ -1,4 +1,4 @@
-import type { ApolloClient } from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import type { FiltersGatewayInterface } from "~/components/AdvancedSearch/gateways/index.js";
 import { FiltersGraphQLGateway } from "~/components/AdvancedSearch/gateways/index.js";
 import { FilterRepository } from "./FilterRepository.js";
@@ -7,7 +7,7 @@ class FilterRepositoryFactory {
     private gateway: FiltersGatewayInterface | undefined;
     private cache: Map<string, FilterRepository> = new Map();
 
-    getRepository(client: ApolloClient<any>, namespace: string) {
+    getRepository(client: ApolloClient, namespace: string) {
         if (!this.gateway) {
             this.gateway = new FiltersGraphQLGateway(client);
         }

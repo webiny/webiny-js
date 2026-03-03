@@ -3,7 +3,7 @@ import type {
     IWorkflowStateListGatewayListParams,
     IWorkflowStateListGatewayListResponse
 } from "./abstraction/WorkflowStateListGateway.js";
-import type ApolloClient from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import type {
     IListWorkflowStatesResponse,
     IListWorkflowStatesVariables
@@ -16,7 +16,7 @@ import {
 import { WebinyError } from "@webiny/error";
 
 interface IWorkflowStateListGatewayParams {
-    client: ApolloClient<object>;
+    client: ApolloClient;
 }
 
 export class WorkflowStateListGateway implements IWorkflowStateListGateway {

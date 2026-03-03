@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useApolloClient } from "@apollo/react-hooks";
+import { useApolloClient } from "@apollo/client/react";
 import { DeleteRedirectGqlGateway } from "./DeleteRedirectGqlGateway.js";
 import { type DeleteRedirectParams } from "./IDeleteRedirectUseCase.js";
 import { DeleteRedirect } from "./DeleteRedirect.js";

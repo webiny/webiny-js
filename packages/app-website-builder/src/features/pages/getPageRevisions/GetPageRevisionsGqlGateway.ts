@@ -1,4 +1,4 @@
-import type ApolloClient from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import gql from "graphql-tag";
 import type { WbError } from "~/types.js";
 import type { IGetPageRevisionsGateway } from "~/features/pages/getPageRevisions/IGetPageRevisionsGateway.js";
@@ -46,9 +46,9 @@ export const GET_PAGE_REVISIONS = gql`
 `;
 
 export class GetPageRevisionsGqlGateway implements IGetPageRevisionsGateway {
-    private client: ApolloClient<any>;
+    private client: ApolloClient;
 
-    constructor(client: ApolloClient<any>) {
+    constructor(client: ApolloClient) {
         this.client = client;
     }
 

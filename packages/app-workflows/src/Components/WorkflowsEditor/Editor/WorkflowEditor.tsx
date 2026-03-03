@@ -5,7 +5,7 @@ import { WorkflowsPresenter } from "~/Presenters/index.js";
 import { WorkflowNotificationTypesGateway, WorkflowsGateway } from "~/Gateways/index.js";
 import type { NonEmptyArray } from "@webiny/app/types.js";
 import { mdbid } from "@webiny/utils/mdbid.js";
-import { useApolloClient } from "@apollo/react-hooks";
+import { useApolloClient } from "@apollo/client/react";
 import { WorkflowEditorView } from "./WorkflowEditorView.js";
 
 export interface IWorkflowPresenterProps {

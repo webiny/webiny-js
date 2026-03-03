@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useQuery } from "@apollo/react-hooks";
+import { useQuery } from "@apollo/client/react";
 import { Grid } from "@webiny/admin-ui";
 import { useDialogs, useSnackbar } from "@webiny/app-admin";
 import type { GenericFormData } from "@webiny/form";
@@ -8,7 +8,10 @@ import type { FolderDto } from "~/domain/folder/FolderDto.js";
 import { useUpdateFolder } from "~/features/folders/updateFolder/index.js";
 import { UsersTeamsMultiAutocomplete } from "./DialogSetPermissions/UsersTeamsMultiAutocomplete.js";
 import { UsersTeamsSelection } from "./DialogSetPermissions/UsersTeamsSelection.js";
-import { LIST_FOLDER_LEVEL_PERMISSIONS_TARGETS } from "./DialogSetPermissions/graphql.js";
+import {
+    type IListFolderLevelPermissionsTargetsResponse,
+    LIST_FOLDER_LEVEL_PERMISSIONS_TARGETS
+} from "./DialogSetPermissions/graphql.js";
 import type { FolderLevelPermissionsTarget, FolderPermission } from "~/types.js";
 
 interface ShowDialogParams {
@@ -41,7 +44,7 @@ interface RemoveUserTeamCallable {
 
 const FormComponent = ({ folder }: FormComponentProps) => {
     const [permissions, setPermissions] = useState<FolderPermission[]>(folder.permissions || []); // Moved useState outside showDialog
-    const listTargetsQuery = useQuery(LIST_FOLDER_LEVEL_PERMISSIONS_TARGETS);
+    const listTargetsQuery = useQuery<IListFolderLevelPermissionsTargetsResponse>(LIST_FOLDER_LEVEL_PERMISSIONS_TARGETS);
     const targetsList: FolderLevelPermissionsTarget[] =
         listTargetsQuery.data?.aco.listFolderLevelPermissionsTargets.data || [];
 

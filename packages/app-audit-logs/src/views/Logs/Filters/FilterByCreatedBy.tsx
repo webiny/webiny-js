@@ -1,8 +1,8 @@
 import React, { useMemo } from "react";
-import { useQuery } from "@apollo/react-hooks";
+import { useQuery } from "@apollo/client/react";
 import { useBind } from "@webiny/form";
 import { Select } from "@webiny/ui/Select/index.js";
-import { LIST_USERS } from "~/graphql.js";
+import { type IListUsersResponse, LIST_USERS } from "~/graphql.js";
 import type { User } from "~/types.js";
 
 const getValidFilterValue = (value: string): string | undefined => {
@@ -13,7 +13,7 @@ const getValidFilterValue = (value: string): string | undefined => {
 };
 
 export const FilterByCreatedBy = () => {
-    const { data: listUsers } = useQuery(LIST_USERS);
+    const { data: listUsers } = useQuery<IListUsersResponse>(LIST_USERS);
     const bind = useBind({
         name: "createdBy",
         beforeChange(value, cb) {

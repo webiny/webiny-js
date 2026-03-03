@@ -17,10 +17,6 @@ const plugin: CmsIconsPlugin = {
     name: "cms-icons-fontawesome",
     type: "cms-icons",
     init() {
-        /**
-         * Ignoring TS errors. We know what we did here is good, but cannot get it to work with typescript.
-         */
-        // @ts-expect-error
         library.add(fab, fas, far);
         const definitions = (library as unknown as Icons).definitions;
         // @ts-expect-error

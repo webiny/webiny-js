@@ -11,14 +11,14 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "@types/react": "18.2.79",
+    "@types/react": "19.2.14",
     "@webiny/react-composition": "0.0.0",
     "lodash": "^4.17.23",
     "nanoid": "^5.1.6",
-    "react": "18.2.0"
+    "react": "^19.2.4"
   },
   "devDependencies": {
-    "@testing-library/react": "^15.0.7",
+    "@testing-library/react": "^16.3.2",
     "@webiny/build-tools": "0.0.0",
     "prettier": "3.6.2",
     "vitest": "^4.0.18"

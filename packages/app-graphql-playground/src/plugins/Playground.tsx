@@ -14,7 +14,7 @@ import { CircularProgress } from "@webiny/ui/Progress/index.js";
 import { playgroundDialog, PlaygroundContainer } from "./Playground.styles.js";
 import { settings } from "./settings.js";
 import { config as appConfig } from "@webiny/app/config.js";
-import type ApolloClient from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import type { GraphQLPlaygroundTabPlugin } from "~/types.js";
 import { ORIGINAL_GQL_PLAYGROUND_URL, PATCHED_GQL_PLAYGROUND_URL } from "./constants.js";
 
@@ -54,7 +54,7 @@ interface CreateApolloClientParams {
 }
 
 interface PlaygroundProps {
-    createApolloClient: (params: CreateApolloClientParams) => ApolloClient<any>;
+    createApolloClient: (params: CreateApolloClientParams) => ApolloClient;
 }
 
 interface CreateApolloLinkCallableParams {

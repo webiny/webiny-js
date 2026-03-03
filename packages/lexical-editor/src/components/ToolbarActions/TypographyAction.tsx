@@ -28,7 +28,7 @@ const quoteTagNames = ["blockquote", "quoteblock"];
  * */
 export const BaseTypographyActionDropDown = makeDecoratable(
     "BaseTypographyActionDropDown",
-    (): JSX.Element | null => {
+    (): React.JSX.Element | null => {
         useEffect(() => {
             console.log("Default BaseTypographyActionDropDown, please add your own component");
         }, []);
@@ -37,10 +37,10 @@ export const BaseTypographyActionDropDown = makeDecoratable(
 );
 
 interface TypographyActionDropdownProps {
-    element: JSX.Element;
+    element: React.JSX.Element;
 }
 
-const TypographyActionDropDown = ({ element }: TypographyActionDropdownProps): JSX.Element => {
+const TypographyActionDropDown = ({ element }: TypographyActionDropdownProps): React.JSX.Element => {
     return <Compose component={BaseTypographyActionDropDown} with={() => () => element} />;
 };
 

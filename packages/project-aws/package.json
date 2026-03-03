@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@pulumi/aws": "^7.20.0",
-    "@pulumi/pulumi": "^3.223.0",
+    "@pulumi/pulumi": "^3.224.0",
     "@pulumi/random": "^4.19.1",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/aws-layers": "0.0.0",
@@ -32,7 +32,7 @@
     "invariant": "^2.2.4",
     "lodash": "^4.17.23",
     "mime": "^3.0.0",
-    "react": "18.2.0",
+    "react": "^19.2.4",
     "replace-in-path": "^1.1.0",
     "zod": "^3.25.76"
   },

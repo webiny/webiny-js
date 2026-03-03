@@ -1,5 +1,5 @@
 import React from "react";
-import { useApolloClient } from "@apollo/react-hooks";
+import { useApolloClient } from "@apollo/client/react";
 import { observer } from "mobx-react-lite";
 import { Button } from "@webiny/admin-ui";
 import type { FileManagerFileItem } from "~/base/ui/FileManager.js";

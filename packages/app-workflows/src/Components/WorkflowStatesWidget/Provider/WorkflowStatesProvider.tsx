@@ -3,7 +3,7 @@ import { WorkflowStatesWidgetPresenter } from "~/Presenters/index.js";
 import React, { useMemo } from "react";
 import { WorkflowStatesWidgetGateway } from "~/Gateways/index.js";
 import { WorkflowStatesWidgetRepository } from "~/Repositories/index.js";
-import type ApolloClient from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import type { NonEmptyArray } from "@webiny/app/types.js";
 import type { WorkflowStateValue } from "~/types.js";
 
@@ -18,7 +18,7 @@ export const WorkflowStatesWidgetContext = React.createContext<IWorkflowStatesWi
 interface IWorkflowStatesProviderProps {
     type: "own" | "requested";
     children: React.ReactNode;
-    client: ApolloClient<object>;
+    client: ApolloClient;
     states: NonEmptyArray<WorkflowStateValue>;
 }
 

@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useApolloClient } from "@apollo/react-hooks";
+import { useApolloClient } from "@apollo/client/react";
 import { useGetPageGraphQLFields } from "~/features/pages/index.js";
 import { DuplicatePageGqlGateway } from "~/features/pages/duplicatePage/DuplicatePageGqlGateway.js";
 import type { DuplicatePageParams } from "~/features/pages/duplicatePage/IDuplicatePageUseCase.js";

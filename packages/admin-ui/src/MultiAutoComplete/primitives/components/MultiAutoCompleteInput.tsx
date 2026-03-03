@@ -1,4 +1,4 @@
-import React from "react";
+import React, { type RefObject } from "react";
 import type { InputPrimitiveProps } from "~/Input/index.js";
 import { InputIcon, inputVariants } from "~/Input/index.js";
 import type { CommandOptionFormatted } from "~/Command/index.js";
@@ -46,13 +46,17 @@ const MultiAutoCompleteInput = ({
     ...props
 }: MultiAutoCompleteInputProps) => {
     const [focused, setFocused] = React.useState<boolean>(false);
-    const inputRef = React.useMemo<React.RefObject<HTMLInputElement>>(
-        () =>
-            parentInputRef && typeof parentInputRef !== "function"
-                ? parentInputRef
-                : React.createRef<HTMLInputElement>(),
-        [parentInputRef]
-    );
+    const inputRef = React.useMemo<React.RefObject<HTMLInputElement>>(() => {
+        /**
+          parentInputRef && typeof parentInputRef !== "function"
+          ? parentInputRef
+          : React.createRef<HTMLInputElement>(),
+         */
+        if (!parentInputRef || typeof parentInputRef === "function") {
+            return React.createRef<HTMLInputElement>() as RefObject<HTMLInputElement>;
+        }
+        return parentInputRef as RefObject<HTMLInputElement>;
+    }, [parentInputRef]);
 
     const renderSelectedOptions = React.useCallback(
         (options: CommandOptionFormatted[]) => {

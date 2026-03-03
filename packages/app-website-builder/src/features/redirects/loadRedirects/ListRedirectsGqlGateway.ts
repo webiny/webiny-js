@@ -1,4 +1,4 @@
-import type ApolloClient from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import gql from "graphql-tag";
 import type { RedirectGatewayDto } from "~/features/redirects/loadRedirects/RedirectGatewayDto.js";
 import type { IListRedirectsGateway } from "./IListRedirectsGateway.js";
@@ -54,10 +54,10 @@ export const LIST_PAGES = (PAGES_FIELDS: string) => gql`
 `;
 
 export class ListRedirectsGqlGateway implements IListRedirectsGateway {
-    private client: ApolloClient<any>;
+    private client: ApolloClient;
     private modelFields: string;
 
-    constructor(client: ApolloClient<any>, modelFields: string) {
+    constructor(client: ApolloClient, modelFields: string) {
         this.client = client;
         this.modelFields = modelFields;
     }

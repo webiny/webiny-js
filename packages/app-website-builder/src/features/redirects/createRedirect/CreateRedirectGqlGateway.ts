@@ -1,4 +1,4 @@
-import type ApolloClient from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import gql from "graphql-tag";
 import type { ICreateRedirectGateway } from "./ICreateRedirectGateway.js";
 import type { RedirectDto } from "./RedirectDto.js";
@@ -34,10 +34,10 @@ export const CREATE_PAGE = (FIELDS: string) => gql`
     `;
 
 export class CreateRedirectGqlGateway implements ICreateRedirectGateway {
-    private client: ApolloClient<any>;
+    private client: ApolloClient;
     private selection: string;
 
-    constructor(client: ApolloClient<any>, selection: string) {
+    constructor(client: ApolloClient, selection: string) {
         this.client = client;
         this.selection = selection;
     }

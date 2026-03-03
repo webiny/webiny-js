@@ -1,4 +1,4 @@
-import type ApolloClient from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import gql from "graphql-tag";
 import type { IDeleteRedirectGateway } from "./IDeleteRedirectGateway.js";
 import type { WbError } from "~/types.js";
@@ -32,9 +32,9 @@ export const DELETE_MUTATION = gql`
 `;
 
 export class DeleteRedirectGqlGateway implements IDeleteRedirectGateway {
-    private client: ApolloClient<any>;
+    private client: ApolloClient;
 
-    constructor(client: ApolloClient<any>) {
+    constructor(client: ApolloClient) {
         this.client = client;
     }
 

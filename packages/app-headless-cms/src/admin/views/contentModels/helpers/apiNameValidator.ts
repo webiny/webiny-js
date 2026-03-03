@@ -1,7 +1,7 @@
 import lodashUpperFirst from "lodash/upperFirst.js";
 import lodashCamelCase from "lodash/camelCase.js";
 import gql from "graphql-tag";
-import type ApolloClient from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import type { CmsModel } from "~/types.js";
 
 /**
@@ -28,7 +28,7 @@ interface SchemaTypes {
 
 interface Params {
     models: CmsModel[];
-    client: ApolloClient<any>;
+    client: ApolloClient;
 }
 
 export const createApiNameValidator = (params: Params) => {

@@ -1,4 +1,4 @@
-import ApolloClient from "apollo-client";
+import type {ApolloClient} from "@apollo/client";
 import { ApolloLink } from "apollo-link";
 import { BatchHttpLink } from "apollo-link-batch-http";
 import { InMemoryCache } from "@webiny/app/apollo-client/InMemoryCache.js";

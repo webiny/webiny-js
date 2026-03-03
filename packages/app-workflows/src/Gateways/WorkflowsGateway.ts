@@ -5,8 +5,10 @@ import type {
     IWorkflowsGatewayListWorkflowsResponse,
     IWorkflowsGatewayStoreWorkflowResponse
 } from "./abstraction/WorkflowsGateway.js";
-import ApolloClient from "apollo-client";
+import type {ApolloClient} from "@apollo/client";
 import type {
+    IDeleteWorkflowResponse,
+    IDeleteWorkflowVariables,
     IListWorkflowResponse,
     IListWorkflowVariables,
     IStoreWorkflowResponse,
@@ -21,7 +23,7 @@ import { WebinyError } from "@webiny/error";
 import { IWorkflow } from "~/types.js";
 
 export interface IWorkflowsGatewayParams {
-    client: ApolloClient<object>;
+    client: ApolloClient;
 }
 
 export class WorkflowsGateway implements IWorkflowsGateway {
@@ -65,7 +67,7 @@ export class WorkflowsGateway implements IWorkflowsGateway {
         workflow: IWorkflow
     ): Promise<IWorkflowsGatewayDeleteWorkflowResponse> {
         try {
-            const result = await this.#client.mutate({
+            const result = await this.#client.mutate<IDeleteWorkflowResponse, IDeleteWorkflowVariables>({
                 mutation: DELETE_WORKFLOW_MUTATION,
                 variables: {
                     app: workflow.app,

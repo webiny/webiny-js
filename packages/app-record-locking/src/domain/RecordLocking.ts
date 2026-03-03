@@ -2,7 +2,7 @@ import type {
     IRecordLocking,
     IRecordLockingUpdateEntryLockResult
 } from "./abstractions/IRecordLocking.js";
-import type { ApolloClient } from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import { RecordLockingGetLockRecord } from "./RecordLockingGetLockRecord.js";
 import { RecordLockingIsEntryLocked } from "./RecordLockingIsEntryLocked.js";
 import { RecordLockingListLockRecords } from "./RecordLockingListLockRecords.js";
@@ -41,7 +41,7 @@ import { RecordLockingGetLockedEntryLockRecord } from "~/domain/RecordLockingGet
 import type { IRecordLockingGetLockedEntryLockRecord } from "./abstractions/IRecordLockingGetLockedEntryLockRecord.js";
 
 export interface ICreateRecordLockingParams {
-    client: ApolloClient<any>;
+    client: ApolloClient;
     setLoading: (loading: boolean) => void;
 }
 

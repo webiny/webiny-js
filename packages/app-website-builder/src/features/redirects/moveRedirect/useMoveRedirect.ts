@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useApolloClient } from "@apollo/react-hooks";
+import { useApolloClient } from "@apollo/client/react";
 import { MoveRedirectGqlGateway } from "~/features/redirects/moveRedirect/MoveRedirectGqlGateway.js";
 import type { MoveRedirectParams } from "~/features/redirects/moveRedirect/IMoveRedirectUseCase.js";
 import { MoveRedirect } from "~/features/redirects/moveRedirect/MoveRedirect.js";

@@ -1,4 +1,4 @@
-import type { ApolloClient } from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import type { CmsContentEntry, CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 import type {
     CmsEntryRestoreFromBinMutationResponse,
@@ -10,10 +10,10 @@ import type { ITrashBinRestoreItemGateway } from "@webiny/app-trash-bin";
 export class TrashBinRestoreItemGraphQLGateway
     implements ITrashBinRestoreItemGateway<CmsContentEntry>
 {
-    private client: ApolloClient<any>;
+    private client: ApolloClient;
     private model: CmsModel;
 
-    constructor(client: ApolloClient<any>, model: CmsModel) {
+    constructor(client: ApolloClient, model: CmsModel) {
         this.client = client;
         this.model = model;
     }

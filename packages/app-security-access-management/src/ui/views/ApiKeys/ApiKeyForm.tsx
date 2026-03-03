@@ -1,17 +1,17 @@
 import React, { useCallback } from "react";
-import { useMutation, useQuery } from "@apollo/react-hooks";
+import { useMutation, useQuery } from "@apollo/client/react";
 import get from "lodash/get.js";
 import isEmpty from "lodash/isEmpty.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { Bind, Form, useForm, useGenerateSlug } from "@webiny/form";
 import {
-    useRouter,
-    Permissions,
     EmptyView,
+    Permissions,
     SimpleForm,
-    SimpleFormFooter,
     SimpleFormContent,
-    SimpleFormHeader
+    SimpleFormFooter,
+    SimpleFormHeader,
+    useRouter
 } from "@webiny/app-admin";
 import { validation } from "@webiny/validation";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
@@ -19,6 +19,11 @@ import { ReactComponent as CopyIcon } from "@webiny/icons/content_copy.svg";
 import { ReactComponent as PasteIcon } from "@webiny/icons/content_paste.svg";
 import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
 import { pickDataForCreate, pickDataForUpdate } from "./utils.js";
+import type {
+    ICreateApiKeyResponse,
+    IReadApiKeyResponse,
+    IUpdateApiKeyResponse
+} from "./graphql.js";
 import * as GQL from "./graphql.js";
 import type { ApiKey } from "~/types.js";
 import {
@@ -49,7 +54,7 @@ export const ApiKeyForm = ({ id, newEntry }: ApiKeyFormProps) => {
     const { goToRoute } = useRouter();
     const toast = useToast();
 
-    const getQuery = useQuery(GQL.READ_API_KEY, {
+    const getQuery = useQuery<IReadApiKeyResponse>(GQL.READ_API_KEY, {
         variables: { id },
         skip: !id,
         onCompleted: data => {
@@ -58,18 +63,19 @@ export const ApiKeyForm = ({ id, newEntry }: ApiKeyFormProps) => {
             }
 
             const { error } = data.security.apiKey;
-            if (error) {
-                goToRoute(Routes.ApiKeys.List);
-                toast.showWarningToast({ title: error.message });
+            if (!error) {
+                return;
             }
+            goToRoute(Routes.ApiKeys.List);
+            toast.showWarningToast({ title: error.message });
         }
     });
 
-    const [create, createMutation] = useMutation(GQL.CREATE_API_KEY, {
+    const [create, createMutation] = useMutation<ICreateApiKeyResponse>(GQL.CREATE_API_KEY, {
         refetchQueries: [{ query: GQL.LIST_API_KEYS }]
     });
 
-    const [update, updateMutation] = useMutation(GQL.UPDATE_API_KEY, {
+    const [update, updateMutation] = useMutation<IUpdateApiKeyResponse>(GQL.UPDATE_API_KEY, {
         refetchQueries: [{ query: GQL.LIST_API_KEYS }]
     });
 
@@ -92,13 +98,13 @@ export const ApiKeyForm = ({ id, newEntry }: ApiKeyFormProps) => {
 
             const response = await operation(args);
 
-            const { error } = response.data.security.apiKey;
+            const { error } = response.data!.security.apiKey;
             if (error) {
                 toast.showWarningToast({ title: error.message });
                 return;
             }
 
-            const { id } = response.data.security.apiKey.data;
+            const { id } = response.data!.security.apiKey.data!;
 
             if (!isUpdate) {
                 goToRoute(Routes.ApiKeys.List, { id });
@@ -109,7 +115,7 @@ export const ApiKeyForm = ({ id, newEntry }: ApiKeyFormProps) => {
         [id]
     );
 
-    const data: ApiKey = get(getQuery, "data.security.apiKey.data", {});
+    const data = get(getQuery, "data.security.apiKey.data", {}) as ApiKey;
 
     const showEmptyView = !newEntry && !loading && isEmpty(data);
 

@@ -1,7 +1,7 @@
 import React from "react";
 import { WorkflowsMenu } from "~/Components/AdminConfig/WorkflowsMenu.js";
 import { AdminConfig, AdminLayout } from "@webiny/app-admin";
-import { useApolloClient } from "@apollo/react-hooks";
+import { useApolloClient } from "@apollo/client/react";
 import Helmet from "react-helmet";
 import { Routes } from "~/routes.js";
 import { WorkflowStateListView } from "~/Components/WorkflowStateList/index.js";

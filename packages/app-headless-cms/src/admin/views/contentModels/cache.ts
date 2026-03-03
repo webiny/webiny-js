@@ -1,6 +1,6 @@
 import dotProp from "dot-prop-immutable";
 import type { DataProxy } from "apollo-cache";
-import type ApolloClient from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import type {
     ListCmsModelsQueryResponse,
     ListMenuCmsGroupsQueryResponse
@@ -115,7 +115,7 @@ export const updateModelInGroupCache = (cache: DataProxy, model: CmsModel): void
  * TODO remove when we can confirm that new deletion works property
  */
 export const removeModelFromCache = (
-    client: ApolloClient<any>,
+    client: ApolloClient,
     model: CmsEditorContentModel
 ): void => {
     const id = `CmsContentModel:${model.modelId}`;

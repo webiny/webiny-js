@@ -1,4 +1,4 @@
-import type ApolloClient from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import type {
     IDeleteCmsModelTask,
     IFullyDeleteCmsModelMutationResponse,
@@ -9,7 +9,7 @@ import type { CmsErrorResponse, CmsModel } from "~/types.js";
 import type { DataProxy } from "apollo-cache";
 
 export interface ICreateProcessParams {
-    client: ApolloClient<any>;
+    client: ApolloClient;
 }
 
 export interface IProcessParams {

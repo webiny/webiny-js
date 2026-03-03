@@ -1,4 +1,4 @@
-import { useApolloClient } from "@apollo/react-hooks";
+import { useApolloClient } from "@apollo/client/react";
 import { useGetPageGraphQLFields } from "~/features/pages/index.js";
 import { ListPagesGqlGateway } from "./ListPagesGqlGateway.js";
 import { useContainer } from "@webiny/app";

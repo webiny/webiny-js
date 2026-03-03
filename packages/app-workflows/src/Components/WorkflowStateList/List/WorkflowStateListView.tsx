@@ -1,13 +1,13 @@
 import React, { useMemo } from "react";
 import { WorkflowStateListProvider } from "../Provider/index.js";
 import { WorkflowStateList } from "./WorkflowStateList.js";
-import type ApolloClient from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import { useRoute } from "@webiny/app";
 import { Routes } from "~/routes.js";
 import type { IWorkflowStateListPresenterListParamsWhere } from "~/Presenters/index.js";
 
 interface IWorkflowStateListViewProps {
-    client: ApolloClient<object>;
+    client: ApolloClient;
 }
 
 export const WorkflowStateListView = (props: IWorkflowStateListViewProps) => {

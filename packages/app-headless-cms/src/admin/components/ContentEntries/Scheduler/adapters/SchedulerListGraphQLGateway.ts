@@ -1,4 +1,4 @@
-import type { ApolloClient } from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import type {
     CmsErrorResponse,
     CmsMetaResponse
@@ -70,9 +70,9 @@ const schema = zod.object({
 });
 
 export class SchedulerListGraphQLGateway implements ISchedulerListGateway {
-    private readonly client: ApolloClient<any>;
+    private readonly client: ApolloClient;
 
-    public constructor(client: ApolloClient<any>) {
+    public constructor(client: ApolloClient) {
         this.client = client;
     }
 

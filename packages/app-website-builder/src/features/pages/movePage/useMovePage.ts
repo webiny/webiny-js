@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useApolloClient } from "@apollo/react-hooks";
+import { useApolloClient } from "@apollo/client/react";
 import { MovePageGqlGateway } from "~/features/pages/movePage/MovePageGqlGateway.js";
 import type { MovePageParams } from "~/features/pages/movePage/IMovePageUseCase.js";
 import { MovePage } from "~/features/pages/movePage/MovePage.js";

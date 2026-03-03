@@ -1,6 +1,6 @@
 import * as React from "react";
 import { cn, cva } from "~/utils.js";
-import { type DialogProps } from "../Dialog.js";
+import type { DialogProps } from "../Dialog.js";
 import { DialogTitle } from "./DialogTitle.js";
 import { DialogDescription } from "./DialogDescription.js";
 
@@ -43,6 +43,7 @@ export const DialogHeader = ({
             <DialogTitle size={size}>
                 {icon &&
                     React.cloneElement(icon, {
+                        // @ts-expect-error
                         size: size && ["lg", "xl", "full"].includes(size) ? "lg" : "md" // Adjust icon size based on dialog size
                     })}
                 {title}

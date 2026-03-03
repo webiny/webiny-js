@@ -163,7 +163,9 @@ const isIconElement = (element: React.ReactNode) => {
  */
 const MenuItem = ({ children, ...rest }: MenuItemProps) => {
     const icon = useMemo(() => {
-        const foundIcon = React.Children.toArray(children).find(isIconElement);
+        const foundIcon = React.Children.toArray(children).find((element): element is React.ReactElement<React.PropsWithChildren> => {
+            return isIconElement(element);
+        });
         // Handles this usage: packages/app-admin/src/components/OptionsMenu/OptionsMenuItem.tsx
         if (React.isValidElement(foundIcon) && foundIcon.type === ListItemGraphic) {
             return foundIcon.props.children;

@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import type { ApolloClient } from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import { DialogsProvider } from "@webiny/app-admin";
 import type { AcoApp, AcoModel, AcoModelField } from "~/types.js";
 import { FoldersProvider as FoldersContextProvider } from "./folders.js";
@@ -13,7 +13,7 @@ export interface AcoAppProviderContext {
     folderIdPath: string;
     folderIdInPath: string;
     model: AcoModel;
-    client: ApolloClient<any>;
+    client: ApolloClient;
 }
 
 export const AcoAppContext = React.createContext<AcoAppProviderContext | undefined>(undefined);
@@ -23,7 +23,7 @@ export type AcoAppProviderProps = {
     id: string;
     folderId: string | undefined;
     folderIdPath: string;
-    client: ApolloClient<any>;
+    client: ApolloClient;
     navigateToFolder: (folderId: string) => void;
     createNavigateFolderStorageKey: () => string;
     model: AcoModel;

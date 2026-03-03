@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useApolloClient } from "@apollo/react-hooks";
+import { useApolloClient } from "@apollo/client/react";
 import { useGetPageGraphQLFields } from "~/features/pages/index.js";
 import { PublishPage } from "~/features/pages/publishPage/PublishPage.js";
 import type { PublishPageParams } from "~/features/pages/publishPage/IPublishPageUseCase.js";

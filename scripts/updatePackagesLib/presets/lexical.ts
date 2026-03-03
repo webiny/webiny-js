@@ -4,6 +4,7 @@ export const lexical = createPreset(() => {
     return {
         name: "lexical",
         matching: /^@lexical\/|^lexical/,
-        skipResolutions: false
+        skipResolutions: false,
+        caret: false
     };
 });

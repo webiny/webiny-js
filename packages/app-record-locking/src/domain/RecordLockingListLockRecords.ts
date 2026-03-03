@@ -1,5 +1,5 @@
 import { WebinyError } from "@webiny/error";
-import type { ApolloClient } from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import type {
     IRecordLockingListLockRecords,
     IRecordLockingListLockRecordsParams,
@@ -14,7 +14,7 @@ import type {
 import { LIST_LOCK_RECORDS } from "~/domain/graphql/listLockRecords.js";
 
 interface Params {
-    client: IRecordLockingClient | ApolloClient<any>;
+    client: IRecordLockingClient | ApolloClient;
 }
 
 export class RecordLockingListLockRecords implements IRecordLockingListLockRecords {

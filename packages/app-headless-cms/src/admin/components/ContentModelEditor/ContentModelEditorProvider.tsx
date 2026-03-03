@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useReducer } from "react";
 import get from "lodash/get.js";
 import pick from "lodash/pick.js";
-import type { ApolloClient } from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import { useSnackbar, useRouter } from "@webiny/app-admin";
 import type {
     GetCmsModelQueryResponse,
@@ -18,7 +18,7 @@ import { createHashing } from "@webiny/app/utils/index.js";
 import { Routes } from "~/routes.js";
 
 export interface ContentModelEditorProviderContext {
-    apolloClient: ApolloClient<any>;
+    apolloClient: ApolloClient;
     data: CmsModel;
     contentModel: CmsModel;
     isPristine: boolean;
@@ -98,7 +98,7 @@ const cleanupModelData = (data: PickedCmsModel): PickedCmsModel => {
 };
 
 interface ContentModelEditorProviderProps {
-    apolloClient: ApolloClient<any>;
+    apolloClient: ApolloClient;
     modelId?: string;
     children: React.ReactElement;
 }

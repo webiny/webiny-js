@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import type {User, IAuditLogsError} from "~/types.js";
 
 const ERROR_FIELDS = /* GraphQL */ `
     code
@@ -6,7 +7,16 @@ const ERROR_FIELDS = /* GraphQL */ `
     data
 `;
 
-export const LIST_USERS: any = gql`
+export interface IListUsersResponse {
+    adminUsers: {
+        users: {
+            data: User[] | null;
+            error: IAuditLogsError | null;
+        }
+    };
+}
+
+export const LIST_USERS = gql`
     query ListUsers {
         adminUsers {
             users: listUsers {

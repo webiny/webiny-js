@@ -3,11 +3,11 @@ import type { FetchResult } from "apollo-link";
 import type { IRecordLockingClient } from "~/domain/abstractions/IRecordLockingClient.js";
 
 export interface IRecordLockingClientParams {
-    client: ApolloClient<any>;
+    client: ApolloClient;
 }
 
 export class RecordLockingClient implements IRecordLockingClient {
-    private readonly client: ApolloClient<any>;
+    private readonly client: ApolloClient;
 
     public constructor(params: IRecordLockingClientParams) {
         this.client = params.client;

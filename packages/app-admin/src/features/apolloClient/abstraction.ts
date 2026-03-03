@@ -1,8 +1,8 @@
-import type { ApolloClient as IApolloClient } from "apollo-client";
+import type { ApolloClient as IApolloClient } from "@apollo/client";
 import { createAbstraction } from "@webiny/feature/admin";
 
-export const ApolloClient = createAbstraction<IApolloClient<any>>("ApolloClient");
+export const ApolloClient = createAbstraction<IApolloClient>("ApolloClient");
 
 export namespace ApolloClient {
-    export type Interface = IApolloClient<any>;
+    export type Interface = IApolloClient;
 }

@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useApolloClient } from "@apollo/react-hooks";
+import { useApolloClient } from "@apollo/client/react";
 import { useGetPageGraphQLFields } from "~/features/pages/index.js";
 import { UnpublishPageGqlGateway } from "~/features/pages/unpublishPage/UnpublishPageGqlGateway.js";
 import type { UnpublishPageParams } from "~/features/pages/unpublishPage/IUnpublishPageUseCase.js";

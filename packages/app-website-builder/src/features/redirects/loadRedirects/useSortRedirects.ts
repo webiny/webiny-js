@@ -1,4 +1,4 @@
-import { useApolloClient } from "@apollo/react-hooks";
+import { useApolloClient } from "@apollo/client/react";
 import { ListRedirectsGqlGateway } from "~/features/redirects/loadRedirects/ListRedirectsGqlGateway.js";
 import { useGetRedirectGraphQLFields } from "~/features/redirects/index.js";
 import { SortRedirects } from "~/features/redirects/loadRedirects/SortRedirects.js";

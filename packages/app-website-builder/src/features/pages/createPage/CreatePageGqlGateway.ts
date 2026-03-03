@@ -1,4 +1,4 @@
-import type ApolloClient from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import gql from "graphql-tag";
 import type { ICreatePageGateway } from "./ICreatePageGateway.js";
 import type { PageDto } from "./PageDto.js";
@@ -39,7 +39,7 @@ export class CreatePageGqlGateway implements ICreatePageGateway {
     private client;
     private readonly modelFields;
 
-    constructor(client: ApolloClient<object>, modelFields: string[]) {
+    constructor(client: ApolloClient, modelFields: string[]) {
         this.client = client;
         this.modelFields = modelFields;
     }

@@ -1,4 +1,4 @@
-import type ApolloClient from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import gql from "graphql-tag";
 import type { IUpdatePageGateway } from "./IUpdatePageGateway.js";
 import type { PageDto } from "./PageDto.js";
@@ -54,7 +54,7 @@ export class UpdatePageGqlGateway implements IUpdatePageGateway {
     private readonly client;
     private readonly modelFields;
 
-    constructor(client: ApolloClient<any>, modelFields: string[]) {
+    constructor(client: ApolloClient, modelFields: string[]) {
         this.client = client;
         this.modelFields = modelFields;
     }

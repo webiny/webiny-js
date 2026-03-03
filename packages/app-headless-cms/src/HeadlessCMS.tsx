@@ -1,5 +1,5 @@
 import React, { Fragment, memo } from "react";
-import type { ApolloClient } from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import { plugins } from "@webiny/plugins";
 import { Provider } from "@webiny/app-admin";
 import { ApolloCacheObjectIdPlugin } from "@webiny/app";
@@ -33,7 +33,7 @@ interface CreateApolloClientParams {
 }
 
 interface CreateApolloClient {
-    (params: CreateApolloClientParams): ApolloClient<any>;
+    (params: CreateApolloClientParams): ApolloClient;
 }
 
 export interface HeadlessCMSProps {

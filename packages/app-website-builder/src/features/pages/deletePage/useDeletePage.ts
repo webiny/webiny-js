@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useApolloClient } from "@apollo/react-hooks";
+import { useApolloClient } from "@apollo/client/react";
 import { DeletePageGqlGateway } from "./DeletePageGqlGateway.js";
 import { type DeletePageParams } from "./IDeletePageUseCase.js";
 import { DeletePage } from "./DeletePage.js";

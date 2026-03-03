@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import type ApolloClient from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import { config as appConfig } from "@webiny/app/config.js";
 import type {
     CmsContentEntry,
@@ -186,7 +186,7 @@ const catchErrorOnExecute = async <T = any,>(
 
 export interface CmsContext {
     createApolloClient: CmsProviderProps["createApolloClient"];
-    apolloClient: ApolloClient<any>;
+    apolloClient: ApolloClient;
     getEntry: (params: GetEntryParams) => Promise<GetEntryResponse>;
     listEntryRevisions: (params: ListEntryRevisionParams) => Promise<ListEntryRevisionsResponse>;
     getSingletonEntry: (params: GetSingletonEntryParams) => Promise<GetEntryResponse>;
@@ -213,7 +213,7 @@ export interface CmsContext {
 export const CmsContext = React.createContext<CmsContext | undefined>(undefined);
 
 export interface CmsProviderProps {
-    createApolloClient: (params: { uri: string }) => ApolloClient<any>;
+    createApolloClient: (params: { uri: string }) => ApolloClient;
     children: React.ReactNode;
 }
 

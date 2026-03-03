@@ -1,4 +1,4 @@
-import type ApolloClient from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import gql from "graphql-tag";
 import type { GenericRecord } from "@webiny/app/types.js";
 import { WebinyError } from "@webiny/error";
@@ -43,9 +43,9 @@ interface QueryType {
 }
 
 export class GetSettingsGqlGateway implements IGetSettings {
-    private client: ApolloClient<any>;
+    private client: ApolloClient;
 
-    constructor(client: ApolloClient<any>) {
+    constructor(client: ApolloClient) {
         this.client = client;
     }
 

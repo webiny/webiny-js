@@ -1,4 +1,4 @@
-import type ApolloClient from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import lodashChunk from "lodash/chunk.js";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useApolloClient } from "~/admin/hooks/index.js";
@@ -17,7 +17,7 @@ interface ExecuteSearchParams {
     setLoading: (loading: boolean) => void;
     setError: (error: string | undefined | null) => void;
     setEntries: (entries: Record<string, CmsReferenceContentEntry>) => void;
-    client: ApolloClient<any>;
+    client: ApolloClient;
     values: CmsReferenceValue[];
     requestContext?: Record<string, any>;
 }

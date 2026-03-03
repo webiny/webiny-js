@@ -1,4 +1,4 @@
-import type ApolloClient from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import gql from "graphql-tag";
 import type { IMovePageGateway } from "./IMovePageGateway.js";
 import type { WbError } from "~/types.js";
@@ -33,9 +33,9 @@ export const MOVE_PAGE = gql`
 `;
 
 export class MovePageGqlGateway implements IMovePageGateway {
-    private client: ApolloClient<any>;
+    private client: ApolloClient;
 
-    constructor(client: ApolloClient<any>) {
+    constructor(client: ApolloClient) {
         this.client = client;
     }
 

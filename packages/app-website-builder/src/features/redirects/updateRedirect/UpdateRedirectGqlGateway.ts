@@ -1,4 +1,4 @@
-import type ApolloClient from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import gql from "graphql-tag";
 import type { IUpdateRedirectGateway } from "./IUpdateRedirectGateway.js";
 import type { RedirectDto } from "./RedirectDto.js";
@@ -51,10 +51,10 @@ export const UPDATE_MUTATION = (FIELDS: string) => gql`
 `;
 
 export class UpdateRedirectGqlGateway implements IUpdateRedirectGateway {
-    private client: ApolloClient<any>;
+    private client: ApolloClient;
     private selection: string;
 
-    constructor(client: ApolloClient<any>, selection: string) {
+    constructor(client: ApolloClient, selection: string) {
         this.client = client;
         this.selection = selection;
     }

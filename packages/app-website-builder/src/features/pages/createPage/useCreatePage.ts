@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useApolloClient } from "@apollo/react-hooks";
+import { useApolloClient } from "@apollo/client/react";
 import { CreatePageGqlGateway } from "./CreatePageGqlGateway.js";
 import { type CreatePageParams } from "./ICreatePageUseCase.js";
 import { CreatePage } from "./CreatePage.js";

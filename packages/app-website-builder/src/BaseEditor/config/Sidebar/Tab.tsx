@@ -25,7 +25,7 @@ export interface TabProps {
     name: string;
     label: string;
     noPadding?: boolean;
-    element: JSX.Element;
+    element: React.JSX.Element;
     disabled?: boolean;
     visible?: boolean;
 }

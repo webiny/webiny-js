@@ -1,4 +1,4 @@
-import type ApolloClient from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import type { DocumentNode } from "graphql";
 import type { FileItem } from "~/types.js";
 import type { IGetFileByUrl } from "./EditFileUsingUrlRepository.js";
@@ -6,10 +6,10 @@ import { getFileByUrlQuery } from "./getFileByUrl.graphql.js";
 import type { useFileModel } from "~/hooks/useFileModel.js";
 
 export class GetFileByUrl implements IGetFileByUrl {
-    private client: ApolloClient<unknown>;
+    private client: ApolloClient;
     private readonly query: DocumentNode;
 
-    constructor(client: ApolloClient<unknown>, model: ReturnType<typeof useFileModel>) {
+    constructor(client: ApolloClient, model: ReturnType<typeof useFileModel>) {
         this.client = client;
         this.query = getFileByUrlQuery(model);
     }

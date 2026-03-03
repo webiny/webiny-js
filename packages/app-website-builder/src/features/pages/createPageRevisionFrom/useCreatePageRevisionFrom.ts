@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useApolloClient } from "@apollo/react-hooks";
+import { useApolloClient } from "@apollo/client/react";
 import { useGetPageGraphQLFields } from "~/features/pages/index.js";
 import { CreatePageRevisionFromGqlGateway } from "~/features/pages/createPageRevisionFrom/CreatePageRevisionFromGqlGateway.js";
 import type { CreatePageRevisionFromParams } from "~/features/pages/createPageRevisionFrom/ICreatePageRevisionFromUseCase.js";

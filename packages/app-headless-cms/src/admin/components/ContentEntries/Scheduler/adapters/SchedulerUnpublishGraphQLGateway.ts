@@ -1,4 +1,4 @@
-import type { ApolloClient } from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import type { CmsErrorResponse } from "@webiny/app-headless-cms-common/types/index.js";
 import zod from "zod";
 import { schedulerEntrySchema } from "./schema/schedulerEntry.js";
@@ -49,9 +49,9 @@ const schema = zod.object({
 });
 
 export class SchedulerUnpublishGraphQLGateway implements ISchedulerUnpublishGateway {
-    private readonly client: ApolloClient<any>;
+    private readonly client: ApolloClient;
 
-    public constructor(client: ApolloClient<any>) {
+    public constructor(client: ApolloClient) {
         this.client = client;
     }
 

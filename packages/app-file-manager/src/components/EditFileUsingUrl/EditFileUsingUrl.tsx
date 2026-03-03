@@ -1,4 +1,4 @@
-import { useApolloClient } from "@apollo/react-hooks";
+import { useApolloClient } from "@apollo/client/react";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import noop from "lodash/noop.js";

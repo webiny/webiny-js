@@ -1,4 +1,4 @@
-import ApolloClient from "apollo-client";
+import type {ApolloClient} from "@apollo/client";
 import type { IListWorkflowNotificationTypesResponse } from "./graphql/workflowNotifications.js";
 import { LIST_WORKFLOW_NOTIFICATION_TYPES_QUERY } from "./graphql/workflowNotifications.js";
 import { WebinyError } from "@webiny/error";
@@ -8,7 +8,7 @@ import type {
 } from "./abstraction/WorkflowNotificationTypesGateway.js";
 
 export interface IWorkflowNotificationTypesGatewayParams {
-    client: ApolloClient<object>;
+    client: ApolloClient;
 }
 
 export class WorkflowNotificationTypesGateway implements IWorkflowNotificationTypesGateway {

@@ -1,7 +1,7 @@
 import type * as React from "react";
 import type { CSSProperties } from "react";
 import { Plugin } from "@webiny/plugins/types.js";
-import type { ApolloClient } from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 
 export type GenericRecordKey = string | number | symbol;
 
@@ -10,7 +10,7 @@ export type GenericRecord<K extends GenericRecordKey = GenericRecordKey, V = any
 export type NonEmptyArray<T> = [T, ...T[]];
 
 export type UploadOptions = {
-    apolloClient: ApolloClient<object>;
+    apolloClient: ApolloClient;
     onProgress?: (params: { sent: number; total: number; percentage: number }) => void;
 };
 

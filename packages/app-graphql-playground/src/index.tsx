@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import type { ApolloClient } from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import { plugins } from "@webiny/plugins";
 import { useRouter, AdminConfig, AdminLayout } from "@webiny/app-admin";
 import { ReactComponent as ApiPlaygroundIcon } from "@webiny/icons/swap_horiz.svg";
@@ -14,7 +14,7 @@ interface CreateApolloClientParams {
 }
 
 interface GraphQLPlaygroundProps {
-    createApolloClient(params: CreateApolloClientParams): ApolloClient<any>;
+    createApolloClient(params: CreateApolloClientParams): ApolloClient;
 }
 
 const GraphQLPlaygroundExtension = ({ createApolloClient }: GraphQLPlaygroundProps) => {

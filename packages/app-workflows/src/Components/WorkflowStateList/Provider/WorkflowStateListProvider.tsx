@@ -3,7 +3,7 @@ import { WorkflowStateListPresenter } from "~/Presenters/index.js";
 import React, { useMemo } from "react";
 import { WorkflowStateListGateway } from "~/Gateways/index.js";
 import { WorkflowStateListRepository } from "~/Repositories/index.js";
-import type ApolloClient from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import type { IWorkflowStateListPresenterListParamsWhere } from "~/Presenters/abstractions/WorkflowStateListPresenter.js";
 
 export interface IWorkflowStateListContext {
@@ -14,7 +14,7 @@ export const WorkflowStateListContext = React.createContext<IWorkflowStateListCo
 
 interface IWorkflowStateListProviderProps {
     children: React.ReactNode;
-    client: ApolloClient<object>;
+    client: ApolloClient;
     where?: IWorkflowStateListPresenterListParamsWhere;
     type?: "own" | "requested" | undefined;
 }

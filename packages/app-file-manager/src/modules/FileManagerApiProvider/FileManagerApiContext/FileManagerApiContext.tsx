@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 import omit from "lodash/omit.js";
-import { useApolloClient } from "@apollo/react-hooks";
+import { useApolloClient } from "@apollo/client/react";
 import WebinyError from "@webiny/error";
 import { useIdentity } from "@webiny/app-admin";
 import type {

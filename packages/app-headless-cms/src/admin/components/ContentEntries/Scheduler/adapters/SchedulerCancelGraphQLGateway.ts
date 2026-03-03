@@ -1,4 +1,4 @@
-import type { ApolloClient } from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import type { CmsErrorResponse } from "@webiny/app-headless-cms-common/types/index.js";
 import gql from "graphql-tag";
 import type {
@@ -35,9 +35,9 @@ interface SchedulerCancelGraphQLMutationResponse {
 }
 
 export class SchedulerCancelGraphQLGateway implements ISchedulerCancelGateway {
-    private readonly client: ApolloClient<any>;
+    private readonly client: ApolloClient;
 
-    public constructor(client: ApolloClient<any>) {
+    public constructor(client: ApolloClient) {
         this.client = client;
     }
 

@@ -2,14 +2,15 @@ import type { SyntheticEvent } from "react";
 import React, { useCallback, useState, useEffect, useMemo } from "react";
 import styled from "@emotion/styled";
 import { css } from "emotion";
-import type { ColorState, RGBColor } from "react-color";
+import type { ColorResult, RGBColor } from "react-color";
 import { ChromePicker } from "react-color";
-import type { OnChangeHandler } from "react-color/lib/components/common/ColorWrap.js";
 import { Tooltip } from "@webiny/ui/Tooltip/index.js";
 
 // Icons
 import { ReactComponent as IconPalette } from "./round-color_lens-24px.svg";
 import { useRichTextEditor } from "@webiny/lexical-editor";
+
+type OnChangeHandler = (color: ColorResult, event: React.ChangeEvent<HTMLInputElement>) => void;
 
 const ColorPickerStyle = styled("div")({
     position: "relative",
@@ -144,7 +145,7 @@ export const LexicalColorPicker = ({
     }, []);
 
     const onColorChange = useCallback(
-        (color: ColorState, event: React.SyntheticEvent) => {
+        (color: ColorResult, event: React.SyntheticEvent) => {
             event.preventDefault();
             // controls of the picker are updated as user moves the mouse
             const customColor = getColorValue(color.rgb, color.rgb.a === 0 ? 1 : color.rgb.a);
@@ -157,7 +158,7 @@ export const LexicalColorPicker = ({
     );
 
     const onColorChangeComplete = useCallback(
-        ({ rgb }: ColorState, event: React.SyntheticEvent) => {
+        ({ rgb }: ColorResult, event: React.SyntheticEvent) => {
             event.preventDefault();
             const color = getColorValue(rgb, rgb.a === 0 ? 1 : rgb.a);
             setActualSelectedColor(color);
@@ -218,8 +219,8 @@ export const LexicalColorPicker = ({
                     className={chromePickerStyle}
                     color={actualSelectedColor}
                     disableAlpha={true}
-                    onChange={onColorChange as OnChangeHandler}
-                    onChangeComplete={onColorChangeComplete as OnChangeHandler}
+                    onChange={onColorChange}
+                    onChangeComplete={onColorChangeComplete}
                 />
             </div>
         </ColorPickerStyle>

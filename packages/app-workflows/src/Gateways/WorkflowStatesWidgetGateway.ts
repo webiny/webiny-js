@@ -1,4 +1,4 @@
-import type ApolloClient from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import type {
     IWorkflowStatesWidgetGateway,
     IWorkflowStatesWidgetGatewayApproveStateStepParams,
@@ -36,7 +36,7 @@ import {
 } from "~/Gateways/graphql/workflowStates.js";
 
 interface IWorkflowStatesWidgetGatewayParams {
-    client: ApolloClient<object>;
+    client: ApolloClient;
 }
 
 export class WorkflowStatesWidgetGateway implements IWorkflowStatesWidgetGateway {
@@ -61,9 +61,9 @@ export class WorkflowStatesWidgetGateway implements IWorkflowStatesWidgetGateway
                 fetchPolicy: "no-cache"
             });
             return {
-                data: result.data.workflows.listWorkflowStates.data,
-                meta: result.data.workflows.listWorkflowStates.meta,
-                error: result.data.workflows.listWorkflowStates.error
+                data: result.data!.workflows.listWorkflowStates.data,
+                meta: result.data!.workflows.listWorkflowStates.meta,
+                error: result.data!.workflows.listWorkflowStates.error
             };
         } catch (ex) {
             return {
@@ -89,9 +89,9 @@ export class WorkflowStatesWidgetGateway implements IWorkflowStatesWidgetGateway
                 fetchPolicy: "no-cache"
             });
             return {
-                data: result.data.workflows.listWorkflowStates.data,
-                meta: result.data.workflows.listWorkflowStates.meta,
-                error: result.data.workflows.listWorkflowStates.error
+                data: result.data!.workflows.listWorkflowStates.data,
+                meta: result.data!.workflows.listWorkflowStates.meta,
+                error: result.data!.workflows.listWorkflowStates.error
             };
         } catch (ex) {
             return {

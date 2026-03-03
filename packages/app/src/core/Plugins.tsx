@@ -5,7 +5,7 @@ export const PluginsContext = createContext<boolean>(false);
 PluginsContext.displayName = "PluginsContext";
 
 interface PluginsProviderComponentProps {
-    children: JSX.Element[];
+    children: React.JSX.Element[];
 }
 const PluginsProviderComponent = ({ children }: PluginsProviderComponentProps) => {
     /**

@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { WorkflowStateListProvider } from "../Provider/index.js";
-import type ApolloClient from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import type { IWorkflowStateListPresenterListParamsWhere } from "~/Presenters/index.js";
 import { WorkflowStateListAppOverlayView } from "./WorkflowStateListAppOverlayView.js";
 
@@ -14,7 +14,7 @@ export interface IWorkflowStateListAppOverlayPropsChildren {
 
 export interface IWorkflowStateListAppOverlayProps {
     app: string;
-    client: ApolloClient<object>;
+    client: ApolloClient;
     children: IWorkflowStateListAppOverlayPropsChildren;
 }
 

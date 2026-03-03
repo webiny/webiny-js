@@ -1,4 +1,4 @@
-import type ApolloClient from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import { useEffect, useState } from "react";
 import { useApolloClient, useModelFieldGraphqlContext } from "~/admin/hooks/index.js";
 import type { CmsReferenceContentEntry } from "~/admin/plugins/fieldRenderers/ref/components/types.js";
@@ -13,7 +13,7 @@ interface ExecuteSearchParams {
     setLoading: (loading: boolean) => void;
     setError: (error: string | undefined | null) => void;
     setEntries: (entries: CmsReferenceContentEntry[]) => void;
-    client: ApolloClient<any>;
+    client: ApolloClient;
     models: CmsModel[];
     requestContext: Record<string, any>;
 }

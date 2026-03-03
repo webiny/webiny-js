@@ -8,7 +8,7 @@ import type { FileItem } from "~/types.js";
 export interface FileProps {
     file: FileItem;
     selected: boolean;
-    fileBody?: JSX.Element;
+    fileBody?: React.JSX.Element;
     onSelect?: (event?: React.MouseEvent) => void;
     onClick?: (event?: React.MouseEvent) => void;
     multiple?: boolean;

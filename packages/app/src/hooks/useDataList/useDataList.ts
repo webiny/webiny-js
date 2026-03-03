@@ -1,16 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useQuery } from "@apollo/react-hooks";
+import { useQuery } from "@apollo/client/react";
 import get from "lodash/get.js";
 import isEqual from "lodash/isEqual.js";
 import { prepareLoadListParams } from "./utils/index.js";
 import { getData, getError, getMeta } from "./functions/index.js";
 
 import type { DocumentNode } from "graphql";
-import type { ApolloClient } from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 
 export interface UseDataListParams {
     variables?: ((params: UseDataListParams) => any) | object;
-    client?: ApolloClient<any>;
+    client?: ApolloClient;
     query: DocumentNode;
     getData?: (data: any) => any;
     getMeta?: (data: any) => any;
@@ -59,13 +59,13 @@ const useDataList = (params: UseDataListParams) => {
         };
     }, []);
 
-    const queryData = useQuery(params.query, getQueryOptions());
+    const queryData = useQuery<Record<string, string>>(params.query, getQueryOptions());
     const prevLoadParamsRef = useRef({});
 
     const dataListProps: DataListProps = {
-        data: get(params, "getData", getData)(queryData.data),
-        meta: get(params, "getMeta", getMeta)(queryData.data),
-        error: get(params, "getError", getError)(queryData.data),
+        data: get(params, "getData", getData)(queryData.data!),
+        meta: get(params, "getMeta", getMeta)(queryData.data!),
+        error: get(params, "getError", getError)(queryData.data!),
 
         loading: queryData.loading,
         init() {

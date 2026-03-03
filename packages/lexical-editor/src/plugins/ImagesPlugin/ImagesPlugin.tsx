@@ -37,7 +37,7 @@ export function ImagesPlugin({
     captionsEnabled
 }: {
     captionsEnabled?: boolean;
-}): JSX.Element | null {
+}): React.JSX.Element | null {
     const { editor } = useRichTextEditor();
 
     useEffect(() => {

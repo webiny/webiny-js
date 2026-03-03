@@ -2,7 +2,7 @@ import React from "react";
 import { ContentEntryEditorConfig, useContentEntry } from "@webiny/app-headless-cms";
 import { Components } from "@webiny/app-workflows";
 import { useSecurity } from "@webiny/app-admin";
-import { useApolloClient } from "@apollo/react-hooks";
+import { useApolloClient } from "@apollo/client/react";
 import { createAppName } from "~/utils/appName.js";
 
 const {

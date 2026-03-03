@@ -22,9 +22,9 @@
     "@webiny/project-aws": "0.0.0",
     "jsonwebtoken": "^9.0.3",
     "mobx": "^6.15.0",
-    "mobx-react-lite": "^3.4.3",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
+    "mobx-react-lite": "^4.1.1",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
     "zod": "^3.25.76"
   },
   "devDependencies": {

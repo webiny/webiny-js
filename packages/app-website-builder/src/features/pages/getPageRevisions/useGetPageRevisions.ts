@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react";
-import { useApolloClient } from "@apollo/react-hooks";
+import { useApolloClient } from "@apollo/client/react";
 import { GetPageRevisionsGqlGateway } from "./GetPageRevisionsGqlGateway.js";
 import type { GetPageRevisionsParams } from "./IGetPageRevisionsUseCase.js";
 import { GetPageRevisions } from "./GetPageRevisions.js";

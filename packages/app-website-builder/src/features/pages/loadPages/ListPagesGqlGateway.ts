@@ -1,4 +1,4 @@
-import type ApolloClient from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import gql from "graphql-tag";
 import type { PageGatewayDto } from "~/features/pages/loadPages/PageGatewayDto.js";
 import type { IListPagesGateway } from "./IListPagesGateway.js";
@@ -57,7 +57,7 @@ export const LIST_PAGES = (fields: string[]) => gql`
 `;
 
 export interface IListPagesGatewayParams {
-    client: ApolloClient<object>;
+    client: ApolloClient;
     modelFields: string[];
     fieldSelection: IListPagesGraphQLFieldSelection[];
 }

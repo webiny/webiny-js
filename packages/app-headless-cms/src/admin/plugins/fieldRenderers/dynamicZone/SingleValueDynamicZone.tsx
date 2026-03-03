@@ -40,8 +40,8 @@ export interface SingleValueItemContainerProps {
     onDelete: () => void;
     title: React.ReactNode;
     description: string;
-    icon: JSX.Element;
-    actions?: JSX.Element;
+    icon: React.JSX.Element;
+    actions?: React.JSX.Element;
     template: CmsDynamicZoneTemplate;
     children: React.ReactNode;
 }

@@ -1,4 +1,4 @@
-import type { ApolloClient } from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 import type { ITrashBinDeleteItemGateway } from "@webiny/app-trash-bin";
 import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 import type {
@@ -8,10 +8,10 @@ import type {
 import { createDeleteMutation } from "@webiny/app-headless-cms-common";
 
 export class TrashBinDeleteItemGraphQLGateway implements ITrashBinDeleteItemGateway {
-    private client: ApolloClient<any>;
+    private client: ApolloClient;
     private model: CmsModel;
 
-    constructor(client: ApolloClient<any>, model: CmsModel) {
+    constructor(client: ApolloClient, model: CmsModel) {
         this.client = client;
         this.model = model;
     }

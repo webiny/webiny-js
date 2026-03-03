@@ -31,6 +31,15 @@ export const LIST_API_KEYS = gql`
     }
 `;
 
+export interface IReadApiKeyResponse {
+    security: {
+        apiKey: {
+            data: ApiKey | null;
+            error: Error | null;
+        };
+    };
+}
+
 export const READ_API_KEY = gql`
     query GetApiKey($id: ID!) {
         security {
@@ -46,6 +55,15 @@ export const READ_API_KEY = gql`
         }
     }
 `;
+
+export interface ICreateApiKeyResponse {
+    security: {
+        apiKey: {
+            data: ApiKey | null;
+            error: Error | null;
+        };
+    };
+}
 
 export const CREATE_API_KEY = gql`
     mutation CreateApiKey($data: SecurityApiKeyInput!){
@@ -63,6 +81,16 @@ export const CREATE_API_KEY = gql`
         }
     }
 `;
+
+
+export interface IUpdateApiKeyResponse {
+    security: {
+        apiKey: {
+            data: ApiKey | null;
+            error: Error | null;
+        };
+    };
+}
 
 export const UPDATE_API_KEY = gql`
     mutation UpdateApiKey($id: ID!, $data: SecurityApiKeyInput!){

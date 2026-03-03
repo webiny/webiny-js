@@ -1,4 +1,4 @@
-import ApolloClient from "apollo-client";
+import type {ApolloClient} from "@apollo/client";
 import type {
     IWorkflowStateGateway,
     IWorkflowStateGatewayApproveStepParams,
@@ -45,7 +45,7 @@ import {
 import { WebinyError } from "@webiny/error";
 
 export interface IWorkflowStateGatewayParams {
-    client: ApolloClient<object>;
+    client: ApolloClient;
 }
 
 export class WorkflowStateGateway implements IWorkflowStateGateway {

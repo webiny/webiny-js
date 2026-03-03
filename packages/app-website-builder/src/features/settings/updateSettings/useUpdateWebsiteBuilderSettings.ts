@@ -1,5 +1,5 @@
 import { useMemo, useCallback } from "react";
-import { useApolloClient } from "@apollo/react-hooks";
+import { useApolloClient } from "@apollo/client/react";
 import { UpdateSettingsRepository } from "./UpdateSettings.repository.js";
 import { settingsCache } from "~/shared/settingsCache.js";
 import type { IWebsiteBuilderSettings } from "~/features/settings/IWebsiteBuilderSettings.js";

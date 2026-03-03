@@ -1,4 +1,4 @@
-import type { ApolloClient } from "apollo-client";
+import type { ApolloClient } from "@apollo/client";
 
 import type {
     CreateFilterPayload,
@@ -24,9 +24,9 @@ import {
 } from "./filters.gql.js";
 
 export class FiltersGraphQLGateway implements FiltersGatewayInterface {
-    private client: ApolloClient<any>;
+    private client: ApolloClient;
 
-    constructor(client: ApolloClient<any>) {
+    constructor(client: ApolloClient) {
         this.client = client;
     }
 

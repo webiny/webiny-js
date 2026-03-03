@@ -8,7 +8,7 @@
   "description": "Security plugins for Cognito",
   "author": "Webiny Ltd.",
   "dependencies": {
-    "@apollo/react-hooks": "^3.1.5",
+    "@apollo/react-hooks": "^4.0.0",
     "@aws-amplify/auth": "^5.6.18",
     "@webiny/admin-ui": "*",
     "@webiny/api-core": "*",
@@ -29,12 +29,12 @@
     "jsonwebtoken": "^9.0.3",
     "lodash": "^4.17.23",
     "mobx": "^6.15.0",
-    "mobx-react-lite": "^3.4.3",
-    "react": "18.2.0",
+    "mobx-react-lite": "^4.1.1",
+    "react": "^19.2.4",
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@types/react": "18.2.79",
+    "@types/react": "19.2.14",
     "@webiny/build-tools": "*",
     "@webiny/project-utils": "*",
     "@webiny/wcp": "*",
