@@ -126,6 +126,8 @@ export const definitions = [
     CoreBeforeWatch.def,
 
     // Pulumi.
+    AdminPulumi.def,
+    ApiPulumi.def,
     CorePulumi.def,
     PulumiResourceNamePrefix.def,
     ProductionEnvironments.def,
