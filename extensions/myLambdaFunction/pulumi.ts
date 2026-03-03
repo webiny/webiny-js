@@ -5,6 +5,8 @@ import path from "path";
 
 class MyApiPulumiHandlerImpl implements ApiPulumi.Interface {
     execute(app: any) {
+        // TODO: having something like app.addLambdaFunction() would be nice,
+        // TODO: but for now, we can just use `app.addResource()` directly.
         app.addResource(aws.lambda.Function, {
             name: "myLambdaFunction",
             config: {
@@ -19,14 +21,6 @@ class MyApiPulumiHandlerImpl implements ApiPulumi.Interface {
                         path.join(app.paths.workspace, "myLambdaFunction/build")
                     )
                 }),
-                environment: {
-                    // variables: getCommonLambdaEnvVariables().apply(value => ({
-                    //     ...value,
-                    //     // ...params.env,
-                    //     AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
-                    // }))
-                },
-                // vpcConfig: app.getModule(VpcConfig).functionVpcConfig,
                 loggingConfig: {
                     logFormat: "JSON"
                 }
