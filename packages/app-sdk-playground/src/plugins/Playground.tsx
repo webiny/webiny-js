@@ -17,7 +17,7 @@ import {
     Toolbar,
     ToolbarActions
 } from "./Playground.styles.js";
-import { defaultSdkCode } from "./default-code.js";
+import { defaultSdkCode } from "./defaultCode.js";
 import { SDK_GLOBAL_DECLARATION } from "./constants.js";
 
 interface ConsoleMessage {

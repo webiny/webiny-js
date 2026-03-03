@@ -1,16 +1,13 @@
 import React, { memo } from "react";
-import { plugins } from "@webiny/plugins";
 import { useRouter, AdminConfig, AdminLayout } from "@webiny/app-admin";
 import { ReactComponent as CodeIcon } from "@webiny/icons/code.svg";
 import Playground from "./plugins/Playground.js";
-import sdkPlaygroundPlugins from "./plugins/index.js";
 import { Routes } from "./routes.js";
 
 const { Route, Menu } = AdminConfig;
 
 const SdkPlaygroundExtension = () => {
     const router = useRouter();
-    plugins.register(sdkPlaygroundPlugins);
 
     return (
         <AdminConfig>
