@@ -11,7 +11,12 @@ export default (params: GetFieldPositionParams): FieldLayoutPosition | null => {
     for (let i = 0; i < layout.length; i++) {
         const row = layout[i];
         for (let j = 0; j < row.length; j++) {
-            if (row[j] === id) {
+            const cell = row[j];
+            // Skip layout descriptors (objects) — only match string field IDs
+            if (typeof cell !== "string") {
+                continue;
+            }
+            if (cell === id) {
                 return { row: i, index: j };
             }
         }

@@ -10,6 +10,7 @@ export interface MultiValueItemContainerProps {
     value: GenericRecord<string>;
     isFirst: boolean;
     isLast: boolean;
+    disabled?: boolean;
     onMoveUp: () => void;
     onMoveDown: () => void;
     onDelete: () => void;
@@ -22,7 +23,7 @@ export interface MultiValueItemContainerProps {
 export const MultiValueItemContainer = makeDecoratable(
     "MultiValueItemContainer",
     ({ children, ...props }: MultiValueItemContainerProps) => {
-        const { onMoveUp, onMoveDown, onDelete, isLast, isFirst } = props;
+        const { onMoveUp, onMoveDown, onDelete, isLast, isFirst, disabled = false } = props;
 
         const actions = (
             <>
@@ -64,7 +65,7 @@ export const MultiValueItemContainer = makeDecoratable(
             >
                 <Accordion.Item
                     title={props.title}
-                    actions={actions}
+                    actions={disabled ? null : actions}
                     defaultOpen={props.isExpanded}
                 >
                     {children}

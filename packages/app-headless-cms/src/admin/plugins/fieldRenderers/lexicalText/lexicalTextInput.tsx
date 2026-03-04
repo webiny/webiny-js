@@ -7,6 +7,7 @@ import { FormComponentDescription } from "@webiny/admin-ui";
 import type { CmsModelFieldRendererPlugin, CmsModelField } from "~/types.js";
 import { useForm } from "@webiny/form";
 import { LexicalCmsEditor } from "~/admin/components/LexicalCmsEditor/LexicalCmsEditor.js";
+import { useEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
@@ -29,26 +30,40 @@ const plugin: CmsModelFieldRendererPlugin = {
                 !get(field, "predefinedValues.enabled")
             ].every(Boolean);
         },
-        render({ field, getBind }) {
+        render({ getBind }) {
+            const { field } = useModelField();
+            const rules = useEffectiveRules(field);
             const form = useForm();
 
             const Bind = getBind();
+
+            const disabled = !rules.canEdit || rules.disabled;
 
             return (
                 <Bind>
                     {bind => {
                         return (
                             <Bind.ValidationContainer>
-                                <FormComponentLabel text={field.label} hint={field.help} />
-                                <FormComponentDescription text={field.description} />
+                                <FormComponentLabel
+                                    text={field.label}
+                                    hint={field.help}
+                                    disabled={disabled}
+                                />
+                                <FormComponentDescription
+                                    text={field.description}
+                                    disabled={disabled}
+                                />
                                 <LexicalCmsEditor
+                                    disabled={disabled}
                                     value={bind.value}
                                     onChange={bind.onChange}
                                     key={getKey(form.data.id, field)}
                                     placeholder={field.placeholder}
                                     data-testid={`fr.input.lexical.${field.label}`}
                                 />
-                                {field.note ? <FormComponentNote text={field.note} /> : null}
+                                {field.note ? (
+                                    <FormComponentNote text={field.note} disabled={disabled} />
+                                ) : null}
                             </Bind.ValidationContainer>
                         );
                     }}

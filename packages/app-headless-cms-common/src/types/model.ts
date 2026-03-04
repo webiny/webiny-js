@@ -18,11 +18,21 @@ export interface CmsModelFieldSettings<T = unknown> {
     defaultSetValue?: string;
     type?: string;
     fields?: CmsModelField<T>[];
-    layout?: string[][];
+    layout?: CmsEditorFieldsLayout;
     models?: Pick<CmsModel, "modelId">[];
     templates?: CmsDynamicZoneTemplate[];
     imagesOnly?: boolean;
     [key: string]: any;
+}
+
+export type FieldRuleAction = "hide" | "disable" | string;
+
+export interface FieldRule {
+    type: "accessControl" | "condition";
+    target: string;
+    operator: string;
+    value: string | number | boolean | null;
+    action: FieldRuleAction;
 }
 
 export type CmsModelField<T = unknown> = T & {
@@ -51,10 +61,73 @@ export type CmsModelField<T = unknown> = T & {
          */
         | CmsModelFieldRendererPlugin["renderer"]["render"];
     tags?: string[];
+    rules?: FieldRule[];
 };
 
 export type CmsEditorFieldId = string;
-export type CmsEditorFieldsLayout = CmsEditorFieldId[][];
+
+export interface CmsBaseLayoutDescriptor {
+    id: string;
+    type: string;
+    rules?: FieldRule[];
+}
+
+export interface CmsSeparatorLayoutDescriptor extends CmsBaseLayoutDescriptor {
+    type: "separator";
+    label: string;
+    description?: string;
+}
+
+export interface CmsAlertLayoutDescriptor extends CmsBaseLayoutDescriptor {
+    type: "alert";
+    label: string;
+    alertType: "info" | "success" | "warning" | "danger";
+}
+
+export interface CmsTabLayoutTab {
+    id: string;
+    label: string;
+    icon?: string;
+    layout: CmsEditorFieldsLayout;
+    rules?: FieldRule[];
+}
+
+export interface CmsTabLayoutDescriptor extends CmsBaseLayoutDescriptor {
+    type: "tabs";
+    label: string;
+    description?: string | null;
+    help?: string | null;
+    tabs: CmsTabLayoutTab[];
+}
+
+export type CmsLayoutDescriptor =
+    | CmsSeparatorLayoutDescriptor
+    | CmsAlertLayoutDescriptor
+    | CmsTabLayoutDescriptor
+    | CmsBaseLayoutDescriptor;
+
+export type CmsEditorLayoutCell = CmsEditorFieldId | CmsLayoutDescriptor;
+export type CmsEditorFieldsLayout = CmsEditorLayoutCell[][];
+
+/**
+ * Distinguish layout descriptors from field IDs (strings) and CmsModelField objects.
+ *
+ * In raw layout data (`CmsEditorFieldsLayout`), cells are either strings (field IDs)
+ * or layout descriptor objects — the `typeof` check handles that.
+ *
+ * In resolved layout data (after `getFieldsInLayout`), cells are either `CmsModelField`
+ * or layout descriptor objects — both have `{ id, type }`, but only `CmsModelField`
+ * has `fieldId`, so we use its absence as the discriminator.
+ */
+export function isLayoutDescriptor(cell: unknown): cell is CmsLayoutDescriptor {
+    return (
+        typeof cell === "object" &&
+        cell !== null &&
+        "type" in cell &&
+        typeof (cell as any).type === "string" &&
+        !("fieldId" in cell)
+    );
+}
 
 /**
  * @category GraphQL

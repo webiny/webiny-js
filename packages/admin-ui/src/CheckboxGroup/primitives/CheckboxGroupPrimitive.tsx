@@ -17,6 +17,10 @@ interface CheckboxGroupPrimitiveProps<TValue = any> {
      * Array of selected checkbox values.
      */
     value?: TValue[];
+    /**
+     * Is checkbox group disabled?
+     */
+    disabled?: boolean;
 }
 
 interface CheckboxGroupPrimitiveVm {
@@ -25,6 +29,7 @@ interface CheckboxGroupPrimitiveVm {
 
 type CheckboxGroupPrimitiveRendererProps<TValue = any> = CheckboxGroupPrimitiveVm & {
     changeChecked: (value: TValue) => void;
+    disabled?: boolean;
 };
 
 /**
@@ -32,7 +37,8 @@ type CheckboxGroupPrimitiveRendererProps<TValue = any> = CheckboxGroupPrimitiveV
  */
 const DecoratableCheckboxGroupPrimitiveRenderer = ({
     items,
-    changeChecked
+    changeChecked,
+    disabled
 }: CheckboxGroupPrimitiveRendererProps) => {
     return (
         <div className={cn("grid gap-sm-extra py-xs-plus")}>
@@ -40,6 +46,7 @@ const DecoratableCheckboxGroupPrimitiveRenderer = ({
                 <CheckboxPrimitiveRenderer
                     key={item.id}
                     {...item}
+                    disabled={disabled ?? item.disabled}
                     changeChecked={() => changeChecked(item.value)}
                 />
             ))}
@@ -56,7 +63,13 @@ const CheckboxGroupPrimitiveRenderer = makeDecoratable(
  */
 const DecoratableCheckboxGroupPrimitive = (props: CheckboxGroupPrimitiveProps) => {
     const { vm, changeChecked } = useCheckboxGroup(props);
-    return <CheckboxGroupPrimitiveRenderer {...vm} changeChecked={changeChecked} />;
+    return (
+        <CheckboxGroupPrimitiveRenderer
+            {...vm}
+            changeChecked={changeChecked}
+            disabled={props.disabled}
+        />
+    );
 };
 const CheckboxGroupPrimitive = makeDecoratable(
     "CheckboxGroupPrimitive",

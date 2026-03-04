@@ -2,42 +2,6 @@ import zod from "zod";
 import upperFirst from "lodash/upperFirst.js";
 import camelCase from "lodash/camelCase.js";
 
-const fieldSystemFields: string[] = [
-    "id",
-    "entryId",
-    "createdOn",
-    "modifiedOn",
-    "publishedOn",
-    "savedOn",
-    "deletedOn",
-    "restoredOn",
-    "firstPublishedOn",
-    "lastPublishedOn",
-    "createdBy",
-    "modifiedBy",
-    "savedBy",
-    "deletedBy",
-    "restoredBy",
-    "firstPublishedBy",
-    "lastPublishedBy",
-    "revisionCreatedOn",
-    "revisionModifiedOn",
-    "revisionSavedOn",
-    "revisionDeletedOn",
-    "revisionRestoredOn",
-    "revisionFirstPublishedOn",
-    "revisionLastPublishedOn",
-    "revisionCreatedBy",
-    "revisionModifiedBy",
-    "revisionSavedBy",
-    "revisionDeletedBy",
-    "revisionRestoredBy",
-    "revisionFirstPublishedBy",
-    "revisionLastPublishedBy",
-    "meta",
-    "wbyAco_location"
-];
-
 const str = zod.string().trim();
 const shortString = str.max(255);
 const longString = str;
@@ -77,18 +41,10 @@ const fieldSchema = zod.object({
     fieldId: shortString
         .max(100)
         .regex(/^!?[a-zA-Z]/, {
-            message: `Provided value is not valid - must not start with a number.`
+            message: `Must not start with a number.`
         })
         .regex(/^(^[a-zA-Z0-9]+)$/, {
-            message: `Provided value is not valid - must be alphanumeric string.`
-        })
-        .superRefine((value, ctx) => {
-            if (fieldSystemFields.includes(value)) {
-                return ctx.addIssue({
-                    code: zod.ZodIssueCode.custom,
-                    message: `Field ID "${value}" is a reserved keyword, and is not allowed.`
-                });
-            }
+            message: `Must be alphanumeric string.`
         }),
     label: shortString,
     help: optionalNullishLongString,
@@ -183,7 +139,21 @@ const fieldSchema = zod.object({
         .transform(value => {
             return value || {};
         })
-        .default({})
+        .default({}),
+    rules: zod
+        .array(
+            zod.object({
+                type: zod.enum(["accessControl", "entryValue"]),
+                target: shortString,
+                operator: shortString,
+                value: zod.union([zod.string(), zod.number(), zod.boolean(), zod.null()]),
+                action: shortString
+            })
+        )
+        .optional()
+        .nullish()
+        .default([])
+        .transform(value => value || [])
 });
 
 const apiNameRefinementValidation = (value: string): boolean => {
@@ -234,7 +204,7 @@ export const createModelCreateValidation = () => {
         group: shortString,
         icon,
         fields: zod.array(fieldSchema).default([]),
-        layout: zod.array(zod.array(shortString)).default([]),
+        layout: zod.array(zod.array(zod.any())).default([]),
         tags: zod.array(shortString).optional(),
         titleFieldId: optionalShortString.nullish(),
         descriptionFieldId: optionalShortString.nullish(),
@@ -262,7 +232,7 @@ export const createModelUpdateValidation = () => {
         group: optionalShortString,
         icon,
         fields: zod.array(fieldSchema),
-        layout: zod.array(zod.array(shortString)),
+        layout: zod.array(zod.array(zod.any())),
         titleFieldId: optionalShortString.nullish(),
         descriptionFieldId: optionalShortString.nullish(),
         imageFieldId: optionalShortString.nullish(),

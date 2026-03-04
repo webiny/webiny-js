@@ -3,6 +3,7 @@ import type {
     IContentSdk,
     IDataProvider,
     ListPagesOptions,
+    ListPagesResult,
     PublicPage
 } from "~/types.js";
 import { documentStoreManager } from "~/DocumentStoreManager.js";
@@ -22,7 +23,7 @@ export class LiveSdk implements IContentSdk {
         return page;
     }
 
-    listPages(options?: ListPagesOptions): Promise<PublicPage[]> {
+    listPages(options?: ListPagesOptions): Promise<ListPagesResult> {
         return this.dataProvider.listPages(options);
     }
 }

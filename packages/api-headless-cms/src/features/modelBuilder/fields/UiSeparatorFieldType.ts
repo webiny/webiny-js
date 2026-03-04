@@ -1,12 +1,34 @@
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
-import { IUiFieldBuilder, UiFieldBuilder } from "./UiFieldType.js";
+import { type LayoutFieldBuildResult } from "./BaseFieldBuilder.js";
+import { LayoutFieldBuilder } from "./LayoutFieldBuilder.js";
+
+export interface IUiSeparatorFieldBuilder extends LayoutFieldBuilder<"uiSeparator"> {}
+
+class SeparatorFieldBuilder
+    extends LayoutFieldBuilder<"uiSeparator">
+    implements IUiSeparatorFieldBuilder
+{
+    public constructor() {
+        super("uiSeparator");
+    }
+
+    public override build(): LayoutFieldBuildResult {
+        return {
+            type: "layout",
+            layoutCell: {
+                type: "separator",
+                label: this.config.label,
+                description: this.config.description
+            }
+        };
+    }
+}
 
 class UiSeparatorFieldTypeFactory implements IFieldTypeFactory {
-    public readonly type = "ui:separator";
+    public readonly type = "uiSeparator";
 
-    public create(): IUiFieldBuilder {
-        const builder = new UiFieldBuilder("separator");
-        return builder.renderer("uiSeparator").label("Separator");
+    public create(): IUiSeparatorFieldBuilder {
+        return new SeparatorFieldBuilder();
     }
 }
 
@@ -18,6 +40,6 @@ export const UiSeparatorFieldType = FieldType.createImplementation({
 // Module augmentation for TypeScript autocomplete
 declare module "../abstractions.js" {
     interface IFieldBuilderRegistry {
-        uiSeparator(): IUiFieldBuilder;
+        uiSeparator(): IUiSeparatorFieldBuilder;
     }
 }

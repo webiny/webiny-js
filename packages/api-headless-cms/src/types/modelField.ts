@@ -1,6 +1,16 @@
-import type { CmsModel } from "./model.js";
+import type { CmsModel, CmsModelLayout } from "./model.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { CmsDynamicZoneTemplate } from "~/types/fields/dynamicZoneField.js";
+
+export type FieldRuleAction = "hide" | "disable" | string;
+
+export interface FieldRule {
+    type: "accessControl" | "entryValue";
+    target: string;
+    operator: string;
+    value: string | number | boolean | null;
+    action: FieldRuleAction;
+}
 
 export type CmsModelFieldType =
     | "boolean"
@@ -113,6 +123,10 @@ export interface CmsModelField {
      * @default {}
      */
     settings?: CmsModelFieldSettings;
+    /**
+     * Rules that control field visibility and editability (access control and entry value conditions).
+     */
+    rules?: FieldRule[];
 }
 
 /**
@@ -188,6 +202,10 @@ export interface CmsModelFieldInput {
     settings?: {
         [key: string]: any;
     };
+    /**
+     * Rules that control field visibility and editability (access control and entry value conditions).
+     */
+    rules?: FieldRule[];
 }
 
 /**
@@ -231,7 +249,7 @@ export interface CmsModelUpdateInput {
      * ]
      * ```
      */
-    layout: string[][];
+    layout: CmsModelLayout;
     /**
      * Tags for the content model.
      */
@@ -284,7 +302,7 @@ export interface CmsModelFieldSettings {
     /**
      * Object field has child fields - so it needs to have a layout.
      */
-    layout?: string[][];
+    layout?: CmsModelLayout;
     /**
      * Ref field.
      */

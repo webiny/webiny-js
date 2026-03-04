@@ -6,7 +6,9 @@ export * from "./hooks/index.js";
 export * from "./dialogs/index.js";
 export * from "./sorting.js";
 export type { TableRow, FolderTableRow, RecordTableRow } from "./table.types.js";
-export type { ListMeta } from "./types.js";
+export type { ListMeta, FolderLevelPermissionsTarget } from "./types.js";
+export { LIST_FOLDER_LEVEL_PERMISSIONS_TARGETS } from "./dialogs/DialogSetPermissions/graphql.js";
+export { UsersTeamsMultiAutocomplete } from "./dialogs/DialogSetPermissions/UsersTeamsMultiAutocomplete.js";
 
 // Export domain
 export * from "./domain/folder/FolderDto.js";

@@ -13,7 +13,13 @@ import type {
     CmsModelFieldValidatorsFactory,
     CmsModelFieldValidatorsGroup
 } from "./validation.js";
-import type { CmsModel, CmsModelField } from "./model.js";
+import type {
+    CmsBaseLayoutDescriptor,
+    CmsEditorFieldsLayout,
+    CmsLayoutDescriptor,
+    CmsModel,
+    CmsModelField
+} from "./model.js";
 import type { CmsIdentity } from "~/types/shared.js";
 import type { SourceType } from "dnd-core";
 import type { IconPickerIconDto } from "@webiny/admin-ui";
@@ -26,6 +32,7 @@ export type DragObjectWithType = {
 
 export type * from "./validation.js";
 export type * from "./model.js";
+export { isLayoutDescriptor } from "./model.js";
 export type * from "./shared.js";
 
 interface QueryFieldParams {
@@ -46,10 +53,12 @@ interface Location {
 export interface DragSource extends DragObjectWithType {
     parent?: string;
     pos?: Partial<Position>;
-    type: "row" | "field" | "newField";
+    type: "row" | "field" | "newField" | "newLayoutField" | "layoutField";
     fieldType?: string;
+    layoutFieldType?: string;
     field?: CmsModelField | null;
     fields?: CmsModelField[];
+    descriptor?: CmsLayoutDescriptor;
 }
 
 /**
@@ -234,6 +243,59 @@ export interface CmsModelFieldTypePlugin extends Plugin {
     };
 }
 
+export interface CmsLayoutFieldTypePlugin extends Plugin {
+    type: "cms-editor-layout-field-type";
+    field: {
+        type: CmsLayoutDescriptor["type"];
+        label: string;
+        description: string;
+        icon: React.ReactElement;
+        createDescriptor(): Omit<CmsLayoutDescriptor, "id">;
+        canEditSettings?: boolean;
+        renderSettings?(): React.ReactNode;
+        /**
+         * Collect all model fields embedded inside a layout descriptor's nested layout.
+         * Used during drag-and-drop to move embedded fields along with the descriptor
+         * across parent boundaries. Return `[]` or omit for descriptors with no nested fields.
+         */
+        collectFields?(params: {
+            descriptor: CmsLayoutDescriptor;
+            getField: (id: string) => CmsModelField | undefined;
+        }): CmsModelField[];
+        /**
+         * Return a label prefix for each field ID nested inside this layout descriptor.
+         * Used by `buildFieldOptions` to include layout hierarchy in field labels.
+         *
+         * For example, a tabs descriptor with label "My Tabs" containing a tab "SEO"
+         * with field "metaTitle" would return: `{ "metaTitle": "My Tabs › SEO" }`.
+         *
+         * Omit or return `{}` for descriptors that don't group fields.
+         */
+        getFieldLabelPrefixes?(params: { descriptor: CmsLayoutDescriptor }): Record<string, string>;
+        /**
+         * Controls how this layout field looks on the model editor canvas.
+         * Each plugin fully owns its visual representation.
+         */
+        render(params: {
+            descriptor: CmsLayoutDescriptor;
+            onUpdate: (d: CmsLayoutDescriptor) => void;
+            onDelete: () => void;
+        }): React.ReactElement;
+    };
+}
+
+export interface CmsLayoutDescriptorRendererPlugin extends Plugin {
+    type: "cms-layout-descriptor-renderer";
+    descriptorType: string;
+    render(props: {
+        descriptor: CmsBaseLayoutDescriptor;
+        Bind: BindComponent;
+        fields: CmsModelField[];
+        contentModel: CmsModel;
+        gridClassName?: string;
+    }): React.ReactElement | null;
+}
+
 export interface CmsModelFieldRendererSettingsProps {
     field: CmsModelField;
 }
@@ -346,7 +408,7 @@ export interface CmsDynamicZoneTemplate {
     description: string;
     icon: string;
     fields: CmsModelField[];
-    layout: string[][];
+    layout: CmsEditorFieldsLayout;
     validation: CmsModelFieldValidator[];
     tags?: string[];
 }
