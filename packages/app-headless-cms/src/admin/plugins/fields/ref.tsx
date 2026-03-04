@@ -29,7 +29,7 @@ const RefFieldSettings = () => {
         if (!data?.listContentModels?.data) {
             return [];
         }
-        const models = withoutBeingDeletedModels(data.listContentModels.data);
+        const models = withoutBeingDeletedModels(data.listContentModels.data as CmsModel[]);
         return (
             models
                 /**

@@ -33,7 +33,11 @@ const executeSearch = async (params: ExecuteSearchParams): Promise<void> => {
             },
             context: requestContext
         });
-        const error = result.data.content?.error;
+        if (!result.data?.content) {
+            setError("No data received.");
+            return;
+        }
+        const error = result.data.content.error;
         if (error) {
             setError(error.message);
             return;
