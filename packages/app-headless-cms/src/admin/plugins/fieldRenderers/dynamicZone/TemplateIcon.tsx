@@ -17,6 +17,7 @@ export const TemplateIcon = ({ icon, size, style }: TemplateIconProps) => {
             className={"text-neutral-xstrong"}
             icon={faIcon}
             size={size}
+            // @ts-expect-error
             style={style}
         />
     ) : null;

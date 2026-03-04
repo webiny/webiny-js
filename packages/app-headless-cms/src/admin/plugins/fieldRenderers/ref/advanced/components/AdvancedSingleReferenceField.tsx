@@ -45,7 +45,7 @@ export const AdvancedSingleReferenceField = (props: AdvancedSingleReferenceField
             showSnackbar(data.listContentModels.error.message);
             return;
         }
-        setLoadedModels(data.listContentModels.data);
+        setLoadedModels(data.listContentModels.data as CmsModel[]);
     }, [data]);
 
     const onNewRecord = useCallback(

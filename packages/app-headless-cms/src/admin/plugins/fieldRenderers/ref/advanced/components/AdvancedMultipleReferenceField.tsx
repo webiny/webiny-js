@@ -53,7 +53,7 @@ export const AdvancedMultipleReferenceField = (props: AdvancedMultipleReferenceF
             showSnackbar(data.listContentModels.error.message);
             return;
         }
-        setLoadedModels(withoutBeingDeletedModels(data.listContentModels.data));
+        setLoadedModels(withoutBeingDeletedModels(data.listContentModels.data as CmsModel[]));
     }, [data]);
 
     const onNewRecord = useCallback(

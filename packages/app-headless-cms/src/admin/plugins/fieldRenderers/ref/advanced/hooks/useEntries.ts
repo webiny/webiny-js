@@ -86,8 +86,13 @@ export const useEntries = (params: Params) => {
                         after
                     }
                 });
-
-                if (result.data.content.error) {
+                if (!result.data) {
+                    setEntries([]);
+                    setError(
+                        `No data received while fetching entries for model ${model.modelId}. Please check your network requests tab.`
+                    );
+                    return;
+                } else if (result.data.content.error) {
                     setEntries([]);
                     setError(result.data.content.error.message);
                     return;

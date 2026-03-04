@@ -80,7 +80,7 @@ export const LIST_MENU_CONTENT_GROUPS_MODELS = gql`
  */
 export interface ListCmsModelsQueryResponse {
     listContentModels: {
-        data: CmsModel[];
+        data?: CmsModel[];
         error?: CmsErrorResponse;
     };
 }
