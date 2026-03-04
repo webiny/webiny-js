@@ -50,7 +50,7 @@ export class SchedulerGetGraphQLGateway implements ISchedulerGetGateway {
     }
 
     public async execute(params: ISchedulerGetExecuteParams) {
-        const { data: response, errors } = await this.client.query<
+        const { data: response } = await this.client.query<
             SchedulerGetGraphQLQueryResponse,
             SchedulerGetGraphQLQueryVariables
         >({
@@ -61,11 +61,8 @@ export class SchedulerGetGraphQLGateway implements ISchedulerGetGateway {
             fetchPolicy: "network-only"
         });
 
-        const result = response.getCmsSchedule;
-        if (!result || errors?.length) {
-            console.error({
-                errors
-            });
+        const result = response?.getCmsSchedule;
+        if (!result) {
             throw new Error("Network error while getting schedule entry.");
         } else if (result.error) {
             console.error({

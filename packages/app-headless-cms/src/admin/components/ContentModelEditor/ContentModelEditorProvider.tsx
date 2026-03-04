@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useReducer } from "react";
-import get from "lodash/get.js";
 import pick from "lodash/pick.js";
 import type { ApolloClient } from "@apollo/client";
-import { useSnackbar, useRouter } from "@webiny/app-admin";
+import { useRouter, useSnackbar } from "@webiny/app-admin";
 import type {
     GetCmsModelQueryResponse,
     GetCmsModelQueryVariables,
@@ -209,7 +208,7 @@ export const ContentModelEditorProvider = ({
             }
         });
 
-        const { data, error } = get(response, "data.getContentModel");
+        const { data, error } = response.data?.getContentModel || {};
         if (error) {
             throw new Error(error.message);
         }

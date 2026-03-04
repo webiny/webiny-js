@@ -74,6 +74,9 @@ export const createApiNameValidator = (params: Params) => {
             query: SCHEMA_TYPES,
             fetchPolicy: "network-only"
         });
+        if (!data) {
+            throw new Error("Could not fetch GraphQL schema types.");
+        }
 
         const types = data.__schema.types.map(t => t.name);
 

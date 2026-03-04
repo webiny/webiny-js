@@ -56,7 +56,7 @@ export class SchedulerUnpublishGraphQLGateway implements ISchedulerUnpublishGate
     }
 
     public async execute(params: ISchedulerUnpublishExecuteParams) {
-        const { data: response, errors } = await this.client.mutate<
+        const { data: response } = await this.client.mutate<
             SchedulerUnpublishGraphQLMutationResponse,
             SchedulerUnpublishGraphQLMutationVariables
         >({
@@ -71,10 +71,7 @@ export class SchedulerUnpublishGraphQLGateway implements ISchedulerUnpublishGate
         });
 
         const result = response?.createCmsSchedule;
-        if (!result || errors?.length) {
-            console.error({
-                errors
-            });
+        if (!result) {
             throw new Error("Network error while creating a schedule.");
         }
 

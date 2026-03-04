@@ -79,7 +79,7 @@ export class SchedulerListGraphQLGateway implements ISchedulerListGateway {
     public async execute(
         params: ISchedulerListExecuteParams
     ): Promise<ISchedulerListGatewayResponse> {
-        const { data: response, errors } = await this.client.query<
+        const { data: response } = await this.client.query<
             SchedulerListGraphQLQueryResponse,
             SchedulerListGraphQLQueryVariables
         >({
@@ -90,11 +90,8 @@ export class SchedulerListGraphQLGateway implements ISchedulerListGateway {
             fetchPolicy: "network-only"
         });
 
-        const result = response.listCmsSchedules;
-        if (!result || errors?.length) {
-            console.error({
-                errors
-            });
+        const result = response?.listCmsSchedules;
+        if (!result) {
             throw new Error("Network error while listing scheduled entries.");
         }
 

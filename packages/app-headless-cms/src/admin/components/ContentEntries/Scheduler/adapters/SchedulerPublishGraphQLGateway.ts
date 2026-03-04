@@ -59,7 +59,7 @@ export class SchedulerPublishGraphQLGateway implements ISchedulerPublishGateway 
     public async execute(
         params: ISchedulerPublishExecuteParams
     ): Promise<ISchedulerPublishGatewayResponse> {
-        const { data: response, errors } = await this.client.mutate<
+        const { data: response } = await this.client.mutate<
             SchedulerPublishGraphQLMutationResponse,
             SchedulerPublishGraphQLMutationVariables
         >({
@@ -74,10 +74,7 @@ export class SchedulerPublishGraphQLGateway implements ISchedulerPublishGateway 
         });
 
         const result = response?.createCmsSchedule;
-        if (!result || errors?.length) {
-            console.error({
-                errors
-            });
+        if (!result) {
             throw new Error("Network error while creating a schedule.");
         }
 

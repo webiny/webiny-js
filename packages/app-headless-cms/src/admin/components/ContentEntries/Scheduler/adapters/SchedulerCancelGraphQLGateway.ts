@@ -42,7 +42,7 @@ export class SchedulerCancelGraphQLGateway implements ISchedulerCancelGateway {
     }
 
     public async execute(params: IScheduleCancelExecuteParams) {
-        const { data: response, errors } = await this.client.mutate<
+        const { data: response } = await this.client.mutate<
             SchedulerCancelGraphQLMutationResponse,
             SchedulerCancelGraphQLMutationVariables
         >({
@@ -55,10 +55,7 @@ export class SchedulerCancelGraphQLGateway implements ISchedulerCancelGateway {
         });
 
         const result = response?.cancelCmsSchedule;
-        if (!result || errors?.length) {
-            console.error({
-                errors
-            });
+        if (!result) {
             throw new Error("Network error while canceling a schedule.");
         }
 
