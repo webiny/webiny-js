@@ -102,8 +102,7 @@ describe("SDK GraphQL - CMS Operations", () => {
             // List entries with sort using SDK.
             const listResult = await sdk.cms.listEntries<ProductValues>({
                 modelId: "product",
-                fields: ["id", "createdOn", "values.*"],
-                depth: 1,
+                fields: ["id", "createdOn", "values.name"],
                 sort: {
                     createdOn: "desc"
                 }
