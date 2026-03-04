@@ -35,7 +35,7 @@
     "eslint": "^10.0.2",
     "fast-glob": "^3.3.3",
     "find-up": "^5.0.0",
-    "fs-extra": "^11.3.3",
+    "fs-extra": "^11.3.4",
     "get-yarn-workspaces": "1.0.2",
     "lodash": "^4.17.23",
     "postcss-loader": "^8.2.1",

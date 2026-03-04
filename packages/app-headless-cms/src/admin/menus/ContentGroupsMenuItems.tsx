@@ -14,17 +14,27 @@ export const ContentGroupsMenuItems = () => {
     if (!groups || groups.length === 0) {
         return null;
     }
+    
+    console.log({
+        groups,
+    })
 
     return (
         <>
-            {groups.map(group => (
-                <HasContentEntryPermissions key={group.id} group={group}>
-                    <>
-                        <GroupMenu group={group} />
-                        <GroupContentModels group={group} />
-                    </>
-                </HasContentEntryPermissions>
-            ))}
+            {groups.map(group => {
+                console.log({
+                    groupId: group.id,
+                    groups: groups.map(g => g.id)
+                });
+                return (
+                    <HasContentEntryPermissions key={group.id} group={group}>
+                        <>
+                            <GroupMenu group={group} />
+                            <GroupContentModels group={group} />
+                        </>
+                    </HasContentEntryPermissions>
+                );
+            })}
         </>
     );
 };

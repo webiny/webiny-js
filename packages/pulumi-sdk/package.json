@@ -20,7 +20,7 @@
     "decompress": "^4.2.1",
     "execa": "^5.1.1",
     "find-up": "^5.0.0",
-    "fs-extra": "^11.3.3",
+    "fs-extra": "^11.3.4",
     "lodash": "^4.17.23",
     "read-json-sync": "2.0.1",
     "semver": "^7.7.4",

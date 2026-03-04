@@ -107,6 +107,9 @@ const getTailwindBasePath = projectRootFolderPath => {
 const getEnvVars = () => {
     const raw = Object.keys(process.env)
         .filter(key => {
+			if (key === "DEBUG") {
+				return true;
+			}
             if (new RegExp(/^REACT_APP_/i).test(key)) {
                 return true;
             }
