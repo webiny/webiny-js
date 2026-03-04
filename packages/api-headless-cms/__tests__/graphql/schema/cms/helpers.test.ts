@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { transformSortToArray } from "~/graphql/schema/cms/helpers";
+import { transformWhereToNested } from "~/graphql/schema/cms/helpers";
 
 /**
  * Test the sort transformation helper that converts object format to array format.
@@ -60,6 +61,60 @@ describe("CMS Schema Helpers", () => {
             const result = transformSortToArray({});
 
             expect(result).toEqual([]);
+        });
+    });
+
+    describe("transformWhereToNested", () => {
+        it("should return undefined for undefined input", () => {
+            expect(transformWhereToNested(undefined)).toBeUndefined();
+        });
+
+        it("should pass through top-level keys unchanged", () => {
+            const input = { id: "abc#0001", entryId: "abc" };
+            expect(transformWhereToNested(input)).toEqual({ id: "abc#0001", entryId: "abc" });
+        });
+
+        it("should expand dot-notation key into nested object", () => {
+            const input = { "values.name": "Keyboard" };
+            expect(transformWhereToNested(input)).toEqual({ values: { name: "Keyboard" } });
+        });
+
+        it("should merge multiple dot-notation keys under the same parent", () => {
+            const input = { "values.name": "Keyboard", "values.price": 150 };
+            expect(transformWhereToNested(input)).toEqual({
+                values: { name: "Keyboard", price: 150 }
+            });
+        });
+
+        it("should handle a mix of top-level and dot-notation keys", () => {
+            const input = { id: "abc#0001", "values.name": "Keyboard" };
+            expect(transformWhereToNested(input)).toEqual({
+                id: "abc#0001",
+                values: { name: "Keyboard" }
+            });
+        });
+
+        it("should handle multi-level dot-notation keys", () => {
+            const input = { "values.author.name": "John" };
+            expect(transformWhereToNested(input)).toEqual({
+                values: { author: { name: "John" } }
+            });
+        });
+
+        it("should handle filter operators with dot-notation (e.g. values.name_contains)", () => {
+            const input = { "values.name_contains": "board" };
+            expect(transformWhereToNested(input)).toEqual({
+                values: { name_contains: "board" }
+            });
+        });
+
+        it("should recursively transform AND/OR arrays", () => {
+            const input = {
+                AND: [{ "values.name": "Keyboard" }, { "values.price": 150 }]
+            };
+            expect(transformWhereToNested(input)).toEqual({
+                AND: [{ values: { name: "Keyboard" } }, { values: { price: 150 } }]
+            });
         });
     });
 });

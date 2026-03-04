@@ -5,7 +5,8 @@ import {
     getModel,
     getErrorMessage,
     buildFieldsSelection,
-    transformSortToArray
+    transformSortToArray,
+    transformWhereToNested
 } from "./helpers.js";
 
 export interface ListEntriesArgs {
@@ -35,6 +36,10 @@ export const createListEntriesResolver = () => {
             // Transform sort to array format expected by the underlying GraphQL schema.
             // Handles both object format {createdOn: "desc"} and array format ["createdOn_DESC"].
             const transformedSort = transformSortToArray(sort);
+
+            // Transform dot-notation where keys (e.g. "values.name") into nested objects
+            // (e.g. { values: { name: ... } }) so they match the typed ListWhereInput.
+            const transformedWhere = transformWhereToNested(where);
 
             const query = /* GraphQL */ `
                 query List${model.pluralApiName}(
@@ -68,7 +73,7 @@ export const createListEntriesResolver = () => {
 
             const result = (await executeSchema({
                 query,
-                variables: { where, sort: transformedSort, limit, after }
+                variables: { where: transformedWhere, sort: transformedSort, limit, after }
             })) as ExecutionResult;
 
             const operationName = `list${model.pluralApiName}`;

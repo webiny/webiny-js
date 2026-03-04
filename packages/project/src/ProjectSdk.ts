@@ -8,6 +8,7 @@ import {
     GetApp,
     GetAppOutput,
     GetAppStackOutput,
+    GetFeatureFlags,
     GetProductionEnvironments,
     GetProject,
     GetProjectIdService,
@@ -97,6 +98,10 @@ export class ProjectSdk {
 
     getProjectInfo() {
         return this.container.resolve(GetProjectInfo).execute();
+    }
+
+    getFeatureFlags() {
+        return this.container.resolve(GetFeatureFlags).execute();
     }
 
     // App-related methods.

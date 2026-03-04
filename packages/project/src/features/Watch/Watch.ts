@@ -239,6 +239,7 @@ export class DefaultWatch implements Watch.Interface {
         // Ignore promise, we don't need to wait for this to finish.
         replaceLambdaFunctions({
             app,
+            deploymentId,
             dependencies: {
                 uiService: ui,
                 loggerService: logger,

@@ -24,7 +24,6 @@ import { ApiScheduler } from "~/pulumi/apps/api/ApiScheduler.js";
 import { getProjectSdk } from "@webiny/project";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
-import { License } from "@webiny/wcp";
 import { handleGuardDutyEvents } from "./handleGuardDutyEvents.js";
 import { ApiPulumi } from "@webiny/project/abstractions/index.js";
 
@@ -75,12 +74,12 @@ export const createApiPulumiApp = () => {
 
             // <-------------------- Enterprise start -------------------->
             app.addHandler(async () => {
-                const license = await License.fromEnvironment();
+                const featureFlags = await sdk.getFeatureFlags();
 
                 const usingAdvancedVpcParams =
                     vpcExtensionsConfig && typeof vpcExtensionsConfig !== "boolean";
 
-                if (license.canUseFileManagerThreatDetection()) {
+                if (featureFlags.isFileManagerThreatDetectionEnabled()) {
                     handleGuardDutyEvents(app as ApiPulumiApp);
                 }
 

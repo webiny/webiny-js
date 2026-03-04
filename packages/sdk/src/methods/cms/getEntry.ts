@@ -30,13 +30,13 @@ export interface GetEntryParams {
  * @param params.where.values - Filter by entry values
  * @param params.fields - Fields to include in the response. Use "values." prefix for entry values (e.g., "values.author.name") or specify top-level fields like "createdOn"
  * @param params.preview - When true, uses preview API to access unpublished/draft content. When false (default), uses read API for published content only.
- * @returns Result containing the entry data (or null if not found) or an error
+ * @returns Result containing the entry data or an error
  */
 export async function getEntry<TValues extends CmsEntryValues = CmsEntryValues>(
     config: WebinyConfig,
     fetchFn: typeof fetch,
     params: GetEntryParams
-): Promise<Result<CmsEntryData<TValues> | null, HttpError | GraphQLError | NetworkError>> {
+): Promise<Result<CmsEntryData<TValues>, HttpError | GraphQLError | NetworkError>> {
     const { modelId, where, fields, preview } = params;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");

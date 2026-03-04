@@ -29,11 +29,13 @@ export const Extensions = () => {
             {/*    pulumiSrc="/extensions/myLambdaFunction/pulumi.ts"*/}
             {/*/>*/}
 
-            {/*<Api.Extension src={"/extensions/models/ProductCategoryModel.ts"} />*/}
-            {/*<Api.Extension src={"/extensions/models/ProductModel.ts"} />*/}
-            {/*<Api.Extension src={"/extensions/models/contactSubmission/ContactSubmissionModel.ts"} />*/}
-            {/*<Api.Extension src={"/extensions/models/contactSubmission/ContactSubmissionHook.ts"} />*/}
-            {/*<Admin.Extension src={"/extensions/models/contactSubmission/EmailEntryListColumn.tsx"} />*/}
+            <Api.Extension src={"/extensions/models/ProductCategoryModel.ts"} />
+            <Api.Extension src={"/extensions/models/ProductModel.ts"} />
+            <Api.Extension src={"/extensions/models/contactSubmission/ContactSubmissionModel.ts"} />
+            <Api.Extension src={"/extensions/models/contactSubmission/ContactSubmissionHook.ts"} />
+            <Admin.Extension
+                src={"/extensions/models/contactSubmission/EmailEntryListColumn.tsx"}
+            />
 
             {/*<Api.BuildParam paramName="MY_CUSTOM_BUILD_PARAM" value="customValue" />*/}
             {/*<Api.BuildParam*/}
@@ -91,13 +93,7 @@ export const Extensions = () => {
 
             {/* Project 👇 */}
             <Project.Telemetry enabled={false} />
-            <Project.FeatureFlags
-                features={{
-                    advancedAccessControlLayer: false,
-                    advancedPublishingWorkflow: true,
-                    fileManager: { threatDetection: false }
-                }}
-            />
+            <Project.FeatureFlags features={{ fileManager: { threatDetection: false } }} />
 
             {process.env.WEBINY_CLI_AUTO_INSTALL && (
                 <Project.AutoInstall
