@@ -39,6 +39,10 @@ export class NullLicense implements ILicense {
         return false;
     }
 
+    canUseHcmsFieldPermissions() {
+        return false;
+    }
+
     canUsePrivateFiles() {
         return false;
     }

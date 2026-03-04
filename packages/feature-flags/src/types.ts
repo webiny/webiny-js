@@ -2,6 +2,7 @@ export interface IAaclFeatureFlags {
     teams?: boolean;
     privateFiles?: boolean;
     folderLevelPermissions?: boolean;
+    hcmsFieldPermissions?: boolean;
 }
 
 export interface IFileManagerFeatureFlags {
