@@ -19,7 +19,6 @@ import { CorePulumi } from "@webiny/project/abstractions/index.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
 import { applyAwsResourceTags, getAwsRegion } from "~/pulumi/apps/awsUtils.js";
-import { License } from "@webiny/wcp";
 import { configureS3BucketMalwareProtection } from "./configureS3BucketMalwareProtection.js";
 import * as pulumi from "@pulumi/pulumi";
 import { CoreAuditLogsDynamo } from "~/pulumi/index.js";
@@ -78,8 +77,8 @@ export function createCorePulumiApp() {
                 const usingAdvancedVpcParams =
                     vpcExtensionsConfig && typeof vpcExtensionsConfig !== "boolean";
 
-                const license = await License.fromEnvironment();
-                if (license.canUseFileManagerThreatDetection()) {
+                const featureFlags = await sdk.getFeatureFlags();
+                if (featureFlags.isFileManagerThreatDetectionEnabled()) {
                     configureS3BucketMalwareProtection(app as CorePulumiApp);
                 }
 
