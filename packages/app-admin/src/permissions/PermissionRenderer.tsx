@@ -19,6 +19,7 @@ export interface PermissionRendererProps {
 
 const NO_ACCESS = "no";
 const FULL_ACCESS = "full";
+const READ_ONLY_ACCESS = "read-only";
 const CUSTOM_ACCESS = "custom";
 
 const RWD_OPTIONS = [
@@ -107,7 +108,7 @@ function EntitySection({ entity, data, cannotUseAAcl, Bind, setValue }: EntitySe
 
     if (hasAction(entity, "rwd")) {
         columns.push(
-            <Grid.Column span={12} key={"pw"}>
+            <Grid.Column span={12} key={"rwd"}>
                 <Bind name={`${entity.id}RWD`}>
                     <Select
                         label={"Primary Actions"}
@@ -173,16 +174,21 @@ export const PermissionRenderer = ({ schema }: PermissionRendererProps) => {
     const entities = schema.entities || [];
     const hasEntities = entities.length > 0;
 
-    const accessLevelOptions = hasEntities
-        ? [
-              { value: NO_ACCESS, label: "No access" },
-              { value: FULL_ACCESS, label: "Full access" },
-              { value: CUSTOM_ACCESS, label: "Custom access" }
-          ]
-        : [
-              { value: NO_ACCESS, label: "No access" },
-              { value: FULL_ACCESS, label: "Full access" }
-          ];
+    const accessLevelOptions = useMemo(() => {
+        const options = [{ value: NO_ACCESS, label: "No access" }];
+
+        if (schema.readOnlyAccess) {
+            options.push({ value: READ_ONLY_ACCESS, label: "Read-only access" });
+        }
+
+        options.push({ value: FULL_ACCESS, label: "Full access" });
+
+        if (hasEntities) {
+            options.push({ value: CUSTOM_ACCESS, label: "Custom access" });
+        }
+
+        return options;
+    }, [schema, hasEntities]);
 
     return (
         <Form data={formData} onChange={onFormChange}>

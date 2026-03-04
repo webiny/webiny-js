@@ -54,8 +54,18 @@ export interface EntityDefinition {
 export interface PermissionSchemaConfig {
     /** Permission prefix — used to filter permissions from the array */
     prefix: string;
-    /** Permission object emitted on "full access". All properties are spread onto the permission. */
-    fullAccess: { name: string; [key: string]: any };
+    /**
+     * Full access configuration.
+     * - `true` — emits `{ name: "${prefix}.*" }`.
+     * - `{ ...extras }` — emits `{ name: "${prefix}.*", ...extras }`.
+     */
+    fullAccess: boolean | { [key: string]: any };
+    /**
+     * Read-only access configuration. When defined, the schema supports a read-only tier.
+     * - `true` — emits `{ name: "${prefix}.*", rwd: "r" }`.
+     * - `Permission[]` — emits the array as-is.
+     */
+    readOnlyAccess?: boolean | Permission[];
     /** Entity definitions (optional — simple apps have none) */
     entities?: EntityDefinition[];
 }
@@ -65,8 +75,18 @@ export interface PermissionSchemaConfig {
  */
 export interface PermissionSchema {
     prefix: string;
-    /** Permission object emitted on "full access". All properties are spread onto the permission. */
-    fullAccess: { name: string; [key: string]: any };
+    /**
+     * Full access configuration.
+     * - `true` — emits `{ name: "${prefix}.*" }`.
+     * - `{ ...extras }` — emits `{ name: "${prefix}.*", ...extras }`.
+     */
+    fullAccess: boolean | { [key: string]: any };
+    /**
+     * Read-only access configuration. When defined, the schema supports a read-only tier.
+     * - `true` — emits `{ name: "${prefix}.*", rwd: "r" }`.
+     * - `Permission[]` — emits the array as-is.
+     */
+    readOnlyAccess?: boolean | Permission[];
     entities?: EntityDefinition[];
 }
 

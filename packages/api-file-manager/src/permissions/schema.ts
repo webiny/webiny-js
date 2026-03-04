@@ -3,7 +3,7 @@ import type { Permissions } from "@webiny/api-core/features/security/permissions
 
 const schema = {
     prefix: "fm",
-    fullAccess: { name: "fm.*" },
+    fullAccess: true,
     entities: [
         {
             id: "file",
