@@ -1,5 +1,5 @@
 import type { UploadedFile, UploadOptions } from "@webiny/app/types.js";
-import { GET_PRE_SIGNED_POST_PAYLOAD } from "./graphql.js";
+import { GET_PRE_SIGNED_POST_PAYLOAD, type IGetPreSignedPostPayloadResponse } from "./graphql.js";
 import type { FileUploadStrategy } from "~/index.js";
 
 declare global {
@@ -12,7 +12,7 @@ declare global {
 export class SimpleUploadStrategy implements FileUploadStrategy {
     async upload(file: File, { apolloClient, onProgress }: UploadOptions): Promise<UploadedFile> {
         // 1. GET PreSignedPostPayload
-        const response = await apolloClient.query({
+        const response = await apolloClient.query<IGetPreSignedPostPayloadResponse>({
             query: GET_PRE_SIGNED_POST_PAYLOAD,
             fetchPolicy: "no-cache",
             variables: {
@@ -26,17 +26,20 @@ export class SimpleUploadStrategy implements FileUploadStrategy {
             }
         });
 
-        const { getPreSignedPostPayload } = response.data.fileManager;
-        if (getPreSignedPostPayload.error) {
+        const { getPreSignedPostPayload } = response.data?.fileManager || {};
+        if (!getPreSignedPostPayload) {
+            throw Error("Could not get pre-signed post payload for file upload.");
+        }
+        else if (getPreSignedPostPayload.error) {
             console.error(getPreSignedPostPayload);
-            throw Error(getPreSignedPostPayload.error);
+            throw Error(getPreSignedPostPayload.error.message);
         }
 
         // 2. upload file to S3
         return new Promise((resolve, reject) => {
             const formData = new window.FormData();
-            Object.keys(getPreSignedPostPayload.data.data.fields).forEach(key => {
-                formData.append(key, getPreSignedPostPayload.data.data.fields[key]);
+            Object.keys(getPreSignedPostPayload.data!.data.fields).forEach(key => {
+                formData.append(key, getPreSignedPostPayload.data!.data.fields[key]);
             });
 
             formData.append("file", file);
@@ -55,11 +58,11 @@ export class SimpleUploadStrategy implements FileUploadStrategy {
                 },
                 false
             );
-            xhr.open("POST", getPreSignedPostPayload.data.data.url, true);
+            xhr.open("POST", getPreSignedPostPayload.data!.data.url, true);
             xhr.send(formData);
             xhr.onload = function () {
                 if (this.status === 204) {
-                    resolve(getPreSignedPostPayload.data.file);
+                    resolve(getPreSignedPostPayload.data!.file);
                     return;
                 }
 

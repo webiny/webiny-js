@@ -12,7 +12,7 @@
   "dependencies": {
     "@apollo/react-hooks": "^4.0.0",
     "@emotion/react": "^11.14.0",
-    "@emotion/styled": "11.10.6",
+    "@emotion/styled": "11.14.1",
     "@webiny/app": "0.0.0",
     "@webiny/app-admin": "0.0.0",
     "@webiny/common-audit-logs": "0.0.0",

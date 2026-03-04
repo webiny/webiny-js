@@ -16,9 +16,9 @@
   "dependencies": {
     "@apollo/react-common": "^3.1.4",
     "@apollo/react-hooks": "^4.0.0",
-    "@emotion/css": "11.10.6",
+    "@emotion/css": "11.13.5",
     "@emotion/react": "^11.14.0",
-    "@emotion/styled": "11.10.6",
+    "@emotion/styled": "11.14.1",
     "@fortawesome/fontawesome-common-types": "^7.2.0",
     "@fortawesome/fontawesome-svg-core": "^7.2.0",
     "@fortawesome/free-brands-svg-icons": "^7.2.0",

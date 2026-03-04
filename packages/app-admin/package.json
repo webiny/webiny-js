@@ -14,7 +14,7 @@
     "@apollo/react-components": "^4.0.0",
     "@apollo/react-hooks": "^4.0.0",
     "@emotion/react": "^11.14.0",
-    "@emotion/styled": "11.10.6",
+    "@emotion/styled": "11.14.1",
     "@iconify/json": "^2.2.446",
     "@monaco-editor/react": "^4.7.0",
     "@svgr/webpack": "^6.5.1",

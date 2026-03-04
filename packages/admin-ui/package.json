@@ -56,7 +56,7 @@
     "@webiny/project": "0.0.0",
     "chalk": "^4.1.2",
     "css-loader": "^7.1.4",
-    "eslint-plugin-storybook": "^10.2.12",
+    "eslint-plugin-storybook": "^9.1.19",
     "file-loader": "6.2.0",
     "postcss-loader": "^8.2.1",
     "prettier": "3.6.2",

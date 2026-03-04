@@ -15,13 +15,12 @@ export class MultiPartUploadGraphQLAPI implements MultiPartUploadAPI {
     }
 
     async createUpload(params: CreateUploadParams): Promise<MultiPartUpload> {
-        const { data, errors } = await this.client.mutate<CreateUploadResponse>({
+        const { data } = await this.client.mutate<CreateUploadResponse>({
             mutation: CREATE_UPLOAD,
             variables: params
         });
 
         if (!data) {
-            console.error(errors);
             throw new Error(`Failed to initialize a multi-part file upload!`);
         }
 
@@ -29,13 +28,12 @@ export class MultiPartUploadGraphQLAPI implements MultiPartUploadAPI {
     }
 
     async completeUpload(params: CompleteUploadParams): Promise<boolean> {
-        const { data, errors } = await this.client.mutate<CompleteUploadResponse>({
+        const { data } = await this.client.mutate<CompleteUploadResponse>({
             mutation: COMPLETE_UPLOAD,
             variables: params
         });
 
         if (!data) {
-            console.error(errors);
             throw new Error(`Failed to complete a multi-part file upload!`);
         }
 
