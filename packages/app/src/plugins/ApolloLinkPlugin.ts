@@ -1,4 +1,4 @@
-import type { ApolloLink } from "apollo-link";
+import type { ApolloLink } from "@apollo/client/link";
 import { nanoid } from "nanoid";
 import { Plugin } from "@webiny/plugins";
 

@@ -1,22 +1,22 @@
-import type { InMemoryCacheConfig } from "@apollo/client";
-import { InMemoryCache as BaseInMemoryCache } from "@apollo/client";
 import type { DocumentNode } from "graphql";
+import { ApolloLink } from "@apollo/client";
 import { plugins } from "@webiny/plugins";
 import { AddQuerySelectionPlugin } from "../plugins/AddQuerySelectionPlugin.js";
 import { ApolloLinkPlugin } from "../plugins/ApolloLinkPlugin.js";
 
-export class InMemoryCache extends BaseInMemoryCache {
+export class TransformDocumentLink extends ApolloLink {
     private readonly transformPlugins: AddQuerySelectionPlugin[];
 
-    constructor(config?: InMemoryCacheConfig) {
-        super(config);
+    constructor() {
+        super();
 
         this.transformPlugins = plugins
             .byType<AddQuerySelectionPlugin>(ApolloLinkPlugin.type)
             .filter(pl => pl instanceof AddQuerySelectionPlugin);
     }
 
-    public override transformDocument(document: DocumentNode): DocumentNode {
+    public override request(operation: any, nextLink: any) {
+        const document = operation.query as DocumentNode;
         // @ts-expect-error
         const operationName = document.definitions[0].name.value;
 
@@ -24,6 +24,6 @@ export class InMemoryCache extends BaseInMemoryCache {
             pl.addSelectionToQuery(operationName, document);
         }
 
-        return super.transformDocument(document);
+        return nextLink(operation);
     }
 }

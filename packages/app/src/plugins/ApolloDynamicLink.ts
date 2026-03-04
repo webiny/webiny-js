@@ -1,8 +1,6 @@
-import type { NextLink } from "apollo-link";
-import { ApolloLink } from "apollo-link";
+import { ApolloLink } from "@apollo/client/link";
 import { plugins } from "@webiny/plugins";
 import type { ApolloLinkPlugin } from "./ApolloLinkPlugin.js";
-import type { Operation } from "apollo-link/lib/types.js";
 
 function createLink(plugin: ApolloLinkPlugin) {
     try {
@@ -17,7 +15,7 @@ function createLink(plugin: ApolloLinkPlugin) {
 export class ApolloDynamicLink extends ApolloLink {
     private cache = new Map();
 
-    public override request(operation: Operation, forward: NextLink) {
+    public override request(operation: ApolloLink.Operation, forward: ApolloLink.ForwardFunction) {
         const linkPlugins = plugins.byType<ApolloLinkPlugin>("apollo-link");
 
         if (!linkPlugins.length) {
@@ -30,7 +28,9 @@ export class ApolloDynamicLink extends ApolloLink {
             /**
              * We filter out falsy items from the linkPlugins because there might be some error while creating link.
              */
-            const links = linkPlugins.map(createLink).filter(Boolean) as ApolloLink[];
+            const links = linkPlugins.map(createLink).filter((item): item is ApolloLink => {
+                return !!item;
+            });
             this.cache.set(cacheKey, ApolloLink.from(links));
         }
 

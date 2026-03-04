@@ -1,6 +1,6 @@
 import type { ApolloClient } from "@apollo/client";
 import type { CmsGroup, CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
-import { CMS_EXPORT_STRUCTURE_QUERY } from "./graphql.js";
+import { CMS_EXPORT_STRUCTURE_QUERY, type ICmsExportStructureResponse } from "./graphql.js";
 
 interface Params {
     client: ApolloClient;
@@ -22,17 +22,30 @@ export const runExport = async ({ client, models }: Params): Promise<Response> =
     if (models?.length) {
         variables.models = models;
     }
-    const result = await client.query({
-        query: CMS_EXPORT_STRUCTURE_QUERY,
-        variables
-    });
-
-    if (result.errors?.length) {
-        console.error(result.errors);
+    let result: ICmsExportStructureResponse;
+    try {
+        const response = await client.query<ICmsExportStructureResponse>({
+            query: CMS_EXPORT_STRUCTURE_QUERY,
+            variables
+        });
+        if (!response.data?.exportStructure) {
+            const message = `There is no data returned from the exportStructure query.`;
+            console.error(message);
+            return {
+                error: {
+                    message
+                }
+            };
+        }
+        result = response.data;
+    } catch (ex) {
+        console.error(ex.message);
         return {
-            error: result.errors[0]
+            error: ex
         };
-    } else if (!result.data?.exportStructure) {
+    }
+
+    if (!result.exportStructure) {
         const message = `There is no object returned from the exportStructure query.`;
         console.error(message);
         return {
@@ -41,7 +54,7 @@ export const runExport = async ({ client, models }: Params): Promise<Response> =
             }
         };
     }
-    const { data, error } = result.data.exportStructure;
+    const { data, error } = result.exportStructure;
     if (error) {
         console.error(error.message);
         return {

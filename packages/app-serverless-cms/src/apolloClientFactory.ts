@@ -1,11 +1,11 @@
-import type {ApolloClient} from "@apollo/client";
-import { ApolloLink } from "apollo-link";
-import { BatchHttpLink } from "apollo-link-batch-http";
+import { ApolloClient } from "@apollo/client";
+import { ApolloLink } from "@apollo/client/link";
+import { BatchHttpLink } from "@apollo/client/link/batch-http";
 import { InMemoryCache } from "@webiny/app/apollo-client/InMemoryCache.js";
 import { plugins } from "@webiny/plugins";
 import { ApolloDynamicLink } from "@webiny/app/plugins/ApolloDynamicLink.js";
 import { ApolloCacheObjectIdPlugin } from "@webiny/app/plugins/ApolloCacheObjectIdPlugin.js";
-import { IntrospectionFragmentMatcher } from "@webiny/app/apollo-client/IntrospectionFragmentMatcher.js";
+import { TransformDocumentLink } from "@webiny/app/apollo-client/TransformDocumentLink.js";
 
 export interface CreateApolloClientParams {
     uri: string;
@@ -13,14 +13,6 @@ export interface CreateApolloClientParams {
 }
 
 export const createApolloClient = ({ uri, batching }: CreateApolloClientParams) => {
-    const fragmentMatcher = new IntrospectionFragmentMatcher({
-        introspectionQueryResultData: {
-            __schema: {
-                types: []
-            }
-        }
-    });
-
     return new ApolloClient({
         link: ApolloLink.from([
             /**
@@ -31,11 +23,10 @@ export const createApolloClient = ({ uri, batching }: CreateApolloClientParams) 
              * This batches requests made to the API to pack multiple requests into a single HTTP request.
              * `credentials: "include"` is necessary to attach cookies to requests.
              */
-            new BatchHttpLink({ uri, credentials: "include", ...batching })
+            new BatchHttpLink({ uri, credentials: "include", ...batching }),
+            new TransformDocumentLink()
         ]),
         cache: new InMemoryCache({
-            addTypename: true,
-            fragmentMatcher,
             dataIdFromObject: obj => {
                 /**
                  * Since every data type coming from API can have a different data structure,
@@ -48,14 +39,14 @@ export const createApolloClient = ({ uri, batching }: CreateApolloClientParams) 
                 for (let i = 0; i < getters.length; i++) {
                     const id = getters[i].getObjectId(obj);
                     if (typeof id !== "undefined") {
-                        return id;
+                        return String(id);
                     }
                 }
 
                 /**
                  * As a fallback, try getting object's `id`.
                  */
-                return obj.id || null;
+                return obj.id ? String(obj.string) : undefined;
             }
         })
     });

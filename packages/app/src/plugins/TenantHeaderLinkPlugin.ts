@@ -1,6 +1,6 @@
-import { setContext } from "apollo-link-context";
+import { setContext } from "@apollo/client/link/context";
 import { ApolloLinkPlugin } from "./ApolloLinkPlugin.js";
-import type { ApolloLink } from "apollo-link";
+import type { ApolloLink } from "@apollo/client/link";
 
 /**
  * Append `x-tenant` header from URL query (necessary for prerendering service).

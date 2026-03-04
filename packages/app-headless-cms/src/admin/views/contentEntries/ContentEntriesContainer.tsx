@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import get from "lodash/get.js";
+import React, { useEffect, useState } from "react";
 import { useRoute, useRouter, useSnackbar } from "@webiny/app-admin";
 import { i18n } from "@webiny/app/i18n/index.js";
 import type {
@@ -26,28 +25,33 @@ export const ContentEntriesContainer = ({ children }: ContentEntriesContainerPro
     const [contentModel, setContentModel] = useState<CmsModel | null>(null);
     const { showSnackbar } = useSnackbar();
 
-    const { loading, error } = useQuery<GetCmsModelQueryResponse, GetCmsModelQueryVariables>(
+    const { data, loading, error } = useQuery<GetCmsModelQueryResponse, GetCmsModelQueryVariables>(
         GET_CONTENT_MODEL,
         {
             skip: !modelId,
             variables: {
                 modelId: modelId as string
-            },
-            onCompleted: data => {
-                const contentModel = get(data, "getContentModel.data", null);
-                if (contentModel) {
-                    return setContentModel(contentModel);
-                }
-
-                goToRoute(Routes.ContentModels.List);
-                showSnackbar(
-                    t`Could not load model "{modelId}". Redirecting...`({
-                        modelId
-                    })
-                );
             }
         }
     );
+
+    useEffect(() => {
+        if (!data) {
+            return;
+        }
+        const model = data.getContentModel?.data;
+        if (model) {
+            setContentModel(model as CmsModel);
+            return;
+        }
+
+        goToRoute(Routes.ContentModels.List);
+        showSnackbar(
+            t`Could not load model "{modelId}". Redirecting...`({
+                modelId
+            })
+        );
+    }, [data]);
 
     if (!contentModel || loading) {
         return <LoadingContentModel />;

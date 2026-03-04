@@ -1,4 +1,4 @@
-import { ApolloLink } from "apollo-link";
+import { ApolloLink } from "@apollo/client/link";
 import { ApolloLinkPlugin } from "./ApolloLinkPlugin.js";
 
 function omitTypename(key: string, value: string): string | undefined {
