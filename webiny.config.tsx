@@ -92,13 +92,7 @@ export const Extensions = () => {
 
             {/* Project 👇 */}
             <Project.Telemetry enabled={false} />
-            <Project.FeatureFlags
-                features={{
-                    advancedAccessControlLayer: false,
-                    advancedPublishingWorkflow: true,
-                    fileManager: { threatDetection: false }
-                }}
-            />
+            <Project.FeatureFlags features={{ fileManager: { threatDetection: false } }} />
 
             {process.env.WEBINY_CLI_AUTO_INSTALL && (
                 <Project.AutoInstall
