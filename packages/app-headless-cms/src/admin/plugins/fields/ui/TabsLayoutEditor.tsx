@@ -92,9 +92,7 @@ const TabsDialogContent = ({ fieldOptions }: { fieldOptions: FieldOption[] }) =>
                     key={"rules"}
                     trigger={"Rules"}
                     value={"rules"}
-                    content={
-                        <RulesTab gridClassName={"mt-md"} fieldOptions={fieldOptions} />
-                    }
+                    content={<RulesTab gridClassName={"mt-md"} fieldOptions={fieldOptions} />}
                 />
             ]}
         />
@@ -140,9 +138,7 @@ const TabDialogContent = ({ fieldOptions }: { fieldOptions: FieldOption[] }) => 
                     key={"rules"}
                     trigger={"Rules"}
                     value={"rules"}
-                    content={
-                        <RulesTab gridClassName={"mt-md"} fieldOptions={fieldOptions} />
-                    }
+                    content={<RulesTab gridClassName={"mt-md"} fieldOptions={fieldOptions} />}
                 />
             ]}
         />

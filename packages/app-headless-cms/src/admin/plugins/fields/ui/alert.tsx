@@ -66,9 +66,7 @@ const AlertDialogContent = ({ fieldOptions }: { fieldOptions: FieldOption[] }) =
                     key={"rules"}
                     trigger={"Rules"}
                     value={"rules"}
-                    content={
-                        <RulesTab gridClassName={"mt-md"} fieldOptions={fieldOptions} />
-                    }
+                    content={<RulesTab gridClassName={"mt-md"} fieldOptions={fieldOptions} />}
                 />
             ]}
         />
