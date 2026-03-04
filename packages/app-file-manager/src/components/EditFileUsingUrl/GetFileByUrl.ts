@@ -1,9 +1,9 @@
-import type {ApolloClient} from "@apollo/client";
-import type {DocumentNode} from "graphql";
-import type {FileItem} from "~/types.js";
-import type {IGetFileByUrl} from "./EditFileUsingUrlRepository.js";
-import {getFileByUrlQuery, type IGetFileByUrlResponse} from "./getFileByUrl.graphql.js";
-import type {useFileModel} from "~/hooks/useFileModel.js";
+import type { ApolloClient } from "@apollo/client";
+import type { DocumentNode } from "graphql";
+import type { FileItem } from "~/types.js";
+import type { IGetFileByUrl } from "./EditFileUsingUrlRepository.js";
+import { getFileByUrlQuery, type IGetFileByUrlResponse } from "./getFileByUrl.graphql.js";
+import type { useFileModel } from "~/hooks/useFileModel.js";
 
 export class GetFileByUrl implements IGetFileByUrl {
     private client: ApolloClient;
@@ -28,7 +28,7 @@ export class GetFileByUrl implements IGetFileByUrl {
         const { data, error } = response.data.fileManager.getFileByUrl;
         if (error) {
             throw new Error(error.message);
-        } else if(!data) {
+        } else if (!data) {
             throw new Error("File not found.");
         }
 

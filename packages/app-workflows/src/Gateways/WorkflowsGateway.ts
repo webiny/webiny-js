@@ -5,7 +5,7 @@ import type {
     IWorkflowsGatewayListWorkflowsResponse,
     IWorkflowsGatewayStoreWorkflowResponse
 } from "./abstraction/WorkflowsGateway.js";
-import type {ApolloClient} from "@apollo/client";
+import type { ApolloClient } from "@apollo/client";
 import type {
     IDeleteWorkflowResponse,
     IDeleteWorkflowVariables,
@@ -67,7 +67,10 @@ export class WorkflowsGateway implements IWorkflowsGateway {
         workflow: IWorkflow
     ): Promise<IWorkflowsGatewayDeleteWorkflowResponse> {
         try {
-            const result = await this.#client.mutate<IDeleteWorkflowResponse, IDeleteWorkflowVariables>({
+            const result = await this.#client.mutate<
+                IDeleteWorkflowResponse,
+                IDeleteWorkflowVariables
+            >({
                 mutation: DELETE_WORKFLOW_MUTATION,
                 variables: {
                     app: workflow.app,

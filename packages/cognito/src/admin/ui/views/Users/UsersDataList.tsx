@@ -95,7 +95,10 @@ const UsersDataList = () => {
         refetchQueries: [{ query: LIST_USERS }]
     });
 
-    const data = usersLoading || !listUsers?.adminUsers?.users?.data ? [] : listUsers.adminUsers.users.data || [];
+    const data =
+        usersLoading || !listUsers?.adminUsers?.users?.data
+            ? []
+            : listUsers.adminUsers.users.data || [];
     const filteredData = filter === "" ? data : data.filter(filterUsers);
     const userList = sortUsers(filteredData);
     const id = new URLSearchParams(location.search).get("id");

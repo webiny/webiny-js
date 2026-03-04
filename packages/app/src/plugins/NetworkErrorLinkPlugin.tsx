@@ -1,16 +1,16 @@
 import React from "react";
-import {ErrorLink} from "@apollo/client/link/error";
-import {print} from "graphql/language/index.js";
-import {boolean} from "boolean";
-import {ApolloLinkPlugin} from "./ApolloLinkPlugin.js";
+import { ErrorLink } from "@apollo/client/link/error";
+import { print } from "graphql/language/index.js";
+import { boolean } from "boolean";
+import { ApolloLinkPlugin } from "./ApolloLinkPlugin.js";
 import createErrorOverlay from "./NetworkErrorLinkPlugin/createErrorOverlay.js";
-import {LocalAwsLambdaTimeoutMessage} from "./NetworkErrorLinkPlugin/LocalAwsLambdaTimeoutMessage.js";
-import {config as appConfig} from "~/config.js";
-import {ErrorOverlay} from "~/plugins/NetworkErrorLinkPlugin/ErrorOverlay.js";
-import {GqlErrorOverlay} from "./NetworkErrorLinkPlugin/GqlErrorOverlay.js";
-import type {EventPublisher} from "~/features/eventPublisher/index.js";
-import {NetworkErrorEvent} from "~/errors/index.js";
-import type {ServerError} from "@apollo/client";
+import { LocalAwsLambdaTimeoutMessage } from "./NetworkErrorLinkPlugin/LocalAwsLambdaTimeoutMessage.js";
+import { config as appConfig } from "~/config.js";
+import { ErrorOverlay } from "~/plugins/NetworkErrorLinkPlugin/ErrorOverlay.js";
+import { GqlErrorOverlay } from "./NetworkErrorLinkPlugin/GqlErrorOverlay.js";
+import type { EventPublisher } from "~/features/eventPublisher/index.js";
+import { NetworkErrorEvent } from "~/errors/index.js";
+import type { ServerError } from "@apollo/client";
 
 const isLocalAwsLambdaFnInvocationTimeoutError = (error: any): error is ServerError => {
     return error.result && error.result.code === "LOCAL_AWS_LAMBDA_TIMEOUT";
@@ -25,15 +25,15 @@ export class NetworkErrorLinkPlugin extends ApolloLinkPlugin {
     }
 
     public override createLink() {
-        return new ErrorLink(({error: networkError, operation}) => {
+        return new ErrorLink(({ error: networkError, operation }) => {
             const debug = appConfig.getKey("DEBUG", boolean(process.env.REACT_APP_DEBUG));
-            
+
             if (networkError) {
                 // Publish network error event
                 const errorType = isLocalAwsLambdaFnInvocationTimeoutError(networkError)
                     ? "timeout"
                     : "network";
-                
+
                 const event = new NetworkErrorEvent({
                     message: networkError.message,
                     operationName: operation.operationName,
@@ -43,9 +43,9 @@ export class NetworkErrorLinkPlugin extends ApolloLinkPlugin {
                     statusCode: (networkError as any).statusCode,
                     result: (networkError as any).result
                 });
-                
+
                 this.getEventPublisher().publish(event);
-                
+
                 // Keep existing overlay logic for now
                 if (debug) {
                     if (isLocalAwsLambdaFnInvocationTimeoutError(networkError)) {
@@ -60,7 +60,7 @@ export class NetworkErrorLinkPlugin extends ApolloLinkPlugin {
                         });
                         return;
                     }
-                    
+
                     createErrorOverlay({
                         element: (
                             <GqlErrorOverlay
@@ -71,9 +71,8 @@ export class NetworkErrorLinkPlugin extends ApolloLinkPlugin {
                     });
                 }
             }
-            
+
             // TODO: also print graphQLErrors
-            
         });
     }
 }

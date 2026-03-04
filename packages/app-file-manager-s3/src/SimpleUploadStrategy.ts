@@ -29,8 +29,7 @@ export class SimpleUploadStrategy implements FileUploadStrategy {
         const { getPreSignedPostPayload } = response.data?.fileManager || {};
         if (!getPreSignedPostPayload) {
             throw Error("Could not get pre-signed post payload for file upload.");
-        }
-        else if (getPreSignedPostPayload.error) {
+        } else if (getPreSignedPostPayload.error) {
             console.error(getPreSignedPostPayload);
             throw Error(getPreSignedPostPayload.error.message);
         }

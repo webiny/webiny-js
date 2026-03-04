@@ -1,4 +1,4 @@
-import type {ApolloClient} from "@apollo/client";
+import type { ApolloClient } from "@apollo/client";
 import type {
     IWorkflowStateGateway,
     IWorkflowStateGatewayApproveStepParams,

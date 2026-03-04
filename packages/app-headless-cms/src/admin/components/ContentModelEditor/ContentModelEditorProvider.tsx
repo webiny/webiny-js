@@ -11,7 +11,7 @@ import type {
 import { GET_CONTENT_MODEL, UPDATE_CONTENT_MODEL } from "~/admin/graphql/contentModels.js";
 import { LIST_MENU_CONTENT_GROUPS_MODELS } from "~/admin/viewsGraphql.js";
 import type { CmsModel, CmsModelField } from "~/types.js";
-import type { FetchResult } from "apollo-link";
+import type { FetchResult } from "@apollo/client/link";
 import { ModelProvider } from "~/admin/components/ModelProvider/index.js";
 import { createHashing } from "@webiny/app/utils/index.js";
 import { Routes } from "~/routes.js";

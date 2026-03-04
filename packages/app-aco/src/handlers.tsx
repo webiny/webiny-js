@@ -1,6 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { useQuery } from "@apollo/client/react";
-import type { FetchResult } from "apollo-link";
+import type { FetchResult } from "@apollo/client/link";
 import type { Loading, LoadingActions } from "~/types.js";
 
 /**

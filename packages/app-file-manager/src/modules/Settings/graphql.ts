@@ -25,8 +25,6 @@ export interface GetSettingsResponse {
     };
 }
 
-
-
 export interface IUpdateSettingsResponse {
     fileManager: {
         updateSettings: {

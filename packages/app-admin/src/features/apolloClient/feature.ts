@@ -1,4 +1,4 @@
-import { setContext } from "apollo-link-context";
+import { setContext } from "@apollo/client/link/context";
 import { ApolloLinkPlugin } from "@webiny/app";
 import { plugins } from "@webiny/plugins";
 import { createFeature } from "@webiny/feature/admin";

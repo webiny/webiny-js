@@ -243,7 +243,7 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
             },
             fetchPolicy: "network-only"
         });
-        
+
         if (!response.data?.fileManager?.getFile) {
             throw new WebinyError("File not found.");
         }

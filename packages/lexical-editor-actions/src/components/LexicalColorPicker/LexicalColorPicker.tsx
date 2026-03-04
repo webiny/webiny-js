@@ -1,5 +1,5 @@
 import type { SyntheticEvent } from "react";
-import React, { useCallback, useState, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import styled from "@emotion/styled";
 import { css } from "emotion";
 import type { ColorResult, RGBColor } from "react-color";
@@ -9,8 +9,6 @@ import { Tooltip } from "@webiny/ui/Tooltip/index.js";
 // Icons
 import { ReactComponent as IconPalette } from "./round-color_lens-24px.svg";
 import { useRichTextEditor } from "@webiny/lexical-editor";
-
-type OnChangeHandler = (color: ColorResult, event: React.ChangeEvent<HTMLInputElement>) => void;
 
 const ColorPickerStyle = styled("div")({
     position: "relative",

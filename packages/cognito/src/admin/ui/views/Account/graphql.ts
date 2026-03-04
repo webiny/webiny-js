@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import type {UserItem} from "~/admin/ui/UserItem.js";
+import type { UserItem } from "~/admin/ui/UserItem.js";
 
 const currentUserFields = /* GraphQL */ `
     {

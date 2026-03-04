@@ -1,5 +1,4 @@
 import React from "react";
-import get from "lodash/get.js";
 import type { ListMenuCmsGroupsQueryResponse } from "~/admin/viewsGraphql.js";
 import { LIST_MENU_CONTENT_GROUPS_MODELS } from "~/admin/viewsGraphql.js";
 import useQuery from "~/admin/hooks/useQuery.js";

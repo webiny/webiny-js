@@ -131,7 +131,10 @@ export const removeModelFromCache = (client: ApolloClient, model: CmsEditorConte
 /**
  * TODO remove when we can confirm that new deletion works property
  */
-export const removeModelFromListCache = (cache: ApolloCache, model: CmsEditorContentModel): void => {
+export const removeModelFromListCache = (
+    cache: ApolloCache,
+    model: CmsEditorContentModel
+): void => {
     const response = cache.readQuery<ListCmsModelsQueryResponse>({
         query: LIST_CONTENT_MODELS
     });
@@ -151,7 +154,10 @@ export const removeModelFromListCache = (cache: ApolloCache, model: CmsEditorCon
 /**
  * TODO remove when we can confirm that new deletion works property
  */
-export const removeModelFromGroupCache = (cache: ApolloCache, model: CmsEditorContentModel): void => {
+export const removeModelFromGroupCache = (
+    cache: ApolloCache,
+    model: CmsEditorContentModel
+): void => {
     const response = cache.readQuery<ListMenuCmsGroupsQueryResponse>({
         query: LIST_MENU_CONTENT_GROUPS_MODELS
     });

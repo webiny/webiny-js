@@ -15,7 +15,7 @@ import type { CmsGroup, CmsModel } from "@webiny/app-headless-cms-common/types/i
 import type { ImportGroupData, ImportModelData } from "./types.js";
 import { ImportAction } from "./types.js";
 import { useSnackbar } from "@webiny/app-admin";
-import type { FetchResult } from "apollo-link";
+import type { FetchResult } from "@apollo/client/link";
 
 const parseFileData = (input: string) => {
     let data: Record<string, any> = {};

@@ -40,7 +40,9 @@ interface TypographyActionDropdownProps {
     element: React.JSX.Element;
 }
 
-const TypographyActionDropDown = ({ element }: TypographyActionDropdownProps): React.JSX.Element => {
+const TypographyActionDropDown = ({
+    element
+}: TypographyActionDropdownProps): React.JSX.Element => {
     return <Compose component={BaseTypographyActionDropDown} with={() => () => element} />;
 };
 

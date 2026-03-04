@@ -1,7 +1,6 @@
 import type { IRecordLockingClient } from "~/domain/abstractions/IRecordLockingClient.js";
-import type { useMutation, useQuery } from "@apollo/client/react";
 import type { ApolloClient } from "@apollo/client";
-import type {OperationVariables} from "@apollo/client/core/types.js";
+import type { OperationVariables } from "@apollo/client/core/types.js";
 
 export interface IRecordLockingClientParams {
     client: ApolloClient;
@@ -14,7 +13,9 @@ export class RecordLockingClient implements IRecordLockingClient {
         this.client = params.client;
     }
 
-    public async query<T, R extends OperationVariables = OperationVariables>(params: ApolloClient.QueryOptions<R>): Promise<ApolloClient.QueryResult<T>> {
+    public async query<T, R extends OperationVariables = OperationVariables>(
+        params: ApolloClient.QueryOptions<R>
+    ): Promise<ApolloClient.QueryResult<T>> {
         return this.client.query<T, R>({
             ...params,
             variables: params.variables as R,

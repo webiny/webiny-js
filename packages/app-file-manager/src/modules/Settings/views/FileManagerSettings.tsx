@@ -27,7 +27,7 @@ const headingLevel = 5;
 export const FileManagerSettings = () => {
     const { showSnackbar } = useSnackbar();
     const { showDialog } = useDialogs();
-    
+
     const { data, loading: queryInProgress } = useQuery<QueryGetSettingsResult>(
         graphql.GET_SETTINGS
     );
@@ -35,7 +35,7 @@ export const FileManagerSettings = () => {
 
     const settings = (get(data, "fileManager.getSettings.data") || {}) as Settings;
     const { loading: mutationInProgress } = result;
-    
+
     const learnMore = () => {
         showDialog({
             title: "How to configure file delivery URL?",
@@ -76,7 +76,7 @@ export const FileManagerSettings = () => {
             cancelLabel: null
         });
     };
-    
+
     const onSubmit = async (data: Settings): Promise<void> => {
         await update({
             variables: {
@@ -158,7 +158,8 @@ export const FileManagerSettings = () => {
                                             note={<UrlPreview />}
                                             description={
                                                 <>
-                                                    This URL will be prepended to the file key.&nbsp;
+                                                    This URL will be prepended to the file
+                                                    key.&nbsp;
                                                     <Link to="#" onClick={learnMore}>
                                                         How to configure?
                                                     </Link>

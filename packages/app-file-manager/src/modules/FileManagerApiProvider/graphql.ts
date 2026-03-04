@@ -2,7 +2,7 @@ import gql from "graphql-tag";
 import type { FileItem } from "~/types.js";
 import type { Settings } from "~/types.js";
 import type { ListTagsResponseItem } from "~/modules/FileManagerApiProvider/FileManagerApiContext/FileManagerApiContext.js";
-import type {CmsModel} from "@webiny/app-headless-cms-common/types/index.js";
+import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 
 export interface FmError {
     code: string;
