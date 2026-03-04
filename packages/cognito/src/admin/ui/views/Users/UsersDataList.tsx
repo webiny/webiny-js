@@ -20,7 +20,12 @@ import {
 } from "@webiny/ui/List/index.js";
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons/index.js";
 import { useRouter, useSnackbar, useConfirmationDialog, SearchUI } from "@webiny/app-admin";
-import { DELETE_USER, LIST_USERS } from "./graphql.js";
+import {
+    DELETE_USER,
+    type IDeleteUserResponse,
+    type IListUsersResponse,
+    LIST_USERS
+} from "./graphql.js";
 import { deserializeSorters } from "../utils.js";
 import { Routes } from "~/admin/routes.js";
 import type { UserItem } from "~/admin/ui/UserItem.js";
@@ -84,13 +89,13 @@ const UsersDataList = () => {
         [sort]
     );
 
-    const { data: listUsers, loading: usersLoading } = useQuery(LIST_USERS);
+    const { data: listUsers, loading: usersLoading } = useQuery<IListUsersResponse>(LIST_USERS);
 
-    const [deleteIt, { loading: deleteLoading }] = useMutation(DELETE_USER, {
+    const [deleteIt, { loading: deleteLoading }] = useMutation<IDeleteUserResponse>(DELETE_USER, {
         refetchQueries: [{ query: LIST_USERS }]
     });
 
-    const data = usersLoading && !listUsers ? [] : listUsers.adminUsers.users.data || [];
+    const data = usersLoading || !listUsers?.adminUsers?.users?.data ? [] : listUsers.adminUsers.users.data || [];
     const filteredData = filter === "" ? data : data.filter(filterUsers);
     const userList = sortUsers(filteredData);
     const id = new URLSearchParams(location.search).get("id");

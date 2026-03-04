@@ -9,15 +9,16 @@ import type {
     DeleteFileMutationResponse,
     DeleteFileMutationVariables,
     FileInput,
+    FmError,
     GetFileManagerSettingsQueryResponse,
-    ListFileTagsQueryResponse,
-    ListFileTagsQueryVariables,
+    IGetFileResponse,
     ListFilesListFilesResponse,
     ListFilesQueryResponse,
     ListFilesQueryVariables,
+    ListFileTagsQueryResponse,
+    ListFileTagsQueryVariables,
     UpdateFileMutationResponse,
-    UpdateFileMutationVariables,
-    FmError
+    UpdateFileMutationVariables
 } from "../graphql.js";
 import {
     CREATE_FILE,
@@ -235,21 +236,25 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
     };
 
     const getFile = async (id: string) => {
-        const response = await client.query({
+        const response = await client.query<IGetFileResponse>({
             query: GET_FILE(modelFields),
             variables: {
                 id
             },
             fetchPolicy: "network-only"
         });
+        
+        if (!response.data?.fileManager?.getFile) {
+            throw new WebinyError("File not found.");
+        }
 
-        const { data, error } = response.data?.fileManager.getFile;
+        const { data, error } = response.data?.fileManager?.getFile;
 
         if (error) {
             throw new WebinyError(error);
         }
 
-        return data;
+        return data as FileItem;
     };
 
     const listFiles: FileManagerApiContextData["listFiles"] = async (params = {}) => {
@@ -258,8 +263,12 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
             variables: params,
             fetchPolicy: "no-cache"
         });
-        const { data: files, meta, error } = data.fileManager.listFiles;
-        return { files, meta, error };
+        const { data: files, meta, error } = data!.fileManager.listFiles;
+        return {
+            files,
+            meta,
+            error
+        };
     };
 
     const listTags: FileManagerApiContextData["listTags"] = async ({ where, refetch } = {}) => {
@@ -269,7 +278,7 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
             fetchPolicy: refetch ? "network-only" : "cache-first"
         });
 
-        return data.fileManager.listTags.data;
+        return data?.fileManager?.listTags?.data as ListTagsResponseItem[];
     };
 
     /**
@@ -298,11 +307,11 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
         return await createFile(createFileInput);
     };
 
-    const getSettings = async () => {
+    const getSettings = async (): Promise<Settings> => {
         const settingsQuery = await client.query<GetFileManagerSettingsQueryResponse>({
             query: GET_FILE_SETTINGS
         });
-        return settingsQuery.data.fileManager.getSettings.data || {};
+        return (settingsQuery.data?.fileManager?.getSettings?.data || {}) as Settings;
     };
 
     const value: FileManagerApiContextData = {

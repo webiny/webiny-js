@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import type {UserItem} from "~/admin/ui/UserItem.js";
 
 const currentUserFields = /* GraphQL */ `
     {
@@ -10,6 +11,15 @@ const currentUserFields = /* GraphQL */ `
         external
     }
 `;
+
+export interface IGetCurrentUserResponse {
+    adminUsers: {
+        user: {
+            data: UserItem | null;
+            error: Error | null;
+        };
+    };
+}
 
 export const GET_CURRENT_USER = gql`
     query GetCurrentUser {
@@ -24,6 +34,15 @@ export const GET_CURRENT_USER = gql`
         }
     }
 `;
+
+export interface IUpdateCurrentUserResponse {
+    adminUsers: {
+        updateCurrentUser: {
+            data: UserItem | null;
+            error: Error | null;
+        };
+    };
+}
 
 export const UPDATE_CURRENT_USER = gql`
     mutation UpdateCurrentUser($data: AdminUsersCurrentUserInput!) {

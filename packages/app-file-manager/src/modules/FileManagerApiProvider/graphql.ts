@@ -21,7 +21,7 @@ const ERROR_FIELDS = /* GraphQL */ `
 export interface GetFileManagerSettingsQueryResponse {
     fileManager: {
         getSettings: {
-            data: Settings;
+            data: Settings | null;
             error?: FmError | null;
         };
     };
@@ -98,6 +98,15 @@ export const LIST_FILES = (FILE_FIELDS: string) => gql`
         }
     }
 `;
+
+export interface IGetFileResponse {
+    fileManager: {
+        getFile: {
+            data: FileItem | null;
+            error: FmError | null;
+        };
+    };
+}
 
 export const GET_FILE = (FILE_FIELDS: string) => gql`
     query GetFile($id: ID!) {

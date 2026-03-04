@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import type { UserItem } from "~/admin/ui/UserItem.js";
 
 const listUserFields = /* GraphQL */ `
     {
@@ -35,7 +36,16 @@ const userFormFields = () => {
     `;
 };
 
-export const LIST_USERS: any = gql`
+export interface IListUsersResponse {
+    adminUsers: {
+        users: {
+            data: UserItem[] | null;
+            error: Error | null;
+        };
+    };
+}
+
+export const LIST_USERS = gql`
     query ListUsers {
         adminUsers {
             users: listUsers {
@@ -45,7 +55,16 @@ export const LIST_USERS: any = gql`
     }
 `;
 
-export const READ_USER: any = () => gql`
+export interface IReadUserResponse {
+    adminUsers: {
+        user: {
+            data: UserItem | null;
+            error: Error | null;
+        };
+    };
+}
+
+export const READ_USER = () => gql`
     query GetUser($id: ID!) {
         adminUsers {
             user: getUser(where: { id: $id }){
@@ -59,22 +78,42 @@ export const READ_USER: any = () => gql`
     }
 `;
 
-export const CREATE_USER: any = gql`
-    mutation CreateUser($data: AdminUsersCreateInput!){
-        adminUsers {
-            user: createUser(data: $data) {
-                data ${listUserFields}
-                error {
-                    code
-                    message
-                    data
+export interface ICreateUserResponse {
+    adminUsers: {
+        user: {
+            data: UserItem | null;
+            error: Error | null;
+        };
+    };
+}
+
+export const CREATE_USER = () => {
+    return gql`
+        mutation CreateUser($data: AdminUsersCreateInput!){
+            adminUsers {
+                user: createUser(data: $data) {
+                    data ${listUserFields}
+                    error {
+                        code
+                        message
+                        data
+                    }
                 }
             }
         }
-    }
-`;
+    `;
+};
 
-export const UPDATE_USER: any = () => gql`
+export interface IUpdateUserResponse {
+    adminUsers: {
+        user: {
+            data: UserItem | null;
+            error: Error | null;
+        };
+    };
+}
+
+export const UPDATE_USER = () => gql`
     mutation UpdateUser($id: ID!, $data: AdminUsersUpdateInput!){
         adminUsers {
             user: updateUser(id: $id, data: $data) {
@@ -89,7 +128,16 @@ export const UPDATE_USER: any = () => gql`
     }
 `;
 
-export const DELETE_USER: any = gql`
+export interface IDeleteUserResponse {
+    adminUsers: {
+        deleteUser: {
+            data: boolean;
+            error: Error | null;
+        };
+    };
+}
+
+export const DELETE_USER = gql`
     mutation DeleteUser($id: ID!) {
         adminUsers {
             deleteUser(id: $id) {

@@ -1,11 +1,20 @@
-import { useCallback } from "react";
-import { useQuery, useMutation } from "@apollo/client/react";
+import { useCallback, useEffect } from "react";
+import { useMutation, useQuery } from "@apollo/client/react";
 import isEmpty from "lodash/isEmpty.js";
-import { useRoute, useRouter, useWcp } from "@webiny/app-admin";
-import { CREATE_USER, LIST_USERS, READ_USER, UPDATE_USER } from "~/admin/ui/views/Users/graphql.js";
+import { useRoute, useRouter } from "@webiny/app-admin";
+import {
+    CREATE_USER,
+    type ICreateUserResponse,
+    type IReadUserResponse,
+    type IUpdateUserResponse,
+    LIST_USERS,
+    READ_USER,
+    UPDATE_USER
+} from "~/admin/ui/views/Users/graphql.js";
 import omit from "lodash/omit.js";
 import { Routes } from "~/admin/routes.js";
 import { useToast } from "@webiny/admin-ui";
+import type { UserItem } from "~/admin/ui/UserItem.js";
 
 export type UseUserForm = ReturnType<typeof useUserForm>;
 
@@ -30,37 +39,35 @@ export function useUserForm() {
     const { route } = useRoute(Routes.Users.List);
     const toast = useToast();
 
-    const wcp = useWcp();
-    const teams = wcp.canUseTeams();
-
     const id = route.params.id;
     const newUser = route.params.new === true;
 
-    const { data, loading: userLoading } = useQuery(READ_USER({ teams }), {
+    const { data, loading: userLoading } = useQuery<IReadUserResponse>(READ_USER(), {
         variables: { id },
-        skip: !id,
-        onCompleted: data => {
-            if (!data) {
-                return;
-            }
-
-            const { error } = data.adminUsers.user;
-            if (error) {
-                goToRoute(Routes.Users.List);
-                toast.showWarningToast({
-                    title: "Error loading user profile",
-                    description: error.message,
-                    duration: Infinity
-                });
-            }
-        }
+        skip: !id
     });
 
-    const [create, { loading: createLoading }] = useMutation(CREATE_USER, {
+    useEffect(() => {
+        if (!data) {
+            return;
+        }
+
+        const { error } = data.adminUsers.user;
+        if (error) {
+            goToRoute(Routes.Users.List);
+            toast.showWarningToast({
+                title: "Error loading user profile",
+                description: error.message,
+                duration: Infinity
+            });
+        }
+    }, [data]);
+
+    const [create, { loading: createLoading }] = useMutation<ICreateUserResponse>(CREATE_USER(), {
         refetchQueries: [{ query: LIST_USERS }]
     });
 
-    const [update, { loading: updateLoading }] = useMutation(UPDATE_USER({ teams }), {
+    const [update, { loading: updateLoading }] = useMutation<IUpdateUserResponse>(UPDATE_USER(), {
         refetchQueries: [{ query: LIST_USERS }]
     });
 
@@ -75,6 +82,15 @@ export function useUserForm() {
 
             const result = await operation(args);
 
+            if (!result.data?.adminUsers) {
+                toast.showWarningToast({
+                    title: "Error updating user profile",
+                    description: "No response from the server.",
+                    duration: Infinity
+                });
+                return;
+            }
+
             const { data: user, error } = result.data.adminUsers.user;
 
             if (error) {
@@ -87,7 +103,7 @@ export function useUserForm() {
             }
 
             if (newUser) {
-                goToRoute(Routes.Users.List, { id: user.id });
+                goToRoute(Routes.Users.List, { id: user?.id });
             }
             toast.showSuccessToast({
                 title: "User saved successfully."
@@ -96,7 +112,9 @@ export function useUserForm() {
         [id, newUser]
     );
 
-    const user = userLoading ? {} : data ? data.adminUsers.user.data : {};
+    const user = (
+        userLoading ? {} : data ? data.adminUsers.user.data || {} : {}
+    ) as Partial<UserItem>;
 
     const showEmptyView = !newUser && !userLoading && isEmpty(user);
 
