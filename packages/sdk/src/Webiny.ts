@@ -5,7 +5,10 @@ export class Webiny {
     public readonly cms: CmsSdk;
 
     constructor(config: WebinyConfig) {
-        this.cms = new CmsSdk(config);
+        this.cms = new CmsSdk({
+            ...config,
+            tenant: config.tenant || "root"
+        });
     }
 }
 

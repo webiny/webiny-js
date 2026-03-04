@@ -24,6 +24,7 @@
     "@webiny/app-headless-cms-workflows": "0.0.0",
     "@webiny/app-mailer": "0.0.0",
     "@webiny/app-record-locking": "0.0.0",
+    "@webiny/app-sdk-playground": "0.0.0",
     "@webiny/app-security-access-management": "0.0.0",
     "@webiny/app-trash-bin": "0.0.0",
     "@webiny/app-website-builder": "0.0.0",

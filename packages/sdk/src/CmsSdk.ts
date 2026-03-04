@@ -31,7 +31,7 @@ export class CmsSdk {
 
     async getEntry<TValues extends CmsEntryValues = CmsEntryValues>(
         params: GetEntryParams
-    ): Promise<Result<CmsEntryData<TValues> | null, HttpError | GraphQLError | NetworkError>> {
+    ): Promise<Result<CmsEntryData<TValues>, HttpError | GraphQLError | NetworkError>> {
         return getEntryFn<TValues>(this.config, this.fetchFn, params);
     }
 

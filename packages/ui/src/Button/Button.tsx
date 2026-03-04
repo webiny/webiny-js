@@ -26,6 +26,11 @@ interface ButtonProps {
     children?: React.ReactNode;
 
     /**
+     * Icon to display inside the button.
+     */
+    icon?: React.ReactNode;
+
+    /**
      * Show ripple effect on button click.
      */
     ripple?: boolean;

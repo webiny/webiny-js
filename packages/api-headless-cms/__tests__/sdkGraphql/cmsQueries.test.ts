@@ -102,7 +102,8 @@ describe("SDK GraphQL - CMS Operations", () => {
             // List entries with sort using SDK.
             const listResult = await sdk.cms.listEntries<ProductValues>({
                 modelId: "product",
-                fields: ["id", "values.name", "values.price"],
+                fields: ["id", "createdOn", "values.*"],
+                depth: 1,
                 sort: {
                     createdOn: "desc"
                 }
@@ -118,7 +119,7 @@ describe("SDK GraphQL - CMS Operations", () => {
             expect(list.data[1].values?.name).toBe("Laptop");
         });
 
-        it("should list entries with where filter", async () => {
+        it("should list entries with where filter on id field", async () => {
             // Create first product.
             const product1Result = await sdk.cms.createEntry<ProductValues>({
                 modelId: "product",
@@ -177,6 +178,67 @@ describe("SDK GraphQL - CMS Operations", () => {
             const list = listResult.value;
             expect(list.data.length).toBe(1);
             expect(list.data[0].id).toBe(productId);
+            expect(list.data[0].values?.name).toBe("Keyboard");
+        });
+
+        it("should list entries with where filter on values.name field using dot-notation", async () => {
+            // Create first product.
+            const product1Result = await sdk.cms.createEntry<ProductValues>({
+                modelId: "product",
+                data: {
+                    values: {
+                        name: "Keyboard",
+                        sku: "KEY-001",
+                        description: "Mechanical keyboard",
+                        price: 150
+                    }
+                },
+                fields: ["id"]
+            });
+            expect(product1Result.isOk()).toBe(true);
+
+            // Publish first product.
+            await sdk.cms.publishEntryRevision({
+                modelId: "product",
+                revisionId: product1Result.value.id!,
+                fields: ["id"]
+            });
+
+            // Create second product.
+            const product2Result = await sdk.cms.createEntry<ProductValues>({
+                modelId: "product",
+                data: {
+                    values: {
+                        name: "Monitor",
+                        sku: "MON-001",
+                        description: "4K Monitor",
+                        price: 400
+                    }
+                },
+                fields: ["id"]
+            });
+            expect(product2Result.isOk()).toBe(true);
+
+            // Publish second product.
+            await sdk.cms.publishEntryRevision({
+                modelId: "product",
+                revisionId: product2Result.value.id!,
+                fields: ["id"]
+            });
+
+            // List entries with where filter on values.name using dot-notation.
+            // This should filter to only return the "Keyboard" product.
+            const listResult = await sdk.cms.listEntries<ProductValues>({
+                modelId: "product",
+                fields: ["id", "values.name", "values.price"],
+                where: {
+                    "values.name": "Keyboard"
+                }
+            });
+
+            expect(listResult.isOk()).toBe(true);
+            const list = listResult.value;
+            expect(list.data.length).toBe(1);
             expect(list.data[0].values?.name).toBe("Keyboard");
         });
 
