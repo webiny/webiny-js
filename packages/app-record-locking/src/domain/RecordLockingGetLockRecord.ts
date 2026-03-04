@@ -31,7 +31,11 @@ export class RecordLockingGetLockRecord implements IRecordLockingGetLockRecord {
             query: GET_LOCK_RECORD_QUERY,
             variables: params
         });
-        if (result.data.recordLocking.getLockRecord.error) {
+        if (!result.data?.recordLocking?.getLockRecord) {
+            throw new WebinyError("Missing response data.", "MISSING_RESPONSE_DATA", {
+                response: result
+            });
+        } else if (result.data.recordLocking.getLockRecord.error) {
             throw new WebinyError(result.data.recordLocking.getLockRecord.error);
         } else if (!result.data.recordLocking.getLockRecord.data) {
             throw new WebinyError("No data returned from server.");

@@ -33,6 +33,15 @@ export class RecordLockingGetLockedEntryLockRecord
             query: GET_LOCKED_ENTRY_LOCK_RECORD_QUERY,
             variables: params
         });
+        if (!result.data?.recordLocking?.getLockedEntryLockRecord) {
+            throw new WebinyError(
+                "Missing response data.",
+                "MISSING_RESPONSE_DATA",
+                {
+                    response: result
+                }
+            );
+        }
         if (result.data.recordLocking.getLockedEntryLockRecord.error) {
             throw new WebinyError(result.data.recordLocking.getLockedEntryLockRecord.error);
         }
