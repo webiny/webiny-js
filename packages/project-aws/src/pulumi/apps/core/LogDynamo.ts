@@ -30,37 +30,82 @@ export const LogDynamo = createAppModule({
                 globalSecondaryIndexes: [
                     {
                         name: "GSI_TENANT",
-                        hashKey: "GSI_TENANT",
+                        keySchemas: [
+                            {
+                                attributeName: "GSI_TENANT",
+                                keyType: "HASH"
+                            }
+                        ],
                         projectionType: "KEYS_ONLY"
                     },
                     {
                         name: "GSI1",
-                        hashKey: "GSI1_PK",
-                        rangeKey: "GSI1_SK",
+                        keySchemas: [
+                            {
+                                attributeName: "GSI1_PK",
+                                keyType: "HASH"
+                            },
+                            {
+                                attributeName: "GSI1_SK",
+                                keyType: "RANGE"
+                            }
+                        ],
                         projectionType: "ALL"
                     },
                     {
                         name: "GSI2",
-                        hashKey: "GSI2_PK",
-                        rangeKey: "GSI2_SK",
+                        keySchemas: [
+                            {
+                                attributeName: "GSI2_PK",
+                                keyType: "HASH"
+                            },
+                            {
+                                attributeName: "GSI2_SK",
+                                keyType: "RANGE"
+                            }
+                        ],
                         projectionType: "ALL"
                     },
                     {
                         name: "GSI3",
-                        hashKey: "GSI3_PK",
-                        rangeKey: "GSI3_SK",
+                        keySchemas: [
+                            {
+                                attributeName: "GSI3_PK",
+                                keyType: "HASH"
+                            },
+                            {
+                                attributeName: "GSI3_SK",
+                                keyType: "RANGE"
+                            }
+                        ],
                         projectionType: "ALL"
                     },
                     {
                         name: "GSI4",
-                        hashKey: "GSI4_PK",
-                        rangeKey: "GSI4_SK",
+                        keySchemas: [
+                            {
+                                attributeName: "GSI4_PK",
+                                keyType: "HASH"
+                            },
+                            {
+                                attributeName: "GSI4_SK",
+                                keyType: "RANGE"
+                            }
+                        ],
                         projectionType: "ALL"
                     },
                     {
                         name: "GSI5",
-                        hashKey: "GSI5_PK",
-                        rangeKey: "GSI5_SK",
+                        keySchemas: [
+                            {
+                                attributeName: "GSI5_PK",
+                                keyType: "HASH"
+                            },
+                            {
+                                attributeName: "GSI5_SK",
+                                keyType: "RANGE"
+                            }
+                        ],
                         projectionType: "ALL"
                     }
                 ],
