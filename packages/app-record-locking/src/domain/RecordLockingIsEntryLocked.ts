@@ -31,7 +31,7 @@ export class RecordLockingIsEntryLocked implements IRecordLockingIsEntryLocked {
                 query: IS_ENTRY_LOCKED_QUERY,
                 variables: params
             });
-            return !!result.data.recordLocking.isEntryLocked.data;
+            return !!result.data?.recordLocking?.isEntryLocked?.data;
         } catch {
             return false;
         }
