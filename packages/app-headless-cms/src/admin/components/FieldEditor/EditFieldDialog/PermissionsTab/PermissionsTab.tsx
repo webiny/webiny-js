@@ -2,6 +2,7 @@ import React from "react";
 import { useQuery } from "@apollo/react-hooks";
 import { Grid } from "@webiny/admin-ui";
 import { useBind } from "@webiny/form";
+import { useWcp } from "@webiny/app-admin";
 import {
     LIST_FOLDER_LEVEL_PERMISSIONS_TARGETS,
     UsersTeamsMultiAutocomplete
@@ -9,8 +10,10 @@ import {
 import type { FolderLevelPermissionsTarget } from "@webiny/app-aco";
 import type { FieldRule } from "~/types.js";
 import { FieldPermissionsSelection } from "./FieldPermissionsSelection.js";
+import { CannotUsePermissions } from "./CannotUsePermissions.js";
 
 export const PermissionsTab = ({ gridClassName }: { gridClassName?: string }) => {
+    const wcp = useWcp();
     const bind = useBind({ name: "rules" });
     const allRules: FieldRule[] = bind.value || [];
     const accessRules = allRules.filter(r => r.type === "accessControl");
@@ -47,6 +50,16 @@ export const PermissionsTab = ({ gridClassName }: { gridClassName?: string }) =>
         const updatedAccessRules = accessRules.filter(rule => rule.value !== removedRule.value);
         bind.onChange([...otherRules, ...updatedAccessRules]);
     };
+
+    if (!wcp.canUseHcmsFieldPermissions()) {
+        return (
+            <Grid className={gridClassName}>
+                <Grid.Column span={12}>
+                    <CannotUsePermissions />
+                </Grid.Column>
+            </Grid>
+        );
+    }
 
     return (
         <Grid className={gridClassName}>
