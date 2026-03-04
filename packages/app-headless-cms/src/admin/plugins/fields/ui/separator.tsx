@@ -100,9 +100,11 @@ const SeparatorLayoutCell = ({ descriptor, onUpdate, onDelete }: SeparatorLayout
     return (
         <div className={"flex items-center gap-sm"}>
             <div className={"flex-1"}>
-                <Separator variant={"accent"}>{descriptor.label}</Separator>
+                <Separator variant={"accent"} labelPosition={"start"}>
+                    {descriptor.label}
+                </Separator>
                 {descriptor.description && (
-                    <Text as={"div"} size={"sm"} className={"text-neutral-strong text-center"}>
+                    <Text as={"div"} size={"sm"} className={"text-neutral-strong mt-sm"}>
                         {descriptor.description}
                     </Text>
                 )}

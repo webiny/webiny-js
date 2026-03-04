@@ -13,7 +13,7 @@ export const SeparatorFieldRenderer = ({ descriptor }: SeparatorFieldRendererPro
                 {descriptor.label}
             </Separator>
             {descriptor.description && (
-                <Text as={"div"} size={"sm"} className={"text-neutral-strong text-center mt-sm"}>
+                <Text as={"div"} size={"sm"} className={"text-neutral-strong mt-sm"}>
                     {descriptor.description}
                 </Text>
             )}
