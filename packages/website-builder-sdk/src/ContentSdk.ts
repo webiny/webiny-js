@@ -1,6 +1,8 @@
 import type {
     Component,
     IContentSdk,
+    ListPagesOptions,
+    ListPagesResult,
     PublicPage,
     PublicRedirect,
     ResolvedComponent
@@ -49,8 +51,8 @@ class InternalContentSdk implements IContentSdk, IRedirects {
         return this.activeSdk.getPage(path);
     }
 
-    listPages(): Promise<PublicPage[]> {
-        return this.activeSdk.listPages();
+    listPages(options?: ListPagesOptions): Promise<ListPagesResult> {
+        return this.activeSdk.listPages(options);
     }
 
     getAllRedirects(): Promise<Map<string, PublicRedirect>> {
@@ -117,9 +119,9 @@ export class ContentSdk implements IContentSdk, IRedirects {
         return this.sdk.getPage(path);
     }
 
-    public listPages() {
+    public listPages(options?: ListPagesOptions) {
         this.assertInitialized();
-        return this.sdk.listPages();
+        return this.sdk.listPages(options);
     }
 
     public async getAllRedirects() {

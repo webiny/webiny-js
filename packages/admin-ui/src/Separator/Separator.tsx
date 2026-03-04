@@ -81,7 +81,7 @@ const SeparatorBase = ({
         : "flex flex-col items-center h-full";
     const separatorClass = separatorVariants({ orientation, variant });
     const textColor = variant === "accent" ? "text-accent-primary" : "text-neutral-primary";
-    const baseLabelClass = `${textColor} text-md font-semibold`;
+    const baseLabelClass = `${textColor} text-lg font-semibold`;
 
     const renderContent = () => {
         if (labelPosition === "start") {

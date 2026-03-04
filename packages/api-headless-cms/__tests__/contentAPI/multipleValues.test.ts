@@ -73,6 +73,7 @@ describe("multiple values in field", () => {
                 listValidation: [],
                 placeholder: "placeholder text",
                 tags: [],
+                rules: [],
                 predefinedValues: {
                     enabled: true,
                     values: [

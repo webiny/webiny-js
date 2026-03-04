@@ -1,5 +1,11 @@
 "use client";
-import type { ComponentGroup, IContentSdk, PublicPage } from "./types.js";
+import type {
+    ComponentGroup,
+    IContentSdk,
+    ListPagesOptions,
+    ListPagesResult,
+    PublicPage
+} from "./types.js";
 import { Messenger, MessageOrigin } from "./messenger/index.js";
 import { logger } from "./Logger.js";
 import { PreviewViewport } from "./PreviewViewport.js";
@@ -59,8 +65,8 @@ export class EditingSdk implements IContentSdk {
         return this.documentStore.getDocument();
     }
 
-    public async listPages(): Promise<PublicPage[]> {
-        return this.liveSdk.listPages();
+    public async listPages(options?: ListPagesOptions): Promise<ListPagesResult> {
+        return this.liveSdk.listPages(options);
     }
 
     registerComponentGroup(group: ComponentGroup) {

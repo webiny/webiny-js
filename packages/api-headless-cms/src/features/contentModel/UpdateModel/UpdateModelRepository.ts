@@ -41,7 +41,9 @@ class UpdateModelRepositoryImpl implements RepositoryAbstraction.Interface {
             try {
                 validateEndingAllowed({ model });
             } catch (error) {
-                return Result.fail(new ModelValidationError((error as Error).message));
+                return Result.fail(
+                    new ModelValidationError({ message: error.message, data: error.data })
+                );
             }
 
             // Get all models for validation (excluding the current model)
@@ -87,7 +89,9 @@ class UpdateModelRepositoryImpl implements RepositoryAbstraction.Interface {
                     context: this.cmsContext
                 });
             } catch (error) {
-                return Result.fail(new ModelValidationError((error as Error).message));
+                return Result.fail(
+                    new ModelValidationError({ message: error.message, data: error.data })
+                );
             }
 
             // Persist to storage

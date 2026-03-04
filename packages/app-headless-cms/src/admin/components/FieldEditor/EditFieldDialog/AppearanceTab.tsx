@@ -82,7 +82,7 @@ const AppearanceTab = () => {
                                             <Text
                                                 as={"div"}
                                                 size={"sm"}
-                                                className={"text-sm text-neutral-strong"}
+                                                className={"text-sm text-neutral-strong text-wrap"}
                                             >
                                                 {item.renderer.description}
                                             </Text>

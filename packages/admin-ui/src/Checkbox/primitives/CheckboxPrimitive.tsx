@@ -65,6 +65,7 @@ interface CheckboxPrimitiveVm {
 type CheckboxPrimitiveRendererProps = Omit<CheckboxPrimitiveProps, "onCheckedChange" | "onChange"> &
     NonNullable<CheckboxPrimitiveVm["item"]> & {
         changeChecked: (checked: boolean) => void;
+        disabled?: boolean;
     };
 
 const DecoratableCheckboxPrimitiveRenderer = ({
@@ -75,6 +76,7 @@ const DecoratableCheckboxPrimitiveRenderer = ({
     changeChecked,
     checked,
     className,
+    disabled = false,
     ...props
 }: CheckboxPrimitiveRendererProps) => {
     return (
@@ -85,6 +87,7 @@ const DecoratableCheckboxPrimitiveRenderer = ({
                 className={cn(checkboxVariants({ indeterminate, hasLabel }), className)}
                 onCheckedChange={changeChecked}
                 checked={indeterminate ? "indeterminate" : checked}
+                disabled={disabled}
             >
                 <span className={cn("flex items-center justify-center")}>
                     {indeterminate ? (
@@ -96,7 +99,15 @@ const DecoratableCheckboxPrimitiveRenderer = ({
                     )}
                 </span>
             </CheckboxPrimitives.Root>
-            {hasLabel && <Label htmlFor={id} text={label} weight={"light"} className={"text-md"} />}
+            {hasLabel && (
+                <Label
+                    disabled={disabled}
+                    htmlFor={id}
+                    text={label}
+                    weight={"light"}
+                    className={"text-md"}
+                />
+            )}
         </div>
     );
 };

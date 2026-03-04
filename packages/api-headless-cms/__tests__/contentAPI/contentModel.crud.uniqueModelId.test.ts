@@ -63,7 +63,9 @@ describe("content model unique model id test", () => {
                     data: null,
                     error: {
                         code: "Cms/Model/ValidationError",
-                        data: null,
+                        data: {
+                            input: "event"
+                        },
                         message: 'Content model with modelId "event" already exists.'
                     }
                 }
@@ -115,7 +117,9 @@ describe("content model unique model id test", () => {
                     data: null,
                     error: {
                         code: "Cms/Model/ValidationError",
-                        data: null,
+                        data: {
+                            input: "Event"
+                        },
                         message: `Content model with singularApiName "Event" already exists.`
                     }
                 }
@@ -140,7 +144,9 @@ describe("content model unique model id test", () => {
                     data: null,
                     error: {
                         code: "Cms/Model/ValidationError",
-                        data: null,
+                        data: {
+                            input: "Events"
+                        },
                         message: 'Content model with pluralApiName "Events" already exists.'
                     }
                 }
@@ -177,7 +183,9 @@ describe("content model unique model id test", () => {
                     data: null,
                     error: {
                         code: "Cms/Model/ValidationError",
-                        data: null,
+                        data: {
+                            input: "Events"
+                        },
                         message: 'Content model with pluralApiName "Events" already exists.'
                     }
                 }
@@ -200,7 +208,9 @@ describe("content model unique model id test", () => {
                     data: null,
                     error: {
                         code: "Cms/Model/ValidationError",
-                        data: null,
+                        data: {
+                            input: "Events"
+                        },
                         message: 'Content model with pluralApiName "Events" already exists.'
                     }
                 }

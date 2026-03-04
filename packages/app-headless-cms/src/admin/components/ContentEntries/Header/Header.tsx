@@ -3,6 +3,7 @@ import { Separator } from "@webiny/admin-ui";
 import { Search } from "@webiny/app-aco";
 import { ButtonFilters } from "./ButtonFilters/index.js";
 import { ButtonsCreate } from "./ButtonsCreate/index.js";
+import { ButtonRefresh } from "./ButtonRefresh/index.js";
 import { Title } from "./Title/index.js";
 
 interface HeaderProps {
@@ -44,6 +45,7 @@ export const Header = (props: HeaderProps) => {
                         </div>
                         <div>
                             <div className={"flex gap-sm"}>
+                                <ButtonRefresh />
                                 <ButtonFilters />
                                 <ButtonsCreate
                                     canCreateFolder={canCreateFolder}

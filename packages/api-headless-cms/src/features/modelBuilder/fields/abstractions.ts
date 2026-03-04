@@ -1,5 +1,5 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { FieldBuilder } from "./FieldBuilder.js";
+import type { BaseFieldBuilder } from "./BaseFieldBuilder.js";
 import type { IFieldBuilderRegistry } from "../abstractions.js";
 
 /**
@@ -10,7 +10,7 @@ export interface IFieldTypeFactory {
     readonly type: string;
 
     /** Create a new field builder instance */
-    create(registry: IFieldBuilderRegistry): FieldBuilder<any>;
+    create(registry: IFieldBuilderRegistry): BaseFieldBuilder<any>;
 }
 
 /**

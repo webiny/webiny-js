@@ -59,6 +59,8 @@
       "@webiny/app-mailer": ["../app-mailer/src"],
       "@webiny/app-record-locking/*": ["../app-record-locking/src/*"],
       "@webiny/app-record-locking": ["../app-record-locking/src"],
+      "@webiny/app-sdk-playground/*": ["../app-sdk-playground/src/*"],
+      "@webiny/app-sdk-playground": ["../app-sdk-playground/src"],
       "@webiny/app-security-access-management/*": ["../app-security-access-management/src/*"],
       "@webiny/app-security-access-management": ["../app-security-access-management/src"],
       "@webiny/app-trash-bin/*": ["../app-trash-bin/src/*"],
