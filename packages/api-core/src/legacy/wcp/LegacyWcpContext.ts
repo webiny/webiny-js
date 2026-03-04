@@ -72,6 +72,10 @@ export class LegacyWcpContext implements WcpContextObject {
         return this.getWcpContext().canUseWorkflows();
     }
 
+    canUseHcmsFieldPermissions(): boolean {
+        return this.getWcpContext().canUseHcmsFieldPermissions();
+    }
+
     ensureCanUseFeature(featureId: keyof typeof WCP_FEATURE_LABEL): void {
         this.getWcpContext().ensureCanUseFeature(featureId);
     }

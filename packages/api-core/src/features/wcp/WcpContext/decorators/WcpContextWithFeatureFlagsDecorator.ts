@@ -54,7 +54,10 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
                             folderLevelPermissions: flags.isFolderLevelPermissionsEnabled()
                                 ? project.package.features.advancedAccessControlLayer.options
                                       .folderLevelPermissions
-                                : false
+                                : false,
+                            hcmsFieldPermissions:
+                                project.package.features.advancedAccessControlLayer.options
+                                    .hcmsFieldPermissions
                         }
                     },
                     auditLogs: {
@@ -135,6 +138,10 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
 
     canUseWorkflows() {
         return this.decoratee.canUseWorkflows() && this.featureFlags.get().isWorkflowsEnabled();
+    }
+
+    canUseHcmsFieldPermissions() {
+        return this.decoratee.canUseHcmsFieldPermissions();
     }
 
     ensureCanUseFeature(featureId: keyof typeof WCP_FEATURE_LABEL) {

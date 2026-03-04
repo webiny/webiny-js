@@ -25,9 +25,15 @@ function CanUseWorkflows({ children }: ChildrenProps) {
     return wcp.canUseWorkflows() ? <>{children}</> : null;
 }
 
+function CanUseHcmsFieldPermissions({ children }: ChildrenProps) {
+    const wcp = useWcp();
+    return wcp.canUseHcmsFieldPermissions() ? <>{children}</> : null;
+}
+
 export const Wcp = {
     CanUseTeams,
     CanUsePrivateFiles,
     CanUseFileManagerThreatDetection,
-    CanUseWorkflows
+    CanUseWorkflows,
+    CanUseHcmsFieldPermissions
 };
