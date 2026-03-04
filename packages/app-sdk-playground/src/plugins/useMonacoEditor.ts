@@ -1,5 +1,4 @@
 import { useCallback, useRef } from "react";
-import type { MutableRefObject } from "react";
 import type { OnMount, BeforeMount } from "@monaco-editor/react";
 import type { editor } from "monaco-editor";
 import { SDK_GLOBAL_DECLARATION } from "./sdkGlobalDeclaration.js";
