@@ -138,7 +138,7 @@ const RuleRow = ({
                 Rule #{index + 1}
             </Separator>
             <Grid>
-                <Grid.Column span={4}>
+                <Grid.Column span={12}>
                     <Select
                         displayResetAction={false}
                         label={"Field"}
@@ -147,7 +147,7 @@ const RuleRow = ({
                         onChange={handleFieldChange}
                     />
                 </Grid.Column>
-                <Grid.Column span={4}>
+                <Grid.Column span={6}>
                     <Select
                         displayResetAction={false}
                         label={"Operator"}
@@ -157,7 +157,7 @@ const RuleRow = ({
                         disabled={!rule.target}
                     />
                 </Grid.Column>
-                <Grid.Column span={4}>
+                <Grid.Column span={6}>
                     {isBooleanField ? (
                         <Select
                             disabled={!showValue}
@@ -182,6 +182,7 @@ const RuleRow = ({
                 </Grid.Column>
                 <Grid.Column span={12}>
                     <Select
+                        label={"Action"}
                         displayResetAction={false}
                         value={rule.action}
                         options={actionOptions}
