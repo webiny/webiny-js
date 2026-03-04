@@ -18,7 +18,7 @@ interface HasRules {
 
 interface IdentityLike {
     id: string;
-    teams: { id: string }[];
+    teams: { slug: string }[];
 }
 
 /**
@@ -32,7 +32,7 @@ function evaluateAccessControlRulesForIdentity(
     const userTargets = new Set<string>();
     userTargets.add(`admin:${identity.id}`);
     for (const team of identity.teams) {
-        userTargets.add(`team:${team.id}`);
+        userTargets.add(`team:${team.slug}`);
     }
 
     let canView = true;

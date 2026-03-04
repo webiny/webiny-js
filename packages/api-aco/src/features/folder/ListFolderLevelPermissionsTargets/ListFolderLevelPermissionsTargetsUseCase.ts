@@ -24,7 +24,7 @@ class ListFolderLevelPermissionsTargetsUseCaseImpl implements UseCaseAbstraction
         const teamTargets = teams.map(team => ({
             id: team.id,
             type: "team",
-            target: `team:${team.id}`,
+            target: `team:${team.slug}`,
             name: team.name || "",
             meta: {}
         }));
