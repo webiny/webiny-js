@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import type { Settings } from "~/types.js";
 
 const fields = /* GraphQL */ `
     {
@@ -20,6 +21,17 @@ export interface GetSettingsResponse {
     fileManager: {
         getSettings: {
             data: Record<string, any>;
+        };
+    };
+}
+
+
+
+export interface IUpdateSettingsResponse {
+    fileManager: {
+        updateSettings: {
+            data: Settings | null;
+            error: Error | null;
         };
     };
 }

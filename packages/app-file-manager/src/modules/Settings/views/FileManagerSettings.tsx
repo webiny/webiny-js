@@ -1,7 +1,7 @@
 import * as React from "react";
-import { Button, Grid, Input, Link, OverlayLoader, Text, Heading } from "@webiny/admin-ui";
+import { Button, Grid, Heading, Input, Link, OverlayLoader, Text } from "@webiny/admin-ui";
 import { Form, useBind } from "@webiny/form";
-import { Mutation, Query } from "@apollo/react-components";
+import { useMutation, useQuery } from "@apollo/client/react";
 import {
     CenteredView,
     SimpleForm,
@@ -11,12 +11,11 @@ import {
     useDialogs,
     useSnackbar
 } from "@webiny/app-admin";
-import type { GetSettingsResponse } from "../graphql.js";
+import type { GetSettingsResponse, IUpdateSettingsResponse } from "../graphql.js";
 import graphql from "../graphql.js";
 import get from "lodash/get.js";
 import { validation } from "@webiny/validation";
 import type { QueryGetSettingsResult, Settings } from "~/types.js";
-import type { MutationFunction, MutationResult } from "@apollo/react-common";
 
 const Code = ({ children }: { children: React.ReactNode }) => {
     return <code className={"text-md font-bold"}>{children}</code>;
@@ -27,9 +26,16 @@ const headingLevel = 5;
 
 export const FileManagerSettings = () => {
     const { showSnackbar } = useSnackbar();
-
     const { showDialog } = useDialogs();
+    
+    const { data, loading: queryInProgress } = useQuery<QueryGetSettingsResult>(
+        graphql.GET_SETTINGS
+    );
+    const [update, result] = useMutation<IUpdateSettingsResponse>(graphql.UPDATE_SETTINGS);
 
+    const settings = (get(data, "fileManager.getSettings.data") || {}) as Settings;
+    const { loading: mutationInProgress } = result;
+    
     const learnMore = () => {
         showDialog({
             title: "How to configure file delivery URL?",
@@ -70,133 +76,106 @@ export const FileManagerSettings = () => {
             cancelLabel: null
         });
     };
+    
+    const onSubmit = async (data: Settings): Promise<void> => {
+        await update({
+            variables: {
+                data: {
+                    uploadMinFileSize: parseFloat(data.uploadMinFileSize),
+                    uploadMaxFileSize: parseFloat(data.uploadMaxFileSize),
+                    srcPrefix: data.srcPrefix
+                }
+            },
+            update: (cache, result) => {
+                const data = structuredClone(
+                    cache.readQuery<GetSettingsResponse>({
+                        query: graphql.GET_SETTINGS
+                    })
+                );
+                if (!data) {
+                    return;
+                }
+                const error = result.data!.fileManager.updateSettings.error;
+                if (error) {
+                    showSnackbar(`Error updating settings: ${error.message}`);
+                    console.error(error);
+                    return;
+                }
+
+                data.fileManager.getSettings.data = {
+                    ...data.fileManager.getSettings.data,
+                    ...result.data!.fileManager.updateSettings.data
+                };
+
+                cache.writeQuery({
+                    query: graphql.GET_SETTINGS,
+                    data
+                });
+                showSnackbar("Settings updated successfully.");
+            }
+        });
+    };
 
     return (
-        <Query query={graphql.GET_SETTINGS}>
-            {({ data, loading: queryInProgress }: MutationResult<QueryGetSettingsResult>) => (
-                <Mutation mutation={graphql.UPDATE_SETTINGS}>
-                    {(update: MutationFunction, result: MutationResult) => {
-                        const settings = (get(data, "fileManager.getSettings.data") ||
-                            {}) as Settings;
-                        const { loading: mutationInProgress } = result;
-
-                        const onSubmit = async (data: Settings): Promise<void> => {
-                            await update({
-                                variables: {
-                                    data: {
-                                        uploadMinFileSize: parseFloat(data.uploadMinFileSize),
-                                        uploadMaxFileSize: parseFloat(data.uploadMaxFileSize),
-                                        srcPrefix: data.srcPrefix
-                                    }
-                                },
-                                update: (cache, result) => {
-                                    const data = structuredClone(
-                                        cache.readQuery<GetSettingsResponse>({
-                                            query: graphql.GET_SETTINGS
-                                        })
-                                    );
-                                    if (!data) {
-                                        return;
-                                    }
-                                    const error = result.data.fileManager.updateSettings.error;
-                                    if (error) {
-                                        showSnackbar(`Error updating settings: ${error.message}`);
-                                        console.error(error);
-                                        return;
-                                    }
-
-                                    data.fileManager.getSettings.data = {
-                                        ...data.fileManager.getSettings.data,
-                                        ...result.data.fileManager.updateSettings.data
-                                    };
-
-                                    cache.writeQuery({
-                                        query: graphql.GET_SETTINGS,
-                                        data
-                                    });
-                                    showSnackbar("Settings updated successfully.");
-                                }
-                            });
-                        };
-                        return (
-                            <CenteredView>
-                                <Form
-                                    data={settings}
-                                    onSubmit={data => {
-                                        /**
-                                         * We are positive that data is Settings.
-                                         */
-                                        onSubmit(data as unknown as Settings);
-                                    }}
-                                >
-                                    {({ Bind, form }) => (
-                                        <SimpleForm>
-                                            {(queryInProgress || mutationInProgress) && (
-                                                <OverlayLoader />
-                                            )}
-                                            <SimpleFormHeader title="General Settings" />
-                                            <SimpleFormContent>
-                                                <Grid>
-                                                    <Grid.Column span={12}>
-                                                        <Bind name={"uploadMinFileSize"}>
-                                                            <Input
-                                                                type="number"
-                                                                label="Minimum file upload size"
-                                                                description="The smallest file size in bytes."
-                                                            />
-                                                        </Bind>
-                                                    </Grid.Column>
-                                                    <Grid.Column span={12}>
-                                                        <Bind name={"uploadMaxFileSize"}>
-                                                            <Input
-                                                                type="number"
-                                                                label="Maximum file upload size"
-                                                                description="The largest file size in bytes."
-                                                            />
-                                                        </Bind>
-                                                    </Grid.Column>
-                                                    <Grid.Column span={12}>
-                                                        <Bind
-                                                            name={"srcPrefix"}
-                                                            validators={[
-                                                                validation.create("required,url")
-                                                            ]}
-                                                        >
-                                                            <Input
-                                                                label="File delivery URL"
-                                                                note={<UrlPreview />}
-                                                                description={
-                                                                    <>
-                                                                        This URL will be prepended
-                                                                        to the file key.&nbsp;
-                                                                        <Link
-                                                                            to="#"
-                                                                            onClick={learnMore}
-                                                                        >
-                                                                            How to configure?
-                                                                        </Link>
-                                                                    </>
-                                                                }
-                                                            />
-                                                        </Bind>
-                                                    </Grid.Column>
-                                                </Grid>
-                                            </SimpleFormContent>
-                                            <SimpleFormFooter>
-                                                <Button
-                                                    text={"Save settings"}
-                                                    onClick={form.submit}
-                                                />
-                                            </SimpleFormFooter>
-                                        </SimpleForm>
-                                    )}
-                                </Form>
-                            </CenteredView>
-                        );
-                    }}
-                </Mutation>
-            )}
-        </Query>
+        <CenteredView>
+            <Form
+                data={settings}
+                onSubmit={data => {
+                    onSubmit(data as unknown as Settings);
+                }}
+            >
+                {({ Bind, form }) => (
+                    <SimpleForm>
+                        {(queryInProgress || mutationInProgress) && <OverlayLoader />}
+                        <SimpleFormHeader title="General Settings" />
+                        <SimpleFormContent>
+                            <Grid>
+                                <Grid.Column span={12}>
+                                    <Bind name={"uploadMinFileSize"}>
+                                        <Input
+                                            type="number"
+                                            label="Minimum file upload size"
+                                            description="The smallest file size in bytes."
+                                        />
+                                    </Bind>
+                                </Grid.Column>
+                                <Grid.Column span={12}>
+                                    <Bind name={"uploadMaxFileSize"}>
+                                        <Input
+                                            type="number"
+                                            label="Maximum file upload size"
+                                            description="The largest file size in bytes."
+                                        />
+                                    </Bind>
+                                </Grid.Column>
+                                <Grid.Column span={12}>
+                                    <Bind
+                                        name={"srcPrefix"}
+                                        validators={[validation.create("required,url")]}
+                                    >
+                                        <Input
+                                            label="File delivery URL"
+                                            note={<UrlPreview />}
+                                            description={
+                                                <>
+                                                    This URL will be prepended to the file key.&nbsp;
+                                                    <Link to="#" onClick={learnMore}>
+                                                        How to configure?
+                                                    </Link>
+                                                </>
+                                            }
+                                        />
+                                    </Bind>
+                                </Grid.Column>
+                            </Grid>
+                        </SimpleFormContent>
+                        <SimpleFormFooter>
+                            <Button text={"Save settings"} onClick={form.submit} />
+                        </SimpleFormFooter>
+                    </SimpleForm>
+                )}
+            </Form>
+        </CenteredView>
     );
 };
 
@@ -206,7 +185,6 @@ const UrlPreview = () => {
     });
 
     let prefix = deliveryUrl.value ?? "";
-
     prefix = prefix.endsWith("/") ? prefix : `${prefix}/`;
 
     return (
