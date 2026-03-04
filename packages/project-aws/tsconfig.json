@@ -8,8 +8,7 @@
     { "path": "../data-migration" },
     { "path": "../project" },
     { "path": "../pulumi" },
-    { "path": "../utils" },
-    { "path": "../wcp" }
+    { "path": "../utils" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -31,9 +30,7 @@
       "@webiny/pulumi/*": ["../pulumi/src/*"],
       "@webiny/pulumi": ["../pulumi/src"],
       "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"],
-      "@webiny/wcp/*": ["../wcp/src/*"],
-      "@webiny/wcp": ["../wcp/src"]
+      "@webiny/utils": ["../utils/src"]
     },
     "baseUrl": "."
   }
