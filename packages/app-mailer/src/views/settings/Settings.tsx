@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { CenteredView, useSnackbar } from "@webiny/app-admin";
-import { Mutation, Query } from "@apollo/react-components";
+import { useQuery, useMutation } from "@apollo/client/react";
 import { Form } from "@webiny/form";
 import {
     SimpleForm,
@@ -49,6 +49,12 @@ export const Settings = () => {
 
     const [errors, setErrors] = useState<ValidationError[] | undefined>();
 
+    const { data: response, loading: queryInProgress } = useQuery<SettingsQueryResponse>(GET_SETTINGS_QUERY);
+    const [update, result] = useMutation<SaveSettingsMutationResponse, SaveSettingsMutationVariables>(SAVE_SETTINGS_MUTATION);
+
+    const { data: settingsData, error: settingsError } = response?.mailer.settings || {};
+    const { loading: mutationInProgress } = result;
+
     useEffect(() => {
         const t = setTimeout(() => {
             if (!password.current) {
@@ -62,208 +68,155 @@ export const Settings = () => {
         };
     }, []);
 
+    const onSubmit = async (data: TransportSettings): Promise<void> => {
+        setErrors([]);
+        await update({
+            variables: {
+                data
+            },
+            update: (cache, result) => {
+                const data = structuredClone(
+                    cache.readQuery<SettingsQueryResponse>({
+                        query: GET_SETTINGS_QUERY
+                    })
+                );
+
+                const { data: updateData, error: updateError } =
+                    result.data?.mailer.settings || {};
+
+                const errors = updateError?.data.errors;
+                if (errors) {
+                    setErrors(errors);
+                    showSnackbar(
+                        "Settings not updated! Please check your network and console logs for detailed information."
+                    );
+                    return;
+                }
+
+                cache.writeQuery({
+                    query: GET_SETTINGS_QUERY,
+                    data: dotPropImmutable.set(data, "mailer.settings.data", {
+                        ...settingsData,
+                        ...updateData
+                    })
+                });
+                showSnackbar("Settings updated successfully.");
+            }
+        });
+    };
+
+    if (settingsError) {
+        return (
+            <SimpleForm>
+                <SimpleFormHeader title="Mailer Settings" />
+                <SimpleFormContent>
+                    <Grid>
+                        <Grid.Column span={12}>
+                            <Alert title={settingsError.message} type="danger">
+                                {settingsError.code === "PASSWORD_SECRET_ERROR" && (
+                                    <p>
+                                        To store the Mailer settings, you must have a password
+                                        secret environment variable defined.
+                                    </p>
+                                )}
+                            </Alert>
+                        </Grid.Column>
+                    </Grid>
+                </SimpleFormContent>
+                <SimpleFormFooter>{""}</SimpleFormFooter>
+            </SimpleForm>
+        );
+    }
+
+    const passwordValidators: Validator[] = [];
+    if (!settingsData?.user) {
+        passwordValidators.push(validation.create("required,minLength:5"));
+    }
+
     return (
-        <Query<SettingsQueryResponse> query={GET_SETTINGS_QUERY}>
-            {({ data: response, loading: queryInProgress }) => (
-                <Mutation<SaveSettingsMutationResponse, SaveSettingsMutationVariables>
-                    mutation={SAVE_SETTINGS_MUTATION}
-                >
-                    {(update, result) => {
-                        const { data: settingsData, error: settingsError } =
-                            response?.mailer.settings || {};
-                        const { loading: mutationInProgress } = result;
-
-                        const onSubmit = async (data: TransportSettings): Promise<void> => {
-                            setErrors([]);
-                            await update({
-                                variables: {
-                                    data
-                                },
-                                update: (cache, result) => {
-                                    const data = structuredClone(
-                                        cache.readQuery<SettingsQueryResponse>({
-                                            query: GET_SETTINGS_QUERY
-                                        })
-                                    );
-
-                                    const { data: updateData, error: updateError } =
-                                        result.data?.mailer.settings || {};
-
-                                    const errors = updateError?.data.errors;
-                                    if (errors) {
-                                        setErrors(errors);
-                                        showSnackbar(
-                                            "Settings not updated! Please check your network and console logs for detailed information."
-                                        );
-                                        return;
-                                    }
-
-                                    cache.writeQuery({
-                                        query: GET_SETTINGS_QUERY,
-                                        data: dotPropImmutable.set(data, "mailer.settings.data", {
-                                            ...settingsData,
-                                            ...updateData
-                                        })
-                                    });
-                                    showSnackbar("Settings updated successfully.");
-                                }
-                            });
-                        };
-                        if (settingsError) {
-                            return (
-                                <SimpleForm>
-                                    <SimpleFormHeader title="Mailer Settings" />
-                                    <SimpleFormContent>
-                                        <Grid>
-                                            <Grid.Column span={12}>
-                                                <Alert title={settingsError.message} type="danger">
-                                                    {settingsError.code ===
-                                                        "PASSWORD_SECRET_ERROR" && (
-                                                        <p>
-                                                            To store the Mailer settings, you must
-                                                            have a password secret environment
-                                                            variable defined.
-                                                        </p>
-                                                    )}
-                                                </Alert>
-                                            </Grid.Column>
-                                        </Grid>
-                                    </SimpleFormContent>
-                                    <SimpleFormFooter>{""}</SimpleFormFooter>
-                                </SimpleForm>
-                            );
-                        }
-
-                        const passwordValidators: Validator[] = [];
-                        if (!settingsData?.user) {
-                            passwordValidators.push(validation.create("required,minLength:5"));
-                        }
-
-                        return (
-                            <CenteredView>
-                                <Form
-                                    data={settingsData || {}}
-                                    onSubmit={data => {
-                                        /**
-                                         * We are positive that data is TransportSettings.
-                                         */
-                                        onSubmit(data as unknown as TransportSettings);
-                                    }}
-                                >
-                                    {({ Bind, form }) => (
-                                        <SimpleForm>
-                                            {(queryInProgress || mutationInProgress) && (
-                                                <OverlayLoader />
-                                            )}
-                                            <SimpleFormHeader title="Mailer Settings" />
-                                            <SimpleFormContent>
-                                                {displayErrors(errors)}
-                                                <Grid>
-                                                    <Grid.Column span={12}>
-                                                        <Bind
-                                                            name={"host"}
-                                                            validators={[
-                                                                validation.create(
-                                                                    "required,minLength:1"
-                                                                )
-                                                            ]}
-                                                        >
-                                                            <Input
-                                                                size={"lg"}
-                                                                type="text"
-                                                                label="Hostname"
-                                                            />
-                                                        </Bind>
-                                                    </Grid.Column>
-                                                    <Grid.Column span={12}>
-                                                        <Bind name={"port"}>
-                                                            <Input
-                                                                size={"lg"}
-                                                                type="number"
-                                                                label="Port"
-                                                            />
-                                                        </Bind>
-                                                    </Grid.Column>
-                                                    <Grid.Column span={12}>
-                                                        <Bind
-                                                            name={"user"}
-                                                            validators={[
-                                                                validation.create(
-                                                                    "required,minLength:1"
-                                                                )
-                                                            ]}
-                                                        >
-                                                            <Input
-                                                                size={"lg"}
-                                                                type="text"
-                                                                label="User"
-                                                                autoComplete="new-password"
-                                                            />
-                                                        </Bind>
-                                                    </Grid.Column>
-                                                    <Grid.Column span={12}>
-                                                        <Bind
-                                                            name={"password"}
-                                                            validators={passwordValidators}
-                                                        >
-                                                            <Input
-                                                                size={"lg"}
-                                                                label="Password"
-                                                                type="password"
-                                                                autoComplete="new-password"
-                                                                value={""}
-                                                                inputRef={password}
-                                                            />
-                                                        </Bind>
-                                                    </Grid.Column>
-                                                    <Grid.Column span={12}>
-                                                        <Bind
-                                                            name={"from"}
-                                                            validators={[
-                                                                validation.create(
-                                                                    "required,minLength:1,email"
-                                                                )
-                                                            ]}
-                                                        >
-                                                            <Input
-                                                                size={"lg"}
-                                                                type="text"
-                                                                label="Mail from"
-                                                            />
-                                                        </Bind>
-                                                    </Grid.Column>
-                                                    <Grid.Column span={12}>
-                                                        <Bind
-                                                            name={"replyTo"}
-                                                            validators={[
-                                                                validation.create("email")
-                                                            ]}
-                                                        >
-                                                            <Input
-                                                                size={"lg"}
-                                                                type="text"
-                                                                label="Mail reply-to"
-                                                            />
-                                                        </Bind>
-                                                    </Grid.Column>
-                                                </Grid>
-                                            </SimpleFormContent>
-                                            <SimpleFormFooter>
-                                                <Button
-                                                    text={"Save"}
-                                                    onClick={ev => {
-                                                        form.submit(ev);
-                                                    }}
-                                                />
-                                            </SimpleFormFooter>
-                                        </SimpleForm>
-                                    )}
-                                </Form>
-                            </CenteredView>
-                        );
-                    }}
-                </Mutation>
-            )}
-        </Query>
+        <CenteredView>
+            <Form
+                data={settingsData || {}}
+                onSubmit={data => {
+                    onSubmit(data as unknown as TransportSettings);
+                }}
+            >
+                {({ Bind, form }) => (
+                    <SimpleForm>
+                        {(queryInProgress || mutationInProgress) && <OverlayLoader />}
+                        <SimpleFormHeader title="Mailer Settings" />
+                        <SimpleFormContent>
+                            {displayErrors(errors)}
+                            <Grid>
+                                <Grid.Column span={12}>
+                                    <Bind
+                                        name={"host"}
+                                        validators={[validation.create("required,minLength:1")]}
+                                    >
+                                        <Input size={"lg"} type="text" label="Hostname" />
+                                    </Bind>
+                                </Grid.Column>
+                                <Grid.Column span={12}>
+                                    <Bind name={"port"}>
+                                        <Input size={"lg"} type="number" label="Port" />
+                                    </Bind>
+                                </Grid.Column>
+                                <Grid.Column span={12}>
+                                    <Bind
+                                        name={"user"}
+                                        validators={[validation.create("required,minLength:1")]}
+                                    >
+                                        <Input
+                                            size={"lg"}
+                                            type="text"
+                                            label="User"
+                                            autoComplete="new-password"
+                                        />
+                                    </Bind>
+                                </Grid.Column>
+                                <Grid.Column span={12}>
+                                    <Bind name={"password"} validators={passwordValidators}>
+                                        <Input
+                                            size={"lg"}
+                                            label="Password"
+                                            type="password"
+                                            autoComplete="new-password"
+                                            value={""}
+                                            inputRef={password}
+                                        />
+                                    </Bind>
+                                </Grid.Column>
+                                <Grid.Column span={12}>
+                                    <Bind
+                                        name={"from"}
+                                        validators={[
+                                            validation.create("required,minLength:1,email")
+                                        ]}
+                                    >
+                                        <Input size={"lg"} type="text" label="Mail from" />
+                                    </Bind>
+                                </Grid.Column>
+                                <Grid.Column span={12}>
+                                    <Bind
+                                        name={"replyTo"}
+                                        validators={[validation.create("email")]}
+                                    >
+                                        <Input size={"lg"} type="text" label="Mail reply-to" />
+                                    </Bind>
+                                </Grid.Column>
+                            </Grid>
+                        </SimpleFormContent>
+                        <SimpleFormFooter>
+                            <Button
+                                text={"Save"}
+                                onClick={ev => {
+                                    form.submit(ev);
+                                }}
+                            />
+                        </SimpleFormFooter>
+                    </SimpleForm>
+                )}
+            </Form>
+        </CenteredView>
     );
 };
