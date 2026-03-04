@@ -2,6 +2,7 @@ import gql from "graphql-tag";
 import type { FileItem } from "~/types.js";
 import type { Settings } from "~/types.js";
 import type { ListTagsResponseItem } from "~/modules/FileManagerApiProvider/FileManagerApiContext/FileManagerApiContext.js";
+import type {CmsModel} from "@webiny/app-headless-cms-common/types/index.js";
 
 export interface FmError {
     code: string;
@@ -241,6 +242,15 @@ export const GET_FILE_SETTINGS = gql`
         }
     }
 `;
+
+export interface IGetFileModelResponse {
+    fileManager: {
+        getFileModel: {
+            data: CmsModel | null;
+            error: FmError | null;
+        };
+    };
+}
 
 export const GET_FILE_MODEL = gql`
     query GetFileModel {

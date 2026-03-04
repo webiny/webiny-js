@@ -17,11 +17,16 @@ import {
     ListItemTextPrimary,
     ListItemTextSecondary
 } from "@webiny/ui/List/index.js";
-import { useSnackbar, useRouter, useConfirmationDialog, SearchUI } from "@webiny/app-admin";
+import { SearchUI, useConfirmationDialog, useRouter, useSnackbar } from "@webiny/app-admin";
 import { Button, Select, Tooltip } from "@webiny/admin-ui";
 import { useApolloClient, useQuery } from "../../hooks/index.js";
+import type {
+    CmsGroupWithModels,
+    DeleteCmsGroupMutationResponse,
+    DeleteCmsGroupMutationVariables,
+    ListCmsGroupsQueryResponse
+} from "./graphql.js";
 import * as GQL from "./graphql.js";
-import type { CmsGroupWithModels, ListCmsGroupsQueryResponse } from "./graphql.js";
 import { deserializeSorters } from "../utils.js";
 import { usePermission } from "~/admin/hooks/index.js";
 import type { CmsGroup } from "~/types.js";
@@ -94,11 +99,18 @@ const ContentModelGroupsDataList = ({ canCreate }: ContentModelGroupsDataListPro
     const deleteItem = useCallback(
         (group: Pick<CmsGroup, "id" | "name">) => {
             showConfirmation(async () => {
-                const response = await client.mutate({
+                const response = await client.mutate<
+                    DeleteCmsGroupMutationResponse,
+                    DeleteCmsGroupMutationVariables
+                >({
                     mutation: GQL.DELETE_CONTENT_MODEL_GROUP,
                     variables: { id: group.id },
                     update(cache, { data }) {
-                        const { error } = data.deleteContentModelGroup;
+                        if (!data) {
+                            showSnackbar("Could not delete content model group.");
+                            return;
+                        }
+                        const { error } = data.contentModelGroup;
                         if (error) {
                             showSnackbar(error.message);
                             return;
@@ -127,7 +139,10 @@ const ContentModelGroupsDataList = ({ canCreate }: ContentModelGroupsDataListPro
                     }
                 });
 
-                const { error } = response.data.deleteContentModelGroup;
+                if (!response.data) {
+                    return showSnackbar("Could not delete content model group.");
+                }
+                const { error } = response.data.contentModelGroup;
                 if (error) {
                     return showSnackbar(error.message);
                 }

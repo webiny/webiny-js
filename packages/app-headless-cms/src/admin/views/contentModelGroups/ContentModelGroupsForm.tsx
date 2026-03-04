@@ -1,28 +1,23 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import isEmpty from "lodash/isEmpty.js";
-import get from "lodash/get.js";
-import { Bind, type FormRenderPropParams, useForm, useGenerateSlug } from "@webiny/form";
+import { Bind, Form, type FormRenderPropParams, useForm, useGenerateSlug } from "@webiny/form";
 import { ReactComponent as DevicesIcon } from "@webiny/icons/devices_other.svg";
-import { Form } from "@webiny/form";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { validation } from "@webiny/validation";
 
 import {
+    EmptyView,
+    SimpleForm,
+    SimpleFormContent,
+    SimpleFormFooter,
+    SimpleFormHeader,
     useRoute,
     useRouter,
-    useSnackbar,
-    EmptyView,
-    SimpleFormHeader,
-    SimpleForm,
-    SimpleFormFooter,
-    SimpleFormContent
+    useSnackbar
 } from "@webiny/app-admin";
 import { IconPicker } from "~/admin/components/IconPicker.js";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { useMutation, useQuery } from "../../hooks/index.js";
-import * as GQL from "./graphql.js";
-import { usePermission } from "~/admin/hooks/index.js";
-import { Tooltip } from "@webiny/ui/Tooltip/index.js";
 import type {
     CmsGroup,
     CreateCmsGroupMutationResponse,
@@ -33,6 +28,9 @@ import type {
     UpdateCmsGroupMutationResponse,
     UpdateCmsGroupMutationVariables
 } from "./graphql.js";
+import * as GQL from "./graphql.js";
+import { usePermission } from "~/admin/hooks/index.js";
+import { Tooltip } from "@webiny/ui/Tooltip/index.js";
 import { Button, Grid, Input, OverlayLoader, Textarea } from "@webiny/admin-ui";
 import { Routes } from "~/routes.js";
 
@@ -56,20 +54,22 @@ const ContentModelGroupsForm = ({ canCreate }: ContentModelGroupsFormProps) => {
             variables: {
                 id: id as string
             },
-            skip: !id,
-            onCompleted: data => {
-                if (!data) {
-                    return;
-                }
-
-                const { error } = data.contentModelGroup;
-                if (error) {
-                    goToRoute(Routes.ContentModelGroups.List);
-                    showSnackbar(error.message);
-                }
-            }
+            skip: !id
         }
     );
+
+    useEffect(() => {
+        if (!getQuery.data) {
+            return;
+        }
+
+        const { error } = getQuery.data
+            .contentModelGroup as GetCmsGroupQueryResponse["contentModelGroup"];
+        if (error) {
+            goToRoute(Routes.ContentModelGroups.List);
+            showSnackbar(error.message);
+        }
+    }, [getQuery.data]);
 
     // Create a new group and update list cache
     const [create, createMutation] = useMutation<
@@ -164,9 +164,9 @@ const ContentModelGroupsForm = ({ canCreate }: ContentModelGroupsFormProps) => {
         [id]
     );
 
-    const data: CmsGroup | null = getQuery.loading
+    const data = getQuery.loading
         ? null
-        : get(getQuery, "data.contentModelGroup.data", null);
+        : (getQuery.data?.contentModelGroup?.data as CmsGroup) || null;
 
     const showEmptyView = !newEntry && !loading && isEmpty(data);
     // Render "No content selected" view.

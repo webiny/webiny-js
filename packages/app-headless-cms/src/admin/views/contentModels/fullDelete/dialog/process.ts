@@ -6,7 +6,7 @@ import type {
 } from "~/admin/viewsGraphql.js";
 import { FULLY_DELETE_CONTENT_MODEL } from "~/admin/viewsGraphql.js";
 import type { CmsErrorResponse, CmsModel } from "~/types.js";
-import type { DataProxy } from "apollo-cache";
+import type { ApolloCache } from "@apollo/client/cache";
 
 export interface ICreateProcessParams {
     client: ApolloClient;
@@ -15,7 +15,7 @@ export interface ICreateProcessParams {
 export interface IProcessParams {
     confirmation: string;
     model: CmsModel;
-    onSuccess: (cache: DataProxy, data: IDeleteCmsModelTask) => void;
+    onSuccess: (cache: ApolloCache, data: IDeleteCmsModelTask) => void;
 }
 
 export interface IProcessResponseSuccess {
@@ -68,9 +68,8 @@ export const createProcessConfirmation = ({ client }: ICreateProcessParams) => {
                     error: fullyDeleteModel.error
                 };
             } else if (!fullyDeleteModel.data) {
-                const graphQlError = result.errors?.[0];
                 const error = {
-                    message: graphQlError?.message || "No data received.",
+                    message: "No data received.",
                     code: "FULLY_DELETE_MODEL_NO_DATA",
                     data: {}
                 };

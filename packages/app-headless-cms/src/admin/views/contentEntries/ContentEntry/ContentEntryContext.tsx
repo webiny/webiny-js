@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useIsMounted, useSnackbar, useRoute, useRouter } from "@webiny/app-admin";
+import { useIsMounted, useRoute, useRouter, useSnackbar } from "@webiny/app-admin";
 import { useCms, useQuery } from "~/admin/hooks/index.js";
 import type { ContentEntriesContext } from "~/admin/views/contentEntries/ContentEntriesContext.js";
 import { useContentEntries } from "~/admin/views/contentEntries/hooks/useContentEntries.js";
@@ -13,9 +13,9 @@ import { createReadQuery } from "@webiny/app-headless-cms-common";
 import { getFetchPolicy } from "~/utils/getFetchPolicy.js";
 import { useRecords } from "@webiny/app-aco";
 import type * as Cms from "~/admin/contexts/Cms/index.js";
+import type { OperationError } from "~/admin/contexts/Cms/index.js";
 import { useMockRecords } from "./useMockRecords.js";
 import { ROOT_FOLDER } from "~/admin/constants.js";
-import type { OperationError } from "~/admin/contexts/Cms/index.js";
 import { Routes } from "~/routes.js";
 
 interface UpdateListCacheOptions {
@@ -116,7 +116,7 @@ export const ContentEntryProvider = ({
 }: ContentEntryContextProviderProps) => {
     const { isMounted } = useIsMounted();
     const [activeTab, setActiveTab] = useState("content");
-    const [entry, setEntry] = useState<CmsContentEntry>();
+    const [entry, setEntry] = useState<CmsContentEntry | null>(null);
     const [revisions, setRevisions] = useState<CmsContentEntryRevision[]>([]);
     const { contentModel: model, canCreate } = useContentEntries();
     const { goToRoute } = useRouter();
@@ -165,7 +165,7 @@ export const ContentEntryProvider = ({
 
     useEffect(() => {
         if (!revisionId && entry) {
-            setEntry(undefined);
+            setEntry(null);
         }
         setActiveTab("content");
     }, [revisionId]);
@@ -191,21 +191,22 @@ export const ContentEntryProvider = ({
     const loadEntry = useQuery<CmsEntryGetQueryResponse, CmsEntryGetQueryVariables>(READ_CONTENT, {
         variables,
         skip: !revisionId,
-        fetchPolicy: getFetchPolicy(model),
-        onCompleted: response => {
-            if (!response || !isMounted()) {
-                return;
-            }
-
-            const { data, error } = response.content;
-            if (!error) {
-                setEntry(data);
-                return;
-            }
-            goToRoute(Routes.ContentEntries.List, { modelId: model.modelId });
-            showSnackbar(error.message);
-        }
+        fetchPolicy: getFetchPolicy(model)
     });
+
+    useEffect(() => {
+        if (!loadEntry.data || !isMounted()) {
+            return;
+        }
+
+        const { data, error } = loadEntry.data.content as CmsEntryGetQueryResponse["content"];
+        if (!error) {
+            setEntry(data);
+            return;
+        }
+        goToRoute(Routes.ContentEntries.List, { modelId: model.modelId });
+        showSnackbar(error.message);
+    }, [loadEntry.data]);
 
     const loading = isLoading || loadEntry.loading;
 
@@ -249,7 +250,7 @@ export const ContentEntryProvider = ({
 
         // The `ContentEntryForm` component reads the `entry` from the context, and we want it to have the latest state.
         // This way, the form also knows whether it's `pristine` or not.
-        setEntry(response.entry);
+        setEntry(response.entry || null);
 
         return response;
     };

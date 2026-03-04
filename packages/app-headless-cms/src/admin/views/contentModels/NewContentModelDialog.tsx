@@ -16,7 +16,7 @@ import type {
     ListMenuCmsGroupsQueryResponse
 } from "../../viewsGraphql.js";
 import * as GQL from "../../viewsGraphql.js";
-import type { CmsModel } from "~/types.js";
+import type { CmsGroup, CmsModel } from "~/types.js";
 import type { CmsGroupOption } from "./types.js";
 import { createApiNameValidator } from "~/admin/views/contentModels/helpers/apiNameValidator.js";
 import { createNameValidator } from "~/admin/views/contentModels/helpers/nameValidator.js";
@@ -95,7 +95,7 @@ const NewContentModelDialog = ({ open, onClose }: NewContentModelDialogProps) =>
     );
 
     const groups = useMemo(() => {
-        return listMenuGroupsQuery.data?.listContentModelGroups?.data || [];
+        return (listMenuGroupsQuery.data?.listContentModelGroups?.data || []) as CmsGroup[];
     }, [listMenuGroupsQuery.data]);
 
     const contentModelGroups = useMemo(() => {

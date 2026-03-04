@@ -12,7 +12,7 @@ import { i18n } from "@webiny/app/i18n/index.js";
 import { ButtonDefault } from "@webiny/ui/Button/index.js";
 import { Cell, Grid } from "@webiny/ui/Grid/index.js";
 import { addModelToGroupCache, addModelToListCache } from "./cache.js";
-import type { CmsModel } from "~/types.js";
+import type { CmsGroup, CmsModel } from "~/types.js";
 import type {
     CreateCmsModelFromMutationResponse,
     CreateCmsModelFromMutationVariables,
@@ -102,7 +102,7 @@ export const CloneContentModelDialog = ({
         }
         const options: CmsGroupOption[] = [];
         const models: CmsModel[] = [];
-        const items = listMenuGroupsQuery.data.listContentModelGroups.data || [];
+        const items = (listMenuGroupsQuery.data.listContentModelGroups?.data || []) as CmsGroup[];
         for (const item of items) {
             options.push({
                 value: item.slug,

@@ -148,7 +148,7 @@ export interface DeleteCmsGroupMutationVariables {
 }
 export const DELETE_CONTENT_MODEL_GROUP = gql`
     mutation CmsDeleteContentModelGroup($id: ID!) {
-        deleteContentModelGroup(id: $id) {
+        contentModelGroup: deleteContentModelGroup(id: $id) {
             data
             error {
                 ${ERROR_FIELS}
