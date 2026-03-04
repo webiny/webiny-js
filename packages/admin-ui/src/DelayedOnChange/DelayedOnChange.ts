@@ -125,7 +125,7 @@ export const DelayedOnChange = <TValue = any>({
     const child = renderProp
         ? renderProp(newProps)
         : React.cloneElement(children as unknown as React.ReactElement, newProps);
-    
+
     /**
      * TODO figure out why props cant be spread
      */

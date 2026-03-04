@@ -114,10 +114,7 @@ export const updateModelInGroupCache = (cache: DataProxy, model: CmsModel): void
 /**
  * TODO remove when we can confirm that new deletion works property
  */
-export const removeModelFromCache = (
-    client: ApolloClient,
-    model: CmsEditorContentModel
-): void => {
+export const removeModelFromCache = (client: ApolloClient, model: CmsEditorContentModel): void => {
     const id = `CmsContentModel:${model.modelId}`;
 
     // @ts-expect-error

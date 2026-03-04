@@ -40,7 +40,7 @@ export interface DynamicSectionProps {
     field: CmsModelField;
     getBind: GetBindCallable;
     showLabel?: boolean;
-    children: (params: DynamicSectionPropsChildrenParams) => JSX.Element;
+    children: (params: DynamicSectionPropsChildrenParams) => React.JSX.Element;
     emptyValue?: any;
     gridClassName?: string;
     onAddItem?: (index: number) => void;

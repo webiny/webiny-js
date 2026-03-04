@@ -14,7 +14,7 @@
     "@lexical/utils": "^0.41.0",
     "@types/prismjs": "^1.26.6",
     "@webiny/lexical-theme": "0.0.0",
-    "lexical": "^0.41.0"
+    "lexical": "0.41.0"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",

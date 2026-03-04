@@ -44,7 +44,7 @@ export const TeamsForm = ({ newEntry, id }: TeamsFormProps) => {
 
     const getQuery = useQuery<IReadTeamResponse>(READ_TEAM, {
         variables: { id },
-        skip: !id,
+        skip: !id
         // onCompleted: data => {
         //     if (!data) {
         //         return;
@@ -65,7 +65,7 @@ export const TeamsForm = ({ newEntry, id }: TeamsFormProps) => {
         if (!getQuery.data) {
             return;
         }
-        
+
         const { error } = getQuery.data.security.team;
         if (!error) {
             return;

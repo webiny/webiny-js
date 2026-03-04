@@ -13,7 +13,7 @@ export interface IListTeamsResponse {
         teams: {
             data: ITeam[];
         };
-        }
+    };
 }
 
 export const LIST_TEAMS = gql`

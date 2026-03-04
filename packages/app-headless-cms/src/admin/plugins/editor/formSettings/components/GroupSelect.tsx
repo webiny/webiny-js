@@ -10,9 +10,15 @@ export default function GroupSelect({ value, ...props }: FormComponentProps) {
         LIST_MENU_CONTENT_GROUPS_MODELS
     );
 
-    const groups = loading || !data ? [] : data.listContentModelGroups.data;
+    const groups =
+        loading || !data?.listContentModelGroups?.data ? [] : data.listContentModelGroups.data;
     const options = useMemo(() => {
-        return groups.map(item => ({ value: item.slug, label: item.name }));
+        return groups.map(item => {
+            return {
+                value: item.slug,
+                label: item.name
+            };
+        });
     }, [groups]);
 
     const selectValue = typeof value === "string" ? value : value.slug;

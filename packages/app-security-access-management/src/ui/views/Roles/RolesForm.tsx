@@ -53,7 +53,7 @@ export const RolesForm = ({ id, newEntry }: RolesFormProps) => {
 
     const getQuery = useQuery<IReadRoleResponse>(READ_ROLE, {
         variables: { id },
-        skip: !id,
+        skip: !id
         // onCompleted: data => {
         //     if (!data) {
         //         return;
@@ -74,7 +74,7 @@ export const RolesForm = ({ id, newEntry }: RolesFormProps) => {
         if (!getQuery.data) {
             return;
         }
-        
+
         const { error } = getQuery.data.security.role;
         if (!error) {
             return;

@@ -49,8 +49,12 @@ export const Settings = () => {
 
     const [errors, setErrors] = useState<ValidationError[] | undefined>();
 
-    const { data: response, loading: queryInProgress } = useQuery<SettingsQueryResponse>(GET_SETTINGS_QUERY);
-    const [update, result] = useMutation<SaveSettingsMutationResponse, SaveSettingsMutationVariables>(SAVE_SETTINGS_MUTATION);
+    const { data: response, loading: queryInProgress } =
+        useQuery<SettingsQueryResponse>(GET_SETTINGS_QUERY);
+    const [update, result] = useMutation<
+        SaveSettingsMutationResponse,
+        SaveSettingsMutationVariables
+    >(SAVE_SETTINGS_MUTATION);
 
     const { data: settingsData, error: settingsError } = response?.mailer.settings || {};
     const { loading: mutationInProgress } = result;
@@ -81,8 +85,7 @@ export const Settings = () => {
                     })
                 );
 
-                const { data: updateData, error: updateError } =
-                    result.data?.mailer.settings || {};
+                const { data: updateData, error: updateError } = result.data?.mailer.settings || {};
 
                 const errors = updateError?.data.errors;
                 if (errors) {

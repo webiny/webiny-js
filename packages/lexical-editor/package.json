@@ -20,7 +20,7 @@
     "@webiny/lexical-theme": "0.0.0",
     "@webiny/react-composition": "0.0.0",
     "@webiny/react-properties": "0.0.0",
-    "lexical": "^0.41.0",
+    "lexical": "0.41.0",
     "lodash": "^4.17.23",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"

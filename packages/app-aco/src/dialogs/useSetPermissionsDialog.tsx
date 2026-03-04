@@ -44,7 +44,9 @@ interface RemoveUserTeamCallable {
 
 const FormComponent = ({ folder }: FormComponentProps) => {
     const [permissions, setPermissions] = useState<FolderPermission[]>(folder.permissions || []); // Moved useState outside showDialog
-    const listTargetsQuery = useQuery<IListFolderLevelPermissionsTargetsResponse>(LIST_FOLDER_LEVEL_PERMISSIONS_TARGETS);
+    const listTargetsQuery = useQuery<IListFolderLevelPermissionsTargetsResponse>(
+        LIST_FOLDER_LEVEL_PERMISSIONS_TARGETS
+    );
     const targetsList: FolderLevelPermissionsTarget[] =
         listTargetsQuery.data?.aco.listFolderLevelPermissionsTargets.data || [];
 

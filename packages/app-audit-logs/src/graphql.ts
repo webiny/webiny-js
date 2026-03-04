@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import type {User, IAuditLogsError} from "~/types.js";
+import type { User, IAuditLogsError } from "~/types.js";
 
 const ERROR_FIELDS = /* GraphQL */ `
     code
@@ -12,7 +12,7 @@ export interface IListUsersResponse {
         users: {
             data: User[] | null;
             error: IAuditLogsError | null;
-        }
+        };
     };
 }
 

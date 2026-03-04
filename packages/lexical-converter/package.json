@@ -7,7 +7,7 @@
     "@lexical/html": "^0.41.0",
     "@webiny/lexical-nodes": "0.0.0",
     "cheerio": "^1.2.0",
-    "lexical": "^0.41.0"
+    "lexical": "0.41.0"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",

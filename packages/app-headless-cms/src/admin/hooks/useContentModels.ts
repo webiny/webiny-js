@@ -25,7 +25,7 @@ export const useContentModels = () => {
 
     const models = useMemo<CmsModel[]>(() => {
         if (!data?.listContentModels?.data) {
-            return  []
+            return [];
         }
         return data.listContentModels.data as CmsModel[];
     }, [data]);

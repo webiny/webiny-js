@@ -10,7 +10,7 @@ import { GroupContentModels } from "./GroupContentModels.js";
 
 export const ContentGroupsMenuItems = () => {
     const response = useQuery<ListMenuCmsGroupsQueryResponse>(LIST_MENU_CONTENT_GROUPS_MODELS);
-    const groups: CmsGroup[] = get(response, "data.listContentModelGroups.data") || [];
+    const groups = (response.data?.listContentModelGroups?.data || []) as CmsGroup[];
 
     if (!groups || groups.length === 0) {
         return null;

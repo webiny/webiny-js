@@ -38,7 +38,7 @@ const BASE_CONTENT_MODEL_FIELDS = `
  */
 export interface ListMenuCmsGroupsQueryResponse {
     listContentModelGroups: {
-        data: CmsGroup[];
+        data?: CmsGroup[];
         error?: CmsErrorResponse;
     };
 }

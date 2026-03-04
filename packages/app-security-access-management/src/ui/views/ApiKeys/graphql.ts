@@ -82,7 +82,6 @@ export const CREATE_API_KEY = gql`
     }
 `;
 
-
 export interface IUpdateApiKeyResponse {
     security: {
         apiKey: {
@@ -108,7 +107,6 @@ export const UPDATE_API_KEY = gql`
         }
     }
 `;
-
 
 export interface IDeleteApiKeyResponse {
     security: {

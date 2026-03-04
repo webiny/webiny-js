@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import type {GenericRecord} from "@webiny/app/types.js";
+import type { GenericRecord } from "@webiny/app/types.js";
 export interface IRole {
     id: string;
     slug: string;
@@ -22,7 +22,6 @@ export interface IListRolesResponse {
         };
     };
 }
-
 
 export const LIST_ROLES = gql`
     query ListRoles {
