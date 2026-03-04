@@ -75,15 +75,19 @@ export interface UseCmsDataResponseRecords {
 export const useCmsData = (): UseCmsDataResponseRecords => {
     const { data } = useQuery<ListCmsPermissionsResponse>(LIST_DATA);
 
-    const groups = data?.listContentModelGroups.data ?? [];
+    const groups = (data?.listContentModelGroups?.data || []) as CmsDataCmsGroup[];
+    const models = ((data?.listContentModels?.data || []) as CmsDataCmsModel[])
+        .filter(model => model.group !== "hidden")
+        .map(model => {
+            // `model.group` is a slug. we need to remap it to actual group object.
+            return {
+                ...model,
+                group: groups.find(item => item.slug === model.group)!
+            };
+        });
 
     return {
-        models: (data?.listContentModels.data ?? [])
-            .filter(model => model.group !== "hidden")
-            .map(model => {
-                // `model.group` is a slug. we need to remap it to actual group object.
-                return { ...model, group: groups.find(item => item.slug === model.group)! };
-            }),
+        models,
         groups
     };
 };

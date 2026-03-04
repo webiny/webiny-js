@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useApolloClient, useModelFieldGraphqlContext } from "~/admin/hooks/index.js";
-import type { CmsModelField, CmsModel } from "~/types.js";
+import type { CmsModel, CmsModelField } from "~/types.js";
 import type {
-    CmsEntrySearchQueryResponse,
-    CmsEntrySearchQueryVariables,
+    CmsEntryGetEntryVariable,
     CmsEntryGetListResponse,
     CmsEntryGetListVariables,
-    CmsEntryGetEntryVariable
+    CmsEntrySearchQueryResponse,
+    CmsEntrySearchQueryVariables
 } from "./graphql.js";
-import { SEARCH_CONTENT_ENTRIES, GET_CONTENT_ENTRIES } from "./graphql.js";
+import { GET_CONTENT_ENTRIES, SEARCH_CONTENT_ENTRIES } from "./graphql.js";
 import type { BindComponentRenderProp } from "@webiny/form";
 import type { CmsReferenceContentEntry, OptionItem, OptionItemCollection } from "./types.js";
 import {
@@ -57,7 +57,7 @@ export const useReferences = ({ bind, field }: UseReferencesParams) => {
         });
         setLoading(false);
 
-        const collection = convertReferenceEntriesToOptionCollection(data.content.data);
+        const collection = convertReferenceEntriesToOptionCollection(data?.content.data || []);
 
         allEntries.current = {
             ...allEntries.current,
@@ -97,7 +97,9 @@ export const useReferences = ({ bind, field }: UseReferencesParams) => {
                     return;
                 }
 
-                const collection = convertReferenceEntriesToOptionCollection(data.content.data);
+                const collection = convertReferenceEntriesToOptionCollection(
+                    data?.content.data || []
+                );
                 setLatestEntries(Object.values(collection));
                 allEntries.current = {
                     ...collection
@@ -135,7 +137,7 @@ export const useReferences = ({ bind, field }: UseReferencesParams) => {
 
                 setLoading(false);
 
-                const latest = (res.data.latest.data || []).reduce(
+                const latest = (res.data?.latest.data || []).reduce(
                     (collection, item) => {
                         collection[item.entryId] = item;
                         return collection;
@@ -143,7 +145,7 @@ export const useReferences = ({ bind, field }: UseReferencesParams) => {
                     {} as Record<string, CmsReferenceContentEntry>
                 );
 
-                const entries = (res.data.published.data || []).reduce((collection, item) => {
+                const entries = (res.data?.published.data || []).reduce((collection, item) => {
                     const entryId = item.entryId;
                     const existingItem = latest[entryId];
                     if (existingItem) {

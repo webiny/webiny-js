@@ -14,11 +14,12 @@ import type {
 import { GET_CONTENT_MODEL } from "~/admin/graphql/contentModels.js";
 import { useCms } from "~/admin/hooks/index.js";
 import {
+    FolderTree,
     NavigateFolderProvider as AbstractNavigateFolderProvider,
-    useLoadFolderHierarchy
+    useLoadFolderHierarchy,
+    useNavigateFolder
 } from "@webiny/app-aco";
-import { FolderTree, useNavigateFolder } from "@webiny/app-aco";
-import { SplitView, LeftPanel, RightPanel, DialogsProvider } from "@webiny/app-admin";
+import { DialogsProvider, LeftPanel, RightPanel, SplitView } from "@webiny/app-admin";
 import { usePersistEntry } from "~/admin/hooks/usePersistEntry.js";
 import type { AcoAppProviderContext } from "@webiny/app-aco/contexts/app.js";
 import { AcoAppContext, createAppFromModel } from "@webiny/app-aco/contexts/app.js";
@@ -107,6 +108,12 @@ export const NewReferencedEntryDialog = ({
                     modelId: baseModel.modelId
                 }
             });
+            if (!response.data?.getContentModel.data) {
+                console.error(
+                    `Could not load content model with modelId "${baseModel.modelId}". Please check if the modelId is correct.`
+                );
+                return;
+            }
             setModel(response.data.getContentModel.data);
         })();
     }, [baseModel.modelId]);

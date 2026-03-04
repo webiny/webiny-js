@@ -1,5 +1,5 @@
 import dotProp from "dot-prop-immutable";
-import type { DataProxy } from "apollo-cache";
+import type { ApolloCache } from "@apollo/client/cache";
 import type { ApolloClient } from "@apollo/client";
 import type {
     ListCmsModelsQueryResponse,
@@ -8,7 +8,7 @@ import type {
 import { LIST_CONTENT_MODELS, LIST_MENU_CONTENT_GROUPS_MODELS } from "../../viewsGraphql.js";
 import type { CmsEditorContentModel, CmsModel } from "~/types.js";
 
-export const addModelToListCache = (cache: DataProxy, model: CmsEditorContentModel): void => {
+export const addModelToListCache = (cache: ApolloCache, model: CmsEditorContentModel): void => {
     const response = cache.readQuery<ListCmsModelsQueryResponse>({
         query: LIST_CONTENT_MODELS
     });
@@ -16,7 +16,7 @@ export const addModelToListCache = (cache: DataProxy, model: CmsEditorContentMod
         return;
     }
     const { listContentModels } = response;
-    const newModelIndex = listContentModels.data.length;
+    const newModelIndex = listContentModels.data?.length;
 
     cache.writeQuery({
         query: LIST_CONTENT_MODELS,
@@ -26,7 +26,7 @@ export const addModelToListCache = (cache: DataProxy, model: CmsEditorContentMod
     });
 };
 
-export const updateModelInCache = (cache: DataProxy, model: CmsModel): void => {
+export const updateModelInCache = (cache: ApolloCache, model: CmsModel): void => {
     const response = cache.readQuery<ListCmsModelsQueryResponse>({
         query: LIST_CONTENT_MODELS
     });
@@ -48,7 +48,7 @@ export const updateModelInCache = (cache: DataProxy, model: CmsModel): void => {
     return updateModelInGroupCache(cache, model);
 };
 
-export const addModelToGroupCache = (cache: DataProxy, model: CmsEditorContentModel): void => {
+export const addModelToGroupCache = (cache: ApolloCache, model: CmsEditorContentModel): void => {
     const response = cache.readQuery<ListMenuCmsGroupsQueryResponse>({
         query: LIST_MENU_CONTENT_GROUPS_MODELS
     });
@@ -58,8 +58,8 @@ export const addModelToGroupCache = (cache: DataProxy, model: CmsEditorContentMo
 
     const { listContentModelGroups: groupsList } = response;
 
-    const groupIndex = groupsList.data.findIndex(g => g.slug === model.group);
-    const newGroupModelIndex = groupsList.data[groupIndex].contentModels.length;
+    const groupIndex = groupsList.data!.findIndex(g => g.slug === model.group);
+    const newGroupModelIndex = groupsList.data![groupIndex].contentModels.length;
 
     cache.writeQuery({
         query: LIST_MENU_CONTENT_GROUPS_MODELS,
@@ -73,7 +73,7 @@ export const addModelToGroupCache = (cache: DataProxy, model: CmsEditorContentMo
     });
 };
 
-export const updateModelInGroupCache = (cache: DataProxy, model: CmsModel): void => {
+export const updateModelInGroupCache = (cache: ApolloCache, model: CmsModel): void => {
     const response = cache.readQuery<ListMenuCmsGroupsQueryResponse>({
         query: LIST_MENU_CONTENT_GROUPS_MODELS
     });
@@ -83,11 +83,11 @@ export const updateModelInGroupCache = (cache: DataProxy, model: CmsModel): void
 
     const { listContentModelGroups: groupsList } = response;
 
-    const groupIndex = groupsList.data.findIndex(g => g.slug === model.group);
+    const groupIndex = groupsList.data!.findIndex(g => g.slug === model.group);
     if (groupIndex < 0) {
         return;
     }
-    const modelIndex = groupsList.data[groupIndex].contentModels.findIndex(
+    const modelIndex = groupsList.data![groupIndex].contentModels.findIndex(
         m => m.modelId === model.modelId
     );
     if (modelIndex < 0) {
@@ -131,7 +131,7 @@ export const removeModelFromCache = (client: ApolloClient, model: CmsEditorConte
 /**
  * TODO remove when we can confirm that new deletion works property
  */
-export const removeModelFromListCache = (cache: DataProxy, model: CmsEditorContentModel): void => {
+export const removeModelFromListCache = (cache: ApolloCache, model: CmsEditorContentModel): void => {
     const response = cache.readQuery<ListCmsModelsQueryResponse>({
         query: LIST_CONTENT_MODELS
     });
@@ -139,7 +139,7 @@ export const removeModelFromListCache = (cache: DataProxy, model: CmsEditorConte
         return;
     }
     const { listContentModels } = response;
-    const modelIndex = listContentModels.data.findIndex(m => m.modelId === model.modelId);
+    const modelIndex = listContentModels.data!.findIndex(m => m.modelId === model.modelId);
 
     cache.writeQuery({
         query: LIST_CONTENT_MODELS,
@@ -151,7 +151,7 @@ export const removeModelFromListCache = (cache: DataProxy, model: CmsEditorConte
 /**
  * TODO remove when we can confirm that new deletion works property
  */
-export const removeModelFromGroupCache = (cache: DataProxy, model: CmsEditorContentModel): void => {
+export const removeModelFromGroupCache = (cache: ApolloCache, model: CmsEditorContentModel): void => {
     const response = cache.readQuery<ListMenuCmsGroupsQueryResponse>({
         query: LIST_MENU_CONTENT_GROUPS_MODELS
     });
@@ -160,11 +160,11 @@ export const removeModelFromGroupCache = (cache: DataProxy, model: CmsEditorCont
     }
     const { listContentModelGroups: groupsList } = response;
 
-    const groupIndex = groupsList.data.findIndex(g => g.slug === model.group);
+    const groupIndex = groupsList.data!.findIndex(g => g.slug === model.group);
     if (groupIndex < 0) {
         return;
     }
-    const modelIndex = groupsList.data[groupIndex].contentModels.findIndex(
+    const modelIndex = groupsList.data![groupIndex].contentModels.findIndex(
         m => m.modelId === model.modelId
     );
 

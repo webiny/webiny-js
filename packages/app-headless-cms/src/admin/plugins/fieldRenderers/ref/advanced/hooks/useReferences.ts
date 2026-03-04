@@ -41,6 +41,10 @@ const executeSearch = async (params: ExecuteSearchParams): Promise<void> => {
             },
             context: requestContext
         });
+        if (!result.data?.entries) {
+            setError("Could not load entries. No data received.");
+            return;
+        }
         const error = result.data.entries?.error;
         if (error) {
             setError(error.message);

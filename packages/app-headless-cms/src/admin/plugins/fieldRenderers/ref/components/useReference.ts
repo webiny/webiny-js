@@ -6,8 +6,8 @@ import type {
     CmsEntrySearchQueryResponse,
     CmsEntrySearchQueryVariables
 } from "./graphql.js";
-import { SEARCH_CONTENT_ENTRIES, GET_CONTENT_ENTRY } from "./graphql.js";
-import type { CmsModelField, CmsModel } from "~/types.js";
+import { GET_CONTENT_ENTRY, SEARCH_CONTENT_ENTRIES } from "./graphql.js";
+import type { CmsModel, CmsModelField } from "~/types.js";
 import type { BindComponentRenderProp } from "@webiny/form";
 import type { OptionItem, OptionItemCollection } from "./types.js";
 import {
@@ -80,7 +80,7 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
         });
         setLoading(false);
 
-        const collection = convertReferenceEntriesToOptionCollection(data.content.data);
+        const collection = convertReferenceEntriesToOptionCollection(data?.content.data || []);
         if (valueEntry) {
             collection[valueEntry.entryId] = valueEntry;
         }
@@ -116,7 +116,7 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
             })
             .then(({ data }) => {
                 const latestEntryData = convertReferenceEntriesToOptionCollection(
-                    data.content.data
+                    data?.content.data || []
                 );
                 if (valueEntry) {
                     latestEntryData[valueEntry.entryId] = valueEntry;
@@ -165,14 +165,14 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
             })
             .then(res => {
                 setLoading(false);
-                const dataEntry = res.data.latest.data;
+                const dataEntry = res.data?.latest.data;
                 if (!dataEntry) {
                     return;
                 }
                 const option: OptionItem = {
                     ...convertReferenceEntryToOption(dataEntry),
                     latest: dataEntry.id,
-                    published: res.data.published.data ? res.data.published.data.id : null
+                    published: res.data?.published.data ? res.data.published.data.id : null
                 };
                 allEntries.current[option.entryId] = option;
                 setLatestEntries(prev => {

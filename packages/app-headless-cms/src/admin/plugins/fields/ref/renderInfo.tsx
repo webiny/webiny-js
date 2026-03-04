@@ -48,7 +48,7 @@ const RenderInfo = ({ field }: RenderInfoParams) => {
             return;
         }
 
-        setModels(data.listContentModels?.data || []);
+        setModels((data?.listContentModels?.data as CmsModel[]) || []);
     }, [data, loading]);
 
     const { items, badges } = useMemo(() => {
