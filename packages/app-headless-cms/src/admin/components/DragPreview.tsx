@@ -75,7 +75,9 @@ const DragPreview = () => {
             className="fixed pointer-events-none left-0 top-0 w-full h-full"
         >
             <div
-                ref={el => (dragPreviewRef = el)}
+                ref={el => {
+                    dragPreviewRef = el;
+                }}
                 className="transition-opacity duration-250 ease-in-out block"
                 style={{ opacity: dragHelperOpacity }}
             >

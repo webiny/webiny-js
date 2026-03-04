@@ -130,7 +130,9 @@ const Editor = () => {
                                     "cursor-grab",
                                     "absolute left-sm-plus top-sm-plus z-10"
                                 ])}
-                                ref={drag}
+                                ref={el => {
+                                    drag(el);
+                                }}
                             >
                                 <Icon
                                     icon={<DragIcon />}
@@ -170,7 +172,9 @@ const Editor = () => {
                                                         "flex-1 basis-full",
                                                         "mx-sm"
                                                     ])}
-                                                    ref={drag}
+                                                    ref={el => {
+                                                        drag(el);
+                                                    }}
                                                 >
                                                     <Vertical
                                                         depth={depth}

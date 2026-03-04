@@ -46,7 +46,9 @@ const Horizontal = ({ last, onDrop, isVisible, ...rest }: HorizontalProps) => {
         <Droppable onDrop={onDrop} isVisible={isVisible}>
             {({ isOver, isDragging, drop }) => (
                 <div
-                    ref={drop}
+                    ref={el => {
+                        drop(el);
+                    }}
                     data-testid={rest["data-testid"]}
                     style={{
                         /* For dropzone debugging: border: "1px solid blue",*/

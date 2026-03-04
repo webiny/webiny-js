@@ -34,7 +34,7 @@ interface CenterProps {
 }
 
 const getInert = (isDroppable: boolean) => {
-    return isDroppable ? {} : { inert: "" };
+    return isDroppable ? {} : { inert: true };
 };
 
 const Center = ({ onDrop, children, style, isDroppable }: CenterProps) => {
@@ -42,7 +42,9 @@ const Center = ({ onDrop, children, style, isDroppable }: CenterProps) => {
         <Droppable onDrop={onDrop} isDroppable={isDroppable}>
             {({ isOver, drop, isDroppable }) => (
                 <div
-                    ref={drop}
+                    ref={el => {
+                        drop(el);
+                    }}
                     style={{ width: "100%", height: "100%", ...style }}
                     data-testid={"cms-editor-first-field-area"}
                     {...getInert(isDroppable)}

@@ -19,7 +19,9 @@ const Field = (props: FieldProps) => {
         <Draggable beginDrag={{ type: "newField", fieldType: type }}>
             {({ drag }) => (
                 <div
-                    ref={drag}
+                    ref={el => {
+                        drag(el);
+                    }}
                     data-testid={`cms-editor-fields-field-${type}`}
                     onDragStart={onFieldDragStart}
                     className={

@@ -24,7 +24,10 @@ export const useContentModels = () => {
     });
 
     const models = useMemo<CmsModel[]>(() => {
-        return data?.listContentModels?.data || [];
+        if (!data?.listContentModels?.data) {
+            return  []
+        }
+        return data.listContentModels.data as CmsModel[];
     }, [data]);
 
     const error = useMemo(() => {
