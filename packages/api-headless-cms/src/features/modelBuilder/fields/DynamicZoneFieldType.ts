@@ -1,7 +1,8 @@
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
-import { FieldBuilder } from "./FieldBuilder.js";
+import { type FieldBuildResult } from "./BaseFieldBuilder.js";
+import { FieldBuilder, type BaseFieldBuilder } from "./FieldBuilder.js";
 import { type IFieldBuilderRegistry } from "../abstractions.js";
-import type { CmsIcon, CmsModelFieldValidation } from "~/types/index.js";
+import type { CmsIcon, CmsModelField, CmsModelFieldValidation } from "~/types/index.js";
 
 interface IDynamicZoneTemplate {
     id: string;
@@ -23,7 +24,7 @@ export interface IDynamicZoneFieldBuilder extends FieldBuilder<"dynamicZone"> {
             gqlTypeName: string;
             icon?: CmsIcon;
             description?: string;
-            fields: (registry: IFieldBuilderRegistry) => Record<string, FieldBuilder<any>>;
+            fields: (registry: IFieldBuilderRegistry) => Record<string, BaseFieldBuilder<any>>;
             layout?: string[][];
         }
     ): this;
@@ -34,7 +35,7 @@ interface IDynamicZoneFieldBuilderTemplateConfig {
     gqlTypeName: string;
     icon?: CmsIcon;
     description?: string;
-    fields: (registry: IFieldBuilderRegistry) => Record<string, FieldBuilder<any>>;
+    fields: (registry: IFieldBuilderRegistry) => Record<string, BaseFieldBuilder<any>>;
     layout?: string[][];
 }
 
@@ -58,13 +59,16 @@ class DynamicZoneFieldBuilder
 
     public template(id: string, config: IDynamicZoneFieldBuilderTemplateConfig): this {
         const fieldBuilders = config.fields(this.registry);
-        const fields: any[] = [];
+        const fields: CmsModelField[] = [];
 
         for (const [key, fieldBuilder] of Object.entries(fieldBuilders)) {
-            // Automatically set the fieldId from the object key
-            // This ensures the key and fieldId are always in sync
             fieldBuilder.fieldId(key);
-            fields.push((fieldBuilder as any).build());
+            const result: FieldBuildResult = (fieldBuilder as any).build();
+            if (result.type === "data") {
+                fields.push(result.field);
+            } else if (result.fields) {
+                fields.push(...result.fields);
+            }
         }
 
         this.templates.push({

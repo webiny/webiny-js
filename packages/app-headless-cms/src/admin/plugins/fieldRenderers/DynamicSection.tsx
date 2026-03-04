@@ -39,6 +39,7 @@ export interface DynamicSectionPropsChildrenParams {
 export interface DynamicSectionProps {
     field: CmsModelField;
     getBind: GetBindCallable;
+    disabled?: boolean;
     showLabel?: boolean;
     children: (params: DynamicSectionPropsChildrenParams) => JSX.Element;
     emptyValue?: any;
@@ -55,6 +56,7 @@ const DynamicSection = ({
     field,
     getBind,
     children,
+    disabled = false,
     showLabel = true,
     emptyValue = "",
     onAddItem = defaultAddItem,
@@ -138,23 +140,26 @@ const DynamicSection = ({
                                         </Grid.Column>
                                     )}
                                 </>
-                                <Grid.Column span={12}>
-                                    <div
-                                        className={cn(
-                                            bindFieldValue.length > 0 ? "pt-none" : "pt-sm"
-                                        )}
-                                    >
-                                        <Button
-                                            variant={"tertiary"}
-                                            icon={<AddIcon />}
-                                            text={t(addValueButtonLabel)}
-                                            onClick={() => {
-                                                appendValue(emptyValue);
-                                                onAddItem(bindFieldValue.length);
-                                            }}
-                                        />
-                                    </div>
-                                </Grid.Column>
+                                {
+                                    <Grid.Column span={12}>
+                                        <div
+                                            className={cn(
+                                                bindFieldValue.length > 0 ? "pt-none" : "pt-sm"
+                                            )}
+                                        >
+                                            <Button
+                                                disabled={disabled}
+                                                variant={"tertiary"}
+                                                icon={<AddIcon />}
+                                                text={t(addValueButtonLabel)}
+                                                onClick={() => {
+                                                    appendValue(emptyValue);
+                                                    onAddItem(bindFieldValue.length);
+                                                }}
+                                            />
+                                        </div>
+                                    </Grid.Column>
+                                }
                             </Grid>
                         </ParentFieldProvider>
                     </Bind.ValidationContainer>

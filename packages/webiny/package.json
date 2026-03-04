@@ -90,6 +90,7 @@
     "./admin/cms/fieldRenderers/dynamicZone": "./admin/cms/fieldRenderers/dynamicZone.js",
     "./admin/cms/fieldRenderers/object": "./admin/cms/fieldRenderers/object.js",
     "./admin/cms/lexical": "./admin/cms/lexical.js",
+    "./admin/cms/model": "./admin/cms/model.js",
     "./admin/cms": "./admin/cms.js",
     "./admin/website-builder/lexical": "./admin/website-builder/lexical.js",
     "./admin/website-builder/page/editor": "./admin/website-builder/page/editor.js",

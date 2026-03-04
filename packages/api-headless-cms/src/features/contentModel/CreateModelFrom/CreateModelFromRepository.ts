@@ -77,14 +77,18 @@ class CreateModelFromRepositoryImpl implements RepositoryAbstraction.Interface {
             try {
                 validateModelIdAllowed({ model });
             } catch (error) {
-                return Result.fail(new ModelValidationError((error as Error).message));
+                return Result.fail(
+                    new ModelValidationError({ message: error.message, data: error.data })
+                );
             }
 
             // Validate API name endings
             try {
                 validateEndingAllowed({ model });
             } catch (error) {
-                return Result.fail(new ModelValidationError((error as Error).message));
+                return Result.fail(
+                    new ModelValidationError({ message: error.message, data: error.data })
+                );
             }
 
             // Validate modelId uniqueness (database)
@@ -143,7 +147,9 @@ class CreateModelFromRepositoryImpl implements RepositoryAbstraction.Interface {
                     context: this.cmsContext
                 });
             } catch (error) {
-                return Result.fail(new ModelValidationError((error as Error).message));
+                return Result.fail(
+                    new ModelValidationError({ message: error.message, data: error.data })
+                );
             }
 
             // Ensure type tags

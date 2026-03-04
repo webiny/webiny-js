@@ -45,7 +45,7 @@ const DecoratableRadioGroup = ({
                 disabled={disabled}
                 className={"mt-none mb-xs-plus"}
             />
-            <RadioGroupPrimitive {...props} />
+            <RadioGroupPrimitive disabled={disabled} {...props} />
             <FormComponentNote text={note} disabled={disabled} />
         </div>
     );

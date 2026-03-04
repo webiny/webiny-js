@@ -44,6 +44,7 @@ export interface AcoListContextData<T> {
     selectAll: () => void;
     unselectAll: () => void;
     getWhere: () => Record<string, any>;
+    refresh: () => Promise<void>;
 }
 
 export const AcoListContext = React.createContext<
@@ -272,40 +273,62 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
         };
     }, [folders, state.folderId, state.filters, props.own, identity]);
 
+    const buildListParams = useCallback((): {
+        params: ListSearchRecordsQueryVariables;
+        isSearch: boolean;
+    } | null => {
+        if (!state.folderId) {
+            return null;
+        }
+
+        const isSearch = Boolean(
+            state.searchQuery ||
+                (state.filters && Object.values(state.filters).filter(Boolean).length)
+        );
+
+        let where = dotPropImmutable.set({}, folderIdPath, state.folderId);
+
+        // In case of a search or filters applied, let's get the where condition based on the current folder ID,
+        // ownership status, and other existing filters in the state.
+        if (isSearch) {
+            where = getWhere();
+        }
+
+        return {
+            params: {
+                limit: state.limit,
+                sort: validateOrGetDefaultDbSort(state.listSort),
+                search: state.searchQuery,
+                after: state.after,
+                where
+            },
+            isSearch
+        };
+    }, [
+        state.folderId,
+        state.filters,
+        state.searchQuery,
+        state.after,
+        state.listSort,
+        state.limit,
+        getWhere,
+        folderIdPath
+    ]);
+
     /**
      * Any time we receive new useful `state` params:
      * - we fetch records according to the new params
      */
     useEffect(() => {
         const listItems = async () => {
-            if (!state.folderId) {
+            const result = buildListParams();
+            if (!result) {
                 return;
             }
 
-            const isSearch = Boolean(
-                state.searchQuery ||
-                    (state.filters && Object.values(state.filters).filter(Boolean).length)
-            );
+            await listRecords(result.params);
 
-            let where = dotPropImmutable.set({}, folderIdPath, state.folderId);
-
-            // In case of a search or filters applied, let's get the where condition based on the current folder ID,
-            // ownership status, and other existing filters in the state.
-            if (isSearch) {
-                where = getWhere();
-            }
-
-            const params: ListSearchRecordsQueryVariables = {
-                limit: state.limit,
-                sort: validateOrGetDefaultDbSort(state.listSort),
-                search: state.searchQuery,
-                after: state.after,
-                where
-            };
-
-            await listRecords(params);
-
-            setState(state => ({ ...state, isSearch }));
+            setState(state => ({ ...state, isSearch: result.isSearch }));
         };
 
         listItems();
@@ -319,6 +342,15 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
         props.own,
         identity
     ]);
+
+    const refresh = useCallback(async () => {
+        const result = buildListParams();
+        if (!result) {
+            return;
+        }
+
+        await listRecords(result.params);
+    }, [buildListParams, listRecords]);
 
     /**
      * useEffect hook to determine if the "Select All" option should be displayed based on the current state and meta properties:
@@ -448,7 +480,8 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
             }));
         },
         getWhere,
-        listMoreRecords
+        listMoreRecords,
+        refresh
     };
 
     return <AcoListContext.Provider value={context}>{children}</AcoListContext.Provider>;

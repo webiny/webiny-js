@@ -41,6 +41,13 @@ export const FIELDS_FIELDS = `
         message
     }
     settings
+    rules {
+     type
+     target
+     operator
+     value
+     action
+    }
 `;
 
 export const MODEL_FIELDS = `

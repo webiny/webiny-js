@@ -257,7 +257,9 @@ describe("content model - cloning", () => {
                     data: null,
                     error: {
                         code: "Cms/Model/ValidationError",
-                        data: null,
+                        data: {
+                            input: "ProductApiSingular"
+                        },
                         message: `Content model with singularApiName "${originalModel.singularApiName}" already exists.`
                     }
                 }
@@ -283,7 +285,9 @@ describe("content model - cloning", () => {
                     data: null,
                     error: {
                         code: "Cms/Model/ValidationError",
-                        data: null,
+                        data: {
+                            input: "ProductPluralApiName"
+                        },
                         message: `Content model with pluralApiName "${originalModel.pluralApiName}" already exists.`
                     }
                 }
@@ -309,7 +313,9 @@ describe("content model - cloning", () => {
                     data: null,
                     error: {
                         code: "Cms/Model/ValidationError",
-                        data: null,
+                        data: {
+                            input: "ProductPluralApiName"
+                        },
                         message: `Content model with pluralApiName "${originalModel.pluralApiName}" already exists.`
                     }
                 }
@@ -335,7 +341,9 @@ describe("content model - cloning", () => {
                     data: null,
                     error: {
                         code: "Cms/Model/ValidationError",
-                        data: null,
+                        data: {
+                            input: "ProductApiSingular"
+                        },
                         message: `Content model with singularApiName "${originalModel.singularApiName}" already exists.`
                     }
                 }

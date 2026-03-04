@@ -34,30 +34,9 @@ describe("UI field - manage api", () => {
                         listValidation: [],
                         label: "Title",
                         type: "text"
-                    },
-                    {
-                        id: "baseUi",
-                        fieldId: "baseUi",
-                        validation: [],
-                        listValidation: [],
-                        label: "Base UI Field",
-                        type: "ui",
-                        settings: {
-                            render: "ui"
-                        }
-                    },
-                    {
-                        id: "separator",
-                        fieldId: "separator",
-                        validation: [],
-                        listValidation: [],
-                        label: "UI Field",
-                        type: "ui:separator",
-                        settings: {
-                            render: "uiSeparator"
-                        }
                     }
-                ]
+                ],
+                layout: [["title"], [{ type: "separator", label: "UI Field" }]]
             }
         });
 
@@ -75,32 +54,9 @@ describe("UI field - manage api", () => {
                                 listValidation: [],
                                 label: "Title",
                                 type: "text"
-                            },
-                            {
-                                id: "baseUi",
-                                fieldId: "baseUi",
-                                storageId: "ui@baseUi",
-                                validation: [],
-                                listValidation: [],
-                                label: "Base UI Field",
-                                type: "ui",
-                                settings: {
-                                    render: "ui"
-                                }
-                            },
-                            {
-                                id: "separator",
-                                fieldId: "separator",
-                                storageId: "ui@separator",
-                                validation: [],
-                                listValidation: [],
-                                label: "UI Field",
-                                type: "ui:separator",
-                                settings: {
-                                    render: "uiSeparator"
-                                }
                             }
-                        ]
+                        ],
+                        layout: [["title"], [{ type: "separator", label: "UI Field" }]]
                     },
                     error: null
                 }

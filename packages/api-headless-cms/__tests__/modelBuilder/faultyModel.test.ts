@@ -36,35 +36,24 @@ describe("Faulty model definition", () => {
         const model = models.find(m => m.modelId === "noFields");
 
         expect(model).toBeDefined();
+        // A dummy emptyPlaceholder text field is added so the GraphQL schema is valid
         expect(model!.fields).toHaveLength(1);
-        const field = model!.fields[0]!;
-        expect(field).toEqual({
-            description: null,
-            fieldId: "alert",
-            help: null,
-            id: "alert",
-            label: "No fields defined in the code content model. Please ensure you have the fields property correctly defined.",
-            list: false,
-            listValidation: [],
-            note: null,
-            placeholder: null,
-            predefinedValues: {
-                enabled: false,
-                values: []
-            },
-            renderer: {
-                name: "uiAlert",
-                settings: {
-                    type: "warning"
-                }
-            },
-            settings: {},
-            storageId: "ui@alert",
-            tags: [],
-            type: "ui:alert",
-            validation: []
+        expect(model!.fields[0]).toMatchObject({
+            fieldId: "emptyPlaceholder",
+            type: "text",
+            label: "Empty"
         });
 
-        expect(model?.layout).toEqual([["alert"]]);
+        // Layout contains the alert descriptor and the placeholder field
+        expect(model?.layout).toEqual([
+            [
+                {
+                    type: "alert",
+                    label: "No fields defined in the code content model. Please ensure you have the fields property correctly defined.",
+                    alertType: "warning"
+                }
+            ],
+            ["emptyPlaceholder"]
+        ]);
     });
 });
