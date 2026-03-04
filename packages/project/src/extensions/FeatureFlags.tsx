@@ -26,12 +26,9 @@ export const FeatureFlags = defineExtension({
             auditLogs: z.boolean().optional(),
             recordLocking: z.boolean().optional(),
             fileManager: z
-                .union([
-                    z.boolean(),
-                    z.object({
-                        threatDetection: z.boolean().optional()
-                    })
-                ])
+                .object({
+                    threatDetection: z.boolean().optional()
+                })
                 .optional()
         })
     }),

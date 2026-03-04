@@ -22,3 +22,4 @@ export * from "./RefreshApp/index.js";
 export * from "./RunPulumiCommand/index.js";
 export * from "./ValidateProjectConfig/index.js";
 export * from "./Watch/index.js";
+export * from "./GetFeatureFlags/index.js";

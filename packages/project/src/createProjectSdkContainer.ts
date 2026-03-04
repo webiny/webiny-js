@@ -33,6 +33,7 @@ import {
     getProjectConfig,
     getProjectInfo,
     getPulumiResourceNamePrefix,
+    getFeatureFlags,
     installExtension,
     isCi,
     isTelemetryEnabled,
@@ -96,6 +97,7 @@ import {
     LoggerService,
     InitProjectSdkService
 } from "~/abstractions/index.js";
+import { getFeatureFlagsWithLicense } from "./decorators/index.js";
 
 export const createProjectSdkContainer = async (
     params: Partial<ProjectSdkParamsService.Params>
@@ -165,8 +167,10 @@ export const createProjectSdkContainer = async (
     container.register(isWebinyJsRepo).inSingletonScope();
     container.register(refreshApp).inSingletonScope();
     container.register(runPulumiCommand).inSingletonScope();
+    container.register(getFeatureFlags).inSingletonScope();
     container.register(validateProjectConfig).inSingletonScope();
     container.register(watch).inSingletonScope();
+    container.registerDecorator(getFeatureFlagsWithLicense);
 
     // Hooks.
     container.registerComposite(beforeBuild);
