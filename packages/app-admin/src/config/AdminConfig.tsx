@@ -1,5 +1,5 @@
 import React from "react";
-import { AppContainer, Plugin } from "@webiny/app";
+import { createProvider } from "@webiny/app";
 import { Menu, type MenuConfig } from "./AdminConfig/Menu.js";
 import type { TenantConfig } from "./AdminConfig/Tenant.js";
 import { Tenant } from "./AdminConfig/Tenant.js";
@@ -37,7 +37,10 @@ interface AdminConfig {
     lexicalTheme: EditorTheme;
 }
 
-export const AdminConfigProvider = AppContainer.createDecorator(Original => {
+/* Once the app fully renders (after the LoginScreen), apply protected configs. */
+export const AdminConfigPlugin = <base.ApplyProtectedConfig />;
+
+export const AdminConfigProvider = createProvider(Original => {
     return function AdminConfigProvider({ children }) {
         return (
             <>
@@ -48,10 +51,6 @@ export const AdminConfigProvider = AppContainer.createDecorator(Original => {
                         {children}
                     </AdminWithConfig>
                 </Original>
-                {/* Once the app fully renders (after the LoginScreen), apply protected configs. */}
-                <Plugin>
-                    <base.ApplyProtectedConfig />
-                </Plugin>
             </>
         );
     };

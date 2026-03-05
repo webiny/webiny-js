@@ -1,4 +1,12 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, {
+    createContext,
+    Fragment,
+    useCallback,
+    useContext,
+    useEffect,
+    useMemo,
+    useState
+} from "react";
 import {
     compose,
     CompositionProvider,
@@ -19,7 +27,6 @@ interface State {
 
 interface AppContext extends State {
     addProvider(hoc: Decorator<GenericComponent<ProviderProps>>): void;
-
     addPlugin(plugin: React.ReactNode): void;
 }
 
@@ -39,6 +46,7 @@ export const useApp = () => {
 
 export interface AppProps {
     routes?: Array<any>;
+    plugins?: any[];
     providers?: Array<Decorator<GenericComponent<ProviderProps>>>;
     decorators?: DecoratorsCollection;
     children?: React.ReactNode | React.ReactNode[];
@@ -50,83 +58,89 @@ interface ProviderProps {
 
 type ComponentWithChildren = React.ComponentType<{ children?: React.ReactNode }>;
 
-export const AppBase = React.memo(({ routes = [], providers = [], children }: AppProps) => {
-    const [state, setState] = useState<State>({
-        plugins: [],
-        providers
-    });
-
-    const addProvider = useCallback((component: Decorator<any>) => {
-        setState(state => {
-            if (state.providers.findIndex(m => m === component) > -1) {
-                return state;
-            }
-
-            return {
-                ...state,
-                providers: [...state.providers, component]
-            };
+export const AppBase = React.memo(
+    ({ routes = [], plugins = [], providers = [], children }: AppProps) => {
+        const [state, setState] = useState<State>({
+            plugins,
+            providers
         });
-    }, []);
 
-    const addPlugin = useCallback((element: JSX.Element) => {
-        setState(state => {
-            return {
+        const addProvider = useCallback((component: Decorator<any>) => {
+            setState(state => {
+                if (state.providers.findIndex(m => m === component) > -1) {
+                    return state;
+                }
+
+                return {
+                    ...state,
+                    providers: [...state.providers, component]
+                };
+            });
+        }, []);
+
+        const addPlugin = useCallback((element: JSX.Element) => {
+            setState(state => {
+                return {
+                    ...state,
+                    plugins: [...state.plugins, element]
+                };
+            });
+        }, []);
+
+        const appContext = useMemo(
+            () => ({
                 ...state,
-                plugins: [...state.plugins, element]
-            };
-        });
-    }, []);
-
-    const appContext = useMemo(
-        () => ({
-            ...state,
-            addProvider,
-            addPlugin
-        }),
-        [state]
-    );
-
-    const AppRouter = useMemo(() => {
-        return function AppRouter() {
-            const router = useRouter();
-            const routerConfig = useRouterConfig();
-            const routesFromConfig = routerConfig.routes;
-            const combinedRoutes = [...routes, ...routesFromConfig];
-
-            useEffect(() => {
-                router.setRoutes(combinedRoutes);
-            }, [combinedRoutes.length]);
-
-            return null;
-        };
-    }, []);
-
-    const Providers = useMemo(() => {
-        return React.memo(
-            compose(...(state.providers || []))(({ children }: ProviderProps) => {
-                return <>{children}</>;
-            })
+                addProvider,
+                addPlugin
+            }),
+            [state]
         );
-    }, [state.providers.length]) as ComponentWithChildren;
 
-    Providers.displayName = "Providers";
+        const AppRouter = useMemo(() => {
+            return function AppRouter() {
+                const router = useRouter();
+                const routerConfig = useRouterConfig();
+                const routesFromConfig = routerConfig.routes;
+                const combinedRoutes = [...routes, ...routesFromConfig];
 
-    return (
-        <AppContext.Provider value={appContext}>
-            {children}
-            <AppContainer>
-                <Providers>
-                    <PluginsProvider>{state.plugins}</PluginsProvider>
-                    <RouterWithConfig>
-                        <AppRouter />
-                        <RouteContent />
-                    </RouterWithConfig>
-                </Providers>
-            </AppContainer>
-        </AppContext.Provider>
-    );
-});
+                useEffect(() => {
+                    router.setRoutes(combinedRoutes);
+                }, [combinedRoutes.length]);
+
+                return null;
+            };
+        }, []);
+
+        const Providers = useMemo(() => {
+            return React.memo(
+                compose(...(state.providers || []))(({ children }: ProviderProps) => {
+                    return <>{children}</>;
+                })
+            );
+        }, [state.providers.length]) as ComponentWithChildren;
+
+        Providers.displayName = "Providers";
+
+        return (
+            <AppContext.Provider value={appContext}>
+                {children}
+                <AppContainer>
+                    <Providers>
+                        <PluginsProvider>
+                            {state.plugins.map((plugin, index) => (
+                                <Fragment key={index}>{plugin}</Fragment>
+                            ))}
+                        </PluginsProvider>
+                        <RouterWithConfig>
+                            <AppRouter />
+                            <RouteContent />
+                        </RouterWithConfig>
+                    </Providers>
+                </AppContainer>
+            </AppContext.Provider>
+        );
+    }
+);
 
 AppBase.displayName = "AppBase";
 

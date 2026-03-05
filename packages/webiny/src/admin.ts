@@ -10,4 +10,5 @@ export { createUsePermissions } from "@webiny/app-admin/permissions/index.js";
 export { RegisterFeature } from "@webiny/app-admin/components/RegisterFeature.js";
 export { BuildParam, BuildParams } from "@webiny/app-admin/features/buildParams/index.js";
 export { AdminConfig } from "@webiny/app-admin/config/AdminConfig.js";
+export { Routes } from "@webiny/app-admin/routes.js";
 export { createFeature, createAbstraction, BaseError } from "@webiny/feature/admin/index.js";
