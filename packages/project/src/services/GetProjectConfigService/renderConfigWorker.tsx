@@ -2,9 +2,9 @@ import "tsx/esm";
 import { Properties, toObject } from "@webiny/react-properties";
 import debounce from "debounce";
 import React from "react";
-import Renderer from "react-test-renderer";
+import { renderToStaticMarkup } from "react-dom/server";
 import { serializeError } from "serialize-error";
-import type { RenderConfigWorkerMessageDto, RenderConfigParamsDto } from "./renderConfig.js";
+import type { RenderConfigParamsDto, RenderConfigWorkerMessageDto } from "./renderConfig.js";
 import { ProjectModel } from "~/models/ProjectModel.js";
 import { EnvProvider } from "./EnvContext.js";
 import { WcpProjectLicenseProvider } from "./WcpProjectLicenseContext.js";
@@ -58,12 +58,19 @@ const onChange = debounce((value: any) => {
     process.exit(0);
 });
 
-Renderer.create(
-    <WcpProjectLicenseProvider>
-        <EnvProvider>
-            <Properties onChange={onChange}>
-                <Extensions />
-            </Properties>
-        </EnvProvider>
-    </WcpProjectLicenseProvider>
-);
+try {
+    renderToStaticMarkup(
+        <WcpProjectLicenseProvider>
+            <EnvProvider>
+                <Properties onChange={onChange}>
+                    <Extensions />
+                </Properties>
+            </EnvProvider>
+        </WcpProjectLicenseProvider>
+    );
+    sendSuccess({
+        message: "Config rendered successfully. Waiting for changes..."
+    });
+} catch (ex) {
+    sendError(ex);
+}
