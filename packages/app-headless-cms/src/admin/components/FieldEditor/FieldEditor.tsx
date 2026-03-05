@@ -161,7 +161,9 @@ const Editor = () => {
                                         "cursor-grab",
                                         "absolute left-sm-plus top-sm-plus z-10"
                                     ])}
-                                    ref={drag}
+                                    ref={element => {
+                                        drag(element);
+                                    }}
                                 >
                                     <Icon
                                         icon={<DragIcon />}
@@ -198,7 +200,9 @@ const Editor = () => {
                                                 >
                                                     {({ drag }) => (
                                                         <div
-                                                            ref={drag}
+                                                            ref={element => {
+                                                                drag(element);
+                                                            }}
                                                             className={cn([
                                                                 "relative",
                                                                 "flex-1 basis-full",
@@ -244,7 +248,9 @@ const Editor = () => {
                                                                 "flex-1 basis-full",
                                                                 "mx-sm"
                                                             ])}
-                                                            ref={drag}
+                                                            ref={element => {
+                                                                drag(element);
+                                                            }}
                                                         >
                                                             <Vertical
                                                                 depth={depth}

@@ -1,5 +1,5 @@
 import React from "react";
-import { css } from "emotion";
+import { css } from "@emotion/css";
 import classNames from "classnames";
 import omit from "lodash/omit.js";
 import { Typography } from "@webiny/ui/Typography/index.js";

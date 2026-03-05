@@ -27,7 +27,7 @@ const Container = styled("div")(({ maxWidth }: Props) => {
         maxWidth: maxWidth || "140px",
         width: "auto",
         display: "flex",
-        flexDirection: "row",
+        flexDirection: "row" as const,
         alignItems: "center",
         justifyContent: "center",
         "&.has-tooltip": {
@@ -43,7 +43,7 @@ const Container = styled("div")(({ maxWidth }: Props) => {
             }
         },
         "&.disabled": {
-            pointerEvents: "none",
+            pointerEvents: "none" as const,
             cursor: "not-allowed",
             [Button]: {
                 color: "var(--mdc-theme-on-background)",
