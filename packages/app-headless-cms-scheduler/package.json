@@ -10,8 +10,8 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "@emotion/react": "11.10.8",
-    "@emotion/styled": "11.10.6",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
     "@material-design-icons/svg": "^0.14.15",
     "@webiny/admin-ui": "0.0.0",
     "@webiny/app-aco": "0.0.0",

@@ -16,7 +16,7 @@
     "react": "19.2.4"
   },
   "devDependencies": {
-    "@emotion/react": "11.10.8",
+    "@emotion/react": "^11.14.0",
     "@testing-library/react": "^15.0.7",
     "@webiny/build-tools": "0.0.0",
     "@webiny/react-composition": "0.0.0",
