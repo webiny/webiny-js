@@ -1,5 +1,5 @@
 import type { IColumnsVisibilityGateway } from "./IColumnsVisibilityGateway.js";
-import { LocalStorage } from "@webiny/app/exports/admin/localStorage.js";
+import { LocalStorage } from "@webiny/app/exports/admin/local-storage.js";
 
 export class ColumnsVisibilityLocalStorageGateway implements IColumnsVisibilityGateway {
     private readonly key: string;

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from "react";
 import { ROOT_FOLDER } from "~/constants.js";
-import { useLocalStorage } from "@webiny/app/exports/admin/localStorage.js";
+import { useLocalStorage } from "@webiny/app/exports/admin/local-storage.js";
 
 export interface NavigateFolderContext {
     currentFolderId: string;
