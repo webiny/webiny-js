@@ -140,7 +140,7 @@ export const FieldPermissionsSelection = ({
             <Text as={"div"} className={"mb-md"}>
                 People and teams with access
             </Text>
-            <Scrollbar style={{ minHeight: "100px" }}>
+            <Scrollbar style={{ minHeight: "300px" }}>
                 <List>
                     {selection?.map(item => (
                         <List.Item
