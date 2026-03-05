@@ -45,7 +45,7 @@ export interface ImageNodeProps {
     height?: "inherit" | number;
 }
 
-export class ImageNode extends DecoratorNode<JSX.Element> {
+export class ImageNode extends DecoratorNode<React.JSX.Element> {
     __id: string;
     __src: string;
     __altText: string;
@@ -159,7 +159,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
         return this.__altText;
     }
 
-    override decorate(): JSX.Element {
+    override decorate(): React.JSX.Element {
         return (
             <Suspense fallback={null}>
                 <ImageComponent

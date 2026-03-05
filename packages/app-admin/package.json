@@ -68,7 +68,7 @@
   },
   "devDependencies": {
     "@emotion/babel-plugin": "^11.13.5",
-    "@testing-library/react": "^15.0.7",
+    "@testing-library/react": "^16.3.2",
     "@types/bytes": "^3.1.5",
     "@types/graphlib": "^2.1.12",
     "@types/is-hotkey": "^0.1.10",
