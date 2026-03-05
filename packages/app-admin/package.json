@@ -53,7 +53,7 @@
     "minimatch": "^10.2.4",
     "mobx": "^6.15.0",
     "mobx-react-lite": "^3.4.3",
-    "monaco-editor": "^0.55.1",
+    "monaco-editor": "0.53.0",
     "prop-types": "^15.8.1",
     "react": "19.2.4",
     "react-dom": "19.2.4",
