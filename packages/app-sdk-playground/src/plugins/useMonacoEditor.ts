@@ -9,7 +9,7 @@ export function useMonacoEditor(handleRun: () => void) {
     const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 
     // Configure Monaco editor with SDK types.
-    const handleBeforeMount: BeforeMount = useCallback(monaco => {
+    const handleBeforeMount: BeforeMount = useCallback(() => {
         typescript.typescriptDefaults.setCompilerOptions({
             target: typescript.ScriptTarget.ES2020,
             allowNonTsExtensions: true,
