@@ -5,4 +5,3 @@ export { BeforeBuild as BeforeBuildHook } from "~/abstractions/features/hooks/Be
 export { AfterDeploy as AfterDeployHook } from "~/abstractions/features/hooks/AfterDeploy.js";
 export { BeforeDeploy as BeforeDeployHook } from "~/abstractions/features/hooks/BeforeDeploy.js";
 export { BeforeWatch as BeforeWatchHook } from "~/abstractions/features/hooks/BeforeWatch.js";
-export { GetAppStackOutput } from "~/abstractions/features/GetAppStackOutput.js";
