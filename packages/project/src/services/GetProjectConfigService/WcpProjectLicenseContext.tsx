@@ -9,6 +9,7 @@ export interface WcpProjectLicenseContextValue {
     canUsePrivateFiles: () => boolean;
     canUseFileManagerThreatDetection: () => boolean;
     canUseWorkflows: () => boolean;
+    canUseHcmsFieldPermissions: () => boolean;
 }
 
 const WcpProjectLicenseContext = createContext<WcpProjectLicenseContextValue | null>(null);
@@ -43,7 +44,8 @@ export const WcpProjectLicenseProvider: React.FC<{ children: React.ReactNode }> 
         canUsePrivateFiles: () => license?.canUsePrivateFiles() ?? false,
         canUseFileManagerThreatDetection: () =>
             license?.canUseFileManagerThreatDetection() ?? false,
-        canUseWorkflows: () => license?.canUseWorkflows() ?? false
+        canUseWorkflows: () => license?.canUseWorkflows() ?? false,
+        canUseHcmsFieldPermissions: () => license?.canUseHcmsFieldPermissions() ?? false
     };
 
     return (

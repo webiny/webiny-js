@@ -9,5 +9,9 @@ export type {
     CmsContentEntry,
     CmsModel,
     CmsModelField,
-    CmsIdentity
+    CmsIdentity,
+    CmsLayoutFieldTypePlugin,
+    CmsLayoutDescriptorRendererPlugin,
+    CmsBaseLayoutDescriptor,
+    CmsLayoutDescriptor
 } from "@webiny/app-headless-cms-common/types/index.ts";

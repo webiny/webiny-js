@@ -26,7 +26,7 @@ const plugin = createCmsGraphQLSchemaPlugin({
             group: String!
             icon: Icon
             description: String
-            layout: [[ID!]!]!
+            layout: JSON!
             fields: [CmsContentModelFieldInput!]!
             titleFieldId: String!
             descriptionFieldId: String

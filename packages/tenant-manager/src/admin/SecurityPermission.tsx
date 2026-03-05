@@ -14,7 +14,7 @@ export const SecurityPermission = () => {
                 icon={<PermissionsIcon />}
                 schema={{
                     prefix: "tm",
-                    fullAccess: { name: "tm.*" }
+                    fullAccess: true
                 }}
             />
         </AdminConfig>

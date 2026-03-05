@@ -1,4 +1,4 @@
-import type { IDataProvider, PublicPage } from "~/types.js";
+import type { IDataProvider, ListPagesOptions, ListPagesResult, PublicPage } from "~/types.js";
 import type { ApiClient } from "~/dataProviders/ApiClient.js";
 import { GET_PAGE_BY_PATH } from "./GET_PAGE_BY_PATH.js";
 import { GET_PAGE_BY_ID } from "./GET_PAGE_BY_ID.js";
@@ -43,19 +43,30 @@ export class DefaultDataProvider implements IDataProvider {
         return result.websiteBuilder.getPageById.data;
     }
 
-    public async listPages() {
+    public async listPages(options?: ListPagesOptions): Promise<ListPagesResult> {
+        const { where, ...rest } = options ?? {};
+
         const result = await this.config.apiClient.query({
             query: LIST_PUBLISHED_PAGES,
             variables: {
                 where: {
+                    ...where,
                     published: true
-                }
+                },
+                ...rest
             }
         });
 
         this.checkForErrors("listPages", result.websiteBuilder.listPages);
 
-        return result.websiteBuilder.listPages.data ?? [];
+        return {
+            data: result.websiteBuilder.listPages.data ?? [],
+            meta: result.websiteBuilder.listPages.meta ?? {
+                hasMoreItems: false,
+                totalCount: 0,
+                cursor: null
+            }
+        };
     }
 
     private checkForErrors(action: string, data: any) {

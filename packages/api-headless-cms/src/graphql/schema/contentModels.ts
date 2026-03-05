@@ -128,6 +128,14 @@ export const createModelsSchema = ({
                 settings: JSON
             }
 
+            input CmsFieldRuleInput {
+                type: String!
+                target: String!
+                operator: String!
+                value: JSON
+                action: String!
+            }
+
             input CmsContentModelFieldInput {
                 id: ID!
                 label: String!
@@ -147,6 +155,7 @@ export const createModelsSchema = ({
                 validation: [CmsFieldValidationInput]
                 listValidation: [CmsFieldValidationInput]
                 settings: JSON
+                rules: [CmsFieldRuleInput!]
             }
 
             input CmsContentModelCreateInput {
@@ -158,7 +167,7 @@ export const createModelsSchema = ({
                 icon: Icon
                 singleEntry: Boolean
                 description: String
-                layout: [[ID!]!]
+                layout: JSON
                 fields: [CmsContentModelFieldInput!]
                 titleFieldId: String
                 descriptionFieldId: String
@@ -184,7 +193,7 @@ export const createModelsSchema = ({
                 group: String
                 icon: Icon
                 description: String
-                layout: [[ID!]!]!
+                layout: JSON!
                 fields: [CmsContentModelFieldInput!]!
                 titleFieldId: String
                 descriptionFieldId: String
@@ -234,6 +243,14 @@ export const createModelsSchema = ({
                 values: [CmsPredefinedValue]
             }
 
+            type CmsFieldRule {
+                type: String!
+                target: String!
+                operator: String!
+                value: JSON
+                action: String!
+            }
+
             type CmsContentModelField {
                 id: ID!
                 # auto-generated value
@@ -253,6 +270,7 @@ export const createModelsSchema = ({
                 validation: [CmsFieldValidation!]
                 listValidation: [CmsFieldValidation!]
                 settings: JSON
+                rules: [CmsFieldRule!]
             }
 
             type CmsContentModel {
@@ -267,7 +285,7 @@ export const createModelsSchema = ({
                 savedOn: DateTime
                 createdBy: CmsIdentity
                 fields: [CmsContentModelField!]!
-                layout: [[String!]!]!
+                layout: JSON!
                 titleFieldId: String
                 descriptionFieldId: String
                 imageFieldId: String

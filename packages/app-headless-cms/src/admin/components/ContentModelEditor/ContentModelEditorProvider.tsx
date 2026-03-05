@@ -12,10 +12,17 @@ import type {
 import { GET_CONTENT_MODEL, UPDATE_CONTENT_MODEL } from "~/admin/graphql/contentModels.js";
 import { LIST_MENU_CONTENT_GROUPS_MODELS } from "~/admin/viewsGraphql.js";
 import type { CmsModel, CmsModelField } from "~/types.js";
+import type { CmsLayoutFieldTypePlugin } from "@webiny/app-headless-cms-common/types/index.js";
 import type { FetchResult } from "apollo-link";
 import { ModelProvider } from "~/admin/components/ModelProvider/index.js";
 import { createHashing } from "@webiny/app/utils/index.js";
 import { Routes } from "~/routes.js";
+import type { FieldOption } from "@webiny/app-headless-cms-common/Fields/fieldOptions.js";
+import {
+    buildFieldOptions,
+    buildFieldLabelPrefixes
+} from "@webiny/app-headless-cms-common/Fields/fieldOptions.js";
+import { plugins } from "@webiny/plugins";
 
 export interface ContentModelEditorProviderContext {
     apolloClient: ApolloClient<any>;
@@ -29,6 +36,7 @@ export interface ContentModelEditorProviderContext {
     setData: (setter: (model: CmsModel) => void, saveContentModel?: boolean) => Promise<any>;
     activeTabIndex: number;
     setActiveTabIndex: (index: number) => void;
+    fieldOptions: FieldOption[];
 }
 
 export const contentModelEditorContext = React.createContext<
@@ -230,6 +238,21 @@ export const ContentModelEditorProvider = ({
         });
     }, [modelId]);
 
+    const layoutFieldPlugins = plugins.byType<CmsLayoutFieldTypePlugin>(
+        "cms-editor-layout-field-type"
+    );
+
+    const fieldOptions = useMemo(() => {
+        const model = state.data;
+        if (!model) {
+            return [];
+        }
+        const prefixes = model.layout
+            ? buildFieldLabelPrefixes(model.layout, layoutFieldPlugins)
+            : undefined;
+        return buildFieldOptions(model.fields ?? [], "", "", prefixes, layoutFieldPlugins);
+    }, [state.data?.fields, state.data?.layout]);
+
     const value = useMemo<ContentModelEditorProviderContext>(
         () => ({
             // Keeping `data` for compatibility
@@ -243,9 +266,10 @@ export const ContentModelEditorProvider = ({
             saveContentModel,
             setData,
             activeTabIndex: state.activeTabIndex,
-            setActiveTabIndex
+            setActiveTabIndex,
+            fieldOptions
         }),
-        [state, apolloClient]
+        [state, apolloClient, fieldOptions]
     );
 
     const { Provider } = contentModelEditorContext;

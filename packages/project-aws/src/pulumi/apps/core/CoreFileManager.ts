@@ -11,10 +11,40 @@ export const CoreFileManger = createAppModule({
         const bucket = app.addResource(aws.s3.Bucket, {
             name,
             config: {
-                acl: aws.s3.CannedAcl.Private,
                 // We definitely don't want to force-destroy if "protected" flag is true.
-                forceDestroy: !params.protect,
-                // We need these rules to be able to upload to this bucket from the browser.
+                forceDestroy: !params.protect
+            },
+            opts: {
+                protect: params.protect
+            }
+        });
+
+        const bucketOwnershipControls = app.addResource(aws.s3.BucketOwnershipControls, {
+            name: `${name}-ownership-controls`,
+            config: {
+                bucket: bucket.output.id,
+                rule: {
+                    objectOwnership: "BucketOwnerPreferred"
+                }
+            }
+        });
+
+        const bucketAcl = app.addResource(aws.s3.BucketAcl, {
+            name: `${name}-acl`,
+            config: {
+                bucket: bucket.output.id,
+                acl: aws.s3.CannedAcl.Private
+            },
+            opts: {
+                dependsOn: [bucketOwnershipControls.output]
+            }
+        });
+
+        // We need these rules to be able to upload to this bucket from the browser.
+        const bucketCorsConfiguration = app.addResource(aws.s3.BucketCorsConfiguration, {
+            name: `${name}-cors`,
+            config: {
+                bucket: bucket.output.id,
                 corsRules: [
                     {
                         allowedHeaders: ["*"],
@@ -23,9 +53,6 @@ export const CoreFileManger = createAppModule({
                         maxAgeSeconds: 3000
                     }
                 ]
-            },
-            opts: {
-                protect: params.protect
             }
         });
 
@@ -43,7 +70,10 @@ export const CoreFileManger = createAppModule({
 
         return {
             bucket,
-            blockPublicAccessBlock
+            bucketOwnershipControls,
+            bucketAcl,
+            blockPublicAccessBlock,
+            bucketCorsConfiguration
         };
     }
 });

@@ -41,7 +41,8 @@ function buildResult<S extends PermissionSchemaConfig>(
     schema: S,
     identity: Identity
 ): UsePermissionsResult<S> {
-    const hasFullAccess = !!identity.getPermission(schema.fullAccess.name);
+    const fullAccessName = `${schema.prefix}.*`;
+    const hasFullAccess = !!identity.getPermission(fullAccessName);
     const entityMap = buildEntityMap(schema);
 
     const canAccess = (entityId: string): boolean => {

@@ -166,7 +166,7 @@ const DecoratableAutoCompletePrimitive = (props: AutoCompletePrimitiveProps) => 
                     </span>
                 </PopoverPrimitive.Trigger>
                 <PopoverPrimitive.Content
-                    style={{ width: "var(--radix-popover-trigger-width)" }}
+                    style={{ minWidth: "var(--radix-popover-trigger-width)" }}
                     onOpenAutoFocus={e => e.preventDefault()}
                 >
                     <AutoCompleteList

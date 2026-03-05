@@ -32,6 +32,10 @@ export class ReactLicense implements ILicense {
         return this.license.canUseFolderLevelPermissions();
     }
 
+    canUseHcmsFieldPermissions(): boolean {
+        return this.license.canUseHcmsFieldPermissions();
+    }
+
     canUsePrivateFiles(): boolean {
         return this.license.canUsePrivateFiles();
     }

@@ -7,12 +7,32 @@ export function createPublicAppBucket(app: PulumiApp, name: string) {
     const bucket = app.addResource(aws.s3.Bucket, {
         name: name,
         config: {
-            acl: aws.s3.CannedAcl.PublicRead,
             forceDestroy: true,
             website: {
                 indexDocument: "index.html",
                 errorDocument: "_NOT_FOUND_PAGE_/index.html"
             }
+        }
+    });
+
+    const bucketOwnershipControls = app.addResource(aws.s3.BucketOwnershipControls, {
+        name: `${name}-ownership-controls`,
+        config: {
+            bucket: bucket.output.id,
+            rule: {
+                objectOwnership: "BucketOwnerPreferred"
+            }
+        }
+    });
+
+    const bucketAcl = app.addResource(aws.s3.BucketAcl, {
+        name: `${name}-acl`,
+        config: {
+            bucket: bucket.output.id,
+            acl: aws.s3.CannedAcl.PublicRead
+        },
+        opts: {
+            dependsOn: [bucketOwnershipControls.output]
         }
     });
 
@@ -29,6 +49,8 @@ export function createPublicAppBucket(app: PulumiApp, name: string) {
 
     return {
         bucket,
+        bucketAcl,
+        bucketOwnershipControls,
         origin
     };
 }
@@ -41,8 +63,28 @@ export function createPrivateAppBucket(app: PulumiApp, name: string) {
     const bucket = app.addResource(aws.s3.Bucket, {
         name: name,
         config: {
-            acl: aws.s3.CannedAcl.Private,
             forceDestroy: true
+        }
+    });
+
+    const bucketOwnershipControls = app.addResource(aws.s3.BucketOwnershipControls, {
+        name: `${name}-ownership-controls`,
+        config: {
+            bucket: bucket.output.id,
+            rule: {
+                objectOwnership: "BucketOwnerPreferred"
+            }
+        }
+    });
+
+    const bucketAcl = app.addResource(aws.s3.BucketAcl, {
+        name: `${name}-acl`,
+        config: {
+            bucket: bucket.output.id,
+            acl: aws.s3.CannedAcl.Private
+        },
+        opts: {
+            dependsOn: [bucketOwnershipControls.output]
         }
     });
 
@@ -119,6 +161,8 @@ export function createPrivateAppBucket(app: PulumiApp, name: string) {
 
     return {
         bucket,
+        bucketOwnershipControls,
+        bucketAcl,
         originIdentity,
         origin,
         bucketPublicAccessBlock,

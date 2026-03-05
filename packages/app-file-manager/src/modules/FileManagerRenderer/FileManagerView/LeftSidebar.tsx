@@ -25,19 +25,21 @@ export const LeftSidebar = ({ currentFolder, onFolderClick, children }: LeftSide
     }, [currentFolder]);
 
     return (
-        <div className={"overflow-auto"} style={{ height: "calc(100vh - 69px)" }}>
-            <div className={"p-sm"}>
+        <div className={"flex flex-col h-main-content"}>
+            <div className={"py-sm px-md"}>
                 <Heading level={5}>File Manager</Heading>
             </div>
             <Separator />
-            <FolderTree
-                folderActions={browser.folder.actions}
-                dropConfirmation={browser.folder.dropConfirmation}
-                focusedFolderId={currentFolder}
-                onFolderClick={data => onFolderClick(data.id)}
-                enableActions={true}
-                enableCreate={true}
-            />
+            <div className={"flex-1 overflow-y-scroll"}>
+                <FolderTree
+                    folderActions={browser.folder.actions}
+                    dropConfirmation={browser.folder.dropConfirmation}
+                    focusedFolderId={currentFolder}
+                    onFolderClick={data => onFolderClick(data.id)}
+                    enableActions={true}
+                    enableCreate={true}
+                />
+            </div>
             {children ? <Separator /> : null}
             {children}
         </div>

@@ -11,6 +11,26 @@ function hasAction(entity: EntityDefinition, name: string): boolean {
     return entity.actions?.some(a => a.name === name) ?? false;
 }
 
+/** Resolve fullAccess config into a concrete Permission object. */
+function resolveFullAccess(schema: PermissionSchema): Permission {
+    const name = `${schema.prefix}.*`;
+    if (schema.fullAccess === true) {
+        return { name };
+    }
+    return { name, ...schema.fullAccess };
+}
+
+/** Resolve readOnlyAccess config into a concrete Permission[]. */
+function resolveReadOnlyAccess(schema: PermissionSchema): Permission[] | undefined {
+    if (!schema.readOnlyAccess) {
+        return undefined;
+    }
+    if (schema.readOnlyAccess === true) {
+        return [{ name: `${schema.prefix}.*`, rwd: "r" }];
+    }
+    return schema.readOnlyAccess;
+}
+
 /**
  * Deserialize Permission[] into form data based on the schema.
  */
@@ -22,8 +42,14 @@ function deserializePermissions(
         return { accessLevel: "no" };
     }
 
+    // Check for read-only access by looking for the synthetic marker permission.
+    if (value.some(p => p.name === `$${schema.prefix}.readonly`)) {
+        return { accessLevel: "read-only" };
+    }
+
     // Check for full access: either wildcard or the schema's fullAccess permission.
-    const hasFullAccess = value.some(p => p.name === "*" || p.name === schema.fullAccess.name);
+    const fullAccessName = `${schema.prefix}.*`;
+    const hasFullAccess = value.some(p => p.name === "*" || p.name === fullAccessName);
     if (hasFullAccess) {
         return { accessLevel: "full" };
     }
@@ -77,7 +103,9 @@ function serializePermissions(
 ): Permission[] {
     // Start by filtering out all permissions belonging to this schema's prefix.
     const filtered = Array.isArray(currentValue)
-        ? currentValue.filter(p => !p.name.startsWith(schema.prefix))
+        ? currentValue.filter(
+              p => !p.name.startsWith(schema.prefix) && !p.name.startsWith(`$${schema.prefix}`)
+          )
         : [];
 
     if (formData.accessLevel === "no" || !formData.accessLevel) {
@@ -85,7 +113,12 @@ function serializePermissions(
     }
 
     if (formData.accessLevel === "full") {
-        return [...filtered, { ...schema.fullAccess }];
+        return [...filtered, resolveFullAccess(schema)];
+    }
+
+    const readOnlyPermissions = resolveReadOnlyAccess(schema);
+    if (formData.accessLevel === "read-only" && readOnlyPermissions) {
+        return [...filtered, { name: `$${schema.prefix}.readonly` }, ...readOnlyPermissions];
     }
 
     const entities = schema.entities || [];
@@ -227,7 +260,11 @@ export function usePermissionForm(
                 );
                 // Re-add non-schema permissions that were filtered out.
                 const nonSchemaPermissions = Array.isArray(value)
-                    ? value.filter(p => !p.name.startsWith(schema.prefix))
+                    ? value.filter(
+                          p =>
+                              !p.name.startsWith(schema.prefix) &&
+                              !p.name.startsWith(`$${schema.prefix}`)
+                      )
                     : [];
                 result = [...nonSchemaPermissions, ...result];
             }

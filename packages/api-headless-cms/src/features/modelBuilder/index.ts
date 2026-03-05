@@ -23,4 +23,6 @@ import "./fields/DynamicZoneFieldType.js";
 // import "./fields/LocationFieldType.js";
 import "./fields/JsonFieldType.js";
 import "./fields/SearchableJsonFieldType.js";
+import "./fields/UiSeparatorFieldType.js";
+import "./fields/UiTabsFieldType.js";
 import "./fields/UiAlertFieldType.js";

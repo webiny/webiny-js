@@ -149,7 +149,9 @@ class CreateModelRepositoryImpl implements RepositoryAbstraction.Interface {
                     context: this.cmsContext
                 });
             } catch (error) {
-                return Result.fail(new ModelValidationError((error as Error).message));
+                return Result.fail(
+                    new ModelValidationError({ message: error.message, data: error.data })
+                );
             }
 
             // TODO: ideally, this will eventually be handled by the Model domain object

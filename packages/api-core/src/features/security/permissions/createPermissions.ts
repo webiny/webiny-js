@@ -36,6 +36,7 @@ function getEntity(entityMap: Map<string, EntityLookup>, entityId: string): Enti
 
 export function createPermissions<const S extends PermissionSchemaConfig>(schema: S) {
     const entityMap = buildEntityMap(schema);
+    const fullAccessName = `${schema.prefix}.*`;
 
     class SchemaPermissions {
         constructor(private identityContext: IdentityContext.Interface) {}
@@ -48,7 +49,7 @@ export function createPermissions<const S extends PermissionSchemaConfig>(schema
                 return true;
             }
             const entity = getEntity(entityMap, entityId);
-            const permissions = await this.identityContext.getPermissions(entity.permission);
+            const permissions = await this.getEntityPermissions(entity.permission);
             if (!permissions.length) {
                 return false;
             }
@@ -73,7 +74,7 @@ export function createPermissions<const S extends PermissionSchemaConfig>(schema
                 return false;
             }
             const entity = getEntity(entityMap, entityId);
-            const permissions = await this.identityContext.getPermissions(entity.permission);
+            const permissions = await this.getEntityPermissions(entity.permission);
             if (!permissions.length) {
                 return false;
             }
@@ -88,7 +89,7 @@ export function createPermissions<const S extends PermissionSchemaConfig>(schema
                 return true;
             }
             const entity = getEntity(entityMap, entityId);
-            const permissions = await this.identityContext.getPermissions(entity.permission);
+            const permissions = await this.getEntityPermissions(entity.permission);
             if (!permissions.length) {
                 return false;
             }
@@ -108,7 +109,7 @@ export function createPermissions<const S extends PermissionSchemaConfig>(schema
                 return true;
             }
             const entity = getEntity(entityMap, entityId);
-            const permissions = await this.identityContext.getPermissions(entity.permission);
+            const permissions = await this.getEntityPermissions(entity.permission);
             if (!permissions.length) {
                 return false;
             }
@@ -128,7 +129,7 @@ export function createPermissions<const S extends PermissionSchemaConfig>(schema
                 return true;
             }
             const entity = getEntity(entityMap, entityId);
-            const permissions = await this.identityContext.getPermissions(entity.permission);
+            const permissions = await this.getEntityPermissions(entity.permission);
             if (!permissions.length) {
                 return false;
             }
@@ -156,7 +157,7 @@ export function createPermissions<const S extends PermissionSchemaConfig>(schema
                 return true;
             }
             const entity = getEntity(entityMap, entityId);
-            const permissions = await this.identityContext.getPermissions(entity.permission);
+            const permissions = await this.getEntityPermissions(entity.permission);
             if (!permissions.length) {
                 return false;
             }
@@ -180,7 +181,7 @@ export function createPermissions<const S extends PermissionSchemaConfig>(schema
                 return true;
             }
             const entity = getEntity(entityMap, entityId);
-            const permissions = await this.identityContext.getPermissions(entity.permission);
+            const permissions = await this.getEntityPermissions(entity.permission);
             if (!permissions.length) {
                 return false;
             }
@@ -197,7 +198,7 @@ export function createPermissions<const S extends PermissionSchemaConfig>(schema
                 return true;
             }
             const entity = getEntity(entityMap, entityId);
-            const permissions = await this.identityContext.getPermissions(entity.permission);
+            const permissions = await this.getEntityPermissions(entity.permission);
             if (!permissions.length) {
                 return false;
             }
@@ -214,7 +215,7 @@ export function createPermissions<const S extends PermissionSchemaConfig>(schema
                 return true;
             }
             const entity = getEntity(entityMap, entityId);
-            const permissions = await this.identityContext.getPermissions(entity.permission);
+            const permissions = await this.getEntityPermissions(entity.permission);
             if (!permissions.length) {
                 return false;
             }
@@ -223,9 +224,29 @@ export function createPermissions<const S extends PermissionSchemaConfig>(schema
             });
         }
 
+        private async getEntityPermissions(entityPermission: string): Promise<any[]> {
+            const permissions = await this.identityContext.getPermissions(entityPermission);
+            if (permissions.length) {
+                return permissions;
+            }
+            // Fall back to the schema wildcard (e.g. "test.*") — its flags apply to all entities.
+            const wildcard = await this.identityContext.getPermission(fullAccessName);
+            return wildcard ? [wildcard] : [];
+        }
+
         private async hasFullSchemaAccess(): Promise<boolean> {
-            const permission = await this.identityContext.getPermission(schema.fullAccess.name);
-            return permission !== null;
+            const permission = await this.identityContext.getPermission(fullAccessName);
+            if (!permission) {
+                return false;
+            }
+            // Only treat as full access if the permission has no `rwd` flag.
+            // A permission like { name: "wb.*", rwd: "r" } should NOT grant full access.
+            const keys = Object.keys(permission).filter(k => k !== "name");
+
+            const hasRwd = keys.includes("rwd");
+
+            // It's full-access only if there's no `rwd` flag.
+            return !hasRwd;
         }
     }
 

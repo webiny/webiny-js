@@ -19,6 +19,7 @@ interface EntryProps {
     entry: CmsReferenceContentEntry;
     onChange: (value: CmsReferenceValue) => void;
     index?: never;
+    disabled?: boolean;
     selected: boolean;
     onMoveUp?: never;
     onMoveDown?: never;
@@ -28,6 +29,7 @@ interface EntryProps {
 
 interface EntryPropsWithRemove {
     onRemove: (entryId: string) => void;
+    disabled?: boolean;
     model: CmsModel;
     entry: CmsReferenceContentEntry;
     index: number;
@@ -46,7 +48,8 @@ export const Entry = ({
     index,
     onMoveUp: onMoveUpClick,
     onMoveDown: onMoveDownClick,
-    placement
+    placement,
+    disabled = false
 }: EntryPropsWithRemove | EntryProps) => {
     const { getLink } = useRouter();
 
@@ -107,7 +110,7 @@ export const Entry = ({
                 { "hover:cursor-pointer": !!onChange }
             )}
         >
-            {onChange && (
+            {onChange && !disabled ? (
                 <div>
                     <Checkbox
                         checked={selected}
@@ -117,7 +120,7 @@ export const Entry = ({
                         }}
                     />
                 </div>
-            )}
+            ) : null}
             <div
                 className={
                     "grid grid-cols-[auto_1fr_auto] items-center gap-lg text-sm text-neutral-muted w-full min-w-0"
@@ -162,7 +165,7 @@ export const Entry = ({
                         variant={"neutral-base-outline"}
                     />
 
-                    {placement == "multiRef" && (
+                    {!disabled && placement == "multiRef" ? (
                         <>
                             <div className={"flex gap-xs"}>
                                 <IconButton
@@ -181,28 +184,30 @@ export const Entry = ({
                                 />
                             </div>
                         </>
-                    )}
+                    ) : null}
 
-                    <DropdownMenu
-                        trigger={
-                            <IconButton variant={"ghost"} size={"sm"} icon={<MoreVertIcon />} />
-                        }
-                    >
-                        <DropdownMenu.Link
-                            icon={<OpenInNewIcon />}
-                            text={"Open in new tab"}
-                            to={link}
-                            target={"_blank"}
-                        />
-
-                        {onRemove && (
-                            <DropdownMenu.Item
-                                icon={<RemoveIcon />}
-                                text={placement === "multiRef" ? "Remove from list" : "Remove"}
-                                onClick={() => onRemove(entry.id)}
+                    {!disabled ? (
+                        <DropdownMenu
+                            trigger={
+                                <IconButton variant={"ghost"} size={"sm"} icon={<MoreVertIcon />} />
+                            }
+                        >
+                            <DropdownMenu.Link
+                                icon={<OpenInNewIcon />}
+                                text={"Open in new tab"}
+                                to={link}
+                                target={"_blank"}
                             />
-                        )}
-                    </DropdownMenu>
+
+                            {onRemove && (
+                                <DropdownMenu.Item
+                                    icon={<RemoveIcon />}
+                                    text={placement === "multiRef" ? "Remove from list" : "Remove"}
+                                    onClick={() => onRemove(entry.id)}
+                                />
+                            )}
+                        </DropdownMenu>
+                    ) : null}
                 </div>
             </div>
         </div>

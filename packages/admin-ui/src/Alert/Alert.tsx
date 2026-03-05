@@ -7,6 +7,7 @@ import { AlertSwatchBox } from "./AlertSwatchBox.js";
 import { AlertPropsProvider, useAlertProps } from "./AlertPropsProvider.js";
 import { AlertCloseButton } from "./AlertCloseButton.js";
 import { defaultVariants } from "./constants.js";
+import { useAdminUi } from "~/AdminUiProvider/index.js";
 
 const alertVariants = cva(
     "flex gap-sm-plus items-start w-full rounded-lg text-md py-sm-extra pl-md pr-sm-plus [&_a]:font-semibold [&_a]:underline",
@@ -88,6 +89,7 @@ const AlertAction = makeDecoratable("AlertAction", AlertActionBase);
 
 const AlertBase = (props: AlertProps) => {
     const { className, type, variant, swatchColor, actions, children, ...rootRestProps } = props;
+    const { compileMarkdown } = useAdminUi();
 
     const backgroundColor = useMemo(() => {
         if (!swatchColor) {
@@ -107,7 +109,7 @@ const AlertBase = (props: AlertProps) => {
             >
                 <AlertSwatchBox />
                 <AlertIcon />
-                <div className={"grow py-xxs"}>{children}</div>
+                <div className={"grow py-xxs"}>{compileMarkdown(children)}</div>
                 {actions && <div className={"flex gap-sm"}>{actions}</div>}
                 <AlertCloseButton />
             </div>
