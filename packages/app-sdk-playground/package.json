@@ -16,7 +16,7 @@
     "@webiny/app-admin": "0.0.0",
     "@webiny/icons": "0.0.0",
     "@webiny/sdk": "0.0.0",
-    "monaco-editor": "^0.53.0",
+    "monaco-editor": "^0.55.1",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },

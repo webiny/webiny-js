@@ -1,6 +1,7 @@
 import { useCallback, useRef } from "react";
-import type { OnMount, BeforeMount } from "@monaco-editor/react";
+import type { BeforeMount, OnMount } from "@monaco-editor/react";
 import type { editor } from "monaco-editor";
+import { typescript } from "monaco-editor";
 import { SDK_GLOBAL_DECLARATION } from "./sdkGlobalDeclaration.js";
 import { defaultSdkCode } from "./defaultCode.js";
 
@@ -9,11 +10,11 @@ export function useMonacoEditor(handleRun: () => void) {
 
     // Configure Monaco editor with SDK types.
     const handleBeforeMount: BeforeMount = useCallback(monaco => {
-        monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
-            target: monaco.languages.typescript.ScriptTarget.ES2020,
+        typescript.typescriptDefaults.setCompilerOptions({
+            target: typescript.ScriptTarget.ES2020,
             allowNonTsExtensions: true,
-            moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
-            module: monaco.languages.typescript.ModuleKind.CommonJS,
+            moduleResolution: typescript.ModuleResolutionKind.NodeJs,
+            module: typescript.ModuleKind.CommonJS,
             noEmit: true,
             esModuleInterop: true,
             allowJs: true
@@ -22,7 +23,7 @@ export function useMonacoEditor(handleRun: () => void) {
         // Single addExtraLib call with a pure script-mode string (no import/export).
         // This makes TypeScript treat the file as an ambient script, so all
         // declare statements become true globals visible to user code.
-        monaco.languages.typescript.typescriptDefaults.addExtraLib(
+        typescript.typescriptDefaults.addExtraLib(
             SDK_GLOBAL_DECLARATION,
             "file:///sdk-globals.d.ts"
         );

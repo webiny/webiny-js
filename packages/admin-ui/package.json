@@ -26,7 +26,7 @@
     "lodash": "^4.17.23",
     "minimatch": "^10.2.4",
     "mobx": "^6.15.0",
-    "monaco-editor": "^0.53.0",
+    "monaco-editor": "^0.55.1",
     "radix-ui": "^1.4.3",
     "react": "19.2.4",
     "react-color": "^2.19.3",
