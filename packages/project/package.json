@@ -34,6 +34,7 @@
     "get-tsconfig": "^4.13.6",
     "graphql-request": "^7.4.0",
     "humanize-duration": "3.33.2",
+    "jsdom": "^28.1.0",
     "load-json-file": "^7.0.1",
     "lodash": "^4.17.23",
     "minimatch": "^10.2.4",
@@ -55,6 +56,7 @@
   "devDependencies": {
     "@types/debounce": "^1.2.4",
     "@types/humanize-duration": "^3.27.4",
+    "@types/jsdom": "^28.0.0",
     "@types/lodash": "^4.17.24",
     "@types/read-json-sync": "^2.0.3",
     "rimraf": "^6.1.3",

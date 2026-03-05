@@ -2,7 +2,8 @@ import "tsx/esm";
 import { Properties, toObject } from "@webiny/react-properties";
 import debounce from "debounce";
 import React from "react";
-import { renderToStaticMarkup } from "react-dom/server";
+import { createRoot } from "react-dom/client";
+import { JSDOM } from "jsdom";
 import { serializeError } from "serialize-error";
 import type { RenderConfigParamsDto, RenderConfigWorkerMessageDto } from "./renderConfig.js";
 import { ProjectModel } from "~/models/ProjectModel.js";
@@ -58,19 +59,22 @@ const onChange = debounce((value: any) => {
     process.exit(0);
 });
 
-try {
-    renderToStaticMarkup(
-        <WcpProjectLicenseProvider>
-            <EnvProvider>
-                <Properties onChange={onChange}>
-                    <Extensions />
-                </Properties>
-            </EnvProvider>
-        </WcpProjectLicenseProvider>
-    );
-    sendSuccess({
-        message: "Config rendered successfully. Waiting for changes..."
-    });
-} catch (ex) {
-    sendError(ex);
-}
+const { window } = new JSDOM(`<div id="root"/>`);
+
+(global as any).window = window;
+
+(global as any).document = window.document;
+
+const root = window.document.getElementById("root")!;
+
+const reactRoot = createRoot(root);
+
+reactRoot.render(
+    <WcpProjectLicenseProvider>
+        <EnvProvider>
+            <Properties onChange={onChange}>
+                <Extensions />
+            </Properties>
+        </EnvProvider>
+    </WcpProjectLicenseProvider>
+);
