@@ -43,15 +43,10 @@ export const AdminConfigPlugin = <base.ApplyProtectedConfig />;
 export const AdminConfigProvider = createProvider(Original => {
     return function AdminConfigProvider({ children }) {
         return (
-            <>
-                {/* Wrap the entire app with an AdminConfig provider, and apply all public configs. */}
-                <Original>
-                    <AdminWithConfig>
-                        <base.ApplyPublicConfig />
-                        {children}
-                    </AdminWithConfig>
-                </Original>
-            </>
+            <AdminWithConfig>
+                <base.ApplyPublicConfig />
+                <Original>{children}</Original>
+            </AdminWithConfig>
         );
     };
 });
