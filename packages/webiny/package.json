@@ -101,11 +101,11 @@
     "./cli/index": "./cli/index.js",
     "./api": "./api.js",
     "./admin/lexical": "./admin/lexical.js",
-    "./extensions": "./extensions.js",
     "./infra/admin": "./infra/admin.js",
     "./infra/api": "./infra/api.js",
     "./infra/core": "./infra/core.js",
     "./infra/index": "./infra/index.js",
+    "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   }
 }
