@@ -103,7 +103,7 @@ export const Menus = React.memo(() => {
 
             {!hasWcpLicense && (
                 <Menu.Support
-                    name={"webiny-version"}
+                    name={"upgrade-webiny"}
                     pin={"end"}
                     element={
                         <>
