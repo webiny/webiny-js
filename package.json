@@ -123,7 +123,7 @@
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.0.18",
     "write-json-file": "^7.0.0",
-    "yargs": "^17.7.2"
+    "yargs": "^18.0.0"
   },
   "optionalDependencies": {
     "fsevents": "^2.3.3"
