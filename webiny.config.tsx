@@ -24,6 +24,7 @@ export const Extensions = () => {
             <Infra.Aws.Tags tags={{ OWNER2: "me2", PROJECT2: "my-project-2" }} />
             <Infra.Aws.DefaultRegion name={"eu-central-1"} />
 
+            {/*<Infra.EnvVar varName="MY_ENV_VAR" value="myValue" />*/}
             {/*<Infra.Api.LambdaFunction*/}
             {/*    functionSrc="/extensions/myLambdaFunction/handler.ts"*/}
             {/*    pulumiSrc="/extensions/myLambdaFunction/pulumi.ts"*/}

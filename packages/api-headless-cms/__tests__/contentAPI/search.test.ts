@@ -3,6 +3,8 @@ import { useFruitManageHandler } from "~tests/testHelpers/useFruitManageHandler"
 import { setupGroupAndModels } from "~tests/testHelpers/setup";
 import { useCategoryManageHandler } from "~tests/testHelpers/useCategoryManageHandler";
 import { toSlug } from "~/utils/toSlug";
+import type { IManageQueryBaseResponse } from "~tests/testHelpers/types.js";
+import type { ICategoryResponseValues } from "~tests/testHelpers/category/manage/types.js";
 
 describe("search", () => {
     const categoryManager = useCategoryManageHandler({
@@ -398,7 +400,7 @@ describe("search", () => {
             cleaning: "Clean Building Day | The Ultimate Cleaning Trick Tips!",
             car: "2001 CarMaker Car type: SVO Reborn? - Burn Epi. 917"
         };
-        const results: any[] = [];
+        const results: IManageQueryBaseResponse<ICategoryResponseValues>[] = [];
         for (const title of Object.values(categories)) {
             const [result] = await categoryManager.createCategory({
                 variables: {
@@ -410,7 +412,13 @@ describe("search", () => {
                     }
                 }
             });
-            results.push(result?.data?.createCategory?.data);
+            const category = result.data?.createCategory?.data;
+            const error = result.data?.createCategory?.error;
+            if (!category || error) {
+                console.log(JSON.stringify(error, null, 2));
+                throw new Error(error?.message || "Could not create category.");
+            }
+            results.push(category);
         }
         expect(results).toHaveLength(Object.values(categories).length);
 
@@ -575,6 +583,31 @@ describe("search", () => {
                         {
                             values: {
                                 title: categories.car
+                            }
+                        }
+                    ],
+                    meta: {
+                        totalCount: 1,
+                        hasMoreItems: false,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+        const [searchFullTextResponse] = await categoryManager.listCategories({
+            variables: {
+                search: results[0].entryId
+            }
+        });
+        expect(searchFullTextResponse).toMatchObject({
+            data: {
+                listCategories: {
+                    data: [
+                        {
+                            id: results[0].id,
+                            values: {
+                                title: results[0].values.title
                             }
                         }
                     ],

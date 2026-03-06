@@ -1,13 +1,14 @@
 import { Plugin } from "@webiny/plugins";
 import type { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types.js";
-import type { CmsModel, CmsModelField } from "@webiny/api-headless-cms/types/index.js";
+import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
+import type { ModelField, ModelFields } from "~/operations/entry/elasticsearch/types.js";
 
 export interface CmsEntryElasticsearchFullTextSearchPluginCbParams {
     model: CmsModel;
     query: ElasticsearchBoolQueryConfig;
     term: string;
-    fields: CmsModelField[];
-    createFieldPath: (field: CmsModelField) => string;
+    fields: ModelFields;
+    createFieldPath: (field: ModelField) => string;
     prepareTerm: (term: string) => string;
 }
 export interface CmsEntryElasticsearchFullTextSearchPluginParams {
