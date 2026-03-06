@@ -95,7 +95,6 @@ export const Extensions = () => {
             {/* Project 👇 */}
             <Project.Telemetry enabled={false} />
             <Project.FeatureFlags features={{ fileManager: { threatDetection: false } }} />
-            <Infra.
 
             {process.env.WEBINY_CLI_AUTO_INSTALL && (
                 <Project.AutoInstall
