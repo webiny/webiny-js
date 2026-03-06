@@ -1,7 +1,6 @@
 import React from "react";
 import { defineExtension } from "@webiny/project/defineExtension/index.js";
-import { EnvVar } from "@webiny/project/extensions/index.js";
-import { Api, Admin } from "@webiny/project-aws";
+import { Api, Admin, Infra } from "@webiny/project-aws";
 import { z } from "zod";
 
 export const Auth0 = defineExtension({
@@ -17,12 +16,12 @@ export const Auth0 = defineExtension({
         return (
             <>
                 {/* Lambda vars */}
-                <EnvVar varName={"AUTH0_ISSUER"} value={props.issuer} />
-                <EnvVar varName={"AUTH0_CLIENT_ID"} value={props.clientId} />
+                <Infra.EnvVar varName={"AUTH0_ISSUER"} value={props.issuer} />
+                <Infra.EnvVar varName={"AUTH0_CLIENT_ID"} value={props.clientId} />
                 {/* Admin app vars */}
-                <EnvVar varName={"REACT_APP_IDP_TYPE"} value={"auth0"} />
-                <EnvVar varName={"REACT_APP_AUTH0_ISSUER"} value={props.issuer} />
-                <EnvVar varName={"REACT_APP_AUTH0_CLIENT_ID"} value={props.clientId} />
+                <Infra.EnvVar varName={"REACT_APP_IDP_TYPE"} value={"auth0"} />
+                <Infra.EnvVar varName={"REACT_APP_AUTH0_ISSUER"} value={props.issuer} />
+                <Infra.EnvVar varName={"REACT_APP_AUTH0_CLIENT_ID"} value={props.clientId} />
                 {/* Api extensions */}
                 <Api.Extension
                     src={import.meta.dirname + "/api/features/Auth0Idp/feature.js"}

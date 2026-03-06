@@ -7,14 +7,27 @@ import { Properties, toObject } from "~/index.js";
 import { useDebugConfig } from "./useDebugConfig.js";
 import { PropertyPriorityProvider } from "./PropertyPriority.js";
 
+/**
+ * Each `<Config>` call composes a new HOC around the previous one via `Compose`.
+ * The last composed HOC is the outermost wrapper. By placing `{newChildren}`
+ * (this HOC's addition) before `{children}` (all previously composed configs),
+ * the final render order matches declaration order:
+ *
+ *   <Config>A</Config>  →  renders first  (outermost HOC, its newChildren rendered first)
+ *   <Config>B</Config>  →  renders second
+ *   <Config>C</Config>  →  renders third  (innermost, rendered last via children chain)
+ *
+ * This is important because Property components register in mount order,
+ * so declaration order = mount order = predictable config resolution.
+ */
 const createHOC =
     (newChildren: React.ReactNode): Decorator<GenericComponent<{ children?: React.ReactNode }>> =>
     BaseComponent => {
         return function ConfigHOC({ children }) {
             return (
                 <BaseComponent>
-                    {children}
                     {newChildren}
+                    {children}
                 </BaseComponent>
             );
         };
