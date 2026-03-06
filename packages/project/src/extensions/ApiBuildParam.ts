@@ -52,7 +52,7 @@ export const BuildParam = defineExtension({
             // File exists, just ensure it's imported in extensions.ts
         } else {
             // Create the BuildParam implementation file.
-            const fileContent = `import { BuildParam } from "webiny/api/buildParams";
+            const fileContent = `import { BuildParam } from "webiny/api/build-params";
 
 class ${className} implements BuildParam.Interface {
     key = "${paramName}";
