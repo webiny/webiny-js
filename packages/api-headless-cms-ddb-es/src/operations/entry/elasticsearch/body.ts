@@ -64,9 +64,9 @@ export const createElasticsearchBody = ({ plugins, model, params }: Params): Sea
      *
      */
     const fullTextSearchFields = createFullTextSearchFields({
-        model,
+        fields: modelFields,
         term,
-        fields
+        targets: fields
     });
     /**
      * The initial elasticsearch query where we attach some default conditions we always need.

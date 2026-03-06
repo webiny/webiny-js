@@ -1,11 +1,12 @@
 import type { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types.js";
 import { normalizeValue } from "@webiny/api-elasticsearch";
-import type { CmsModel, CmsModelField } from "@webiny/api-headless-cms/types/index.js";
+import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type { PluginsContainer } from "@webiny/plugins";
 import {
     CmsEntryElasticsearchFullTextSearchPlugin,
     createCmsEntryElasticsearchFullTextSearchPlugin
 } from "~/plugins/index.js";
+import type { ModelFields } from "~/operations/entry/elasticsearch/types.js";
 
 /**
  * Our default plugin is working with the AND operator for the multiple words query string.
@@ -17,7 +18,7 @@ const defaultPlugin = createCmsEntryElasticsearchFullTextSearchPlugin({
         query.must.push({
             query_string: {
                 allow_leading_wildcard: true,
-                fields: fields.map(createFieldPath),
+                fields: Object.values(fields).map(createFieldPath),
                 query: `*${prepareTerm(term)}*`,
                 default_operator: "and"
             }
@@ -71,11 +72,12 @@ interface Params {
     model: CmsModel;
     query: ElasticsearchBoolQueryConfig;
     term?: string;
-    fields: CmsModelField[];
+    fields: ModelFields;
 }
 export const applyFullTextSearch = (params: Params): void => {
     const { plugins, query, term, fields, model } = params;
-    if (!term || term.length === 0 || fields.length === 0) {
+    const keys = Object.keys(fields);
+    if (!term || term.length === 0 || keys.length === 0) {
         return;
     }
 
@@ -86,7 +88,14 @@ export const applyFullTextSearch = (params: Params): void => {
 
     plugin.apply({
         model,
-        createFieldPath: field => `values.${field.storageId}`,
+        createFieldPath: field => {
+            if (typeof field.path === "function") {
+                return field.path(term);
+            } else if (field.systemField) {
+                return field.path || field.field.storageId;
+            }
+            return `values.${field.path || field.field.storageId}`;
+        },
         fields,
         query,
         term,

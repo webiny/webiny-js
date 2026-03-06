@@ -1,21 +1,22 @@
-import type { CmsModel, CmsModelField } from "@webiny/api-headless-cms/types/index.js";
+import type { ModelFields } from "~/operations/entry/elasticsearch/types.js";
 
 interface Params {
-    model: CmsModel;
+    fields: ModelFields;
     term?: string;
-    fields?: string[];
+    targets?: string[];
 }
-export const createFullTextSearchFields = (params: Params): CmsModelField[] => {
-    const { term, model, fields } = params;
-    if (!fields || fields.length === 0 || !term || term.trim().length === 0) {
-        return [];
+export const createFullTextSearchFields = (params: Params): ModelFields => {
+    const { term, targets, fields } = params;
+    if (!targets?.length || !term || term.trim().length === 0) {
+        return {};
     }
-    return fields.reduce<CmsModelField[]>((collection, fieldId) => {
-        const field = model.fields.find(f => f.fieldId === fieldId);
-        if (!field) {
-            return collection;
+
+    const result: ModelFields = {};
+    for (const key in fields) {
+        if (targets.includes(key) === false) {
+            continue;
         }
-        collection.push(field);
-        return collection;
-    }, []);
+        result[key] = fields[key];
+    }
+    return result;
 };
