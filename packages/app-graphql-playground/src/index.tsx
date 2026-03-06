@@ -24,7 +24,6 @@ const GraphQLPlaygroundExtension = ({ createApolloClient }: GraphQLPlaygroundPro
     return (
         <AdminConfig>
             <Menu.Support
-                pin={"start"}
                 name={"api-playground"}
                 element={
                     <Menu.Support.Link

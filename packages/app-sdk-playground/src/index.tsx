@@ -12,7 +12,6 @@ const SdkPlaygroundExtension = () => {
     return (
         <AdminConfig>
             <Menu.Support
-                pin={"start"}
                 name={"sdk-playground"}
                 element={
                     <Menu.Support.Link
