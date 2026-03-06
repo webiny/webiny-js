@@ -4,7 +4,7 @@ export const Routes = {
     ContentModels: {
         Workflows: new Route({
             name: "Cms/ContentModels/Workflows",
-            path: "/cms/content-models/workflows",
+            path: "/cms/workflows",
             params: zod => {
                 return {
                     app: zod.string().optional()
@@ -13,9 +13,9 @@ export const Routes = {
         })
     },
     ContentEntries: {
-        WorkflowStateList: new Route({
+        ContentReviews: new Route({
             name: "Cms/ContentEntries/WorkflowStateList",
-            path: "/cms/workflow-states"
+            path: "/cms/content-reviews"
         })
     }
 };
