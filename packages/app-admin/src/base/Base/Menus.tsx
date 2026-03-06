@@ -9,7 +9,6 @@ import { ReactComponent as GithubIcon } from "@webiny/icons/route.svg";
 import { ReactComponent as MoreIcon } from "@webiny/icons/more_vert.svg";
 import { ReactComponent as UpgradeIcon } from "@webiny/icons/electric_bolt.svg";
 import { DropdownMenu } from "@webiny/admin-ui";
-import { WebinyVersion } from "./Menus/WebinyVersion.js";
 import { SupportMenuItems } from "./Menus/SupportMenuItems.js";
 import { AdminConfig } from "~/config/AdminConfig.js";
 import { HasPermission } from "~/presentation/security/components/HasPermission.js";
@@ -63,24 +62,6 @@ export const Menus = React.memo(() => {
                 }
             />
 
-            {hasWcpLicense && (
-                <Menu.Support
-                    name={"upgrade"}
-                    pin={"start"}
-                    element={
-                        <Menu.Support.Link
-                            text={"Upgrade"}
-                            icon={
-                                <Menu.Support.Link.Icon label="Upgrade" element={<UpgradeIcon />} />
-                            }
-                            to={"https://www.webiny.com/pricing"}
-                            rel={"noopener noreferrer"}
-                            target={"_blank"}
-                        />
-                    }
-                />
-            )}
-
             <Menu.Support
                 name={"docs"}
                 element={
@@ -120,16 +101,32 @@ export const Menus = React.memo(() => {
                 }
             />
 
-            <Menu.Support
-                name={"webiny-version"}
-                pin={"end"}
-                element={
-                    <>
-                        <DropdownMenu.Separator />
-                        <DropdownMenu.Item text={<WebinyVersion />} readOnly />
-                    </>
-                }
-            />
+            {!hasWcpLicense && (
+                <Menu.Support
+                    name={"webiny-version"}
+                    pin={"end"}
+                    element={
+                        <>
+                            <DropdownMenu.Separator />
+                            <Menu.Support.Link
+                                text={"Upgrade"}
+                                icon={
+                                    <Menu.Support.Link.Icon
+                                        label="Upgrade"
+                                        element={<UpgradeIcon />}
+                                    />
+                                }
+                                to={"https://www.webiny.com/pricing"}
+                                rel={"noopener noreferrer"}
+                                target={"_blank"}
+                                className={
+                                    "[&_a]:text-accent-primary! [&_svg]:fill-accent-default! font-semibold"
+                                }
+                            />
+                        </>
+                    }
+                />
+            )}
 
             <Menu.Footer
                 name={"support"}
