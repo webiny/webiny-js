@@ -1,0 +1,146 @@
+# Webiny Project Structure
+
+## TL;DR
+
+A Webiny project has a flat structure centered around `webiny.config.tsx` — the single configuration file where all extensions are registered. Custom code lives in the `extensions/` folder. Extensions are registered as React components (`<Api.Extension>`, `<Admin.Extension>`, `<Infra.*>`, `<Cli.Command>`) and can be conditionally loaded per environment.
+
+## Project Layout
+
+```
+my-webiny-project/
+├── extensions/          # All custom code — API, Admin, Infra, CLI extensions
+│   └── README.md
+├── public/              # Static assets for the Admin app
+│   ├── favicon.ico
+│   ├── global.css
+│   ├── index.html
+│   └── robots.txt
+├── eslint.config.js     # ESLint configuration
+├── package.json         # Single package.json for the whole project
+├── tsconfig.json        # Single TypeScript config
+├── webiny.config.tsx    # Main configuration — all extensions registered here
+├── webiny-env.d.ts      # TypeScript environment types
+└── yarn.lock
+```
+
+Key points:
+- **Single `package.json`** — no monorepo, no workspaces needed.
+- **Single `tsconfig.json`** — straightforward TypeScript setup.
+- **`webiny.config.tsx`** — the entry point for everything. All extensions, infrastructure options, and project settings are declared here.
+- **`extensions/`** — where all your custom code lives. Organize with subfolders as needed (e.g., `extensions/contactSubmission/`, `extensions/AdminBranding/`).
+
+## The `webiny.config.tsx` File
+
+This file exports a single React component called `Extensions`. It uses JSX to declaratively register all configuration:
+
+```tsx
+// webiny.config.tsx
+import React from "react";
+import { Admin, Api, Cli, Infra, Project, Security } from "webiny/extensions";
+import { Cognito } from "@webiny/cognito";
+
+export const Extensions = () => {
+    return (
+        <>
+            {/* Infrastructure configuration */}
+            <Infra.Aws.DefaultRegion name={"us-east-1"} />
+            <Infra.OpenSearch enabled={true} />
+            <Infra.Aws.Tags tags={{ OWNER: "me", PROJECT: "my-project" }} />
+
+            {/* Identity provider */}
+            <Cognito />
+
+            {/* API extensions (backend) */}
+            <Api.Extension src={"/extensions/ProductCategoryModel.ts"} />
+            <Api.Extension src={"/extensions/ProductModel.ts"} />
+            <Api.Extension src={"/extensions/contactSubmission/ContactSubmissionHook.ts"} />
+
+            {/* Security hooks */}
+            <Api.Extension src={"/extensions/MyApiKey.ts"} />
+            <Security.ApiKey.AfterUpdate src={"/extensions/MyApiKeyAfterUpdate.ts"} />
+
+            {/* Admin extensions (frontend) */}
+            <Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />
+            <Admin.Extension src={"/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />
+            <Admin.Extension src={"/extensions/contactSubmission/EmailEntryListColumn.tsx"} />
+
+            {/* Infrastructure / Pulumi extensions */}
+            <Infra.Core.Pulumi src={"/extensions/MyCorePulumiHandler.ts"} />
+
+            {/* CLI extensions */}
+            <Cli.Command src={"/extensions/MyCustomCommand.ts"} />
+
+            {/* Project settings */}
+            <Project.Telemetry enabled={false} />
+        </>
+    );
+};
+```
+
+## Extension Types
+
+| JSX Element | What It Does | File Type |
+|---|---|---|
+| `<Api.Extension src="..." />` | Registers a backend extension (GraphQL schemas, content models, lifecycle hooks) | `.ts` |
+| `<Admin.Extension src="..." />` | Registers a frontend Admin UI extension (themes, branding, custom columns, custom forms) | `.tsx` |
+| `<Infra.Core.Pulumi src="..." />` | Registers a Pulumi infrastructure handler | `.ts` |
+| `<Cli.Command src="..." />` | Registers a custom CLI command | `.ts` |
+| `<Security.ApiKey.AfterUpdate src="..." />` | Registers a security lifecycle hook | `.ts` |
+
+## Infrastructure Components
+
+Declarative components for configuring AWS infrastructure:
+
+| Component | Purpose |
+|---|---|
+| `<Infra.Aws.DefaultRegion name="us-east-1" />` | Set the AWS region |
+| `<Infra.Aws.Tags tags={{ KEY: "value" }} />` | Apply tags to all AWS resources |
+| `<Infra.OpenSearch enabled={true} />` | Enable/disable OpenSearch |
+| `<Infra.Vpc enabled={true} />` | Enable/disable VPC deployment |
+| `<Infra.PulumiResourceNamePrefix prefix="myproj-" />` | Prefix all Pulumi resource names |
+| `<Infra.ProductionEnvironments environments={["prod", "staging"]} />` | Define which envs use production infra |
+| `<Project.Telemetry enabled={false} />` | Enable/disable telemetry |
+
+## Environment-Conditional Configuration
+
+Use `<Infra.Env.Is>` to load extensions or config only in specific environments:
+
+```tsx
+<Infra.Env.Is env="prod">
+    <Infra.Aws.Tags tags={{ ENV: "production" }} />
+    <Infra.OpenSearch enabled={true} />
+</Infra.Env.Is>
+
+<Infra.Env.Is env={["dev", "staging"]}>
+    <Infra.Aws.Tags tags={{ ENV: "non-production" }} />
+    <Infra.OpenSearch enabled={false} />
+</Infra.Env.Is>
+```
+
+## Build Parameters
+
+Pass custom values from config to extensions at build time:
+
+```tsx
+<Api.BuildParam paramName="MY_CUSTOM_PARAM" value="customValue" />
+<Api.BuildParam paramName="MY_CONFIG" value={{ myKey: 2, nested: { foo: "bar" } }} />
+<Admin.BuildParam paramName="ADMIN_CUSTOM_PARAM" value="adminValue" />
+```
+
+These are accessed in extensions via the `BuildParams` feature (see dependency-injection-patterns skill).
+
+## Installing Pre-Built Extensions
+
+Webiny provides official extensions you can install with:
+
+```bash
+yarn webiny extension <extension-name>
+```
+
+This downloads the extension code into `extensions/`, updates `webiny.config.tsx` to register it, and gives you full access to modify the code.
+
+## Related Skills
+
+- [`dependency-injection-patterns.md`](./dependency-injection-patterns.md) — How extensions use DI to access services
+- [`local-development-and-deployment.md`](./local-development-and-deployment.md) — How to deploy and develop locally
+
