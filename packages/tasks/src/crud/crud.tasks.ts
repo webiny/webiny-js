@@ -93,13 +93,13 @@ interface IValidateParams {
 
 const getZodSchema = (schema: GenericRecord<string, zod.ZodTypeAny> | zod.ZodTypeAny) => {
     if (!schema) {
-        return zod.object({}).passthrough();
+        return zod.looseObject({});
     } else if (schema instanceof zod.ZodObject) {
-        return schema.passthrough();
+        return schema.loose();
     } else if (schema instanceof zod.ZodType) {
         return schema;
     }
-    return zod.object(schema).passthrough();
+    return zod.looseObject(schema);
 };
 
 const validateTaskInput = async (params: IValidateParams) => {

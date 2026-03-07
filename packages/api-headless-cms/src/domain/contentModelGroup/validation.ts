@@ -6,12 +6,11 @@ const str = zod.string().trim();
 const name = str.max(100);
 const description = str.max(255).optional().nullish();
 const icon = zod
-    .object({
+    .looseObject({
         type: zod.string(),
         name: zod.string(),
         value: zod.string().optional()
     })
-    .passthrough()
     .optional()
     .nullish()
     .default(null)

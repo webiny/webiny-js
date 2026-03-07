@@ -47,12 +47,11 @@ const optionalNullishShortString = optionalShortString.nullish().default(null);
 const optionalNullishLongString = optionalLongString.nullish().default(null);
 
 const icon = zod
-    .object({
+    .looseObject({
         type: zod.string(),
         name: zod.string(),
         value: zod.string().optional()
     })
-    .passthrough()
     .optional()
     .nullish()
     .default(null)
@@ -130,7 +129,7 @@ const fieldSchema = zod.object({
     renderer: zod
         .object({
             name: shortString,
-            settings: zod.object({}).passthrough().nullish().optional()
+            settings: zod.looseObject({}).nullish().optional()
         })
         .optional()
         .nullable()
@@ -141,8 +140,7 @@ const fieldSchema = zod.object({
                 name: shortString,
                 message: optionalShortString.default("Value is required."),
                 settings: zod
-                    .object({})
-                    .passthrough()
+                    .looseObject({})
                     .optional()
                     .nullish()
                     .transform(value => {
@@ -161,8 +159,7 @@ const fieldSchema = zod.object({
                 name: shortString,
                 message: optionalShortString.default("Value is required."),
                 settings: zod
-                    .object({})
-                    .passthrough()
+                    .looseObject({})
                     .optional()
                     .nullish()
                     .transform(value => {
@@ -176,8 +173,7 @@ const fieldSchema = zod.object({
         .default([])
         .transform(value => value || []),
     settings: zod
-        .object({})
-        .passthrough()
+        .looseObject({})
         .optional()
         .nullish()
         .transform(value => {
@@ -329,10 +325,14 @@ export const createModelUpdateValidation = () => {
     return zod.object({
         name: optionalShortString,
         singularApiName: optionalShortString.superRefine((value, ctx) => {
-            if (value) refineSingularApiName(value, ctx);
+            if (value) {
+                refineSingularApiName(value, ctx);
+            }
         }),
         pluralApiName: optionalShortString.superRefine((value, ctx) => {
-            if (value) refinePluralApiName(value, ctx);
+            if (value) {
+                refinePluralApiName(value, ctx);
+            }
         }),
         description: optionalNullishShortString,
         group: optionalShortString,

@@ -21,9 +21,7 @@ export class Route<TParams extends RouteParamsDefinition | undefined = undefined
         this.route = route;
         const paramsSchema = route.params ? route.params(z) : undefined;
         // @ts-expect-error
-        this.schema = paramsSchema
-            ? z.object(this.coerceParams(paramsSchema)).passthrough()
-            : undefined;
+        this.schema = paramsSchema ? z.looseObject(this.coerceParams(paramsSchema)) : undefined;
     }
 
     get name() {
