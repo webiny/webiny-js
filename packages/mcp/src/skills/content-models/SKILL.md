@@ -1,3 +1,14 @@
+---
+name: webiny-content-models
+description: >
+  Creating Headless CMS content models via code using the ModelFactory pattern.
+  Use this skill when the developer wants to create, modify, or understand content model
+  definitions, define fields and validators, set up reference fields between models,
+  configure field layouts, or work with the ModelFactory builder API. Also covers field types
+  (text, number, boolean, datetime, file, ref, object, richText) and validation (required,
+  unique, email, pattern, minLength, maxLength, gte, predefinedValues).
+---
+
 # Creating Content Models via Code
 
 ## TL;DR
@@ -289,7 +300,6 @@ Deploy:       yarn webiny deploy api  (or use watch mode)
 
 ## Related Skills
 
-- [`dependency-injection-patterns.md`](./dependency-injection-patterns.md) — The `createImplementation` pattern used here
-- [`lifecycle-events.md`](./lifecycle-events.md) — Hook into create/update/delete events on your models
-- [`webiny-sdk.md`](./webiny-sdk.md) — Query and write data to your models from external apps
-
+- `dependency-injection` -- The `createImplementation` pattern used here
+- `lifecycle-events` -- Hook into create/update/delete events on your models
+- `webiny-sdk` -- Query and write data to your models from external apps

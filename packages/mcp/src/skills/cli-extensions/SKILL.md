@@ -1,3 +1,13 @@
+---
+name: webiny-cli-extensions
+description: >
+  Adding custom commands to the Webiny CLI using CliCommandFactory.
+  Use this skill when the developer wants to create a custom CLI command, add a data migration
+  script, build a code generator, create deployment scripts, export CMS content, or add
+  health check commands. Covers CliCommandFactory.Interface, command definition, typed
+  parameters, the Ui service for terminal output, and registration via <Cli.Command>.
+---
+
 # CLI Extensions
 
 ## TL;DR
@@ -98,11 +108,11 @@ import { Ui } from "webiny/cli";
 
 ## Use Cases
 
-- **Data migrations** — Scripts to migrate or seed CMS data
-- **Code generators** — Generate boilerplate extension files
-- **Deployment scripts** — Custom deployment workflows
-- **Data exports** — Export CMS content to files
-- **Health checks** — Verify infrastructure or API status
+- **Data migrations** -- Scripts to migrate or seed CMS data
+- **Code generators** -- Generate boilerplate extension files
+- **Deployment scripts** -- Custom deployment workflows
+- **Data exports** -- Export CMS content to files
+- **Health checks** -- Verify infrastructure or API status
 
 ## Quick Reference
 
@@ -118,6 +128,5 @@ Run:             yarn webiny <command-name> [args]
 
 ## Related Skills
 
-- [`dependency-injection-patterns.md`](./dependency-injection-patterns.md) — The `createImplementation` pattern and available injectable services
-- [`webiny-project-structure.md`](./webiny-project-structure.md) — How to register CLI commands in `webiny.config.tsx`
-
+- `dependency-injection` -- The `createImplementation` pattern and available injectable services
+- `project-structure` -- How to register CLI commands in `webiny.config.tsx`

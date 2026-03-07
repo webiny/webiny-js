@@ -15223,6 +15223,7 @@ __metadata:
     "@types/ncp": "npm:^2.0.8"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/cli-core": "npm:0.0.0"
+    front-matter: "npm:^4.0.2"
     react: "npm:18.2.0"
     typescript: "npm:5.9.3"
     zod: "npm:^3.25.76"
@@ -22201,6 +22202,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"front-matter@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "front-matter@npm:4.0.2"
+  dependencies:
+    js-yaml: "npm:^3.13.1"
+  checksum: 10/8897a831a82c5d35413b02b806ed421e793068ad8bf75e864163ec07b7f0cfd87e2fcce0893e8ceccc8f6c63a46e953a6c01208e573627626867a8b86cf6abb9
+  languageName: node
+  linkType: hard
+
 "fs-constants@npm:^1.0.0":
   version: 1.0.0
   resolution: "fs-constants@npm:1.0.0"
@@ -24693,7 +24703,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-yaml@npm:^3.10.0, js-yaml@npm:^3.14.2":
+"js-yaml@npm:^3.10.0, js-yaml@npm:^3.13.1, js-yaml@npm:^3.14.2":
   version: 3.14.2
   resolution: "js-yaml@npm:3.14.2"
   dependencies:

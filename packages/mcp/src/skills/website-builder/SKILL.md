@@ -1,35 +1,47 @@
+---
+name: webiny-website-builder
+description: >
+  Building Website Builder editor components, theming, and CMS integration using
+  @webiny/website-builder-nextjs. Use this skill when the developer wants to create editor
+  components for the Website Builder, register components with createComponent, define
+  configurable inputs (text, number, boolean, color, select, file, slot, lexical),
+  set up component groups, customize the theme (CSS variables, createTheme, Tailwind bridge,
+  fonts), build Server Components that fetch CMS data, or understand the WB architecture
+  (Admin iframe + Next.js). Also use for anything related to the Website Builder starter kit.
+---
+
 # Website Builder
 
 ## TL;DR
 
-The Webiny Website Builder uses a unique architecture: the Admin editor loads your Next.js app inside an iframe. All component code and styles live in your Next.js project — Webiny only stores the page structure (which components and what input values). You build editor components with `@webiny/website-builder-nextjs`, register them via `createComponent()`, define configurable inputs, and manage theming through CSS custom properties and `createTheme()`.
+The Webiny Website Builder uses a unique architecture: the Admin editor loads your Next.js app inside an iframe. All component code and styles live in your Next.js project -- Webiny only stores the page structure (which components and what input values). You build editor components with `@webiny/website-builder-nextjs`, register them via `createComponent()`, define configurable inputs, and manage theming through CSS custom properties and `createTheme()`.
 
 ## Architecture
 
 ```
-┌──────────────────────────────────────────────────────────┐
-│  Webiny Admin                                            │
-│  ┌────────────────────────────────────────────────────┐  │
-│  │  Website Builder Editor                            │  │
-│  │                                                    │  │
-│  │   sidebar     ┌──────────────────────────────┐     │  │
-│  │   (inputs)    │  your Next.js app (iframe)   │     │  │
-│  │               │  real components             │     │  │
-│  │               │  real styles                 │     │  │
-│  │               └──────────────────────────────┘     │  │
-│  └────────────────────────────────────────────────────┘  │
-└──────────────────────────────────────────────────────────┘
-                        ↕ postMessage (SDK)
-┌──────────────────────────────────────────────────────────┐
-│  Your Next.js App (running separately)                   │
-│  @webiny/website-builder-nextjs SDK installed            │
-└──────────────────────────────────────────────────────────┘
++----------------------------------------------------------+
+|  Webiny Admin                                            |
+|  +----------------------------------------------------+  |
+|  |  Website Builder Editor                            |  |
+|  |                                                    |  |
+|  |   sidebar     +------------------------------+     |  |
+|  |   (inputs)    |  your Next.js app (iframe)   |     |  |
+|  |               |  real components             |     |  |
+|  |               |  real styles                 |     |  |
+|  |               +------------------------------+     |  |
+|  +----------------------------------------------------+  |
++----------------------------------------------------------+
+                        postMessage (SDK)
++----------------------------------------------------------+
+|  Your Next.js App (running separately)                   |
+|  @webiny/website-builder-nextjs SDK installed            |
++----------------------------------------------------------+
 ```
 
 Key implications:
-- **No style clashes** — your components, your styles, full ownership
-- **Genuine WYSIWYG** — editors see your real app, not a simulation
-- **Framework-owned code** — all React components live in your Next.js repo
+- **No style clashes** -- your components, your styles, full ownership
+- **Genuine WYSIWYG** -- editors see your real app, not a simulation
+- **Framework-owned code** -- all React components live in your Next.js repo
 
 ## Setup
 
@@ -56,8 +68,8 @@ NEXT_PUBLIC_WEBSITE_BUILDER_API_TENANT=root
 ## Editor Components
 
 An editor component has two parts:
-1. **React component** — renders the UI, receives configured values via `inputs` prop
-2. **Manifest** — metadata (name, label, group, inputs) that tells the editor about the component
+1. **React component** -- renders the UI, receives configured values via `inputs` prop
+2. **Manifest** -- metadata (name, label, group, inputs) that tells the editor about the component
 
 ### Creating a Component
 
@@ -130,7 +142,7 @@ export const editorComponents = [
 
 ### Component Name Convention
 
-Use a namespaced string: `"YourNamespace/ComponentName"`. Component names are stored in page documents — treat them as **stable identifiers**; renaming breaks existing pages.
+Use a namespaced string: `"YourNamespace/ComponentName"`. Component names are stored in page documents -- treat them as **stable identifiers**; renaming breaks existing pages.
 
 ## Input Types
 
@@ -181,7 +193,7 @@ The `filter` option creates a catch-all group for components without an explicit
 
 The theme system has three files that work together:
 
-### 1. `theme.css` — CSS Custom Properties
+### 1. `theme.css` -- CSS Custom Properties
 
 ```css
 /* src/theme/theme.css */
@@ -211,7 +223,7 @@ The theme system has three files that work together:
 }
 ```
 
-### 2. `theme.ts` — Theme Registration
+### 2. `theme.ts` -- Theme Registration
 
 ```typescript
 // src/theme/theme.ts
@@ -250,7 +262,7 @@ export const theme = createTheme({
 - `typography` populates the editor's typography toolbar
 - `fonts` injects fonts into the editor iframe
 
-### 3. `tailwind.css` — Tailwind Bridge
+### 3. `tailwind.css` -- Tailwind Bridge
 
 ```css
 /* src/theme/tailwind.css */
@@ -327,7 +339,7 @@ export async function ProductListing({
 }
 ```
 
-Register it (note: async Server Components work even though `index.tsx` is `"use client"`):
+Register it (async Server Components work even though `index.tsx` is `"use client"`):
 
 ```tsx
 createComponent(ProductListing, {
@@ -340,18 +352,18 @@ createComponent(ProductListing, {
 })
 ```
 
-To use the Headless CMS SDK, initialize it in `src/lib/webiny.ts` with a **Read API** key (see the `webiny-sdk.md` skill).
+To use the Headless CMS SDK, initialize it in `src/lib/webiny.ts` with a **Read API** key (see the `webiny-sdk` skill).
 
 ## Data Flow
 
 ```
-Editor → saves page document to Webiny API
+Editor -> saves page document to Webiny API
            (document: component name + input values)
 
 Next.js request/build
-  → contentSdk.getPage("/slug") → returns page document
-  → DocumentRenderer matches component name to React component
-  → Component renders (Server Component may fetch CMS data)
+  -> contentSdk.getPage("/slug") -> returns page document
+  -> DocumentRenderer matches component name to React component
+  -> Component renders (Server Component may fetch CMS data)
 ```
 
 ## Quick Reference
@@ -367,6 +379,5 @@ Groups:           registerComponentGroup({ name, label, description })
 
 ## Related Skills
 
-- [`webiny-sdk.md`](./webiny-sdk.md) — Using the Headless CMS SDK inside Website Builder components
-- [`webiny-project-structure.md`](./webiny-project-structure.md) — Webiny project setup and extension registration
-
+- `webiny-sdk` -- Using the Headless CMS SDK inside Website Builder components
+- `project-structure` -- Webiny project setup and extension registration

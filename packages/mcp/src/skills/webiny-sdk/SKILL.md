@@ -1,3 +1,14 @@
+---
+name: webiny-sdk
+description: >
+  Using @webiny/sdk to read and write CMS data from external applications.
+  Use this skill when the developer is building a Next.js, Vue, Node.js, or any external app
+  that needs to fetch or write content to Webiny, set up the SDK, use the Result pattern,
+  list/get/create/update/publish entries, filter and sort queries, use TypeScript generics
+  for type safety, work with the File Manager, or create API keys programmatically. Also
+  covers the three API types (Read, Manage, Preview) and CmsEntryData typing.
+---
+
 # Webiny SDK
 
 ## TL;DR
@@ -23,9 +34,9 @@ export const sdk = new Sdk({
 });
 ```
 
-- `token` — API key token generated in Webiny Admin (Settings → API Keys)
-- `endpoint` — The base CloudFront URL (e.g., `https://xxx.cloudfront.net`). Run `yarn webiny info` to find it.
-- `tenant` — Tenant ID, defaults to `"root"`
+- `token` -- API key token generated in Webiny Admin (Settings > API Keys)
+- `endpoint` -- The base CloudFront URL (e.g., `https://xxx.cloudfront.net`). Run `yarn webiny info` to find it.
+- `tenant` -- Tenant ID, defaults to `"root"`
 
 ## The Three API Types
 
@@ -38,20 +49,20 @@ Webiny provides three separate GraphQL APIs:
 | **Preview** | `/cms/preview` | Latest revisions (drafts + published) | No | Content preview |
 
 The SDK automatically routes to the correct API based on the method:
-- `listEntries`, `getEntry` → Read API
-- `createEntry`, `updateEntry`, `publishEntry`, `unpublishEntry` → Manage API
+- `listEntries`, `getEntry` -> Read API
+- `createEntry`, `updateEntry`, `publishEntry`, `unpublishEntry` -> Manage API
 
 ## The Result Pattern
 
-Every SDK method returns a `Result` object — it never throws:
+Every SDK method returns a `Result` object -- it never throws:
 
 ```typescript
 const result = await sdk.cms.listEntries({ modelId: "product", fields: ["id"] });
 
 if (result.isOk()) {
-    console.log(result.value.data);    // success — typed data
+    console.log(result.value.data);    // success -- typed data
 } else {
-    console.error(result.error.message); // failure — error info
+    console.error(result.error.message); // failure -- error info
 }
 ```
 
@@ -82,7 +93,7 @@ const result = await sdk.cms.listEntries<Product>({
 if (result.isOk()) {
     // result.value.data is CmsEntryData<Product>[]
     const products = result.value.data;
-    // products[0].values.name — fully typed
+    // products[0].values.name -- fully typed
 }
 ```
 
@@ -121,8 +132,8 @@ const result = await sdk.cms.listEntries<Product>({
 | `_not` | Not equals | `"values.status_not": "archived"` |
 | `_contains` | Contains substring | `"values.name_contains": "Pro"` |
 | `_startsWith` | Starts with | `"values.name_startsWith": "Web"` |
-| `_gt` / `_gte` | Greater than / ≥ | `"values.price_gte": 100` |
-| `_lt` / `_lte` | Less than / ≤ | `"values.price_lt": 500` |
+| `_gt` / `_gte` | Greater than / >= | `"values.price_gte": 100` |
+| `_lt` / `_lte` | Less than / <= | `"values.price_lt": 500` |
 | `_in` | In array | `"values.status_in": ["active", "featured"]` |
 
 ### Sort Format
@@ -249,12 +260,11 @@ Install:        npm install @webiny/sdk
 Import:         import { Sdk } from "@webiny/sdk";
 Type import:    import type { CmsEntryData } from "@webiny/sdk";
 Initialize:     new Sdk({ token, endpoint, tenant })
-Result check:   result.isOk() → result.value.data / result.error.message
+Result check:   result.isOk() -> result.value.data / result.error.message
 API endpoint:   yarn webiny info (in your Webiny project)
 ```
 
 ## Related Skills
 
-- [`creating-content-models-via-code.md`](./creating-content-models-via-code.md) — Define the models you query with the SDK
-- [`website-builder.md`](./website-builder.md) — Use the SDK inside Website Builder components to fetch CMS data
-
+- `content-models` -- Define the models you query with the SDK
+- `website-builder` -- Use the SDK inside Website Builder components to fetch CMS data

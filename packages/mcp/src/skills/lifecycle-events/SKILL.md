@@ -1,8 +1,19 @@
+---
+name: webiny-lifecycle-events
+description: >
+  CMS entry lifecycle hooks and security event handlers.
+  Use this skill when the developer wants to intercept content entry operations
+  (create, update, delete, publish, unpublish), validate data before save, auto-calculate
+  fields, send notifications after operations, enforce security policies, sync with external
+  systems, or hook into API key updates. Covers before/after hooks, event filtering by modelId,
+  payload mutation, and the Logger/BuildParams DI services.
+---
+
 # Lifecycle Events
 
 ## TL;DR
 
-Webiny fires lifecycle events before and after CMS entry operations (create, update, delete, publish, unpublish) and security operations (API key updates). You hook into these by implementing the corresponding `EventHandler.Interface`, filtering by `modelId`, and optionally mutating `payload.values` before data is saved. Register as `<Api.Extension>` or `<Security.ApiKey.AfterUpdate>`.
+Webiny fires lifecycle events before and after CMS entry operations (create, update, delete, publish, unpublish) and security operations (API key updates). You hook into these by implementing the corresponding `EventHandler.Interface`, filtering by `modelId`, and optionally mutating `payload.values` before data is saved. Register as `<Api.Extension>`.
 
 ## CMS Entry Lifecycle Events
 
@@ -23,9 +34,9 @@ Webiny fires lifecycle events before and after CMS entry operations (create, upd
 
 Every handler receives an `event` with:
 
-- `event.modelId` — The model ID string (e.g., `"contactSubmission"`)
-- `event.payload` — The entry data object
-  - `event.payload.values` — The field values (can be mutated in `before` hooks)
+- `event.modelId` -- The model ID string (e.g., `"contactSubmission"`)
+- `event.payload` -- The entry data object
+  - `event.payload.values` -- The field values (can be mutated in `before` hooks)
 
 ### Pattern
 
@@ -36,7 +47,7 @@ class MyHookImpl implements Handler.Interface {
     async handle(event: Handler.Event): Promise<void> {
         const { payload, modelId } = event;
 
-        // 1. Filter by model — handlers fire for ALL models
+        // 1. Filter by model -- handlers fire for ALL models
         if (modelId !== "myTargetModel") {
             return;
         }
@@ -187,6 +198,5 @@ Deploy:             yarn webiny deploy api
 
 ## Related Skills
 
-- [`creating-content-models-via-code.md`](./creating-content-models-via-code.md) — Define the models your hooks target
-- [`dependency-injection-patterns.md`](./dependency-injection-patterns.md) — Inject Logger, BuildParams, and other services
-
+- `content-models` -- Define the models your hooks target
+- `dependency-injection` -- Inject Logger, BuildParams, and other services

@@ -1,3 +1,13 @@
+---
+name: webiny-infrastructure-extensions
+description: >
+  Modifying AWS infrastructure using Pulumi handlers and declarative Infra components.
+  Use this skill when the developer wants to customize AWS infrastructure, add Pulumi handlers,
+  configure OpenSearch, VPC, resource tags, regions, custom domains, blue-green deployments,
+  environment-conditional config, or manage production vs development infrastructure modes.
+  Covers CorePulumi.Interface, all <Infra.*> declarative components, and <Infra.Env.Is>.
+---
+
 # Infrastructure Extensions
 
 ## TL;DR
@@ -17,7 +27,7 @@ class MyCorePulumiHandlerImpl implements CorePulumi.Interface {
     constructor(private ui: Ui.Interface) {}
 
     execute(app: any) {
-        this.ui.info("🔮 Executing MyCorePulumiHandler with environment:", app.env);
+        this.ui.info("Executing MyCorePulumiHandler with environment:", app.env);
 
         // Access and modify Pulumi resources here
         // app.resources gives you access to all provisioned resources
@@ -45,7 +55,7 @@ Register:
 
 ## Declarative Infrastructure Components
 
-These components go directly in `webiny.config.tsx` — no separate extension file needed:
+These components go directly in `webiny.config.tsx` -- no separate extension file needed:
 
 ### AWS Configuration
 
@@ -53,7 +63,7 @@ These components go directly in `webiny.config.tsx` — no separate extension fi
 {/* Set the AWS region */}
 <Infra.Aws.DefaultRegion name={"us-east-1"} />
 
-{/* Apply tags to all AWS resources — multiple calls are merged */}
+{/* Apply tags to all AWS resources -- multiple calls are merged */}
 <Infra.Aws.Tags tags={{ OWNER: "me", PROJECT: "my-project" }} />
 <Infra.Aws.Tags tags={{ COST_CENTER: "engineering" }} />
 ```
@@ -177,6 +187,5 @@ Deploy:          yarn webiny deploy core  (infrastructure changes)
 
 ## Related Skills
 
-- [`webiny-project-structure.md`](./webiny-project-structure.md) — Full `webiny.config.tsx` anatomy
-- [`local-development-and-deployment.md`](./local-development-and-deployment.md) — Deployment commands and environment management
-
+- `project-structure` -- Full `webiny.config.tsx` anatomy
+- `local-development` -- Deployment commands and environment management

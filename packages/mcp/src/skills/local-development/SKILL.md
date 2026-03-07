@@ -1,3 +1,13 @@
+---
+name: webiny-local-development
+description: >
+  Deploying, developing locally, managing environments, and debugging Webiny projects.
+  Use this skill when the developer asks about deployment commands (deploy, destroy, info),
+  local development with watch mode (API or Admin), the Local Lambda Development system,
+  environment management (long-lived vs short-lived, production vs dev modes), build parameters,
+  state files, debugging API/Admin/Infrastructure errors, or the redeploy-after-watch requirement.
+---
+
 # Local Development and Deployment
 
 ## TL;DR
@@ -14,7 +24,7 @@ Deploy all three applications (Core, API, Admin) at once:
 yarn webiny deploy
 ```
 
-This deploys to the `dev` environment by default. First deployment takes 5–15 minutes.
+This deploys to the `dev` environment by default. First deployment takes 5-15 minutes.
 
 ### Deploying Individual Applications
 
@@ -64,17 +74,17 @@ yarn webiny watch api
 ```
 
 How it works:
-1. **Lambda stubs deployed** — real Lambda functions are replaced with stubs that forward events
-2. **Events forwarded** — requests to AWS get forwarded to your local machine
-3. **Local execution** — your code runs locally with full AWS Lambda environment
-4. **Response routing** — responses sent back through the Lambda stub
+1. **Lambda stubs deployed** -- real Lambda functions are replaced with stubs that forward events
+2. **Events forwarded** -- requests to AWS get forwarded to your local machine
+3. **Local execution** -- your code runs locally with full AWS Lambda environment
+4. **Response routing** -- responses sent back through the Lambda stub
 
 Benefits:
 - See backend code changes instantly (no redeployment)
 - Debug locally with standard Node.js tools
 - Console logs appear directly in your terminal
 
-**⚠️ Important: Redeploy After Watch**
+**IMPORTANT: Redeploy After Watch**
 
 When you stop `yarn webiny watch api`, your Lambda functions still contain stub code. You **must** redeploy:
 
@@ -101,9 +111,9 @@ yarn webiny watch admin
 ### Long-Lived Environments
 
 Persistent environments maintained over time:
-- **dev** — daily development
-- **staging** — pre-production testing
-- **prod** — production
+- **dev** -- daily development
+- **staging** -- pre-production testing
+- **prod** -- production
 
 Best practice: manage via CI/CD pipelines.
 
@@ -125,8 +135,8 @@ yarn webiny destroy --env feature-123
 ### Deployment Modes
 
 Webiny has two deployment templates:
-- **dev** — smaller, cheaper infrastructure for development
-- **prod** — production-grade infrastructure with HA, backups, auto-scaling
+- **dev** -- smaller, cheaper infrastructure for development
+- **prod** -- production-grade infrastructure with HA, backups, auto-scaling
 
 The mode is determined by whether the environment name is in the `ProductionEnvironments` list:
 
@@ -189,10 +199,10 @@ this.logger.error("Something failed");
 ### Admin Errors
 
 Use browser DevTools:
-- **Console** — view logs and errors
-- **Network tab** — inspect GraphQL requests/responses
-- **React Developer Tools** — debug component state/props
-- **GraphQL Network Inspector** — inspect GraphQL operations
+- **Console** -- view logs and errors
+- **Network tab** -- inspect GraphQL requests/responses
+- **React Developer Tools** -- debug component state/props
+- **GraphQL Network Inspector** -- inspect GraphQL operations
 
 ### Infrastructure Errors
 
@@ -230,6 +240,5 @@ After watch:      yarn webiny deploy api  (MUST redeploy!)
 
 ## Related Skills
 
-- [`webiny-project-structure.md`](./webiny-project-structure.md) — Project layout and `webiny.config.tsx`
-- [`infrastructure-extensions.md`](./infrastructure-extensions.md) — Customizing AWS infrastructure and environments
-
+- `project-structure` -- Project layout and `webiny.config.tsx`
+- `infrastructure-extensions` -- Customizing AWS infrastructure and environments

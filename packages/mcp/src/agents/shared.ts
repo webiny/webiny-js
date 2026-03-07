@@ -28,7 +28,10 @@ interface WriteMcpConfigParams {
 export function writeMcpConfig({ ui, configPath }: WriteMcpConfigParams): boolean {
     ensureDir(configPath);
 
-    const entry = { command: "npx", args: ["webiny", "mcp-server"] };
+    const entry = {
+        command: "npx",
+        args: ["webiny", "mcp-server", "--additional-skills=./my-skills"]
+    };
     let config: { mcpServers: Record<string, unknown> } = { mcpServers: {} };
 
     if (existsSync(configPath)) {

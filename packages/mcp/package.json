@@ -17,6 +17,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.27.1",
     "@webiny/cli-core": "0.0.0",
+    "front-matter": "^4.0.2",
     "react": "18.2.0",
     "zod": "^3.25.76"
   },

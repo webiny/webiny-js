@@ -1,3 +1,13 @@
+---
+name: webiny-admin-ui-extensions
+description: >
+  Customizing the Webiny Admin UI -- white-labeling, custom data list columns, page-type forms,
+  and Lexical editor plugins. Use this skill when the developer wants to change branding (logo,
+  title, theme colors), add custom columns to content entry list views, create custom forms
+  for Website Builder page types, or extend the Lexical rich text editor. Covers AdminConfig,
+  ContentEntryListConfig, Browser.Table.Column, Bind, useForm, and form validation.
+---
+
 # Admin UI Extensions
 
 ## TL;DR
@@ -27,8 +37,8 @@ const AdminTheme = () => {
 export default AdminTheme;
 ```
 
-- `palette` — `"primary"`, `"secondary"`, `"neutral"`, etc.
-- `color` — any CSS color value: named colors, hex (`"#6B46C1"`), or RGB.
+- `palette` -- `"primary"`, `"secondary"`, `"neutral"`, etc.
+- `color` -- any CSS color value: named colors, hex (`"#6B46C1"`), or RGB.
 
 ### Logo and Title
 
@@ -144,7 +154,7 @@ Register:
 |---|---|---|
 | `name` | `string` | Unique column identifier |
 | `header` | `string` | Column header text |
-| `path` | `string` | Dot-path to the data field (e.g., `"values.email"`) — for simple columns |
+| `path` | `string` | Dot-path to the data field (e.g., `"values.email"`) -- for simple columns |
 | `cell` | `ReactElement` | Custom React component for complex rendering |
 | `modelIds` | `string[]` | Restrict column to specific content models |
 | `after` | `string` | Position this column after another column by name |
@@ -153,8 +163,8 @@ Register:
 
 Inside a custom `cell` component:
 
-- `useTableRow<T>()` — access the full row data, typed with your interface
-- `isFolderRow(row)` — check if the current row is a folder (return placeholder content)
+- `useTableRow<T>()` -- access the full row data, typed with your interface
+- `isFolderRow(row)` -- check if the current row is a folder (return placeholder content)
 
 ## Custom Page-Type Forms
 
@@ -252,6 +262,5 @@ Deploy:              yarn webiny deploy admin
 
 ## Related Skills
 
-- [`webiny-project-structure.md`](./webiny-project-structure.md) — How to register Admin extensions
-- [`creating-content-models-via-code.md`](./creating-content-models-via-code.md) — Define models that your list columns target
-
+- `project-structure` -- How to register Admin extensions
+- `content-models` -- Define models that your list columns target

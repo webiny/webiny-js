@@ -1,14 +1,24 @@
+---
+name: webiny-project-structure
+description: >
+  Webiny project layout, webiny.config.tsx anatomy, and extension registration.
+  Use this skill when the developer asks about folder structure, where custom code goes,
+  how to register extensions, what webiny.config.tsx does, or how the project is organized.
+  Also use when they need to understand the relationship between extensions/, webiny.config.tsx,
+  and the different extension types (Api, Admin, Infra, CLI).
+---
+
 # Webiny Project Structure
 
 ## TL;DR
 
-A Webiny project has a flat structure centered around `webiny.config.tsx` — the single configuration file where all extensions are registered. Custom code lives in the `extensions/` folder. Extensions are registered as React components (`<Api.Extension>`, `<Admin.Extension>`, `<Infra.*>`, `<Cli.Command>`) and can be conditionally loaded per environment.
+A Webiny project has a flat structure centered around `webiny.config.tsx` -- the single configuration file where all extensions are registered. Custom code lives in the `extensions/` folder. Extensions are registered as React components (`<Api.Extension>`, `<Admin.Extension>`, `<Infra.*>`, `<Cli.Command>`) and can be conditionally loaded per environment.
 
 ## Project Layout
 
 ```
 my-webiny-project/
-├── extensions/          # All custom code — API, Admin, Infra, CLI extensions
+├── extensions/          # All custom code -- API, Admin, Infra, CLI extensions
 │   └── README.md
 ├── public/              # Static assets for the Admin app
 │   ├── favicon.ico
@@ -18,16 +28,16 @@ my-webiny-project/
 ├── eslint.config.js     # ESLint configuration
 ├── package.json         # Single package.json for the whole project
 ├── tsconfig.json        # Single TypeScript config
-├── webiny.config.tsx    # Main configuration — all extensions registered here
+├── webiny.config.tsx    # Main configuration -- all extensions registered here
 ├── webiny-env.d.ts      # TypeScript environment types
 └── yarn.lock
 ```
 
 Key points:
-- **Single `package.json`** — no monorepo, no workspaces needed.
-- **Single `tsconfig.json`** — straightforward TypeScript setup.
-- **`webiny.config.tsx`** — the entry point for everything. All extensions, infrastructure options, and project settings are declared here.
-- **`extensions/`** — where all your custom code lives. Organize with subfolders as needed (e.g., `extensions/contactSubmission/`, `extensions/AdminBranding/`).
+- **Single `package.json`** -- no monorepo, no workspaces needed.
+- **Single `tsconfig.json`** -- straightforward TypeScript setup.
+- **`webiny.config.tsx`** -- the entry point for everything. All extensions, infrastructure options, and project settings are declared here.
+- **`extensions/`** -- where all your custom code lives. Organize with subfolders as needed (e.g., `extensions/contactSubmission/`, `extensions/AdminBranding/`).
 
 ## The `webiny.config.tsx` File
 
@@ -127,7 +137,7 @@ Pass custom values from config to extensions at build time:
 <Admin.BuildParam paramName="ADMIN_CUSTOM_PARAM" value="adminValue" />
 ```
 
-These are accessed in extensions via the `BuildParams` feature (see dependency-injection-patterns skill).
+These are accessed in extensions via the `BuildParams` feature (see dependency-injection skill).
 
 ## Installing Pre-Built Extensions
 
@@ -141,6 +151,5 @@ This downloads the extension code into `extensions/`, updates `webiny.config.tsx
 
 ## Related Skills
 
-- [`dependency-injection-patterns.md`](./dependency-injection-patterns.md) — How extensions use DI to access services
-- [`local-development-and-deployment.md`](./local-development-and-deployment.md) — How to deploy and develop locally
-
+- `dependency-injection` -- How extensions use DI to access services
+- `local-development` -- How to deploy and develop locally

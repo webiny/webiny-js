@@ -1,3 +1,13 @@
+---
+name: webiny-custom-graphql-api
+description: >
+  Adding custom GraphQL queries and mutations using GraphQLSchemaFactory.
+  Use this skill when the developer wants to add custom GraphQL endpoints, create custom
+  queries or mutations, add business logic to the API layer, build custom resolvers,
+  or inject backend services (identity, tenancy, CMS use-cases) into their GraphQL schema.
+  Covers the full pattern from simple queries to complex resolvers with dependency injection.
+---
+
 # Custom GraphQL API
 
 ## TL;DR
@@ -184,6 +194,5 @@ Deploy:       yarn webiny deploy api
 
 ## Related Skills
 
-- [`dependency-injection-patterns.md`](./dependency-injection-patterns.md) — Full DI reference for all injectable services
-- [`webiny-project-structure.md`](./webiny-project-structure.md) — How to register extensions in `webiny.config.tsx`
-
+- `dependency-injection` -- Full DI reference for all injectable services
+- `project-structure` -- How to register extensions in `webiny.config.tsx`

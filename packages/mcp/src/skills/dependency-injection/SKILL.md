@@ -1,8 +1,19 @@
+---
+name: webiny-dependency-injection
+description: >
+  The universal createImplementation DI pattern and all injectable services.
+  Use this skill when the developer is writing any Webiny extension and needs to understand
+  dependency injection, constructor injection, how to access Logger/BuildParams/IdentityContext,
+  how to inject CMS use-cases (list/get/create/update/delete entries), or how the dependencies
+  array works. This is the connective tissue across all extension types -- API, Admin, CLI,
+  and Infrastructure.
+---
+
 # Dependency Injection Patterns
 
 ## TL;DR
 
-Every Webiny extension type uses the same DI pattern: define a class implementing `*.Interface`, declare dependencies in the constructor, and export via `*.createImplementation({ implementation, dependencies })`. The DI container automatically provides the required services, ensures type safety, and validates at compile time. This pattern is the connective tissue across all extension types — API, Admin, CLI, and Infrastructure.
+Every Webiny extension type uses the same DI pattern: define a class implementing `*.Interface`, declare dependencies in the constructor, and export via `*.createImplementation({ implementation, dependencies })`. The DI container automatically provides the required services, ensures type safety, and validates at compile time. This pattern is the connective tissue across all extension types -- API, Admin, CLI, and Infrastructure.
 
 ## The Universal Pattern
 
@@ -30,10 +41,10 @@ export default SomeFactory.createImplementation({
 ```
 
 Key rules:
-1. **One class per file** — each extension file exports a single implementation.
-2. **Constructor injection** — dependencies are received as constructor parameters, in the same order as the `dependencies` array.
-3. **Dependencies array** — must exactly match the constructor parameter order and types.
-4. **Interface types** — always type constructor params as `Feature.Interface`.
+1. **One class per file** -- each extension file exports a single implementation.
+2. **Constructor injection** -- dependencies are received as constructor parameters, in the same order as the `dependencies` array.
+3. **Dependencies array** -- must exactly match the constructor parameter order and types.
+4. **Interface types** -- always type constructor params as `Feature.Interface`.
 
 ## Where This Pattern Appears
 
@@ -235,7 +246,6 @@ export default CorePulumi.createImplementation({
 
 ## Related Skills
 
-- [`custom-graphql-api.md`](./custom-graphql-api.md) — DI in GraphQL schema extensions
-- [`lifecycle-events.md`](./lifecycle-events.md) — DI in lifecycle event handlers
-- [`cli-extensions.md`](./cli-extensions.md) — DI in CLI command extensions
-
+- `custom-graphql-api` -- DI in GraphQL schema extensions
+- `lifecycle-events` -- DI in lifecycle event handlers
+- `cli-extensions` -- DI in CLI command extensions
