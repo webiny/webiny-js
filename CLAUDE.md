@@ -95,3 +95,11 @@ When creating a plan on an issue, Claude should:
 - Modify `.github/workflows/` files
 - Change secrets or environment variable definitions
 - Install new dependencies without explaining the rationale in the PR description
+
+## Webiny
+
+This project uses the Webiny framework.
+A `webiny` MCP server is available.
+When helping with Webiny-related tasks:
+1. Call `list_webiny_skills` to see available skills.
+2. Call `get_webiny_skill` with the relevant topic before writing code.

@@ -1,10 +1,10 @@
 /**
- * Agent adapter: Claude Code
+ * Agent adapter: Windsurf (Codeium)
  *
- * MCP config : .mcp.json  (project-level, checked into git)
- * Hint file  : CLAUDE.md  (Claude Code reads this automatically each session)
+ * MCP config : .windsurf/mcp.json  (project-level)
+ * Hint file  : .windsurf/rules/webiny.md
  *
- * Docs: https://docs.anthropic.com/en/docs/claude-code/mcp
+ * Docs: https://docs.codeium.com/windsurf/mcp
  */
 
 import { join } from "path";
@@ -17,16 +17,16 @@ interface InitParams {
 }
 
 export async function init({ ui, cwd }: InitParams): Promise<void> {
-    ui.info("Setting up for Claude Code...");
+    ui.info("Setting up for Windsurf...");
 
     writeMcpConfig({
         ui,
-        configPath: join(cwd, ".mcp.json")
+        configPath: join(cwd, ".windsurf", "mcp.json")
     });
 
     writeHintFile({
         ui,
-        hintPath: join(cwd, "CLAUDE.md"),
+        hintPath: join(cwd, ".windsurf", "rules", "webiny.md"),
         content: webinyHintBlock({ heading: "## Webiny" })
     });
 

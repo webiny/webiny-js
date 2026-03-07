@@ -7,7 +7,7 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "description": "A set of project apps that together form Webiny CMS, deployed into Amazon Web Services (AWS).",
+  "description": "Webiny Model Context Protocol (MCP) server.",
   "author": "Webiny Ltd",
   "license": "MIT",
   "publishConfig": {
@@ -15,7 +15,10 @@
     "directory": "dist"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.27.1"
+    "@modelcontextprotocol/sdk": "^1.27.1",
+    "@webiny/cli-core": "0.0.0",
+    "react": "18.2.0",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@types/lodash": "^4.17.24",

@@ -1,22 +1,29 @@
 import { CliCommandFactory } from "@webiny/cli-core/exports/cli/command.js";
+import { Ui } from "@webiny/cli-core/exports/cli/index.js";
 
 export interface IInitAgentParams {
     agent: string;
     instructions: boolean;
 }
 
-const SUPPORTED = ["claude", "cursor", "windsurf", "copilot"];
+const SUPPORTED = ["claude", "cursor", "windsurf", "copilot", "cline"];
 
-class McpInitAgent implements CliCommandFactory.Interface<IInitAgentParams> {
+class ConfigureMcp implements CliCommandFactory.Interface<IInitAgentParams> {
+    constructor(private ui: Ui.Interface) {}
+
     execute(): CliCommandFactory.CommandDefinition<IInitAgentParams> {
         return {
-            name: "init-agent",
+            name: "configure-mcp",
             description: "Configure MCP server for a specific agent.",
-            examples: ["$0 init-agent claude", "$0 init-agent --instructions"],
+            examples: [
+                "$0 configure-mcp claude",
+                "$0 configure-mcp cursor",
+                "$0 configure-mcp --instructions"
+            ],
             params: [
                 {
                     name: "agent",
-                    description: "Agent name (claude, copilot, cursor, ...)",
+                    description: "Agent name (claude, cursor, windsurf, copilot, cline)",
                     type: "string",
                     default: "claude"
                 }
@@ -39,23 +46,21 @@ class McpInitAgent implements CliCommandFactory.Interface<IInitAgentParams> {
                 const target = params.agent || "claude";
 
                 if (!SUPPORTED.includes(target)) {
-                    console.error(`[webiny] Unknown agent "${target}".`);
-                    console.error(`         Supported: ${SUPPORTED.join(", ")}`);
-                    console.error(
-                        `         For other agents run: npx webiny init-agent --instructions`
-                    );
+                    this.ui.error(`Unknown agent "${target}".`);
+                    this.ui.text(`Supported: ${SUPPORTED.join(", ")}`);
+                    this.ui.text("For other agents run: npx webiny configure-mcp --instructions");
                     process.exit(1);
                 }
 
                 const cwd = process.cwd();
                 const { init } = await import(`../agents/${target}.js`);
-                await init({ cwd });
+                await init({ ui: this.ui, cwd });
             }
         };
     }
 }
 
 export default CliCommandFactory.createImplementation({
-    implementation: McpInitAgent,
-    dependencies: []
+    implementation: ConfigureMcp,
+    dependencies: [Ui]
 });

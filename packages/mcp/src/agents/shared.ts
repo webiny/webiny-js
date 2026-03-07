@@ -4,12 +4,14 @@
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
 import { dirname } from "path";
+import type { Ui } from "@webiny/cli-core/exports/cli/index.js";
 
 // ---------------------------------------------------------------------------
 // MCP config helpers
 // ---------------------------------------------------------------------------
 
 interface WriteMcpConfigParams {
+    ui: Ui.Interface;
     configPath: string;
 }
 
@@ -23,7 +25,7 @@ interface WriteMcpConfigParams {
  *   }
  * }
  */
-export function writeMcpConfig({ configPath }: WriteMcpConfigParams): boolean {
+export function writeMcpConfig({ ui, configPath }: WriteMcpConfigParams): boolean {
     ensureDir(configPath);
 
     const entry = { command: "npx", args: ["webiny", "mcp-server"] };
@@ -34,18 +36,18 @@ export function writeMcpConfig({ configPath }: WriteMcpConfigParams): boolean {
             config = JSON.parse(readFileSync(configPath, "utf8"));
             config.mcpServers ??= {};
         } catch {
-            console.warn(`[webiny] Warning: could not parse ${configPath} — will overwrite.`);
+            ui.warning(`Could not parse %s — will overwrite.`, configPath);
         }
     }
 
     if (config.mcpServers.webiny) {
-        console.log(`[webiny] ${configPath} already has a 'webiny' entry — skipping.`);
+        ui.info(`%s already has a %s entry — skipping.`, configPath, "webiny");
         return false;
     }
 
     config.mcpServers.webiny = entry;
     writeFileSync(configPath, JSON.stringify(config, null, 2) + "\n");
-    console.log(`[webiny] ✓ Registered Webiny MCP server in ${configPath}`);
+    ui.success(`Registered Webiny MCP server in %s`, configPath);
     return true;
 }
 
@@ -54,6 +56,7 @@ export function writeMcpConfig({ configPath }: WriteMcpConfigParams): boolean {
 // ---------------------------------------------------------------------------
 
 interface WriteHintFileParams {
+    ui: Ui.Interface;
     hintPath: string;
     content: string;
     marker?: string;
@@ -64,6 +67,7 @@ interface WriteHintFileParams {
  * copilot-instructions.md, etc.) if not already present.
  */
 export function writeHintFile({
+    ui,
     hintPath,
     content,
     marker = "list_webiny_skills"
@@ -73,7 +77,7 @@ export function writeHintFile({
     if (existsSync(hintPath)) {
         const existing = readFileSync(hintPath, "utf8");
         if (existing.includes(marker)) {
-            console.log(`[webiny] ${hintPath} already contains Webiny instructions — skipping.`);
+            ui.info(`%s already contains Webiny instructions — skipping.`, hintPath);
             return false;
         }
         writeFileSync(hintPath, existing.trimEnd() + "\n\n" + content.trim() + "\n");
@@ -81,7 +85,7 @@ export function writeHintFile({
         writeFileSync(hintPath, content.trim() + "\n");
     }
 
-    console.log(`[webiny] ✓ Wrote Webiny instructions to ${hintPath}`);
+    ui.success(`Wrote Webiny instructions to ${hintPath}`);
     return true;
 }
 
@@ -115,19 +119,20 @@ export function webinyHintBlock({
 // ---------------------------------------------------------------------------
 
 interface PrintDoneParams {
+    ui: Ui.Interface;
     extra?: string;
 }
 
-export function printDone({ extra = "" }: PrintDoneParams = {}): void {
-    console.log("");
+export function printDone({ ui, extra }: PrintDoneParams): void {
+    ui.emptyLine();
     if (extra) {
-        console.log(extra);
+        ui.warning(extra);
     }
-    console.log("Restart your agent/editor session if it is already running.");
-    console.log("");
-    console.log("To test the MCP server directly:");
-    console.log("  npx @modelcontextprotocol/inspector npx webiny mcp-server");
-    console.log("");
+    ui.info("Restart your agent/editor session if it is already running.");
+    ui.emptyLine();
+    ui.info("To test the MCP server directly:");
+    ui.info("  %s", "npx @modelcontextprotocol/inspector npx webiny mcp-server");
+    ui.emptyLine();
 }
 
 // ---------------------------------------------------------------------------

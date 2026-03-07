@@ -1,10 +1,10 @@
 /**
- * Agent adapter: Claude Code
+ * Agent adapter: Cursor
  *
- * MCP config : .mcp.json  (project-level, checked into git)
- * Hint file  : CLAUDE.md  (Claude Code reads this automatically each session)
+ * MCP config : .cursor/mcp.json  (project-level)
+ * Hint file  : .cursor/rules/webiny.mdc
  *
- * Docs: https://docs.anthropic.com/en/docs/claude-code/mcp
+ * Docs: https://docs.cursor.com/context/model-context-protocol
  */
 
 import { join } from "path";
@@ -17,17 +17,17 @@ interface InitParams {
 }
 
 export async function init({ ui, cwd }: InitParams): Promise<void> {
-    ui.info("Setting up for Claude Code...");
+    ui.info("Setting up for Cursor...");
 
     writeMcpConfig({
         ui,
-        configPath: join(cwd, ".mcp.json")
+        configPath: join(cwd, ".cursor", "mcp.json")
     });
 
     writeHintFile({
         ui,
-        hintPath: join(cwd, "CLAUDE.md"),
-        content: webinyHintBlock({ heading: "## Webiny" })
+        hintPath: join(cwd, ".cursor", "rules", "webiny.mdc"),
+        content: webinyHintBlock({ heading: "# Webiny" })
     });
 
     printDone({ ui });
