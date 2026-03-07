@@ -15,7 +15,7 @@ import {
 import { createPathResolver } from "@webiny/project";
 import { CliCommand } from "@webiny/cli-core/extensions/index.js";
 import { CorePulumi } from "@webiny/project/extensions/index.js";
-// import { TenantManager } from "@webiny/tenant-manager";
+import { McpExtension } from "@webiny/mcp";
 
 const p = createPathResolver(import.meta.dirname);
 
@@ -59,8 +59,8 @@ export const ProjectAws = () => {
                 src={p("ProjectAws/BlueGreenDeployments/PrintDeploymentInfoAfterDeploy.js")}
             />
 
-            {/* Tenant Manager */}
-            {/*<TenantManager />*/}
+            {/* MCP */}
+            <McpExtension />
         </>
     );
 };

@@ -17,6 +17,7 @@ export interface ICliCommandOptionDefinition<TCommandParams> {
     group?: string;
     required?: boolean;
     alias?: string;
+    array?: boolean;
     default?: any;
     validation?: (value: TCommandParams) => boolean | string;
 }

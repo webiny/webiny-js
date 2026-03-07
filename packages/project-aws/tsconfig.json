@@ -6,6 +6,7 @@
     { "path": "../aws-sdk" },
     { "path": "../cli-core" },
     { "path": "../data-migration" },
+    { "path": "../mcp" },
     { "path": "../project" },
     { "path": "../pulumi" },
     { "path": "../utils" }
@@ -25,6 +26,8 @@
       "@webiny/cli-core": ["../cli-core/src"],
       "@webiny/data-migration/*": ["../data-migration/src/*"],
       "@webiny/data-migration": ["../data-migration/src"],
+      "@webiny/mcp/*": ["../mcp/src/*"],
+      "@webiny/mcp": ["../mcp/src"],
       "@webiny/project/*": ["../project/src/*"],
       "@webiny/project": ["../project/src"],
       "@webiny/pulumi/*": ["../pulumi/src/*"],
