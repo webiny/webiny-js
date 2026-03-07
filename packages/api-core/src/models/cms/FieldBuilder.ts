@@ -75,35 +75,35 @@ export class TextFieldBuilder<TZod extends z.ZodString = z.ZodString> extends Fi
     }
 
     slug(): this {
-        this.zodSchema = (this.zodSchema as z.ZodString).regex(
-            /^[a-z0-9-]+$/,
-            "Must be a valid slug (lowercase letters, numbers, and hyphens only)"
-        ) as TZod;
-        this.config.validation?.push({
-            name: "slug",
-            message: "Must be a valid slug",
-            settings: {}
-        });
-        return this;
+        return this.addStringValidator(
+            (this.zodSchema as z.ZodString).regex(
+                /^[a-z0-9-]+$/,
+                "Must be a valid slug (lowercase letters, numbers, and hyphens only)"
+            ),
+            "slug",
+            "Must be a valid slug"
+        );
     }
 
     email(): this {
-        this.zodSchema = (this.zodSchema as z.ZodString).email("Must be a valid email") as TZod;
-        this.config.validation?.push({
-            name: "email",
-            message: "Must be a valid email",
-            settings: {}
-        });
-        return this;
+        return this.addStringValidator(
+            (this.zodSchema as z.ZodString).email("Must be a valid email"),
+            "email",
+            "Must be a valid email"
+        );
     }
 
     url(): this {
-        this.zodSchema = (this.zodSchema as z.ZodString).url("Must be a valid URL") as TZod;
-        this.config.validation?.push({
-            name: "url",
-            message: "Must be a valid URL",
-            settings: {}
-        });
+        return this.addStringValidator(
+            (this.zodSchema as z.ZodString).url("Must be a valid URL"),
+            "url",
+            "Must be a valid URL"
+        );
+    }
+
+    private addStringValidator(schema: z.ZodString, name: string, message: string): this {
+        this.zodSchema = schema as TZod;
+        this.config.validation?.push({ name, message, settings: {} });
         return this;
     }
 
@@ -125,7 +125,7 @@ export class ObjectFieldBuilder<TShape extends z.ZodRawShape> extends FieldBuild
 
     constructor(
         fields: (registry: IFieldBuilderRegistry) => {
-            [K in keyof TShape]: FieldBuilder<TShape[K]>;
+            [K in keyof TShape]: FieldBuilder<TShape[K] & z.ZodTypeAny>;
         },
         registry: IFieldBuilderRegistry
     ) {

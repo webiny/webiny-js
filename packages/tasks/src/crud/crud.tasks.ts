@@ -91,12 +91,12 @@ interface IValidateParams {
     context: Context;
 }
 
-const getZodSchema = (schema: GenericRecord<string, zod.Schema> | zod.Schema) => {
+const getZodSchema = (schema: GenericRecord<string, zod.ZodTypeAny> | zod.ZodTypeAny) => {
     if (!schema) {
         return zod.object({}).passthrough();
     } else if (schema instanceof zod.ZodObject) {
         return schema.passthrough();
-    } else if (schema instanceof zod.Schema) {
+    } else if (schema instanceof zod.ZodType) {
         return schema;
     }
     return zod.object(schema).passthrough();

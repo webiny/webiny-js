@@ -35,7 +35,7 @@ class UpdateRoleUseCaseImpl implements UseCase.Interface {
 
         const validation = updateRoleValidation.safeParse(input);
         if (!validation.success) {
-            return Result.fail(new RoleValidationError(validation.error.errors[0].message));
+            return Result.fail(new RoleValidationError(validation.error.issues[0].message));
         }
 
         const existingResult = await this.repository.get({ id });

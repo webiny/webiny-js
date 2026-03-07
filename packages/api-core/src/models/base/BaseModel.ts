@@ -44,7 +44,7 @@ export abstract class BaseModel<TModel extends z.ZodObject<any> = any> {
     }
 
     toData(): IModelData<TModel> {
-        if (this.__schema && this.__schema._def?.typeName === "ZodObject") {
+        if (this.__schema && this.__schema._def?.type === "object") {
             const result = {} as IModelData<TModel>;
             const shape = this.__schema.shape;
             for (const key in shape) {
@@ -70,7 +70,7 @@ export abstract class BaseModel<TModel extends z.ZodObject<any> = any> {
             throw new WebinyError({
                 message: "Validation error",
                 code: "DOMAIN_MODEL_VALIDATION_ERROR",
-                data: result.error.errors
+                data: result.error.issues
             });
         }
     }

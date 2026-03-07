@@ -6,7 +6,7 @@ import type { GraphQLRequestBody } from "~/types.js";
 const requestBodySchema = zod
     .object({
         query: zod.string(),
-        variables: zod.record(zod.any()).nullish().optional(),
+        variables: zod.record(zod.string(), zod.any()).nullish().optional(),
         operationName: zod
             .string()
             .nullish()

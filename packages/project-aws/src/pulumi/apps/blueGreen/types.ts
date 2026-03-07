@@ -29,8 +29,8 @@ export interface IBlueGreenDeployment {
 }
 
 export interface IAttachedDomainsTypes {
-    api: NonEmptyArray<string>;
-    admin: NonEmptyArray<string>;
+    api: string[];
+    admin: string[];
 }
 
 export interface IAttachedDomains {
@@ -70,7 +70,7 @@ export interface IResolvedDomain {
     /**
      * List of domains that will be used as source and transferred to the target domain.
      */
-    sources: NonEmptyArray<string>;
+    sources: string[];
     /**
      * The target CloudFront domain of the deployment.
      */

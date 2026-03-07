@@ -36,7 +36,7 @@ export class ExtensionInstanceModel<TParamsSchema extends z.ZodTypeAny> {
 
         const validationResult = await paramsSchema.safeParseAsync(this.params);
         if (!validationResult.success) {
-            const errorMessages = validationResult.error.errors.map(err => err.message).join("; ");
+            const errorMessages = validationResult.error.issues.map((err: { message: string }) => err.message).join("; ");
 
             throw ProjectError.from(
                 `Validation failed for extension of type %s: ${errorMessages}`,

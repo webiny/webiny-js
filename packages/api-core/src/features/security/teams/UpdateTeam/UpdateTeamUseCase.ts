@@ -37,7 +37,7 @@ export class UpdateTeamUseCase {
 
         const validation = updateTeamValidation.safeParse(input);
         if (!validation.success) {
-            return Result.fail(new TeamValidationError(validation.error.errors[0].message));
+            return Result.fail(new TeamValidationError(validation.error.issues[0].message));
         }
 
         const existingResult = await this.repository.get({ id });

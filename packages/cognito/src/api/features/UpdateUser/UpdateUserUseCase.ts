@@ -46,7 +46,7 @@ class UpdateUserUseCaseImpl implements UseCaseAbstraction.Interface {
         // Validate input (including password)
         const validation = updateAdminUserValidation.safeParse(input);
         if (!validation.success) {
-            return Result.fail(new UserValidationError(validation.error.errors[0].message));
+            return Result.fail(new UserValidationError(validation.error.issues[0].message));
         }
 
         const data = validation.data;

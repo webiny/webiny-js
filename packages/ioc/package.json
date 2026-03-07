@@ -18,7 +18,7 @@
     "@webiny/build-tools": "0.0.0",
     "typescript": "5.9.3",
     "vitest": "^4.0.18",
-    "zod": "^3.25.76"
+    "zod": "^4.3.6"
   },
   "publishConfig": {
     "access": "public",

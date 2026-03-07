@@ -28,7 +28,7 @@
     "lodash": "^4.17.23",
     "object-merge-advanced": "^12.1.0",
     "object-sizeof": "^2.6.5",
-    "zod": "^3.25.76"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",

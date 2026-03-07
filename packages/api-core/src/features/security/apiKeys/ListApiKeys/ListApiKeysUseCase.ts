@@ -28,7 +28,7 @@ class ListApiKeysUseCaseImpl implements ListApiKeysUseCaseAbstraction.Interface 
 
         const validation = listApiKeysInputSchema.safeParse(params);
         if (!validation.success) {
-            return Result.fail(new ApiKeyValidationError(validation.error.errors[0].message));
+            return Result.fail(new ApiKeyValidationError(validation.error.issues[0].message));
         }
 
         return this.repository.list(validation.data);

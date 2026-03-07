@@ -13,7 +13,7 @@ class FieldBuilderRegistryImpl implements IFieldBuilderRegistry {
 
     object<TShape extends z.ZodRawShape>(
         fields: (registry: IFieldBuilderRegistry) => {
-            [K in keyof TShape]: FieldBuilder<TShape[K]>;
+            [K in keyof TShape]: FieldBuilder<TShape[K] & z.ZodTypeAny>;
         }
     ): ObjectFieldBuilder<TShape> {
         return new ObjectFieldBuilder(fields, this);

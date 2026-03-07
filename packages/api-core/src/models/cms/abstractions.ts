@@ -12,7 +12,7 @@ export interface IFieldBuilderRegistry {
     text(): TextFieldBuilder<z.ZodString>;
     object<TShape extends z.ZodRawShape>(
         fields: (registry: IFieldBuilderRegistry) => {
-            [K in keyof TShape]: FieldBuilder<TShape[K]>;
+            [K in keyof TShape]: FieldBuilder<TShape[K] & z.ZodTypeAny>;
         }
     ): ObjectFieldBuilder<TShape>;
 }

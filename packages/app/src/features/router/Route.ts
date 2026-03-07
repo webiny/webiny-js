@@ -46,15 +46,15 @@ export class Route<TParams extends RouteParamsDefinition | undefined = undefined
             let isNullable = false;
 
             // unwrap optional
-            if (base._def.typeName === z.ZodFirstPartyTypeKind.ZodOptional) {
+            if (base instanceof z.ZodOptional) {
                 isOptional = true;
-                base = base._def.innerType;
+                base = base.unwrap() as z.ZodTypeAny;
             }
 
             // unwrap nullable
-            if (base._def.typeName === z.ZodFirstPartyTypeKind.ZodNullable) {
+            if (base instanceof z.ZodNullable) {
                 isNullable = true;
-                base = base._def.innerType;
+                base = base.unwrap() as z.ZodTypeAny;
             }
 
             // replace with coerced

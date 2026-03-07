@@ -177,6 +177,18 @@ const refinementPluralValidationMessage = (value?: string) => {
     };
 };
 
+const refineSingularApiName = (value: string, ctx: zod.RefinementCtx) => {
+    if (!apiNameRefinementValidation(value)) {
+        ctx.addIssue({ code: zod.ZodIssueCode.custom, ...refinementSingularValidationMessage(value) });
+    }
+};
+
+const refinePluralApiName = (value: string, ctx: zod.RefinementCtx) => {
+    if (!apiNameRefinementValidation(value)) {
+        ctx.addIssue({ code: zod.ZodIssueCode.custom, ...refinementPluralValidationMessage(value) });
+    }
+};
+
 const modelIdTransformation = (value?: string) => {
     if (!value) {
         return value;
@@ -192,12 +204,8 @@ export const createModelCreateValidation = () => {
     return zod.object({
         name: shortString,
         modelId: optionalShortString.transform(modelIdTransformation),
-        singularApiName: shortString
-            .min(1)
-            .refine(apiNameRefinementValidation, refinementSingularValidationMessage),
-        pluralApiName: shortString
-            .min(1)
-            .refine(apiNameRefinementValidation, refinementPluralValidationMessage),
+        singularApiName: shortString.min(1).superRefine(refineSingularApiName),
+        pluralApiName: shortString.min(1).superRefine(refinePluralApiName),
         description: optionalNullishShortString.transform(value => {
             return value || "";
         }),
@@ -216,18 +224,12 @@ export const createModelCreateValidation = () => {
 export const createModelUpdateValidation = () => {
     return zod.object({
         name: optionalShortString,
-        singularApiName: optionalShortString.refine(value => {
-            if (!value) {
-                return true;
-            }
-            return apiNameRefinementValidation(value);
-        }, refinementSingularValidationMessage),
-        pluralApiName: optionalShortString.refine(value => {
-            if (!value) {
-                return true;
-            }
-            return apiNameRefinementValidation(value);
-        }, refinementPluralValidationMessage),
+        singularApiName: optionalShortString.superRefine((value, ctx) => {
+            if (value) refineSingularApiName(value, ctx);
+        }),
+        pluralApiName: optionalShortString.superRefine((value, ctx) => {
+            if (value) refinePluralApiName(value, ctx);
+        }),
         description: optionalNullishShortString,
         group: optionalShortString,
         icon,
@@ -244,14 +246,8 @@ export const createModelCreateFromValidation = () => {
     return zod.object({
         name: shortString,
         modelId: optionalShortString.transform(modelIdTransformation),
-        singularApiName: shortString.refine(
-            apiNameRefinementValidation,
-            refinementSingularValidationMessage
-        ),
-        pluralApiName: shortString.refine(
-            apiNameRefinementValidation,
-            refinementPluralValidationMessage
-        ),
+        singularApiName: shortString.superRefine(refineSingularApiName),
+        pluralApiName: shortString.superRefine(refinePluralApiName),
         description: optionalNullishShortString,
         group: shortString,
         icon
