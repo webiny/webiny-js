@@ -9,7 +9,10 @@ export interface ExtensionDefinitionModelParams<TParamsSchema extends z.ZodTypeA
     array?: boolean;
     paramsSchema?: TParamsSchema | ((ctx: ExtensionInstanceModelContext) => TParamsSchema);
 
-    build?(params: z.infer<TParamsSchema>, ctx: ExtensionInstanceModelContext): Promise<void> | void;
+    build?(
+        params: z.infer<TParamsSchema>,
+        ctx: ExtensionInstanceModelContext
+    ): Promise<void> | void;
 
     validate?(params: z.infer<TParamsSchema>): Promise<void> | void;
 }
@@ -21,7 +24,10 @@ export class ExtensionDefinitionModel<TParamsSchema extends z.ZodTypeAny> {
     multiple?: boolean;
     paramsSchema?: TParamsSchema | ((ctx: ExtensionInstanceModelContext) => TParamsSchema);
 
-    build?(params: z.infer<TParamsSchema>, ctx: ExtensionInstanceModelContext): Promise<void> | void;
+    build?(
+        params: z.infer<TParamsSchema>,
+        ctx: ExtensionInstanceModelContext
+    ): Promise<void> | void;
 
     validate?(params: z.infer<TParamsSchema>): Promise<void> | void;
 

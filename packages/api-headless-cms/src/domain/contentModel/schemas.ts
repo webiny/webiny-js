@@ -179,13 +179,19 @@ const refinementPluralValidationMessage = (value?: string) => {
 
 const refineSingularApiName = (value: string, ctx: zod.RefinementCtx) => {
     if (!apiNameRefinementValidation(value)) {
-        ctx.addIssue({ code: zod.ZodIssueCode.custom, ...refinementSingularValidationMessage(value) });
+        ctx.addIssue({
+            code: zod.ZodIssueCode.custom,
+            ...refinementSingularValidationMessage(value)
+        });
     }
 };
 
 const refinePluralApiName = (value: string, ctx: zod.RefinementCtx) => {
     if (!apiNameRefinementValidation(value)) {
-        ctx.addIssue({ code: zod.ZodIssueCode.custom, ...refinementPluralValidationMessage(value) });
+        ctx.addIssue({
+            code: zod.ZodIssueCode.custom,
+            ...refinementPluralValidationMessage(value)
+        });
     }
 };
 

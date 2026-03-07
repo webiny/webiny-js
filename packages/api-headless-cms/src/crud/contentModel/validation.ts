@@ -231,19 +231,28 @@ const refinementModelIdValidationMessage = (value?: string) => {
 
 const refineSingularApiName = (value: string, ctx: zod.RefinementCtx) => {
     if (!apiNameRefinementValidation(value)) {
-        ctx.addIssue({ code: zod.ZodIssueCode.custom, ...refinementSingularValidationMessage(value) });
+        ctx.addIssue({
+            code: zod.ZodIssueCode.custom,
+            ...refinementSingularValidationMessage(value)
+        });
     }
 };
 
 const refinePluralApiName = (value: string, ctx: zod.RefinementCtx) => {
     if (!apiNameRefinementValidation(value)) {
-        ctx.addIssue({ code: zod.ZodIssueCode.custom, ...refinementPluralValidationMessage(value) });
+        ctx.addIssue({
+            code: zod.ZodIssueCode.custom,
+            ...refinementPluralValidationMessage(value)
+        });
     }
 };
 
 const refineModelId = (value: string, ctx: zod.RefinementCtx) => {
     if (!refinementModelIdValidation(value)) {
-        ctx.addIssue({ code: zod.ZodIssueCode.custom, ...refinementModelIdValidationMessage(value) });
+        ctx.addIssue({
+            code: zod.ZodIssueCode.custom,
+            ...refinementModelIdValidationMessage(value)
+        });
     }
 };
 
@@ -283,7 +292,10 @@ export const createModelImportValidation = () => {
     return zod.object({
         name: shortString.min(1).superRefine((value, ctx) => {
             if (value.match(/[a-zA-Z]/) === null) {
-                ctx.addIssue({ code: zod.ZodIssueCode.custom, message: `The name "${value}" is not valid.` });
+                ctx.addIssue({
+                    code: zod.ZodIssueCode.custom,
+                    message: `The name "${value}" is not valid.`
+                });
             }
         }),
         modelId: shortString.min(1).superRefine(refineModelId).transform(modelIdTransformation),

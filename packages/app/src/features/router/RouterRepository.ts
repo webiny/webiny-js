@@ -69,7 +69,11 @@ class RouterRepositoryImpl implements Abstractions.RouterRepository.Interface {
             return;
         }
 
-        const params = route.params ? (route.params as unknown as { parse: (v: unknown) => unknown }).parse(matchedRoute.params) : matchedRoute.params;
+        const params = route.params
+            ? (route.params as unknown as { parse: (v: unknown) => unknown }).parse(
+                  matchedRoute.params
+              )
+            : matchedRoute.params;
 
         runInAction(() => {
             Object.assign(this.currentRoute, {
