@@ -1,5 +1,6 @@
 ---
 name: webiny-cli-extensions
+context: webiny-extensions
 description: >
   Adding custom commands to the Webiny CLI using CliCommandFactory.
   Use this skill when the developer wants to create a custom CLI command, add a data migration

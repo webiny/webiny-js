@@ -1,5 +1,6 @@
 ---
 name: webiny-content-models
+context: webiny-extensions
 description: >
   Creating Headless CMS content models via code using the ModelFactory pattern.
   Use this skill when the developer wants to create, modify, or understand content model

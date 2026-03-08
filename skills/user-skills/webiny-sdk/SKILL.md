@@ -1,5 +1,6 @@
 ---
 name: webiny-sdk
+context: webiny-extensions
 description: >
   Using @webiny/sdk to read and write CMS data from external applications.
   Use this skill when the developer is building a Next.js, Vue, Node.js, or any external app

@@ -1,5 +1,6 @@
 ---
 name: webiny-dependency-injection
+context: webiny-extensions
 description: >
   The universal createImplementation DI pattern and all injectable services.
   Use this skill when the developer is writing any Webiny extension and needs to understand
@@ -20,7 +21,7 @@ Every Webiny extension type uses the same DI pattern: define a class implementin
 ```typescript
 import { SomeFactory } from "webiny/some/path";
 import { Logger } from "webiny/api/logger";
-import { BuildParams } from "webiny/api/buildParams";
+import { BuildParams } from "webiny/api/build-params";
 
 class MyImplementation implements SomeFactory.Interface {
     constructor(
@@ -62,12 +63,12 @@ Key rules:
 
 ### Utility Services
 
-| Service | Import | Interface | Available In | Purpose |
-|---|---|---|---|---|
-| `Logger` | `"webiny/api/logger"` | `Logger.Interface` | API | Logging (persists to CloudWatch) |
-| `BuildParams` | `"webiny/api/buildParams"` | `BuildParams.Interface` | API | Access build-time parameters |
-| `Ui` (CLI) | `"webiny/cli"` | `Ui.Interface` | CLI | Terminal output formatting |
-| `Ui` (Infra) | `"webiny/infra"` | `Ui.Interface` | Infra | Terminal output during deploy |
+| Service | Import                      | Interface | Available In | Purpose |
+|---|-----------------------------|---|---|---|
+| `Logger` | `"webiny/api/logger"`       | `Logger.Interface` | API | Logging (persists to CloudWatch) |
+| `BuildParams` | `"webiny/api/build-params"` | `BuildParams.Interface` | API | Access build-time parameters |
+| `Ui` (CLI) | `"webiny/cli"`              | `Ui.Interface` | CLI | Terminal output formatting |
+| `Ui` (Infra) | `"webiny/infra"`            | `Ui.Interface` | Infra | Terminal output during deploy |
 
 ### Logger Methods
 

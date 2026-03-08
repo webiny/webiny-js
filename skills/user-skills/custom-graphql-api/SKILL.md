@@ -1,5 +1,6 @@
 ---
 name: webiny-custom-graphql-api
+context: webiny-extensions
 description: >
   Adding custom GraphQL queries and mutations using GraphQLSchemaFactory.
   Use this skill when the developer wants to add custom GraphQL endpoints, create custom
@@ -142,14 +143,14 @@ export default GraphQLSchemaFactory.createImplementation({
 
 ### Core Features
 
-| Feature | Import Path | Purpose |
-|---|---|---|
-| `IdentityContext` | `"webiny/api/security"` | Access current user identity and permissions |
-| `TenantContext` | `"@webiny/api-core/features/TenantContext"` | Access current tenant information |
+| Feature | Import Path                                  | Purpose |
+|---|----------------------------------------------|---|
+| `IdentityContext` | `"webiny/api/security"`                      | Access current user identity and permissions |
+| `TenantContext` | `"@webiny/api-core/features/TenantContext"`  | Access current tenant information |
 | `EventPublisher` | `"@webiny/api-core/features/EventPublisher"` | Publish domain events |
-| `WcpContext` | `"@webiny/api-core/features/WcpContext"` | Webiny Control Panel integration |
-| `Logger` | `"webiny/api/logger"` | Logging (persists to CloudWatch) |
-| `BuildParams` | `"webiny/api/buildParams"` | Access build-time parameters |
+| `WcpContext` | `"@webiny/api-core/features/WcpContext"`     | Webiny Control Panel integration |
+| `Logger` | `"webiny/api/logger"`                        | Logging (persists to CloudWatch) |
+| `BuildParams` | `"webiny/api/build-params"`                  | Access build-time parameters |
 
 ### Headless CMS Use-Cases
 

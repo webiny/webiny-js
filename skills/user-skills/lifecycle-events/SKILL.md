@@ -1,5 +1,6 @@
 ---
 name: webiny-lifecycle-events
+context: webiny-extensions
 description: >
   CMS entry lifecycle hooks and security event handlers.
   Use this skill when the developer wants to intercept content entry operations
@@ -152,9 +153,9 @@ export default Handler.createImplementation({
 
 ```typescript
 // extensions/MyApiKeyAfterUpdate.ts
-import { ApiKeyAfterUpdateHandler } from "webiny/api/security/apiKey";
+import { ApiKeyAfterUpdateHandler } from "webiny/api/security/api-key";
 import { Logger } from "webiny/api/logger";
-import { BuildParams } from "webiny/api/buildParams";
+import { BuildParams } from "webiny/api/build-params";
 
 class MyApiKeyAfterUpdateImpl implements ApiKeyAfterUpdateHandler.Interface {
     constructor(

@@ -10,7 +10,7 @@ export type ElementMap = Record<string, DocumentElement>;
 
 export type DocumentState = Record<string, any>;
 
-export type DocumentMetadata = { documentType: string; pageType: string };
+export type DocumentMetadata = Record<string, any>;
 
 export type InputValueBinding<T = any> = ValueBinding<T> & {
     id: string;
@@ -164,7 +164,7 @@ export type Document = {
 
 export type PublicPage = Pick<
     Page,
-    "id" | "version" | "properties" | "bindings" | "elements" | "extensions" | "metadata"
+    "id" | "version" | "properties" | "bindings" | "elements" | "extensions" | "metadata" | "state"
 >;
 
 export type PublicRedirect = {

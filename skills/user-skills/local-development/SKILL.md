@@ -1,5 +1,6 @@
 ---
 name: webiny-local-development
+context: webiny-extensions
 description: >
   Deploying, developing locally, managing environments, and debugging Webiny projects.
   Use this skill when the developer asks about deployment commands (deploy, destroy, info),
@@ -166,7 +167,7 @@ Pass custom config values from `webiny.config.tsx` to your extensions:
 Access in API extensions:
 
 ```typescript
-import { BuildParams } from "webiny/api/buildParams";
+import { BuildParams } from "webiny/api/build-params";
 
 class MyExtension implements SomeFactory.Interface {
     constructor(private buildParams: BuildParams.Interface) {}

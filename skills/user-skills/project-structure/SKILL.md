@@ -1,5 +1,6 @@
 ---
 name: webiny-project-structure
+context: webiny-extensions
 description: >
   Webiny project layout, webiny.config.tsx anatomy, and extension registration.
   Use this skill when the developer asks about folder structure, where custom code goes,

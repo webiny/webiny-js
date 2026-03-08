@@ -27,6 +27,9 @@
     "@webiny/build-tools": "0.0.0",
     "typescript": "5.9.3"
   },
+  "scripts": {
+    "prepublishOnly": "cp -R ../../skills/user-skills ./dist/skills"
+  },
   "adio": {
     "ignoreDirs": [
       "_templates"

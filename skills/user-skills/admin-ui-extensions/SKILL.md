@@ -1,5 +1,6 @@
 ---
 name: webiny-admin-ui-extensions
+context: webiny-extensions
 description: >
   Customizing the Webiny Admin UI -- white-labeling, custom data list columns, page-type forms,
   and Lexical editor plugins. Use this skill when the developer wants to change branding (logo,
