@@ -48,7 +48,7 @@ const UrlInput = () => {
 
     const urlBind = useBind({
         name: "url",
-        validators: validation.create("required,url:allowRelative,allowHref")
+        validators: validation.create("required,url:allowRelative:allowHref")
     });
 
     useEffect(() => {
