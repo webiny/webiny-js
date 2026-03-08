@@ -150,14 +150,18 @@ export class ObjectFieldBuilder<TShape extends z.ZodRawShape> extends FieldBuild
     optional(): ObjectFieldBuilder<TShape> & {
         getZodSchema(): z.ZodOptional<z.ZodObject<TShape>>;
     } {
+        // @ts-expect-error
         this.zodSchema = this.zodSchema.optional();
+        // @ts-expect-error
         return this;
     }
 
     nullable(): ObjectFieldBuilder<TShape> & {
         getZodSchema(): z.ZodNullable<z.ZodObject<TShape>>;
     } {
+        // @ts-expect-error
         this.zodSchema = this.zodSchema.nullable();
+        // @ts-expect-error
         return this;
     }
 

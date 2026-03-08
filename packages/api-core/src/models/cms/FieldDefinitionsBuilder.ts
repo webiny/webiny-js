@@ -15,6 +15,7 @@ export class FieldDefinitionsBuilder<TFields extends z.ZodRawShape = {}> {
         configure: (field: IFieldBuilderRegistry) => FieldBuilder<TZod>
     ): FieldDefinitionsBuilder<TFields & Record<K, TZod>> {
         this.registerField(name, configure(this.registry));
+        // @ts-expect-error
         return this;
     }
 
@@ -25,6 +26,7 @@ export class FieldDefinitionsBuilder<TFields extends z.ZodRawShape = {}> {
         for (const [fieldId, fieldBuilder] of Object.entries(shape)) {
             this.registerField(fieldId, fieldBuilder);
         }
+        // @ts-expect-error
         return this;
     }
 
