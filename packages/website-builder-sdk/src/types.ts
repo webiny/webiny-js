@@ -10,6 +10,8 @@ export type ElementMap = Record<string, DocumentElement>;
 
 export type DocumentState = Record<string, any>;
 
+export type DocumentMetadata = { documentType: string; pageType: string };
+
 export type InputValueBinding<T = any> = ValueBinding<T> & {
     id: string;
     type: string;
@@ -155,13 +157,14 @@ export type Document = {
     state: DocumentState;
     version: number;
     properties: Record<string, any>;
+    metadata: DocumentMetadata;
     bindings: DocumentBindings;
     elements: ElementMap;
 };
 
 export type PublicPage = Pick<
     Page,
-    "id" | "version" | "properties" | "bindings" | "elements" | "extensions" | "state"
+    "id" | "version" | "properties" | "bindings" | "elements" | "extensions" | "metadata"
 >;
 
 export type PublicRedirect = {
@@ -215,6 +218,7 @@ export type Page = Document & {
         };
     };
     extensions: Record<string, any>;
+    metadata: DocumentMetadata;
 };
 
 export type Box = {
@@ -289,7 +293,7 @@ export interface ListPagesMeta {
 }
 
 export interface ListPagesResult {
-    data: PublicPage[];
+    data: Array<Omit<PublicPage, "properties" | "bindings">>;
     meta: ListPagesMeta;
 }
 

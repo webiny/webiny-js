@@ -11,8 +11,7 @@ export const LIST_PUBLISHED_PAGES = /* GraphQL*/ `
                 data {
                     id
                     properties
-                    elements
-                    bindings
+                    metadata
                     extensions
                 }
                 meta {
