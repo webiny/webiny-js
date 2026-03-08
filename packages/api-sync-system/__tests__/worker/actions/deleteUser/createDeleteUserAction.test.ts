@@ -33,28 +33,25 @@ describe("deleteUserAction", () => {
             data: {
                 invalidFields: {
                     action: {
-                        code: "invalid_type",
+                        code: "invalid_value",
                         data: {
-                            fatal: undefined,
                             path: ["action"]
                         },
-                        message: "Required"
+                        message: 'Invalid input: expected "deleteUser"'
                     },
                     target: {
                         code: "invalid_type",
                         data: {
-                            fatal: undefined,
                             path: ["target"]
                         },
-                        message: "Required"
+                        message: "Invalid input: expected object, received undefined"
                     },
                     username: {
                         code: "invalid_type",
                         data: {
-                            fatal: undefined,
                             path: ["username"]
                         },
-                        message: "Required"
+                        message: "Invalid input: expected string, received undefined"
                     }
                 }
             },

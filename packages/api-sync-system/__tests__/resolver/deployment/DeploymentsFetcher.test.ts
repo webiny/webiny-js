@@ -88,26 +88,23 @@ describe("DeploymentsFetcher", () => {
                 "1.env": {
                     code: "invalid_type",
                     data: {
-                        fatal: undefined,
                         path: [1, "env"]
                     },
-                    message: "Required"
+                    message: "Invalid input: expected string, received undefined"
                 },
                 "1.region": {
                     code: "invalid_type",
                     data: {
-                        fatal: undefined,
                         path: [1, "region"]
                     },
-                    message: "Required"
+                    message: "Invalid input: expected string, received undefined"
                 },
                 "1.version": {
                     code: "invalid_type",
                     data: {
-                        fatal: undefined,
                         path: [1, "version"]
                     },
-                    message: "Required"
+                    message: "Invalid input: expected string, received undefined"
                 }
             });
         }
