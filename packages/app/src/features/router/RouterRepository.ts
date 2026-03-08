@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import type { MatchedRoute, RouteDefinition, OnRouteExit } from "./abstractions.js";
+import type { MatchedRoute, OnRouteExit, RouteDefinition } from "./abstractions.js";
 import * as Abstractions from "./abstractions.js";
 import { Route, RouteParamsDefinition, RouteParamsInfer } from "./Route.js";
 import { createImplementation } from "@webiny/di";
@@ -68,12 +68,11 @@ class RouterRepositoryImpl implements Abstractions.RouterRepository.Interface {
         if (!route) {
             return;
         }
-
-        const params = route.params
-            ? (route.params as unknown as { parse: (v: unknown) => unknown }).parse(
-                  matchedRoute.params
-              )
-            : matchedRoute.params;
+        
+        const params =
+            typeof route.params?.parse === "function"
+                ? route.params.parse(matchedRoute.params)
+                : matchedRoute.params;
 
         runInAction(() => {
             Object.assign(this.currentRoute, {

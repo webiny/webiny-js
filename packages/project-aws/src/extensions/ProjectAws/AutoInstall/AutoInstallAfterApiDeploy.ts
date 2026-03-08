@@ -76,8 +76,8 @@ class AutoInstallAfterApiDeployImpl implements ApiAfterDeploy.Interface {
         if (adminAutoInstallExtensions.length === 0) {
             return;
         }
-
-        const config = adminAutoInstallExtensions[0].params as any;
+        
+        const config = adminAutoInstallExtensions[0].params;
 
         // Check if system is already installed
         this.ui.info("Checking if system is already installed...");
@@ -98,7 +98,10 @@ class AutoInstallAfterApiDeployImpl implements ApiAfterDeploy.Interface {
         }
 
         this.ui.info("Auto-installing...");
-
+        /**
+         * Type Error introduced with Zod v4. V3 had any type.
+         */
+        // @ts-expect-error
         const adminUser = config.adminUser || {
             firstName: "John",
             lastName: "Smith",
